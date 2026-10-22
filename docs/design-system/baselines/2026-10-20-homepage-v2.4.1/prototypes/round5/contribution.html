@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>贡献柱语义与几何 · 第五轮原型</title>
+  <link rel="stylesheet" href="./contribution.css">
+  <style>[hidden]{display:none!important}.segment,.segment.hollow{top:5px;height:14px;box-sizing:border-box}.segment.hollow{background:transparent!important;border:0;box-shadow:inset 0 0 0 2px currentColor}.segment.zero{border:0!important;box-shadow:none!important;background:transparent!important}.market-summary select{height:28px;padding:0 28px 0 9px;color:#e6edf7;background:#111a26;border:1px solid #283448;border-radius:6px;font-family:inherit;font-size:14px}.pager{display:flex;justify-content:flex-end;gap:10px;align-items:center;padding:8px 0;color:#a8b6cb;font-size:12px}.pager button{height:30px;padding:0 10px;color:#e6edf7;background:#0e1622;border:1px solid #283448;border-radius:5px}.detail table{margin-top:10px;border-collapse:collapse;font-size:12px}.detail th,.detail td{padding:4px 16px 4px 0;text-align:left;color:#a8b6cb}.detail th{color:#e6edf7}</style>
+</head>
+<body>
+  <header class="doc-head">
+    <div class="eyebrow">第五轮原型 B · contribution review</div>
+    <h1>贡献柱的语义与几何</h1>
+    <p>首页底部贡献区的局部裁切；上方模块仍在原位。本页保留旧版与已确认配色对照、正负分段几何和下钻旅程。</p>
+    <div class="doc-links"><a href="./index.html?section=contribution">返回原型索引</a><a href="./reference/contribution-current-a-share.svg">查看参考图</a><span>review-only 选择器与说明在产品画布外 · 静态 fixtures</span></div>
+  </header>
+
+  <main>
+    <div class="review-tools" aria-label="原型审查工具">
+      <label>配色对照<select id="palette"><option value="proposed">已确认：正负同色</option><option value="legacy">旧稿：正值绿/蓝</option></select></label>
+      <label>状态<select id="fixture"><option value="normal">正常 · 双正/双负/异号</option><option value="edge">边界 · 极小/零/不可计算</option><option value="extreme">极值 · 大额与负值</option></select></label>
+      <span class="review-note">D11 外壳：分类 14px · 视觉 28px · 命中区 36px</span>
+    </div>
+
+    <section class="contribution" aria-labelledby="contribution-title">
+      <div class="module-head">
+        <div><h2 id="contribution-title">当前期间贡献</h2><p id="period-copy">当前表现日期 · 2026-01-01 — 2026-10-15 · 已实现 + 浮盈变化</p></div>
+        <strong id="total" class="total">+18,420.00 CNY</strong>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="贡献模式">
+        <button role="tab" aria-selected="true" data-mode="current">当前期间</button><button role="tab" aria-selected="false" data-mode="historical">历史已平仓</button>
+      </div>
+      <div class="filters" aria-label="贡献筛选">
+        <div class="filter-group"><span class="filter-label">分类</span><div class="seg" role="group" aria-label="分类"><button aria-pressed="true" data-category="long">做多</button><button aria-pressed="false" data-category="short">做空</button><button aria-pressed="false" data-category="ipo">打新</button></div></div>
+        <label class="sort-field">排序<span class="filter-select custom-select"><select id="sort" aria-label="排序"><option value="desc">盈利最高 ↓</option><option value="asc">亏损最大 ↑</option></select></span></label>
+        <label class="check"><input id="open-only" type="checkbox">仅看未平仓</label>
+        <label class="market-summary">全局市场 <span class="filter-select custom-select"><select id="market-scope" aria-label="全局市场"><option value="all">全部市场</option><option value="A股">A股</option><option value="港股">港股</option><option value="美股">美股</option></select></span></label>
+      </div>
+      <div class="crumbs" id="crumbs" hidden><button id="back-market">全部市场</button><span>›</span><span id="crumb-market"></span></div>
+      <div class="legend" aria-label="贡献构成图例"><span class="legend-solid"></span><span>已实现（实心）</span><span class="legend-hollow"></span><span id="floating-legend">浮盈变化（中空）</span><span class="legend-help">正负各自从零线两侧绘制</span></div>
+      <div class="bar-header"><span id="row-label">市场</span><span>合计</span></div>
+      <div id="bars" class="bars" aria-live="polite"></div>
+      <div class="module-foot"><strong id="foot-total">合计 +18,420.00 CNY</strong><span id="foot-breakdown">已实现 +12,240.00 · 浮盈变化 +6,180.00</span></div>
+    </section>
+
+    <aside class="journey" aria-label="审查说明"><strong>旅程证据目标</strong><span>全部 → 市场条 → 标的明细 → 详情连接占位 → 关闭返回</span><span>历史模式仅显示已平仓构成；当前/历史筛选与下钻分别记忆。</span></aside>
+    <aside id="detail" class="detail" aria-label="详情连接占位 · 仅验证返回状态" hidden><div><strong id="detail-title">详情连接占位 · 仅验证返回状态</strong><p>仅验证返回状态；正式详情沿用既有交易详情容器。以下为贡献读数示例。</p><p id="detail-copy"></p><div id="detail-trades"></div></div><button id="close-detail">关闭并返回</button></aside>
+  </main>
+  <script src="../round4/ui-select.js"></script>
+  <script src="./contribution.js"></script>
+</body>
+</html>

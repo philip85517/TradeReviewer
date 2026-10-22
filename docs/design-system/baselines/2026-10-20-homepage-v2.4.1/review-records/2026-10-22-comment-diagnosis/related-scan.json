@@ -1,0 +1,237 @@
+{
+  "referenced_svg_count": 106,
+  "source_svg_count": 123,
+  "matches": {
+    "technical_copy": [
+      "01-live-normal.svg",
+      "02-simulation-normal.svg",
+      "03-distribution-selected.svg",
+      "04-return.svg",
+      "05-loading.svg",
+      "06-empty.svg",
+      "07-error.svg",
+      "08-extreme.svg",
+      "09-missing-input.svg",
+      "handoff.svg",
+      "hcr06-final-pending-return.svg",
+      "hcr06-final-return.svg"
+    ],
+    "healthy_status": [
+      "chart-hover--keyboard.svg",
+      "chart-hover.svg"
+    ],
+    "fixed_tooltip": [
+      "chart-hover--keyboard.svg",
+      "chart-hover.svg"
+    ],
+    "history_subtitle": [
+      "history-stats-cumulative.svg",
+      "history-stats-empty.svg",
+      "history-stats-error.svg",
+      "history-stats-extreme.svg",
+      "history-stats-rounds.svg",
+      "history-stats-source-missing.svg",
+      "history-stats-win.svg",
+      "history.svg",
+      "home-1280.svg",
+      "home-1440.svg",
+      "home-history-1280.svg",
+      "home-history-1440.svg",
+      "journeys-year.svg"
+    ]
+  },
+  "note": "正文直接引用的 SVG 静态候选扫描；非逐图浏览器验收",
+  "locations": {
+    "01-live-normal.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 498
+      }
+    ],
+    "02-simulation-normal.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 499
+      }
+    ],
+    "03-distribution-selected.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 500
+      }
+    ],
+    "04-return.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 501
+      }
+    ],
+    "05-loading.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 502
+      }
+    ],
+    "06-empty.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 503
+      }
+    ],
+    "07-error.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 504
+      }
+    ],
+    "08-extreme.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 505
+      }
+    ],
+    "09-missing-input.svg": [
+      {
+        "chapter": "八、交易库内部规范 {#chapter-HP07}",
+        "line": 506
+      }
+    ],
+    "handoff.svg": [
+      {
+        "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+        "line": 443
+      }
+    ],
+    "hcr06-final-pending-return.svg": [
+      {
+        "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+        "line": 462
+      }
+    ],
+    "hcr06-final-return.svg": [
+      {
+        "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+        "line": 451
+      }
+    ],
+    "chart-hover--keyboard.svg": [
+      {
+        "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+        "line": 241
+      }
+    ],
+    "chart-hover.svg": [
+      {
+        "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+        "line": 240
+      }
+    ],
+    "history-stats-cumulative.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 374
+      }
+    ],
+    "history-stats-empty.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 385
+      }
+    ],
+    "history-stats-error.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 386
+      }
+    ],
+    "history-stats-extreme.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 388
+      }
+    ],
+    "history-stats-rounds.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 376
+      }
+    ],
+    "history-stats-source-missing.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 387
+      }
+    ],
+    "history-stats-win.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 375
+      }
+    ],
+    "history.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 373
+      }
+    ],
+    "home-1280.svg": [
+      {
+        "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+        "line": 56
+      }
+    ],
+    "home-1440.svg": [
+      {
+        "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+        "line": 51
+      }
+    ],
+    "home-history-1280.svg": [
+      {
+        "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+        "line": 57
+      }
+    ],
+    "home-history-1440.svg": [
+      {
+        "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+        "line": 52
+      }
+    ],
+    "journeys-year.svg": [
+      {
+        "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+        "line": 384
+      }
+    ]
+  },
+  "uncalibrated_money_header_candidates": [
+    "50-items--page-7.svg",
+    "50-items.svg",
+    "count-boundaries--nine-items-last-page.svg",
+    "count-boundaries.svg",
+    "count-scales--ten-items.svg",
+    "count-scales--twenty-items.svg",
+    "count-scales.svg",
+    "empty--zero-holdings.svg",
+    "empty.svg",
+    "error--update-failure.svg",
+    "extreme.svg",
+    "holding-option-C-large-1280.svg",
+    "holding-option-C-large-1440.svg",
+    "holding-option-C-normal-1280.svg",
+    "holding-option-C-normal-1440.svg",
+    "holding-return--after.svg",
+    "holding-return--detail.svg",
+    "holding-return.svg",
+    "home-1280.svg",
+    "home-1440.svg",
+    "home-history-1280.svg",
+    "home-history-1440.svg",
+    "loading--stale-data.svg",
+    "loading.svg",
+    "local-search-pages--clear.svg",
+    "local-search-pages--one-match.svg",
+    "local-search-pages.svg"
+  ]
+}

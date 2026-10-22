@@ -1,0 +1,9 @@
+{
+  "immutableComments": {
+    "review-records/comments-original.json": true,
+    "reviews/HOME-DOC-V23.json": true,
+    "reviews/comment-migration.source.json": true,
+    "reviews/comments-snapshot.json": true
+  },
+  "frozenArchiveChanged": []
+}

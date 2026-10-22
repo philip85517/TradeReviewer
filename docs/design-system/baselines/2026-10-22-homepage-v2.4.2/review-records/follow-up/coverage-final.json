@@ -1,0 +1,1128 @@
+[
+  {
+    "name": "home-1440.svg",
+    "hash": "bcb180ebf38b21725b082dd8f58a9c83eb030a20bb448e3e145e0418e9efdccc",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "home-history-1440.svg",
+    "hash": "1d6dc464ffb34dfb02f92687929c8763d4279279c887884eae195cedb52a0e3c",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "home-1280.svg",
+    "hash": "c4e341c1bb69ab5b0b658351529310451a47a71b305d5058ee8533a348d516c7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "home-history-1280.svg",
+    "hash": "f5a947389865e6beb51de583bdde47fc4dbd48dc822344a0906776fb83deba65",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "visual-samples-board.svg",
+    "hash": "9e44de3e8c22de4d22ee3029f7ea1be21b966e1aa37968866a45eb237ecd2397",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "account.svg",
+    "hash": "e13e8ad14cf7809341967983b1bd84d311323f460c1967cb410b55261cbc0f65",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search.svg",
+    "hash": "35b47cf593f0d5ac294704bc136dec6309ac78a66550d3d5e3ee1355e6dbbfa3",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search--detail.svg",
+    "hash": "5c6b0ed321449b8cb578e51afaf91c0b3b19470f423222ac17579339f1ae55bf",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search--empty.svg",
+    "hash": "c920da86e0b1434fee1af6751ebb3847f89ff88bff5345451df01ddf2912bdea",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search-detail.svg",
+    "hash": "a5f321bf3481fb59e36e2294f91294826e90e8d8110704de49904f07998e252a",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search-motion.svg",
+    "hash": "94a0e96de0d86c7ba1e9733de369c9152ba65ac512e65cd00d79a59e5acbbc99",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search-overlay-open.svg",
+    "hash": "a461fa978344fd65c0755909f6d82f19535d88578e17cf43fe8b2008194734fc",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "search-overlay-reduced-motion.svg",
+    "hash": "7daff09086667595b8d98ff254095abf384cb55e60729c2b63d894b2eed43c58",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "detail.svg",
+    "hash": "f0b55f8f66267819fd3e8f2a4f50da01c289a2312e30c43b89a997f12ad2a1f9",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "filter.svg",
+    "hash": "d5182ba7030cf8052405785122f79e8eb39a46ffcbe99d8172cdc51297f602ec",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "multi-applied.svg",
+    "hash": "d03db33e3660ca3a0054b7cb4e912ae6df59ba60237da0b0e06b57c27a415181",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "multi-applied--reopen.svg",
+    "hash": "54fb6956e21cd5e72e6e8d58dc5afe18c9bdda740433c235257daab3e5fb9405",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "clear-attachments.svg",
+    "hash": "f16dec43c9457a46b161b891604e61d171ff4747f120a3c15aed7e949f1fc456",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "clear-attachments--after-clear.svg",
+    "hash": "b937d08da29d52a225b9664ed00c14b70b48f6d747512d9837189af74d8272a5",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "reset.svg",
+    "hash": "7beba1abdc564bb19f9e7e8aebd51e1204f0445b4db81f2a2dfd96d5b4207e43",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "reset--reset.svg",
+    "hash": "0019ea5a874eb9449dfc9da0ff455f98f8a350f6b4de28468befb797726d05e6",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "cancel.svg",
+    "hash": "4567ad852e2c1ba70f054397f7f55042ebd3e2faebc9bb68a3a9e3f8ed9d1b7c",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "cancel--cancelled.svg",
+    "hash": "9288b0cabf7d432b2b67b4ca6967ec90c3dcd95aed5f12e71f6e6de4548bf887",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "period.svg",
+    "hash": "4fbe2cdd0d411a25adc92c555784c09b82eabcd5927691edab01aca70e31b6d8",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-hover.svg",
+    "hash": "0ffd13dee12dfe0debceea03b7a4e230e2f9b3b455b90c4014c465be5b5bd1b7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-hover--keyboard.svg",
+    "hash": "c6c2a5245ceaeadd00e5a65c0037f1f2cf203d519cd80acbbf13bbb69f7f4d49",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-gap.svg",
+    "hash": "bf34df83d71d083fb87f092143e67d0c8e3a8b32a0673e9d4fccba4030c4c2b8",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-scale.svg",
+    "hash": "fdc1d06b7bf48f1f5f18ce4c3200e06ccb38a6430d7d181d0102ab556da3e9db",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-scale--normal.svg",
+    "hash": "7ee84e1e4aa57bcd8fa48bc348f93f10bb9e4ab21001cb283eaf5e6403bc80b0",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-scale--wide.svg",
+    "hash": "637d62153ec63126594a5ceb951b5a14fa477398e5aedef7a58dc39ebacb40d8",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "chart-scale--extreme.svg",
+    "hash": "cf0129188fed68d006b739a03adfca8eeb4ee50dd28e3747726da2f26e627180",
+    "scope": "current-document",
+    "evidence": [
+      "independent-tables/chart-fixes-final-review.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "count-scales.svg",
+    "hash": "6d0cda2ce2cdde1841c51df62700e89044ab43ac766adbcbb3fc008b252479f5",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "count-scales--ten-items.svg",
+    "hash": "478ef062563c6d73cf26107fe9c33891486d79f677dcf253e185507ef917682a",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "count-scales--twenty-items.svg",
+    "hash": "a4219afb5c90b20c2a966513130576c777f5fd6968c1e4612e41f9873dca60b7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "local-search-pages.svg",
+    "hash": "0b53c43a52b02173fc81dca5b9ec4df29225abe63a7bbe78edfa8565eaecf21a",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "local-search-pages--one-match.svg",
+    "hash": "0ff2df22d77d57762ce976f3e26fd83520faea7539bfdd8ac86036a61c9eab58",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "local-search-pages--clear.svg",
+    "hash": "e10217122ce59480b8ca24f8c43390448afdc469d8a55d054b8a9fe51e28a7ec",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "50-items.svg",
+    "hash": "a2f21f907ff99aa445bc505b99608786c66ffa9d0f33834039edd4b767625e59",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "50-items--page-7.svg",
+    "hash": "c4243b3ee6c7c226fa88c3ae2e765a92654e1023fde180c4f075352f5181c4a7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-return.svg",
+    "hash": "2919c8c86e1287afceee49fc6f7e97c1f7182e37f93df364997cbc5b0659c123",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-return--detail.svg",
+    "hash": "500d9ef4a7861796db36e086f152c3e56377679088a4dcaaae781b0c524dbb5a",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-return--after.svg",
+    "hash": "d8ec41af5b346f37f87b7422a18644b79e1f2024e452a7d9d3b01fd2579e69a7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "empty.svg",
+    "hash": "65fb3072c63e3ba7a8bd73e200b12a17934ba44f8403df4e54c9f648bdb4b6d7",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "empty--zero-holdings.svg",
+    "hash": "66e69cd4cda73f941f59f3bd510dfde1b558a6a0a563b21900c8494092176778",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "count-boundaries.svg",
+    "hash": "446d061a3c7e00dbd22d89726b44163a7259582f1c1fa6e8f692ebd24425cf1b",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "count-boundaries--nine-items-last-page.svg",
+    "hash": "aa5523723eed34f40b91db75b3215a78287902c313d4da046e0ac2ec2d12ca08",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "extreme.svg",
+    "hash": "98617362bbae84d585dc15b876428db02c38fc2e0011be1fe3175d5ef7467db9",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history.svg",
+    "hash": "71b470909ca2bc25da61f83f06cf4f00869f1949dedb378b3ae094a82edf153c",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-cumulative.svg",
+    "hash": "cb48191c2c933c87c54566c0fe9d90a68c7e130f1c41d936dfa9a19b1165b298",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-win.svg",
+    "hash": "24974a7cd7b45d879556faa74250a58586e2a1781e07b4328e52f812ae7c38d5",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-rounds.svg",
+    "hash": "973fcff8f47771eebbaf53174dec736378b4b50d4b48a85a56206461dbcf7b72",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "journeys-year.svg",
+    "hash": "3c4ef7647ecd9aaac3c446f190ac625b823b6d08b672cdb2f8d7426a5628677d",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-empty.svg",
+    "hash": "31373b67e8c671f25d9969dbb10772f75784785321ce1a25ff3ea03c556cc6e6",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-error.svg",
+    "hash": "6cde268ce8b12553557565dc9dfcbba2d4b1b20feba9e74b4d1bae595bdc897a",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-source-missing.svg",
+    "hash": "108099294b134377912499d794f79e15186ecd88450a0f4eeec2526b535722f9",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "history-stats-extreme.svg",
+    "hash": "d4656e46487508c095aed0f5194fd1e5196c814d9e1f146d439f7bdf588ba840",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-states.svg",
+    "hash": "f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-current-a-share.svg",
+    "hash": "cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-historical-a-share.svg",
+    "hash": "528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution.svg",
+    "hash": "944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-loading.svg",
+    "hash": "9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-empty.svg",
+    "hash": "26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-error.svg",
+    "hash": "e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-extreme.svg",
+    "hash": "b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "contribution-mixed-sign-demo.svg",
+    "hash": "50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "handoff.svg",
+    "hash": "f9ddd3d554a56c398ad1e9370537b77c9968741253c938a27de3a9cceb2a7b2f",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "journeys-date.svg",
+    "hash": "21bfbd6d491574026419a89f367e855704339e8d26a8e10840a061a5e427cbb2",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-return.svg",
+    "hash": "d3a60dc9ce39074ed503f09ddc95971df233181c98cb8e8d3ca8255f9bb4664e",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "journeys-pending.svg",
+    "hash": "e867f00fc2d004f0b36038682cd62cbec633b9b13c54b71239c1307a01c354ef",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "journeys-pending-normal.svg",
+    "hash": "8e5389d967bde61a688edee16909ec0b3944a7de50d98ec350bec7f40415d558",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "journeys-pending-99plus.svg",
+    "hash": "b05a9944711e4902574c3e623b392acaa7bdb2f8219ca493e7e8ca37537b0262",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-pending-library.svg",
+    "hash": "460c461caf1adb0dc542c21174161a887ac6588f014327ccc88ab6a6a038307d",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-pending-library-1280.svg",
+    "hash": "6e2b9432f48f416f86b20a14318c50ecee52c02a55da9769b49660279a0744c0",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-pending-return.svg",
+    "hash": "9fa80d1ee26bd08b543131896b50e42fa3e18adeb4d77953d4215a072acca8f4",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-sim-ab.svg",
+    "hash": "98a9733b23ebc9983828a0c858149de0dafd9b069d442be9794defda60716176",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-rounds-a.svg",
+    "hash": "1669f726874229fe4a2b34d41c06a3057743cf0dae1398a4e4452f1339d062c6",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-replay-a1.svg",
+    "hash": "b382bc2f7c5eb0e2fed40907974e75b8651259fc885696a39c6ed7af81f60b55",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-replay-a2.svg",
+    "hash": "31fa2d14cc9f97eb83d64b4e2b9b728692526d038aa3b855961e3109772e7bc4",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "hcr06-final-replay-b1.svg",
+    "hash": "58cacca068ce051c12f64979c6c93dd80da5a066b894cfac0d26535d422a6701",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "01-live-normal.svg",
+    "hash": "6caa8ee9c5dd20dc16597365d512e860001032fcb4e798bb54a9d30551855025",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "02-simulation-normal.svg",
+    "hash": "f6051051e4a8167243224a893497224a8a9069d6d0d0362ce022155ca25f5f92",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "03-distribution-selected.svg",
+    "hash": "57f15ae97b072b6f92f1273f8f36dc6af7bd4c73911962f99ebe7837fa1925ae",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "04-return.svg",
+    "hash": "7b77f07eafbde72c6523989e64fdd617eaadc929d665139736685fd51e04349e",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "05-loading.svg",
+    "hash": "6ec46f8d367e7451723461d989024e3bab8b6e92283db760430ab0b0b20ed139",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "06-empty.svg",
+    "hash": "1f74bd558c620bcd7bff38340890054672c65128e333f12e1783c1dd9ac71f04",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "07-error.svg",
+    "hash": "3a3d318106c3d11f49465ef66f65b2cea5278b22513082a3d79368b91e14a294",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "08-extreme.svg",
+    "hash": "55d5ce58d36e917388682badfbbec3d0223f3ce0d393bb8d4fe0e7629e40c718",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "09-missing-input.svg",
+    "hash": "8991be89b915211a643dceb76a662d0c9dca9d48eebbd2f6651ead5517929b2f",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "loading.svg",
+    "hash": "7b91c7e90c09ee4722abb129f7461ce1396af118672628b276f79181a4b67bef",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "loading--stale-data.svg",
+    "hash": "1a28221daa6452591d8cb539246578eeb9831de817b4a1fcbb059dac920b4db3",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "error.svg",
+    "hash": "d97d6e67e0eedebb80646c8e88bd86ad4634733f697cd5f668df10cbc1db6646",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "error--update-failure.svg",
+    "hash": "97111a10a399dd6b76badf81d30fa3a8d7b1c030dc26e465f5a5e31d7ed7717b",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "repair.svg",
+    "hash": "1a2f995c264f4200a4a6cf423bff32097a3fcb359862423f85afc7681948f2ae",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "atoms.svg",
+    "hash": "d9218c2a03551b2bdc2c9ab05925f946d74eb093c8fe8c67f595b06c7bda8af8",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-option-A-normal-1440.svg",
+    "hash": "11ce9f7571e14ff2109d959465566ac9dff9b451f6ecc7220e9dfd2f6a7e99f5",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-A-normal-1280.svg",
+    "hash": "8943e1df8cc8ae477681f524422ed89de6936f20235729796bd6104582a64fd2",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-A-large-1440.svg",
+    "hash": "8cd233750c3926cc960f1fdf2ae45124dc24a8582b5d3c8d71dc512101317cba",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-A-large-1280.svg",
+    "hash": "9408c23e986be6064bfc0c667cba692507329739f5da8a625a1fe0646d51822a",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-B-normal-1440.svg",
+    "hash": "04051cfff278b3ea3176b66be35d1e05dffd7fdea5cd83e40ec5695ab5ebebd4",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-B-normal-1280.svg",
+    "hash": "651abb97cdff3dfba71be5cf44373fb0c6ab7c45c4012984e0e5ec832ab444f3",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-B-large-1440.svg",
+    "hash": "f133f596f9b9f20662fd7f670bbbbf22c6ec4eaf2bc1969ce63d81e8afd0b56a",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-B-large-1280.svg",
+    "hash": "353871f59f004f12cfd29fd358ce8eb919727b6bcc92075e352dd6bb84178b26",
+    "scope": "historical-candidate-preserved",
+    "evidence": [],
+    "status": "EXCLUDED_FROM_NEW_BASELINE"
+  },
+  {
+    "name": "holding-option-C-normal-1440.svg",
+    "hash": "4d89991d74de2a9c0cd6f151d49349aa374fdef36a3a84bde76a99ef2834056b",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-option-C-normal-1280.svg",
+    "hash": "b56a8b82eeb4f246147ccd0711a8097397d2f433a194ddb658f072abcd9132b2",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-option-C-large-1440.svg",
+    "hash": "c948d7598d3c0c5a4b2ca4e99de1280d691af77544eefe09f8b2f30c4d82a499",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  },
+  {
+    "name": "holding-option-C-large-1280.svg",
+    "hash": "b0be3a1f5964bf2e988559d98c788e48bc7f5c7fb2ee1217308584e60d61d010",
+    "scope": "current-document",
+    "evidence": [
+      "independent-shared/REPORT.md",
+      "independent-tables/REPORT.md",
+      "final-acceptance.md"
+    ],
+    "status": "STATIC_PASS"
+  }
+]

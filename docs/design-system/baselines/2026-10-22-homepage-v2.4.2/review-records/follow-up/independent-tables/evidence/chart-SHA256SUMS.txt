@@ -1,0 +1,20 @@
+# Supplemental chart/period evidence SHA-256
+
+Rendered by sharp from current SVG at density 72; raster canvas matches source viewBox.
+
+8f030c5a5056dddfa6801488df81265b6666465a79299006930ea4a157874ed6  charts/chart-gap.png
+951e2ce4641f595c744cf6eeb25b805ee865c2f2b1873c4c4728d479dedd94db  source/images/chart-gap.svg
+c1cd05cd0d25551c92fb6b36df5fdb18dec0e8a114c98ef480829c3327438aaf  charts/chart-hover--keyboard.png
+a90ce3547100588eb3a033e46c06f49e414e328828bd3823b9ce029f504624e9  source/images/chart-hover--keyboard.svg
+c58e0a4fb7ddbfdfbf70ab4fa339d071cff9f67be0589744bd9fe26cc0570ba9  charts/chart-hover.png
+856091744b956f37ab080494c46d5484d03ffa0c2fa91838d3034f0bac100b02  source/images/chart-hover.svg
+6106646dbae05e789c5a64438ccb8e48ba763b66a1bb899b03cd72f31e919723  charts/chart-scale--extreme.png
+5a55263f83ded74305163dabe085d007ec5159c5dc373d1608acb6b4b45dfacc  source/images/chart-scale--extreme.svg
+b4cd700056817b3283f1a5ec1db854432be9283de33bc803d023531fe335d772  charts/chart-scale--normal.png
+5d4af3a400cf93317f5f4e9c99c7df245554462ecfd19d44349cc70023bebe35  source/images/chart-scale--normal.svg
+6ba2200b162e9afa82252982d42dc95ae4ae75b259daa964683e32ae2bb3c591  charts/chart-scale--wide.png
+f56a3becdc0abc70c2022f9cefd02e9703490f49d7cd0e5c1d4198ea92e4cd22  source/images/chart-scale--wide.svg
+4a0ef4db9e3c7bcbb3a8aa8b3ffbd5274c89ff015886e8a35bf34f98edec9509  charts/chart-scale.png
+5e5e4200cf8733e0c6a8f478bb9f15fb80e5dbdf5e7cfb6f1363493bd651f5b7  source/images/chart-scale.svg
+a14b26a8ba807b2899d47f2a977bc354c3ab323ab3b1b9b8c86e8a543ef67bef  charts/period.png
+9454786027b6d9c9875b5ee49f503557e58ae77d1c2584e168724c81a77b01f2  source/images/period.svg

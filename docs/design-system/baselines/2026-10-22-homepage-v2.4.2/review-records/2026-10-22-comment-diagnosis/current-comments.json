@@ -1,0 +1,372 @@
+[
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:25:43Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:25:43Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-8be5c5ac0c4a4a60aaba9b0a091b7e1a",
+    "image": {
+      "chapter": "HP11",
+      "fingerprint": "bcb180ebf38b21725b082dd8f58a9c83eb030a20bb448e3e145e0418e9efdccc",
+      "id": "home-1440",
+      "occurrenceId": "home-1440@state-demo-1-1",
+      "src": "source/images/home-1440.svg"
+    },
+    "opinion": "1）持仓盈亏 和 持仓量的数值，没有拉齐自字号大小，检查与之前原型设计方案的差异\n2）最新持仓的 (CNY)与下方数字对齐的方式，我觉着不像我选择的方案，就是调整了对齐线的，而是单纯仅仅把全角符号换成了半角；需要对照原型的方案差异",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:32:43Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:32:43Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-afdb69a64a7b42d2b0dc9221f2b714d0",
+    "image": {
+      "chapter": "HP02",
+      "fingerprint": "0ffd13dee12dfe0debceea03b7a4e230e2f9b3b455b90c4014c465be5b5bd1b7",
+      "id": "chart-hover",
+      "occurrenceId": "chart-hover@state-demo-5-1",
+      "src": "source/images/chart-hover.svg"
+    },
+    "opinion": "1）这张图悬浮上去后出现的Text框，这个框内的文字没有被边界包裹住，这个设计规范需要确认\n2）然后文字内部的 行情☑️与汇率☑️，这两者的内容不需要展现，只要出问题时有❗️的规范元素在表头即可",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:39:38Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:39:38Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-d3088e708a1f48e2a27bdea0301cb495",
+    "image": {
+      "chapter": "HP02",
+      "fingerprint": "0ffd13dee12dfe0debceea03b7a4e230e2f9b3b455b90c4014c465be5b5bd1b7",
+      "id": "chart-hover",
+      "occurrenceId": "chart-hover@state-demo-5-1",
+      "src": "source/images/chart-hover.svg"
+    },
+    "opinion": "同样是hove上后，图标中的文字是否超出框框",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:41:50Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:41:50Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-b42d4da739da4ac39a015a26dd592774",
+    "image": {
+      "chapter": "HP05",
+      "fingerprint": "973fcff8f47771eebbaf53174dec736378b4b50d4b48a85a56206461dbcf7b72",
+      "id": "history-stats-rounds",
+      "occurrenceId": "history-stats-rounds@state-demo-12-4",
+      "src": "source/images/history-stats-rounds.svg"
+    },
+    "opinion": "历史已平仓下的文字不需要存在",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:46:14Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:46:14Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-547c6b093fcc4ff3a2d51ed97dc27cb3",
+    "image": {
+      "chapter": "HP05",
+      "fingerprint": "973fcff8f47771eebbaf53174dec736378b4b50d4b48a85a56206461dbcf7b72",
+      "id": "history-stats-rounds",
+      "occurrenceId": "history-stats-rounds@state-demo-12-4",
+      "src": "source/images/history-stats-rounds.svg"
+    },
+    "opinion": "review这里的说明文字，有些不是给网站用户看的内容使用统一的说明控件去进行说明",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:46:58Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:46:58Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-2364b533e6fe456c98038a334aa28285",
+    "image": {
+      "chapter": "HP06",
+      "fingerprint": "f9ddd3d554a56c398ad1e9370537b77c9968741253c938a27de3a9cceb2a7b2f",
+      "id": "handoff",
+      "occurrenceId": "handoff@443",
+      "src": "source/images/handoff.svg"
+    },
+    "opinion": "这里的控件正式样式里的文字和功能说明，独立开在其它区域，不要让后续前端开发的人员误以为也要1:1实现这些文字",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:48:21Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:48:21Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-0d4f47cdc61e4f4bb1fd3758478a7a87",
+    "image": {
+      "chapter": "HP06",
+      "fingerprint": "f9ddd3d554a56c398ad1e9370537b77c9968741253c938a27de3a9cceb2a7b2f",
+      "id": "handoff",
+      "occurrenceId": "handoff@443",
+      "src": "source/images/handoff.svg"
+    },
+    "opinion": "第七章与第八章合并，相同的内容只留一份；\n同时在交易库中用用户动线说明交易进入的链路",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:48:54Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:48:54Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-8af1a5aaf1c84167a990c33f9d96146f",
+    "image": {
+      "chapter": "HP07",
+      "fingerprint": "98a9733b23ebc9983828a0c858149de0dafd9b069d442be9794defda60716176",
+      "id": "hcr06-final-sim-ab",
+      "occurrenceId": "hcr06-final-sim-ab@state-demo-18-1",
+      "src": "source/images/hcr06-final-sim-ab.svg"
+    },
+    "opinion": "日期控件和搜索组件未使用全局的设计规范",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:49:56Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:49:56Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-17f5d568171d40538b1ee2575886402f",
+    "image": {
+      "chapter": "HP07",
+      "fingerprint": "98a9733b23ebc9983828a0c858149de0dafd9b069d442be9794defda60716176",
+      "id": "hcr06-final-sim-ab",
+      "occurrenceId": "hcr06-final-sim-ab@state-demo-18-1",
+      "src": "source/images/hcr06-final-sim-ab.svg"
+    },
+    "opinion": "日历/对齐和搜索都有对齐和控件规范的问题",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  },
+  {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-21T16:51:25Z",
+    "documentId": "HOME-DOC-V23",
+    "fingerprint": "204c2c3deb5437c227baf5b91ac95a2ca02d6fb25a24cfe83b1218a6d0b7f020",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-21T16:51:25Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-d6dc076545444ac58513468c86d96599",
+    "image": {
+      "chapter": "HP07",
+      "fingerprint": "6caa8ee9c5dd20dc16597365d512e860001032fcb4e798bb54a9d30551855025",
+      "id": "01-live-normal",
+      "occurrenceId": "01-live-normal@state-demo-19-1",
+      "src": "source/images/01-live-normal.svg"
+    },
+    "opinion": "1）检查该图的文字说明，有些非必要的说明文字不在主页面产生，而使用规范的提示ICON，悬浮时显示说明文字\n2）回合分布中，除了绝对量，还应该有比例，不然无法跨时间段比较\n3）顶部控件的规范需要与全局设计规范对齐",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "2.4.1"
+  }
+]

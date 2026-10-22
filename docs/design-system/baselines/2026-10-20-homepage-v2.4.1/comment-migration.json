@@ -1,0 +1,435 @@
+{
+  "schema": "hcr02-comment-migration/1",
+  "documentId": "HOME-DOC-V23",
+  "fingerprint": "6aea7a7df1f858daef742b0e0af4bde919e4dd851ae8b2d5aa40add44d42c1c4",
+  "entries": [
+    {
+      "commentId": "comment-fa4fb3f1fa8f4fffa6ba73e729683c2d",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/holding-return-6a91c31dd5a3.svg",
+      "sourceOccurrenceId": "holding-return@280",
+      "targetOccurrenceId": "holding-return@state-demo-9-1",
+      "target": {
+        "occurrenceId": "holding-return@state-demo-9-1"
+      },
+      "originalChapter": "HP04",
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-46d442c4b2784ca2b9a198fb34d766fd",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/home-1440-5b886c155eef.svg",
+      "sourceOccurrenceId": "home-1440@46",
+      "targetOccurrenceId": "home-1440@state-demo-1-1",
+      "target": {
+        "occurrenceId": "home-1440@state-demo-1-1"
+      },
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-f5fc106179a84677962bdcc194ae2e36",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/home-1280-40d9d2319e89.svg",
+      "sourceOccurrenceId": "home-1280@48",
+      "targetOccurrenceId": "home-1280@state-demo-2-1",
+      "target": {
+        "occurrenceId": "home-1280@state-demo-2-1"
+      },
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-157c15abd5234d51bfea92618b7f7090",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP11-B006",
+      "target": {
+        "blockId": "HOME-HP11-B006",
+        "quote": "深色背景承载整页，表面和边线划分区域；蓝色表示可操作或当前选择，绿色和红色表示盈亏，黄色提示数据需要关注。颜色必须配合文字或可访问名称，不能单靠颜色表达状态。",
+        "blockIdBySource": {
+          "HOME-HP01-B055": "HOME-HP11-B006"
+        }
+      },
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-be74243f81284103bd817fa48c44a9dd",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/search-0ea535dae0cd.svg",
+      "sourceOccurrenceId": "search@state-demo-1-1",
+      "targetOccurrenceId": "search@state-demo-3-1",
+      "target": {
+        "occurrenceId": "search@state-demo-3-1"
+      },
+      "originalChapter": "HP03",
+      "currentChapter": "HP03"
+    },
+    {
+      "commentId": "comment-aae2a88ebb554b47844b3a429ce30cf9",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/cancel-715161926006.svg",
+      "sourceOccurrenceId": "cancel@state-demo-2-5",
+      "targetOccurrenceId": "cancel@state-demo-4-8",
+      "target": {
+        "occurrenceId": "cancel@state-demo-4-8"
+      },
+      "originalChapter": "HP03",
+      "currentChapter": "HP03"
+    },
+    {
+      "commentId": "comment-685afcfc6e27448d937d9a8bf6fc313c",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/chart-hover-4e50cce156e2.svg",
+      "sourceOccurrenceId": "chart-hover@state-demo-3-1",
+      "targetOccurrenceId": "chart-hover@state-demo-5-1",
+      "target": {
+        "occurrenceId": "chart-hover@state-demo-5-1"
+      },
+      "originalChapter": "HP02",
+      "currentChapter": "HP02"
+    },
+    {
+      "commentId": "comment-e060950542ca4bd9bfc3d7e064cde967",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP04-B070",
+      "target": {
+        "blockId": "HOME-HP04-B070",
+        "quote": "标题区左侧分两行：第一行“当前持仓（最新）”为18/24px正文色；第二行显示市值与当前浮盈，标签12/16px次要色，市值保持中性色，浮盈正值绿色、负值红色、零为正文色。右侧放搜索入口与导出。它们与标题区共用上边界，不占表头或数据行。示意数据用于展示真实标的名称和数字密度，产品不渲染“样例”“样本”等前缀。",
+        "blockIdBySource": {
+          "HOME-HP04-B042": "HOME-HP04-B070"
+        }
+      },
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-9de55ebf84ac40628022d725f4ab550c",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP04-B035",
+      "target": {
+        "blockId": "HOME-HP04-B035",
+        "quote": "12/16px次要色；数值标题右对齐，名称左对齐",
+        "blockIdBySource": {
+          "HOME-HP04-B060": "HOME-HP04-B035"
+        }
+      },
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-0f9d2f5583944cd2bed95b0fb1a860c4",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/count-scales-c19c9e0376c8.svg",
+      "sourceOccurrenceId": "count-scales@262",
+      "targetOccurrenceId": "count-scales@state-demo-6-1",
+      "target": {
+        "occurrenceId": "count-scales@state-demo-6-1"
+      },
+      "originalChapter": "HP04",
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-3feb55774db8428a9feedbae68f62683",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/local-search-pages-ed7ea8311786.svg",
+      "sourceOccurrenceId": "local-search-pages@270",
+      "targetOccurrenceId": "local-search-pages@state-demo-7-1",
+      "target": {
+        "occurrenceId": "local-search-pages@state-demo-7-1"
+      },
+      "originalChapter": "HP04",
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-3f389a05ebda45288d042f475234adf6",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/50-items-5c8a59d6139f.svg",
+      "sourceOccurrenceId": "50-items@272",
+      "targetOccurrenceId": "50-items@state-demo-8-1",
+      "target": {
+        "occurrenceId": "50-items@state-demo-8-1"
+      },
+      "originalChapter": "HP04",
+      "currentChapter": "HP04"
+    },
+    {
+      "commentId": "comment-46d96184dde049898bd14815ce0ee511",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP05-B001",
+      "target": {
+        "blockId": "HOME-HP05-B001",
+        "quote": "历史已平仓是首页默认展开的最后一个模块。阅读当前期间贡献后继续向下滚动即可看到，无需点击卡片或进入另一个页面。它回答“这一年已经结束的交易最终留下了多少收益”，与仍可能波动的当前表现分开",
+        "blockIdBySource": {
+          "HOME-HP05-B004": "HOME-HP05-B001"
+        }
+      },
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-9c1f70e9c11449ac9fcdebe20e44daf0",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/history-05d0ada32e7c.svg",
+      "sourceOccurrenceId": "history@336",
+      "targetOccurrenceId": "history@state-demo-12-1",
+      "target": {
+        "occurrenceId": "history@state-demo-12-1"
+      },
+      "originalChapter": "HP05",
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-22c012f2ea1a4c49a6c418e8d0ea9032",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/contribution-114c70d98790.svg",
+      "sourceOccurrenceId": "contribution@315",
+      "targetOccurrenceId": "contribution@state-demo-15-1",
+      "target": {
+        "occurrenceId": "contribution@state-demo-15-1"
+      },
+      "originalChapter": "HP05",
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-792d132cc6e64345b6663df8dc2ddc0f",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/journeys-year-357577eb6f66.svg",
+      "sourceOccurrenceId": "journeys-year@338",
+      "targetOccurrenceId": "journeys-year@state-demo-13-1",
+      "target": {
+        "occurrenceId": "journeys-year@state-demo-13-1"
+      },
+      "originalChapter": "HP05",
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-02ca3e065306472d89aab388582ea300",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP06-B001",
+      "target": {
+        "blockId": "HOME-HP06-B001",
+        "quote": "日期检索把趋势上的日期接到具体交易",
+        "blockIdBySource": {
+          "HOME-HP06-B007": "HOME-HP06-B001"
+        }
+      },
+      "currentChapter": "HP06"
+    },
+    {
+      "commentId": "comment-1daefa1b38624ceb8bd0b0d69c37e826",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP06-B018",
+      "target": {
+        "blockId": "HOME-HP06-B018",
+        "quote": "首页只规定这次交接的来源和返回",
+        "blockIdBySource": {
+          "HOME-HP06-B005": "HOME-HP06-B018"
+        }
+      },
+      "currentChapter": "HP06"
+    },
+    {
+      "commentId": "comment-2d14e13e4d9f42feaee845d62e5581cb",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/journeys-date-2a232fc06d29.svg",
+      "sourceOccurrenceId": "journeys-date@359",
+      "targetOccurrenceId": "journeys-date@state-demo-16-1",
+      "target": {
+        "occurrenceId": "journeys-date@state-demo-16-1"
+      },
+      "originalChapter": "HP06",
+      "currentChapter": "HP06"
+    },
+    {
+      "commentId": "comment-167f4c92664e48029de326fa7810d09d",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/journeys-date-2a232fc06d29.svg",
+      "sourceOccurrenceId": "journeys-date@369",
+      "targetOccurrenceId": "journeys-date@state-demo-16-1",
+      "target": {
+        "occurrenceId": "journeys-date@state-demo-16-1"
+      },
+      "originalChapter": "HP07",
+      "currentChapter": "HP06"
+    },
+    {
+      "commentId": "comment-c2275cbee9aa4691bb06a5bc416bd934",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP05-B029",
+      "target": {
+        "blockId": "HOME-HP05-B029",
+        "quote": "市场汇总进入路径必须可追溯：先选择具体市场行，再进入该市场的证券列表（market row → symbol list），再从证券列表选择标的，进入已有交易详情容器",
+        "blockIdBySource": {
+          "HOME-HP07-B004": "HOME-HP05-B029"
+        }
+      },
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-95767e40d6054707991ee46df585acbc",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP05-B029",
+      "target": {
+        "blockId": "HOME-HP05-B029",
+        "quote": "市场汇总进入路径必须可追溯：先选择具体市场行，再进入该市场的证券列表（market row → symbol list），再从证券列表选择标的，进入已有交易详情容器。返回时恢复原市场、证券、日期、账户、筛选、排序、页码、滚动位置和触发焦点。不得从泛化“进入贡献”按钮直接跳到固定证券详情，也不得为此新增没有合同依据的双栏容器。",
+        "blockIdBySource": {
+          "HOME-HP07-B004": "HOME-HP05-B029"
+        }
+      },
+      "currentChapter": "HP05"
+    },
+    {
+      "commentId": "comment-52d491fa928d4cd08b51d9dcb6f4c5ad",
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "kind": "image",
+      "sourceUrl": "original-images/journeys-date-2a232fc06d29.svg",
+      "sourceOccurrenceId": "journeys-date@369",
+      "targetOccurrenceId": "journeys-date@state-demo-16-1",
+      "target": {
+        "occurrenceId": "journeys-date@state-demo-16-1"
+      },
+      "originalChapter": "HP07",
+      "currentChapter": "HP06"
+    },
+    {
+      "commentId": "comment-d8e062905eea496fa19e410cc8be7774",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP10-B012",
+      "target": {
+        "blockId": "HOME-HP10-B012",
+        "quote": "0、5、10、20、50条及末页保持结构；数值右对齐；长名和缺失值可理解",
+        "blockIdBySource": {
+          "HOME-HP09-B017": "HOME-HP10-B012"
+        }
+      },
+      "currentChapter": "HP10"
+    },
+    {
+      "commentId": "comment-a8e46fd41069482caedfcb2ff8238a01",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP10-B012",
+      "target": {
+        "blockId": "HOME-HP10-B012",
+        "quote": "0、5、10、20、50条及末页保持结构；数值右对齐；长名和缺失值可理解",
+        "blockIdBySource": {
+          "HOME-HP09-B017": "HOME-HP10-B012"
+        }
+      },
+      "currentChapter": "HP10"
+    },
+    {
+      "commentId": "comment-f3183a28da2244b58276a123703e3353",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP10-B012",
+      "target": {
+        "blockId": "HOME-HP10-B012",
+        "quote": "0、5、10、20、50条及末页保持结构；数值右对齐；长名和缺失值可理解",
+        "blockIdBySource": {
+          "HOME-HP09-B017": "HOME-HP10-B012"
+        }
+      },
+      "currentChapter": "HP10"
+    },
+    {
+      "commentId": "comment-73b7ef80503143e8b6552b256dc83ca8",
+      "mappingBasis": "current semantic paragraph; original quote retained",
+      "kind": "block",
+      "targetBlockId": "HOME-HP10-B021",
+      "target": {
+        "blockId": "HOME-HP10-B021",
+        "quote": "视觉检查使用1440×1000和1280×800、100%缩放，分别比较布局、字号、行高、颜色、边线、空白和层级；不能用“没有溢出”代替视觉对照。窄屏和触屏需要单独设计与验证，不能把桌面证据当作触屏证据。",
+        "blockIdBySource": {
+          "HOME-HP09-B026": "HOME-HP10-B021"
+        }
+      },
+      "currentChapter": "HP10"
+    },
+    {
+      "commentId": "comment-dec82c5186214a12bbb91d6e991bf537",
+      "sourceUrl": "original-images/home-history-1440-cc1df536541d.svg",
+      "kind": "image",
+      "sourceOccurrenceId": "home-history-1440@state-demo-1-2",
+      "targetOccurrenceId": "home-history-1440@state-demo-1-2",
+      "target": {
+        "occurrenceId": "home-history-1440@state-demo-1-2"
+      },
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-764e82100ea147469cda22550950f541",
+      "sourceUrl": "original-images/home-history-1440-cc1df536541d.svg",
+      "kind": "image",
+      "sourceOccurrenceId": "home-history-1440@state-demo-1-2",
+      "targetOccurrenceId": "home-history-1440@state-demo-1-2",
+      "target": {
+        "occurrenceId": "home-history-1440@state-demo-1-2"
+      },
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-d68efb00024148e7aaee5e84dde7831d",
+      "sourceUrl": "original-images/home-history-1440-cc1df536541d.svg",
+      "kind": "image",
+      "sourceOccurrenceId": "home-history-1440@state-demo-1-2",
+      "targetOccurrenceId": "home-history-1440@state-demo-1-2",
+      "target": {
+        "occurrenceId": "home-history-1440@state-demo-1-2"
+      },
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-c08f791d6f41402ba3e9e660752a2af6",
+      "sourceUrl": "original-images/home-history-1440-cc1df536541d.svg",
+      "kind": "image",
+      "sourceOccurrenceId": "home-history-1440@state-demo-1-2",
+      "targetOccurrenceId": "home-history-1440@state-demo-1-2",
+      "target": {
+        "occurrenceId": "home-history-1440@state-demo-1-2"
+      },
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    },
+    {
+      "commentId": "comment-d0cd94a94168446f9ed740e2fd6599fb",
+      "sourceUrl": "original-images/visual-samples-board-e1da889318d2.svg",
+      "kind": "image",
+      "sourceOccurrenceId": "visual-samples-board@69",
+      "targetOccurrenceId": "visual-samples-board@73",
+      "target": {
+        "occurrenceId": "visual-samples-board@73"
+      },
+      "mappingBasis": "semantic image identity; original pixels retained separately",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Tooltip containment: FAIL; bottom overflow=8.50px
+Prototype header calibration: 成本价(CNY) Δ=0.687, 最新价(CNY) Δ=0.789, 持仓市值(CNY) Δ=0.550, 持仓浮动盈亏(CNY) Δ=0.769
+Traceback (most recent call last):
+  File "/Users/zhoulin/.codex/worktrees/12f2/TradeReview/docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/2026-10-22-comment-diagnosis/reproduce-observed-defects.py", line 11, in <module>
+    assert over<=0, 'Confirmed current defect: tooltip text is outside its panel'
+AssertionError: Confirmed current defect: tooltip text is outside its panel
+
+Exit code: 1 (expected diagnostic failure)

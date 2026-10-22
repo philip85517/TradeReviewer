@@ -1,0 +1,124 @@
+ M .scratch/homepage-v241-repair/README.md
+ M .scratch/homepage-v241-repair/issues/00-map.md
+ M .scratch/homepage-v241-repair/issues/02-visual-options.md
+ M docs/design-system/README.md
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/HANDOFF.md
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/comment-migration.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/document-identity.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/document-manifest.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/package-verification.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/reviews/HOME-DOC-V23.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/reviews/comment-migration.json
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/component-manual.html
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/01-live-normal.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/02-simulation-normal.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/03-distribution-selected.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/04-return.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/05-loading.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/06-empty.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/07-error.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/08-extreme.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/09-missing-input.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/50-items--page-7.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/50-items.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/account.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/atom-datatable.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/atoms.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-gap.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-hover--keyboard.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-hover.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-scale--extreme.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-scale--normal.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-scale--wide.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/chart-scale.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-current-a-share.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-empty.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-error.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-extreme.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-historical-a-share.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-loading.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-mixed-sign-demo.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-states.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/count-boundaries--nine-items-last-page.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/count-boundaries.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/count-scales--ten-items.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/count-scales--twenty-items.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/count-scales.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/detail.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/empty--zero-holdings.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/empty.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/extreme.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/filter.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/hcr06-final-sim-ab.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-cumulative.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-empty.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-error.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-extreme.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-rounds.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-source-missing.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-win.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-large-1280.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-large-1440.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-normal-1280.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-normal-1440.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-return--after.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-return--detail.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-return.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1280.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1440.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-history-1280.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-history-1440.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/journeys-date.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/journeys-year.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/loading--stale-data.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/loading.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/local-search-pages--clear.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/local-search-pages--one-match.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/local-search-pages.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/period.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/repair.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-detail.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-empty-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-error-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-motion-after-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-motion-before-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-motion-during-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-overlay-open.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-overlay-reduced-motion.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/search-result-frame.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/visual-samples-board.svg
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/visual-design.candidate.md
+ M docs/design-system/baselines/2026-10-20-homepage-v2.4.1/visual-spec.html
+?? .scratch/homepage-v22-contract-review/
+?? .scratch/homepage-v22-repair/
+?? .scratch/homepage-v22/
+?? .scratch/homepage-v23-audit/
+?? .scratch/homepage-v23-consensus-revision/
+?? .scratch/homepage-v23-fix/
+?? .scratch/homepage-v23-repair2/
+?? .scratch/homepage-v23/
+?? .scratch/homepage-v241-integration/
+?? .scratch/homepage-v241-repair/DESIGN-COVERAGE.md
+?? .scratch/homepage-v241-repair/comments/02/
+?? .scratch/homepage-v241-repair/comments/06/
+?? .scratch/homepage-v241-repair/holdings-c/
+?? .scratch/homepage-v241-repair/independent-review.md
+?? .scratch/homepage-v241-repair/issues/03-holdings-c-repair.md
+?? .scratch/homepage-v241-repair/issues/04-history-chart-prototype.md
+?? .scratch/homepage-v241-repair/issues/05-contribution-prototype.md
+?? .scratch/homepage-v241-repair/issues/06-basis.md
+?? .scratch/homepage-v241-repair/issues/07-tables.md
+?? .scratch/homepage-v241-repair/issues/08-history.md
+?? .scratch/homepage-v241-repair/issues/09-shared.md
+?? .scratch/homepage-v241-repair/issues/10-acceptance.md
+?? .scratch/homepage-v241-repair/resolutions/
+?? .scratch/homepage-v241-repair/visual-options/
+?? .scratch/homepage-v241-repair/work/
+?? docs/design-system/baselines/2026-10-17-homepage-v2.2/
+?? docs/design-system/baselines/2026-10-18-homepage-v2.3/
+?? docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/2026-10-22-comment-diagnosis/
+?? docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/2026-10-22-comment-repair/
+?? docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/
+?? docs/design-system/iterations/2026-10-21-homepage-v2.4.1-follow-up/

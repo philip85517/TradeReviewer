@@ -1,0 +1,9 @@
+{
+  "scope": "archive integrity and portable links; no new UI acceptance or full V2.4.1 acceptance",
+  "hashedFiles": 149,
+  "byteExactSnapshots": 141,
+  "prototypeHtmlFiles": 5,
+  "localLinksChecked": 335,
+  "errors": [],
+  "result": "PASS"
+}

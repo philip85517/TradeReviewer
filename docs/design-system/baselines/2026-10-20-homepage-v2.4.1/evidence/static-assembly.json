@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "htmlReferenceCount": 665,
+  "assetReferenceCount": 106,
+  "missingReferencedFiles": [],
+  "manifestImageCount": 108,
+  "uniqueManifestImageSourceCount": 106,
+  "imageRefsExist": true,
+  "manifestImageHashMismatches": [],
+  "manifestImageHashesMatch": true,
+  "commentCount": 27,
+  "targetCount": 27,
+  "allCommentTargetsPresent": true,
+  "currentDocumentId": "HOME-DOC-V23",
+  "currentRevision": 27,
+  "browserVerification": "NOT VERIFIED BY THIS SCRIPT"
+}

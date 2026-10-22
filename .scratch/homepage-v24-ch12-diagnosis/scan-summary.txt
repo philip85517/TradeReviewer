@@ -1,0 +1,25 @@
+bare-month 12 assets 12 occurrences ['二、整页布局与视觉基础', '六、历史统计与底部贡献区']
+  history-stats-cumulative.svg, history-stats-empty.svg, history-stats-error.svg, history-stats-rounds.svg, history-stats-source-missing.svg, history-stats-win.svg, history.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg, journeys-year.svg
+chart-status 8 assets 8 occurrences ['二、整页布局与视觉基础', '六、历史统计与底部贡献区']
+  history-stats-cumulative.svg, history-stats-rounds.svg, history-stats-win.svg, history.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg
+contribution-control 4 assets 4 occurrences ['二、整页布局与视觉基础']
+  home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg
+date-ticks 12 assets 12 occurrences ['二、整页布局与视觉基础', '四、当前表现：指标、期间与曲线']
+  chart-gap.svg, chart-hover--keyboard.svg, chart-hover.svg, chart-scale--extreme.svg, chart-scale--normal.svg, chart-scale--wide.svg, chart-scale.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg, period.svg
+holding-table 36 assets 38 occurrences ['三、页头范围、搜索与筛选', '九、异常状态与动效', '二、整页布局与视觉基础', '五、当前持仓：稳定扫描与逐行查看', '附录一、版本变化与待决策']
+  50-items--page-7.svg, 50-items.svg, count-boundaries--nine-items-last-page.svg, count-boundaries.svg, count-scales--ten-items.svg, count-scales--twenty-items.svg, count-scales.svg, detail.svg, empty--zero-holdings.svg, empty.svg, error--update-failure.svg, extreme.svg, holding-option-A-large-1280.svg, holding-option-A-large-1440.svg, holding-option-A-normal-1280.svg, holding-option-A-normal-1440.svg, holding-option-B-large-1280.svg, holding-option-B-large-1440.svg, holding-option-B-normal-1280.svg, holding-option-B-normal-1440.svg, holding-option-C-large-1280.svg, holding-option-C-large-1440.svg, holding-option-C-normal-1280.svg, holding-option-C-normal-1440.svg, holding-return--after.svg, holding-return--detail.svg, holding-return.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg, loading--stale-data.svg, loading.svg, local-search-pages--clear.svg, local-search-pages--one-match.svg, local-search-pages.svg
+outline-height10 2 assets 2 occurrences ['二、整页布局与视觉基础']
+  home-1280.svg, home-1440.svg
+period-name 10 assets 10 occurrences ['二、整页布局与视觉基础', '六、历史统计与底部贡献区']
+  history-stats-empty.svg, history-stats-error.svg, history-stats-extreme.svg, history-stats-source-missing.svg, history.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg, journeys-year.svg
+related-hollow 4 assets 4 occurrences ['六、历史统计与底部贡献区']
+  contribution-current-a-share.svg, contribution-extreme.svg, contribution-mixed-sign-demo.svg, contribution-states.svg
+samples-board 1 assets 1 occurrences ['二、整页布局与视觉基础']
+  visual-samples-board.svg
+trade-table 3 assets 3 occurrences ['七、从首页进入交易与复盘']
+  hcr06-final-pending-library-1280.svg, hcr06-final-pending-library.svg, journeys-date.svg
+whole-home 4 assets 4 occurrences ['二、整页布局与视觉基础']
+  home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg
+win-card 12 assets 12 occurrences ['二、整页布局与视觉基础', '六、历史统计与底部贡献区']
+  history-stats-cumulative.svg, history-stats-error.svg, history-stats-extreme.svg, history-stats-rounds.svg, history-stats-source-missing.svg, history-stats-win.svg, history.svg, home-1280.svg, home-1440.svg, home-history-1280.svg, home-history-1440.svg, journeys-year.svg
+TOTAL 108 occurrences 106 assets

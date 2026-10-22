@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>V2.1 旅程合同</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { display: block; padding: 3px 0; color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a.is-current { border-left: 2px solid #3797ff; padding-left: 8px; margin-left: -10px; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { width: 100%; height: 510px; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: 460px; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>V2.1 旅程合同</strong><p class="nav-meta">VDF-002 · 文档 2.1 · 本地可读副本</p><a href="#v21-旅程合同">V2.1 旅程合同</a><a href="#来源与重建">来源与重建</a><a href="#共同状态选择">共同状态选择</a><a href="#覆盖矩阵">覆盖矩阵</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">文档附页 · 2.1</p><a class="review-open" href="visual-spec.html">返回正文阅读器</a></header><h1 id="v21-旅程合同">V2.1 旅程合同</h1>
+<p>本组分镜是 V2.1 修订旅程的实现合同。它们是设计分镜，不是产品截图，也不是运行时验收证据。分镜采用可量测的局部控件画板，整页层级以首页主稿为准；不把整页压缩进小框，不用文字摘要代替真实行、输入框或按钮。</p>
+<h2 id="来源与重建">来源与重建</h2>
+<p>源文件为 <a href="build-journey-revision.py">`build-journey-revision.py`</a>，从仓库根目录执行：</p>
+<pre><code class="language-bash">python3 docs/design-system/baselines/2026-10-17-homepage-v2.1/build-journey-revision.py</code></pre>
+<p>生成器将以下七张图写入 <code>images/</code>：</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F02 贡献列表"><a class="image-link" href="images/journey-contribution.svg"><img data-comment-image="journey-contribution" data-comment-occurrence="journey-contribution@15" src="images/journey-contribution.svg" alt="F02 贡献列表" width="1500" height="5974"></a></div><a class="image-action" href="images/journey-contribution.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F03 交易库交接"><a class="image-link" href="images/journey-library.svg"><img data-comment-image="journey-library" data-comment-occurrence="journey-library@17" src="images/journey-library.svg" alt="F03 交易库交接" width="1500" height="1366"></a></div><a class="image-action" href="images/journey-library.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F04 账户范围竞态"><a class="image-link" href="images/journey-scope.svg"><img data-comment-image="journey-scope" data-comment-occurrence="journey-scope@19" src="images/journey-scope.svg" alt="F04 账户范围竞态" width="1500" height="2260"></a></div><a class="image-action" href="images/journey-scope.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F05 行情缺口"><a class="image-link" href="images/journey-gap.svg"><img data-comment-image="journey-gap" data-comment-occurrence="journey-gap@21" src="images/journey-gap.svg" alt="F05 行情缺口" width="1500" height="1406"></a></div><a class="image-action" href="images/journey-gap.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F06 历史页"><a class="image-link" href="images/journey-history.svg"><img data-comment-image="journey-history" data-comment-occurrence="journey-history@23" src="images/journey-history.svg" alt="F06 历史页" width="1500" height="2290"></a></div><a class="image-action" href="images/journey-history.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F08 搜索与详情"><a class="image-link" href="images/journey-search.svg"><img data-comment-image="journey-search" data-comment-occurrence="journey-search@25" src="images/journey-search.svg" alt="F08 搜索与详情" width="1500" height="2230"></a></div><a class="image-action" href="images/journey-search.svg">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="F09 日期范围"><a class="image-link" href="images/journey-date.svg"><img data-comment-image="journey-date" data-comment-occurrence="journey-date@27" src="images/journey-date.svg" alt="F09 日期范围" width="1500" height="2410"></a></div><a class="image-action" href="images/journey-date.svg">查看原尺寸</a>
+</figure>
+<p>每张图都是深色桌面分镜，使用大尺寸状态框、可见控件、标签、数值、焦点环和响应说明，避免把状态压缩成只有文字的卡片。</p>
+<h2 id="共同状态选择">共同状态选择</h2>
+<ul>
+<li><strong>F02</strong> 保留已有行的 viewport 位置，展开按钮随新增行下移；行高 32px，动画 200ms，reduced-motion 为 0ms。键盘展开聚焦第一条新增行；键盘收起先聚焦保留的第 10 行，完成后若按钮不可见才用 nearest 滚入。鼠标不强行移动键盘焦点；同向重复不重复追加，反向从当前高度继续。</li>
+<li><strong>F03</strong> URL 显式携带 <code>market=all|a|hk|us</code>、<code>scope=live|sim</code>、<code>accounts</code>、<code>date</code>、<code>queue</code>。直开、刷新和浏览器返回保持同一状态。非法 market 回退 <code>all</code> 并显示解释；URL 是权威来源，不能从内存猜市场。</li>
+<li><strong>F04</strong> 分开 <code>committedScope A</code>、<code>draftScope B</code> 和 request generation。市场/账户/live-sim 的 B 显示待应用/加载中，但标题、单位、KPI、曲线、贡献和持仓仍是 A 的整组数据。A→B→C 时取消 B 并忽略迟到 B；只有最新 generation 且 scope key 匹配才提交。C 失败原子回到 A，提供手动重试；无缓存初载失败显示骨架/错误，不显示 0；请求超时 15 秒，不自动无限重试。日期期间变更只提交期间 KPI、曲线和贡献，当前持仓仍取最新值。</li>
+<li><strong>F05</strong> 缺口是可聚焦的原因入口。鼠标 hover 延迟 300ms，focus 立即打开，leave 100ms 后隐藏，Esc 隐藏至重新进入。原因浮层区分无行情和无汇率；关闭后焦点回到缺口入口。</li>
+<li><strong>F06</strong> 覆盖年份选择、空年、0 待复盘、市场同步、进入历史贡献和返回。历史贡献按平仓日归属，仅含已平仓净额，和当前期间贡献分开。</li>
+<li><strong>F08</strong> 清空只清 query；无匹配有独立清除入口。名称 tooltip 的 hover 延迟 300ms，键盘 focus 立即打开；Esc 隐藏至重新进入。选择候选打开当前范围内的标的详情，不提交或改变首页全局账户/scope。详情使用 focus trap，Esc/× 关闭，外点不关闭；关闭后焦点回原行“查看”，行失效则回表标题。</li>
+<li>F09 快捷范围（今年、本月、本周）只编辑日期草稿，只有“应用”才请求数据。中间日期示例使用 10-14：期初 6252，截至所选日浮盈 10012、已实现 7440、变动 3760、净 11200，当日市值 288420。浮层明确所选日不是期末，当前持仓 KPI 仍取最新值。</li>
+</ul>
+<h2 id="覆盖矩阵">覆盖矩阵</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">问题</th>
+<th scope="col">图稿</th>
+<th scope="col">必须出现的状态</th>
+</tr></thead><tbody>
+<tr>
+<td>F02</td>
+<td><code>journey-contribution.svg</code></td>
+<td>10→20前/中/后、20→30前/中/后、收起前/中/后与反向；局部按钮坐标、scrollTop=S和焦点</td>
+</tr>
+<tr>
+<td>F03</td>
+<td><code>journey-library.svg</code></td>
+<td>直开 URL、刷新、返回、非法市场回退</td>
+</tr>
+<tr>
+<td>F04</td>
+<td><code>journey-scope.svg</code></td>
+<td>A/B/C 竞态、迟到 B 忽略、失败回 A、手动重试</td>
+</tr>
+<tr>
+<td>F05</td>
+<td><code>journey-gap.svg</code></td>
+<td>默认缺口、鼠标/focus 原因、键盘打开/关闭、焦点返回</td>
+</tr>
+<tr>
+<td>F06</td>
+<td><code>journey-history.svg</code></td>
+<td>年份、空年、0 待复盘、市场同步、历史贡献进出</td>
+</tr>
+<tr>
+<td>F08</td>
+<td><code>journey-search.svg</code></td>
+<td>打开、清空、无匹配、候选详情、Esc/× 关闭、焦点返回</td>
+</tr>
+<tr>
+<td>F09</td>
+<td><code>journey-date.svg</code></td>
+<td>快捷范围、草稿/应用、成功/失败/重试、10-14 非期末浮层</td>
+</tr>
+</tbody></table></div>
+<p>本旅程合同覆盖 F02–F06、F08、F09；F01/F07/F11 原子图和 F10/F12 协调者工作不在文件边界内。</p></main></div></body></html>

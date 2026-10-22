@@ -1,0 +1,162 @@
+{
+  "scope": "Documentation split only; product UI and database acceptance not applicable",
+  "checks": [
+    {
+      "check": "frozen-source",
+      "result": "PASS",
+      "detail": "V2.4.1 current source retained; only document title version differs"
+    },
+    {
+      "check": "image-byte-preservation",
+      "result": "PASS",
+      "detail": {
+        "compared": 369,
+        "differences": []
+      }
+    },
+    {
+      "check": "frozen-comments",
+      "result": "PASS",
+      "detail": {
+        "count": 43,
+        "sha256": "03ca5132853155fae9217cca75ac04002f9043bdbc0e1edcb707d3b73892d543"
+      }
+    },
+    {
+      "check": "2026-10-22-homepage-v2.4.2-comment-archive",
+      "result": "PASS",
+      "detail": "All text, replies, states, history and operation data retained byte for byte"
+    },
+    {
+      "check": "2026-10-22-homepage-v2.5-comment-archive",
+      "result": "PASS",
+      "detail": "All text, replies, states, history and operation data retained byte for byte"
+    },
+    {
+      "check": "2026-10-22-trading-library-v1.0-comment-archive",
+      "result": "PASS",
+      "detail": "All text, replies, states, history and operation data retained byte for byte"
+    },
+    {
+      "check": "2026-10-22-homepage-v2.4.2-identity",
+      "result": "PASS",
+      "detail": {
+        "documentId": "HOME-DOC-V23",
+        "version": "2.4.2",
+        "blocks": 546,
+        "images": 108
+      }
+    },
+    {
+      "check": "2026-10-22-homepage-v2.4.2-manifest",
+      "result": "PASS",
+      "detail": "Manifest fingerprint matches current Markdown"
+    },
+    {
+      "check": "2026-10-22-homepage-v2.4.2-offline-snapshot",
+      "result": "PASS",
+      "detail": {
+        "comments": 43
+      }
+    },
+    {
+      "check": "2026-10-22-homepage-v2.5-identity",
+      "result": "PASS",
+      "detail": {
+        "documentId": "SITE-HOME-V25",
+        "version": "2.5",
+        "blocks": 530,
+        "images": 90
+      }
+    },
+    {
+      "check": "2026-10-22-homepage-v2.5-manifest",
+      "result": "PASS",
+      "detail": "Manifest fingerprint matches current Markdown"
+    },
+    {
+      "check": "2026-10-22-homepage-v2.5-offline-snapshot",
+      "result": "PASS",
+      "detail": {
+        "comments": 0
+      }
+    },
+    {
+      "check": "2026-10-22-trading-library-v1.0-identity",
+      "result": "PASS",
+      "detail": {
+        "documentId": "TRADING-LIBRARY-V10",
+        "version": "1.0",
+        "blocks": 69,
+        "images": 20
+      }
+    },
+    {
+      "check": "2026-10-22-trading-library-v1.0-manifest",
+      "result": "PASS",
+      "detail": "Manifest fingerprint matches current Markdown"
+    },
+    {
+      "check": "2026-10-22-trading-library-v1.0-offline-snapshot",
+      "result": "PASS",
+      "detail": {
+        "comments": 0
+      }
+    },
+    {
+      "check": "unaffected-home-chapters",
+      "result": "PASS",
+      "detail": [
+        {
+          "chapter": "HP02",
+          "identical": true,
+          "allowed_scope_qualification": "none"
+        },
+        {
+          "chapter": "HP03",
+          "identical": true,
+          "allowed_scope_qualification": "none"
+        },
+        {
+          "chapter": "HP04",
+          "identical": true,
+          "allowed_scope_qualification": "none"
+        },
+        {
+          "chapter": "HP05",
+          "identical": true,
+          "allowed_scope_qualification": "Only qualifies the existing eight-row rule as homepage contribution scope; no behavior change"
+        }
+      ]
+    },
+    {
+      "check": "chapter-seven-storyboards",
+      "result": "PASS",
+      "detail": {
+        "original": 22,
+        "retained": 22,
+        "missing": []
+      }
+    },
+    {
+      "check": "homepage-entry-boundary",
+      "result": "PASS",
+      "detail": [
+        "hcr06-final-pending-return.svg",
+        "hcr06-final-return.svg",
+        "journeys-pending-99plus.svg",
+        "journeys-pending-normal.svg",
+        "journeys-pending.svg"
+      ]
+    },
+    {
+      "check": "reader-links-and-assets",
+      "result": "PASS",
+      "detail": {
+        "checked": 744,
+        "errors": []
+      }
+    }
+  ],
+  "passed": true
+}

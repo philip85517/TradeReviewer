@@ -1,0 +1,2612 @@
+{
+  "version": "HOME-DOC-V23-CURRENT",
+  "contract": "shared-control-current",
+  "status": "CURRENT_DERIVATION_NOT_ACCEPTED",
+  "historical_contract": "inherited-contract.json",
+  "historical_contract_status": "ARCHIVED_INHERITED_11_CLASSES_88_STATES",
+  "source_manual": "component-manual.html",
+  "source_manual_semantics": "逐行派生；不覆盖历史继承合同，不删减不适用状态",
+  "component_count": 12,
+  "state_count": 96,
+  "applicable_count": 85,
+  "not_applicable_count": 11,
+  "components": [
+    {
+      "id": "IconButton",
+      "label_zh": "图标按钮（IconButton）",
+      "state_count": 8,
+      "applicable_count": 7,
+      "not_applicable_count": 1,
+      "states": [
+        {
+          "id": "IconButton.default",
+          "component": "IconButton",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 到达；Enter 或 Space 键激活",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.hover",
+          "component": "IconButton",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "指针进入按钮；用 120ms 渐变立即开始高亮，提示框延迟 300ms",
+          "feedback": "按钮立即变亮；300ms 后显示提示框",
+          "exit": "指针离开按钮或关闭提示框",
+          "keyboard": "键盘操作不依赖悬停；Tab 可进入同一动作",
+          "failure_recovery": "错误提示框显示原因；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.focus",
+          "component": "IconButton",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "Tab 或 Shift+Tab 移动；Esc 键取消",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.pressed",
+          "component": "IconButton",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 或 Space 键只提交一次；Esc 键取消未提交动作",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.disabled",
+          "component": "IconButton",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "按 Tab 跳过；Enter 或 Space 键不产生动作",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.loading",
+          "component": "IconButton",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "点击查看动作后请求等待中",
+          "feedback": "显示旋转环和“更新中”；锁定重复点击",
+          "exit": "请求完成或出现错误提示框",
+          "keyboard": "按 Tab 保持顺序；等待期间按 Enter 或 Space 键不重复提交",
+          "failure_recovery": "超时保留按钮与错误原因；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "IconButton.empty",
+          "component": "IconButton",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（图标动作始终有明确动作名；没有空内容状态）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "图标动作始终有明确动作名；没有空内容状态"
+        },
+        {
+          "id": "IconButton.error",
+          "component": "IconButton",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 36,
+            "visible_height": 36,
+            "hit_width": 36,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 36×36px；命中 36×36px",
+          "trigger": "查看动作返回错误",
+          "feedback": "显示错误图标与原因提示框",
+          "exit": "关闭提示框或返回稳定状态",
+          "keyboard": "Tab 到错误说明；Esc 键关闭说明",
+          "failure_recovery": "错误原因保留；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#图标按钮iconbutton",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "SegmentedTabs",
+      "label_zh": "分段标签（SegmentedTabs）",
+      "state_count": 8,
+      "applicable_count": 7,
+      "not_applicable_count": 1,
+      "states": [
+        {
+          "id": "SegmentedTabs.default",
+          "component": "SegmentedTabs",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 到达；方向键/Home/End 选择；Enter 或 Space 键提交",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.hover",
+          "component": "SegmentedTabs",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "指针进入单一分段；用 120ms 渐变立即开始高亮目标段",
+          "feedback": "仅目标段悬停边框/底色变化，选中段保持选中",
+          "exit": "指针离开目标段",
+          "keyboard": "键盘操作不依赖悬停；按 Tab 到达后方向键切换",
+          "failure_recovery": "不提交、不改变选中段；离开后恢复",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.focus",
+          "component": "SegmentedTabs",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "方向键/Home/End 移动；Enter 或 Space 键提交；Esc 键取消",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.pressed",
+          "component": "SegmentedTabs",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 或 Space 键只提交当前分段；Esc 键取消",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.disabled",
+          "component": "SegmentedTabs",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "按 Tab 跳过；方向键与 Enter 不产生选择",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.loading",
+          "component": "SegmentedTabs",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "点击分段后请求等待中",
+          "feedback": "保留旧选中段并显示请求中标记",
+          "exit": "请求成功切换，或失败回滚旧段",
+          "keyboard": "方向键可读当前分段；Enter 或 Space 键在等待期间不重复提交",
+          "failure_recovery": "迟到响应按请求序号丢弃；失败显示回滚原因",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "SegmentedTabs.empty",
+          "component": "SegmentedTabs",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（分段组始终至少包含一个分段）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "分段组始终至少包含一个分段"
+        },
+        {
+          "id": "SegmentedTabs.error",
+          "component": "SegmentedTabs",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 244,
+            "visible_height": 36,
+            "hit_width": 244,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 244×36px；命中 244×36px",
+          "trigger": "分段请求失败",
+          "feedback": "保留旧选中段并显示失败文案",
+          "exit": "离开错误状态或返回稳定选择",
+          "keyboard": "Tab 到错误文案；方向键不改变旧分段；Esc 键返回",
+          "failure_recovery": "迟到响应丢弃；失败回滚到旧段",
+          "evidence": {
+            "manual_section": "component-manual.html#分段标签segmentedtabs",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Select",
+      "label_zh": "账户选择器（Select）",
+      "state_count": 8,
+      "applicable_count": 8,
+      "not_applicable_count": 0,
+      "states": [
+        {
+          "id": "Select.default",
+          "component": "Select",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 到达；Enter 或 Space 键打开菜单；方向键选项",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.hover",
+          "component": "Select",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "指针进入选择框；用 120ms 渐变立即开始高亮",
+          "feedback": "选择框底色变化，不打开菜单",
+          "exit": "指针离开选择框或点击打开",
+          "keyboard": "键盘操作不依赖悬停；Tab 后按 Enter 打开菜单",
+          "failure_recovery": "值保持不变",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.focus",
+          "component": "Select",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "方向键移动菜单选项；按 Enter 选择；Esc 键返回触发器",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.pressed",
+          "component": "Select",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "方向键移动；按 Enter 选择账户；Esc 键关闭菜单",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.disabled",
+          "component": "Select",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "按 Tab 跳过；Enter 或 Space 键不打开菜单",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.loading",
+          "component": "Select",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "账户列表请求等待中",
+          "feedback": "显示加载账户中与旋转提示，保留当前值",
+          "exit": "请求完成打开可选项，或显示错误状态",
+          "keyboard": "按 Tab 保持选择顺序；Enter 或 Space 键在加载期间不重复打开",
+          "failure_recovery": "失败保留原值并显示错误原因；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.empty",
+          "component": "Select",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "账户列表为空",
+          "feedback": "显示暂无可选账户与导入账户下一步按钮",
+          "exit": "点击/Enter 导入账户，或 Esc 键返回",
+          "keyboard": "Tab 到导入账户下一步按钮；按 Enter 执行导入；Esc 键返回",
+          "failure_recovery": "导入失败保留空原因与下一步按钮",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Select.error",
+          "component": "Select",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 180,
+            "visible_height": 36,
+            "hit_width": 180,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 180×36px；命中 180×36px",
+          "trigger": "账户列表读取失败",
+          "feedback": "保留当前值与错误文案",
+          "exit": "离开错误状态或 Esc 键返回",
+          "keyboard": "Tab 到错误说明；Esc 键返回原值",
+          "failure_recovery": "失败保持原值与错误原因；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#账户选择器select",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Popover",
+      "label_zh": "搜索浮层（Popover）",
+      "state_count": 8,
+      "applicable_count": 8,
+      "not_applicable_count": 0,
+      "states": [
+        {
+          "id": "Popover.default",
+          "component": "Popover",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "Tab 到触发器；按 Enter 打开并聚焦搜索字段",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.hover",
+          "component": "Popover",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "指针进入触发器；用 120ms 渐变立即开始高亮，浮层不因悬停自动打开",
+          "feedback": "触发器高亮；点击后才打开全局遮罩舞台",
+          "exit": "指针离开或点击遮罩外",
+          "keyboard": "键盘操作不依赖悬停；Tab 到触发器后按 Enter 打开",
+          "failure_recovery": "外部点击关闭且不改草稿",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.focus",
+          "component": "Popover",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示2px焦点环与当前值，焦点可见",
+          "exit": "按Tab离开、Enter或Space激活或Esc取消",
+          "keyboard": "Tab循环搜索与结果；Shift+Tab回触发器；Esc关闭",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.pressed",
+          "component": "Popover",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "指针按下并完成点击，或按Enter或Space",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter提交搜索；Esc关闭遮罩",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.disabled",
+          "component": "Popover",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "Tab跳过不可用触发器；Enter不打开",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.loading",
+          "component": "Popover",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "搜索提交后请求等待中",
+          "feedback": "搜索字段保留草稿并显示查询中提示",
+          "exit": "请求完成更新结果，或显示错误状态",
+          "keyboard": "Tab保持搜索字段；Enter在等待期间不重复查询",
+          "failure_recovery": "失败保留草稿与错误原因；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.empty",
+          "component": "Popover",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "搜索无匹配结果",
+          "feedback": "显示没有匹配结果；输入框尾部 X 是唯一清除入口",
+          "exit": "清除搜索、改写查询或点击遮罩外关闭",
+          "keyboard": "Tab 回到输入框；Enter 在输入框触发 X；Esc 键返回触发器",
+          "failure_recovery": "清除失败保留原查询和空原因",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Popover.error",
+          "component": "Popover",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": null,
+          "dimensions_source": "舞台最大960px；命中为实际控件",
+          "trigger": "搜索校验失败",
+          "feedback": "保留草稿与错误原因",
+          "exit": "Esc关闭或点击遮罩外关闭；非模态可退出",
+          "keyboard": "Tab到错误说明；Esc关闭错误",
+          "failure_recovery": "失败不改变已提交范围；外部点击可关闭",
+          "evidence": {
+            "manual_section": "component-manual.html#搜索浮层popover",
+            "asset": "integration-assets/images/single-frame/search--normal.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "FilterPopover",
+      "label_zh": "筛选浮层（FilterPopover）",
+      "state_count": 8,
+      "applicable_count": 8,
+      "not_applicable_count": 0,
+      "states": [
+        {
+          "id": "FilterPopover.default",
+          "component": "FilterPopover",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "点击筛选入口或重新打开",
+          "presentation_and_data_boundary": "显示已生效条件；草稿初始化为当前已生效范围；不推动页面内容",
+          "exit_and_recovery": "进入草稿编辑",
+          "keyboard": "Tab 到字段；Enter 或 Space 打开",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.草稿",
+          "component": "FilterPopover",
+          "state": "草稿",
+          "state_label_zh": "草稿",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "直接多选附加条件",
+          "presentation_and_data_boundary": "复选框即时反映草稿；页面数据、计数和标签仍保持已生效范围",
+          "exit_and_recovery": "点击应用、清除附加、恢复全部默认、Esc 或外点",
+          "keyboard": "Tab 按字段顺序；输入和复选框不触发页面查询",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "草稿",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.应用",
+          "component": "FilterPopover",
+          "state": "应用",
+          "state_label_zh": "应用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "点击“应用”或按 Enter",
+          "presentation_and_data_boundary": "一次提交当前草稿；成功后更新已生效条件、计数、标签和数据",
+          "exit_and_recovery": "成功关闭浮层并回到筛选入口；失败进入错误并保留草稿",
+          "keyboard": "Enter 只提交一次；请求中不重复提交",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "应用",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.清除附加",
+          "component": "FilterPopover",
+          "state": "清除附加",
+          "state_label_zh": "清除附加",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "点击“清除附加”",
+          "presentation_and_data_boundary": "仅把附加条件清空并按应用规则提交；市场、账户和实盘范围不变",
+          "exit_and_recovery": "成功后回到无附加条件的默认附加状态；失败保留原已生效范围和草稿",
+          "keyboard": "Enter 执行清除；焦点留在操作区",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "清除附加",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.恢复全部默认",
+          "component": "FilterPopover",
+          "state": "恢复全部默认",
+          "state_label_zh": "恢复全部默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "点击“恢复全部默认”",
+          "presentation_and_data_boundary": "将市场、账户及附加条件恢复默认；日期期间不改变；按应用规则一次提交",
+          "exit_and_recovery": "成功后关闭并显示默认范围；失败进入错误并保留原完整值",
+          "keyboard": "Enter 执行恢复；请求中不重复提交",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "恢复全部默认",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.Esc / 外点",
+          "component": "FilterPopover",
+          "state": "Esc / 外点",
+          "state_label_zh": "Esc / 外点",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "按 Esc 或点击浮层外部",
+          "presentation_and_data_boundary": "关闭浮层，不提交草稿；已生效范围不变，未提交草稿保留以便再次编辑",
+          "exit_and_recovery": "重新打开恢复上次草稿；切换市场或账户时丢弃旧范围草稿",
+          "keyboard": "Esc 关闭并把焦点返回筛选入口",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "Esc / 外点",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.loading",
+          "component": "FilterPopover",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "应用、清除附加或恢复默认请求等待",
+          "presentation_and_data_boundary": "锁定重复提交，保留草稿和原已生效条件；不显示伪造的新数据",
+          "exit_and_recovery": "成功进入默认或关闭状态；失败进入错误",
+          "keyboard": "Tab 保持顺序；Enter 不重复提交",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "FilterPopover.error",
+          "component": "FilterPopover",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 320,
+            "field_height": 36,
+            "action_gap": 16
+          },
+          "trigger": "请求或校验失败",
+          "presentation_and_data_boundary": "显示明确失败原因；保留提交前的完整已生效条件与当前草稿，不留下新标签配旧数据",
+          "exit_and_recovery": "关闭错误可继续编辑；重新点击“应用”“清除附加”或“恢复全部默认”才提交新请求；失败恢复使用首页唯一全局修复入口，不增加局部重试按钮；Esc 关闭但保留草稿",
+          "keyboard": "Tab 到错误说明；Esc 关闭说明并返回入口",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选浮层filterpopover",
+            "asset": "integration-assets/images/single-frame/filter--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Token",
+      "label_zh": "筛选条件标签（Token）",
+      "state_count": 8,
+      "applicable_count": 6,
+      "not_applicable_count": 2,
+      "states": [
+        {
+          "id": "Token.default",
+          "component": "Token",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 到 36px 删除命中区；Enter 或 Space 键删除",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Token.hover",
+          "component": "Token",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "指针进入删除命中区；用 120ms 渐变立即开始高亮",
+          "feedback": "仅删除图标变红/高亮，条件标签文本保持",
+          "exit": "指针离开命中区",
+          "keyboard": "指针进入删除命中区；键盘仍由 Tab 到达",
+          "failure_recovery": "不提交删除",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Token.focus",
+          "component": "Token",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "Tab 到删除区；Enter 或 Space 键删除；Esc 键取消",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Token.pressed",
+          "component": "Token",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 或 Space 键只删除一次；Esc 键取消",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Token.disabled",
+          "component": "Token",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（已提交条件标签可移除；权限应禁用父级表单）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "已提交条件标签可移除；权限应禁用父级表单"
+        },
+        {
+          "id": "Token.loading",
+          "component": "Token",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "点击删除后删除请求等待中",
+          "feedback": "保留筛选条件标签并显示等待反馈",
+          "exit": "删除成功移除，或失败恢复筛选条件标签",
+          "keyboard": "按 Tab 保持顺序；Enter 或 Space 键在删除请求等待期间不重复提交",
+          "failure_recovery": "锁定重复删除；失败恢复原筛选条件标签与焦点",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Token.empty",
+          "component": "Token",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": false,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "筛选条件集合为空",
+          "feedback": "不渲染筛选条件标签；焦点返回筛选入口",
+          "exit": "返回筛选入口或添加筛选条件",
+          "keyboard": "集合为空；焦点返回筛选入口；无筛选条件标签命中区",
+          "failure_recovery": "空集合不创建删除焦点；筛选入口保持可达",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "筛选条件集合为空"
+        },
+        {
+          "id": "Token.error",
+          "component": "Token",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 104,
+            "visible_height": 24,
+            "hit_width": 104,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 104×24px；命中 104×36px",
+          "trigger": "删除请求失败",
+          "feedback": "保留筛选条件标签并显示移除失败原因",
+          "exit": "离开错误状态或返回筛选入口",
+          "keyboard": "Tab 到删除区；Esc 键保留筛选条件标签",
+          "failure_recovery": "失败恢复原筛选条件标签、删除命中区与焦点；等待全局修复入口处理",
+          "evidence": {
+            "manual_section": "component-manual.html#筛选条件标签token",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Metric",
+      "label_zh": "指标卡（Metric）",
+      "state_count": 8,
+      "applicable_count": 6,
+      "not_applicable_count": 2,
+      "states": [
+        {
+          "id": "Metric.default",
+          "component": "Metric",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "Tab 到详情动作；按 Enter 打开口径",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Metric.hover",
+          "component": "Metric",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "指针进入指标详情操作提示；立即 120ms 提示",
+          "feedback": "指标值不变，仅详情入口高亮",
+          "exit": "指针离开详情入口",
+          "keyboard": "键盘操作不依赖悬停；Tab 到详情动作",
+          "failure_recovery": "不发起请求、不改变指标值",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Metric.focus",
+          "component": "Metric",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "Tab 进入口径详情；Esc 键关闭并返回指标",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Metric.pressed",
+          "component": "Metric",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（指标有详情动作，但没有持久按下状态）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "指标有详情动作，但没有持久按下状态"
+        },
+        {
+          "id": "Metric.disabled",
+          "component": "Metric",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（指标是只读信息，使用不可用/错误文案，不使用禁用）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "指标是只读信息，使用不可用/错误文案，不使用禁用"
+        },
+        {
+          "id": "Metric.loading",
+          "component": "Metric",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "指标数据请求等待中",
+          "feedback": "保留原值并显示骨架/加载反馈",
+          "exit": "请求完成更新值，或显示原因",
+          "keyboard": "按 Tab 保持指标顺序；Enter 不重复请求",
+          "failure_recovery": "超时保留原值；不将等待中显示为 0",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Metric.empty",
+          "component": "Metric",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "当前范围没有可计算指标",
+          "feedback": "显示破折号与口径说明，不显示下一步按钮",
+          "exit": "切换范围或返回上一筛选",
+          "keyboard": "Tab 到替代说明；Esc 键返回",
+          "failure_recovery": "范围切换失败保留破折号与上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "Metric.error",
+          "component": "Metric",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 276,
+            "visible_height": 88,
+            "hit_width": 276,
+            "hit_height": 88
+          },
+          "dimensions_source": "外观 276×88px；命中 276×88px",
+          "trigger": "指标计算失败",
+          "feedback": "保留指标区域并提供“查看原因”入口",
+          "exit": "点击原因入口或返回上一范围",
+          "keyboard": "Tab 到原因；按 Enter 打开原因详情；Esc 键返回",
+          "failure_recovery": "不显示 0；原因入口保留失败上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#指标卡metric",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "StatusBadge",
+      "label_zh": "状态徽章（StatusBadge）",
+      "state_count": 8,
+      "applicable_count": 7,
+      "not_applicable_count": 1,
+      "states": [
+        {
+          "id": "StatusBadge.default",
+          "component": "StatusBadge",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 到达；按 Enter 打开详情",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.hover",
+          "component": "StatusBadge",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "指针进入徽章；用 120ms 渐变立即开始高亮，详情提示延迟 300ms",
+          "feedback": "徽章高亮并在延迟后显示更新时间",
+          "exit": "指针离开徽章",
+          "keyboard": "键盘操作不依赖悬停；按 Tab 到达徽章",
+          "failure_recovery": "提示失败保持徽章文案",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.focus",
+          "component": "StatusBadge",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "按 Tab 到达；按 Enter 打开原因；Esc 键关闭详情",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.pressed",
+          "component": "StatusBadge",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "Enter 或 Space 键激活状态徽标详情",
+          "feedback": "打开更新时间或过期原因详情",
+          "exit": "Esc 键关闭详情并返回徽章",
+          "keyboard": "按 Enter 打开详情；Esc 键关闭详情",
+          "failure_recovery": "详情失败保持徽章原文案",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.disabled",
+          "component": "StatusBadge",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（状态是只读指示器，不使用禁用）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "状态是只读指示器，不使用禁用"
+        },
+        {
+          "id": "StatusBadge.loading",
+          "component": "StatusBadge",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "状态刷新请求等待中",
+          "feedback": "显示更新中徽章，不伪造更新时间",
+          "exit": "刷新成功显示时间，或显示过期原因",
+          "keyboard": "按 Tab 到达；Enter 不重复刷新",
+          "failure_recovery": "失败保留更新中/过期原因，不显示成功",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.empty",
+          "component": "StatusBadge",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "没有可显示的更新时间或状态",
+          "feedback": "显示暂无状态徽章",
+          "exit": "数据出现或离开上下文",
+          "keyboard": "按 Tab 到达只读暂无状态；按 Enter 打开说明",
+          "failure_recovery": "缺失继续显示暂无状态",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "StatusBadge.error",
+          "component": "StatusBadge",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 124,
+            "visible_height": 24,
+            "hit_width": 124,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 124×24px；命中 124×36px",
+          "trigger": "状态刷新失败",
+          "feedback": "显示过期·原因徽章",
+          "exit": "聚焦打开原因或离开徽章",
+          "keyboard": "按 Tab 到达；按 Enter 打开过期原因；Esc 键关闭详情",
+          "failure_recovery": "保留过期原因，不提供不存在的重试按钮",
+          "evidence": {
+            "manual_section": "component-manual.html#状态徽章statusbadge",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DataTable",
+      "label_zh": "持仓数据表（DataTable）",
+      "state_count": 8,
+      "applicable_count": 8,
+      "not_applicable_count": 0,
+      "states": [
+        {
+          "id": "DataTable.default",
+          "component": "DataTable",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "Tab 顺序：搜索、表头、8 行查看、分页",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.hover",
+          "component": "DataTable",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "指针进入单一表格行；用 120ms 渐变立即开始高亮目标行",
+          "feedback": "仅目标行高亮，表头/其他行不变",
+          "exit": "指针离开该行",
+          "keyboard": "指针进入行；键盘 Tab 仍按搜索→表头→行→分页",
+          "failure_recovery": "不改变排序、分页或行数据",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.focus",
+          "component": "DataTable",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "Tab 进入表头/行操作；Enter 排序或查看；Esc 键取消",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.pressed",
+          "component": "DataTable",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 激活排序/查看/分页；Esc 键取消未提交动作",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.disabled",
+          "component": "DataTable",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "按 Tab 跳过禁用操作；Enter 不排序或查看",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.loading",
+          "component": "DataTable",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "排序、分页或查询请求等待中",
+          "feedback": "保留 8 行槽位；分页槽位置灰且不可用",
+          "exit": "成功替换 8 行并恢复分页，或保留原表显示错误",
+          "keyboard": "Tab 保留搜索、表头和分页顺序；Enter 不重复请求",
+          "failure_recovery": "迟到响应丢弃；错误保留原表并显示原因",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.empty",
+          "component": "DataTable",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "当前范围无持仓行",
+          "feedback": "行区显示空原因，分页槽位显示 0 项且不提供分页按钮",
+          "exit": "切换范围、导入或清除筛选",
+          "keyboard": "Tab 到空原因与下一步；Enter 切换范围或导入",
+          "failure_recovery": "下一步失败保留查询范围与空原因；不创建虚假的第 1 页",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "DataTable.error",
+          "component": "DataTable",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 620,
+            "visible_height": 520,
+            "hit_width": 620,
+            "hit_height": 520
+          },
+          "dimensions_source": "外观 620×520px；命中 620×520px",
+          "trigger": "表格请求失败",
+          "feedback": "保留原表与错误条",
+          "exit": "离开错误条或 Esc 键关闭原因",
+          "keyboard": "Tab 到原表和错误说明；Esc 键关闭原因",
+          "failure_recovery": "迟到响应丢弃；失败继续保留原表",
+          "evidence": {
+            "manual_section": "component-manual.html#持仓数据表datatable",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ChartTooltip",
+      "label_zh": "图表点提示（ChartTooltip）",
+      "state_count": 8,
+      "applicable_count": 7,
+      "not_applicable_count": 1,
+      "states": [
+        {
+          "id": "ChartTooltip.default",
+          "component": "ChartTooltip",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "按 Tab 聚焦图表；方向键移动数据点",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.hover",
+          "component": "ChartTooltip",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "指针进入数据点；立即 120ms 显示点反馈",
+          "feedback": "数据点高亮，提示框内容按 300ms 延迟显示",
+          "exit": "指针离开数据点",
+          "keyboard": "指针进入数据点；键盘用方向键选择点",
+          "failure_recovery": "无数据点时不插值，移除旧提示框",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.focus",
+          "component": "ChartTooltip",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "方向键切换数据点；Esc 键移除提示框",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.pressed",
+          "component": "ChartTooltip",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 固定当前点；Esc 键解除固定",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.disabled",
+          "component": "ChartTooltip",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（图表不可用时不显示提示框）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "图表不可用时不显示提示框"
+        },
+        {
+          "id": "ChartTooltip.loading",
+          "component": "ChartTooltip",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "图表行情请求等待中",
+          "feedback": "保留日期并显示行情加载中与旋转提示",
+          "exit": "行情完成显示值，或显示缺口原因",
+          "keyboard": "按 Tab 保持图表顺序；方向键不读取未就绪点",
+          "failure_recovery": "不显示旧提示框数值冒充新值",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.empty",
+          "component": "ChartTooltip",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "该日期缺少行情",
+          "feedback": "显示缺行情原因，不插值",
+          "exit": "切换数据点或 Esc 键移除提示框",
+          "keyboard": "Tab 到缺口说明；Esc 键移除提示框",
+          "failure_recovery": "缺口继续明确显示，不伪造数值",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "ChartTooltip.error",
+          "component": "ChartTooltip",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 264,
+            "visible_height": 112,
+            "hit_width": 264,
+            "hit_height": 112
+          },
+          "dimensions_source": "外观 264×112px；命中 264×112px",
+          "trigger": "该数据点读取失败",
+          "feedback": "显示缺口原因入口，不提供重试按钮",
+          "exit": "聚焦/点击原因入口或 Esc 键移除提示框",
+          "keyboard": "Tab 到缺口原因；Esc 键移除过期提示框",
+          "failure_recovery": "保留缺口原因；不显示过期或成功数值",
+          "evidence": {
+            "manual_section": "component-manual.html#图表点提示charttooltip",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "EmptyState",
+      "label_zh": "空结果状态（EmptyState）",
+      "state_count": 8,
+      "applicable_count": 6,
+      "not_applicable_count": 2,
+      "states": [
+        {
+          "id": "EmptyState.default",
+          "component": "EmptyState",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "Tab 到切换市场按钮；Enter 或 Space 键执行",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "EmptyState.hover",
+          "component": "EmptyState",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "指针进入切换市场按钮；用 120ms 渐变立即开始高亮",
+          "feedback": "仅下一步按钮高亮，空原因不变",
+          "exit": "指针离开下一步按钮",
+          "keyboard": "指针进入下一步按钮；键盘仍由 Tab 到切换市场按钮",
+          "failure_recovery": "不触发导航",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "EmptyState.focus",
+          "component": "EmptyState",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "按 Tab 聚焦切换市场按钮；Enter 或 Space 键执行；Esc 键返回",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "EmptyState.pressed",
+          "component": "EmptyState",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 或 Space 键只提交切换市场按钮一次；Esc 键取消",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "EmptyState.disabled",
+          "component": "EmptyState",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（切换市场按钮有独立禁用原因；空状态本身不禁用）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "切换市场按钮有独立禁用原因；空状态本身不禁用"
+        },
+        {
+          "id": "EmptyState.loading",
+          "component": "EmptyState",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（加载时使用父级区块骨架；不与空状态同时显示）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "加载时使用父级区块骨架；不与空状态同时显示"
+        },
+        {
+          "id": "EmptyState.empty",
+          "component": "EmptyState",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "查询范围无结果",
+          "feedback": "显示空原因与切换市场按钮",
+          "exit": "点击/Enter 切换市场或导入交易",
+          "keyboard": "Tab 到切换市场按钮；Enter 或 Space 键执行下一步",
+          "failure_recovery": "下一步失败保留查询上下文与空原因",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "EmptyState.error",
+          "component": "EmptyState",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 300,
+            "visible_height": 120,
+            "hit_width": 300,
+            "hit_height": 120
+          },
+          "dimensions_source": "外观 300×120px；命中 300×120px",
+          "trigger": "空态数据读取失败",
+          "feedback": "显示数据暂不可用与切换市场按钮",
+          "exit": "点击切换市场按钮切换范围或返回",
+          "keyboard": "Tab 到现有范围操作与错误原因；Enter 或 Space 键执行范围切换",
+          "failure_recovery": "失败保留错误上下文，不伪造无结果",
+          "evidence": {
+            "manual_section": "component-manual.html#空结果状态emptystate",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "RetryAction",
+      "label_zh": "重试动作（RetryAction）",
+      "state_count": 8,
+      "applicable_count": 7,
+      "not_applicable_count": 1,
+      "states": [
+        {
+          "id": "RetryAction.default",
+          "component": "RetryAction",
+          "state": "default",
+          "state_label_zh": "默认",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "进入页面或恢复默认值",
+          "feedback": "显示稳定默认内容与可操作边界",
+          "exit": "激活、悬停或聚焦进入下一状态",
+          "keyboard": "错误上下文 Tab 到重试；Enter 或 Space 键执行",
+          "failure_recovery": "数据缺失显示明确占位并保留上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "default",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.hover",
+          "component": "RetryAction",
+          "state": "hover",
+          "state_label_zh": "悬停",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "指针进入重试按钮；用 120ms 渐变立即开始高亮",
+          "feedback": "按钮高亮但不提交请求",
+          "exit": "指针离开按钮",
+          "keyboard": "指针进入重试按钮；键盘仍由 Tab 到达",
+          "failure_recovery": "不改变错误上下文",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "hover",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.focus",
+          "component": "RetryAction",
+          "state": "focus",
+          "state_label_zh": "聚焦",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "Tab 或 Shift+Tab 将焦点移入",
+          "feedback": "显示 2px 焦点环与当前值，焦点可见",
+          "exit": "按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消",
+          "keyboard": "按 Tab 聚焦重试；Enter 或 Space 键执行；Esc 键取消",
+          "failure_recovery": "焦点环不遮挡内容；失败后焦点留在原控件",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "focus",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.pressed",
+          "component": "RetryAction",
+          "state": "pressed",
+          "state_label_zh": "按下",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "指针按下并完成点击，或按 Enter 或 Space 键",
+          "feedback": "显示按下反馈并提交一次动作",
+          "exit": "动作完成、取消或返回稳定状态",
+          "keyboard": "Enter 或 Space 键只重试一次；Esc 键取消",
+          "failure_recovery": "重复提交会锁住按钮；失败后恢复默认并保留错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "pressed",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.disabled",
+          "component": "RetryAction",
+          "state": "disabled",
+          "state_label_zh": "禁用",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "权限、不可用数据或父级表单明确设置禁用",
+          "feedback": "降低对比度且不响应指针/键盘激活",
+          "exit": "权限恢复或父级表单重新启用",
+          "keyboard": "按 Tab 跳过重试；Enter 或 Space 键不提交",
+          "failure_recovery": "禁用原因必须由相邻文案说明，不伪造成功",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "disabled",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.loading",
+          "component": "RetryAction",
+          "state": "loading",
+          "state_label_zh": "加载",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "点击/Enter 重试后请求等待中",
+          "feedback": "显示重试中并阻止重复提交",
+          "exit": "成功移除错误入口，或失败恢复重试按钮",
+          "keyboard": "按 Tab 保持顺序；Enter 或 Space 键在等待期间不重复提交",
+          "failure_recovery": "迟到响应丢弃；失败恢复按钮与错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "loading",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        },
+        {
+          "id": "RetryAction.empty",
+          "component": "RetryAction",
+          "state": "empty",
+          "state_label_zh": "空",
+          "applicable": false,
+          "dimensions": null,
+          "dimensions_source": "不适用",
+          "trigger": "不渲染（重试只在发生错误时显示）",
+          "feedback": "不渲染",
+          "exit": "不渲染",
+          "keyboard": "不适用",
+          "failure_recovery": "不适用",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "empty",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          },
+          "na_reason": "重试只在发生错误时显示"
+        },
+        {
+          "id": "RetryAction.error",
+          "component": "RetryAction",
+          "state": "error",
+          "state_label_zh": "错误",
+          "applicable": true,
+          "dimensions": {
+            "visible_width": 110,
+            "visible_height": 32,
+            "hit_width": 110,
+            "hit_height": 36
+          },
+          "dimensions_source": "外观 110×32px；命中 110×36px",
+          "trigger": "错误上下文已建立且重试可用",
+          "feedback": "显示异步重试按钮",
+          "exit": "点击或按 Enter 进入加载，或 Esc 键离开",
+          "keyboard": "Tab 到重试；Enter 或 Space 键重试；Esc 键关闭原因",
+          "failure_recovery": "失败恢复按钮；保留具体错误原因",
+          "evidence": {
+            "manual_section": "component-manual.html#重试动作retryaction",
+            "asset": "integration-assets/images/single-frame/atoms--full.svg",
+            "fragment": null,
+            "state_field": "error",
+            "basis": "语义状态字段；该单帧 SVG 不声明逐状态 URL fragment",
+            "asset_status": "NOT_ACCEPTED"
+          }
+        }
+      ]
+    }
+  ]
+}

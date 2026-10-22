@@ -1,0 +1,28 @@
+{
+  "frozen_paths": 533,
+  "changed_frozen_paths": [],
+  "source_sha256": {
+    "build.py": "9e05a2da6c3efab4d5550e60fb169412c9356699171b6e56f44221fc721d7e34",
+    "index.html": "3c337ce30eb2eadeecd0454895a3841f1f8db8301a1d9edafc11263f323f67ce",
+    "ui-select.js": "87c217dd328fed254d000e01b408a90210b3ad35c71d48ef0b87a59fb8261503",
+    "cards.html": "41ec4686bf8872a002ffebcde0a22fb2169d3b845e4c991928a1cf92062e591d",
+    "accepted-chart-title.svg": "0cbde9b976b625b1ee2f8b0714b5e2c6e596dd13ce19f81d176f20d24139b7aa"
+  },
+  "screenshots_sha256": {
+    "d01-desktop.jpg": "dff203438b7b2c87b937acd12056b01c1bd89165de5f96d1de953b3031fe192a",
+    "cards-desktop.jpg": "6910fcd9f744626d2c3fa5d17864538a652b1a7125fda2736dd572c6b4289ff7",
+    "d07-390.jpg": "9e2e6c7e35b0af2f152bb1df0509e0699511ee1d41db37894965b66e7ebfc3c3",
+    "cards-390.jpg": "d405989dfbefbc8b6ca300d4184db0ce36e84bc9c2c9374b43443e3e2bd931d5",
+    "d07-desktop.jpg": "c0d90d0449b5a55d303130263ffdd35e1560a83ead03b53b09714c6b257ee5d0",
+    "cards-390-menu.jpg": "79766b340dcb904fb34e4bb64d0b8b3928bbcf4be0d6a621fb0cabfc9b7c0649",
+    "cards-desktop-menu.jpg": "75a05f0f3ff81a90b3fe7271af728eb9325871e0cd749d532e99353cd3155605",
+    "d07-future-tip.jpg": "310aba9fd0680e15d56e983fdcda618da0a8084e40f83d50ef4f19d398fb4758",
+    "d07-empty-tip.jpg": "b4bc6cee127dd3cb28888066b0e844df10d888e31fdb29e41b4e402ebef7b1e3",
+    "d03-approved.jpg": "7c9608faca4a9d240e4266d031b7055b4c1edc290d9f90ca300d8608ec222402"
+  },
+  "checks": [
+    "Python AST PASS",
+    "node --check PASS",
+    "git diff --check PASS"
+  ]
+}

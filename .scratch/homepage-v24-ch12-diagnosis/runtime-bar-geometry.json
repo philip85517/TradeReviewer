@@ -1,0 +1,62 @@
+[
+  {
+    "background": "rgb(83, 215, 160)",
+    "border": "rgb(230, 237, 247)",
+    "center": 639.390625,
+    "class": "bar realized",
+    "h": 12,
+    "w": 293.984375,
+    "x": 660,
+    "y": 633.390625
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "border": "rgb(108, 168, 255)",
+    "center": 644.390625,
+    "class": "bar floating",
+    "h": 10,
+    "w": 98.6484375,
+    "x": 953.984375,
+    "y": 639.390625
+  },
+  {
+    "background": "rgb(255, 133, 146)",
+    "border": "rgb(230, 237, 247)",
+    "center": 775.390625,
+    "class": "bar realized loss",
+    "h": 12,
+    "w": 13.0625,
+    "x": 646.9296875,
+    "y": 769.390625
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "border": "rgb(255, 133, 146)",
+    "center": 780.390625,
+    "class": "bar floating loss",
+    "h": 10,
+    "w": 6.53125,
+    "x": 640.3984375,
+    "y": 775.390625
+  },
+  {
+    "background": "rgb(83, 215, 160)",
+    "border": "rgb(230, 237, 247)",
+    "center": 911.390625,
+    "class": "bar realized",
+    "h": 12,
+    "w": 118.8984375,
+    "x": 660,
+    "y": 905.390625
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "border": "rgb(108, 168, 255)",
+    "center": 916.390625,
+    "class": "bar floating",
+    "h": 10,
+    "w": 109.75,
+    "x": 778.8984375,
+    "y": 911.390625
+  }
+]

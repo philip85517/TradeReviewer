@@ -1,0 +1,109 @@
+﻿章节,图稿,出现位置ID,标题,匹配问题族
+二、整页布局与视觉基础,source/images/home-1440.svg,home-1440@state-demo-1-1,当前期间贡献 · 1440px,"holding-table,whole-home,period-name,bare-month,chart-status,win-card,contribution-control,outline-height10,date-ticks"
+二、整页布局与视觉基础,source/images/home-history-1440.svg,home-history-1440@state-demo-1-2,历史已平仓贡献 · 1440px,"holding-table,whole-home,period-name,bare-month,chart-status,win-card,contribution-control,date-ticks"
+二、整页布局与视觉基础,source/images/home-1280.svg,home-1280@state-demo-2-1,当前期间贡献 · 1280px,"holding-table,whole-home,period-name,bare-month,chart-status,win-card,contribution-control,outline-height10,date-ticks"
+二、整页布局与视觉基础,source/images/home-history-1280.svg,home-history-1280@state-demo-2-2,历史已平仓贡献 · 1280px,"holding-table,whole-home,period-name,bare-month,chart-status,win-card,contribution-control,date-ticks"
+二、整页布局与视觉基础,source/images/visual-samples-board.svg,visual-samples-board@69,布局尺寸与颜色控件样例,samples-board
+三、页头范围、搜索与筛选,source/images/account.svg,account@116,账户选择与当前范围,
+三、页头范围、搜索与筛选,source/images/search.svg,search@state-demo-3-1,搜索结果,
+三、页头范围、搜索与筛选,source/images/search--detail.svg,search--detail@state-demo-3-2,无匹配,
+三、页头范围、搜索与筛选,source/images/search--empty.svg,search--empty@state-demo-3-3,请求失败,
+三、页头范围、搜索与筛选,source/images/search-detail.svg,search-detail@state-demo-3-4,打开详情,
+三、页头范围、搜索与筛选,source/images/search-motion.svg,search-motion@state-demo-3-5,搜索遮罩关闭,
+三、页头范围、搜索与筛选,source/images/search-overlay-open.svg,search-overlay-open@state-demo-3-6,输入聚焦,
+三、页头范围、搜索与筛选,source/images/search-overlay-reduced-motion.svg,search-overlay-reduced-motion@state-demo-3-7,减弱动效：直接呈现结果面板,
+三、页头范围、搜索与筛选,source/images/detail.svg,detail@149,标的详情的信息组织,holding-table
+三、页头范围、搜索与筛选,source/images/filter.svg,filter@state-demo-4-1,编辑条件,
+三、页头范围、搜索与筛选,source/images/multi-applied.svg,multi-applied@state-demo-4-2,筛选已应用,
+三、页头范围、搜索与筛选,source/images/multi-applied--reopen.svg,multi-applied--reopen@state-demo-4-3,重新打开筛选,
+三、页头范围、搜索与筛选,source/images/clear-attachments.svg,clear-attachments@state-demo-4-4,清除前,
+三、页头范围、搜索与筛选,source/images/clear-attachments--after-clear.svg,clear-attachments--after-clear@state-demo-4-5,清除后,
+三、页头范围、搜索与筛选,source/images/reset.svg,reset@state-demo-4-6,未保存修改,
+三、页头范围、搜索与筛选,source/images/reset--reset.svg,reset--reset@state-demo-4-7,已重置,
+三、页头范围、搜索与筛选,source/images/cancel.svg,cancel@state-demo-4-8,日期草稿,
+三、页头范围、搜索与筛选,source/images/cancel--cancelled.svg,cancel--cancelled@state-demo-4-9,取消日期,
+四、当前表现：指标、期间与曲线,source/images/period.svg,period@208,快捷期间与自定义日期,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-hover.svg,chart-hover@state-demo-5-1,鼠标悬停,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-hover--keyboard.svg,chart-hover--keyboard@state-demo-5-2,键盘聚焦,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-gap.svg,chart-gap@state-demo-5-3,遇到数据缺口,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-scale.svg,chart-scale@state-demo-5-4,紧凑比例,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-scale--normal.svg,chart-scale--normal@state-demo-5-5,常规金额范围,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-scale--wide.svg,chart-scale--wide@state-demo-5-6,宽图表,date-ticks
+四、当前表现：指标、期间与曲线,source/images/chart-scale--extreme.svg,chart-scale--extreme@state-demo-5-7,极值比例,date-ticks
+五、当前持仓：稳定扫描与逐行查看,source/images/count-scales.svg,count-scales@state-demo-6-1,5 条,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/count-scales--ten-items.svg,count-scales--ten-items@state-demo-6-2,10 条,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/count-scales--twenty-items.svg,count-scales--twenty-items@state-demo-6-3,20 条,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/local-search-pages.svg,local-search-pages@state-demo-7-1,第 3 页,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/local-search-pages--one-match.svg,local-search-pages--one-match@state-demo-7-2,单条匹配,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/local-search-pages--clear.svg,local-search-pages--clear@state-demo-7-3,清除搜索,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/50-items.svg,50-items@state-demo-8-1,第 1 页,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/50-items--page-7.svg,50-items--page-7@state-demo-8-2,第 7 页,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/holding-return.svg,holding-return@state-demo-9-1,进入详情前,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/holding-return--detail.svg,holding-return--detail@state-demo-9-2,详情,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/holding-return--after.svg,holding-return--after@state-demo-9-3,返回详情后,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/empty.svg,empty@state-demo-10-1,无匹配,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/empty--zero-holdings.svg,empty--zero-holdings@state-demo-10-2,零持仓,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/count-boundaries.svg,count-boundaries@state-demo-11-1,单条记录,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/count-boundaries--nine-items-last-page.svg,count-boundaries--nine-items-last-page@state-demo-11-2,9 条末页,holding-table
+五、当前持仓：稳定扫描与逐行查看,source/images/extreme.svg,extreme@335,极值、零值、缺失数据与长名称,holding-table
+六、历史统计与底部贡献区,source/images/history.svg,history@state-demo-12-1,各期盈亏,"period-name,bare-month,chart-status,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-cumulative.svg,history-stats-cumulative@state-demo-12-2,累计盈亏,"bare-month,chart-status,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-win.svg,history-stats-win@state-demo-12-3,各期胜率,"bare-month,chart-status,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-rounds.svg,history-stats-rounds@state-demo-12-4,回合数,"bare-month,chart-status,win-card"
+六、历史统计与底部贡献区,source/images/journeys-year.svg,journeys-year@state-demo-13-1,读取新范围,"period-name,bare-month,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-empty.svg,history-stats-empty@state-demo-13-2,范围无回合,"period-name,bare-month"
+六、历史统计与底部贡献区,source/images/history-stats-error.svg,history-stats-error@state-demo-13-3,读取失败,"period-name,bare-month,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-source-missing.svg,history-stats-source-missing@state-demo-13-4,数据缺失,"period-name,bare-month,win-card"
+六、历史统计与底部贡献区,source/images/history-stats-extreme.svg,history-stats-extreme@state-demo-13-5,大额与边界,"period-name,win-card"
+六、历史统计与底部贡献区,source/images/contribution-states.svg,contribution-states@state-demo-14-1,全部市场,related-hollow
+六、历史统计与底部贡献区,source/images/contribution-current-a-share.svg,contribution-current-a-share@state-demo-14-2,A股明细,related-hollow
+六、历史统计与底部贡献区,source/images/contribution-historical-a-share.svg,contribution-historical-a-share@state-demo-14-3,历史已平仓,
+六、历史统计与底部贡献区,source/images/contribution.svg,contribution@state-demo-15-1,估值缺失,
+六、历史统计与底部贡献区,source/images/contribution-loading.svg,contribution-loading@state-demo-15-2,等待数据,
+六、历史统计与底部贡献区,source/images/contribution-empty.svg,contribution-empty@state-demo-15-3,没有贡献,
+六、历史统计与底部贡献区,source/images/contribution-error.svg,contribution-error@state-demo-15-4,读取失败,
+六、历史统计与底部贡献区,source/images/contribution-extreme.svg,contribution-extreme@state-demo-15-5,极值,related-hollow
+六、历史统计与底部贡献区,source/images/contribution-mixed-sign-demo.svg,contribution-mixed-sign-demo@state-demo-15-6,同一市场内的正负贡献,related-hollow
+七、从首页进入交易与复盘,source/images/handoff.svg,handoff@431,首页到交易库的条件交接,
+七、从首页进入交易与复盘,source/images/journeys-date.svg,journeys-date@state-demo-16-1,带条件到达,trade-table
+七、从首页进入交易与复盘,source/images/hcr06-final-return.svg,hcr06-final-return@state-demo-16-2,返回来源,
+七、从首页进入交易与复盘,source/images/journeys-pending.svg,journeys-pending@state-demo-17-1,没有待复盘,
+七、从首页进入交易与复盘,source/images/journeys-pending-normal.svg,journeys-pending-normal@state-demo-17-2,查看待复盘数量,
+七、从首页进入交易与复盘,source/images/journeys-pending-99plus.svg,journeys-pending-99plus@state-demo-17-3,超过九十九条,
+七、从首页进入交易与复盘,source/images/hcr06-final-pending-library.svg,hcr06-final-pending-library@state-demo-17-4,到达待复盘列表,trade-table
+七、从首页进入交易与复盘,source/images/hcr06-final-pending-library-1280.svg,hcr06-final-pending-library-1280@state-demo-17-5,较窄桌面,trade-table
+七、从首页进入交易与复盘,source/images/hcr06-final-pending-return.svg,hcr06-final-pending-return@state-demo-17-6,返回首页来源,
+八、交易库内部规范,source/images/hcr06-final-sim-ab.svg,hcr06-final-sim-ab@state-demo-18-1,练习列表,
+八、交易库内部规范,source/images/hcr06-final-rounds-a.svg,hcr06-final-rounds-a@state-demo-18-2,一次练习的回合集,
+八、交易库内部规范,source/images/hcr06-final-replay-a1.svg,hcr06-final-replay-a1@state-demo-18-3,第一个回合,
+八、交易库内部规范,source/images/hcr06-final-replay-a2.svg,hcr06-final-replay-a2@state-demo-18-4,第二个回合,
+八、交易库内部规范,source/images/hcr06-final-replay-b1.svg,hcr06-final-replay-b1@state-demo-18-5,另一练习,
+八、交易库内部规范,source/images/01-live-normal.svg,01-live-normal@state-demo-19-1,实盘统计,
+八、交易库内部规范,source/images/02-simulation-normal.svg,02-simulation-normal@state-demo-19-2,练习统计,
+八、交易库内部规范,source/images/03-distribution-selected.svg,03-distribution-selected@state-demo-19-3,分布下钻,
+八、交易库内部规范,source/images/04-return.svg,04-return@state-demo-19-4,复盘后返回,
+八、交易库内部规范,source/images/05-loading.svg,05-loading@state-demo-19-5,切换范围时等待,
+八、交易库内部规范,source/images/06-empty.svg,06-empty@state-demo-19-6,范围没有已平仓回合,
+八、交易库内部规范,source/images/07-error.svg,07-error@state-demo-19-7,读取失败与重试,
+八、交易库内部规范,source/images/08-extreme.svg,08-extreme@state-demo-19-8,极端分布,
+八、交易库内部规范,source/images/09-missing-input.svg,09-missing-input@state-demo-19-9,计算输入缺失,
+九、异常状态与动效,source/images/empty.svg,empty@state-demo-20-1,无匹配,holding-table
+九、异常状态与动效,source/images/empty--zero-holdings.svg,empty--zero-holdings@state-demo-20-2,零持仓,holding-table
+九、异常状态与动效,source/images/loading.svg,loading@state-demo-20-3,初始加载骨架,holding-table
+九、异常状态与动效,source/images/loading--stale-data.svg,loading--stale-data@state-demo-20-4,旧数据加载,holding-table
+九、异常状态与动效,source/images/error.svg,error@state-demo-20-5,首次读取错误,
+九、异常状态与动效,source/images/error--update-failure.svg,error--update-failure@state-demo-20-6,更新失败,holding-table
+九、异常状态与动效,source/images/repair.svg,repair@state-demo-20-7,全局修复,
+十、共享控件与状态标准,source/images/atoms.svg,atoms@568,共享控件的状态示例,
+附录一、版本变化与待决策,source/images/holding-option-A-normal-1440.svg,holding-option-A-normal-1440@state-demo-21-1,普通金额 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-A-normal-1280.svg,holding-option-A-normal-1280@state-demo-21-2,普通金额 · 1280px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-A-large-1440.svg,holding-option-A-large-1440@state-demo-21-3,大额与长名称 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-A-large-1280.svg,holding-option-A-large-1280@state-demo-21-4,大额与长名称 · 1280px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-B-normal-1440.svg,holding-option-B-normal-1440@state-demo-22-1,普通金额 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-B-normal-1280.svg,holding-option-B-normal-1280@state-demo-22-2,普通金额 · 1280px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-B-large-1440.svg,holding-option-B-large-1440@state-demo-22-3,大额与长名称 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-B-large-1280.svg,holding-option-B-large-1280@state-demo-22-4,大额与长名称 · 1280px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-C-normal-1440.svg,holding-option-C-normal-1440@state-demo-23-1,普通金额 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-C-normal-1280.svg,holding-option-C-normal-1280@state-demo-23-2,普通金额 · 1280px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-C-large-1440.svg,holding-option-C-large-1440@state-demo-23-3,大额与长名称 · 1440px,holding-table
+附录一、版本变化与待决策,source/images/holding-option-C-large-1280.svg,holding-option-C-large-1280@state-demo-23-4,大额与长名称 · 1280px,holding-table

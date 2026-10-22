@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>V2.4.1 评论修复与独立验收</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+.image-viewer-modal[hidden] { display: none; }
+.image-viewer-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgba(3, 8, 16, .86); }
+.image-viewer-dialog { position: relative; display: flex; flex-direction: column; width: min(1100px, 100%); max-height: calc(100vh - 48px); overflow: hidden; border: 1px solid #45678f; border-radius: 10px; background: #0b1220; box-shadow: 0 16px 60px rgba(0,0,0,.55); outline: none; }
+.image-viewer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; color: #e7edf6; background: #101c2f; }
+.image-viewer-head button { min-height: 36px; padding: 5px 12px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; }
+.image-viewer-scroll { overflow: auto; padding: 16px; overscroll-behavior: contain; }
+.image-viewer-scroll img { width: auto; max-width: none; height: auto; margin: 0 auto; border-color: #45678f; }
+body.image-viewer-open { overflow: hidden; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+.review-image-target { outline: 3px solid #66b5ff; outline-offset: 6px; border-radius: 6px; box-shadow: 0 0 0 8px rgba(55, 151, 255, .22), 0 0 24px rgba(102, 181, 255, .72); }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>V2.4.1 评论修复与独立验收</strong><p class="nav-meta">文档 2.4.1 · 控件与参考附页</p><a class="toc-level-1" href="#v241-评论修复与独立验收" data-target="v241-评论修复与独立验收">V2.4.1 评论修复与独立验收</a><a class="toc-level-2" href="#逐项结果" data-target="逐项结果">逐项结果</a><a class="toc-level-2" href="#独立复核与返修" data-target="独立复核与返修">独立复核与返修</a><a class="toc-level-2" href="#版本与范围保护" data-target="版本与范围保护">版本与范围保护</a><a class="toc-level-2" href="#验收边界" data-target="验收边界">验收边界</a><a class="toc-level-2" href="#后续防止重复回归" data-target="后续防止重复回归">后续防止重复回归</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">文档附页 · 2.4.1</p><a class="review-open" href="../../visual-spec.html">返回正文阅读器</a></header><h1 id="v241-评论修复与独立验收">V2.4.1 评论修复与独立验收</h1>
+<p>日期：2026-10-22。范围为 revision 42 中当前 V2.4.1 的 10 条评论及其直接关联正文、控件手册和图稿。原始诊断与失败证据保留在 <a href="../2026-10-22-comment-diagnosis/REPORT.md">诊断报告</a>。本记录承接诊断，不覆盖历史记录。</p>
+<p>本次保留已批准的页面顺序、底部单一贡献区、控件比例、图表轴线及颜色、实盘/模拟盘身份、回合配对和日期统计口径。没有开发业务页面，也没有提交或推送。</p>
+<h2 id="逐项结果">逐项结果</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">评论</th>
+<th scope="col">已确认现象及根因</th>
+<th scope="col">本次修复</th>
+<th scope="col">关联范围与验收证据</th>
+<th scope="col">结果</th>
+</tr></thead><tbody>
+<tr>
+<td>C01</td>
+<td>正式 SVG 未保存批准原型的字形右缘校准；相同 text-anchor 不等于字形可见右缘一致。两项汇总实际均为14px，未发现彼此字号不同。</td>
+<td>将字体加载后的实际校准写入静态 SVG，统一四个金额表头与内容的可见右缘；保留汇总14px与批准C方案比例。</td>
+<td>27张表格，浏览器112个表头实例；<a href="evidence/table-browser-results.json">测量结果</a>、<a href="evidence/holdings-table.png">1440图稿</a>、<a href="evidence/holdings-1280.png">1280图稿</a>。3张无数值状态使用同列定义校准。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>字段增至六项后仍用264×112旧框；正常数据质量提示混入常显文案。</td>
+<td>提示框按内容计算高度，四边至少12px；日期加六个财务字段用264×144，紧凑组件样例264×124；正常勾选隐藏，异常使用16px说明图标。</td>
+<td>鼠标/键盘2张、atom和缺口图；<a href="evidence/chart-browser-results.json">实际字形测量</a>、<a href="evidence/chart-tooltip.png">截图</a>。</td>
+<td>PASS（静态设计状态）</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>与C02同一溢出，第二条评论保留独立追踪。</td>
+<td>与C02同步修复，无重复创建另一套控件。</td>
+<td>9个有内容的可见提示框均满足四边≥12px；2个继承分镜裁剪的无内容非活动框单列排除，未冒充通过。</td>
+<td>PASS（静态设计状态）</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>年份选择器与标题副行重复表达范围。</td>
+<td>去掉13张相关图的“按平仓时间 · 年份”副行；保留标题、选择器与必要业务指标；口径进说明图标和正文。</td>
+<td>9张history/journeys图 + 4张home嵌入图；精确名单见下方manifest和分工报告。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>业务信息、次级口径、作者说明未分层。</td>
+<td>业务标题/数值/缺失事实保留；平仓统计口径移入统一info；技术规则留正文。</td>
+<td><a href="charts-report.md">图表修复报告</a>文案分类；正文与控件手册同步。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>产品图混入交接合同和实现字段。</td>
+<td>删除入口状态合同、perspective/sourceFocus/sourceDate等画内说明；保留来源与用户操作；恢复细节写在图外规范。</td>
+<td>handoff、两张返回图及正文；入口→点击→到达→详情→返回五阶段连续，入口卡按钮留白另经复查。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>章节按模块拆开，入口/到达状态混画。</td>
+<td>在现有文档内合并第七八章，保留旧HP06/HP07锚点，重复只留一份；完整说明首页→列表→标的/一次练习→回合集合→复盘→返回。</td>
+<td>章节目录、原锚点和五帧练习分镜；不改变原页面布局。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>部分分镜只同步宽高，没同步字体、图标和中心线。</td>
+<td>日期/搜索/刷新按36px控件高、14px文字及SVG图标同步；待复盘搜索同系列补齐。</td>
+<td>sim-ab、journeys-date、两张pending列表；保留已合规宽度和间距。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>工具行和数值列手写坐标各自为政。</td>
+<td>统一工具中心线、数值列右边界；长日期不缩字号，按完整文案加内边距扩框，市场字段避让。</td>
+<td>同C08；05/08/09长日期反例额外复查。</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>统计页另画控件且常显实现说明；只有回合数不能比较比例。</td>
+<td>统一日期36/14，技术说明改info；显示回合数与占比，用户明确确认“保留2位小数，窄栏换行”。分母为当前范围全部有效回合，局部下钻不改分母。</td>
+<td>9张统计状态、正文、手册；正常24回合比例合计100%，极值1回合100.00%；空/错/加载不伪造比例。</td>
+<td>PASS（静态设计状态）</td>
+</tr>
+</tbody></table></div>
+<h2 id="独立复核与返修">独立复核与返修</h2>
+<p>三个 Luna 实现任务分别负责表格、图表、交易库图稿，文件所有权互不交叉；root负责正文、手册、整页一致性和最终验收。实施者的静态通过没有直接作为最终通过。</p>
+<ul>
+<li>root首次测量提示框发现上下内边距不足，退回重新移动内容并调整外框；最终活动框最小上下留白12.27/13.65px，左右12px。</li>
+<li>表格经过字体加载、静态回写和独立浏览器测量，最终112实例全部通过；报告记录的是实际字形右缘，非坐标相同。</li>
+<li>表格owner只读交叉复核发现待复盘搜索字号未统一、library报告通配范围9/5不一致；返修统一搜索14px并改为精确范围。徽章独立字号规范不变。</li>
+<li>root直接比图发现05/08/09长日期越界、handoff按钮压住卡片底边；扩日期框及最小调整内部间距，不重排整体页面。</li>
+<li>文档只读复核发现补充章节缺导航、C04常显禁用规则不明确、加载态“旋转提示”与SVG info不一致；均已补齐。旧v23锚点为历史兼容保留，不重命名破坏链接；账户176px产品尺寸与180px状态样例的差异已有明确说明，未擅改。</li>
+<li>复核曾把占比精度判为未授权：诊断快照是旧时点。最新用户回复已明确两位小数/窄栏换行；本记录更新当前状态，旧诊断保持原样。</li>
+</ul>
+<h2 id="版本与范围保护">版本与范围保护</h2>
+<p><a href="before-manifest.json">修复前清单</a>冻结本轮开始时的文件哈希；<a href="after-manifest.json">修复后清单</a>记录精确修改名单与哈希。相对本轮起点修改56张SVG与2份正文/手册，301个其他source文件不变。不能把本来已脏的git工作树全部算成本轮修改。</p>
+<p>原评论JSON哈希不变：仍42条，其中当前版本10条；没有擅自关闭评论、替用户确认或改写评论原文。评论映射随重新构建刷新，原评论内容保留。</p>
+<h2 id="验收边界">验收边界</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">门槛</th>
+<th scope="col">范围与结果</th>
+</tr></thead><tbody>
+<tr>
+<td>源文件一致性</td>
+<td>全部source SVG可解析；全部当前修复文件具备归属与证据；正文/手册/生成页同步。</td>
+</tr>
+<tr>
+<td>独立视觉对照</td>
+<td>root真实浏览器查看1440/1280固有画布、提示框、交易库工具行、长日期与分布；浏览器视口1280×720，DPR2。固有SVG宽度不等于浏览器视口或真实响应式宽度。</td>
+</tr>
+<tr>
+<td>阅读器交互</td>
+<td>目录跳转、保留的章节锚点、练习五帧/统计九帧的上一帧下一帧与重置、评论面板读取；记录见reader-browser-results.json。</td>
+</tr>
+<tr>
+<td>业务交互/数据持久化</td>
+<td>NOT APPLICABLE：本轮仅修复静态规范，不开发运行时控件，不接触业务数据库。静态SVG的title/aria-label只证明说明被保存，不声称已完成业务hover/键盘实现。</td>
+</tr>
+<tr>
+<td>触摸/多浏览器</td>
+<td>NOT APPLICABLE：未改变阅读器交互实现；本轮不作设备兼容验收声明。</td>
+</tr>
+<tr>
+<td>Git操作</td>
+<td>未提交、未推送。本轮文件均落在仓库，可随后追踪提交。</td>
+</tr>
+</tbody></table></div>
+<h2 id="后续防止重复回归">后续防止重复回归</h2>
+<p>保留字形校准脚本、字体就绪后的浏览器测量页及失败反例；修改金额列必须重跑112实例。新增Tooltip字段必须重算内容高度并验证四边字形边距。交易库共享控件变更必须查正常、加载、空、错误、极值及待复盘变体，特别覆盖长日期。作者说明与产品文案分层验收，不把常驻技术文案重新画回产品图。</p>
+<p>本轮没有新增待决设计选择。C01若未来希望提升汇总视觉权重，应另开设计讨论，不能将“现有两个14px数值一致”改述为字体缺陷。</p></main></div></body></html>

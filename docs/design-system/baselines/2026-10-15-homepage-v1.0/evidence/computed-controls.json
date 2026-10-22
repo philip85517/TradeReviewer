@@ -1,0 +1,120 @@
+{
+  "controls": [
+    {
+      "css": {
+        "backgroundColor": "rgb(17, 26, 43)",
+        "borderColor": "rgb(52, 68, 91)",
+        "borderRadius": "6px",
+        "boxShadow": "none",
+        "color": "rgb(145, 169, 201)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "筛选"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgb(24, 50, 70)",
+        "borderColor": "rgb(52, 85, 102)",
+        "borderRadius": "6px",
+        "boxShadow": "none",
+        "color": "rgb(228, 248, 250)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "今年"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": "6px",
+        "boxShadow": "none",
+        "color": "rgb(154, 176, 202)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "全部"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgb(24, 50, 70)",
+        "borderColor": "rgb(52, 85, 102)",
+        "borderRadius": "6px",
+        "boxShadow": "none",
+        "color": "rgb(228, 248, 250)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "日"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgb(23, 43, 68)",
+        "borderColor": "rgb(42, 70, 103)",
+        "borderRadius": "5px",
+        "boxShadow": "none",
+        "color": "rgb(83, 169, 255)",
+        "fontSize": "11px",
+        "height": "28.5px",
+        "opacity": "0.45"
+      },
+      "disabled": true,
+      "text": "上一页"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgb(22, 61, 99)",
+        "borderColor": "rgb(55, 151, 255)",
+        "borderRadius": "5px",
+        "boxShadow": "none",
+        "color": "rgb(237, 246, 255)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "今年"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": "5px",
+        "boxShadow": "none",
+        "color": "rgb(145, 169, 201)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "全部"
+    },
+    {
+      "css": {
+        "backgroundColor": "rgb(20, 39, 64)",
+        "borderColor": "rgb(42, 70, 103)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(237, 245, 255)",
+        "fontSize": "14px",
+        "height": "36px",
+        "opacity": "1"
+      },
+      "disabled": false,
+      "text": "日"
+    }
+  ],
+  "viewport": [
+    1280,
+    900
+  ]
+}

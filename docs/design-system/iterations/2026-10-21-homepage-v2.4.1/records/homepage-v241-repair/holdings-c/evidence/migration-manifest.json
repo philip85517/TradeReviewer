@@ -1,0 +1,208 @@
+{
+  "migration": "V241-03 holdings C full-page defaults",
+  "approvedCandidates": [
+    "source/images/holding-option-C-normal-1280.svg",
+    "source/images/holding-option-C-normal-1440.svg",
+    "source/images/holding-option-C-large-1280.svg",
+    "source/images/holding-option-C-large-1440.svg"
+  ],
+  "targets": [
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1280.svg",
+      "beforeSha256": "125889fde104369ad1603ee2948878f5aedf2ca79750e60e1ddc6c3c14c7874f",
+      "afterSha256": "a02f54c4c6d90d45af2ef37e9e62781ef3ad84e22dc02fd45b9f3b974a200b01",
+      "status": "already-migrated",
+      "changedElements": {
+        "marketValueLabel": {
+          "from": {
+            "x": "112",
+            "y": "630"
+          },
+          "to": {
+            "x": "545",
+            "y": "610"
+          }
+        },
+        "marketValueValue": {
+          "from": {
+            "x": "148",
+            "y": "630"
+          },
+          "to": {
+            "x": "581",
+            "y": "610"
+          }
+        },
+        "pnlLabel": {
+          "from": {
+            "x": "376",
+            "y": "630"
+          },
+          "to": {
+            "x": "710",
+            "y": "610"
+          }
+        },
+        "pnlValue": {
+          "from": {
+            "x": "486",
+            "y": "630"
+          },
+          "to": {
+            "x": "820",
+            "y": "610"
+          }
+        }
+      }
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/images/home-1280.svg",
+      "beforeSha256": "40d9d2319e89f89a448d047c1ecefaa5b3026ee4f5dca35cbf2696a0a1d3d287",
+      "afterSha256": "9c907b4b94ea22b6583b9ed61b500fa1bca04f716e70700e7f9775f53bedc1a4",
+      "status": "already-migrated",
+      "changedElements": {
+        "marketValueLabel": {
+          "from": {
+            "x": "112",
+            "y": "630"
+          },
+          "to": {
+            "x": "545",
+            "y": "610"
+          }
+        },
+        "marketValueValue": {
+          "from": {
+            "x": "148",
+            "y": "630"
+          },
+          "to": {
+            "x": "581",
+            "y": "610"
+          }
+        },
+        "pnlLabel": {
+          "from": {
+            "x": "376",
+            "y": "630"
+          },
+          "to": {
+            "x": "710",
+            "y": "610"
+          }
+        },
+        "pnlValue": {
+          "from": {
+            "x": "486",
+            "y": "630"
+          },
+          "to": {
+            "x": "820",
+            "y": "610"
+          }
+        }
+      }
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1440.svg",
+      "beforeSha256": "609c6e79bfb6268a16915d56841ab096f23422bcd5e5f999c23b34a238ddfba7",
+      "afterSha256": "42885e2ee4b08a6ed31710a174649dc701140575b91282de36534d43c8bc3000",
+      "status": "already-migrated",
+      "changedElements": {
+        "marketValueLabel": {
+          "from": {
+            "x": "112",
+            "y": "630"
+          },
+          "to": {
+            "x": "705",
+            "y": "610"
+          }
+        },
+        "marketValueValue": {
+          "from": {
+            "x": "148",
+            "y": "630"
+          },
+          "to": {
+            "x": "741",
+            "y": "610"
+          }
+        },
+        "pnlLabel": {
+          "from": {
+            "x": "376",
+            "y": "630"
+          },
+          "to": {
+            "x": "870",
+            "y": "610"
+          }
+        },
+        "pnlValue": {
+          "from": {
+            "x": "486",
+            "y": "630"
+          },
+          "to": {
+            "x": "980",
+            "y": "610"
+          }
+        }
+      }
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/images/home-1440.svg",
+      "beforeSha256": "5b886c155eef65cee7fe69cb265142943fa8beb862d0364fbfd756329cc82b81",
+      "afterSha256": "ea4717442df57380a613dbe4eeb050dac87fd242af19418901560bdce0f85b0c",
+      "status": "already-migrated",
+      "changedElements": {
+        "marketValueLabel": {
+          "from": {
+            "x": "112",
+            "y": "630"
+          },
+          "to": {
+            "x": "705",
+            "y": "610"
+          }
+        },
+        "marketValueValue": {
+          "from": {
+            "x": "148",
+            "y": "630"
+          },
+          "to": {
+            "x": "741",
+            "y": "610"
+          }
+        },
+        "pnlLabel": {
+          "from": {
+            "x": "376",
+            "y": "630"
+          },
+          "to": {
+            "x": "870",
+            "y": "610"
+          }
+        },
+        "pnlValue": {
+          "from": {
+            "x": "486",
+            "y": "630"
+          },
+          "to": {
+            "x": "980",
+            "y": "610"
+          }
+        }
+      }
+    }
+  ],
+  "assertions": [
+    "Only four summary text anchors changed per target.",
+    "Table columns, header bracket glyphs, toolbar, rows, and footer were not rewritten.",
+    "Candidate A/B/C boards were not touched."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "scope": "V241-03 D02 C1-2",
+  "targets": [
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1280.svg",
+      "status": "PASS",
+      "summaryInstances": 4
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/images/home-1280.svg",
+      "status": "PASS",
+      "summaryInstances": 2
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1440.svg",
+      "status": "PASS",
+      "summaryInstances": 4
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/images/home-1440.svg",
+      "status": "PASS",
+      "summaryInstances": 2
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-normal-1280.svg",
+      "status": "UNCHANGED-CANDIDATE-REFERENCE",
+      "summaryInstances": 2
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-normal-1440.svg",
+      "status": "UNCHANGED-CANDIDATE-REFERENCE",
+      "summaryInstances": 2
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-large-1280.svg",
+      "status": "UNCHANGED-CANDIDATE-REFERENCE",
+      "summaryInstances": 2
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/holding-option-C-large-1440.svg",
+      "status": "UNCHANGED-CANDIDATE-REFERENCE",
+      "summaryInstances": 2
+    }
+  ],
+  "coverage": {
+    "fullPageDefaults": "2 viewports × 2 packaged/source copies = 4",
+    "approvedCandidateReferences": "4 (normal/large × 1280/1440)",
+    "states": [
+      "normal",
+      "extreme/large",
+      "empty",
+      "loading",
+      "return"
+    ],
+    "interactiveBrowser": "NOT VERIFIED by implementer; root owns independent acceptance"
+  }
+}

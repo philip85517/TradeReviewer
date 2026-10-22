@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>V2.1 → V2.2 逐条评论复核</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>V2.1 → V2.2 逐条评论复核</strong><p class="nav-meta">文档 2.3 · 控件与参考附页</p><a class="toc-level-1" href="#v21-v22-逐条评论复核" data-target="v21-v22-逐条评论复核">V2.1 → V2.2 逐条评论复核</a><a class="toc-level-2" href="#r01-共享列边界与导航选择器契约" data-target="r01-共享列边界与导航选择器契约">R01 共享列边界与导航/选择器契约</a><a class="toc-level-2" href="#r02-导航语义丢失" data-target="r02-导航语义丢失">R02 导航语义丢失</a><a class="toc-level-2" href="#r03-设计说明侵入产品" data-target="r03-设计说明侵入产品">R03 设计说明侵入产品</a><a class="toc-level-2" href="#r04-跨区域作用域不清" data-target="r04-跨区域作用域不清">R04 跨区域作用域不清</a><a class="toc-level-2" href="#r05-损益分类与时间归属混淆" data-target="r05-损益分类与时间归属混淆">R05 损益分类与时间归属混淆</a><a class="toc-level-2" href="#r06-首页混入训练语境" data-target="r06-首页混入训练语境">R06 首页混入训练语境</a><a class="toc-level-2" href="#r07-图表读取精度不足" data-target="r07-图表读取精度不足">R07 图表读取精度不足</a><a class="toc-level-2" href="#r08-搜索图形不统一" data-target="r08-搜索图形不统一">R08 搜索图形不统一</a><a class="toc-level-2" href="#r09-筛选结构与任务不匹配" data-target="r09-筛选结构与任务不匹配">R09 筛选结构与任务不匹配</a><a class="toc-level-2" href="#r10-作用域只有文字声明" data-target="r10-作用域只有文字声明">R10 作用域只有文字声明</a><a class="toc-level-2" href="#r11-图表交互规范与图稿脱节" data-target="r11-图表交互规范与图稿脱节">R11 图表交互规范与图稿脱节</a><a class="toc-level-2" href="#r12-模拟筛选未收敛" data-target="r12-模拟筛选未收敛">R12 模拟筛选未收敛</a><a class="toc-level-2" href="#r13-功能去留表达歧义" data-target="r13-功能去留表达歧义">R13 功能去留表达歧义</a><a class="toc-level-2" href="#r14-范围菜单沿用旧语义" data-target="r14-范围菜单沿用旧语义">R14 范围菜单沿用旧语义</a><a class="toc-level-2" href="#r15-详情动作压倒信息" data-target="r15-详情动作压倒信息">R15 详情动作压倒信息</a><a class="toc-level-2" href="#r16-通用控件缺少单一来源" data-target="r16-通用控件缺少单一来源">R16 通用控件缺少单一来源</a><a class="toc-level-2" href="#r17-缺失数据和hover未形成状态模型" data-target="r17-缺失数据和hover未形成状态模型">R17 缺失数据和hover未形成状态模型</a><a class="toc-level-2" href="#r18-异常分镜过度行动化" data-target="r18-异常分镜过度行动化">R18 异常分镜过度行动化</a><a class="toc-level-2" href="#r19-恢复动作散落" data-target="r19-恢复动作散落">R19 恢复动作散落</a><a class="toc-level-2" href="#r20-损益颜色缺少全局语义" data-target="r20-损益颜色缺少全局语义">R20 损益颜色缺少全局语义</a><a class="toc-level-2" href="#r21-局部搜索复制实现" data-target="r21-局部搜索复制实现">R21 局部搜索复制实现</a><a class="toc-level-2" href="#r22-正常状态噪声" data-target="r22-正常状态噪声">R22 正常状态噪声</a><a class="toc-level-2" href="#r23-实现术语泄漏" data-target="r23-实现术语泄漏">R23 实现术语泄漏</a><a class="toc-level-2" href="#r24-条件与动作视觉等级冲突" data-target="r24-条件与动作视觉等级冲突">R24 条件与动作视觉等级冲突</a><a class="toc-level-2" href="#r25-控件几何分散" data-target="r25-控件几何分散">R25 控件几何分散</a><a class="toc-level-2" href="#r26-选中表达冗余" data-target="r26-选中表达冗余">R26 选中表达冗余</a><a class="toc-level-2" href="#r27-状态徽章固定宽度" data-target="r27-状态徽章固定宽度">R27 状态徽章固定宽度</a></nav><main class="rule-details" id="companion-document"><aside style="padding:20px;border:2px solid #ffc66d;margin-bottom:24px"><strong>历史记录 · 保留当时意见与决定</strong><p>以下文字不代表V2.4.1当前规则，包括当时未决项和布局。当前采用底部唯一贡献区、持仓C方案；O02仍沿用24px。请以<a href="../visual-spec.html">V2.4.1完整规范</a>及<a href="../review-records/integration-report.html">本版整合记录</a>为准。</p></aside><header class="reader-header"><p class="document-status">文档附页 · 2.3</p><a class="review-open" href="historical/v2.2/visual-spec.html">返回正文阅读器</a></header><h1 id="v21-v22-逐条评论复核">V2.1 → V2.2 逐条评论复核</h1>
+<p>27 条原始意见及 ID 保留。响应覆盖不等于用户接受；已完成独立复核；跨年贡献和紧凑徽章仍待用户决定。见 <a data-unavailable-href="acceptance.html" aria-disabled="true" title="历史源缺失：acceptance.html">验收记录</a>、<a href="open-decisions.html">确认与开放项</a>。</p>
+<p>原文见 <a data-unavailable-href="../2026-10-17-homepage-v2.1/reviews/2026-10-17/HOME-DOC-V21.json" aria-disabled="true" title="历史源缺失：../2026-10-17-homepage-v2.1/reviews/2026-10-17/HOME-DOC-V21.json">冻结评论</a>，完整映射见 <a data-unavailable-href="comment-responses.json" aria-disabled="true" title="历史源缺失：comment-responses.json">响应记录</a>。</p>
+<h2 id="r01-共享列边界与导航选择器契约">R01 共享列边界与导航/选择器契约</h2>
+<p>原始 ID：<code>comment-5976deded10a40bc859610b060f4c741</code>。</p>
+<p>根因复核：R01-A：冻结SVG浏览器测量两列标题与金额右边一致，未复现物理偏移，不能伪造偏移根因。B/C确有图标复用及选择器布局不统一。</p>
+<p>修正：统一列定义及金额右边界；恢复8列持仓、查看图标、导航计数；保留账户176×36与语义图标。原SVG错位未复现，不冒称产品CSS已修复。</p>
+<p>规范：HP01 / HP03 / HP04 / HP08；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r02-导航语义丢失">R02 导航语义丢失</h2>
+<p>原始 ID：<code>comment-a6e0d41be9b64433ae63977f786d3dc7</code>。</p>
+<p>根因复核：旧主图icon fallback使多项重复，外框增加无功能视觉重量。</p>
+<p>修正：房屋/账本/图表/数据库/分支，统一中心线，无外框。</p>
+<p>规范：HP01 / HP08；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r03-设计说明侵入产品">R03 设计说明侵入产品</h2>
+<p>原始 ID：<code>comment-00ec83d1546f49cdb07610f07fb8939d</code>。</p>
+<p>根因复核：把计算口径作为常驻标签，日期控件混合不同语义。</p>
+<p>修正：口径说明留在文档；期间控件与历史年份分开；恢复今年/近1月/近1周标签。</p>
+<p>规范：HP02；<a href="historical/v2.2/images/period.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r04-跨区域作用域不清">R04 跨区域作用域不清</h2>
+<p>原始 ID：<code>comment-9656f210508048009e3c24b5dc4beed8</code>。</p>
+<p>根因复核：持仓、历史、期间的阅读顺序与数据时间语义不一致。</p>
+<p>修正：按本轮用户确认：当前表现在前，贡献在历史之前；贡献固定8行分页，补排序、全量合计与市场下钻。</p>
+<p>规范：HP01 / HP05；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r05-损益分类与时间归属混淆">R05 损益分类与时间归属混淆</h2>
+<p>原始 ID：<code>comment-5df2a3efd53e43ebb62dddedac39c6f7</code>。</p>
+<p>根因复核：累计持仓浮盈与期间收益相加会重复计入跨年收益，部分平仓更易重复。</p>
+<p>修正：保留已平仓/未平仓视觉区分及跨年计算解释；未平仓展示沿用仅当年，自定义跨年扩展仍待确认。</p>
+<p>规范：HP02 / HP05；<a href="historical/v2.2/images/contribution.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; inherited-boundary-preserved; open-decision-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r06-首页混入训练语境">R06 首页混入训练语境</h2>
+<p>原始 ID：<code>comment-11daaef9f708456abc4c5eff82575484</code>。</p>
+<p>根因复核：模拟运行维度改变首页账户与收益解释。</p>
+<p>修正：首页移除模拟入口；保留未来二级练习看板的独立领域。</p>
+<p>规范：HP01；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r07-图表读取精度不足">R07 图表读取精度不足</h2>
+<p>原始 ID：<code>comment-54d1cd9c256848d0871d0047538b867c</code>。</p>
+<p>根因复核：旧图高240，刻度/辅助线不足，精确值依赖猜测。</p>
+<p>修正：保留图高、刻度、网格优化；恢复历史费用/胜率与日期点数据，补年份旅程。</p>
+<p>规范：HP02 / HP05；<a href="historical/v2.2/images/history.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r08-搜索图形不统一">R08 搜索图形不统一</h2>
+<p>原始 ID：<code>comment-9482a88d74054c9abf31ce000e3716ab</code>。</p>
+<p>根因复核：多个生成器使用各自搜索几何及缩放。</p>
+<p>修正：单一24坐标系圆环/手柄，18视觉尺寸，36命中区。</p>
+<p>规范：HP03 / HP08；<a href="historical/v2.2/images/search.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r09-筛选结构与任务不匹配">R09 筛选结构与任务不匹配</h2>
+<p>原始 ID：<code>comment-e3bc65b58eed4b78884f4f081d667e0f</code>。</p>
+<p>根因复核：在浮层内套下拉增加层级，条件与操作混杂。</p>
+<p>修正：直接多选与维度计数；恢复未实现/待复盘条件、Esc保留草稿、清除附加与恢复全部默认的区别。</p>
+<p>规范：HP03；<a href="historical/v2.2/images/filter.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r10-作用域只有文字声明">R10 作用域只有文字声明</h2>
+<p>原始 ID：<code>comment-2b46e50e88f148bd8dc22b00c0a120c0</code>。</p>
+<p>根因复核：顶部期间看似全局，实际仅作用部分区块。</p>
+<p>修正：期间放入表现与贡献的共同区域；历史自己的年份，持仓保持当前。</p>
+<p>规范：HP01 / HP02；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r11-图表交互规范与图稿脱节">R11 图表交互规范与图稿脱节</h2>
+<p>原始 ID：<code>comment-e0089d10eccd4966ad81b04667eb6f66</code>。</p>
+<p>根因复核：主图旧hover只有竖线；缺少两轴标签，说明文字顶替图形。</p>
+<p>修正：双向虚线、轴末标签、轻网格；去除保持原布局文案。</p>
+<p>规范：HP02；<a href="historical/v2.2/images/chart-hover.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r12-模拟筛选未收敛">R12 模拟筛选未收敛</h2>
+<p>原始 ID：<code>comment-58695f8016b34b88bb120dda28cef9cf</code>。</p>
+<p>根因复核：与R06同一领域边界问题。</p>
+<p>修正：所有首页筛选分镜移除模拟。</p>
+<p>规范：HP01 / HP03；<a href="historical/v2.2/images/filter.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r13-功能去留表达歧义">R13 功能去留表达歧义</h2>
+<p>原始 ID：<code>comment-2093d8946f4640e6a30135e92b40aff5</code>。</p>
+<p>根因复核：移除首页容易被解释为删除模拟功能。</p>
+<p>修正：明确仅移除首页，未来二级看板独立。</p>
+<p>规范：HP01；<a href="historical/v2.2/images/home-1440.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r14-范围菜单沿用旧语义">R14 范围菜单沿用旧语义</h2>
+<p>原始 ID：<code>comment-26bb0e1ebb79475f82ce2c9abc6c8670</code>。</p>
+<p>根因复核：旧范围菜单包含运行选择。</p>
+<p>修正：首页仅市场/账户/类别，无实盘模拟切换。</p>
+<p>规范：HP03；<a href="historical/v2.2/images/account.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r15-详情动作压倒信息">R15 详情动作压倒信息</h2>
+<p>原始 ID：<code>comment-e155ef2e13e94d45943c82c924628162</code>。</p>
+<p>根因复核：分镜以大按钮占主要面积，实体数据层级被压缩。</p>
+<p>修正：保留数据主导详情；搜索来源返回结果，持仓来源关闭回原行，不混用返回文案。</p>
+<p>规范：HP03；<a href="historical/v2.2/images/search-detail.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r16-通用控件缺少单一来源">R16 通用控件缺少单一来源</h2>
+<p>原始 ID：<code>comment-c75bdf4b9d014337bc08647715458308</code>。</p>
+<p>根因复核：搜索/筛选多个实现导致几何与展开状态漂移。</p>
+<p>修正：保留统一图标/条件布局；补前中后静态动效分镜及减少动态效果规则，非产品动画验收。</p>
+<p>规范：HP03 / HP07；<a href="historical/v2.2/images/filter.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r17-缺失数据和hover未形成状态模型">R17 缺失数据和hover未形成状态模型</h2>
+<p>原始 ID：<code>comment-ec8cd0d6c9f44b489f457161d81fbdd8</code>。</p>
+<p>根因复核：默认曲线、缺失、tooltip分别画，遗漏轴标签和避让。</p>
+<p>修正：保留双虚线/半透明避让/缺口；恢复日期详情指标，按本轮确认删除D01二级入口。</p>
+<p>规范：HP02 / HP07；<a href="historical/v2.2/images/chart-gap.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r18-异常分镜过度行动化">R18 异常分镜过度行动化</h2>
+<p>原始 ID：<code>comment-dec6bb81100a4f9abbf851e5720f00e0</code>。</p>
+<p>根因复核：每个缺口都挂跳转/修复/日志，打断读取。</p>
+<p>修正：局部只呈现简短缺失原因，不放局部修复。</p>
+<p>规范：HP02 / HP07；<a href="historical/v2.2/images/chart-gap.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r19-恢复动作散落">R19 恢复动作散落</h2>
+<p>原始 ID：<code>comment-fd4d9191dd3047cab3fd5dc877873f40</code>。</p>
+<p>根因复核：局部恢复入口让用户重复决定修复范围。</p>
+<p>修正：单一全局修复保留；补RetryAction状态，正常态不新增噪音。</p>
+<p>规范：HP07；<a href="historical/v2.2/images/repair.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r20-损益颜色缺少全局语义">R20 损益颜色缺少全局语义</h2>
+<p>原始 ID：<code>comment-9c62c8d501e348c89bf2e3e519e82695</code>。</p>
+<p>根因复核：详情和主页面颜色各自定义。</p>
+<p>修正：正绿负红零中性，恢复旧收益色值#53D7A0/#FF8592，不重新定义全站palette。</p>
+<p>规范：HP03 / HP04 / HP08；<a href="historical/v2.2/images/detail.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r21-局部搜索复制实现">R21 局部搜索复制实现</h2>
+<p>原始 ID：<code>comment-7b561d78c02e4c368517d2c6908d4cd0</code>。</p>
+<p>根因复核：与R08/R16同一图标源问题。</p>
+<p>修正：持仓局部和全局搜索复用同一几何。</p>
+<p>规范：HP08；<a href="historical/v2.2/images/atoms.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r22-正常状态噪声">R22 正常状态噪声</h2>
+<p>原始 ID：<code>comment-6fb683124e054b43bceb4620e9907e52</code>。</p>
+<p>根因复核：把正常估值/行情时间说明常驻在详情。</p>
+<p>修正：正常不显示状态，异常才提示缺失。</p>
+<p>规范：HP03 / HP07；<a href="historical/v2.2/images/detail.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r23-实现术语泄漏">R23 实现术语泄漏</h2>
+<p>原始 ID：<code>comment-60275d74616a4c89b246b9d86843507b</code>。</p>
+<p>根因复核：交接分镜暴露队列等内部机制。</p>
+<p>修正：隐藏queue等内部词，保留日期/待复盘入口、参数及刷新/返回合同。</p>
+<p>规范：HP06；<a href="historical/v2.2/images/handoff.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r24-条件与动作视觉等级冲突">R24 条件与动作视觉等级冲突</h2>
+<p>原始 ID：<code>comment-0587602b0f814ea1be50687afe173c0a</code>。</p>
+<p>根因复核：条件像按钮，重复应用操作制造第二次确认。</p>
+<p>修正：只读条件与动作分层；进入交易库条件已生效，不再提供含糊的二次查看交易确认。</p>
+<p>规范：HP06；<a href="historical/v2.2/images/handoff.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r25-控件几何分散">R25 控件几何分散</h2>
+<p>原始 ID：<code>comment-6b1cbc45240e435db8855ad36eab223e</code>。</p>
+<p>根因复核：各分镜各算padding/中心线，状态切换无法保持稳定。</p>
+<p>修正：保留对齐与焦点规则，恢复11类×8状态逐格合同及对应分镜。</p>
+<p>规范：HP08；<a href="historical/v2.2/images/atoms.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r26-选中表达冗余">R26 选中表达冗余</h2>
+<p>原始 ID：<code>comment-ba9f19a511ff43b49990954aef012d8f</code>。</p>
+<p>根因复核：边框、填充、大尺寸叠加使选择态臃肿。</p>
+<p>修正：局部选中态减重，不推广为表格缩高；表格恢复40/48/48。</p>
+<p>规范：HP08；<a href="historical/v2.2/images/atoms.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; design-repaired; user-acceptance-pending</code>；用户接受：<code>pending</code>。</p>
+<h2 id="r27-状态徽章固定宽度">R27 状态徽章固定宽度</h2>
+<p>原始 ID：<code>comment-cbbc5d73a1db4c1ca5a29209491834fb</code>。</p>
+<p>根因复核：紧凑化是候选响应；原锚点不能证明具体留白问题仅由徽章宽度导致。保留原几何，等待用户确认候选。</p>
+<p>修正：紧凑徽章是候选，不能唯一归因为固定宽；旧几何保持，20px自适应方案单列待确认。</p>
+<p>规范：HP08；<a href="historical/v2.2/images/atoms.svg">分镜</a>。</p>
+<p>状态：<code>independently-reviewed; inherited-boundary-preserved; open-decision-pending</code>；用户接受：<code>pending</code>。</p></main></div></body></html>

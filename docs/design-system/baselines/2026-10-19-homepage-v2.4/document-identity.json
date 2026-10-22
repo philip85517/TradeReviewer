@@ -1,0 +1,4977 @@
+{
+  "schema": "strategy-document-identity/1",
+  "documentId": "HOME-DOC-V23",
+  "version": "2.4",
+  "blocks": [
+    {
+      "id": "HOME-DOC-B001",
+      "kind": "paragraph",
+      "chapter": "DOC",
+      "text": "首页是一张交易工作台：先看这一段时间的表现，再检查当前持仓与历史统计，最后在底部贡献区理解盈亏来源，并进入交易核对与复盘。本规范从这条使用路径出发，说明页面为什么这样安排，以及每个模块应如何显示和响应操作。",
+      "sourceKey": "eefec3160f1f83bd9dcd3c7d",
+      "sourceLine": 3
+    },
+    {
+      "id": "HOME-DOC-B002",
+      "kind": "paragraph",
+      "chapter": "DOC",
+      "text": "文档包含整页设计、模块规则、可切换的交互分镜和可复用控件。设计人员可以按章节阅读，开发人员可以查阅尺寸与状态，验收人员可以用最后的检查表逐项对照。图中的交易数据用于说明设计。",
+      "sourceKey": "13fca5e75cd9a08b948dcf8b",
+      "sourceLine": 5
+    },
+    {
+      "id": "HOME-HP01-B001",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "用户打开首页时，最需要知道的是“最近表现如何”“现在持有什么”“结果由哪些交易或标的形成”。因此，页面从当前表现、当前持仓读到历史统计，最后通过底部唯一的贡献区解释盈亏来源。贡献区可切换当前期间与历史已平仓，两种口径复用同一个位置。日期检索和待复盘入口把阅读结果自然接到交易库中的后续工作。",
+      "sourceKey": "67673078d2ab3dcb850f042f",
+      "sourceLine": 11
+    },
+    {
+      "id": "HOME-HP01-B002",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "首页只呈现实盘。模拟交易属于子模块能力，不混入首页的选择器、统计或数据。这样，同一屏上的数字始终有明确、稳定的业务范围。",
+      "sourceKey": "7372ff57b35e2c92b359ad6f",
+      "sourceLine": 13
+    },
+    {
+      "id": "HOME-HP01-B003",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "设计选择",
+      "sourceKey": "a492c67d68f1450b244389bf",
+      "sourceLine": 17
+    },
+    {
+      "id": "HOME-HP01-B004",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "解决的问题",
+      "sourceKey": "cb1c502553bcde3be09624be",
+      "sourceLine": 17
+    },
+    {
+      "id": "HOME-HP01-B005",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "取舍",
+      "sourceKey": "d4d0ef78d3d6ba0bcaae9139",
+      "sourceLine": 17
+    },
+    {
+      "id": "HOME-HP01-B006",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "当前表现放在最前",
+      "sourceKey": "f02ae225d59f58bab3aa128c",
+      "sourceLine": 19
+    },
+    {
+      "id": "HOME-HP01-B007",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "首先回答当前期间是否盈利、变化从何而来",
+      "sourceKey": "c53dcdc5f219639c7c2f5f47",
+      "sourceLine": 19
+    },
+    {
+      "id": "HOME-HP01-B008",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "持仓列表略向下，但紧随曲线，仍是第二个核心模块",
+      "sourceKey": "80bca1fd3ab78d05856218ac",
+      "sourceLine": 19
+    },
+    {
+      "id": "HOME-HP01-B009",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "期间、最新持仓、历史结果分区",
+      "sourceKey": "04fb945e4c49b3f45f6999d0",
+      "sourceLine": 20
+    },
+    {
+      "id": "HOME-HP01-B010",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "避免不同时间口径被误读成一个总数",
+      "sourceKey": "2a7c2c1eac343960228326bf",
+      "sourceLine": 20
+    },
+    {
+      "id": "HOME-HP01-B011",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "保留三个明确的时间概念，不能为压缩界面把它们合并",
+      "sourceKey": "ab1e115d6b2b3b45a29a3276",
+      "sourceLine": 20
+    },
+    {
+      "id": "HOME-HP01-B012",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "一个主曲线，组成项放入详情",
+      "sourceKey": "3783a546ccdc879ff8c34ad3",
+      "sourceLine": 21
+    },
+    {
+      "id": "HOME-HP01-B013",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "让趋势可快速辨认，减少多线竞争",
+      "sourceKey": "5c6b9cfea761ac4451c1d847",
+      "sourceLine": 21
+    },
+    {
+      "id": "HOME-HP01-B014",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "具体原因需要悬停或聚焦后查看，详情字段必须完整",
+      "sourceKey": "bcf60de7e3bf8d8585999da5",
+      "sourceLine": 21
+    },
+    {
+      "id": "HOME-HP01-B015",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "公共范围放页头，局部操作留在模块内",
+      "sourceKey": "2e130c2126a2aa94dc5bac99",
+      "sourceLine": 22
+    },
+    {
+      "id": "HOME-HP01-B016",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "让用户知道一次操作会影响哪里",
+      "sourceKey": "04ee8a6280371689f9cc4ced",
+      "sourceLine": 22
+    },
+    {
+      "id": "HOME-HP01-B017",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "同为搜索也要区分“找标的”和“筛持仓”，不共用模糊入口",
+      "sourceKey": "585fe816650df580e00ddf44",
+      "sourceLine": 22
+    },
+    {
+      "id": "HOME-HP01-B018",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "固定高度的八行列表",
+      "sourceKey": "5d938dfb150717643592fcf7",
+      "sourceLine": 23
+    },
+    {
+      "id": "HOME-HP01-B019",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "翻页和数据量变化时，下方模块保持稳定",
+      "sourceKey": "c7146f6840b867b26109c13a",
+      "sourceLine": 23
+    },
+    {
+      "id": "HOME-HP01-B020",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "少量数据保留空行槽，大量数据通过分页查看",
+      "sourceKey": "d3ab9745116a8896826b9d5f",
+      "sourceLine": 23
+    },
+    {
+      "id": "HOME-HP01-B021",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "异常时提示，正常时保持安静",
+      "sourceKey": "30947621997c433e0d05fa10",
+      "sourceLine": 24
+    },
+    {
+      "id": "HOME-HP01-B022",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "避免状态徽章和操作按钮抢占核心数字",
+      "sourceKey": "0441f994086d7ef0a15a8ab9",
+      "sourceLine": 24
+    },
+    {
+      "id": "HOME-HP01-B023",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "缺失原因仍需可查，恢复动作集中到一个入口",
+      "sourceKey": "9117d14d0e42e382e93974b9",
+      "sourceLine": 24
+    },
+    {
+      "id": "HOME-HP01-B024",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "视觉上的科技感来自清晰的数字层级、精确对齐、克制的深色表面和明确的操作反馈。首页不使用口号、重复背景卡片或常驻资产分布侧栏；口径说明放在标题旁的可访问说明入口，给数据留下空间。",
+      "sourceKey": "2c443dc2302709acf32226f3",
+      "sourceLine": 26
+    },
+    {
+      "id": "HOME-HP01-B025",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "先解释数字，再突出数字。 金额要同时说明币种、时间范围和数据覆盖情况。未知显示缺失原因，不能写成零。最新持仓市值不包含现金和负债，不能命名为“总资产”。",
+      "sourceKey": "6ea6863b0228d5d8b2b5eeb3",
+      "sourceLine": 30
+    },
+    {
+      "id": "HOME-HP01-B026",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "操作范围可预测。 市场和账户作用于整页；期间只作用于期间统计；持仓搜索只作用于当前表格。任何范围变化都应让标签和数据一起更新。",
+      "sourceKey": "1463bbfbcd10b71f24e8db5a",
+      "sourceLine": 32
+    },
+    {
+      "id": "HOME-HP01-B027",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "位置稳定，状态可恢复。 浮层覆盖内容，分页替换行，加载保留占位；打开、关闭或等待数据都不推动主要布局。进入详情再返回，应找得到之前的行和位置。",
+      "sourceKey": "9c86946ecfa46a845ed5ca5b",
+      "sourceLine": 34
+    },
+    {
+      "id": "HOME-HP01-B028",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "只展示必要动作。 详情保留一个“查看交易”主动作；数据异常只保留一个全局“一键修复”入口。按钮名称说明实际结果，而不是要求用户猜测。",
+      "sourceKey": "4c258041671cc75427b02b38",
+      "sourceLine": 36
+    },
+    {
+      "id": "HOME-HP01-B029",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "页面从上到下依次是：页头范围工具、当前表现、当前持仓、历史统计、贡献区。当前表现由四张指标卡和一张曲线组成。底部只保留一个贡献区：当前期间模式沿用当前表现的日期，历史已平仓模式沿用历史统计的年份范围，不再增加第三套日期控件。",
+      "sourceKey": "7e38358375d9eb26b1595fcb",
+      "sourceLine": 42
+    },
+    {
+      "id": "HOME-HP01-B030",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "切换贡献模式只更新底部模块，当前表现、持仓和历史统计保持原来的位置。当前期间与历史已平仓分别保留分类、排序和局部展开状态；页头的市场条件始终只有一套，不随模式切换回退。",
+      "sourceKey": "62dfc86c4cf27fc9de664e3d",
+      "sourceLine": 44
+    },
+    {
+      "id": "HOME-HP01-B031",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "布局部位",
+      "sourceKey": "62fc26e36d02ccac4fc02bee",
+      "sourceLine": 56
+    },
+    {
+      "id": "HOME-HP01-B032",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "尺寸与规则",
+      "sourceKey": "fd5adb889a2e15766eb89362",
+      "sourceLine": 56
+    },
+    {
+      "id": "HOME-HP01-B033",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "左侧导航",
+      "sourceKey": "0231b830a9a0214c82a0e17a",
+      "sourceLine": 58
+    },
+    {
+      "id": "HOME-HP01-B034",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "宽72px",
+      "sourceKey": "1a3cf4a6d4181a734f5345e0",
+      "sourceLine": 58
+    },
+    {
+      "id": "HOME-HP01-B035",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "页头",
+      "sourceKey": "3a3206a1f9d39457e6518d5a",
+      "sourceLine": 59
+    },
+    {
+      "id": "HOME-HP01-B036",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "高64px，所有控件垂直居中",
+      "sourceKey": "b252e06f2b505af49339230e",
+      "sourceLine": 59
+    },
+    {
+      "id": "HOME-HP01-B037",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "内容区域",
+      "sourceKey": "97f222a9c1487f231440773d",
+      "sourceLine": 60
+    },
+    {
+      "id": "HOME-HP01-B038",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "左右各24px；1440与1280宽度下，主内容约1320与1160px",
+      "sourceKey": "992d969caf2131d25acbf855",
+      "sourceLine": 60
+    },
+    {
+      "id": "HOME-HP01-B039",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "模块间距",
+      "sourceKey": "8a1b14e46abd045ce9f582dd",
+      "sourceLine": 61
+    },
+    {
+      "id": "HOME-HP01-B040",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "24px；模块内部主要间距16px",
+      "sourceKey": "105c82f80a83d8aa322344ef",
+      "sourceLine": 61
+    },
+    {
+      "id": "HOME-HP01-B041",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "表面层级",
+      "sourceKey": "9d985eab173268a8767f3975",
+      "sourceLine": 62
+    },
+    {
+      "id": "HOME-HP01-B042",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "单层模块表面；浮层使用更高一级背景，不套重复卡片",
+      "sourceKey": "b3104210d1092e6cce90e351",
+      "sourceLine": 62
+    },
+    {
+      "id": "HOME-HP01-B043",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "适用画面",
+      "sourceKey": "ad220ae97b13c6de5ac7244e",
+      "sourceLine": 63
+    },
+    {
+      "id": "HOME-HP01-B044",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "桌面1440×1000、1280×800，100%缩放",
+      "sourceKey": "725f0f1ab499117c4af5eecb",
+      "sourceLine": 63
+    },
+    {
+      "id": "HOME-HP01-B045",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "每张分镜只呈现一个完整状态，并在图外说明它位于整页的哪个位置、由什么操作触发。前后帧使用相同视口与缩放；局部图省略其他区域时必须明确标注。读者可以展开完整界面，或以100%原尺寸滚动查看。实现尺寸仍以本规范的尺寸表为准。",
+      "sourceKey": "cf304c9d80888eb203c9895f",
+      "sourceLine": 65
+    },
+    {
+      "id": "HOME-HP01-B046",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "V2.3 为表格中的每一个尺寸行补充了可直接比对的局部样例：布局与颜色样例板。样例使用真实控件名称、表头、金额和状态色；它是尺寸和对齐的视觉校准，不是新增页面或新的入口。",
+      "sourceKey": "4b170174109467d35a22ac4b",
+      "sourceLine": 67
+    },
+    {
+      "id": "HOME-HP01-B047",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "深色背景承载整页，表面和边线划分区域；蓝色表示可操作或当前选择，绿色和红色表示盈亏，黄色提示数据需要关注。颜色必须配合文字或可访问名称，不能单靠颜色表达状态。",
+      "sourceKey": "afe3d97c11e9de2af18fa2f3",
+      "sourceLine": 73
+    },
+    {
+      "id": "HOME-HP01-B048",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "用途",
+      "sourceKey": "a3fd9a995df3b999b108f3f1",
+      "sourceLine": 75
+    },
+    {
+      "id": "HOME-HP01-B049",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "颜色",
+      "sourceKey": "55519a0fd24a4a57ed6a387b",
+      "sourceLine": 75
+    },
+    {
+      "id": "HOME-HP01-B050",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "页面背景 / 模块表面 / 浮层表面",
+      "sourceKey": "ed940d97cc6f988f8b1b73a1",
+      "sourceLine": 77
+    },
+    {
+      "id": "HOME-HP01-B051",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#0B1019 / #111A26 / #162233",
+      "sourceKey": "c0ad7610baf0794fc5fd6764",
+      "sourceLine": 77
+    },
+    {
+      "id": "HOME-HP01-B052",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "边线",
+      "sourceKey": "89c370538a6657784d12274d",
+      "sourceLine": 78
+    },
+    {
+      "id": "HOME-HP01-B053",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#283448",
+      "sourceKey": "569311f68d992d1c4b592184",
+      "sourceLine": 78
+    },
+    {
+      "id": "HOME-HP01-B054",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "正文 / 次要文字 / 弱提示",
+      "sourceKey": "1f60fe28632cac642f773b82",
+      "sourceLine": 79
+    },
+    {
+      "id": "HOME-HP01-B055",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#E6EDF7 / #A8B6CB / #71829B",
+      "sourceKey": "dbbe2c7515dffae1194d27d6",
+      "sourceLine": 79
+    },
+    {
+      "id": "HOME-HP01-B056",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "操作 / 焦点",
+      "sourceKey": "6be94c400c21d5529809e054",
+      "sourceLine": 80
+    },
+    {
+      "id": "HOME-HP01-B057",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#6CA8FF / #A9C8FF",
+      "sourceKey": "86990ba7ce8d49b694fcb532",
+      "sourceLine": 80
+    },
+    {
+      "id": "HOME-HP01-B058",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "盈利 / 亏损 / 提醒",
+      "sourceKey": "e93f941bb4f1db81b723713c",
+      "sourceLine": 81
+    },
+    {
+      "id": "HOME-HP01-B059",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#53D7A0 / #FF8592 / #FFC66D",
+      "sourceKey": "c468764ef9e30313d42f34c1",
+      "sourceLine": 81
+    },
+    {
+      "id": "HOME-HP01-B060",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "悬停 / 按下背景",
+      "sourceKey": "d99900452701138acd8453ba",
+      "sourceLine": 82
+    },
+    {
+      "id": "HOME-HP01-B061",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#1C2B42 / #243B5C",
+      "sourceKey": "7548b0106ce8cee981f29c88",
+      "sourceLine": 82
+    },
+    {
+      "id": "HOME-HP01-B062",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "禁用文字 / 禁用边线",
+      "sourceKey": "3f7961c4e0e74c1483229c31",
+      "sourceLine": 83
+    },
+    {
+      "id": "HOME-HP01-B063",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "#53647B / #202B3A",
+      "sourceKey": "bb7dc1c614e6543203e653cf",
+      "sourceLine": 83
+    },
+    {
+      "id": "HOME-HP01-B064",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "文字层级",
+      "sourceKey": "673932e2d5a201d598337972",
+      "sourceLine": 85
+    },
+    {
+      "id": "HOME-HP01-B065",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "字号 / 行高",
+      "sourceKey": "d95a1e112659bf385e4f3de5",
+      "sourceLine": 85
+    },
+    {
+      "id": "HOME-HP01-B066",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "页面标题",
+      "sourceKey": "d8d175c65a7b0f0956a7d4da",
+      "sourceLine": 87
+    },
+    {
+      "id": "HOME-HP01-B067",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "24 / 32px",
+      "sourceKey": "252b72af60733e059c54cc7e",
+      "sourceLine": 87
+    },
+    {
+      "id": "HOME-HP01-B068",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "模块标题",
+      "sourceKey": "2944496ab5ce4341cd83ec94",
+      "sourceLine": 88
+    },
+    {
+      "id": "HOME-HP01-B069",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "18 / 24px",
+      "sourceKey": "092a1cd7c6ba3b11a6ab8f10",
+      "sourceLine": 88
+    },
+    {
+      "id": "HOME-HP01-B070",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "正文、金额、控件文字",
+      "sourceKey": "33e30aaca375dd92cdd85c0b",
+      "sourceLine": 89
+    },
+    {
+      "id": "HOME-HP01-B071",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "14 / 20px",
+      "sourceKey": "25d9804bcf021a6d65153e4c",
+      "sourceLine": 89
+    },
+    {
+      "id": "HOME-HP01-B072",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "说明、代码、坐标轴",
+      "sourceKey": "5b65bea3840d23813b32a0b1",
+      "sourceLine": 90
+    },
+    {
+      "id": "HOME-HP01-B073",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "12 / 16px",
+      "sourceKey": "1c2a5349e9b8a6904bf9bf08",
+      "sourceLine": 90
+    },
+    {
+      "id": "HOME-HP01-B074",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "指标主值",
+      "sourceKey": "1b1c9ccf442fa31525381f18",
+      "sourceLine": 91
+    },
+    {
+      "id": "HOME-HP01-B075",
+      "kind": "tablecell",
+      "chapter": "HP01",
+      "text": "28 / 34px",
+      "sourceKey": "7d84a7fb8aef9e5746584fc6",
+      "sourceLine": 91
+    },
+    {
+      "id": "HOME-HP01-B076",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "字体使用系统无衬线字体，中文由平台字体补齐。相比固定下载字体，这种选择更稳定，也不会增加字体加载和授权依赖；全页等宽字体会损害中文与长名称的阅读，因此只对数字启用等宽数字特性。",
+      "sourceKey": "89c82d52e644ef86b8b34e74",
+      "sourceLine": 93
+    },
+    {
+      "id": "HOME-HP01-B077",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "间距以4px为基础，使用4、8、12、16、24、32px。小控件圆角6px，面板和浮层圆角8px；键盘焦点为2px浅蓝外描边。金额和数值表头对齐右边界，名称与说明左对齐。",
+      "sourceKey": "efba8fb7f1502028d18a956e",
+      "sourceLine": 95
+    },
+    {
+      "id": "HOME-HP01-B078",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "颜色 token 必须落到控件上使用：背景用于页面和模块表面，#283448 用于边线与网格，#A8B6CB 用于零线与次要文字，#6CA8FF/#A9C8FF 用于操作与焦点，#53D7A0/#FF8592 用于盈利/亏损，#FFC66D 用于提醒。颜色样例和对应控件见 布局与颜色样例板。",
+      "sourceKey": "aa7da8ebbfd8c5eb58c71629",
+      "sourceLine": 97
+    },
+    {
+      "id": "HOME-HP01-B082",
+      "kind": "paragraph",
+      "chapter": "HP01",
+      "text": "全局对齐规则是：按钮和分段标签的文字在命中盒内水平、垂直居中；搜索、日期输入和选择器当前值左对齐，左右内边距至少12px，箭头占独立位置；每张表由同一列定义计算表头和值的锚点，数值列共用右边界，动作列在自己的列中心居中；说明、名称和错误文案左对齐。列定义同时给出最小宽度与溢出策略：身份列可省略并在悬停/聚焦显示全值，数值列不换行，非金额按规定精度显示；金额按万／亿规则缩写，悬停、键盘聚焦及详情可查看完整值，复制和导出保留完整值，动作列保留36px命中盒。36px高控件使用14/20px文字，上下各留8px。金额使用等宽数字，不以缩小字号换取列宽。",
+      "sourceKey": "748838cf6cc63ca55238b6ea",
+      "sourceLine": 99
+    },
+    {
+      "id": "HOME-HP03-B001",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "页头从左到右为页面标题、市场切换、账户选择、标的搜索、筛选、更新时间。市场固定使用“全部 / A股 / 港股 / 美股”四个标签，用户不必先展开下拉菜单才能识别当前范围。",
+      "sourceKey": "8c74e4c01d1ca61ac9a12928",
+      "sourceLine": 105
+    },
+    {
+      "id": "HOME-HP03-B002",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "账户选择器高36px，建议宽176px；当前账户始终可见，箭头固定靠右，长名称省略并提供全称。相邻控件间距8px，选择不同值不改变控件宽度。搜索与筛选是独立图标按钮，视觉图标18px、绘图坐标24×24、命中区域36×36px。",
+      "sourceKey": "888f2ed0aa4b0920b74cea63",
+      "sourceLine": 107
+    },
+    {
+      "id": "HOME-HP03-B003",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "操作",
+      "sourceKey": "a1d7829fef25045082f7e3c2",
+      "sourceLine": 109
+    },
+    {
+      "id": "HOME-HP03-B004",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "影响范围",
+      "sourceKey": "4127fb67bd410233679d76e3",
+      "sourceLine": 109
+    },
+    {
+      "id": "HOME-HP03-B005",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "币种或结果",
+      "sourceKey": "d77e4f3d9e862489e800f911",
+      "sourceLine": 109
+    },
+    {
+      "id": "HOME-HP03-B006",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "切换市场",
+      "sourceKey": "da067730cbc8380c50776626",
+      "sourceLine": 111
+    },
+    {
+      "id": "HOME-HP03-B007",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "表现、持仓、历史、贡献区",
+      "sourceKey": "194d69d9fd674b28c1bef215",
+      "sourceLine": 111
+    },
+    {
+      "id": "HOME-HP03-B008",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "全部和A股为CNY，港股为HKD，美股为USD",
+      "sourceKey": "86f616ec5108d0ffea640b7a",
+      "sourceLine": 111
+    },
+    {
+      "id": "HOME-HP03-B009",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "切换账户",
+      "sourceKey": "f0365103ca0ad468656243b3",
+      "sourceLine": 112
+    },
+    {
+      "id": "HOME-HP03-B010",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "整页当前账户范围",
+      "sourceKey": "293c19f10178bd8ea8d216e5",
+      "sourceLine": 112
+    },
+    {
+      "id": "HOME-HP03-B011",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "选择器保留当前值",
+      "sourceKey": "68fa4b2c8fb4f1efe00bb872",
+      "sourceLine": 112
+    },
+    {
+      "id": "HOME-HP03-B012",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "标的搜索",
+      "sourceKey": "0f0d3606d15df2362a600bd6",
+      "sourceLine": 113
+    },
+    {
+      "id": "HOME-HP03-B013",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "查找标的并打开详情",
+      "sourceKey": "0dcf65f6b187d5bf4b43a774",
+      "sourceLine": 113
+    },
+    {
+      "id": "HOME-HP03-B014",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "不改变市场、账户或期间",
+      "sourceKey": "fdae23b06e46118e785997ec",
+      "sourceLine": 113
+    },
+    {
+      "id": "HOME-HP03-B015",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "附加筛选",
+      "sourceKey": "a95df9bdcb56cd64f0f8c414",
+      "sourceLine": 114
+    },
+    {
+      "id": "HOME-HP03-B016",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "按已应用条件限制数据",
+      "sourceKey": "e3f528306bd06e6850bfd592",
+      "sourceLine": 114
+    },
+    {
+      "id": "HOME-HP03-B017",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "条件以计数和可移除标签显示",
+      "sourceKey": "853a578a168c317854998fc9",
+      "sourceLine": 114
+    },
+    {
+      "id": "HOME-HP03-B018",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "账户选项浮层与176px触发框共用左右边界；选项文本左对齐、左右留16px。长账户名在选项中省略，悬停或聚焦显示全名，不能让文字越过浮层。选中标记占独立区域，不推移其他选项。",
+      "sourceKey": "9d70c61109cc36179d85d770",
+      "sourceLine": 118
+    },
+    {
+      "id": "HOME-HP03-B019",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "点击页头搜索图标，打开覆盖页头和首页内容的全局搜索遮罩。桌面搜索舞台最大宽960px，左右至少留24px；窄屏使用可用宽度减去两侧24px，剩余空间不足时舞台全宽。页头仍可见为结构背景但不接受输入，遮罩阻断底层操作；输入框和结果区在舞台内共用列锚点，结果区独立滚动，不推动首页布局。TradingView 的 Symbol Search同样将顶部入口与搜索对话框分开；这里继承其职责分离，不继承旧的窄浮层尺寸。局部持仓搜索仍是表内 inline filter，只筛选当前表，不打开全局遮罩。",
+      "sourceKey": "1ca9151c8b6c634a42a8b4a8",
+      "sourceLine": 122
+    },
+    {
+      "id": "HOME-HP03-B020",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "搜索结果同时显示名称、代码、交易所、币种和资产类别，帮助用户区分同名标的。交易所直接可见，不只放在悬停提示中。",
+      "sourceKey": "30ba73b784e72b02c3abfa50",
+      "sourceLine": 124
+    },
+    {
+      "id": "HOME-HP03-B021",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "输入停顿300ms后查询；中文输入尚未完成组词时不查询，确认完整词后再提交。清除按钮只清空查询词和候选结果。浮层关闭不改变首页范围。",
+      "sourceKey": "6c7a5d3d4ae800eb92303f40",
+      "sourceLine": 126
+    },
+    {
+      "id": "HOME-HP03-B022",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "步骤",
+      "sourceKey": "e16265697154462e5d68fbc6",
+      "sourceLine": 128
+    },
+    {
+      "id": "HOME-HP03-B023",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "用户动作",
+      "sourceKey": "15c2fd5ae7c7f51dbbc5c636",
+      "sourceLine": 128
+    },
+    {
+      "id": "HOME-HP03-B024",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "画面与返回行为",
+      "sourceKey": "dfd8ffc321d211742584c4ae",
+      "sourceLine": 128
+    },
+    {
+      "id": "HOME-HP03-B025",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "打开",
+      "sourceKey": "61005d205d55ddd0c47f6c10",
+      "sourceLine": 130
+    },
+    {
+      "id": "HOME-HP03-B026",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "点击搜索图标",
+      "sourceKey": "acdc486ae943ef91b21b7f98",
+      "sourceLine": 130
+    },
+    {
+      "id": "HOME-HP03-B027",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "遮罩覆盖页头与内容，搜索舞台使用最大960px与24px外侧间距；页头、指标与表格位置不变",
+      "sourceKey": "1a4ccfa8702936b01165d6ed",
+      "sourceLine": 130
+    },
+    {
+      "id": "HOME-HP03-B028",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "输入",
+      "sourceKey": "5caca73d6b8a07bdb67a03c0",
+      "sourceLine": 131
+    },
+    {
+      "id": "HOME-HP03-B029",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "输入名称或代码",
+      "sourceKey": "8e238615ed3162b632e99c9d",
+      "sourceLine": 131
+    },
+    {
+      "id": "HOME-HP03-B030",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "等待300ms后显示匹配结果；无结果明确说明",
+      "sourceKey": "0fbe3deadc25a4b1c85a1c11",
+      "sourceLine": 131
+    },
+    {
+      "id": "HOME-HP03-B031",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "查看",
+      "sourceKey": "08edb7a964f7008129db8a2d",
+      "sourceLine": 132
+    },
+    {
+      "id": "HOME-HP03-B032",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "选择一个结果",
+      "sourceKey": "38dfe17cdd87b4bc48f73ff9",
+      "sourceLine": 132
+    },
+    {
+      "id": "HOME-HP03-B033",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "打开详情对话框，保留原查询和结果位置",
+      "sourceKey": "2757c2764573ede4848ec3a1",
+      "sourceLine": 132
+    },
+    {
+      "id": "HOME-HP03-B034",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "进入交易",
+      "sourceKey": "9c213fae97dbb904c4206b46",
+      "sourceLine": 133
+    },
+    {
+      "id": "HOME-HP03-B035",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "点击“查看交易”",
+      "sourceKey": "38dd395d19ac2b6525612911",
+      "sourceLine": 133
+    },
+    {
+      "id": "HOME-HP03-B036",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "按所选标的进入交易库",
+      "sourceKey": "77c108d46c894817d41fbe65",
+      "sourceLine": 133
+    },
+    {
+      "id": "HOME-HP03-B037",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "关闭详情",
+      "sourceKey": "98ed4c9ee1430e8bccaa959f",
+      "sourceLine": 134
+    },
+    {
+      "id": "HOME-HP03-B038",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "关闭按钮或Esc",
+      "sourceKey": "3149ec179265a435d139dbed",
+      "sourceLine": 134
+    },
+    {
+      "id": "HOME-HP03-B039",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "回到原搜索结果，保留查询词、滚动和所选行",
+      "sourceKey": "d796e2cfe6e1d3b5c7e71848",
+      "sourceLine": 134
+    },
+    {
+      "id": "HOME-HP03-B040",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "退出搜索",
+      "sourceKey": "663ef7aed9837ed22941986e",
+      "sourceLine": 135
+    },
+    {
+      "id": "HOME-HP03-B041",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "Esc、明确的关闭按钮或点击遮罩外",
+      "sourceKey": "5ee83597bc2ebadbb3431602",
+      "sourceLine": 135
+    },
+    {
+      "id": "HOME-HP03-B042",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "回到搜索触发按钮；关闭不等同于清空查询",
+      "sourceKey": "fae75dc5ff37b5d7cfa9441d",
+      "sourceLine": 135
+    },
+    {
+      "id": "HOME-HP03-B043",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "详情对话框锁定键盘焦点，外点不关闭；搜索结果浮层允许外点关闭。不同层级使用不同退出规则，避免误触丢失详情上下文。",
+      "sourceKey": "d894353ee2c2f76bce200ec7",
+      "sourceLine": 137
+    },
+    {
+      "id": "HOME-HP03-B044",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "筛选一共包含市场、账户、标的类别、仅看未平仓持仓、是否待复盘五个维度。“仅看未平仓持仓”包含持仓浮动盈亏为0的未平仓持仓。市场和账户在页头，独立的 320px 筛选浮层承载其余条件，使用直接多选，避免在浮层中继续嵌套下拉。它不复用全局搜索遮罩；字段和操作按钮高 36px。",
+      "sourceKey": "b2f5abcb7fecf5f1c6630d9d",
+      "sourceLine": 153
+    },
+    {
+      "id": "HOME-HP03-B045",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "同一维度中任一所选项满足即可，不同维度之间必须同时满足。用户编辑的是草稿，点击“应用”后一次生效；已生效条件用数量角标和可移除标签表达。",
+      "sourceKey": "4564dbda9c8e93cf3f07ac79",
+      "sourceLine": 155
+    },
+    {
+      "id": "HOME-HP03-B046",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "动作",
+      "sourceKey": "10e8d4c21976c8401ea1e6e3",
+      "sourceLine": 157
+    },
+    {
+      "id": "HOME-HP03-B047",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "结果",
+      "sourceKey": "f35dc0cce2819084004caa5d",
+      "sourceLine": 157
+    },
+    {
+      "id": "HOME-HP03-B048",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "应用",
+      "sourceKey": "63fd04d0cbc5252711061765",
+      "sourceLine": 159
+    },
+    {
+      "id": "HOME-HP03-B049",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "一次提交当前草稿，成功后更新条件和数据",
+      "sourceKey": "2f51f3ab6843743f3bd9c373",
+      "sourceLine": 159
+    },
+    {
+      "id": "HOME-HP03-B050",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "清除附加",
+      "sourceKey": "fcd236f116f1d34f66226e47",
+      "sourceLine": 160
+    },
+    {
+      "id": "HOME-HP03-B051",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "清除附加筛选，保留市场、账户与实盘范围；编辑仍按应用规则生效",
+      "sourceKey": "e9f06f0dbbf6ea78a14605f6",
+      "sourceLine": 160
+    },
+    {
+      "id": "HOME-HP03-B052",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "恢复全部默认",
+      "sourceKey": "c297109396d22363079ebe7d",
+      "sourceLine": 161
+    },
+    {
+      "id": "HOME-HP03-B053",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "恢复默认市场、账户及附加条件；不改日期期间",
+      "sourceKey": "859b3027855d0ac1b39410a8",
+      "sourceLine": 161
+    },
+    {
+      "id": "HOME-HP03-B054",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "Esc或点击外部",
+      "sourceKey": "038ee471f8f7f10599913abc",
+      "sourceLine": 162
+    },
+    {
+      "id": "HOME-HP03-B055",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "关闭浮层，保留未提交草稿；重新打开可继续编辑",
+      "sourceKey": "0500e4fbf4064820ce654c0a",
+      "sourceLine": 162
+    },
+    {
+      "id": "HOME-HP03-B056",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "切换市场或账户",
+      "sourceKey": "191717a106fc3215cb2131fd",
+      "sourceLine": 163
+    },
+    {
+      "id": "HOME-HP03-B057",
+      "kind": "tablecell",
+      "chapter": "HP03",
+      "text": "关闭浮层并丢弃旧范围的筛选草稿",
+      "sourceKey": "1cee09ffeed1b78c84d60476",
+      "sourceLine": 163
+    },
+    {
+      "id": "HOME-HP03-B058",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "请求失败时保留提交前的完整已生效范围和当前草稿，并显示错误原因；不得留下新标签配旧数据。Esc 或点击外部只关闭浮层，不提交草稿；重新打开继续编辑，切换市场或账户才丢弃旧范围草稿。",
+      "sourceKey": "2b26977c77b9720299aebfcd",
+      "sourceLine": 165
+    },
+    {
+      "id": "HOME-HP03-B059",
+      "kind": "paragraph",
+      "chapter": "HP03",
+      "text": "恢复默认独立放在第二行，与清除附加和应用分开，底部保留16px空间。",
+      "sourceKey": "986019b73c66d3d9d19405f7",
+      "sourceLine": 167
+    },
+    {
+      "id": "HOME-HP02-B001",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "当前表现帮助用户同时看清结果和构成。前三张卡回答所选期间发生了什么，第四张卡回答现在持有多少市值。",
+      "sourceKey": "ae727d88d40ebc1fccc1bc4e",
+      "sourceLine": 185
+    },
+    {
+      "id": "HOME-HP02-B002",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "指标",
+      "sourceKey": "225629e3fbe76f5a74f87c95",
+      "sourceLine": 187
+    },
+    {
+      "id": "HOME-HP02-B003",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "含义",
+      "sourceKey": "c9398e35d842f7061f14a019",
+      "sourceLine": 187
+    },
+    {
+      "id": "HOME-HP02-B004",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "随期间变化",
+      "sourceKey": "e220d3e25c440d6b7e0c1a23",
+      "sourceLine": 187
+    },
+    {
+      "id": "HOME-HP02-B005",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "期间净盈亏",
+      "sourceKey": "40740bbedec88c8d074359d8",
+      "sourceLine": 189
+    },
+    {
+      "id": "HOME-HP02-B006",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "期间已实现，加上期末与期初浮盈的差额",
+      "sourceKey": "fe5880688014ad8dc3247ef2",
+      "sourceLine": 189
+    },
+    {
+      "id": "HOME-HP02-B007",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "是",
+      "sourceKey": "1a9c54dd44820f1ea8d06ed4",
+      "sourceLine": 189
+    },
+    {
+      "id": "HOME-HP02-B008",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "期间已实现",
+      "sourceKey": "9f228a93f8637b7c196bf46a",
+      "sourceLine": 190
+    },
+    {
+      "id": "HOME-HP02-B009",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "按实际平仓日归属、扣除费用的已实现结果",
+      "sourceKey": "d6fdbad703cf29b774ce0196",
+      "sourceLine": 190
+    },
+    {
+      "id": "HOME-HP02-B010",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "是",
+      "sourceKey": "1a9c54dd44820f1ea8d06ed4",
+      "sourceLine": 190
+    },
+    {
+      "id": "HOME-HP02-B011",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "期间浮盈变动",
+      "sourceKey": "bdd61cab97afee4e84ca61e1",
+      "sourceLine": 191
+    },
+    {
+      "id": "HOME-HP02-B012",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "期末浮盈减期初浮盈",
+      "sourceKey": "79da2d0295c650b4af8e45c4",
+      "sourceLine": 191
+    },
+    {
+      "id": "HOME-HP02-B013",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "是",
+      "sourceKey": "1a9c54dd44820f1ea8d06ed4",
+      "sourceLine": 191
+    },
+    {
+      "id": "HOME-HP02-B014",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "当前持仓市值",
+      "sourceKey": "d607434e311959009728ab51",
+      "sourceLine": 192
+    },
+    {
+      "id": "HOME-HP02-B015",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "最新可用行情下的持仓市值",
+      "sourceKey": "5e842435577dfa1fba89c808",
+      "sourceLine": 192
+    },
+    {
+      "id": "HOME-HP02-B016",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "否",
+      "sourceKey": "f694e9d5a4840db6857b7603",
+      "sourceLine": 192
+    },
+    {
+      "id": "HOME-HP02-B017",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "计算关系为：期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。部分平仓逐笔按平仓日期和金额计算，做空也使用实际平仓时间和金额。期间浮盈变动不能替换成当前浮盈总额。",
+      "sourceKey": "146bbfdc4b921e429ec22113",
+      "sourceLine": 194
+    },
+    {
+      "id": "HOME-HP02-B018",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "四张卡同时存在，高88px；标签14/20px，主值28/34px。正值绿色、负值红色、零值正文色。当前市值的详情还需显示当前浮盈、覆盖数量、原币金额与汇率来源。",
+      "sourceKey": "e64ce8a3dbaf90a5bae9b8d8",
+      "sourceLine": 196
+    },
+    {
+      "id": "HOME-HP02-B019",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "例如，上年成本100，今年期初市值120、浮盈20，今年以130卖出：今年期间已实现为30，期末浮盈为0，期间净盈亏为30＋0−20＝10；历史已平仓按今年平仓日记录30。两个数字回答不同问题，不能相加。当前期间允许跨年，并按相同公式计算。",
+      "sourceKey": "d73e86177542e7d39f7428dc",
+      "sourceLine": 198
+    },
+    {
+      "id": "HOME-HP02-B020",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "快捷项统一为“本周／本月／本年”，同时显示实际起止日期。按上海时区，本周从周一、本月从1日、本年从1月1日起，均截止今天并包含首尾日期。跨午夜成交先转换到同一业务时区。以2026年10月19日为例，本周为10月19日至19日、本月为10月1日至19日、本年为1月1日至10月19日。",
+      "sourceKey": "c65f612946bcf7480475005f",
+      "sourceLine": 202
+    },
+    {
+      "id": "HOME-HP02-B021",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "点击快捷期间右侧显示起止日期的控件，直接打开“自定义日期”浮层，不需要先经过另一个下拉菜单。开始日期、结束日期和“应用”在同一浮层内；日期输入文字左对齐，快捷期间和“应用”按钮文字居中。修改日期只改变草稿，点击“应用”且校验通过才更新期间；开始晚于结束时显示字段错误并禁用应用。取消或Esc关闭后，原已生效期间保持不变。",
+      "sourceKey": "213ea68df6438b24dfedd452",
+      "sourceLine": 204
+    },
+    {
+      "id": "HOME-HP02-B022",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "日期变化更新前三项指标、曲线与贡献区的“当前期间”模式数据，但不切换贡献模式。最新持仓、历史统计与“历史已平仓”模式保持不变。",
+      "sourceKey": "0810c82e7d223684eff0cb09",
+      "sourceLine": 206
+    },
+    {
+      "id": "HOME-HP02-B023",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "更新时保留上一组完整数据；成功后范围标签和数字一起替换，失败则保留原范围并说明新选择未应用。不能出现新日期配旧金额。",
+      "sourceKey": "0243740b74a6f210cfc89f4b",
+      "sourceLine": 210
+    },
+    {
+      "id": "HOME-HP02-B024",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "主曲线表达“当前表现｜期间净盈亏（按日）”，重点是趋势、转折和相对于零线的位置。仅绘制一条主线，组成项进入日期详情，避免多条曲线同时争夺注意力。",
+      "sourceKey": "92c7e01322c2581daaf1b940",
+      "sourceLine": 214
+    },
+    {
+      "id": "HOME-HP02-B043",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "线宽2px，坐标文字12/16px，纵轴最多7个刻度，金额刻度按万／亿规则缩写并保留两位小数，同时标明市场币种；提示框与可访问读数提供带千分位的完整金额。零线使用#A8B6CB，网格使用#283448，两者帮助读数；双向虚线十字线和轴端日期、金额标签帮助定位。提示框靠近边缘时自动避让，不能遮住主要曲线。",
+      "sourceKey": "a1114b256de94d57f07a0707",
+      "sourceLine": 216
+    },
+    {
+      "id": "HOME-HP02-B026",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "图表增加网格、双向十字线、轴端标签和缺口说明。",
+      "sourceKey": "692a823877e2730352507fe3",
+      "sourceLine": 218
+    },
+    {
+      "id": "HOME-HP02-B027",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "日期详情字段",
+      "sourceKey": "5804abf4722e79281da8ebfd",
+      "sourceLine": 220
+    },
+    {
+      "id": "HOME-HP02-B028",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "要求",
+      "sourceKey": "6ceb847671ce94c385d61239",
+      "sourceLine": 220
+    },
+    {
+      "id": "HOME-HP02-B029",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "日期",
+      "sourceKey": "bb0321d13602a8082441ff61",
+      "sourceLine": 222
+    },
+    {
+      "id": "HOME-HP02-B030",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "使用所选图点的业务日期",
+      "sourceKey": "692307f1dda094f6658ed60a",
+      "sourceLine": 222
+    },
+    {
+      "id": "HOME-HP02-B031",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "当日持仓市值、当日浮盈",
+      "sourceKey": "5853b7bb5b4cdd1eee73cd3e",
+      "sourceLine": 223
+    },
+    {
+      "id": "HOME-HP02-B032",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "使用该日实际数据，不能回填最新值",
+      "sourceKey": "c6fc3c27d0e1bcfcd7d1c76c",
+      "sourceLine": 223
+    },
+    {
+      "id": "HOME-HP02-B033",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "累计已实现、累计净盈亏",
+      "sourceKey": "cd0d1fe080456736543524e3",
+      "sourceLine": 224
+    },
+    {
+      "id": "HOME-HP02-B034",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "截止所选日的累计结果",
+      "sourceKey": "ab6623f9ebb261a998dfc08d",
+      "sourceLine": 224
+    },
+    {
+      "id": "HOME-HP02-B035",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "费用、汇率、行情覆盖",
+      "sourceKey": "642113e10f60df7cb492a567",
+      "sourceLine": 225
+    },
+    {
+      "id": "HOME-HP02-B036",
+      "kind": "tablecell",
+      "chapter": "HP02",
+      "text": "显示状态与缺失原因；金额可查看完整精度和原币",
+      "sourceKey": "b5cf3e9620fc1ea56b22ec9b",
+      "sourceLine": 225
+    },
+    {
+      "id": "HOME-HP02-B037",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "日期详情使用264×112px紧凑提示框。日期和说明使用12px次要色；市值为12px正文色，浮盈、已实现及净盈亏按数值正负使用绿色或红色，零值使用正文色；当前图点的期间净盈亏为13px。标签与值分开着色，不能让“市值”和“盈利”共用一段绿色文字。缺失值使用“—”与原因，费用说明不使用盈亏色。",
+      "sourceKey": "a2c79ccb8cd31aca82a651eb",
+      "sourceLine": 227
+    },
+    {
+      "id": "HOME-HP02-B038",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "鼠标悬停300ms后显示提示，移开100ms后关闭；键盘聚焦立即显示。左右键选择相邻有效点，Home/End跳到首尾，Enter固定详情，Esc关闭并返回触发点。Esc关闭后，重新进入该点才再次显示。",
+      "sourceKey": "ff2f77898bb62d970e290a6f",
+      "sourceLine": 229
+    },
+    {
+      "id": "HOME-HP02-B039",
+      "kind": "paragraph",
+      "chapter": "HP02",
+      "text": "缺行情或汇率时曲线断开，不插值，也不制造虚拟点；提示写清日期范围、缺失原因，未知金额显示“—”。日期详情不提供“查看该日敞口”二级入口。",
+      "sourceKey": "983a828202537dc937cc4792",
+      "sourceLine": 231
+    },
+    {
+      "id": "HOME-HP04-B001",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "持仓表首先帮助用户辨认标的，再比较持有时间、数量、成本、最新价、市值和浮盈。模块标题明确写“当前持仓（最新）”，与上方期间统计区分。名称和交易所代码组成身份区域，数值沿固定右边界排列。",
+      "sourceKey": "cc3fd566d2f9fc1f2ce452f4",
+      "sourceLine": 247
+    },
+    {
+      "id": "HOME-HP04-B002",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "标题区高48px、表头40px、每行48px、分页区48px，固定八行槽。即使只有五条数据，分页区和下方模块也不向上跳动。",
+      "sourceKey": "fca519f1dca3f037b46282ec",
+      "sourceLine": 249
+    },
+    {
+      "id": "HOME-HP04-B003",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "列",
+      "sourceKey": "1268912a2a6e9c1862e04d75",
+      "sourceLine": 251
+    },
+    {
+      "id": "HOME-HP04-B004",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "内宽比例",
+      "sourceKey": "081ed496435037c3589da63c",
+      "sourceLine": 251
+    },
+    {
+      "id": "HOME-HP04-B005",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "展示与对齐",
+      "sourceKey": "409022ef746e4eb55d7c6c6e",
+      "sourceLine": 251
+    },
+    {
+      "id": "HOME-HP04-B006",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "标的",
+      "sourceKey": "ad1961296bc0e97056a93748",
+      "sourceLine": 253
+    },
+    {
+      "id": "HOME-HP04-B007",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "25%",
+      "sourceKey": "c4877bbed3c4c3a0dd64f6ae",
+      "sourceLine": 253
+    },
+    {
+      "id": "HOME-HP04-B008",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "左对齐；名称最多两行，代码与交易所可辨认",
+      "sourceKey": "664fa8993be50b8ce989326b",
+      "sourceLine": 253
+    },
+    {
+      "id": "HOME-HP04-B009",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "持仓天数",
+      "sourceKey": "7e0e71c8b1787fb4bfbe6d4c",
+      "sourceLine": 254
+    },
+    {
+      "id": "HOME-HP04-B010",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "8%",
+      "sourceKey": "e43bb0bc17934d6a434b9dfe",
+      "sourceLine": 254
+    },
+    {
+      "id": "HOME-HP04-B011",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；当天为“0天”，未知为“—”",
+      "sourceKey": "cded16316423a2121da987c3",
+      "sourceLine": 254
+    },
+    {
+      "id": "HOME-HP04-B012",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "数量",
+      "sourceKey": "a5250d11b3775bf6a9283722",
+      "sourceLine": 255
+    },
+    {
+      "id": "HOME-HP04-B013",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "10%",
+      "sourceKey": "d34fc69aa9a31406980b326d",
+      "sourceLine": 255
+    },
+    {
+      "id": "HOME-HP04-B014",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；保留真实精度与负号，不用科学计数法",
+      "sourceKey": "935e2e92a7417eb245d79bec",
+      "sourceLine": 255
+    },
+    {
+      "id": "HOME-HP04-B015",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "成本价",
+      "sourceKey": "b50c974a3979263473834f4c",
+      "sourceLine": 256
+    },
+    {
+      "id": "HOME-HP04-B016",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "11%",
+      "sourceKey": "e6624704355627d97f71fdba",
+      "sourceLine": 256
+    },
+    {
+      "id": "HOME-HP04-B017",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；两位小数",
+      "sourceKey": "50e76ea6288ceb9ecd844529",
+      "sourceLine": 256
+    },
+    {
+      "id": "HOME-HP04-B018",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "最新价",
+      "sourceKey": "c1387fceb3f3f1523c0091fb",
+      "sourceLine": 257
+    },
+    {
+      "id": "HOME-HP04-B019",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "11%",
+      "sourceKey": "e6624704355627d97f71fdba",
+      "sourceLine": 257
+    },
+    {
+      "id": "HOME-HP04-B020",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；两位小数",
+      "sourceKey": "50e76ea6288ceb9ecd844529",
+      "sourceLine": 257
+    },
+    {
+      "id": "HOME-HP04-B021",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "持仓市值",
+      "sourceKey": "7e8f3ab88c96ffa622df190d",
+      "sourceLine": 258
+    },
+    {
+      "id": "HOME-HP04-B022",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "15%",
+      "sourceKey": "8a221e59458698d870762aa8",
+      "sourceLine": 258
+    },
+    {
+      "id": "HOME-HP04-B023",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；列头带市场币种",
+      "sourceKey": "dd90e5bffaff3674cbbdf660",
+      "sourceLine": 258
+    },
+    {
+      "id": "HOME-HP04-B024",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "持仓浮动盈亏",
+      "sourceKey": "cefe375112872fc966b5ea8f",
+      "sourceLine": 259
+    },
+    {
+      "id": "HOME-HP04-B025",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "14%",
+      "sourceKey": "6af0e4228468f7f0e308660b",
+      "sourceLine": 259
+    },
+    {
+      "id": "HOME-HP04-B026",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "右对齐；正负号与颜色共同表达结果",
+      "sourceKey": "bf19bdbdf2866761285e0773",
+      "sourceLine": 259
+    },
+    {
+      "id": "HOME-HP04-B027",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "查看",
+      "sourceKey": "08edb7a964f7008129db8a2d",
+      "sourceLine": 260
+    },
+    {
+      "id": "HOME-HP04-B028",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "6%",
+      "sourceKey": "67d27402a6ae7ec29a527db2",
+      "sourceLine": 260
+    },
+    {
+      "id": "HOME-HP04-B029",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "独立详情图标，36px命中区",
+      "sourceKey": "35a0619f862fcadcc3ce6d29",
+      "sourceLine": 260
+    },
+    {
+      "id": "HOME-HP04-B030",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "列宽按面板内宽减去左右各16px后计算，固定比例为25% / 8% / 10% / 11% / 11% / 15% / 14% / 6%，舍入差额归标的列。数值列的完整标题和数据共用同一右边界；不同位数、正负号和千分位不得造成对齐漂移。1440与1280画面仅调整列宽，不改变行高和槽数。",
+      "sourceKey": "96338bb6a879cb4de98b591c",
+      "sourceLine": 262
+    },
+    {
+      "id": "HOME-HP04-B031",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "标题区左侧分两行：第一行“当前持仓（最新）”为18/24px正文色；第二行显示市值与持仓浮动盈亏，标签12/16px次要色，市值保持中性色，浮盈正值绿色、负值红色、零为正文色。右侧放搜索入口与导出。它们与标题区共用上边界，不占表头或数据行。示意数据用于展示真实标的名称和数字密度，产品不渲染“样例”“样本”等前缀。说明性整行蓝框不属于产品设计，必须删除；详情图标默认无框，键盘焦点提示保留。分镜讲解与操作提示放在产品画布外。",
+      "sourceKey": "b8c80f2d33e8799c63b8369e",
+      "sourceLine": 264
+    },
+    {
+      "id": "HOME-HP04-B032",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "控件或文字",
+      "sourceKey": "ecd4af84291216089456668f",
+      "sourceLine": 266
+    },
+    {
+      "id": "HOME-HP04-B033",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "对齐与样式",
+      "sourceKey": "138077d11b00311802160d10",
+      "sourceLine": 266
+    },
+    {
+      "id": "HOME-HP04-B034",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "表头",
+      "sourceKey": "9712eec68cd352591630b414",
+      "sourceLine": 268
+    },
+    {
+      "id": "HOME-HP04-B035",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "12/16px次要色；数值标题右对齐，名称左对齐",
+      "sourceKey": "c3103fa3c12e92dad9378856",
+      "sourceLine": 268
+    },
+    {
+      "id": "HOME-HP04-B036",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "表格数值",
+      "sourceKey": "d8a4a549a005bdacdfbf0296",
+      "sourceLine": 269
+    },
+    {
+      "id": "HOME-HP04-B037",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "14/20px；市值中性、浮盈按正负着色",
+      "sourceKey": "0fd36bfafd72728a9292f99b",
+      "sourceLine": 269
+    },
+    {
+      "id": "HOME-HP04-B038",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "搜索入口",
+      "sourceKey": "c469a6a9a7d176e9d6c1da53",
+      "sourceLine": 270
+    },
+    {
+      "id": "HOME-HP04-B039",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "高36px；文字14/20px，与图标作为一组居中",
+      "sourceKey": "1840827a42386e8a0c0f16e6",
+      "sourceLine": 270
+    },
+    {
+      "id": "HOME-HP04-B040",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "搜索输入",
+      "sourceKey": "8db67d28d3e1a1c36103e4ba",
+      "sourceLine": 271
+    },
+    {
+      "id": "HOME-HP04-B041",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "高36px；输入文字14/20px，左对齐，清除图标独立靠右",
+      "sourceKey": "f74237cb72ee1bd1f30ba600",
+      "sourceLine": 271
+    },
+    {
+      "id": "HOME-HP04-B042",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "导出与翻页按钮",
+      "sourceKey": "e4e466d988d38b31aee7c3fe",
+      "sourceLine": 272
+    },
+    {
+      "id": "HOME-HP04-B043",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "高36px；文字14/20px居中，禁用态仍保持位置",
+      "sourceKey": "a7a16a41e289379ba32233a3",
+      "sourceLine": 272
+    },
+    {
+      "id": "HOME-HP04-B044",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "分页数量与页码",
+      "sourceKey": "3d817936f88dc4e727fbccbc",
+      "sourceLine": 273
+    },
+    {
+      "id": "HOME-HP04-B045",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "12/16px次要色；数量在左，页码组在右",
+      "sourceKey": "35aa65c7161438a5aaa6e5a9",
+      "sourceLine": 273
+    },
+    {
+      "id": "HOME-HP04-B046",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "零条时保留表头、八行槽和底部分页区域的空间，但不绘制可操作翻页箭头；一至八条只有一页，上一页/下一页禁用；九条进入第二页，第二页只显示一条并保留其余空槽；多页末页同样保持高度。表头与数值列边界在这些状态下不变。",
+      "sourceKey": "e6123620ada1467b7cbc9621",
+      "sourceLine": 275
+    },
+    {
+      "id": "HOME-HP04-B071",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "成本价、最新价统一显示两位小数，并明确数值表头与内容的共同右边界。显示精度不改变原始交易精度。大额金额采用已确认规则：绝对值达到100,000,000显示“亿”，否则达到10,000显示“万”；缩写保留两位小数。悬停、键盘聚焦和详情提供完整值，复制和导出保留完整值；单价仍保留两位小数。阈值与精度由同一格式函数统一，展示缩写不改变原始数据。",
+      "sourceKey": "15ac273ec68e199289d248d3",
+      "sourceLine": 277
+    },
+    {
+      "id": "HOME-HP04-B048",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "局部搜索使用表格工具栏内联输入框，只过滤持仓表；输入防抖300ms，中文组词期间不查询。输入新词、清空搜索、排序或切换市场都回第1页，清空局部搜索不重置全局范围。输入、清空与失焦均不改变表格高度，不另开搜索结果浮层。",
+      "sourceKey": "ed79fc78cda0e974f9cd892c",
+      "sourceLine": 287
+    },
+    {
+      "id": "HOME-HP04-B049",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "排序入口为列头按钮或菜单，显示箭头、可访问名称和说明。全部市场完成CNY换算后，市值与持仓浮动盈亏可以排序；汇率不完整或覆盖不足时禁用，并说明原因。导出针对完整筛选结果，而不只导出当前页；没有数据时禁用，提示“无可导出的持仓（0）”。",
+      "sourceKey": "f0cd6655b5f5f9780d7c565f",
+      "sourceLine": 289
+    },
+    {
+      "id": "HOME-HP04-B050",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "查看按钮的提示和可访问名称为“查看持仓详情”。按钮位于最后一列的6%区域，并在该命中盒内居中，不能左贴表格边缘；详情内唯一主动作“查看交易”同样水平居中。关闭详情后，恢复来源行、搜索词、排序、页码和滚动位置；来源行若因刷新消失，焦点回表格标题。这个返回目标与标的搜索进入详情时的结果列表不同。",
+      "sourceKey": "cb53378d0c2002e7f45f915a",
+      "sourceLine": 304
+    },
+    {
+      "id": "HOME-HP04-B051",
+      "kind": "paragraph",
+      "chapter": "HP04",
+      "text": "键盘依次经过局部搜索、表头排序、逐行查看和分页。名称被省略时，悬停或聚焦可读到全名、代码、交易所和资产类别。",
+      "sourceKey": "04b585e8e18dcecdcfe2a137",
+      "sourceLine": 306
+    },
+    {
+      "id": "HOME-HP04-B052",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "情况",
+      "sourceKey": "aad875dbc174738f36c22ae1",
+      "sourceLine": 316
+    },
+    {
+      "id": "HOME-HP04-B053",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "画面与操作",
+      "sourceKey": "2a3b9a8c871887455a99f023",
+      "sourceLine": 316
+    },
+    {
+      "id": "HOME-HP04-B054",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "没有持仓",
+      "sourceKey": "144e5355d22f5a26586df645",
+      "sourceLine": 318
+    },
+    {
+      "id": "HOME-HP04-B055",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "保留空表结构与下一步说明，不显示“第1/1页”；空状态图标、说明、动作分开，避免重复与遮挡",
+      "sourceKey": "beb92eec17fa83c101f342da",
+      "sourceLine": 318
+    },
+    {
+      "id": "HOME-HP04-B056",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "有持仓但搜索无匹配",
+      "sourceKey": "c4c77415337c9fec1b464778",
+      "sourceLine": 319
+    },
+    {
+      "id": "HOME-HP04-B057",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "显示“当前搜索无匹配”而不是“没有持仓”；输入框尾部 X 是唯一清空入口，清空只重置局部搜索并回到第1页，空态正文不再增加同义按钮",
+      "sourceKey": "7fadd061d2ed3a36dd4f50dd",
+      "sourceLine": 319
+    },
+    {
+      "id": "HOME-HP04-B058",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "缺少成本 / 最新价",
+      "sourceKey": "97de6dcd32a8d0856a8dc2d8",
+      "sourceLine": 320
+    },
+    {
+      "id": "HOME-HP04-B059",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "分别显示“暂无” / “待更新”，不能写成零",
+      "sourceKey": "d5566794f0d0e31d22653c28",
+      "sourceLine": 320
+    },
+    {
+      "id": "HOME-HP04-B060",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "长名称",
+      "sourceKey": "7aaa3c9b5be251907ebb2cc1",
+      "sourceLine": 321
+    },
+    {
+      "id": "HOME-HP04-B061",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "保留身份识别，省略部分在悬停或聚焦时完整展示",
+      "sourceKey": "bf08a72ed3c925b4aac34db1",
+      "sourceLine": 321
+    },
+    {
+      "id": "HOME-HP04-B062",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "超长数值",
+      "sourceKey": "df86c68c9d7873fdd21f2092",
+      "sourceLine": 322
+    },
+    {
+      "id": "HOME-HP04-B063",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "可使用第二行12/16px说明或提示框，不撑高48px行",
+      "sourceKey": "f37cf2e1c91ebc6dccb7db16",
+      "sourceLine": 322
+    },
+    {
+      "id": "HOME-HP04-B064",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "最后一页不足八项",
+      "sourceKey": "fbeb157a242090beb6ac74a4",
+      "sourceLine": 323
+    },
+    {
+      "id": "HOME-HP04-B065",
+      "kind": "tablecell",
+      "chapter": "HP04",
+      "text": "保留八个行槽和稳定分页位置",
+      "sourceKey": "c3d772b4beb27d2198704180",
+      "sourceLine": 323
+    },
+    {
+      "id": "HOME-HP05-B001",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "历史统计位于当前持仓下方、底部贡献区上方，默认展开，向下滚动即可看到，无需点击卡片或进入另一个页面。它回答“所选范围内已经结束的交易最终留下了多少收益”，与仍可能波动的当前表现分开。",
+      "sourceKey": "48948e2d1ee45ad994a7a416",
+      "sourceLine": 341
+    },
+    {
+      "id": "HOME-HP05-B002",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "模块从上到下依次是标题与年份范围、四张等宽指标卡、历史趋势图。四卡为已平仓净盈亏、已平仓回合数、胜率、已扣费用，整页图与局部图保持相同顺序。净盈亏突出所选范围的结果，回合数说明样本量，胜率同时给出盈利回合数与总回合数，费用帮助核对已扣成本。没有已平仓回合时显示“暂无已平仓回合”，胜率为“—”，不显示0%。",
+      "sourceKey": "c0314944901a8b8288709a1d",
+      "sourceLine": 343
+    },
+    {
+      "id": "HOME-HP05-B003",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "年份范围支持单年、今年、年份区间和全部；单年按月、跨年按年展示。盈亏默认显示各期结果，可切换为从所选范围起点开始的累计值。胜率趋势始终按各期独立计算，无回合的月份或年份留缺口；范围胜率为总盈利回合数除以全部已平仓回合数，不平均分期胜率。",
+      "sourceKey": "194c6ebed3f59b6e9b345d31",
+      "sourceLine": 345
+    },
+    {
+      "id": "HOME-HP05-B004",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "切换盈亏、胜率或回合数时，图表容器、绘图区和操作区保持位置与尺寸。胜率轴固定0%–100%，数量使用覆盖数据范围的整数刻度，金额轴随范围调整。不同单位的曲线不直接变形过渡；加载保留空间，刻度预留足够宽度，避免切换抖动或截断。",
+      "sourceKey": "e91bedd6ad138ce1ba6d75d6",
+      "sourceLine": 347
+    },
+    {
+      "id": "HOME-HP05-B005",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "点击标题右侧年份范围选择器并应用，同步更新历史指标、曲线与贡献区的“历史已平仓”模式数据；不强制切换当前可见的贡献模式。当前表现、持仓与“当前期间”模式保持原样。年份选择器使用年份与下拉箭头语义；具体日期或日期区间使用日历图标，静态日期或图表轴刻度不使用日历图标。按交易平仓日归年，未完成的回合不混入年度已平仓统计。历史成交补录、撤销或修正后，相关年份可以重新计算，并显示带业务时区的更新时间。",
+      "sourceKey": "79ead3274ab99a01cd9f2728",
+      "sourceLine": 349
+    },
+    {
+      "id": "HOME-HP05-B006",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "鼠标悬停或键盘聚焦曲线日期点，才显示该日期的提示框和十字线；移开或Esc后回到默认曲线。提示框属于图表临时读数，不是进入下方页面的入口。历史结果与期间贡献口径不同，不能相加。",
+      "sourceKey": "d271a19e2447f84986b90567",
+      "sourceLine": 351
+    },
+    {
+      "id": "HOME-HP05-B007",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "下面的历史分镜分别呈现同一模块的默认、悬停、加载和异常状态，每帧使用一致的视口与比例。说明放在图外，不在产品画布中增加额外图框。年度切换分镜若只展示历史模块，必须标明“首页历史模块局部状态；上方当前表现、当前持仓以及下方贡献区保持原位，本图省略”，不得被读作新页面。历史区域通过向下滚动进入，滚动不改变首页模块顺序。默认状态、触发操作和结果按下表阅读。",
+      "sourceKey": "e51c240017ed4b18b6e18bd8",
+      "sourceLine": 353
+    },
+    {
+      "id": "HOME-HP05-B008",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "起始状态",
+      "sourceKey": "0dc600ef7c7c8f6e2573a306",
+      "sourceLine": 355
+    },
+    {
+      "id": "HOME-HP05-B009",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "操作",
+      "sourceKey": "a1d7829fef25045082f7e3c2",
+      "sourceLine": 355
+    },
+    {
+      "id": "HOME-HP05-B010",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "结果与退出",
+      "sourceKey": "7e2de1789133c5f26f8af963",
+      "sourceLine": 355
+    },
+    {
+      "id": "HOME-HP05-B011",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "首页默认",
+      "sourceKey": "4051d0ca98a1cdd339b7bf13",
+      "sourceLine": 357
+    },
+    {
+      "id": "HOME-HP05-B012",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "滚动到当前持仓下方",
+      "sourceKey": "c915d4af1d345e7df6ce1a83",
+      "sourceLine": 357
+    },
+    {
+      "id": "HOME-HP05-B013",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "直接看到历史四卡与曲线，无新增入口；贡献区位于其后",
+      "sourceKey": "fd9f2950d429e363f0453b85",
+      "sourceLine": 357
+    },
+    {
+      "id": "HOME-HP05-B014",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "历史范围已显示",
+      "sourceKey": "27e43a8628c452b9ce06609f",
+      "sourceLine": 358
+    },
+    {
+      "id": "HOME-HP05-B015",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "打开年份范围选择器并选择另一范围",
+      "sourceKey": "cffe465bc89654f2af58894e",
+      "sourceLine": 358
+    },
+    {
+      "id": "HOME-HP05-B016",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "更新历史统计与历史贡献数据；不切换贡献模式；加载保留原完整数据，失败保留原范围",
+      "sourceKey": "c6db639297a407f0b9d72049",
+      "sourceLine": 358
+    },
+    {
+      "id": "HOME-HP05-B017",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "历史曲线",
+      "sourceKey": "804a7e6068c19e3a3e592325",
+      "sourceLine": 359
+    },
+    {
+      "id": "HOME-HP05-B018",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "悬停或聚焦一个日期点",
+      "sourceKey": "6a639c77e6588a78c42f1e19",
+      "sourceLine": 359
+    },
+    {
+      "id": "HOME-HP05-B019",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "显示日期详情；移开或Esc关闭，不跳转页面",
+      "sourceKey": "594ec134c47f4d6f32bc73e4",
+      "sourceLine": 359
+    },
+    {
+      "id": "HOME-HP05-B020",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "所选范围无已平仓回合",
+      "sourceKey": "b8b1e426fd3fdb3b913bff86",
+      "sourceLine": 360
+    },
+    {
+      "id": "HOME-HP05-B021",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "范围读取成功",
+      "sourceKey": "8841427d5e556812ef884c33",
+      "sourceLine": 360
+    },
+    {
+      "id": "HOME-HP05-B022",
+      "kind": "tablecell",
+      "chapter": "HP05",
+      "text": "回合数为0、胜率为“—”，显示空态说明，不伪造收益曲线",
+      "sourceKey": "fe559d536e6cdf7eba069157",
+      "sourceLine": 360
+    },
+    {
+      "id": "HOME-HP05-B031",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "以下为首页历史模块的局部状态。其他首页模块省略，位置与整页图一致。",
+      "sourceKey": "3bbbcf31f26b2bafe3595f7b",
+      "sourceLine": 362
+    },
+    {
+      "id": "HOME-HP05-B032",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "年份范围的等待与异常也发生在原历史模块中，不是新的首页布局。",
+      "sourceKey": "229a9ef8cbcae469eab5863c",
+      "sourceLine": 371
+    },
+    {
+      "id": "HOME-HP05-B023",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "贡献区位于历史统计下方，是首页唯一解释盈亏来源的区域。模块内切换“当前期间 / 历史已平仓”：当前期间沿用当前表现的日期，历史已平仓沿用历史统计的年份范围。切换只更新本模块，不移动上方区域，也不增加另一套日期控件。当前期间与期间净盈亏使用相同市场、账户、费用和汇率口径；适用范围内，全量贡献合计应与期间净盈亏一致。",
+      "sourceKey": "0d04c171f07fa3520e14ce58",
+      "sourceLine": 383
+    },
+    {
+      "id": "HOME-HP05-B024",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "页头选择“全部”时，先显示A股、港股、美股的市场条形汇总。点击某一条形，在贡献区内展开该市场的标的明细；页头仍为“全部”，面包屑显示“全部市场 > A股”等当前位置。点击面包屑返回市场汇总。页头直接选择A股、港股或美股时，贡献区直接显示对应标的明细。全局市场始终只有一套，不能因切换贡献模式而恢复成另一个市场。",
+      "sourceKey": "a59c179d5aeafe9d78cb1fba",
+      "sourceLine": 385
+    },
+    {
+      "id": "HOME-HP05-B025",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "“做多 / 做空 / 打新”互斥，切换时摘要、条形或明细、合计与分页同时更新。打新只包含获配及后续卖出，上市后自行买入归做多。“盈利最高”按值降序，“亏损最大”按值升序；下钻保留全量合计，让读者区分局部结果与整个范围的结果。",
+      "sourceKey": "87ab860293d4f4664ce21709",
+      "sourceLine": 387
+    },
+    {
+      "id": "HOME-HP05-B026",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "正负贡献分别从零线两侧绘制。实心表示期间已实现贡献，中空表示期间浮盈变化（期末浮盈减期初浮盈）；两者可能异号，不能把负值也堆成正宽度。当前期间允许跨年，完整口径为期间内已实现贡献加期末浮盈减期初浮盈，不能漏掉期间平仓部分的期初浮盈。例如期初浮盈100、期间实现150、期末浮盈0，期间贡献为50。缺少必要估值时显示“不可计算”，不得以0代替。历史贡献只统计选定范围内已平仓回合，不混入当前浮盈。",
+      "sourceKey": "f1ff01ee871b53b0eb2aa174",
+      "sourceLine": 389
+    },
+    {
+      "id": "HOME-HP05-B027",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "标的明细每页固定八行；五十项共七页，最后一页两项。市场汇总只有三个市场，不套用标的明细的分页数量。翻页不推动上方模块，键盘焦点进入新页首行。合计来自全量数据，而非当前页。",
+      "sourceKey": "6f8e5a7f27e254cb30d2c71c",
+      "sourceLine": 391
+    },
+    {
+      "id": "HOME-HP05-B028",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "当前期间与历史已平仓分别记忆分类、排序、局部下钻和页码。点击标的进入其交易详情，关闭后恢复来源模式、条件、页码、滚动位置和原触发焦点。若数据刷新使原标的消失，焦点回到贡献区标题，保留仍有效的条件。",
+      "sourceKey": "e7954f3b3bc3542402373f31",
+      "sourceLine": 393
+    },
+    {
+      "id": "HOME-HP05-B033",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "以下各帧只展示底部贡献区；上方当前表现、持仓和历史统计均保持原位。",
+      "sourceKey": "7265e78090dd6ae3b7b5017d",
+      "sourceLine": 395
+    },
+    {
+      "id": "HOME-HP05-B034",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "贡献的异常状态沿用相同组件；计算口径以上文公式为准。",
+      "sourceKey": "77ceb081b24283b4364dddcb",
+      "sourceLine": 403
+    },
+    {
+      "id": "HOME-HP05-B029",
+      "kind": "paragraph",
+      "chapter": "HP05",
+      "text": "市场汇总进入路径必须可追溯：先选择具体市场行，再进入该市场的证券列表（market row → symbol list），再从证券列表选择标的，进入已有交易详情容器。返回时恢复原市场、证券、日期、账户、筛选、排序、页码、滚动位置和触发焦点。不得从泛化“进入贡献”按钮直接跳到固定证券详情，也不得为此新增没有合同依据的双栏容器。",
+      "sourceKey": "0af9bc6b9025f7ba1b508817",
+      "sourceLine": 414
+    },
+    {
+      "id": "HOME-HP06-B001",
+      "kind": "paragraph",
+      "chapter": "HP06",
+      "text": "日期检索把趋势上的日期接到具体交易；待复盘入口把交易结果接到复盘任务。进入交易库后，来源日期、市场和账户条件已经生效，不要求用户再次应用。条件摘要是只读说明，应与按钮分开，不画成待确认的操作。",
+      "sourceKey": "eb026ad510c8c7db353a5df5",
+      "sourceLine": 420
+    },
+    {
+      "id": "HOME-HP06-B002",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "旅程",
+      "sourceKey": "ce59830ad02f1ee16310d8cc",
+      "sourceLine": 422
+    },
+    {
+      "id": "HOME-HP06-B003",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "进入后的状态",
+      "sourceKey": "d6c871e25404b1df5fe257b3",
+      "sourceLine": 422
+    },
+    {
+      "id": "HOME-HP06-B004",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "返回与刷新",
+      "sourceKey": "3bd6f805beb8f0d120f4283e",
+      "sourceLine": 422
+    },
+    {
+      "id": "HOME-HP06-B005",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "按日期查看交易",
+      "sourceKey": "f7aa50cc70a1a015e3be06d5",
+      "sourceLine": 424
+    },
+    {
+      "id": "HOME-HP06-B006",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "显示该日和来源市场、账户，按成交日期筛选交易；保留未平仓成交。统计页另按回合平仓日期归属",
+      "sourceKey": "48b470b6a1f15d7e2826563b",
+      "sourceLine": 424
+    },
+    {
+      "id": "HOME-HP06-B007",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "刷新保留条件；回首页恢复原期间及位置",
+      "sourceKey": "4a2815d58703543073bde90c",
+      "sourceLine": 424
+    },
+    {
+      "id": "HOME-HP06-B008",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "进入待复盘",
+      "sourceKey": "4467c3f45559cd9eeb116405",
+      "sourceLine": 425
+    },
+    {
+      "id": "HOME-HP06-B009",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "显示来源范围内的待复盘交易",
+      "sourceKey": "37a9b9cd7b5ee1ea70eb8377",
+      "sourceLine": 425
+    },
+    {
+      "id": "HOME-HP06-B010",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "数量与首页范围一致；完成后可核对队列变化",
+      "sourceKey": "4e242584ff1327c55ceaf356",
+      "sourceLine": 425
+    },
+    {
+      "id": "HOME-HP06-B011",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "打开交易详情",
+      "sourceKey": "6fe6be187889e1bad534cb26",
+      "sourceLine": 426
+    },
+    {
+      "id": "HOME-HP06-B012",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "携带正确交易或回合",
+      "sourceKey": "4fa3aea9561148f0eab13c8c",
+      "sourceLine": 426
+    },
+    {
+      "id": "HOME-HP06-B013",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "关闭后回到来源列表上下文",
+      "sourceKey": "0038eaca1fd4a88522675bad",
+      "sourceLine": 426
+    },
+    {
+      "id": "HOME-HP06-B014",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "返回首页",
+      "sourceKey": "f02c45ab416e9b014db36b8e",
+      "sourceLine": 427
+    },
+    {
+      "id": "HOME-HP06-B015",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "重新读取首页数据",
+      "sourceKey": "a267a642af50b16af460881a",
+      "sourceLine": 427
+    },
+    {
+      "id": "HOME-HP06-B016",
+      "kind": "tablecell",
+      "chapter": "HP06",
+      "text": "恢复范围、筛选、持仓与贡献页码、排序和滚动",
+      "sourceKey": "809c881061daace764dab15c",
+      "sourceLine": 427
+    },
+    {
+      "id": "HOME-HP06-B017",
+      "kind": "paragraph",
+      "chapter": "HP06",
+      "text": "待复盘数量为0时隐藏数字，仍保留可访问名称；超过99显示“99+”。日期或筛选参数不合法时使用明确的默认值并提示，而不是静默展示一个不同范围。",
+      "sourceKey": "15cfa62ec66f2fa1461caa75",
+      "sourceLine": 429
+    },
+    {
+      "id": "HOME-HP06-B018",
+      "kind": "paragraph",
+      "chapter": "HP06",
+      "text": "首页只规定这次交接的来源和返回；交易库内部的搜索、刷新、日期、表格和详情容器由下一章统一规定。",
+      "sourceKey": "67ea620ec112db2d556aeff0",
+      "sourceLine": 433
+    },
+    {
+      "id": "HOME-HP06-B021",
+      "kind": "paragraph",
+      "chapter": "HP06",
+      "text": "这组分镜从首页日期入口进入交易库，再返回原来源。",
+      "sourceKey": "497cb818709c63ddeddd045e",
+      "sourceLine": 435
+    },
+    {
+      "id": "HOME-HP06-B022",
+      "kind": "paragraph",
+      "chapter": "HP06",
+      "text": "前三帧仅展示首页的待复盘入口；后续帧展示点击后到达的完整交易库及返回来源。",
+      "sourceKey": "0d379f37ba4b39cf02878637",
+      "sourceLine": 442
+    },
+    {
+      "id": "HOME-HP07-B001",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "本章定义交易库自身的布局与状态；首页只负责交接来源日期、市场、账户、标的和返回上下文。首页入口默认进入实盘，来源条件到达后立即生效。交易库内修改条件不回写首页；返回首页恢复原期间、滚动位置和触发焦点。",
+      "sourceKey": "dbe65a1ffa9b2ce2e0e446cd",
+      "sourceLine": 455
+    },
+    {
+      "id": "HOME-HP07-B002",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "交易库分为互斥的“实盘 / 模拟盘”视角，复用列表和统计组件。两个视角各自记忆日期、市场、账户条件、搜索、排序、页码、滚动位置与焦点；列表和统计共享当前视角的日期、市场及账户条件。切换视角不得覆盖另一视角已保存的账户选择，也不得把实盘账户作为模拟盘练习的身份。此处只约定条件的保存与恢复，不新增模拟盘账户控件或账户业务模型。",
+      "sourceKey": "f9d8a5f19b02a5152a7d0020",
+      "sourceLine": 457
+    },
+    {
+      "id": "HOME-HP07-B008",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "日期支持单日、区间、全部及“本周／本月／本年”快捷范围。按上海时区，本周从周一、本月从每月1日、本年从1月1日起，均截至今天并包含起止日；实际起止日期必须可见。实盘列表按每笔成交日期筛选，统计按回合平仓日期归属；两页明确标注日期口径，未平仓成交仍可在列表查看。回合详情保留范围外必要的开仓上下文；模拟盘按导入文件保存的练习日期归属，不以行情日期代替。",
+      "sourceKey": "788448d962e43ed0732b5b18",
+      "sourceLine": 459
+    },
+    {
+      "id": "HOME-HP07-B004",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "模拟盘以一次练习为列表入口：一次练习包含一个标的的多个交易回合，同一标的同一天的反复练习也保持独立。列表分别显示练习记录数与已平仓回合数。点击练习直接进入该练习的回合集，操作与实盘进入某个标的的回合集一致，不增加中间页面。进入回合复盘再返回时，恢复原练习、筛选、排序、页码、滚动位置和焦点。",
+      "sourceKey": "fe47ec2ef80b6b2171efae0e",
+      "sourceLine": 461
+    },
+    {
+      "id": "HOME-HP07-B005",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "中途加减仓按最近开仓优先配对。例如先买100、再买50、卖80，依次配对50与30。配对不跨练习，每个有效配对算一回合，因此本例为两回合；余70仍未平仓，排除在已平仓回合统计之外；不要求练习另有开始或结束状态。扣费后收益大于0为盈利、小于0为亏损、等于0为持平。胜率分母包含持平回合，平均盈利和平均亏损不含持平回合。",
+      "sourceKey": "da7f70b83f2d9d8b76cbc941",
+      "sourceLine": 463
+    },
+    {
+      "id": "HOME-HP07-B006",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "统计页复用趋势与盈亏分布。日期跨度不超过31天按日、超过31天且不超过两年按月、超过两年按年展示。分布默认使用回合收益率，可切金额。点击分布区间只展开该区间的回合明细，不改变顶部条件、不重算原分布；进入复盘并返回后，恢复原区间与列表位置。",
+      "sourceKey": "dd80512fcee92dfe27e1c158",
+      "sourceLine": 465
+    },
+    {
+      "id": "HOME-HP07-B007",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "交易库搜索是局部 inline filter，只过滤交易库表，不调用全局标的搜索遮罩。标题工具区保持搜索220px、刷新36px、间隔28px和独立条件摘要；表头与结果区不重叠。交易库日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。",
+      "sourceKey": "839a067285255aaa63dc5a53",
+      "sourceLine": 467
+    },
+    {
+      "id": "HOME-HP09-B001",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "正常状态保持简洁，不展示“估值完整”等常驻徽章。异常才出现简短原因，颜色辅助识别：加载为灰蓝，更新为蓝，数据过期为黄，失败为红。所有状态都提供文字或可访问名称。",
+      "sourceKey": "ec89dc56af15f26ac00d9cf9",
+      "sourceLine": 501
+    },
+    {
+      "id": "HOME-HP09-B002",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "状态",
+      "sourceKey": "bad79813cdfe69394f02395e",
+      "sourceLine": 503
+    },
+    {
+      "id": "HOME-HP09-B003",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "画面",
+      "sourceKey": "542b7449eef6676a7b2b9529",
+      "sourceLine": 503
+    },
+    {
+      "id": "HOME-HP09-B004",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "用户可以做什么",
+      "sourceKey": "f733d0a0ed79e8bb137989cb",
+      "sourceLine": 503
+    },
+    {
+      "id": "HOME-HP09-B005",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "首次加载",
+      "sourceKey": "c90051122087d5dda32012bb",
+      "sourceLine": 505
+    },
+    {
+      "id": "HOME-HP09-B006",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "标题、四指标、图表、表头和八行槽按最终尺寸占位",
+      "sourceKey": "2c0c4b68d301934d9c8c2169",
+      "sourceLine": 505
+    },
+    {
+      "id": "HOME-HP09-B007",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "等待数据，不被布局跳动打断",
+      "sourceKey": "1e0f17c9794260c1a91f7c2b",
+      "sourceLine": 505
+    },
+    {
+      "id": "HOME-HP09-B008",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "已有数据、后台更新",
+      "sourceKey": "be98b809033e409359629110",
+      "sourceLine": 506
+    },
+    {
+      "id": "HOME-HP09-B009",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "保留上一组完整有效数据",
+      "sourceKey": "62d42dbd5864be072902d78d",
+      "sourceLine": 506
+    },
+    {
+      "id": "HOME-HP09-B010",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "继续阅读，辨认更新状态",
+      "sourceKey": "a02b9312b1e2fe6e15add7b4",
+      "sourceLine": 506
+    },
+    {
+      "id": "HOME-HP09-B011",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "没有数据",
+      "sourceKey": "91092eb91e7c05515144e4c8",
+      "sourceLine": 507
+    },
+    {
+      "id": "HOME-HP09-B012",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "区分空持仓、搜索无匹配、零贡献、零待复盘",
+      "sourceKey": "1ae033c9f0defe2cc2c9e3e0",
+      "sourceLine": 507
+    },
+    {
+      "id": "HOME-HP09-B013",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "按照对应空态继续操作",
+      "sourceKey": "a72cf97893765ee2e9e422ec",
+      "sourceLine": 507
+    },
+    {
+      "id": "HOME-HP09-B014",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "缺行情或汇率",
+      "sourceKey": "b335e976cdf17fc0d3e4ba1a",
+      "sourceLine": 508
+    },
+    {
+      "id": "HOME-HP09-B015",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "未知金额用“—”，曲线缺口断开",
+      "sourceKey": "a9e552eb57827e135f632dc4",
+      "sourceLine": 508
+    },
+    {
+      "id": "HOME-HP09-B016",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "查看原因，使用全局修复",
+      "sourceKey": "8cb9996b278b04c20e2a270f",
+      "sourceLine": 508
+    },
+    {
+      "id": "HOME-HP09-B017",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "首次加载失败",
+      "sourceKey": "6bd2db743a9e9681e7fbe4a7",
+      "sourceLine": 509
+    },
+    {
+      "id": "HOME-HP09-B018",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "明确不可用，不伪造零值",
+      "sourceKey": "95d485e4b23b5bdfa2f6b7e6",
+      "sourceLine": 509
+    },
+    {
+      "id": "HOME-HP09-B019",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "使用全局恢复入口",
+      "sourceKey": "52cc48181eb33c203394e505",
+      "sourceLine": 509
+    },
+    {
+      "id": "HOME-HP09-B020",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "更新失败或超时",
+      "sourceKey": "1fd640ecd0c1efea55a5d80d",
+      "sourceLine": 510
+    },
+    {
+      "id": "HOME-HP09-B021",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "保留旧范围和有效值，说明新范围未应用",
+      "sourceKey": "abe7f458b5d80f4b5aa3a44d",
+      "sourceLine": 510
+    },
+    {
+      "id": "HOME-HP09-B022",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "通过同一全局入口重试",
+      "sourceKey": "754eebfff3f0249a1532b225",
+      "sourceLine": 510
+    },
+    {
+      "id": "HOME-HP09-B023",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "部分修复成功",
+      "sourceKey": "80a3ca1b4726a0a992b71333",
+      "sourceLine": 511
+    },
+    {
+      "id": "HOME-HP09-B024",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "更新已完成部分，仍显示剩余缺失",
+      "sourceKey": "c92305b3d664d8b42de33521",
+      "sourceLine": 511
+    },
+    {
+      "id": "HOME-HP09-B025",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "了解未完成原因，再次使用同一入口",
+      "sourceKey": "79008a51e11886cc291e1d61",
+      "sourceLine": 511
+    },
+    {
+      "id": "HOME-HP09-B026",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "首页只有一个全局“一键修复”。修复中禁止重复提交；成功后相关数据一起刷新，失败后恢复同一按钮。图点和局部模块只说明原因，不增加第二个补全、日志或修复入口。",
+      "sourceKey": "6d2dfd5188887bfb0f6eaefb",
+      "sourceLine": 513
+    },
+    {
+      "id": "HOME-HP09-B027",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "用户连续切换范围时，只应用最后一次仍然有效的选择。等待期间，标题、币种和数据继续对应原范围；较早的请求即使晚到，也不能覆盖新选择。新请求失败时保留原范围，并说明新选择没有应用。",
+      "sourceKey": "298215242fa49ab8db90a30a",
+      "sourceLine": 527
+    },
+    {
+      "id": "HOME-HP09-B028",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "例如，用户正查看全部市场，先选港股、随即又选美股：选择器显示等待反馈，标题、币种、指标、曲线、贡献和表格仍共同指向全部市场。港股请求被取消，迟到结果不显示；只有美股读取成功后整组切换。若失败，则明确提示“美股未应用”，继续保留全部市场的数据。",
+      "sourceKey": "a55daaaa6946ff2ad7541af5",
+      "sourceLine": 529
+    },
+    {
+      "id": "HOME-HP09-B029",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "日期切换同步替换期间指标、曲线与“当前期间”贡献数据，不切换贡献模式；历史统计和历史贡献保持不变，当前持仓始终保持最新时点。请求超过15秒转为手动恢复，不无限自动重试。开发所需的请求识别方式放在附录中。",
+      "sourceKey": "847a32e0b698028f4b351ba2",
+      "sourceLine": 531
+    },
+    {
+      "id": "HOME-HP09-B030",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "变化",
+      "sourceKey": "c09fc2dcea84492197dd2ee6",
+      "sourceLine": 535
+    },
+    {
+      "id": "HOME-HP09-B031",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "动效",
+      "sourceKey": "621dd2518d9c18b883f10c11",
+      "sourceLine": 535
+    },
+    {
+      "id": "HOME-HP09-B032",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "不应发生的结果",
+      "sourceKey": "86e89b3c364cf8af6b10a615",
+      "sourceLine": 535
+    },
+    {
+      "id": "HOME-HP09-B033",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "浮层打开 / 关闭",
+      "sourceKey": "35f5917c2a5efd7328f6e717",
+      "sourceLine": 537
+    },
+    {
+      "id": "HOME-HP09-B034",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "160ms缓出，透明度变化并移动4px",
+      "sourceKey": "e27ab179e2b53c442da47b99",
+      "sourceLine": 537
+    },
+    {
+      "id": "HOME-HP09-B035",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "不能推动触发器、标题或表格底边",
+      "sourceKey": "64239dd8415354ccd54821a1",
+      "sourceLine": 537
+    },
+    {
+      "id": "HOME-HP09-B036",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "鼠标悬停",
+      "sourceKey": "f0afab68bd8ee94ff17ffdbb",
+      "sourceLine": 538
+    },
+    {
+      "id": "HOME-HP09-B037",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "120ms颜色变化",
+      "sourceKey": "a4037db6a69ca584f795e2c1",
+      "sourceLine": 538
+    },
+    {
+      "id": "HOME-HP09-B038",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "不能改变控件大小",
+      "sourceKey": "34b50bbfdf6a0c890db62ed9",
+      "sourceLine": 538
+    },
+    {
+      "id": "HOME-HP09-B039",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "数据替换",
+      "sourceKey": "ba7e0c73329077db2153d963",
+      "sourceLine": 539
+    },
+    {
+      "id": "HOME-HP09-B040",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "150ms淡入",
+      "sourceKey": "d659e3bcae3478a7643632e6",
+      "sourceLine": 539
+    },
+    {
+      "id": "HOME-HP09-B041",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "金额不滚动跳数，不出现半组新数据",
+      "sourceKey": "3902a6abf4278f446bac5414",
+      "sourceLine": 539
+    },
+    {
+      "id": "HOME-HP09-B042",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "翻页",
+      "sourceKey": "f33b08ed175dac57c1985a59",
+      "sourceLine": 540
+    },
+    {
+      "id": "HOME-HP09-B043",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "替换行，保持容器高度",
+      "sourceKey": "9a0a10540199297545c7783e",
+      "sourceLine": 540
+    },
+    {
+      "id": "HOME-HP09-B044",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "其他模块不移动",
+      "sourceKey": "e1b2956ecd8c9598a46d66b3",
+      "sourceLine": 540
+    },
+    {
+      "id": "HOME-HP09-B045",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "键盘焦点",
+      "sourceKey": "746a9d0ba7ce14d87bf688fb",
+      "sourceLine": 541
+    },
+    {
+      "id": "HOME-HP09-B046",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "立即移动、清晰描边",
+      "sourceKey": "66ed6ffd6d2bfafaea268626",
+      "sourceLine": 541
+    },
+    {
+      "id": "HOME-HP09-B047",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "不靠动画才能辨认当前位置",
+      "sourceKey": "9b80473f948408fa4e6fb83b",
+      "sourceLine": 541
+    },
+    {
+      "id": "HOME-HP09-B048",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "图表提示",
+      "sourceKey": "6a9a3a3722c00d7ecd459cdc",
+      "sourceLine": 542
+    },
+    {
+      "id": "HOME-HP09-B049",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "显示和关闭，不缩放",
+      "sourceKey": "25e91e2980a701bd086cd52d",
+      "sourceLine": 542
+    },
+    {
+      "id": "HOME-HP09-B050",
+      "kind": "tablecell",
+      "chapter": "HP09",
+      "text": "不遮住主要曲线或超出边界",
+      "sourceKey": "c3b1cd4c6f42bf25c4df3a04",
+      "sourceLine": 542
+    },
+    {
+      "id": "HOME-HP09-B051",
+      "kind": "paragraph",
+      "chapter": "HP09",
+      "text": "用户启用减弱动效时，移除位移、计数和淡入，直接显示最终状态。",
+      "sourceKey": "7a14a6eade1527c12bbe87b0",
+      "sourceLine": 544
+    },
+    {
+      "id": "HOME-HP08-B003",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "子模块必须优先复用这些控件的尺寸、颜色、焦点和状态规则；新增组件前先检查与现有组件合并或扩展的可能，并明确自身的数据范围。不能因为都使用同一种按钮，就把搜索、筛选、修复或详情混成一个操作。",
+      "sourceKey": "c7854f00e0715cd181a3ab49",
+      "sourceLine": 550
+    },
+    {
+      "id": "HOME-HP08-B002",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "控件",
+      "sourceKey": "9c424566fedc5d7ef53ac782",
+      "sourceLine": 552
+    },
+    {
+      "id": "HOME-HP08-B029",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "用途",
+      "sourceKey": "a3fd9a995df3b999b108f3f1",
+      "sourceLine": 552
+    },
+    {
+      "id": "HOME-HP08-B004",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "关键尺寸",
+      "sourceKey": "c6a805f18b7c57d0dd6e66b0",
+      "sourceLine": 552
+    },
+    {
+      "id": "HOME-HP08-B005",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "图标按钮",
+      "sourceKey": "17489958291607849f848285",
+      "sourceLine": 554
+    },
+    {
+      "id": "HOME-HP08-B006",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "单一语义动作，如搜索、筛选、查看",
+      "sourceKey": "9cf51af94b72bdfe5b126c3b",
+      "sourceLine": 554
+    },
+    {
+      "id": "HOME-HP08-B007",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "36×36px命中；通用图标16×16坐标，页头搜索/筛选使用18px视觉图标、24×24坐标",
+      "sourceKey": "11c984a01ea7c1d13435c06f",
+      "sourceLine": 554
+    },
+    {
+      "id": "HOME-HP08-B008",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "分段标签",
+      "sourceKey": "8b0fb4edad8276e95fb83f77",
+      "sourceLine": 555
+    },
+    {
+      "id": "HOME-HP08-B009",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "少量互斥范围，如市场",
+      "sourceKey": "198743d390394a6e89fe97cf",
+      "sourceLine": 555
+    },
+    {
+      "id": "HOME-HP08-B010",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "高36px",
+      "sourceKey": "57c68f0b7b1cdcf5fdf2a9b5",
+      "sourceLine": 555
+    },
+    {
+      "id": "HOME-HP08-B011",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "选择器",
+      "sourceKey": "bad25ce7aa2e671984b07032",
+      "sourceLine": 556
+    },
+    {
+      "id": "HOME-HP08-B012",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "显示并选择当前账户",
+      "sourceKey": "b1dc94b411a3d388afbaf8ee",
+      "sourceLine": 556
+    },
+    {
+      "id": "HOME-HP08-B013",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "高36px、最小宽120px；页头建议176px",
+      "sourceKey": "e24b636aa65973a6b9a077c4",
+      "sourceLine": 556
+    },
+    {
+      "id": "HOME-HP08-B014",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "浮层",
+      "sourceKey": "51d2fe6f2493c3908a285e8d",
+      "sourceLine": 557
+    },
+    {
+      "id": "HOME-HP08-B015",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "全局实体搜索或编辑筛选",
+      "sourceKey": "611e032a9295354fc4a1ac01",
+      "sourceLine": 557
+    },
+    {
+      "id": "HOME-HP08-B016",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "搜索舞台最大960px、桌面两侧至少24px且窄屏全宽；筛选宽320px、输入高36px",
+      "sourceKey": "6e32edf966423d9c3d9ee369",
+      "sourceLine": 557
+    },
+    {
+      "id": "HOME-HP08-B017",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "条件标签",
+      "sourceKey": "1f29005653cbdefc6bedddfd",
+      "sourceLine": 558
+    },
+    {
+      "id": "HOME-HP08-B018",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "显示与移除已应用条件",
+      "sourceKey": "9c67cde329875c974b37c0dd",
+      "sourceLine": 558
+    },
+    {
+      "id": "HOME-HP08-B019",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "可见高24px，外层与删除命中高36px",
+      "sourceKey": "4c85eccfb1dacf788990f3f6",
+      "sourceLine": 558
+    },
+    {
+      "id": "HOME-HP08-B020",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "指标卡",
+      "sourceKey": "534345295ff2915a61469be2",
+      "sourceLine": 559
+    },
+    {
+      "id": "HOME-HP08-B021",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "结果与口径说明",
+      "sourceKey": "57cf8cc1d5094be65c66ebe9",
+      "sourceLine": 559
+    },
+    {
+      "id": "HOME-HP08-B022",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "高88px，主值28px",
+      "sourceKey": "5e3da5015ceec9e38b55fb5d",
+      "sourceLine": 559
+    },
+    {
+      "id": "HOME-HP08-B023",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "状态徽章",
+      "sourceKey": "b27c9988e5f4bd0e145cc5a9",
+      "sourceLine": 560
+    },
+    {
+      "id": "HOME-HP08-B024",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "需要注意的状态",
+      "sourceKey": "94488f465152acd3f795d614",
+      "sourceLine": 560
+    },
+    {
+      "id": "HOME-HP08-B025",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "当前高24px",
+      "sourceKey": "64c0f172a0c8df52b9294cef",
+      "sourceLine": 560
+    },
+    {
+      "id": "HOME-HP08-B026",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "数据表",
+      "sourceKey": "e03bb4e7c7bdd146f6cf0417",
+      "sourceLine": 561
+    },
+    {
+      "id": "HOME-HP08-B027",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "稳定扫描与逐行操作",
+      "sourceKey": "1d0844f184c1fb673393af50",
+      "sourceLine": 561
+    },
+    {
+      "id": "HOME-HP08-B028",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "表头40px、行48px、分页48px",
+      "sourceKey": "4e1dcf742f951eefa3e2ec96",
+      "sourceLine": 561
+    },
+    {
+      "id": "HOME-HP08-B041",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "图表提示",
+      "sourceKey": "6a9a3a3722c00d7ecd459cdc",
+      "sourceLine": 562
+    },
+    {
+      "id": "HOME-HP08-B030",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "解释选中日期与金额",
+      "sourceKey": "f2c47fc7abf4f20549610cdb",
+      "sourceLine": 562
+    },
+    {
+      "id": "HOME-HP08-B031",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "基础尺寸264×112px，内容完整并避让边缘",
+      "sourceKey": "10c4ebe3bd761b1cc52a1aad",
+      "sourceLine": 562
+    },
+    {
+      "id": "HOME-HP08-B032",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "空状态",
+      "sourceKey": "ef98e405cc078bdb1fbfccfb",
+      "sourceLine": 563
+    },
+    {
+      "id": "HOME-HP08-B033",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "说明没有结果及下一步",
+      "sourceKey": "8746c76a030fdb0908589d21",
+      "sourceLine": 563
+    },
+    {
+      "id": "HOME-HP08-B034",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "最小高120px",
+      "sourceKey": "1edeeabf49ffc07afb9a1265",
+      "sourceLine": 563
+    },
+    {
+      "id": "HOME-HP08-B035",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "全局修复按钮",
+      "sourceKey": "90295f0dc29a31949018d449",
+      "sourceLine": 564
+    },
+    {
+      "id": "HOME-HP08-B036",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "恢复缺失数据或失败请求",
+      "sourceKey": "02d85a8d8317cac0f590439a",
+      "sourceLine": 564
+    },
+    {
+      "id": "HOME-HP08-B037",
+      "kind": "tablecell",
+      "chapter": "HP08",
+      "text": "可见高32px、命中高36px",
+      "sourceKey": "d6023d86f210c80cb4c8a944",
+      "sourceLine": 564
+    },
+    {
+      "id": "HOME-HP08-B038",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "所有尺寸行均有对应的真实控件局部样例，见 布局与颜色样例板；样例覆盖搜索、日期、表头、数值、按钮、空态和颜色 token。",
+      "sourceKey": "80684ab5746e7545523b1034",
+      "sourceLine": 566
+    },
+    {
+      "id": "HOME-HP08-B039",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "默认态说明可操作边界；悬停态提供轻反馈；焦点态支持键盘定位；按下态确认触发；禁用态说明为什么不能操作；加载态保留上下文；空态区分没有数据与没有匹配；错误态说明原因和恢复位置。",
+      "sourceKey": "58b72e483bf5ada6d05bb01f",
+      "sourceLine": 572
+    },
+    {
+      "id": "HOME-HP08-B043",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "控件状态手册逐一列出12类控件的八种状态，包含触发、反馈、退出、键盘和错误恢复，以及对应图稿。共96个状态组合，其中85个适用、11个因控件性质不适用；不适用的状态也明确说明，不用一张缩略图代替完整交互规则。",
+      "sourceKey": "171801ec10e9523f1759d2ae",
+      "sourceLine": 574
+    },
+    {
+      "id": "HOME-HP10-B001",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "检查范围",
+      "sourceKey": "87fb333e4bfd7c5c413e3844",
+      "sourceLine": 580
+    },
+    {
+      "id": "HOME-HP10-B002",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "必须观察到的结果",
+      "sourceKey": "48268fe02cc2b7b8df47678e",
+      "sourceLine": 580
+    },
+    {
+      "id": "HOME-HP10-B003",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "整页布局",
+      "sourceKey": "86e614309fb7498028489d3b",
+      "sourceLine": 582
+    },
+    {
+      "id": "HOME-HP10-B004",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "表现、持仓、历史、底部唯一贡献区顺序一致；两个桌面尺寸保持相同层级",
+      "sourceKey": "6c6b96ddedfeb1a16d72f646",
+      "sourceLine": 582
+    },
+    {
+      "id": "HOME-HP10-B005",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "范围切换",
+      "sourceKey": "999557a429b0dca24abe2504",
+      "sourceLine": 583
+    },
+    {
+      "id": "HOME-HP10-B006",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "市场、账户、币种和数据一致；失败不留下新标签配旧数字",
+      "sourceKey": "3508b194a643a8a705796e02",
+      "sourceLine": 583
+    },
+    {
+      "id": "HOME-HP10-B007",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "期间选择",
+      "sourceKey": "ec67f9757ba021b7d5b802d7",
+      "sourceLine": 584
+    },
+    {
+      "id": "HOME-HP10-B008",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "三项期间指标、曲线与当前期间贡献数据一起更新；不切换贡献模式，持仓、历史统计与历史贡献不变",
+      "sourceKey": "fabe3a8e59433272f6d0b469",
+      "sourceLine": 584
+    },
+    {
+      "id": "HOME-HP10-B009",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "搜索与筛选",
+      "sourceKey": "1977d261fe2d1073a2a2471c",
+      "sourceLine": 585
+    },
+    {
+      "id": "HOME-HP10-B010",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "输入法、清除、应用、Esc与外点符合各自规则；浮层不推动页面",
+      "sourceKey": "85c34d0cab434eabd24b0580",
+      "sourceLine": 585
+    },
+    {
+      "id": "HOME-HP10-B011",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "持仓表",
+      "sourceKey": "59a4a81d06568b220af3ca18",
+      "sourceLine": 586
+    },
+    {
+      "id": "HOME-HP10-B012",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "0、5、10、20、50条及末页保持结构；数值右对齐；长名和缺失值可理解",
+      "sourceKey": "b5d4c0e0ecf75068715e7d74",
+      "sourceLine": 586
+    },
+    {
+      "id": "HOME-HP10-B013",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "贡献与历史",
+      "sourceKey": "9bc75d943ef35bd874a8c5fd",
+      "sourceLine": 587
+    },
+    {
+      "id": "HOME-HP10-B014",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "全量合计不随分页变化；历史范围切换与零样本口径正确",
+      "sourceKey": "983a81dcd00bc3b25cb19b46",
+      "sourceLine": 587
+    },
+    {
+      "id": "HOME-HP10-B015",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "查看和返回",
+      "sourceKey": "5b88db70db77b6f9cb37e118",
+      "sourceLine": 588
+    },
+    {
+      "id": "HOME-HP10-B016",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "恢复来源行、页码、筛选、排序与滚动；来源消失时有合理焦点",
+      "sourceKey": "03280ae60e44c29f89728609",
+      "sourceLine": 588
+    },
+    {
+      "id": "HOME-HP10-B017",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "异常恢复",
+      "sourceKey": "2fb3008c059a5c1fbbab67d0",
+      "sourceLine": 589
+    },
+    {
+      "id": "HOME-HP10-B018",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "首次失败和更新失败不同；只存在一个全局修复入口",
+      "sourceKey": "7a74e7fb334b36a09cc48554",
+      "sourceLine": 589
+    },
+    {
+      "id": "HOME-HP10-B019",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "可访问操作",
+      "sourceKey": "ac722e1d02e991d3ed9a1d3b",
+      "sourceLine": 590
+    },
+    {
+      "id": "HOME-HP10-B020",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "鼠标与键盘均能完成核心路径，焦点和说明清楚可见",
+      "sourceKey": "94a0373e2762f91190e90da5",
+      "sourceLine": 590
+    },
+    {
+      "id": "HOME-HP10-B021",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "视觉检查使用1440×1000和1280×800、100%缩放，分别比较布局、字号、行高、颜色、边线、空白和层级；不能用“没有溢出”代替视觉对照。窄屏和触屏需要单独设计与验证，不能把桌面证据当作触屏证据。",
+      "sourceKey": "06501a5bc4030f85d187bd29",
+      "sourceLine": 592
+    },
+    {
+      "id": "HOME-HP10-B022",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "功能、数据持久化与视觉分别验收。从交易进入复盘并保存时，要在隔离测试数据库中检查保存、返回、刷新和重新打开后的结果；静态分镜只说明预期行为，不证明产品已实现。",
+      "sourceKey": "aa1b7ba1f074d6502d392e9a",
+      "sourceLine": 594
+    },
+    {
+      "id": "HOME-HP10-B023",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "正文描述当前完整设计。本表集中说明版本来源与变化，阅读各模块时无需来回查阅历史文档。",
+      "sourceKey": "9f85fdcf3e97ab2c1b761ecf",
+      "sourceLine": 598
+    },
+    {
+      "id": "HOME-HP10-B041",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "版本身份：这是累计修订的 V2.4 规范，保留此前确认的布局与共识。历史版本用于追溯；验收以当前正文和图稿为准。",
+      "sourceKey": "d0f64080f5cedee2ff383451",
+      "sourceLine": 600
+    },
+    {
+      "id": "HOME-HP10-B025",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "内容",
+      "sourceKey": "40a7a35f455beab76d755cec",
+      "sourceLine": 602
+    },
+    {
+      "id": "HOME-HP10-B026",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "来源与演进",
+      "sourceKey": "80a0d5e8691b6127415a075a",
+      "sourceLine": 602
+    },
+    {
+      "id": "HOME-HP10-B027",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "当前规则",
+      "sourceKey": "a0fd041aaf9942f794d47dbf",
+      "sourceLine": 602
+    },
+    {
+      "id": "HOME-HP10-B028",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "首页任务与数据口径",
+      "sourceKey": "1259ee885d6aadeca64993d0",
+      "sourceLine": 604
+    },
+    {
+      "id": "HOME-HP10-B029",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V1提出核心任务；V2重新组织页面",
+      "sourceKey": "bc6f9f4e67bc40db81181897",
+      "sourceLine": 604
+    },
+    {
+      "id": "HOME-HP10-B030",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "表现、持仓、历史、底部唯一贡献区分区，日期检索和复盘任务通过交易库衔接",
+      "sourceKey": "cd76518eea3b908d27c2607d",
+      "sourceLine": 604
+    },
+    {
+      "id": "HOME-HP10-B031",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "主布局、四指标与视觉体系",
+      "sourceKey": "80e1383399ce5c977a137531",
+      "sourceLine": 605
+    },
+    {
+      "id": "HOME-HP10-B032",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2形成，V2.1补细",
+      "sourceKey": "fdbe54f24aa885932557acf5",
+      "sourceLine": 605
+    },
+    {
+      "id": "HOME-HP10-B033",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "表现优先，单层表面，保留四指标和既定颜色、文字、表格尺寸",
+      "sourceKey": "6677172752ff118dd5c459a9",
+      "sourceLine": 605
+    },
+    {
+      "id": "HOME-HP10-B034",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "搜索、详情、请求与返回",
+      "sourceKey": "d5b6f43137de296d6f571061",
+      "sourceLine": 606
+    },
+    {
+      "id": "HOME-HP10-B035",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.1补齐边界",
+      "sourceKey": "dcc3f1a9a2c844e2b5c70f76",
+      "sourceLine": 606
+    },
+    {
+      "id": "HOME-HP10-B036",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "输入法处理、焦点返回、连续请求、刷新与直达保持上下文",
+      "sourceKey": "e5b0360dccb25f653249b7c5",
+      "sourceLine": 606
+    },
+    {
+      "id": "HOME-HP10-B037",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "贡献位置与分页",
+      "sourceKey": "9a71f0b3a4e2d21b27463697",
+      "sourceLine": 607
+    },
+    {
+      "id": "HOME-HP10-B038",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "本轮共识修订",
+      "sourceKey": "b27dcbb7cc51e646eaa41237",
+      "sourceLine": 607
+    },
+    {
+      "id": "HOME-HP10-B039",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "历史之后只保留一个贡献区；当前期间与历史已平仓复用组件，标的明细每页八行",
+      "sourceKey": "3f6b8c157d83c59b16f42f8c",
+      "sourceLine": 607
+    },
+    {
+      "id": "HOME-HP10-B040",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "实盘范围与恢复动作",
+      "sourceKey": "100937d8e70d3ca8bc2d65a2",
+      "sourceLine": 608
+    },
+    {
+      "id": "HOME-HP10-B050",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2修订",
+      "sourceKey": "2c83181cfab4b4f26f81f07e",
+      "sourceLine": 608
+    },
+    {
+      "id": "HOME-HP10-B042",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "首页只呈现实盘，唯一全局修复入口",
+      "sourceKey": "863ba718146a85c561cce6f6",
+      "sourceLine": 608
+    },
+    {
+      "id": "HOME-HP10-B043",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "图表读数辅助",
+      "sourceKey": "74d45a4f016acdbb76de16ff",
+      "sourceLine": 609
+    },
+    {
+      "id": "HOME-HP10-B044",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2新增；2026-10-18确认配色",
+      "sourceKey": "50b9a786d2c8f69f817966ee",
+      "sourceLine": 609
+    },
+    {
+      "id": "HOME-HP10-B045",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "网格、双向十字线、轴端标签、缺口说明与边缘避让；零线#A8B6CB、网格#283448",
+      "sourceKey": "07ef4db586cc1354dff537fd",
+      "sourceLine": 609
+    },
+    {
+      "id": "HOME-HP10-B046",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.3 视觉样例与对齐",
+      "sourceKey": "5ebe2cb9bae3228c3135bb3a",
+      "sourceLine": 610
+    },
+    {
+      "id": "HOME-HP10-B047",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "本轮评论5–20补充",
+      "sourceKey": "2aab04a746c6450ea78f08e8",
+      "sourceLine": 610
+    },
+    {
+      "id": "HOME-HP10-B048",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "每个布局表格行都有局部样例；全局按钮文字居中，输入左对齐、数值表头右对齐，名称与说明左对齐；颜色 token 落到实际控件",
+      "sourceKey": "dadbca58894ce7c7b6990ddc",
+      "sourceLine": 610
+    },
+    {
+      "id": "HOME-HP10-B049",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "日期详情入口",
+      "sourceKey": "9149700e24fa92f387daf941",
+      "sourceLine": 611
+    },
+    {
+      "id": "HOME-HP10-B053",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2修订",
+      "sourceKey": "2c83181cfab4b4f26f81f07e",
+      "sourceLine": 611
+    },
+    {
+      "id": "HOME-HP10-B051",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "移除“查看该日敞口”，保留全部日期详情字段",
+      "sourceKey": "5136de4aa5d6b3ac92127723",
+      "sourceLine": 611
+    },
+    {
+      "id": "HOME-HP10-B052",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "筛选、价格与对齐",
+      "sourceKey": "5c24050816b8edcccad4b3ec",
+      "sourceLine": 612
+    },
+    {
+      "id": "HOME-HP10-B056",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2修订",
+      "sourceKey": "2c83181cfab4b4f26f81f07e",
+      "sourceLine": 612
+    },
+    {
+      "id": "HOME-HP10-B054",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "恢复默认独立一行；价格两位小数；数值标题和内容共用右边界",
+      "sourceKey": "f6ff4354eefb145b001f44b1",
+      "sourceLine": 612
+    },
+    {
+      "id": "HOME-HP10-B055",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "交易表工具区",
+      "sourceKey": "b7dda2e51416718bab60659a",
+      "sourceLine": 613
+    },
+    {
+      "id": "HOME-HP10-B070",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2修订",
+      "sourceKey": "2c83181cfab4b4f26f81f07e",
+      "sourceLine": 613
+    },
+    {
+      "id": "HOME-HP10-B057",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "搜索和刷新独立占位，空态图标与文字分开",
+      "sourceKey": "c0c30e28365850e012eba75b",
+      "sourceLine": 613
+    },
+    {
+      "id": "HOME-HP10-B058",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "本次文档组织",
+      "sourceKey": "af15524b78f286442c73e2b1",
+      "sourceLine": 614
+    },
+    {
+      "id": "HOME-HP10-B059",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.2编辑整理",
+      "sourceKey": "e2ba830eb09134439f67e851",
+      "sourceLine": 614
+    },
+    {
+      "id": "HOME-HP10-B060",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "从任务与原则起笔，按模块完整叙述；版本记录集中到附录，设计规则不变",
+      "sourceKey": "d69f50560449d8e0c6e93a86",
+      "sourceLine": 614
+    },
+    {
+      "id": "HOME-HP10-B061",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "待决策问题",
+      "sourceKey": "86ff6cfc80f1931dc3c18294",
+      "sourceLine": 616
+    },
+    {
+      "id": "HOME-HP10-B062",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "当前使用的规则",
+      "sourceKey": "fa3318ca5ff09283858cc6ce",
+      "sourceLine": 616
+    },
+    {
+      "id": "HOME-HP10-B063",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "需要确认的选择",
+      "sourceKey": "c7de07ab219a22422ad96069",
+      "sourceLine": 616
+    },
+    {
+      "id": "HOME-HP10-B064",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "持仓汇总布局",
+      "sourceKey": "f0ab4cfe181911495631fff8",
+      "sourceLine": 618
+    },
+    {
+      "id": "HOME-HP10-B065",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "保持现行标题副行布局",
+      "sourceKey": "a79ab4e5d6d335e84a66611a",
+      "sourceLine": 618
+    },
+    {
+      "id": "HOME-HP10-B066",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "比较三种视觉候选后选择；未确认前不替换默认布局",
+      "sourceKey": "6702f800d6544528b5acf2ad",
+      "sourceLine": 618
+    },
+    {
+      "id": "HOME-HP10-B067",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "状态徽章是否进一步紧凑",
+      "sourceKey": "98c44389d6f0b1d1f5c09f49",
+      "sourceLine": 619
+    },
+    {
+      "id": "HOME-HP10-B068",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "24px高",
+      "sourceKey": "c799b181ef9b8eb9d5e4a382",
+      "sourceLine": 619
+    },
+    {
+      "id": "HOME-HP10-B069",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "保持当前几何，或采用20px高、自适应宽的方案",
+      "sourceKey": "eea26eb934c9e44f5b9ea7de",
+      "sourceLine": 619
+    },
+    {
+      "id": "HOME-HP10-B110",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "详细修订依据 · 历史21条评论与图稿 · 旧轮评论回应 · 待决策记录",
+      "sourceKey": "0a8057c6a1e3199b4d74c90c",
+      "sourceLine": 621
+    },
+    {
+      "id": "HOME-HP10-B071",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "文档中的对齐辅助层仅供检查表头、列宽和边界，默认关闭，不属于产品界面，也不应复制到视觉基线。",
+      "sourceKey": "929f34bf4b9171b188426f07",
+      "sourceLine": 623
+    },
+    {
+      "id": "HOME-HP10-B077",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "正文继续使用现行标题副行布局。以下三种方案使用相同持仓数据、列宽和操作，仅比较汇总指标的位置；选择后再统一应用。",
+      "sourceKey": "ca12ca6da3d465224795cf3c",
+      "sourceLine": 627
+    },
+    {
+      "id": "HOME-HP10-B089",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "方案",
+      "sourceKey": "f24dd1cce8f36b70a8921641",
+      "sourceLine": 629
+    },
+    {
+      "id": "HOME-HP10-B112",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "优点",
+      "sourceKey": "f804998bea7b89e452435a46",
+      "sourceLine": 629
+    },
+    {
+      "id": "HOME-HP10-B105",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "取舍",
+      "sourceKey": "d4d0ef78d3d6ba0bcaae9139",
+      "sourceLine": 629
+    },
+    {
+      "id": "HOME-HP10-B114",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "A 标题内副行",
+      "sourceKey": "da6914f987a00364a9c5dfba",
+      "sourceLine": 631
+    },
+    {
+      "id": "HOME-HP10-B115",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "延续已有阅读顺序，占用较少空间",
+      "sourceKey": "6616fd55280c863676cb6395",
+      "sourceLine": 631
+    },
+    {
+      "id": "HOME-HP10-B116",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "长金额需要保持与工具栏的间距",
+      "sourceKey": "a3b7561c9b5554fd6a437005",
+      "sourceLine": 631
+    },
+    {
+      "id": "HOME-HP10-B117",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "B 独立紧凑栏",
+      "sourceKey": "f9cab82217ad9af5344ba964",
+      "sourceLine": 632
+    },
+    {
+      "id": "HOME-HP10-B118",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "汇总与标题、操作各自清晰",
+      "sourceKey": "0fc379237ac69c3213175d8d",
+      "sourceLine": 632
+    },
+    {
+      "id": "HOME-HP10-B119",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "增加一行高度",
+      "sourceKey": "d0cf4a0bf3955a53d0319a2c",
+      "sourceLine": 632
+    },
+    {
+      "id": "HOME-HP10-B120",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "C 标题右侧并列",
+      "sourceKey": "6056bbc214de9111bef887af",
+      "sourceLine": 633
+    },
+    {
+      "id": "HOME-HP10-B121",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "汇总醒目，纵向较紧凑",
+      "sourceKey": "5f9fdbc0539e3e35727c3943",
+      "sourceLine": 633
+    },
+    {
+      "id": "HOME-HP10-B122",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "横向空间更紧，需要检查较窄桌面",
+      "sourceKey": "111d496c0f0dc4dc4da77b6c",
+      "sourceLine": 633
+    },
+    {
+      "id": "HOME-HP10-B072",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "本附录保存实现所需的精确约定，避免把接口参数写进界面文案。",
+      "sourceKey": "b21f2754ab88f97a02004415",
+      "sourceLine": 664
+    },
+    {
+      "id": "HOME-HP10-B073",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "项目",
+      "sourceKey": "8c1b6e60498e11c5e140a231",
+      "sourceLine": 666
+    },
+    {
+      "id": "HOME-HP10-B074",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "约定",
+      "sourceKey": "e3a5e6456b27c24042055b46",
+      "sourceLine": 666
+    },
+    {
+      "id": "HOME-HP10-B075",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "按日期进入交易库",
+      "sourceKey": "c22d70222eb65610caa047a4",
+      "sourceLine": 668
+    },
+    {
+      "id": "HOME-HP10-B076",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "/trades?date=YYYY-MM-DD&market=<market>&scope=<scope>&accounts=<accounts>",
+      "sourceKey": "88e969d1d7bab458e5c6c40b",
+      "sourceLine": 668
+    },
+    {
+      "id": "HOME-HP10-B113",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "进入待复盘",
+      "sourceKey": "4467c3f45559cd9eeb116405",
+      "sourceLine": 669
+    },
+    {
+      "id": "HOME-HP10-B078",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "/trades?queue=pending-review&rangeMode=<mode>&from=<YYYY-MM-DD>&to=<YYYY-MM-DD>&market=<market>&scope=live&accounts=<accounts>；传递首页已应用范围，全部范围使用rangeMode=all且不带起止日期",
+      "sourceKey": "28ccd5f410865ce123b8ed6d",
+      "sourceLine": 669
+    },
+    {
+      "id": "HOME-HP10-B079",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "按标的进入交易库",
+      "sourceKey": "e9f2ec43b153476f2255e6db",
+      "sourceLine": 670
+    },
+    {
+      "id": "HOME-HP10-B080",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "/trades?symbol=<symbolIdentity>&rangeMode=<mode>&from=<YYYY-MM-DD>&to=<YYYY-MM-DD>&market=<market>&scope=live&accounts=<accounts>；标的身份包含交易所与代码，必要时包含资产类别；目标为该标的的交易集合，不代入固定首行",
+      "sourceKey": "48359533d818edd9970aa496",
+      "sourceLine": 670
+    },
+    {
+      "id": "HOME-HP10-B081",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "范围重建",
+      "sourceKey": "a6623e8cac78173cbd86a537",
+      "sourceLine": 671
+    },
+    {
+      "id": "HOME-HP10-B082",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "刷新与直达按URL重建已应用范围；自然快捷项交接实际起止日期。非法或不完整范围显示可修正提示，不静默扩大全部；来源快照不能替代目标页范围",
+      "sourceKey": "1381969bf38a09856fd3e6a6",
+      "sourceLine": 671
+    },
+    {
+      "id": "HOME-HP10-B083",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "市场参数",
+      "sourceKey": "74d33f34a362ea7990884455",
+      "sourceLine": 672
+    },
+    {
+      "id": "HOME-HP10-B084",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "all/a/hk/us；非法值回all并提示",
+      "sourceKey": "c8719e3eaf575ac566cfb9e9",
+      "sourceLine": 672
+    },
+    {
+      "id": "HOME-HP10-B085",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "交易范围参数",
+      "sourceKey": "2fd6a6d7e1e581c49459a72a",
+      "sourceLine": 673
+    },
+    {
+      "id": "HOME-HP10-B086",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "live/sim；首页只产生live",
+      "sourceKey": "c15f98eac669d054a74a02ac",
+      "sourceLine": 673
+    },
+    {
+      "id": "HOME-HP10-B087",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "账户参数",
+      "sourceKey": "81bdcfd90eed4879731a9b83",
+      "sourceLine": 674
+    },
+    {
+      "id": "HOME-HP10-B088",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "必须显式传递；刷新与直达以URL参数为准",
+      "sourceKey": "81cd07023b5490f418381856",
+      "sourceLine": 674
+    },
+    {
+      "id": "HOME-HP10-B123",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "返回首页",
+      "sourceKey": "f02c45ab416e9b014db36b8e",
+      "sourceLine": 675
+    },
+    {
+      "id": "HOME-HP10-B090",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "/home，恢复来源上下文并重新读取数据；快照包含当前期间、历史范围、全局市场、账户及附加筛选，持仓搜索/排序/页码，贡献当前模式及两模式各自的分类/排序/下钻/页码，以及滚动和原触发焦点。原对象消失只回退到来源容器标题，不清空仍有效条件",
+      "sourceKey": "ad68b673fccf04d6145b1bbe",
+      "sourceLine": 675
+    },
+    {
+      "id": "HOME-HP10-B091",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "请求一致性",
+      "sourceKey": "107133239fd0deaf5b15ffe9",
+      "sourceLine": 676
+    },
+    {
+      "id": "HOME-HP10-B092",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "递增请求编号（generation）与完整范围标识（scope key）同时匹配才允许更新；取消旧请求并忽略迟到结果；重试创建新编号",
+      "sourceKey": "517b4850418af6c4259cf9a7",
+      "sourceLine": 676
+    },
+    {
+      "id": "HOME-HP10-B093",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "输入法",
+      "sourceKey": "eb7b13867518f9393a165294",
+      "sourceLine": 677
+    },
+    {
+      "id": "HOME-HP10-B094",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "compositionstart至compositionend之间不提交查询；结束后提交最新完整词",
+      "sourceKey": "34d7e215834bb27aa0bca9a4",
+      "sourceLine": 677
+    },
+    {
+      "id": "HOME-HP10-B095",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "业务时区",
+      "sourceKey": "046ab182dd88e555923b7ed4",
+      "sourceLine": 678
+    },
+    {
+      "id": "HOME-HP10-B096",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "Asia/Shanghai",
+      "sourceKey": "7cd241ea71fc3a009775605e",
+      "sourceLine": 678
+    },
+    {
+      "id": "HOME-HP10-B097",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "字体",
+      "sourceKey": "4f581a053a615ecd1a28b77a",
+      "sourceLine": 679
+    },
+    {
+      "id": "HOME-HP10-B098",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif；数字启用tabular-nums",
+      "sourceKey": "1fc71dfce3030c43543708fa",
+      "sourceLine": 679
+    },
+    {
+      "id": "HOME-HP10-B099",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "浮层动效",
+      "sourceKey": "57cae3f470d2ee9ae2dcaea7",
+      "sourceLine": 680
+    },
+    {
+      "id": "HOME-HP10-B100",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "translateY(-4px)到0及透明度变化，160ms ease-out；关闭反向",
+      "sourceKey": "3fbe0954f76fac4dac00f8b7",
+      "sourceLine": 680
+    },
+    {
+      "id": "HOME-HP10-B101",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "减弱动效",
+      "sourceKey": "a5b7ca3cb389125b9c414874",
+      "sourceLine": 681
+    },
+    {
+      "id": "HOME-HP10-B102",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "prefers-reduced-motion时直接呈现最终态",
+      "sourceKey": "b583f1314808c0c38a0c95e8",
+      "sourceLine": 681
+    },
+    {
+      "id": "HOME-HP10-B103",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "图标绘制与实现",
+      "sourceKey": "0d86a91ec56aabcb435126d3",
+      "sourceLine": 682
+    },
+    {
+      "id": "HOME-HP10-B104",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "部分分镜SVG用24×24坐标绘制路径；产品通用图标仍遵循16×16坐标规范，页头搜索/筛选为24×24例外。分镜源文件不能直接当作产品图标库",
+      "sourceKey": "9af7e7aeff810e87ee381420",
+      "sourceLine": 682
+    },
+    {
+      "id": "HOME-HP10-B127",
+      "kind": "paragraph",
+      "chapter": "HP10",
+      "text": "完整控件状态手册 · 当前控件状态数据 · 图稿索引",
+      "sourceKey": "15e7ade2d1faff9c5c349527",
+      "sourceLine": 684
+    }
+  ],
+  "images": [
+    {
+      "id": "visual-samples-board",
+      "occurrenceId": "visual-samples-board@69",
+      "sharedImageId": "visual-samples-board",
+      "src": "source/images/visual-samples-board.svg",
+      "chapter": "HP01",
+      "sourceLine": 69
+    },
+    {
+      "id": "account",
+      "occurrenceId": "account@116",
+      "sharedImageId": "account",
+      "src": "source/images/account.svg",
+      "chapter": "HP03",
+      "sourceLine": 116
+    },
+    {
+      "id": "detail",
+      "occurrenceId": "detail@149",
+      "sharedImageId": "detail",
+      "src": "source/images/detail.svg",
+      "chapter": "HP03",
+      "sourceLine": 149
+    },
+    {
+      "id": "period",
+      "occurrenceId": "period@208",
+      "sharedImageId": "period",
+      "src": "source/images/period.svg",
+      "chapter": "HP02",
+      "sourceLine": 208
+    },
+    {
+      "id": "extreme",
+      "occurrenceId": "extreme@335",
+      "sharedImageId": "extreme",
+      "src": "source/images/extreme.svg",
+      "chapter": "HP04",
+      "sourceLine": 335
+    },
+    {
+      "id": "handoff",
+      "occurrenceId": "handoff@431",
+      "sharedImageId": "handoff",
+      "src": "source/images/handoff.svg",
+      "chapter": "HP06",
+      "sourceLine": 431
+    },
+    {
+      "id": "atoms",
+      "occurrenceId": "atoms@568",
+      "sharedImageId": "atoms",
+      "src": "source/images/atoms.svg",
+      "chapter": "HP08",
+      "sourceLine": 568
+    },
+    {
+      "id": "home-1440",
+      "occurrenceId": "home-1440@state-demo-1-1",
+      "sharedImageId": "home-1440",
+      "src": "source/images/home-1440.svg",
+      "chapter": "HP01",
+      "sourceLine": 46
+    },
+    {
+      "id": "home-history-1440",
+      "occurrenceId": "home-history-1440@state-demo-1-2",
+      "sharedImageId": "home-history-1440",
+      "src": "source/images/home-history-1440.svg",
+      "chapter": "HP01",
+      "sourceLine": 46
+    },
+    {
+      "id": "home-1280",
+      "occurrenceId": "home-1280@state-demo-2-1",
+      "sharedImageId": "home-1280",
+      "src": "source/images/home-1280.svg",
+      "chapter": "HP01",
+      "sourceLine": 51
+    },
+    {
+      "id": "home-history-1280",
+      "occurrenceId": "home-history-1280@state-demo-2-2",
+      "sharedImageId": "home-history-1280",
+      "src": "source/images/home-history-1280.svg",
+      "chapter": "HP01",
+      "sourceLine": 51
+    },
+    {
+      "id": "search",
+      "occurrenceId": "search@state-demo-3-1",
+      "sharedImageId": "search",
+      "src": "source/images/search.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search--detail",
+      "occurrenceId": "search--detail@state-demo-3-2",
+      "sharedImageId": "search--detail",
+      "src": "source/images/search--detail.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search--empty",
+      "occurrenceId": "search--empty@state-demo-3-3",
+      "sharedImageId": "search--empty",
+      "src": "source/images/search--empty.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search-detail",
+      "occurrenceId": "search-detail@state-demo-3-4",
+      "sharedImageId": "search-detail",
+      "src": "source/images/search-detail.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search-motion",
+      "occurrenceId": "search-motion@state-demo-3-5",
+      "sharedImageId": "search-motion",
+      "src": "source/images/search-motion.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search-overlay-open",
+      "occurrenceId": "search-overlay-open@state-demo-3-6",
+      "sharedImageId": "search-overlay-open",
+      "src": "source/images/search-overlay-open.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "search-overlay-reduced-motion",
+      "occurrenceId": "search-overlay-reduced-motion@state-demo-3-7",
+      "sharedImageId": "search-overlay-reduced-motion",
+      "src": "source/images/search-overlay-reduced-motion.svg",
+      "chapter": "HP03",
+      "sourceLine": 139
+    },
+    {
+      "id": "filter",
+      "occurrenceId": "filter@state-demo-4-1",
+      "sharedImageId": "filter",
+      "src": "source/images/filter.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "multi-applied",
+      "occurrenceId": "multi-applied@state-demo-4-2",
+      "sharedImageId": "multi-applied",
+      "src": "source/images/multi-applied.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "multi-applied--reopen",
+      "occurrenceId": "multi-applied--reopen@state-demo-4-3",
+      "sharedImageId": "multi-applied--reopen",
+      "src": "source/images/multi-applied--reopen.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "clear-attachments",
+      "occurrenceId": "clear-attachments@state-demo-4-4",
+      "sharedImageId": "clear-attachments",
+      "src": "source/images/clear-attachments.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "clear-attachments--after-clear",
+      "occurrenceId": "clear-attachments--after-clear@state-demo-4-5",
+      "sharedImageId": "clear-attachments--after-clear",
+      "src": "source/images/clear-attachments--after-clear.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "reset",
+      "occurrenceId": "reset@state-demo-4-6",
+      "sharedImageId": "reset",
+      "src": "source/images/reset.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "reset--reset",
+      "occurrenceId": "reset--reset@state-demo-4-7",
+      "sharedImageId": "reset--reset",
+      "src": "source/images/reset--reset.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "cancel",
+      "occurrenceId": "cancel@state-demo-4-8",
+      "sharedImageId": "cancel",
+      "src": "source/images/cancel.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "cancel--cancelled",
+      "occurrenceId": "cancel--cancelled@state-demo-4-9",
+      "sharedImageId": "cancel--cancelled",
+      "src": "source/images/cancel--cancelled.svg",
+      "chapter": "HP03",
+      "sourceLine": 169
+    },
+    {
+      "id": "chart-hover",
+      "occurrenceId": "chart-hover@state-demo-5-1",
+      "sharedImageId": "chart-hover",
+      "src": "source/images/chart-hover.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-hover--keyboard",
+      "occurrenceId": "chart-hover--keyboard@state-demo-5-2",
+      "sharedImageId": "chart-hover--keyboard",
+      "src": "source/images/chart-hover--keyboard.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-gap",
+      "occurrenceId": "chart-gap@state-demo-5-3",
+      "sharedImageId": "chart-gap",
+      "src": "source/images/chart-gap.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-scale",
+      "occurrenceId": "chart-scale@state-demo-5-4",
+      "sharedImageId": "chart-scale",
+      "src": "source/images/chart-scale.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-scale--normal",
+      "occurrenceId": "chart-scale--normal@state-demo-5-5",
+      "sharedImageId": "chart-scale--normal",
+      "src": "source/images/chart-scale--normal.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-scale--wide",
+      "occurrenceId": "chart-scale--wide@state-demo-5-6",
+      "sharedImageId": "chart-scale--wide",
+      "src": "source/images/chart-scale--wide.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "chart-scale--extreme",
+      "occurrenceId": "chart-scale--extreme@state-demo-5-7",
+      "sharedImageId": "chart-scale--extreme",
+      "src": "source/images/chart-scale--extreme.svg",
+      "chapter": "HP02",
+      "sourceLine": 233
+    },
+    {
+      "id": "count-scales",
+      "occurrenceId": "count-scales@state-demo-6-1",
+      "sharedImageId": "count-scales",
+      "src": "source/images/count-scales.svg",
+      "chapter": "HP04",
+      "sourceLine": 279
+    },
+    {
+      "id": "count-scales--ten-items",
+      "occurrenceId": "count-scales--ten-items@state-demo-6-2",
+      "sharedImageId": "count-scales--ten-items",
+      "src": "source/images/count-scales--ten-items.svg",
+      "chapter": "HP04",
+      "sourceLine": 279
+    },
+    {
+      "id": "count-scales--twenty-items",
+      "occurrenceId": "count-scales--twenty-items@state-demo-6-3",
+      "sharedImageId": "count-scales--twenty-items",
+      "src": "source/images/count-scales--twenty-items.svg",
+      "chapter": "HP04",
+      "sourceLine": 279
+    },
+    {
+      "id": "local-search-pages",
+      "occurrenceId": "local-search-pages@state-demo-7-1",
+      "sharedImageId": "local-search-pages",
+      "src": "source/images/local-search-pages.svg",
+      "chapter": "HP04",
+      "sourceLine": 291
+    },
+    {
+      "id": "local-search-pages--one-match",
+      "occurrenceId": "local-search-pages--one-match@state-demo-7-2",
+      "sharedImageId": "local-search-pages--one-match",
+      "src": "source/images/local-search-pages--one-match.svg",
+      "chapter": "HP04",
+      "sourceLine": 291
+    },
+    {
+      "id": "local-search-pages--clear",
+      "occurrenceId": "local-search-pages--clear@state-demo-7-3",
+      "sharedImageId": "local-search-pages--clear",
+      "src": "source/images/local-search-pages--clear.svg",
+      "chapter": "HP04",
+      "sourceLine": 291
+    },
+    {
+      "id": "50-items",
+      "occurrenceId": "50-items@state-demo-8-1",
+      "sharedImageId": "50-items",
+      "src": "source/images/50-items.svg",
+      "chapter": "HP04",
+      "sourceLine": 297
+    },
+    {
+      "id": "50-items--page-7",
+      "occurrenceId": "50-items--page-7@state-demo-8-2",
+      "sharedImageId": "50-items--page-7",
+      "src": "source/images/50-items--page-7.svg",
+      "chapter": "HP04",
+      "sourceLine": 297
+    },
+    {
+      "id": "holding-return",
+      "occurrenceId": "holding-return@state-demo-9-1",
+      "sharedImageId": "holding-return",
+      "src": "source/images/holding-return.svg",
+      "chapter": "HP04",
+      "sourceLine": 308
+    },
+    {
+      "id": "holding-return--detail",
+      "occurrenceId": "holding-return--detail@state-demo-9-2",
+      "sharedImageId": "holding-return--detail",
+      "src": "source/images/holding-return--detail.svg",
+      "chapter": "HP04",
+      "sourceLine": 308
+    },
+    {
+      "id": "holding-return--after",
+      "occurrenceId": "holding-return--after@state-demo-9-3",
+      "sharedImageId": "holding-return--after",
+      "src": "source/images/holding-return--after.svg",
+      "chapter": "HP04",
+      "sourceLine": 308
+    },
+    {
+      "id": "empty",
+      "occurrenceId": "empty@state-demo-10-1",
+      "sharedImageId": "empty",
+      "src": "source/images/empty.svg",
+      "chapter": "HP04",
+      "sourceLine": 325
+    },
+    {
+      "id": "empty--zero-holdings",
+      "occurrenceId": "empty--zero-holdings@state-demo-10-2",
+      "sharedImageId": "empty--zero-holdings",
+      "src": "source/images/empty--zero-holdings.svg",
+      "chapter": "HP04",
+      "sourceLine": 325
+    },
+    {
+      "id": "count-boundaries",
+      "occurrenceId": "count-boundaries@state-demo-11-1",
+      "sharedImageId": "count-boundaries",
+      "src": "source/images/count-boundaries.svg",
+      "chapter": "HP04",
+      "sourceLine": 330
+    },
+    {
+      "id": "count-boundaries--nine-items-last-page",
+      "occurrenceId": "count-boundaries--nine-items-last-page@state-demo-11-2",
+      "sharedImageId": "count-boundaries--nine-items-last-page",
+      "src": "source/images/count-boundaries--nine-items-last-page.svg",
+      "chapter": "HP04",
+      "sourceLine": 330
+    },
+    {
+      "id": "history",
+      "occurrenceId": "history@state-demo-12-1",
+      "sharedImageId": "history",
+      "src": "source/images/history.svg",
+      "chapter": "HP05",
+      "sourceLine": 364
+    },
+    {
+      "id": "history-stats-cumulative",
+      "occurrenceId": "history-stats-cumulative@state-demo-12-2",
+      "sharedImageId": "history-stats-cumulative",
+      "src": "source/images/history-stats-cumulative.svg",
+      "chapter": "HP05",
+      "sourceLine": 364
+    },
+    {
+      "id": "history-stats-win",
+      "occurrenceId": "history-stats-win@state-demo-12-3",
+      "sharedImageId": "history-stats-win",
+      "src": "source/images/history-stats-win.svg",
+      "chapter": "HP05",
+      "sourceLine": 364
+    },
+    {
+      "id": "history-stats-rounds",
+      "occurrenceId": "history-stats-rounds@state-demo-12-4",
+      "sharedImageId": "history-stats-rounds",
+      "src": "source/images/history-stats-rounds.svg",
+      "chapter": "HP05",
+      "sourceLine": 364
+    },
+    {
+      "id": "journeys-year",
+      "occurrenceId": "journeys-year@state-demo-13-1",
+      "sharedImageId": "journeys-year",
+      "src": "source/images/journeys-year.svg",
+      "chapter": "HP05",
+      "sourceLine": 373
+    },
+    {
+      "id": "history-stats-empty",
+      "occurrenceId": "history-stats-empty@state-demo-13-2",
+      "sharedImageId": "history-stats-empty",
+      "src": "source/images/history-stats-empty.svg",
+      "chapter": "HP05",
+      "sourceLine": 373
+    },
+    {
+      "id": "history-stats-error",
+      "occurrenceId": "history-stats-error@state-demo-13-3",
+      "sharedImageId": "history-stats-error",
+      "src": "source/images/history-stats-error.svg",
+      "chapter": "HP05",
+      "sourceLine": 373
+    },
+    {
+      "id": "history-stats-source-missing",
+      "occurrenceId": "history-stats-source-missing@state-demo-13-4",
+      "sharedImageId": "history-stats-source-missing",
+      "src": "source/images/history-stats-source-missing.svg",
+      "chapter": "HP05",
+      "sourceLine": 373
+    },
+    {
+      "id": "history-stats-extreme",
+      "occurrenceId": "history-stats-extreme@state-demo-13-5",
+      "sharedImageId": "history-stats-extreme",
+      "src": "source/images/history-stats-extreme.svg",
+      "chapter": "HP05",
+      "sourceLine": 373
+    },
+    {
+      "id": "contribution-states",
+      "occurrenceId": "contribution-states@state-demo-14-1",
+      "sharedImageId": "contribution-states",
+      "src": "source/images/contribution-states.svg",
+      "chapter": "HP05",
+      "sourceLine": 397
+    },
+    {
+      "id": "contribution-current-a-share",
+      "occurrenceId": "contribution-current-a-share@state-demo-14-2",
+      "sharedImageId": "contribution-current-a-share",
+      "src": "source/images/contribution-current-a-share.svg",
+      "chapter": "HP05",
+      "sourceLine": 397
+    },
+    {
+      "id": "contribution-historical-a-share",
+      "occurrenceId": "contribution-historical-a-share@state-demo-14-3",
+      "sharedImageId": "contribution-historical-a-share",
+      "src": "source/images/contribution-historical-a-share.svg",
+      "chapter": "HP05",
+      "sourceLine": 397
+    },
+    {
+      "id": "contribution",
+      "occurrenceId": "contribution@state-demo-15-1",
+      "sharedImageId": "contribution",
+      "src": "source/images/contribution.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "contribution-loading",
+      "occurrenceId": "contribution-loading@state-demo-15-2",
+      "sharedImageId": "contribution-loading",
+      "src": "source/images/contribution-loading.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "contribution-empty",
+      "occurrenceId": "contribution-empty@state-demo-15-3",
+      "sharedImageId": "contribution-empty",
+      "src": "source/images/contribution-empty.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "contribution-error",
+      "occurrenceId": "contribution-error@state-demo-15-4",
+      "sharedImageId": "contribution-error",
+      "src": "source/images/contribution-error.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "contribution-extreme",
+      "occurrenceId": "contribution-extreme@state-demo-15-5",
+      "sharedImageId": "contribution-extreme",
+      "src": "source/images/contribution-extreme.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "contribution-mixed-sign-demo",
+      "occurrenceId": "contribution-mixed-sign-demo@state-demo-15-6",
+      "sharedImageId": "contribution-mixed-sign-demo",
+      "src": "source/images/contribution-mixed-sign-demo.svg",
+      "chapter": "HP05",
+      "sourceLine": 405
+    },
+    {
+      "id": "journeys-date",
+      "occurrenceId": "journeys-date@state-demo-16-1",
+      "sharedImageId": "journeys-date",
+      "src": "source/images/journeys-date.svg",
+      "chapter": "HP06",
+      "sourceLine": 437
+    },
+    {
+      "id": "hcr06-final-return",
+      "occurrenceId": "hcr06-final-return@state-demo-16-2",
+      "sharedImageId": "hcr06-final-return",
+      "src": "source/images/hcr06-final-return.svg",
+      "chapter": "HP06",
+      "sourceLine": 437
+    },
+    {
+      "id": "journeys-pending",
+      "occurrenceId": "journeys-pending@state-demo-17-1",
+      "sharedImageId": "journeys-pending",
+      "src": "source/images/journeys-pending.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "journeys-pending-normal",
+      "occurrenceId": "journeys-pending-normal@state-demo-17-2",
+      "sharedImageId": "journeys-pending-normal",
+      "src": "source/images/journeys-pending-normal.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "journeys-pending-99plus",
+      "occurrenceId": "journeys-pending-99plus@state-demo-17-3",
+      "sharedImageId": "journeys-pending-99plus",
+      "src": "source/images/journeys-pending-99plus.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "hcr06-final-pending-library",
+      "occurrenceId": "hcr06-final-pending-library@state-demo-17-4",
+      "sharedImageId": "hcr06-final-pending-library",
+      "src": "source/images/hcr06-final-pending-library.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "hcr06-final-pending-library-1280",
+      "occurrenceId": "hcr06-final-pending-library-1280@state-demo-17-5",
+      "sharedImageId": "hcr06-final-pending-library-1280",
+      "src": "source/images/hcr06-final-pending-library-1280.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "hcr06-final-pending-return",
+      "occurrenceId": "hcr06-final-pending-return@state-demo-17-6",
+      "sharedImageId": "hcr06-final-pending-return",
+      "src": "source/images/hcr06-final-pending-return.svg",
+      "chapter": "HP06",
+      "sourceLine": 444
+    },
+    {
+      "id": "hcr06-final-sim-ab",
+      "occurrenceId": "hcr06-final-sim-ab@state-demo-18-1",
+      "sharedImageId": "hcr06-final-sim-ab",
+      "src": "source/images/hcr06-final-sim-ab.svg",
+      "chapter": "HP07",
+      "sourceLine": 475
+    },
+    {
+      "id": "hcr06-final-rounds-a",
+      "occurrenceId": "hcr06-final-rounds-a@state-demo-18-2",
+      "sharedImageId": "hcr06-final-rounds-a",
+      "src": "source/images/hcr06-final-rounds-a.svg",
+      "chapter": "HP07",
+      "sourceLine": 475
+    },
+    {
+      "id": "hcr06-final-replay-a1",
+      "occurrenceId": "hcr06-final-replay-a1@state-demo-18-3",
+      "sharedImageId": "hcr06-final-replay-a1",
+      "src": "source/images/hcr06-final-replay-a1.svg",
+      "chapter": "HP07",
+      "sourceLine": 475
+    },
+    {
+      "id": "hcr06-final-replay-a2",
+      "occurrenceId": "hcr06-final-replay-a2@state-demo-18-4",
+      "sharedImageId": "hcr06-final-replay-a2",
+      "src": "source/images/hcr06-final-replay-a2.svg",
+      "chapter": "HP07",
+      "sourceLine": 475
+    },
+    {
+      "id": "hcr06-final-replay-b1",
+      "occurrenceId": "hcr06-final-replay-b1@state-demo-18-5",
+      "sharedImageId": "hcr06-final-replay-b1",
+      "src": "source/images/hcr06-final-replay-b1.svg",
+      "chapter": "HP07",
+      "sourceLine": 475
+    },
+    {
+      "id": "01-live-normal",
+      "occurrenceId": "01-live-normal@state-demo-19-1",
+      "sharedImageId": "01-live-normal",
+      "src": "source/images/01-live-normal.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "02-simulation-normal",
+      "occurrenceId": "02-simulation-normal@state-demo-19-2",
+      "sharedImageId": "02-simulation-normal",
+      "src": "source/images/02-simulation-normal.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "03-distribution-selected",
+      "occurrenceId": "03-distribution-selected@state-demo-19-3",
+      "sharedImageId": "03-distribution-selected",
+      "src": "source/images/03-distribution-selected.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "04-return",
+      "occurrenceId": "04-return@state-demo-19-4",
+      "sharedImageId": "04-return",
+      "src": "source/images/04-return.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "05-loading",
+      "occurrenceId": "05-loading@state-demo-19-5",
+      "sharedImageId": "05-loading",
+      "src": "source/images/05-loading.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "06-empty",
+      "occurrenceId": "06-empty@state-demo-19-6",
+      "sharedImageId": "06-empty",
+      "src": "source/images/06-empty.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "07-error",
+      "occurrenceId": "07-error@state-demo-19-7",
+      "sharedImageId": "07-error",
+      "src": "source/images/07-error.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "08-extreme",
+      "occurrenceId": "08-extreme@state-demo-19-8",
+      "sharedImageId": "08-extreme",
+      "src": "source/images/08-extreme.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "09-missing-input",
+      "occurrenceId": "09-missing-input@state-demo-19-9",
+      "sharedImageId": "09-missing-input",
+      "src": "source/images/09-missing-input.svg",
+      "chapter": "HP07",
+      "sourceLine": 485
+    },
+    {
+      "id": "empty",
+      "occurrenceId": "empty@state-demo-20-1",
+      "sharedImageId": "empty",
+      "src": "source/images/empty.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "empty--zero-holdings",
+      "occurrenceId": "empty--zero-holdings@state-demo-20-2",
+      "sharedImageId": "empty--zero-holdings",
+      "src": "source/images/empty--zero-holdings.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "loading",
+      "occurrenceId": "loading@state-demo-20-3",
+      "sharedImageId": "loading",
+      "src": "source/images/loading.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "loading--stale-data",
+      "occurrenceId": "loading--stale-data@state-demo-20-4",
+      "sharedImageId": "loading--stale-data",
+      "src": "source/images/loading--stale-data.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "error",
+      "occurrenceId": "error@state-demo-20-5",
+      "sharedImageId": "error",
+      "src": "source/images/error.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "error--update-failure",
+      "occurrenceId": "error--update-failure@state-demo-20-6",
+      "sharedImageId": "error--update-failure",
+      "src": "source/images/error--update-failure.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "repair",
+      "occurrenceId": "repair@state-demo-20-7",
+      "sharedImageId": "repair",
+      "src": "source/images/repair.svg",
+      "chapter": "HP09",
+      "sourceLine": 515
+    },
+    {
+      "id": "holding-option-A-normal-1440",
+      "occurrenceId": "holding-option-A-normal-1440@state-demo-21-1",
+      "sharedImageId": "holding-option-A-normal-1440",
+      "src": "source/images/holding-option-A-normal-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 637
+    },
+    {
+      "id": "holding-option-A-normal-1280",
+      "occurrenceId": "holding-option-A-normal-1280@state-demo-21-2",
+      "sharedImageId": "holding-option-A-normal-1280",
+      "src": "source/images/holding-option-A-normal-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 637
+    },
+    {
+      "id": "holding-option-A-large-1440",
+      "occurrenceId": "holding-option-A-large-1440@state-demo-21-3",
+      "sharedImageId": "holding-option-A-large-1440",
+      "src": "source/images/holding-option-A-large-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 637
+    },
+    {
+      "id": "holding-option-A-large-1280",
+      "occurrenceId": "holding-option-A-large-1280@state-demo-21-4",
+      "sharedImageId": "holding-option-A-large-1280",
+      "src": "source/images/holding-option-A-large-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 637
+    },
+    {
+      "id": "holding-option-B-normal-1440",
+      "occurrenceId": "holding-option-B-normal-1440@state-demo-22-1",
+      "sharedImageId": "holding-option-B-normal-1440",
+      "src": "source/images/holding-option-B-normal-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 646
+    },
+    {
+      "id": "holding-option-B-normal-1280",
+      "occurrenceId": "holding-option-B-normal-1280@state-demo-22-2",
+      "sharedImageId": "holding-option-B-normal-1280",
+      "src": "source/images/holding-option-B-normal-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 646
+    },
+    {
+      "id": "holding-option-B-large-1440",
+      "occurrenceId": "holding-option-B-large-1440@state-demo-22-3",
+      "sharedImageId": "holding-option-B-large-1440",
+      "src": "source/images/holding-option-B-large-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 646
+    },
+    {
+      "id": "holding-option-B-large-1280",
+      "occurrenceId": "holding-option-B-large-1280@state-demo-22-4",
+      "sharedImageId": "holding-option-B-large-1280",
+      "src": "source/images/holding-option-B-large-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 646
+    },
+    {
+      "id": "holding-option-C-normal-1440",
+      "occurrenceId": "holding-option-C-normal-1440@state-demo-23-1",
+      "sharedImageId": "holding-option-C-normal-1440",
+      "src": "source/images/holding-option-C-normal-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 655
+    },
+    {
+      "id": "holding-option-C-normal-1280",
+      "occurrenceId": "holding-option-C-normal-1280@state-demo-23-2",
+      "sharedImageId": "holding-option-C-normal-1280",
+      "src": "source/images/holding-option-C-normal-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 655
+    },
+    {
+      "id": "holding-option-C-large-1440",
+      "occurrenceId": "holding-option-C-large-1440@state-demo-23-3",
+      "sharedImageId": "holding-option-C-large-1440",
+      "src": "source/images/holding-option-C-large-1440.svg",
+      "chapter": "HP10",
+      "sourceLine": 655
+    },
+    {
+      "id": "holding-option-C-large-1280",
+      "occurrenceId": "holding-option-C-large-1280@state-demo-23-4",
+      "sharedImageId": "holding-option-C-large-1280",
+      "src": "source/images/holding-option-C-large-1280.svg",
+      "chapter": "HP10",
+      "sourceLine": 655
+    }
+  ]
+}

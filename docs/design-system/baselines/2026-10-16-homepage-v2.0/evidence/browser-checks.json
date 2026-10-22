@@ -1,0 +1,30 @@
+{
+  "readerViewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "readerScrollWidth": 1265,
+  "brokenVisibleImages": [],
+  "storyboardGroups": 6,
+  "lastGroupAfterNext": "第 2 / 2 帧 · 重试中、成功与再次失败",
+  "commentTest": {
+    "servicePort": 3080,
+    "storage": "/tmp/homepage-v2-review-test/HOME-DOC-V2.json",
+    "revision": 1,
+    "count": 1,
+    "reloadRestored": true,
+    "productionCommentsModified": false
+  },
+  "artboards": [
+    {
+      "width": 1440,
+      "height": 2030
+    },
+    {
+      "width": 1280,
+      "height": 2030
+    }
+  ],
+  "productViewportTests": "NOT APPLICABLE: documentation only; no product UI implemented",
+  "physicalTouch": "NOT APPLICABLE: desktop document scope"
+}

@@ -1,0 +1,196 @@
+{
+  "history": [
+    {
+      "name": "history-stats-cumulative.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-empty.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-error.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-extreme.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-rounds.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-source-missing.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history-stats-win.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "history.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": false
+    },
+    {
+      "name": "journeys-year.svg",
+      "visibleLabels": 0,
+      "controlGroups": 1,
+      "chevrons": 2,
+      "annual": true
+    }
+  ],
+  "contribution": [
+    {
+      "name": "contribution-current-a-share.svg",
+      "hollow14": 0,
+      "hollow12": 8
+    },
+    {
+      "name": "contribution-empty.svg",
+      "hollow14": 0,
+      "hollow12": 0
+    },
+    {
+      "name": "contribution-error.svg",
+      "hollow14": 0,
+      "hollow12": 0
+    },
+    {
+      "name": "contribution-extreme.svg",
+      "hollow14": 0,
+      "hollow12": 1
+    },
+    {
+      "name": "contribution-historical-a-share.svg",
+      "hollow14": 0,
+      "hollow12": 0
+    },
+    {
+      "name": "contribution-loading.svg",
+      "hollow14": 0,
+      "hollow12": 0
+    },
+    {
+      "name": "contribution-mixed-sign-demo.svg",
+      "hollow14": 0,
+      "hollow12": 2
+    },
+    {
+      "name": "contribution-states.svg",
+      "hollow14": 0,
+      "hollow12": 3
+    },
+    {
+      "name": "contribution.svg",
+      "hollow14": 0,
+      "hollow12": 0
+    }
+  ],
+  "home": [
+    {
+      "name": "home-1280.svg",
+      "sortFaces": 1,
+      "sortHits": 1,
+      "sortTextArrow": 0,
+      "marketFaces": 1,
+      "marketHits": 1,
+      "marketChevrons": 1,
+      "checkbox": 1,
+      "disabledVisual": 0,
+      "categoryVisuals": 3,
+      "selectedUnderlines": 1,
+      "legendRealized": 1,
+      "legendFloating": 1,
+      "hollow14": 0,
+      "chevrons": 2,
+      "legacyLabels": 0,
+      "zeroY": 470,
+      "tickLines": 5
+    },
+    {
+      "name": "home-1440.svg",
+      "sortFaces": 1,
+      "sortHits": 1,
+      "sortTextArrow": 0,
+      "marketFaces": 1,
+      "marketHits": 1,
+      "marketChevrons": 1,
+      "checkbox": 1,
+      "disabledVisual": 0,
+      "categoryVisuals": 3,
+      "selectedUnderlines": 1,
+      "legendRealized": 1,
+      "legendFloating": 1,
+      "hollow14": 0,
+      "chevrons": 2,
+      "legacyLabels": 0,
+      "zeroY": 470,
+      "tickLines": 5
+    },
+    {
+      "name": "home-history-1280.svg",
+      "sortFaces": 1,
+      "sortHits": 1,
+      "sortTextArrow": 0,
+      "marketFaces": 1,
+      "marketHits": 1,
+      "marketChevrons": 1,
+      "checkbox": 1,
+      "disabledVisual": 1,
+      "categoryVisuals": 3,
+      "selectedUnderlines": 1,
+      "legendRealized": 1,
+      "legendFloating": 0,
+      "hollow14": 0,
+      "chevrons": 2,
+      "legacyLabels": 0,
+      "zeroY": 470,
+      "tickLines": 5
+    },
+    {
+      "name": "home-history-1440.svg",
+      "sortFaces": 1,
+      "sortHits": 1,
+      "sortTextArrow": 0,
+      "marketFaces": 1,
+      "marketHits": 1,
+      "marketChevrons": 1,
+      "checkbox": 1,
+      "disabledVisual": 1,
+      "categoryVisuals": 3,
+      "selectedUnderlines": 1,
+      "legendRealized": 1,
+      "legendFloating": 0,
+      "hollow14": 0,
+      "chevrons": 2,
+      "legacyLabels": 0,
+      "zeroY": 470,
+      "tickLines": 5
+    }
+  ]
+}

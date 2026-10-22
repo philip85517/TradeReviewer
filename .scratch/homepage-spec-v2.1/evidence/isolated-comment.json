@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "actor": {
+        "name": "V2.1 隔离验收",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-17T01:42:02Z",
+      "documentId": "HOME-DOC-V21",
+      "fingerprint": "2dec83511f45bcec1d8ed7d633b0d12014a5f33371521ca45a9ef6e8ffb6ce15",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "V2.1 隔离验收",
+            "role": "commenter"
+          },
+          "at": "2026-10-17T01:42:02Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-b0513ef0a1b54c8a84cc61fddc8a7dcd",
+      "image": {
+        "chapter": "DOC",
+        "fingerprint": "e54b9eae386b621326d088f8b33bca5114fdbd32d2c2185694304d9c08e1a087",
+        "id": "V2-01",
+        "occurrenceId": "V2-01@5",
+        "src": "images/home-1440.svg"
+      },
+      "opinion": "仅隔离测试：验证 V2.1 图片评论保存后重开可回溯。",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "2.1"
+    }
+  ],
+  "documentId": "HOME-DOC-V21",
+  "operations": {
+    "bd8d8096-97e6-4e98-93c1-45a12f85515b": {
+      "commentId": "comment-b0513ef0a1b54c8a84cc61fddc8a7dcd",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "V2.1 隔离验收",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-17T01:42:02Z",
+            "documentId": "HOME-DOC-V21",
+            "fingerprint": "2dec83511f45bcec1d8ed7d633b0d12014a5f33371521ca45a9ef6e8ffb6ce15",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "V2.1 隔离验收",
+                  "role": "commenter"
+                },
+                "at": "2026-10-17T01:42:02Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-b0513ef0a1b54c8a84cc61fddc8a7dcd",
+            "image": {
+              "chapter": "DOC",
+              "fingerprint": "e54b9eae386b621326d088f8b33bca5114fdbd32d2c2185694304d9c08e1a087",
+              "id": "V2-01",
+              "occurrenceId": "V2-01@5",
+              "src": "images/home-1440.svg"
+            },
+            "opinion": "仅隔离测试：验证 V2.1 图片评论保存后重开可回溯。",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "2.1"
+          }
+        ],
+        "revision": 1,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 1
+    }
+  },
+  "revision": 1,
+  "storeVersion": 1
+}

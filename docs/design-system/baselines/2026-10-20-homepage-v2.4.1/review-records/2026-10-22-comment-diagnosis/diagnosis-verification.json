@@ -1,0 +1,27 @@
+{
+  "scope": {
+    "currentComments": 10,
+    "commentedSvgBrowserObserved": 6,
+    "sourceSvgInventory": 123,
+    "bodyReferencedSvg": 106
+  },
+  "sourceIntegrity": {
+    "checkedFiles": 127,
+    "changed": []
+  },
+  "documentRender": {
+    "pages": 6,
+    "allPagesVisuallyInspected": true,
+    "result": "PASS"
+  },
+  "observedDefectReproduction": {
+    "exitCode": 1,
+    "expectedFailure": true,
+    "kind": "replay of browser geometry evidence, not application runtime test"
+  },
+  "limitations": [
+    "Related scan candidates are not all browser-confirmed defects",
+    "No repairs or comment status changes",
+    "No full application interaction or database acceptance performed"
+  ]
+}

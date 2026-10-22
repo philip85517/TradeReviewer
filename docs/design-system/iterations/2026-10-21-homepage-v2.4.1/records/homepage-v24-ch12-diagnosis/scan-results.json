@@ -1,0 +1,1189 @@
+[
+  {
+    "src": "source/images/01-live-normal.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/02-simulation-normal.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/03-distribution-selected.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/04-return.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/05-loading.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/06-empty.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/07-error.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/08-extreme.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/09-missing-input.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/50-items--page-7.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/50-items.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/account.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/atoms.svg",
+    "flags": [],
+    "chapters": [
+      "十、共享控件与状态标准"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/cancel--cancelled.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/cancel.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-gap.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-hover--keyboard.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-hover.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-scale--extreme.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-scale--normal.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-scale--wide.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/chart-scale.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/clear-attachments--after-clear.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/clear-attachments.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-current-a-share.svg",
+    "flags": [
+      "related-hollow"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-empty.svg",
+    "flags": [],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-error.svg",
+    "flags": [],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-extreme.svg",
+    "flags": [
+      "related-hollow"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-historical-a-share.svg",
+    "flags": [],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-loading.svg",
+    "flags": [],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-mixed-sign-demo.svg",
+    "flags": [
+      "related-hollow"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution-states.svg",
+    "flags": [
+      "related-hollow"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/contribution.svg",
+    "flags": [],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/count-boundaries--nine-items-last-page.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/count-boundaries.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/count-scales--ten-items.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/count-scales--twenty-items.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/count-scales.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/detail.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/empty--zero-holdings.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "九、异常状态与动效",
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 2,
+    "hollow": []
+  },
+  {
+    "src": "source/images/empty.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "九、异常状态与动效",
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 2,
+    "hollow": []
+  },
+  {
+    "src": "source/images/error--update-failure.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "九、异常状态与动效"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/error.svg",
+    "flags": [],
+    "chapters": [
+      "九、异常状态与动效"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/extreme.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/filter.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/handoff.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-pending-library-1280.svg",
+    "flags": [
+      "trade-table"
+    ],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-pending-library.svg",
+    "flags": [
+      "trade-table"
+    ],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-pending-return.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-replay-a1.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-replay-a2.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-replay-b1.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-return.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-rounds-a.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/hcr06-final-sim-ab.svg",
+    "flags": [],
+    "chapters": [
+      "八、交易库内部规范"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-cumulative.svg",
+    "flags": [
+      "bare-month",
+      "chart-status",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-empty.svg",
+    "flags": [
+      "period-name",
+      "bare-month"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-error.svg",
+    "flags": [
+      "period-name",
+      "bare-month",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-extreme.svg",
+    "flags": [
+      "period-name",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-rounds.svg",
+    "flags": [
+      "bare-month",
+      "chart-status",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-source-missing.svg",
+    "flags": [
+      "period-name",
+      "bare-month",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history-stats-win.svg",
+    "flags": [
+      "bare-month",
+      "chart-status",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/history.svg",
+    "flags": [
+      "period-name",
+      "bare-month",
+      "chart-status",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-A-large-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-A-large-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-A-normal-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-A-normal-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-B-large-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-B-large-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-B-normal-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-B-normal-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-C-large-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-C-large-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-C-normal-1280.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-option-C-normal-1440.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "附录一、版本变化与待决策"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-return--after.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-return--detail.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/holding-return.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/home-1280.svg",
+    "flags": [
+      "holding-table",
+      "whole-home",
+      "period-name",
+      "bare-month",
+      "chart-status",
+      "win-card",
+      "contribution-control",
+      "outline-height10",
+      "date-ticks"
+    ],
+    "chapters": [
+      "二、整页布局与视觉基础"
+    ],
+    "occurrences": 1,
+    "hollow": [
+      {
+        "x": "863.5657237936772",
+        "y": "296",
+        "width": "87.43427620632279",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#6CA8FF",
+        "stroke-width": "3"
+      },
+      {
+        "x": "585.6289517470882",
+        "y": "368",
+        "width": "5.7903494176372705",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#FF8592",
+        "stroke-width": "3"
+      },
+      {
+        "x": "708.3843594009984",
+        "y": "440",
+        "width": "97.27787021630614",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#6CA8FF",
+        "stroke-width": "3"
+      }
+    ]
+  },
+  {
+    "src": "source/images/home-1440.svg",
+    "flags": [
+      "holding-table",
+      "whole-home",
+      "period-name",
+      "bare-month",
+      "chart-status",
+      "win-card",
+      "contribution-control",
+      "outline-height10",
+      "date-ticks"
+    ],
+    "chapters": [
+      "二、整页布局与视觉基础"
+    ],
+    "occurrences": 1,
+    "hollow": [
+      {
+        "x": "982.5058236272878",
+        "y": "296",
+        "width": "99.49417637271215",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#6CA8FF",
+        "stroke-width": "3"
+      },
+      {
+        "x": "666.2329450915141",
+        "y": "368",
+        "width": "6.5890183028286184",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#FF8592",
+        "stroke-width": "3"
+      },
+      {
+        "x": "805.9201331114808",
+        "y": "440",
+        "width": "110.69550748752079",
+        "height": "10",
+        "rx": "0",
+        "fill": "none",
+        "stroke": "#6CA8FF",
+        "stroke-width": "3"
+      }
+    ]
+  },
+  {
+    "src": "source/images/home-history-1280.svg",
+    "flags": [
+      "holding-table",
+      "whole-home",
+      "period-name",
+      "bare-month",
+      "chart-status",
+      "win-card",
+      "contribution-control",
+      "date-ticks"
+    ],
+    "chapters": [
+      "二、整页布局与视觉基础"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/home-history-1440.svg",
+    "flags": [
+      "holding-table",
+      "whole-home",
+      "period-name",
+      "bare-month",
+      "chart-status",
+      "win-card",
+      "contribution-control",
+      "date-ticks"
+    ],
+    "chapters": [
+      "二、整页布局与视觉基础"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/journeys-date.svg",
+    "flags": [
+      "trade-table"
+    ],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/journeys-pending-99plus.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/journeys-pending-normal.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/journeys-pending.svg",
+    "flags": [],
+    "chapters": [
+      "七、从首页进入交易与复盘"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/journeys-year.svg",
+    "flags": [
+      "period-name",
+      "bare-month",
+      "win-card"
+    ],
+    "chapters": [
+      "六、历史统计与底部贡献区"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/loading--stale-data.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "九、异常状态与动效"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/loading.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "九、异常状态与动效"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/local-search-pages--clear.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/local-search-pages--one-match.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/local-search-pages.svg",
+    "flags": [
+      "holding-table"
+    ],
+    "chapters": [
+      "五、当前持仓：稳定扫描与逐行查看"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/multi-applied--reopen.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/multi-applied.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/period.svg",
+    "flags": [
+      "date-ticks"
+    ],
+    "chapters": [
+      "四、当前表现：指标、期间与曲线"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/repair.svg",
+    "flags": [],
+    "chapters": [
+      "九、异常状态与动效"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/reset--reset.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/reset.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search--detail.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search--empty.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search-detail.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search-motion.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search-overlay-open.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search-overlay-reduced-motion.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/search.svg",
+    "flags": [],
+    "chapters": [
+      "三、页头范围、搜索与筛选"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  },
+  {
+    "src": "source/images/visual-samples-board.svg",
+    "flags": [
+      "samples-board"
+    ],
+    "chapters": [
+      "二、整页布局与视觉基础"
+    ],
+    "occurrences": 1,
+    "hollow": []
+  }
+]

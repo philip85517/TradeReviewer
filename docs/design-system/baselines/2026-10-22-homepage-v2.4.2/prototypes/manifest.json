@@ -1,0 +1,266 @@
+[
+  {
+    "asset": "headers-current.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      670,
+      638,
+      655,
+      130
+    ],
+    "sha256": "e04b266dc6aa5b249d6b91455bbba70789caa92ccff2d38277c535c918f0b8e6"
+  },
+  {
+    "asset": "headers-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      670,
+      638,
+      655,
+      130
+    ],
+    "sha256": "05abb42490d25f83a85b2ee2ff68422adb47dfb4bf84b816a0b5ffcbc9972f8d"
+  },
+  {
+    "asset": "current-section-current.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      90,
+      80,
+      140,
+      36
+    ],
+    "sha256": "784fce5d99c0e273227c551a9e6b5adf91d1e0e601fe2ed9d724474c33a02bb3"
+  },
+  {
+    "asset": "current-section-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      90,
+      80,
+      140,
+      36
+    ],
+    "sha256": "784fce5d99c0e273227c551a9e6b5adf91d1e0e601fe2ed9d724474c33a02bb3"
+  },
+  {
+    "asset": "current-chart-current.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      106,
+      230,
+      240,
+      36
+    ],
+    "sha256": "361109674e87121921069af1e42f44b3d43d845b1ed1598607e7e9be589a404c"
+  },
+  {
+    "asset": "current-chart-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "root",
+    "crop": [
+      106,
+      230,
+      240,
+      36
+    ],
+    "sha256": "361109674e87121921069af1e42f44b3d43d845b1ed1598607e7e9be589a404c"
+  },
+  {
+    "asset": "history-section-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      8,
+      240,
+      34
+    ],
+    "sha256": "b3c84dfe66c7ab82c9fa87c5cd7728445ba838da8dffe050695391fcf5b3992c"
+  },
+  {
+    "asset": "history-section-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      8,
+      240,
+      34
+    ],
+    "sha256": "1296cba2ce33fbdc952dd59ddf7a6bcae277a95375c695b079b424926726ecba"
+  },
+  {
+    "asset": "history-chart-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      222,
+      240,
+      40
+    ],
+    "sha256": "109ed8b456adda51e5d65730e2613fc077b042a653893e21f768057072a00255"
+  },
+  {
+    "asset": "history-chart-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      222,
+      240,
+      40
+    ],
+    "sha256": "ec24150fb62b7727c68d88d93962809e6081e5242591a67731e9f135d4ed8d0f"
+  },
+  {
+    "asset": "period-selector-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      880,
+      14,
+      414,
+      54
+    ],
+    "sha256": "aebac62ff4d546abdf8c3921d660010ec475e6dd07da1a03e414468f3443b920"
+  },
+  {
+    "asset": "period-selector-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      880,
+      14,
+      414,
+      54
+    ],
+    "sha256": "2eff36b292efc2fa4df9a9bef635b7f4eb04509ddd5642883e23f96583f64dfb"
+  },
+  {
+    "asset": "period-title-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      222,
+      300,
+      40
+    ],
+    "sha256": "335af77b16327da6a41dc5ef48553f4cd82ff689c111bb197b9b995560874862"
+  },
+  {
+    "asset": "period-title-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      18,
+      222,
+      300,
+      40
+    ],
+    "sha256": "4e0252670f6b17fe0aa8bc27d624a1f2d69e08e92b8ae30ef939603b6d6c3e08"
+  },
+  {
+    "asset": "period-chart-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      0,
+      214,
+      1320,
+      320
+    ],
+    "sha256": "b4cd5ced0257ffb0a4cd4e94857e0b63610cd19aabf028e06cc0f0a76b1c9a6e"
+  },
+  {
+    "asset": "period-chart-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      0,
+      214,
+      1320,
+      320
+    ],
+    "sha256": "bbc5926ef4b48f9544b783e407cb4d439347bd56e723184de62898c037cc3a47"
+  },
+  {
+    "asset": "winrate-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      666,
+      82,
+      321,
+      88
+    ],
+    "sha256": "8ccfbe8543e6142046d0a501dcbf9c5f22dec783cb5acd6a070bc49052202460"
+  },
+  {
+    "asset": "winrate-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      666,
+      82,
+      321,
+      88
+    ],
+    "sha256": "c317c822ee058adba94a88df1534f373915b41dbc273b359e00227f0da35f956"
+  },
+  {
+    "asset": "winrate-narrow-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      666,
+      82,
+      278,
+      88
+    ],
+    "sha256": "b96dc772b4ab98c2d099f4cd5fbfea4f7e98abd954cd859367219971e73e9ef7"
+  },
+  {
+    "asset": "winrate-narrow-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1130",
+    "crop": [
+      666,
+      82,
+      278,
+      88
+    ],
+    "sha256": "b96dc772b4ab98c2d099f4cd5fbfea4f7e98abd954cd859367219971e73e9ef7"
+  },
+  {
+    "asset": "contribution-labels-current.svg",
+    "source": "home-1440.svg",
+    "nested": "1712.0",
+    "crop": [
+      16,
+      110,
+      830,
+      72
+    ],
+    "sha256": "317e39b4120bc7702d936cd4477299296be0ef051c18cdeca9efd8d794834e70"
+  },
+  {
+    "asset": "contribution-labels-proposed.svg",
+    "source": "home-1440.svg",
+    "nested": "1712.0",
+    "crop": [
+      16,
+      110,
+      830,
+      72
+    ],
+    "sha256": "d46adca172463912e0cec2d3b2ae99efa6a464c716f28004488567ebb6e161f7"
+  }
+]

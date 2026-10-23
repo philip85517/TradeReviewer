@@ -1,0 +1,154 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:86533) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ scripts/deploy.test.mjs (58 tests | 4 failed) 36529ms
+     × backup and restore resolve the quoted external SQLite directory 36ms
+     × restores a checked database through an atomic swap and returns healthy 28ms
+     × health failure after a restore swap rolls back the database and restarts the original app 22ms
+     × stages the tracked build and application data sources from the real repository 5010ms
+ ❯ app/lib/market/baostock-client.test.ts (8 tests | 5 failed) 30ms
+     × logs in anonymously, sends the documented query and decodes compressed pages 17ms
+     × accepts BaoStock's empty data field as a valid empty page 2ms
+     × stops at the configured page limit and marks a full final page truncated 2ms
+     × closes the socket and reports abort when the caller cancels a hanging response 2ms
+     × enforces a total deadline and response byte limit 1ms
+ ❯ app/lib/reviews/homepage-v25-state.test.ts (7 tests | 2 failed) 22ms
+     × distinguishes cancel, identity change, clear attachments and reset dates 9ms
+     × round trips only the versioned UI snapshot and recovers malformed input 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/deploy.test.mjs > SQLite operations > backup and restore resolve the quoted external SQLite directory
+ FAIL  scripts/deploy.test.mjs > SQLite operations > restores a checked database through an atomic swap and returns healthy
+ FAIL  scripts/deploy.test.mjs > SQLite operations > health failure after a restore swap rolls back the database and restarts the original app
+ FAIL  app/lib/market/baostock-client.test.ts > BaoStock Node transport > logs in anonymously, sends the documented query and decodes compressed pages
+ FAIL  app/lib/market/baostock-client.test.ts > BaoStock Node transport > accepts BaoStock's empty data field as a valid empty page
+ FAIL  app/lib/market/baostock-client.test.ts > BaoStock Node transport > stops at the configured page limit and marks a full final page truncated
+ FAIL  app/lib/market/baostock-client.test.ts > BaoStock Node transport > closes the socket and reports abort when the caller cancels a hanging response
+ FAIL  app/lib/market/baostock-client.test.ts > BaoStock Node transport > enforces a total deadline and response byte limit
+Error: listen EPERM: operation not permitted 127.0.0.1
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  scripts/deploy.test.mjs > deployment release staging > stages the tracked build and application data sources from the real repository
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/deploy.test.mjs:999:7
+    997|   });
+    998|
+    999|   test("stages the tracked build and application data sources from the…
+       |       ^
+    1000|     const sandbox = await mkdtemp(join(tmpdir(), "tradereview-real-sou…
+    1001|     const targetDir = join(sandbox, "target");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > distinguishes cancel, identity change, clear attachments and reset dates
+AssertionError: expected { categories: [], …(2) } to deeply equal []
+
+- Expected:
+[]
+
++ Received:
+{
+  "categories": [],
+  "openOnly": false,
+  "pendingReview": false,
+}
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:80:133
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > round trips only the versioned UI snapshot and recovers malformed input
+AssertionError: expected null to deeply equal { version: 1, scope: { …(6) }, …(10) }
+
+- Expected:
+{
+  "attachments": {
+    "categories": [],
+    "openOnly": false,
+    "pendingReview": false,
+  },
+  "contribution": {
+    "currentCategory": "all",
+    "currentDrilldown": null,
+    "currentMarket": null,
+    "currentPage": 1,
+    "currentSort": "value",
+    "currentSymbol": null,
+    "historyCategory": "all",
+    "historyDrilldown": null,
+    "historyMarket": null,
+    "historyPage": 1,
+    "historySort": "value",
+    "historySymbol": null,
+    "mode": "current",
+    "selectedMarket": null,
+    "selectedSymbol": null,
+  },
+  "focus": "holdings",
+  "futureDisclosureSources": [],
+  "history": {
+    "from": null,
+    "to": null,
+    "year": null,
+  },
+  "holdings": {
+    "page": 2,
+    "query": "AAPL",
+    "sort": "name",
+  },
+  "period": {
+    "from": null,
+    "preset": "all",
+    "to": null,
+  },
+  "returnState": {
+    "detailId": null,
+    "missingContainerTitle": null,
+    "source": null,
+    "triggerFocusId": null,
+  },
+  "scope": {
+    "accounts": [
+      "paper",
+    ],
+    "from": "2026-01-01",
+    "live": true,
+    "market": "all",
+    "rangeMode": "custom",
+    "to": "2026-01-31",
+  },
+  "scrollTop": 0,
+  "search": {
+    "open": false,
+    "query": "",
+    "resultsScrollTop": 0,
+    "selectedSymbol": null,
+    "triggerFocusId": null,
+  },
+  "version": 1,
+}
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:100:70
+     99|   it("round trips only the versioned UI snapshot and recovers malforme…
+    100|     const state = createHomepageState(scope);
+    101|     const snapshot = { ...state.snapshot, holdings: { ...state.snapsho…
+       |                        ^
+    102|     expect(decodeHomepageSnapshot(encodeHomepageSnapshot(snapshot))).t…
+    103|     expect(decodeHomepageSnapshot('{"version":999}')).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+
+ Test Files  3 failed | 318 passed | 3 skipped (324)
+      Tests  11 failed | 3074 passed | 6 skipped (3091)
+   Start at  23:30:38
+   Duration  436.12s (transform 9.58s, setup 54.56s, import 40.12s, tests 376.63s, environment 296.73s)
+

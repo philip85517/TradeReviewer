@@ -1,0 +1,549 @@
+--- accepted-A/input-position-ledger.ts
++++ app/lib/replay/position-ledger.ts
+@@ -1,4 +1,5 @@
+ import Decimal from "decimal.js";
++import { sha256 } from "../recall/retained-digest";
+ 
+ import {
+   hasSettlementCurrencyMismatch,
+@@ -94,7 +95,10 @@
+   quantity: Decimal; averageCost: Decimal; realizedPnl: Decimal; fees: Decimal; grossCapitalDeployed: Decimal;
+   reasons: string[]; warnings: NonNullable<PositionLedgerSnapshot["warnings"]>; quantityUncertain: boolean;
+ };
+-function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void): PositionLedgerSnapshot {
++type LedgerEntry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
++type MovementObservation = { entry: LedgerEntry; ordinal: number; before: Checkpoint; after: Checkpoint; closed: Decimal | null; opened: Decimal | null; effect: CanonicalMovementFact["effect"]; evidenceIds: string[]; beforeFeeUnavailable: boolean; afterFeeUnavailable: boolean };
++type FactObserver = { context(cursor: string | null, selected: TradeExecution[]): void; movement(value: MovementObservation): void; terminal(value: Checkpoint, feeUnavailable: boolean): void };
++function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void, facts?: FactObserver): PositionLedgerSnapshot {
+   let quantity = new Decimal(0);
+   let averageCost = new Decimal(0);
+   let realizedPnl = new Decimal(0);
+@@ -118,7 +122,7 @@
+     Boolean(input.executions.length === 0 && input.inventoryIdentity && item.symbol && item.market &&
+       input.inventoryIdentity.accountId === item.accountId &&
+       canonicalInstrumentId(input.inventoryIdentity.symbol, input.inventoryIdentity.market) === canonicalInstrumentId(item.symbol, item.market));
+-  type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
++  type Entry = LedgerEntry;
+   const timeline: Entry[] = input.executions.map(execution => ({ at: replayExecutionAt(execution), execution }));
+   const seen = new Set<string>();
+   for (const position of [...(input.evidence ?? []).flatMap(e => e.positions), ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])]) {
+@@ -172,12 +176,21 @@
+   const checkpoint = (): Checkpoint => ({ quantity, averageCost, realizedPnl, fees, grossCapitalDeployed,
+     reasons: [...reasons], warnings: warnings.map(item => ({ ...item })), quantityUncertain: quantityUncertain || pendingTransfers.size > 0 });
+   observe?.(checkpoint());
+-
++  facts?.context(cursor ?? null, timeline.flatMap(entry => entry.execution && selectedExecution(entry.execution) ? [entry.execution] : []));
++  let ordinal = -1, factFeeUnavailable = false;
+   for (const entry of timeline) {
++    ordinal++;
+     if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
+     if (cursor && Date.parse(entry.at) > Date.parse(cursor)
+       && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
++    const before = facts ? checkpoint() : undefined;
++    const beforeFeeUnavailable = factFeeUnavailable;
++    let closed: Decimal | null = null, opened: Decimal | null = null;
++    let effect: CanonicalMovementFact["effect"] = "applied";
++    let movementEvidence: string[] | undefined;
++    try {
+     if (entry.pendingTransfer) {
++      effect = "unresolved";
+       pendingTransfers.add(`${entry.pendingTransfer.accountId}:${entry.pendingTransfer.id}`);
+       reasons.add("ambiguous-event-order");
+       continue;
+@@ -208,10 +221,10 @@
+     }
+     if (entry.event) {
+       const event = entry.event;
+-      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) continue;
++      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) { effect = "suppressed-duplicate"; continue; }
+       const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+       const isBonusShare = isBonusShareEvidence(event);
+-      if (isIpoAllocation && isZero(event.quantity)) continue;
++      if (isIpoAllocation && isZero(event.quantity)) { effect = "suppressed-duplicate"; continue; }
+       const sameDayExecution = event.date.length === 10 && actualVisibleExecutions.some(e =>
+         e.accountId === event.accountId &&
+         canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol ?? "", event.market ?? "") &&
+@@ -292,6 +305,7 @@
+           continue;
+         }
+         const size = quantityValue;
++        if (facts) { closed = new Decimal(0); opened = size; }
+         const instrumentCurrencies = new Set(actualVisibleExecutions.filter(e =>
+           e.accountId === event.accountId &&
+           event.symbol &&
+@@ -302,11 +316,12 @@
+         const cashCost = cost ? new Decimal(cost.cashCost) : undefined;
+         const allocationCost = cashCost?.div(size);
+         if (!cost || !allocationCost) {
++          if (facts) factFeeUnavailable = true;
+           reasons.add("position-event");
+           if (!hasHistory) reasons.add("initial-position");
+           reasons.add("unknown-cost");
+         }
+-        if (cost) fees = fees.plus(cost.feeCost);
++        if (cost) { fees = fees.plus(cost.feeCost); if (facts) movementEvidence = cost.evidenceIds; }
+         if (quantity.gte(0)) {
+           const newQuantity = quantity.plus(size);
+           if (allocationCost) {
+@@ -318,6 +333,7 @@
+           quantity = newQuantity;
+         } else {
+           const covered = Decimal.min(quantity.abs(), size);
++          if (facts) { closed = covered; opened = size.minus(covered); }
+           if (allocationCost) realizedPnl = realizedPnl.plus(averageCost.minus(allocationCost).mul(covered));
+           quantity = quantity.plus(size);
+           if (quantity.isPositive() && allocationCost) {
+@@ -327,6 +343,7 @@
+           if (quantity.isZero()) averageCost = new Decimal(0);
+         }
+       } else {
++        effect = "contextual";
+         // Cash, fee, dividend, and other statement rows are contextual
+         // evidence only; they do not establish inventory history.
+         continue;
+@@ -366,6 +383,7 @@
+     lastActivity = execution.source.tradingDate ?? execution.executedAt;
+     hasHistory = true;
+     const size = new Decimal(execution.quantity).abs();
++    if (facts) { closed = new Decimal(0); opened = size; }
+     const settlement = execution.source.settlement;
+     const price = settlement && settlement.currency === execution.instrument.currency
+       ? new Decimal(settlement.grossAmount).div(settlement.quantity)
+@@ -382,6 +400,7 @@
+         grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
+       } else {
+         const covered = Decimal.min(quantity.abs(), size);
++        if (facts) { closed = covered; opened = size.minus(covered); }
+         realizedPnl = realizedPnl.plus(averageCost.minus(price).mul(covered));
+         quantity = quantity.plus(size);
+         if (quantity.isPositive()) {
+@@ -401,8 +420,9 @@
+       quantity = quantity.minus(size);
+       grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
+     } else {
+-      const closed = Decimal.min(quantity, size);
+-      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(closed));
++      const matched = Decimal.min(quantity, size);
++      if (facts) { closed = matched; opened = size.minus(matched); }
++      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(matched));
+       quantity = quantity.minus(size);
+       if (quantity.isNegative()) {
+         averageCost = price;
+@@ -411,8 +431,13 @@
+       if (quantity.isZero()) averageCost = new Decimal(0);
+     }
+     observe?.(checkpoint());
+-  }
+-  return finalizePosition(checkpoint(), input.markPrice);
++    } finally {
++      if (facts && before) facts.movement({ entry, ordinal, before, after: checkpoint(), closed, opened, effect, evidenceIds: movementEvidence ?? [], beforeFeeUnavailable, afterFeeUnavailable: factFeeUnavailable });
++    }
++  }
++  const terminal = checkpoint();
++  facts?.terminal(terminal, factFeeUnavailable);
++  return finalizePosition(terminal, input.markPrice);
+ }
+ 
+ function finalizePosition(state: Checkpoint, price: string): PositionLedgerSnapshot {
+@@ -509,3 +534,97 @@
+   });
+   return freezeLedgerValue({results,diagnostics:{evaluations,transitions}});
+ }
++
++export type PositionFactValue = Readonly<{ value: string | null; available: boolean; reasons: readonly string[] }>;
++export type PositionFactCoverage = Readonly<{ available: boolean; reasons: readonly string[] }>;
++export type CanonicalStateFact = Readonly<{
++  quantity: PositionFactValue; averageCost: PositionFactValue; realizedPnl: PositionFactValue;
++  fees: PositionFactValue; grossCapitalDeployed: PositionFactValue;
++  reasons: readonly string[]; warnings: readonly NonNullable<PositionLedgerSnapshot["warnings"]>[number][];
++}>;
++export type CanonicalMovementFact = Readonly<{
++  factId: string; contextId: string; ordinal: number;
++  kind: "execution" | "ipo-allocation" | "bonus" | "transfer" | "position-reconciliation" | "evidence-status";
++  effect: "applied" | "suppressed-duplicate" | "unresolved" | "contextual";
++  executionId: string | null; eventId: string | null; evidenceIds: readonly string[];
++  time: Readonly<{ at: string; sourceDate: string; precision: "instant" | "day" | "month" }>;
++  before: CanonicalStateFact; after: CanonicalStateFact;
++  matchedClosedQuantity: PositionFactValue; openedQuantity: PositionFactValue; realizedDelta: PositionFactValue;
++}>;
++export type PositionFactQuery = Readonly<{ cursor?: string; visibleExecutionIds?: readonly string[] }>;
++export type CanonicalFactResult = Readonly<{
++  contextId: string; sourceId: string; effectiveKnowledgeCursor: string | null; selectedExecutionIds: readonly string[];
++  mode: "ordinary-sweep" | "exact-context-fallback"; terminal: CanonicalStateFact; facts: readonly CanonicalMovementFact[];
++  coverage: Readonly<{ quantity: PositionFactCoverage; chronology: PositionFactCoverage; costAndRealized: PositionFactCoverage }>;
++}>;
++function factValue(value: Decimal | null, reasons: readonly string[] = []): PositionFactValue {
++  return { value: reasons.length || value === null ? null : value.isZero() ? "0" : value.toFixed(), available: !reasons.length && value !== null, reasons: [...reasons] };
++}
++function stateFact(state: Checkpoint, feeUnavailable = false): CanonicalStateFact {
++  return { quantity: factValue(state.quantity, state.quantityUncertain ? ["quantity-unavailable", ...state.reasons] : []),
++    averageCost: factValue(state.averageCost, state.reasons), realizedPnl: factValue(state.realizedPnl, state.reasons),
++    fees: factValue(state.fees, [...state.reasons.filter(reason => reason.includes("fee")), ...(feeUnavailable ? ["ipo-fee-allocation-unavailable"] : [])]),
++    grossCapitalDeployed: factValue(state.grossCapitalDeployed, state.reasons), reasons: [...state.reasons], warnings: state.warnings.map(warning => ({ ...warning })) };
++}
++function observedFact(value: MovementObservation): Omit<CanonicalMovementFact, "factId" | "contextId"> {
++  const { entry, before, after, ordinal, closed, opened, effect } = value;
++  const event = entry.event ?? entry.pendingTransfer, execution = entry.execution, position = entry.position;
++  const sourceDate = execution ? execution.source.tradingDate ?? execution.executedAt : event?.date ?? position!.date;
++  const precision = execution ? execution.source.timePrecision === "date-only" || execution.executedAt.length === 10 ? "day" : "instant" : sourceDate.length === 7 ? "month" : "day";
++  const quantityReasons = before.quantityUncertain || after.quantityUncertain ? ["quantity-unavailable"] : [];
++  const realizedReasons = [...new Set([...before.reasons, ...after.reasons])];
++  return { ordinal, kind: execution ? "execution" : position ? "position-reconciliation" : entry.pendingTransfer ? "evidence-status" : event?.kind === "ipo" && event.quantity !== undefined ? "ipo-allocation" : event && isBonusShareEvidence(event) ? "bonus" : event?.kind === "transfer-in" || event?.kind === "transfer-out" ? "transfer" : "evidence-status",
++    effect, executionId: execution?.id ?? null, eventId: event?.id ?? null,
++    evidenceIds: execution ? [execution.id] : event ? [...new Set([event.id, ...value.evidenceIds])] : [JSON.stringify([position!.accountId, position!.market, position!.symbol, position!.phase, position!.date, position!.quantity])],
++    time: { at: entry.at, sourceDate, precision }, before: stateFact(before, value.beforeFeeUnavailable), after: stateFact(after, value.afterFeeUnavailable),
++    matchedClosedQuantity: factValue(closed, quantityReasons), openedQuantity: factValue(opened, quantityReasons),
++    realizedDelta: factValue(after.realizedPnl.minus(before.realizedPnl), realizedReasons) };
++}
++/** Explicit, transient observation of the canonical evaluator. No fact graph is retained in a prepared handle. */
++export function readPreparedPositionFacts(source: PreparedPositionLedger, queries: readonly PositionFactQuery[]) {
++  const prepared = preparedLedgers.get(source);
++  if (!prepared) throw new TypeError("Unknown prepared position ledger");
++  const sourceId = `sha256:${sha256(JSON.stringify({ input: prepared.input, policy: "canonical-movement-1" }))}`;
++  let evaluations = 0, transitions = 0, indexProbes = 0;
++  const evaluate = (query: PositionFactQuery) => {
++    const observations: Omit<CanonicalMovementFact, "factId" | "contextId">[] = [];
++    let terminal: CanonicalStateFact | undefined, cursor: string | null = null, selected: string[] = [];
++    evaluations++;
++    evaluatePositionAtPrice({ ...prepared.input, ...query, markPrice: "0" }, undefined, {
++      context(at, executions) { cursor = at; selected = executions.map(execution => execution.id); },
++      movement(value) { observations.push(observedFact(value)); transitions++; },
++      terminal(value, feeUnavailable) { terminal = stateFact(value, feeUnavailable); },
++    });
++    return { observations, terminal: terminal!, cursor, selected };
++  };
++  // Resolve prefix queries through the existing index/binary search. One shared
++  // observed sweep serves the batch; each prefix then materializes only its facts/IDs.
++  let swept: ReturnType<typeof evaluate> | undefined;
++  const results: CanonicalFactResult[] = queries.map(query => {
++    let length = 0, prefix = source.kind === "ordinary-sweep";
++    const cursor = query.cursor ? replayCursorAt(query.cursor) : null;
++    if (prefix && query.visibleExecutionIds) {
++      let maximum = -1;
++      for (const id of new Set(query.visibleExecutionIds)) {
++        indexProbes++;
++        const index = prepared.index.get(id);
++        if (index !== undefined) { length++; maximum = Math.max(maximum, index); }
++      }
++      prefix = maximum === length - 1;
++    } else if (prefix) {
++      let low = 0, high = prepared.ordered.length;
++      while (low < high) { indexProbes++; const middle = (low + high) >>> 1; if (!cursor || replayExecutionAt(prepared.ordered[middle]) <= cursor) low = middle + 1; else high = middle; }
++      length = low;
++    }
++    if (prefix && !swept) swept = evaluate({});
++    const evaluated = prefix && swept ? { observations: swept.observations.slice(0, length), terminal: stateFact(prepared.checkpoints[length]), cursor: cursor ?? swept.cursor, selected: prepared.ordered.slice(0, length).map(execution => execution.id) } : evaluate(query);
++    const contextId = `sha256:${sha256(JSON.stringify([sourceId, evaluated.cursor, evaluated.selected]))}`;
++    const facts = evaluated.observations.map(fact => ({ ...fact, contextId, factId: `${contextId}:${fact.ordinal}` }));
++    const terminal = evaluated.terminal;
++    const chronologyReasons = [...new Set([...(!terminal.quantity.available ? terminal.quantity.reasons : []), ...terminal.reasons.filter(reason => ["position-gap", "ambiguous-event-order", "ambiguous-opening", "history-incomplete"].includes(reason)), ...(facts.some(fact => fact.kind !== "ipo-allocation" && !fact.before.reasons.includes("initial-position") && fact.after.reasons.includes("initial-position")) ? ["initial-position"] : [])])];
++    return { contextId, sourceId, effectiveKnowledgeCursor: evaluated.cursor, selectedExecutionIds: evaluated.selected,
++      mode: prefix ? "ordinary-sweep" : "exact-context-fallback", terminal, facts,
++      coverage: { quantity: { available: terminal.quantity.available, reasons: terminal.quantity.reasons }, chronology: { available: !chronologyReasons.length, reasons: chronologyReasons }, costAndRealized: { available: terminal.realizedPnl.available, reasons: terminal.realizedPnl.reasons } } };
++  });
++  return freezeLedgerValue({ results, diagnostics: { evaluations, transitions, indexProbes, retainedFactBytes: 0 } });
++}
+--- accepted-A/input-homepage-v25-performance.ts
++++ app/lib/reviews/homepage-v25-performance.ts
+@@ -3,7 +3,7 @@
+ import type { TradeLibraryEntry } from "../trades/library";
+ import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
+ import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
+-import { replayPositionAtPrice, preparePositionLedger, replayPreparedPositionBoundaries, type PreparedPositionLedger, type PositionLedgerSnapshot } from "../replay/position-ledger";
++import { replayPositionAtPrice, preparePositionLedger, replayPreparedPositionBoundaries, readPreparedPositionFacts, type CanonicalFactResult, type PositionFactValue, type PreparedPositionLedger, type PositionLedgerSnapshot } from "../replay/position-ledger";
+ import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
+ import type { StatementEvent } from "../import/monthly-statement";
+ import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
+@@ -177,7 +177,7 @@
+ function seedExecutions(group: Group, start: string): TradeExecution[] {
+   return group.seeds.map((position, index) => ({ id: `homepage-boundary:${index}`, accountId: position.accountId, accountLabel: position.accountId, instrument: { ...group.instrument, currency: position.currency }, side: position.direction === "long" ? "buy" : "sell", quantity: position.quantity, price: position.unitCost, fee: "0", executedAt: `${previousDay(start)}T00:00:00Z`, source: { platform: "homepage-boundary", row: index, positionEffect: position.direction === "long" ? "open-long" : "open-short" } }));
+ }
+-function replay(group: Group, boundary: Boundary, start: string, prepared?: PreparedKernel): State {
++function replay(group: Group, boundary: Boundary, start: string, prepared?: PreparedKernel, observe?: FeeStepObserver): State {
+   const originals = [...seedExecutions(group, start), ...group.executions];
+   const selected = originals.filter(e => visible(e, boundary)).sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)) || (a.source.sourceOrder ?? a.source.row) - (b.source.sourceOrder ?? b.source.row) || a.id.localeCompare(b.id));
+   const pnl = new Set<string>(group.conflicts), quantityReasons = new Set<string>([...group.conflicts].filter(reason => reason === "execution-lineage-unavailable"));
+@@ -224,14 +224,19 @@
+   // An IPO may acquire stock before its refund is known. Project only fees,
+   // using this boundary's cash knowledge and canonical inventory at each
+   // movement prefix. Never reconstruct cost or realized profit here.
++  let stepContext: { sourceId: string; selectedExecutionIds: string[] } | undefined;
+   const beforeStep = (ids: string[], step: Step) => {
+-    if (!allocations.length) return snapshot(ids, step.at > boundary.cursor ? boundary.cursor : step.at, feeExecutions);
++    if (!allocations.length) {
++      if (observe) stepContext = { sourceId: `sha256:${sha256(JSON.stringify({ input: { executions: feeExecutions }, policy: "canonical-movement-1" }))}`, selectedExecutionIds: [...ids] };
++      return snapshot(ids, step.at > boundary.cursor ? boundary.cursor : step.at, feeExecutions);
++    }
+     const precedes = (at: string, rank: number) => at < step.at || at === step.at && rank < step.rank;
+     const prefix = feeExecutions.map(e => ({ ...e, source: { ...e.source,
+       positionEvents: e.source.positionEvents?.filter(event => event.kind === "fee" || event.kind === "ipo" && event.quantity === undefined || precedes(eventAt(event), 2)),
+       statementPositions: e.source.statementPositions?.filter(position => precedes(statementPositionAt(position), position.phase === "opening" ? 0 : 4)),
+       openingPosition: e.source.openingPosition && precedes(statementPositionAt(e.source.openingPosition), e.source.openingPosition.phase === "opening" ? 0 : 4) ? e.source.openingPosition : undefined,
+     } }));
++    if (observe) stepContext = { sourceId: `sha256:${sha256(JSON.stringify({ input: { executions: prefix }, policy: "canonical-movement-1" }))}`, selectedExecutionIds: [...ids] };
+     return snapshot(ids, boundary.cursor, prefix);
+   };
+   let ids: string[] = [], pool: Decimal | null = new Decimal(0), projectedFees = new Decimal(0);
+@@ -250,6 +255,7 @@
+       continue;
+     }
+     if (prepared) prepared.counts.feeSteps++;
++    const poolBefore = pool;
+     const before = beforeStep(ids, step);
+     if (before.quantityKnown === false) pool = null;
+     const beforeQuantity = D(before.quantity)!;
+@@ -267,10 +273,17 @@
+     if (e && ((e.source.positionEffect === "close-long" && (beforeQuantity.lte(0) || size.gt(beforeQuantity))) || (e.source.positionEffect === "close-short" && (beforeQuantity.gte(0) || size.gt(beforeQuantity.abs()))))) {
+       pnl.add("position-coverage-missing"); quantityReasons.add("position-coverage-missing");
+     }
++    let released: Decimal | null = null;
+     if (pool && fee && size.gt(0)) {
+       const allocated: Decimal = closed.gt(0) ? pool.mul(closed).div(beforeQuantity.abs()) : new Decimal(0);
+       pool = pool.minus(allocated).plus(fee.mul(size.minus(closed)).div(size));
+-    }
++      if (observe) released = allocated;
++    }
++    observe?.({ executionId: e?.id ?? null, allocationEventId: step.allocation?.id ?? null, at: step.at,
++      poolBefore, poolAfter: pool, released, fee, closed, size, reasons: [...pnl, ...quantityReasons],
++      beforeContext: { ...stepContext!, cursor: allocations.length ? boundary.cursor : step.at > boundary.cursor ? boundary.cursor : step.at,
++        selectedExecutionPrefixLength: ids.length, movementPrefix: prefix.slice(0, -1).map(item => [...item]),
++        evidencePolicy: allocations.length ? "cash-knowledge-with-preceding-movements" : "original" } });
+     if (e) ids = [...ids, e.id];
+     prepared?.memo.set(checkpointKey, { pool: pool === null ? null : pool.toString(), projectedFees: projectedFees.toString(), pnl: [...pnl], quantity: [...quantityReasons] } satisfies FeeCheckpoint);
+   }
+@@ -689,9 +702,10 @@
+   return state;
+ }
+ type OrdinaryProjection = { canonical: PreparedPositionLedger; ordered: TradeExecution[]; checkpoints: FeeCheckpoint[] };
+-function prepareOrdinaryProjection(data: PreparedData, group: Group, canonical: PreparedPositionLedger, normalized: ReturnType<typeof normalizedExecution>[]): OrdinaryProjection {
++function prepareOrdinaryProjection(data: PreparedData | undefined, group: Group, canonical: PreparedPositionLedger, normalized: ReturnType<typeof normalizedExecution>[], observe?: FeeStepObserver, prefixLength?: number): OrdinaryProjection {
+   const byId=new Map(normalized.map(row=>[row.execution.id,row]));
+-  const ordered=canonical.transitions.map(fact=>byId.get(fact.executionId)!.execution);
++  const transitions = prefixLength === undefined ? canonical.transitions : canonical.transitions.slice(0, prefixLength);
++  const ordered=transitions.map(fact=>byId.get(fact.executionId)!.execution);
+   const pnl=new Set(group.conflicts), quantity=new Set<string>([...group.conflicts].filter(reason=>reason==="execution-lineage-unavailable"));
+   if(group.inventoryConflict) quantity.add("duplicate-execution-conflict");
+   if(group.executions.some(e=>executionDay(e)===null)){pnl.add("execution-time-invalid");quantity.add("execution-time-invalid");}
+@@ -699,7 +713,8 @@
+   const capture=():FeeCheckpoint=>({pool:pool===null?null:pool.toString(),projectedFees:projectedFees.toString(),pnl:[...pnl],quantity:[...quantity]});
+   const checkpoints=[capture()];
+   for(let index=0;index<ordered.length;index++){
+-    data.counts.feeSteps++;
++    if (data) data.counts.feeSteps++;
++    const poolBefore = pool;
+     const e=ordered[index], row=byId.get(e.id)!, before=canonical.transitions[index].before;
+     row.pnl.forEach(reason=>pnl.add(reason));row.quantity.forEach(reason=>quantity.add(reason));
+     if(!before.quantityKnown)pool=null;
+@@ -708,10 +723,15 @@
+     const closes=e.side==="sell"&&beforeQuantity.gt(0)||e.side==="buy"&&beforeQuantity.lt(0),closed=closes?Decimal.min(beforeQuantity.abs(),size):new Decimal(0);
+     if(e.side==="sell"&&size.gt(Decimal.max(beforeQuantity,0))&&e.source.positionEffect!=="open-short"){pnl.add("execution-direction-unavailable");quantity.add("execution-direction-unavailable");}
+     if(e.source.positionEffect==="close-long"&&(beforeQuantity.lte(0)||size.gt(beforeQuantity))||e.source.positionEffect==="close-short"&&(beforeQuantity.gte(0)||size.gt(beforeQuantity.abs()))){pnl.add("position-coverage-missing");quantity.add("position-coverage-missing");}
++    let released: Decimal | null = null;
+     if(pool&&size.gt(0)){
+       const allocated: Decimal=closed.gt(0)?pool.mul(closed).div(beforeQuantity.abs()):new Decimal(0);
+       pool=pool.minus(allocated).plus(fee.mul(size.minus(closed)).div(size));
+-    }
++      if (observe) released = allocated;
++    }
++    observe?.({ executionId: e.id, allocationEventId: null, at: replayExecutionAt(e), poolBefore, poolAfter: pool,
++      released, fee, closed, size, reasons: [...pnl, ...quantity],
++      beforeContext: { selectedExecutionIds: null, cursor: replayExecutionAt(e), selectedExecutionPrefixLength: index, movementPrefix: null, evidencePolicy: "original" } });
+     checkpoints.push(capture());
+   }
+   return {canonical,ordered,checkpoints};
+@@ -785,8 +805,8 @@
+ function validKnowledge(value: string | null | undefined, boundary: Boundary): value is string {
+   return Boolean(value && /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) && Number.isFinite(Date.parse(value)) && Date.parse(value) <= Date.parse(boundary.cursor));
+ }
+-function fxFor(data: PreparedData, boundary: Boundary, codes: string[], target: string | undefined, current = false): { snapshot?: RoomFxSnapshot; coverage: FxCoverage } {
+-  data.counts.fxLookups++;
++function fxFor(data: PreparedData, boundary: Boundary, codes: string[], target: string | undefined, current = false, count = true): { snapshot?: RoomFxSnapshot; coverage: FxCoverage } {
++  if (count) data.counts.fxLookups++;
+   const targetCode = target ? currency(target) : null;
+   const requiredPairs = unique(codes.flatMap(code => !targetCode || code === targetCode ? [] : [code, targetCode].filter(c => c !== "CNY").map(c => `${c}/CNY`)));
+   const coverage: { state: FxCoverage["state"]; businessDate: string; observationIds: string[]; requiredPairs: string[]; pairKnowledge: Record<string, { publishedAt: string; knownAt: string; fetchedAt: string; source: string }>; reasons: string[] } = { state: requiredPairs.length ? "missing" : "not-required", businessDate: boundary.day, observationIds: [], requiredPairs, pairKnowledge: {}, reasons: [] };
+@@ -821,7 +841,7 @@
+   const snapshot: RoomFxSnapshot | undefined = coverage.state === "complete" && current ? data.input.currentFxSnapshot!.snapshot : coverage.state === "complete" ? { id: coverage.observationIds.join("|"), source: unique(Object.values(coverage.pairKnowledge).map(k => k.source)).join("|"), asOf: boundary.cursor, baseCurrency: "CNY", status: "complete", rates } : undefined;
+   return { snapshot, coverage };
+ }
+-function collectFeeFacts(data: PreparedData): HomepageV25FeeFact[] {
++function collectFeeFacts(data: PreparedData, supplemental: readonly { event: StatementEvent; group: Group }[] = []): HomepageV25FeeFact[] {
+   const facts: HomepageV25FeeFact[] = [];
+   const events = new Map<string, { event: StatementEvent; group: Group; conflict: boolean }>();
+   for (const group of data.groups) {
+@@ -840,6 +860,14 @@
+         else events.set(key, { event, group, conflict: false });
+       }
+     }
++  }
++  // Explicit seam reads can supply statement-only groups through the same fee
++  // evidence collector. Normal source preparation supplies no supplemental rows.
++  for (const { event, group } of supplemental) {
++    const key = `${event.accountId}|${group.identity.nature}|${group.identity.simulationRunId ?? ""}|${event.id}`;
++    const previous = events.get(key);
++    if (previous) { if (JSON.stringify(previous.event) !== JSON.stringify(event)) previous.conflict = true; }
++    else events.set(key, { event, group, conflict: false });
+   }
+   for (const [key, { event, group, conflict }] of events) {
+     if (event.kind !== "fee") continue;
+@@ -1022,3 +1050,160 @@
+   if(!data) throw new HomepageV25ProjectionInputError("prepared-source-invalid");
+   return freezeProjection({...data.counts, distinctCanonicalContexts:data.memo.count("canonical:"),cacheEntries:data.memo.size,cacheEstimatedBytes:data.memo.bytes,evictions:data.memo.evictions,batchEntries:data.memo.count("batch:"),sourceEstimatedBytes:data.sourceEstimatedBytes,indexEstimatedBytes:data.indexEstimatedBytes});
+ }
++
++type FeeStepObservation = {
++  executionId: string | null; allocationEventId: string | null; at: string;
++  poolBefore: Decimal | null; poolAfter: Decimal | null; released: Decimal | null; fee: Decimal | null;
++  closed: Decimal; size: Decimal; reasons: string[];
++  beforeContext: { sourceId?: string; selectedExecutionIds: readonly string[] | null; cursor: string; selectedExecutionPrefixLength: number; movementPrefix: string[][] | null; evidencePolicy: "original" | "cash-knowledge-with-preceding-movements" };
++};
++type FeeStepObserver = (step: FeeStepObservation) => void;
++export type HomepageV25FeeAllocationFact = Readonly<{
++  contextId: string; movementFactId: string | null; executionId: string | null; allocationEventId: string | null;
++  feeFactIds: readonly string[]; evidenceIds: readonly string[];
++  beforeContext: Readonly<FeeStepObservation["beforeContext"] & { sourceId: string; selectedExecutionOrder: readonly string[] }>;
++  openingPoolBefore: PositionFactValue; openingPoolAfter: PositionFactValue; releasedOpeningFee: PositionFactValue;
++  movementFeeTotal: PositionFactValue; movementFeeToClosing: PositionFactValue; movementFeeToOpening: PositionFactValue; realizedFeeDelta: PositionFactValue;
++}>;
++function financialFactValue(value: Decimal | null, reasons: readonly string[] = []): PositionFactValue {
++  const unavailable = unique(reasons);
++  return { value: value === null || unavailable.length ? null : value.isZero() ? "0" : value.toFixed(), available: value !== null && !unavailable.length, reasons: unavailable };
++}
++/** Financial-owner read seam. Collects transient canonical movements and observes F's existing allocation steps. */
++export function readHomepageV25FinancialFacts(source: HomepageV25PreparedSource, request: { asOf: string; targetCurrency?: string }) {
++  const data = preparedData.get(source);
++  if (!data) throw new TypeError("Unknown prepared homepage source");
++  const boundary = parseAsOf(request.asOf);
++  if (!boundary) throw new HomepageV25ProjectionInputError("as-of-invalid");
++  const episodesByGroup = new Map<string, TradeLibraryEntry["episodes"][number]["episode"][]>();
++  for (const entry of data.input.entries) for (const item of entry.episodes) {
++    const episode = item.episode, nature = episode.tradeNature ?? (episode.executions[0] ? tradeNatureOf(episode.executions[0]) : "unknown");
++    const key = `${episode.accountId}|${episode.instrument.id}|${nature}|${episode.simulationRunId ?? ""}`;
++    const bucket = episodesByGroup.get(key) ?? []; bucket.push(episode); episodesByGroup.set(key, bucket);
++  }
++  const groups = data.groups.map(group => {
++    const normalized = data.normalized.get(group.key)!;
++    const episodes = episodesByGroup.get(group.key) ?? [];
++    const uncoveredEvidence = !group.executions.length ? episodes.map(episode => ({
++      positions: [...(episode.initialPosition ? [episode.initialPosition] : []), ...episode.executions.flatMap(execution => [...(execution.source.statementPositions ?? []), ...(execution.source.openingPosition ? [execution.source.openingPosition] : [])])],
++      events: [...(episode.positionEvents ?? []), ...episode.executions.flatMap(execution => execution.source.positionEvents ?? [])],
++    })) : [];
++    const prepared = uncoveredEvidence.length ? undefined : data.ordinary.get(group.key);
++    const selected = selectedPrepared(data, group, boundary);
++    // The business-day selection can differ from chronological order for coarse fills.
++    // Use the same prefix condition as ordinaryState before observing its fee sweep.
++    const ordinaryPrefix = prepared && !selected.some((execution, index) => execution.id !== prepared.ordered[index]?.id);
++    const canonicalSource = prepared?.canonical ?? preparePositionLedger({ executions: normalized.map(row => row.execution), ...(uncoveredEvidence.length ? { inventoryIdentity: { accountId: group.identity.accountId, symbol: group.instrument.symbol, market: group.instrument.market }, evidence: uncoveredEvidence } : {}) });
++    const observed = readPreparedPositionFacts(canonicalSource, [{ cursor: boundary.cursor, visibleExecutionIds: selected.map(execution => execution.id) }]);
++    const canonical: CanonicalFactResult = observed.results[0];
++    const feeFacts = visibleFeeFacts(data, boundary, uncoveredEvidence.length
++      ? collectFeeFacts({ ...data, groups: [group] }, uncoveredEvidence.flatMap(evidence => evidence.events.map(event => ({ event, group }))))
++      : data.feeFactsByGroup.get(group.key) ?? []);
++    const allocations: HomepageV25FeeAllocationFact[] = [];
++    const executionOrder = canonical.selectedExecutionIds;
++    const movements = new Map<string, CanonicalFactResult["facts"][number]>();
++    for (const fact of canonical.facts) {
++      if (fact.executionId) movements.set(`execution:${fact.executionId}`, fact);
++      else if (fact.kind === "ipo-allocation" && fact.effect === "applied") movements.set(`allocation:${fact.eventId}`, fact);
++    }
++    const feesByEvidence = new Map<string, HomepageV25FeeFact[]>();
++    for (const fact of feeFacts) for (const id of [...fact.lineage.executionIds, ...fact.lineage.eventIds]) {
++      const bucket = feesByEvidence.get(id) ?? []; bucket.push(fact); feesByEvidence.set(id, bucket);
++    }
++    let poolLineageReasons: string[] = [];
++    const observe: FeeStepObserver = step => {
++      const movement = movements.get(step.executionId ? `execution:${step.executionId}` : `allocation:${step.allocationEventId}`);
++      if (!movement) return;
++      const feeReasons = unique([...movement.after.fees.reasons, ...step.reasons.filter(reason => reason.includes("fee") || ["duplicate-execution-conflict", "execution-lineage-unavailable", "execution-time-invalid", "currency-conflict", "settlement-currency-mismatch"].includes(reason))]);
++      const matchingReasons = unique([...movement.before.quantity.reasons, ...movement.after.quantity.reasons,
++        ...movement.matchedClosedQuantity.reasons, ...movement.openedQuantity.reasons,
++        ...step.reasons.filter(reason => ["quantity-unavailable", "execution-direction-unavailable", "position-coverage-missing"].includes(reason))]);
++      const beforeReasons = unique([...poolLineageReasons, ...movement.before.fees.reasons]);
++      const roleReasons = unique([...matchingReasons, ...feeReasons]);
++      const releasedReasons = unique([...beforeReasons, ...matchingReasons]);
++      const afterReasons = unique([...beforeReasons, ...roleReasons]);
++      const closeFee = step.fee && step.size.gt(0) ? step.fee.mul(step.closed).div(step.size) : null;
++      const openFee = step.fee && step.size.gt(0) ? step.fee.mul(step.size.minus(step.closed)).div(step.size) : null;
++      const matchingFees = [...new Map((step.executionId ? feesByEvidence.get(step.executionId) ?? [] : movement.evidenceIds.flatMap(id => feesByEvidence.get(id) ?? [])).map(fact => [fact.factId, fact])).values()];
++      allocations.push({ contextId: canonical.contextId, movementFactId: movement.factId, executionId: step.executionId, allocationEventId: step.allocationEventId,
++        feeFactIds: matchingFees.map(fact => fact.factId), evidenceIds: unique([...movement.evidenceIds, ...matchingFees.flatMap(fact => fact.knowledge.evidenceIds)]),
++        beforeContext: { ...step.beforeContext, sourceId: step.beforeContext.sourceId ?? canonical.sourceId, selectedExecutionOrder: executionOrder },
++        openingPoolBefore: financialFactValue(step.poolBefore, beforeReasons), openingPoolAfter: financialFactValue(step.poolAfter, afterReasons),
++        releasedOpeningFee: financialFactValue(step.released, releasedReasons), movementFeeTotal: financialFactValue(step.fee, feeReasons),
++        movementFeeToClosing: financialFactValue(closeFee, roleReasons), movementFeeToOpening: financialFactValue(openFee, roleReasons),
++        realizedFeeDelta: financialFactValue(step.released && closeFee ? step.released.plus(closeFee) : null, unique([...releasedReasons, ...roleReasons])) });
++      poolLineageReasons = afterReasons;
++    };
++    let state: State;
++    if (ordinaryPrefix) {
++      // Run the existing fee sweep only for the selected prefix; do not retain its checkpoints or facts.
++      const fees = prepareOrdinaryProjection(undefined, group, canonicalSource, normalized, observe, selected.length).checkpoints.at(-1)!;
++      const ledger = replayPreparedPositionBoundaries(canonicalSource, [{ markPrice: "0", cursor: boundary.cursor, visibleExecutionIds: selected.map(execution => execution.id) }]).results[0].snapshot;
++      state = finishState(boundary, ledger, selected, new Set(fees.pnl), new Set(fees.quantity), fees.pool === null ? null : new Decimal(fees.pool), new Decimal(fees.projectedFees));
++    } else state = replay(group, boundary, "2000-01-01", undefined, observe);
++    const feeReasons = unique([...canonical.terminal.fees.reasons, ...state.pnlReasons.filter(reason => reason.includes("fee") || state.quantityReasons.includes(reason) || ["duplicate-execution-conflict", "currency-conflict", "settlement-currency-mismatch"].includes(reason))]);
++    const fullFees = D(canonical.terminal.fees.value);
++    const realizedFees = fullFees && state.openFees ? fullFees.minus(state.openFees) : null;
++    const gross = D(canonical.terminal.realizedPnl.value);
++    return { key: group.key, identity: { ...group.identity, market: group.instrument.market, currency: group.instrument.currency },
++      canonical, allocations, incurredFeeFacts: structuredClone(feeFacts), rawExecutions: structuredClone(group.executions),
++      openFees: financialFactValue(state.openFees, feeReasons), realizedFees: financialFactValue(realizedFees, feeReasons),
++      nativeRealizedNet: financialFactValue(gross && realizedFees ? gross.minus(realizedFees) : null, state.pnlReasons),
++      sourceCoverage: structuredClone(lifetimeFor(data, group, boundary)),
++      episodeCoverage: episodeFactCoverage(episodes, canonical),
++      classificationCoverage: classificationFactCoverage(canonical, group.executions),
++      fxCoverage: fxFor(data, boundary, [group.instrument.currency], request.targetCurrency, false, false).coverage,
++      quantityCoverage: { available: state.quantity !== null, reasons: state.quantityReasons },
++      diagnostics: { ...observed.diagnostics, feeSteps: allocations.length, mode: ordinaryPrefix ? "ordinary-sweep" as const : "exact-context-fallback" as const } };
++  });
++  return freezeProjection({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, asOf: request.asOf, effectiveKnowledgeCursor: boundary.cursor, scope: structuredClone(data.scope), groups });
++}
++
++function episodeFactCoverage(episodes: TradeLibraryEntry["episodes"][number]["episode"][], canonical: CanonicalFactResult) {
++  const byId = new Map(canonical.facts.filter(fact => fact.executionId).map(fact => [fact.executionId!, fact]));
++  const associatedIds = new Set(episodes.flatMap(episode => episode.executions.map(execution => execution.id)));
++  const missingLineage = !episodes.length || canonical.selectedExecutionIds.some(id => !associatedIds.has(id));
++  const conflicts: string[] = [];
++  for (const episode of episodes) {
++    const last = episode.executions.map(execution => byId.get(execution.id)).filter((fact): fact is NonNullable<typeof fact> => Boolean(fact)).at(-1);
++    if (!last) continue;
++    const lastRaw = episode.executions.at(-1);
++    // Only complete, visible episode lineage may be checked. Canonical remains the movement authority.
++    if (lastRaw && !byId.has(lastRaw.id)) continue;
++    const after = D(last.after.quantity.value), zero = after !== null && (episode.direction === "long" ? after.lte(0) : after.gte(0));
++    if ((episode.status === "closed") !== zero || zero && episode.endedAt !== undefined && !episodeEndMatches(episode.endedAt, last.time)) conflicts.push(episode.id);
++  }
++  const reasons = [...(conflicts.length ? ["episode-canonical-conflict"] : []), ...(missingLineage ? ["episode-lineage-unavailable"] : [])];
++  return { available: !reasons.length, reasons, episodeIds: episodes.map(episode => episode.id), conflictingEpisodeIds: unique(conflicts) };
++}
++function episodeEndMatches(endedAt: string, time: CanonicalFactResult["facts"][number]["time"]): boolean {
++  // Interpret the episode's own declaration. A fill's tradingDate must never
++  // replace it, and a day/month fact cannot certify a more precise instant.
++  const month = /^\d{4}-(?:0[1-9]|1[0-2])$/.test(endedAt);
++  const day = validDay(endedAt);
++  const instant = !month && !day && /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(endedAt) ? Date.parse(endedAt) : NaN;
++  if (!month && !day && !Number.isFinite(instant)) return false;
++  if (time.precision === "instant" && !month && !day) return instant === Date.parse(time.at);
++  const length = month || time.precision === "month" ? 7 : 10;
++  const declared = month || day ? endedAt : new Date(instant).toISOString();
++  const canonical = time.precision === "instant" ? new Date(time.at).toISOString() : time.sourceDate;
++  return declared.slice(0, length) === canonical.slice(0, length);
++}
++function classificationFactCoverage(canonical: CanonicalFactResult, executions: readonly TradeExecution[]) {
++  const suppressed = new Set(canonical.facts.filter(fact => fact.kind === "ipo-allocation" && fact.effect === "suppressed-duplicate").map(fact => fact.eventId));
++  const allocations = [...new Map(executions.flatMap(execution => execution.source.positionEvents ?? []).filter(event => suppressed.has(event.id)).map(event => [event.id, event])).values()];
++  const ipoBuys = new Set<string>();
++  // This existing authority identifies the duplicate acquisition only. It does
++  // not establish any disposal-to-lot relationship for mixed-source inventory.
++  for (const event of allocations) for (const execution of executions) if (isExecutionBackedIpoAllocation(event, [execution])) ipoBuys.add(execution.id);
++  const classes = new Set<"ipo" | "long" | "short">();
++  let disposal = false, unknown = false;
++  for (const fact of canonical.facts) {
++    if (fact.kind === "ipo-allocation" && (fact.effect === "applied" || allocations.some(event => event.id === fact.eventId))) classes.add("ipo");
++    if (fact.kind === "execution" && D(fact.openedQuantity.value)?.gt(0)) classes.add(ipoBuys.has(fact.executionId!) ? "ipo" : D(fact.after.quantity.value)?.lt(0) ? "short" : "long");
++    if (D(fact.matchedClosedQuantity.value)?.gt(0)) disposal = true;
++    if (fact.kind === "execution" && !fact.openedQuantity.available || ["transfer", "position-reconciliation"].includes(fact.kind)) unknown = true;
++  }
++  const reasons = classes.size > 1 && disposal ? ["provenance-ambiguous"] : unknown ? ["provenance-coverage-missing"] : [];
++  return { available: !reasons.length, reasons, sourceClasses: [...classes] };
++}

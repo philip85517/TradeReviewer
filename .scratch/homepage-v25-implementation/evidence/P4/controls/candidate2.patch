@@ -1,0 +1,138 @@
+--- a/app/components/homepage-v25/history-controls.tsx
++++ b/app/components/homepage-v25/history-controls.tsx
+@@ -67,7 +67,8 @@
+   const appliedKey = rangeKey(appliedRange);
+   const selectedRange = rangeOptions.findIndex(option => rangeKey(option.range) === appliedKey);
+   const selectedMetric = CHART_MODES.indexOf(chartMode);
+-  const label = rangeOptions[selectedRange]?.label ?? rangeLabel(appliedRange);
++  const label = rangeLabel(appliedRange);
++  const fullLabel = rangeOptions[selectedRange]?.label ?? label;
+   // Primitive signature lets an actual caller option change refresh focus, without refocusing on every render.
+   const optionsKey = JSON.stringify(rangeOptions.map(option => [option.id, option.label, rangeKey(option.range)]));
+   const hasInvalidRange = rangeOptions.some(option => !validRange(option.range));
+@@ -159,7 +160,7 @@
+     <div className="hp-history-controls__combo">
+       <button ref={element => { triggers.current.range = element; }} type="button"
+         className="hp-history-controls__trigger hp-history-controls__trigger--range"
+-        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${label}`} aria-haspopup="listbox" aria-expanded={open === "range"}
++        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${fullLabel}`} title={fullLabel} aria-haspopup="listbox" aria-expanded={open === "range"}
+         aria-controls={open === "range" ? `${id}-range` : undefined} aria-describedby={messages}
+         aria-busy={pending || undefined} onClick={() => setOpen(open === "range" ? null : "range")}
+         onKeyDown={event => triggerKeyDown(event, "range")}>
+--- a/app/components/homepage-v25/history-controls.css
++++ b/app/components/homepage-v25/history-controls.css
+@@ -40,7 +40,7 @@
+   background: transparent;
+   color: inherit;
+   font: inherit;
+-  white-space: normal;
++  white-space: nowrap;
+   cursor: pointer;
+   transition: background-color 120ms ease;
+ }
+@@ -67,7 +67,6 @@
+ 
+ .hp-history-controls .hp-history-controls__label {
+   min-width: 0;
+-  overflow-wrap: anywhere;
+ }
+ 
+ .hp-history-controls .hp-history-controls__arrow {
+--- a/app/components/homepage-v25/history-controls.test.tsx
++++ b/app/components/homepage-v25/history-controls.test.tsx
+@@ -49,6 +49,40 @@
+     expect(rangeTrigger()).toHaveTextContent("2031");
+     await userEvent.click(rangeTrigger());
+     expect(screen.queryByRole("option", { selected: true })).not.toBeInTheDocument();
++  });
++
++  it.each([
++    [{ mode: "year", year: 2038 }, "2038"],
++    [{ mode: "this-year", year: 2038 }, "今年"],
++    [{ mode: "years", fromYear: 2036, toYear: 2038 }, "2036–2038"],
++    [{ mode: "all" }, "全部"],
++  ] as const)("keeps %j compact while preserving the full caller label in accessible, title and menu text", async (appliedRange, shortLabel) => {
++    const fullLabel = `${shortLabel}：全部已经确认可用、用于核对真实历史范围的详细说明`;
++    const custom = [{ id: "descriptive", label: fullLabel, range: appliedRange }];
++    render(<HistoryControls {...props({ appliedRange, rangeOptions: custom })} />);
++    expect(rangeTrigger().textContent).toBe(shortLabel);
++    expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
++    expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
++    await userEvent.click(rangeTrigger());
++    expect(screen.getByRole("option", { name: fullLabel })).toHaveTextContent(fullLabel);
++    expect(screen.getByRole("option", { name: fullLabel })).toHaveFocus();
++    await userEvent.keyboard("{Escape}");
++    expect(rangeTrigger()).toHaveFocus();
++    expect(rangeTrigger().textContent).toBe(shortLabel);
++  });
++
++  it("refreshes caller descriptions without changing the compact applied range or issuing requests", async () => {
++    const p = props();
++    const { rerender } = render(<HistoryControls {...p} />);
++    const fullLabel = "2026：外部更新后的完整年度范围说明，保留给辅助技术和展开选项";
++    rerender(<HistoryControls {...p} rangeOptions={[{ ...options[0], label: fullLabel }]} />);
++    expect(rangeTrigger().textContent).toBe("2026");
++    expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
++    expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
++    await userEvent.click(rangeTrigger());
++    expect(screen.getByRole("option", { name: fullLabel })).toHaveAttribute("aria-selected", "true");
++    expect(p.onRangeApply).not.toHaveBeenCalled();
++    expect(p.onChartModeChange).not.toHaveBeenCalled();
+   });
+ });
+ 
+@@ -184,6 +218,42 @@
+     expect(screen.getByRole("textbox", { name: "页面其他状态" })).toHaveValue("保持");
+     expect(p.onRangeApply).not.toHaveBeenCalled(); expect(p.onChartModeChange).not.toHaveBeenCalled();
+   });
++
++  it("retains compact applied text and full long descriptions through pending, error, retry, keyboard exit and caller commit", async () => {
++    const longOptions = options.map(option => ({ ...option, label: `${option.label}：全部已经确认可用的很长历史年度范围` }));
++    const p = props({ rangeOptions: longOptions }); const user = userEvent.setup();
++    const { rerender } = render(<HistoryControls {...p} />);
++    expect(rangeTrigger().textContent).toBe("2026");
++    await user.click(rangeTrigger()); await user.tab();
++    expect(metricTrigger()).toHaveFocus();
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    await user.click(rangeTrigger()); await user.keyboard("{End}{Escape}");
++    expect(rangeTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++    await user.click(rangeTrigger()); await user.click(screen.getByRole("option", { name: longOptions[2].label }));
++    expect(p.onRangeApply).toHaveBeenCalledExactlyOnceWith(options[2].range);
++    rerender(<HistoryControls {...p} pending />);
++    expect(rangeTrigger().textContent).toBe("2026");
++    expect(rangeTrigger()).toHaveAttribute("title", longOptions[0].label);
++    expect(metricTrigger()).toHaveTextContent("每月净盈亏");
++    await user.click(rangeTrigger()); await user.click(screen.getByRole("option", { name: longOptions[2].label }));
++    expect(p.onRangeApply).toHaveBeenCalledTimes(1);
++    await user.keyboard("{Escape}");
++    await user.click(metricTrigger()); await user.click(screen.getByRole("option", { name: "累计净盈亏" }));
++    expect(p.onChartModeChange).toHaveBeenCalledExactlyOnceWith("cumulative-pnl");
++    expect(p.onRangeApply).toHaveBeenCalledTimes(1);
++    rerender(<HistoryControls {...p} error="读取失败：请重新选择历史范围重试" />);
++    expect(rangeTrigger().textContent).toBe("2026");
++    expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${longOptions[0].label}`);
++    expect(screen.getByRole("alert")).toHaveTextContent("请重新选择历史范围重试");
++    await user.click(rangeTrigger()); await user.click(screen.getByRole("option", { name: longOptions[2].label }));
++    expect(p.onRangeApply).toHaveBeenNthCalledWith(2, options[2].range);
++    rerender(<HistoryControls {...p} appliedRange={options[2].range} />);
++    expect(rangeTrigger().textContent).toBe("2024–2026");
++    expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${longOptions[2].label}`);
++    expect(rangeTrigger()).toHaveAttribute("title", longOptions[2].label);
++    expect(metricTrigger()).toHaveTextContent("每年净盈亏");
++    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
++  });
+ });
+ 
+ // Incorrect metric order, ignored controlled selection or a range callback in metric handlers fails these tests.
+@@ -240,7 +310,10 @@
+   it("preserves the full long numerical range and caller error text", async () => {
+     const custom = [{ id: "full", label: "0001–9999", range: { mode: "years", fromYear: 1, toYear: 9999 } }] as const;
+     render(<HistoryControls {...props({ rangeOptions: custom, appliedRange: custom[0].range, error: "读取失败：完整错误原因应保持可读，重新选择范围后重试。" })} />);
+-    expect(rangeTrigger()).toHaveTextContent("0001–9999"); expect(screen.getByRole("alert")).toHaveTextContent("完整错误原因应保持可读");
++    expect(rangeTrigger().textContent).toBe("1–9999");
++    expect(rangeTrigger()).toHaveAccessibleName("历史范围：0001–9999");
++    expect(rangeTrigger()).toHaveAttribute("title", "0001–9999");
++    expect(screen.getByRole("alert")).toHaveTextContent("完整错误原因应保持可读");
+     await userEvent.click(rangeTrigger()); await userEvent.click(screen.getByRole("option", { name: "0001–9999" }));
+   });
+ 

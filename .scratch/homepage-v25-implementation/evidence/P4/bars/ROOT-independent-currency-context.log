@@ -1,0 +1,350 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:54343) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx (1 test | 1 failed) 280ms
+   × an invalidated contribution detail stays closed and preserves outside focus when a currency context returns 278ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx > an invalidated contribution detail stays closed and preserves outside focus when a currency context returns
+Error: a dismissed readout must not resurrect without a new activation: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-labelledby="_r_0_-detail-title"
+  aria-modal="false"
+  class="hp-contribution-bars__detail"
+  id="_r_0_-detail"
+  role="dialog"
+  style="left: 12px; top: 12px;"
+  tabindex="-1"
+>
+  <div
+    class="hp-contribution-bars__detail-heading"
+  >
+    <h4
+      id="_r_0_-detail-title"
+    >
+      字面证券
+       · 贡献详情
+    </h4>
+    <button
+      aria-label="关闭贡献详情"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+  <p
+    class="hp-contribution-bars__context"
+  >
+    当前贡献
+     · 报表币种 
+    CNY
+  </p>
+  <section
+    aria-label="期间已实现"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间已实现
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        120.123456 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456
+           
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="期间浮盈变动"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间浮盈变动
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        -20.123456 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456
+           
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="贡献净值"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      贡献净值
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        100.000000 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456
+           
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+</div> instead
+ ❯ .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx:40:116
+     38|   mounted.rerender(content("CNY"));
+     39|   // Soft assertions preserve both independent observations in this si…
+     40|   expect.soft(screen.queryByRole("dialog"), "a dismissed readout must …
+       |                                                                                                                    ^
+     41|   expect.soft(outside, "context restoration must not steal the reader'…
+     42| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx > an invalidated contribution detail stays closed and preserves outside focus when a currency context returns
+Error: context restoration must not steal the reader's outside focus: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button>
+  外部阅读位置
+</button>
+Received element with focus:
+  <div
+  aria-labelledby="_r_0_-detail-title"
+  aria-modal="false"
+  class="hp-contribution-bars__detail"
+  id="_r_0_-detail"
+  role="dialog"
+  style="left: 12px; top: 12px;"
+  tabindex="-1"
+>
+  <div
+    class="hp-contribution-bars__detail-heading"
+  >
+    <h4
+      id="_r_0_-detail-title"
+    >
+      字面证券
+       · 贡献详情
+    </h4>
+    <button
+      aria-label="关闭贡献详情"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+  <p
+    class="hp-contribution-bars__context"
+  >
+    当前贡献
+     · 报表币种·
+    CNY
+  </p>
+  <section
+    aria-label="期间已实现"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间已实现
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        120.123456 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456············
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="期间浮盈变动"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间浮盈变动
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        -20.123456 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456············
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="贡献净值"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      贡献净值
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        100.000000 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        1 / 1
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          120.123456············
+          CNY
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        同币种，无需换汇
+      </dd>
+    </dl>
+  </section>
+</div>
+ ❯ .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx:41:89
+     39|   // Soft assertions preserve both independent observations in this si…
+     40|   expect.soft(screen.queryByRole("dialog"), "a dismissed readout must …
+     41|   expect.soft(outside, "context restoration must not steal the reader'…
+       |                                                                                         ^
+     42| });
+     43|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  07:28:51
+   Duration  2.10s (transform 110ms, setup 196ms, import 173ms, tests 280ms, environment 1.03s)
+

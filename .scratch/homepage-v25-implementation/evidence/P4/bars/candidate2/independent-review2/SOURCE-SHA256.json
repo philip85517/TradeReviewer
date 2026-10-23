@@ -1,0 +1,72 @@
+{
+  "reviewer": "/root/series_bundle_review",
+  "actual_model": "gpt-6.1-sol",
+  "reasoning_effort": "ultra",
+  "scope": "ContributionBars candidate2 readonly spec/quality; no feature or visual acceptance",
+  "worktree": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "head_at_final_check": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "beginning_check_utc": "2026-10-22T23:43:02.445472+00:00",
+  "ending_check_utc": "2026-10-22T23:47:43.460949+00:00",
+  "beginning_sources_sha256": {
+    "app/components/homepage-v25/contribution-bars.tsx": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+    "app/components/homepage-v25/contribution-bars.css": "38fec37c82993b162c9aeebd5763829e9c0cc7b5558e9a24e0a2c79cae346213",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "35ec77854673a9a986eba6926e25c7df39fa9dfcbcb439e1be8b604312ddc198",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+  },
+  "ending_sources_sha256": {
+    "app/components/homepage-v25/contribution-bars.tsx": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+    "app/components/homepage-v25/contribution-bars.css": "38fec37c82993b162c9aeebd5763829e9c0cc7b5558e9a24e0a2c79cae346213",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "35ec77854673a9a986eba6926e25c7df39fa9dfcbcb439e1be8b604312ddc198",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+  },
+  "all_reviewed_sources_unchanged": true,
+  "reference_inputs_sha256": {
+    "AGENTS.md": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+    "docs/agents/development-workflow.md": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+    "docs/agents/task-decomposition.md": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+    "docs/agents/frontend-control-audit.md": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+    "docs/agents/ui-task-templates.md": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+    "docs/agents/issue-tracker.md": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-DISPATCH.md": "977329dff5e09f20b1f2648daad1813f72603c1b054c4c0e1c3532ff99daf183",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-ACCEPTANCE-1.md": "7b61d70d91447127f39853dc33eee97195d08bf2751eb2db64a41b8a9dfe9bd6",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-CANDIDATE2-DISPATCH.md": "d4af6fbaa656933a23d3bdfacd3d179aa222d621fa7104dd830ae9d07e230b4b",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/IMPLEMENTATION-READY.md": "d4c402939b65fe77f33b7606bd43ba2848e9bd2adfd68e063b6201e3e706fce5",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/SELF-REVIEW.md": "44e5eb42b507ecbf08655b7013086eb46664962ecfc9d77d3e6a346f2f37c1b2",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/CORRECTIONS.patch": "27d8121c691849a3356f81342bacf35b05286c3974f88417c93765de293ad510",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/DESIGN-COVERAGE.md": "20c531676f8e073a8f4f3b66bda7490f7672ebf57261f990c159b45286b063ac",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/PRODUCT-SHA256SUMS": "2993199a6df7ec9c3bc1daa11a89353669ae6c6f7548ab81b89c7f2c737ba49e",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/GREEN.log": "ecc55fe3e71f98e446a701dc2dcaaa715777e12302198bda183597dc9cac1794",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/INDEPENDENT.log": "6366a68daede1e9ec1729e8db3caf964eb29b781039cc32a1cdf54b9e99449bc",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/preservation-check.log": "c83ceccf5138f936d1d56a2e1cabce666de6a4e26d148a932b1955c5225fa37d",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/style-baseline-contract.log": "f80553b8ee5cede37b39aa515cd49b19015cbda721b77966b0d13585536d55d5",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.tsx.before.txt": "8e01b337f4d3774e6778683247e0ab3f56c0676485db33065216733d377b3fcc",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.css.before.txt": "67993922cb8f7def8b6693c2bda986ac2fa5edf4d537b850a67d0b44769935c2",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.test.tsx.before.txt": "2cc9f4b7efcc5423cbfc45cab051000aff065b4be83571c1f158c4d32fc8152b",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/reference-contribution-current-a-share.png": "27792a704030a119ac3fe58d0a94c4aa27db4661b945e586ac842a1546652b51",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/reference-contribution-mixed-sign-demo.png": "0066d49b2427fe6dedd558354e9fbbecf056d08ecc00ff37aa276929b3ab8ecd",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/reference-contribution-error.png": "8bd5c81f4a04e932d32499cbe0efaa3722f607054852ea5e2d9b62b6e8f3d4e3",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-current-a-share.svg": "cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-mixed-sign-demo.svg": "50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-error.svg": "e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51",
+    ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/bars-candidate2-pending-390.txt": "20b81094617ebf05f816ed91320a5b64c6643a43f8d3873ad6396467d111c930"
+  },
+  "report_sha256": "9e18545747d72d698e1a16b7ed75b067685dc8d6c63fa45bc5ebcffa974e38d6",
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 1,
+    "ids": [
+      "CB-M04"
+    ]
+  },
+  "reviewer_test_execution_count": 0,
+  "reviewer_browser_execution_count": 0,
+  "new_counterexample": null,
+  "external_actual_evidence": "Root browser raw observation read and hash-bound; reviewer did not operate browser or inspect pending screenshot",
+  "freeze": "Final reviewer write; no product/old evidence/shared tracker changes. Root alone rules formal round/P4."
+}

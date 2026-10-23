@@ -1,0 +1,4 @@
+Pinned Node 26 + Vitest directed run before implementation:
+
+FAIL: Failed to resolve import "./homepage-v25-performance" from homepage-v25-performance.test.ts
+Reason: production module did not exist yet (TDD RED).

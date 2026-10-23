@@ -1,0 +1,17 @@
+"use client";
+
+import type { HomepageHistoryChartMode, HomepageHistoryRange } from "../../lib/reviews/homepage-v25-state";
+
+export type HistoryRangeOption = { id: string; label: string; range: HomepageHistoryRange };
+export type HistoryControlsProps = {
+  appliedRange: HomepageHistoryRange;
+  chartMode: HomepageHistoryChartMode;
+  rangeOptions: readonly HistoryRangeOption[];
+  pending?: boolean;
+  error?: string | null;
+  onRangeApply: (range: HomepageHistoryRange) => void;
+  onChartModeChange: (mode: HomepageHistoryChartMode) => void;
+};
+
+// Inert contract stub for the recorded RED run; no behavior implemented yet.
+export function HistoryControls(_props: HistoryControlsProps) { return null; }

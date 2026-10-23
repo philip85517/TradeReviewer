@@ -1,0 +1,11 @@
+app/components/homepage-v25/metric-cards.tsx: diff --no-index --check exit 1, no whitespace diagnostics
+app/components/homepage-v25/metric-cards.css: diff --no-index --check exit 1, no whitespace diagnostics
+app/components/homepage-v25/metric-cards.test.tsx: diff --no-index --check exit 1, no whitespace diagnostics
+All original20 test bodies byte-preserved before new regressions.
+Pinned runtime: v26.0.0
+Product writes freeze at the hashes above. No product changes after final23/23 run.
+{
+  "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+  "app/components/homepage-v25/metric-cards.css": "1e391540fd971dc201cd74b7274eb563a80fe6c7f830cbd9a3fb82899ad55330",
+  "app/components/homepage-v25/metric-cards.test.tsx": "fd36f70cff05d0420f027c8856c2055b95e87749656a697cf3d956748b266057"
+}

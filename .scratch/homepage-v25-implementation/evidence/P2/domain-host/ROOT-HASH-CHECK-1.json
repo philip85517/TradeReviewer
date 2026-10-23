@@ -1,0 +1,6 @@
+{
+  "app/components/homepage-v25/session-model.ts": true,
+  "app/components/homepage-v25/session-model.test.ts": true,
+  "app/components/homepage-v25/use-homepage-host.ts": true,
+  "app/components/homepage-v25/use-homepage-host.test.tsx": true
+}

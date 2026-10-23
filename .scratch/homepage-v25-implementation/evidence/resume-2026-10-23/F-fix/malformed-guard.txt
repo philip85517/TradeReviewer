@@ -1,0 +1,9 @@
+  const snapshot = (ids: string[], cursor: string): PositionLedgerSnapshot => {
+    try { return replayPositionAtPrice({ executions: safe, markPrice: "0", cursor, visibleExecutionIds: ids }); }
+    catch (error) {
+      // Imported evidence can contain malformed decimal fields. Classify that
+      // evidence at this adapter boundary; placeholders never become money.
+      if (!(error instanceof Error) || !error.message.includes("DecimalError")) throw error;
+      return { quantity: "0", averageCost: "0", realizedPnl: "0", unrealizedPnl: "0", netPnl: "0", fees: "0", grossCapitalDeployed: "0", returnPercent: "0", quantityKnown: false, costKnown: false, accuracy: { pnl: "unavailable", reasons: ["evidence-invalid"] } };
+    }
+  };

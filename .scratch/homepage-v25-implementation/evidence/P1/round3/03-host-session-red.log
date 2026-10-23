@@ -1,0 +1,182 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25044) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/session-model.test.ts (3 tests | 3 failed) 15ms
+     × commits matching business rows and applied labels atomically, ignoring an older completion 10ms
+     × restores UI only alongside a fresh data result and uses period dates for the ordinary collection 1ms
+     × refreshes committed attachments while preserving a separately edited draft, then hands off the native date 1ms
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (17 tests | 6 failed) 269ms
+     × retains the direct homepage date scope rangeMode=date&date=2026-10-22 through null, reload and guarded return 57ms
+     × retains the direct homepage date scope rangeMode=date&date=2026-10-22 through SSE:600519, reload and guarded return 9ms
+     × keeps the homepage navigation's applied scope and source UI while global addresses and indexed pops derive their own origin 18ms
+     × does not commit a global collection scope when its guard cancel 6ms
+     × does not commit a global collection scope when its guard throw 6ms
+     × commits only the latest guarded global transition and preserves the homepage source for return 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage integrated session > commits matching business rows and applied labels atomically, ignoring an older completion
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:90:29
+     88| }
+     89| function required<T>(value: T | null): T {
+     90|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     91|   return value;
+     92| }
+ ❯ createHomepageState app/lib/reviews/homepage-v25-state.ts:259:22
+ ❯ changeHomepageIdentity app/lib/reviews/homepage-v25-state.ts:379:16
+ ❯ startHomepageRead app/components/homepage-v25/session-model.ts:10:20
+ ❯ app/components/homepage-v25/session-model.test.ts:9:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage integrated session > restores UI only alongside a fresh data result and uses period dates for the ordinary collection
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:90:29
+     88| }
+     89| function required<T>(value: T | null): T {
+     90|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     91|   return value;
+     92| }
+ ❯ createHomepageState app/lib/reviews/homepage-v25-state.ts:259:22
+ ❯ changeHomepageIdentity app/lib/reviews/homepage-v25-state.ts:379:16
+ ❯ startHomepageRead app/components/homepage-v25/session-model.ts:10:20
+ ❯ app/components/homepage-v25/session-model.test.ts:24:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage integrated session > refreshes committed attachments while preserving a separately edited draft, then hands off the native date
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:90:29
+     88| }
+     89| function required<T>(value: T | null): T {
+     90|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     91|   return value;
+     92| }
+ ❯ createHomepageState app/lib/reviews/homepage-v25-state.ts:259:22
+ ❯ changeHomepageIdentity app/lib/reviews/homepage-v25-state.ts:379:16
+ ❯ startHomepageRead app/components/homepage-v25/session-model.ts:10:20
+ ❯ app/components/homepage-v25/session-model.test.ts:40:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through null, reload and guarded return
+AssertionError: expected '?scope=live&market=a&accounts=one&ran…' to contain 'rangeMode=date&date=2026-10-22'
+
+Expected: "rangeMode=date&date=2026-10-22"
+Received: "?scope=live&market=a&accounts=one&rangeMode=custom&from=2026-10-22&to=2026-10-22"
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:19:29
+     17|     await waitFor(() => expect(host.result.current.initialized).toBe(t…
+     18|     await act(() => host.result.current.openTrades(identity));
+     19|     expect(location.search).toContain(range);
+       |                             ^
+     20|     if (identity) expect(new URL(location.href).searchParams.get("symb…
+     21|     host.unmount();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through SSE:600519, reload and guarded return
+AssertionError: expected '?scope=live&market=a&accounts=one&ran…' to contain 'rangeMode=date&date=2026-10-22'
+
+Expected: "rangeMode=date&date=2026-10-22"
+Received: "?scope=live&market=a&accounts=one&rangeMode=custom&from=2026-10-22&to=2026-10-22&symbol=SSE%3A600519"
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:19:29
+     17|     await waitFor(() => expect(host.result.current.initialized).toBe(t…
+     18|     await act(() => host.result.current.openTrades(identity));
+     19|     expect(location.search).toContain(range);
+       |                             ^
+     20|     if (identity) expect(new URL(location.href).searchParams.get("symb…
+     21|     host.unmount();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps the homepage navigation's applied scope and source UI while global addresses and indexed pops derive their own origin
+AssertionError: expected { live: true, market: 'a', …(4) } to match object { market: 'a', …(3) }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "accounts": [
+      "one",
+    ],
+-   "date": "2026-10-22",
+    "market": "a",
+-   "rangeMode": "date",
++   "rangeMode": "custom",
+  }
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:39:40
+     37|     const strictEntry = history.state; const strictUrl = location.href;
+     38|     expect(result.current.route.collectionOrigin).toBe("homepage");
+     39|     expect(result.current.route.scope).toMatchObject({ market: "a", ac…
+       |                                        ^
+     40|     await act(() => result.current.openGlobalTrades());
+     41|     const globalEntry = history.state;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard cancel
+AssertionError: expected undefined to be false // Object.is equality
+
+- Expected:
+false
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:79:22
+     77|     let accepted: unknown;
+     78|     await act(async () => { accepted = await result.current.openGlobal…
+     79|     expect(accepted).toBe(false);
+       |                      ^
+     80|     expect(commit).not.toHaveBeenCalled();
+     81|     expect(location.pathname + location.search).toBe("/home?scope=live…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard throw
+Error: save unavailable
+ ❯ Object.<anonymous> app/components/homepage-v25/use-homepage-host.test.tsx:71:67
+     69|   it.each(["cancel", "throw"])("does not commit a global collection sc…
+     70|     history.replaceState(null, "", "/home?scope=live&market=a&accounts…
+     71|     const guard = vi.fn(async () => { if (mode === "throw") throw new …
+       |                                                                   ^
+     72|     const commit = vi.fn();
+     73|     const { result } = renderHook(() => useHomepageHost({ enabled: tru…
+ ❯ app/components/homepage-v25/use-homepage-host.ts:182:31
+ ❯ Object.openGlobalTrades app/components/homepage-v25/use-homepage-host.ts:189:46
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:78:61
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:78:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > commits only the latest guarded global transition and preserves the homepage source for return
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:99:20
+     97|     await act(async () => { approvals[1](true); await current; });
+     98|     const entry = history.state;
+     99|     expect(second).toHaveBeenCalledOnce(); expect(first).not.toHaveBee…
+       |                    ^
+    100|     expect(location.pathname + location.search).toBe("/trades");
+    101|     expect(result.current.route.collectionOrigin).toBe("global");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  9 failed | 11 passed (20)
+   Start at  02:48:22
+   Duration  2.01s (transform 614ms, setup 376ms, import 727ms, tests 284ms, environment 1.73s)
+

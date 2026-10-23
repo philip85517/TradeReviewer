@@ -1,0 +1,2576 @@
+[
+  {
+    "file": "bars-candidate2-axis-actual-1440.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "block",
+        "left": "558px",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 1440,
+        "scroll": 1440
+      },
+      "container": {
+        "height": 387,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "list": {
+        "height": 344,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 155.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 701.9921875,
+                "y": 166.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 605.2734375,
+                "y": 166.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 163.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 198.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 195
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 484.375,
+                "y": 209.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 701.9921875,
+                "y": 209.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 206.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 241.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 238
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 701.9921875,
+                "y": 252.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 605.2734375,
+                "y": 252.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 249.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 284.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 281
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 484.375,
+                "y": 295.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 701.9921875,
+                "y": 295.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 292.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 327.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 324
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 701.9921875,
+                "y": 338.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 605.2734375,
+                "y": 338.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 335.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 370.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 367
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 484.375,
+                "y": 381.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 701.9921875,
+                "y": 381.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 378.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 413.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 410
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 701.9921875,
+                "y": 424.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 605.2734375,
+                "y": 424.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 421.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 144,
+            "y": 456.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 144,
+            "y": 453
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 484.375,
+                "y": 467.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 701.9921875,
+                "y": 467.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 411.8359375,
+            "y": 464.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      }
+    }
+  },
+  {
+    "file": "bars-candidate2-axis-actual-1280.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "block",
+        "left": "558px",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 1280,
+        "scroll": 1280
+      },
+      "container": {
+        "height": 387,
+        "width": 1152,
+        "x": 64,
+        "y": 152
+      },
+      "list": {
+        "height": 344,
+        "width": 1152,
+        "x": 64,
+        "y": 152
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 155.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 152
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 621.9921875,
+                "y": 166.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 525.2734375,
+                "y": 166.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 163.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 198.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 195
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 404.375,
+                "y": 209.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 621.9921875,
+                "y": 209.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 206.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 241.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 238
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 621.9921875,
+                "y": 252.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 525.2734375,
+                "y": 252.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 249.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 284.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 281
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 404.375,
+                "y": 295.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 621.9921875,
+                "y": 295.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 292.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 327.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 324
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 621.9921875,
+                "y": 338.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 525.2734375,
+                "y": 338.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 335.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 370.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 367
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 404.375,
+                "y": 381.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 621.9921875,
+                "y": 381.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 378.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 413.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 410
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 290.15625,
+                "x": 621.9921875,
+                "y": 424.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 96.71875,
+                "x": 525.2734375,
+                "y": 424.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 421.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 1116,
+            "x": 64,
+            "y": 456.5
+          },
+          "row": {
+            "height": 43,
+            "width": 1152,
+            "x": 64,
+            "y": 453
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 217.6171875,
+                "x": 404.375,
+                "y": 467.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 72.5390625,
+                "x": 621.9921875,
+                "y": 467.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 580.3203125,
+            "x": 331.8359375,
+            "y": 464.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      }
+    }
+  },
+  {
+    "file": "bars-candidate2-axis-actual-785.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "block",
+        "left": "350.5px",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 785,
+        "scroll": 785
+      },
+      "container": {
+        "height": 387,
+        "width": 737,
+        "x": 24,
+        "y": 152
+      },
+      "list": {
+        "height": 344,
+        "width": 737,
+        "x": 24,
+        "y": 152
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 155.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 152
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182.2578125,
+                "x": 374.4921875,
+                "y": 166.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.75,
+                "x": 313.7421875,
+                "y": 166.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 163.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 198.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 195
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.6953125,
+                "x": 237.796875,
+                "y": 209.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5625,
+                "x": 374.4921875,
+                "y": 209.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 206.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 241.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 238
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182.2578125,
+                "x": 374.4921875,
+                "y": 252.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.75,
+                "x": 313.7421875,
+                "y": 252.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 249.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 284.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 281
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.6953125,
+                "x": 237.796875,
+                "y": 295.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5625,
+                "x": 374.4921875,
+                "y": 295.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 292.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 327.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 324
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182.2578125,
+                "x": 374.4921875,
+                "y": 338.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.75,
+                "x": 313.7421875,
+                "y": 338.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 335.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 370.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 367
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.6953125,
+                "x": 237.796875,
+                "y": 381.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5625,
+                "x": 374.4921875,
+                "y": 381.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 378.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 413.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 410
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182.2578125,
+                "x": 374.4921875,
+                "y": 424.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.75,
+                "x": 313.7421875,
+                "y": 424.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 421.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 701,
+            "x": 24,
+            "y": 456.5
+          },
+          "row": {
+            "height": 43,
+            "width": 737,
+            "x": 24,
+            "y": 453
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.6953125,
+                "x": 237.796875,
+                "y": 467.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5625,
+                "x": 374.4921875,
+                "y": 467.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364.5234375,
+            "x": 192.234375,
+            "y": 464.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 785
+      }
+    }
+  },
+  {
+    "file": "bars-candidate2-axis-actual-784.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "block",
+        "left": "350px",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 784,
+        "scroll": 784
+      },
+      "container": {
+        "height": 387,
+        "width": 736,
+        "x": 24,
+        "y": 152
+      },
+      "list": {
+        "height": 344,
+        "width": 736,
+        "x": 24,
+        "y": 152
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 155.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 152
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182,
+                "x": 374,
+                "y": 166.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.6640625,
+                "x": 313.328125,
+                "y": 166.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 163.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 198.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 195
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.5,
+                "x": 237.5,
+                "y": 209.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5,
+                "x": 374,
+                "y": 209.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 206.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 241.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 238
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182,
+                "x": 374,
+                "y": 252.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.6640625,
+                "x": 313.328125,
+                "y": 252.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 249.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 284.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 281
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.5,
+                "x": 237.5,
+                "y": 295.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5,
+                "x": 374,
+                "y": 295.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 292.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 327.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 324
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182,
+                "x": 374,
+                "y": 338.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.6640625,
+                "x": 313.328125,
+                "y": 338.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 335.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 370.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 367
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.5,
+                "x": 237.5,
+                "y": 381.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5,
+                "x": 374,
+                "y": 381.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 378.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 413.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 410
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 182,
+                "x": 374,
+                "y": 424.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 60.6640625,
+                "x": 313.328125,
+                "y": 424.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 421.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 36,
+            "width": 700,
+            "x": 24,
+            "y": 456.5
+          },
+          "row": {
+            "height": 43,
+            "width": 736,
+            "x": 24,
+            "y": 453
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 136.5,
+                "x": 237.5,
+                "y": 467.5
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 45.5,
+                "x": 374,
+                "y": 467.5
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 364,
+            "x": 192,
+            "y": 464.5
+          },
+          "zero": {
+            "display": "none",
+            "rect": {
+              "height": 0,
+              "width": 0,
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 784
+      }
+    }
+  },
+  {
+    "file": "bars-candidate2-axis-actual-783.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "none",
+        "left": "calc(50% - 18px)",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 783,
+        "scroll": 783
+      },
+      "container": {
+        "height": 555,
+        "width": 735,
+        "x": 24,
+        "y": 152
+      },
+      "list": {
+        "height": 512,
+        "width": 735,
+        "x": 24,
+        "y": 152
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 156
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 152
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 349.5,
+                "x": 373.5,
+                "y": 192
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 116.5,
+                "x": 257,
+                "y": 192
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 189
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 189
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 220
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 216
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 262.125,
+                "x": 111.375,
+                "y": 256
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 87.375,
+                "x": 373.5,
+                "y": 256
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 253
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 253
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 284
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 280
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 349.5,
+                "x": 373.5,
+                "y": 320
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 116.5,
+                "x": 257,
+                "y": 320
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 317
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 317
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 348
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 344
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 262.125,
+                "x": 111.375,
+                "y": 384
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 87.375,
+                "x": 373.5,
+                "y": 384
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 381
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 381
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 412
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 408
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 349.5,
+                "x": 373.5,
+                "y": 448
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 116.5,
+                "x": 257,
+                "y": 448
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 445
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 445
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 476
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 472
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 262.125,
+                "x": 111.375,
+                "y": 512
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 87.375,
+                "x": 373.5,
+                "y": 512
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 509
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 509
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 540
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 536
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 349.5,
+                "x": 373.5,
+                "y": 576
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 116.5,
+                "x": 257,
+                "y": 576
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 573
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 573
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 699,
+            "x": 24,
+            "y": 604
+          },
+          "row": {
+            "height": 64,
+            "width": 735,
+            "x": 24,
+            "y": 600
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 262.125,
+                "x": 111.375,
+                "y": 640
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 87.375,
+                "x": 373.5,
+                "y": 640
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 699,
+            "x": 24,
+            "y": 637
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 373.5,
+              "y": 637
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 783
+      }
+    }
+  },
+  {
+    "file": "bars-candidate2-axis-actual-390.jpg",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 85 button 外部阅读位置",
+    "geometry": {
+      "axis": {
+        "bottom": "0px",
+        "content": "\"\"",
+        "display": "none",
+        "left": "calc(50% - 18px)",
+        "top": "0px",
+        "width": "1px"
+      },
+      "body": {
+        "client": 390,
+        "scroll": 390
+      },
+      "container": {
+        "height": 555,
+        "width": 342,
+        "x": 24,
+        "y": 220
+      },
+      "list": {
+        "height": 512,
+        "width": 342,
+        "x": 24,
+        "y": 220
+      },
+      "rows": [
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 224
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 220
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 153,
+                "x": 177,
+                "y": 260
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 51,
+                "x": 126,
+                "y": 260
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 257
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 257
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 288
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 284
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 114.75,
+                "x": 62.25,
+                "y": 324
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 38.25,
+                "x": 177,
+                "y": 324
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 321
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 321
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 352
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 348
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 153,
+                "x": 177,
+                "y": 388
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 51,
+                "x": 126,
+                "y": 388
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 385
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 385
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 416
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 412
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 114.75,
+                "x": 62.25,
+                "y": 452
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 38.25,
+                "x": 177,
+                "y": 452
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 449
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 449
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 480
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 476
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 153,
+                "x": 177,
+                "y": 516
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 51,
+                "x": 126,
+                "y": 516
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 513
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 513
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 544
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 540
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 114.75,
+                "x": 62.25,
+                "y": 580
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 38.25,
+                "x": 177,
+                "y": 580
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 577
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 577
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 608
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 604
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 153,
+                "x": 177,
+                "y": 644
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 51,
+                "x": 126,
+                "y": 644
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 641
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 641
+            }
+          }
+        },
+        {
+          "action": {
+            "height": 56,
+            "width": 306,
+            "x": 24,
+            "y": 672
+          },
+          "row": {
+            "height": 64,
+            "width": 342,
+            "x": 24,
+            "y": 668
+          },
+          "segments": [
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative",
+              "rect": {
+                "height": 14,
+                "width": 114.75,
+                "x": 62.25,
+                "y": 708
+              }
+            },
+            {
+              "class": "hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive",
+              "rect": {
+                "height": 14,
+                "width": 38.25,
+                "x": 177,
+                "y": 708
+              }
+            }
+          ],
+          "track": {
+            "height": 20,
+            "width": 306,
+            "x": 24,
+            "y": 705
+          },
+          "zero": {
+            "display": "block",
+            "rect": {
+              "height": 20,
+              "width": 1,
+              "x": 177,
+              "y": 705
+            }
+          }
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      }
+    }
+  }
+]

@@ -1,0 +1,39 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:9797) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (67 tests | 3 failed | 61 skipped) 71ms
+     × does not publish arbitrary inventory from duplicate 'quantity' conflicts 46ms
+     × does not publish arbitrary inventory from duplicate 'direction' conflicts 6ms
+     × does not publish arbitrary inventory from duplicate 'time' conflicts 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not publish arbitrary inventory from duplicate 'quantity' conflicts
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not publish arbitrary inventory from duplicate 'direction' conflicts
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not publish arbitrary inventory from duplicate 'time' conflicts
+AssertionError: expected '110' to be null
+
+- Expected:
+null
+
++ Received:
+"110"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:92:45
+     90|     const result = real([original, { ...original, ...change }]);
+     91|     expect(result.net.value).toBeNull();
+     92|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     93|     expect(result.currentMarketValue.reasons).toContain("duplicate-exe…
+     94|     expect(result.instruments[0].evidence.current.quantity).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed | 5 skipped (6)
+      Tests  3 failed | 3 passed | 89 skipped (95)
+   Start at  00:56:26
+   Duration  5.56s (transform 491ms, setup 0ms, import 1.91s, tests 71ms, environment 1ms)
+

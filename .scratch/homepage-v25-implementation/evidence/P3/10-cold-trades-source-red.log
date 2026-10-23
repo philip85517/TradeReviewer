@@ -1,0 +1,67 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:30302) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (22 tests | 3 failed | 19 skipped) 3107ms
+     × owns the cold /trades bundle before opening its collection after delayed readiness 1067ms
+     × owns the cold /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22&symbol=SSE%3A600519 bundle before opening its collection after delayed readiness 1014ms
+     × keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source 1023ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades bundle before opening its collection after delayed readiness
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22&symbol=SSE%3A600519 bundle before opening its collection after delayed readiness
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:23:40
+     21|     expect(reload).not.toHaveBeenCalled();
+     22|     rerender({ ready: true, data: "legacy-ready-must-not-own" });
+     23|     await waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+       |                                        ^
+     24|     expect(result.current.initialized).toBe(false);
+     25|     expect(result.current.data).toBe("empty-before-bootstrap");
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source
+AssertionError: expected null to be 'bootstrap unavailable' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+- Expected:
+"bootstrap unavailable"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:54:60
+
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 19 skipped (22)
+   Start at  03:27:43
+   Duration  6.41s (transform 362ms, setup 468ms, import 447ms, tests 3.11s, environment 1.75s)
+

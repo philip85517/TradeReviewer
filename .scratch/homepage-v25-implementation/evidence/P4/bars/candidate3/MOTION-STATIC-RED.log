@@ -1,0 +1,9 @@
+COMMAND ["rg", "-n", "transition|animation|keyframes|prefers-reduced-motion|\\.animate\\(", "app/components/homepage-v25/contribution-bars.css", "app/components/homepage-v25/contribution-bars.tsx"]
+STDOUT
+
+STDERR
+
+EXIT 1
+No local transition/animation/keyframes/reduced-motion/WAAPI exists before CB-M05. This is static source RED only, not a browser measurement.
+contribution-bars.tsx d4fb8688a12c5c4ae828baed24b931e7726a05342c317097a9a4b5b89b831108
+contribution-bars.css 36c3ef1720a1a73680dcd997da38520248dafa5801ac62ad9587f91c2842a4d5

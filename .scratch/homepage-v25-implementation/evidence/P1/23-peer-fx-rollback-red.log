@@ -1,0 +1,32 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:15449) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx (5 tests | 1 failed | 4 skipped) 46ms
+     × must preserve the accepted fresh FX when workspace publishes its rebuilt options.data 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must preserve the accepted fresh FX when workspace publishes its rebuilt options.data
+AssertionError: expected 'old-fx' to be 'fresh-fx' // Object.is equality
+
+Expected: "fresh-fx"
+Received: "old-fx"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:87:44
+     85|     expect(result.current.ui.snapshot.scope.market).toBe("hk");
+     86|     expect(result.current.data.entries).toBe("fresh-entries");
+     87|     expect(result.current.data.fxSnapshot).toBe("fresh-fx");
+       |                                            ^
+     88|   });
+     89| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  01:20:17
+   Duration  2.69s (transform 322ms, setup 308ms, import 402ms, tests 46ms, environment 1.62s)
+

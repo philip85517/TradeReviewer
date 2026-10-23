@@ -1,0 +1,3 @@
+app/components/homepage-v25/period-selector.test.tsx(1,30): error TS2307: Cannot find module 'node:fs' or its corresponding type declarations.
+app/components/homepage-v25/period-selector.test.tsx(44,24): error TS2345: Argument of type 'HTMLStyleElement' is not assignable to parameter of type 'string | ReadableStream<any> | Response'.
+  Type 'HTMLStyleElement' is missing the following properties from type 'Response': headers, ok, redirected, status, and 12 more.

@@ -1,0 +1,10 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:26885) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ scripts/deploy.test.mjs (58 tests | 4 failed) 33829ms
+     × backup and restore resolve the quoted external SQLite directory 31ms
+     × restores a checked database through an atomic swap and returns healthy 20ms
+     × health failure after a restore swap rolls back the database and restarts the original app 17ms
+     × stages the tracked build and application data sources from the real repository 5013ms

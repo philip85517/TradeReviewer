@@ -1,0 +1,217 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all".
+0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all
+	1 container
+		2 container 主导航
+			3 container Description: 主导航, ID: primary-navigation
+				4 button 我的交易室
+					5 text 我的交易室
+					6 text 首页
+				7 button 交易库
+				8 button 分析
+				9 button 数据
+				10 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+			11 container 辅助导航
+				12 button 设置
+		13 container
+			14 heading 首页, Value: 1
+				15 text 首页
+			16 container 市场
+				17 checkbox 全部, Value: 0
+				18 checkbox A股, Value: 1
+				19 checkbox 港股, Value: 0
+				20 checkbox 美股, Value: 0
+			21 pop up button (collapsed) 全部账户, Secondary Actions: Expand
+			22 pop up button (collapsed) Description: 搜索标的, ID: hp-symbol-search, Secondary Actions: Expand
+			23 button (disabled) Description: 附加筛选，尚未接入, Help: 附加筛选将在后续阶段接入
+			24 text 截至 2026-10-22T20:55:18.187Z
+			25 container 当前表现，尚未接入
+				26 heading 当前表现, Value: 2
+					27 text 当前表现
+				28 text 期间表现尚未接入
+				29 text 当前期间统计与曲线将在后续阶段接入
+			30 container 当前持仓（最新）
+				31 heading 当前持仓（最新）, Value: 2, ID: hp-holdings-title
+					32 text 当前持仓（最新）
+				33 text 持仓市值( CNY )
+				34 button (collapsed) Description: 数值完整值, Secondary Actions: Expand
+				35 text 持仓浮动盈亏( CNY )
+				36 button (collapsed) Description: 数值完整值, Secondary Actions: Expand
+				37 button 搜索持仓
+				38 button Description: 导出持仓 CSV, Help: 导出全部筛选结果（74）
+				39 table 当前持仓
+					40 row
+						41 cell
+							42 button 按标的名称排序
+						43 cell
+							44 text 持仓天数
+						45 cell
+							46 text 数量
+						47 cell
+							48 text 成本价
+						49 cell
+							50 text 最新价
+						51 cell
+							52 button (disabled) Description: 按持仓市值排序, Help: 行情、成本或汇率覆盖不足，暂不能按金额排序
+								53 text 持仓市值( CNY )
+						54 cell
+							55 button (disabled) Description: 按持仓浮动盈亏排序, Help: 行情、成本或汇率覆盖不足，暂不能按金额排序
+								56 text 持仓浮动盈亏( CNY )
+						57 cell
+							58 text 查看
+					59 container
+						60 row
+							61 cell P1 持仓 01 · SSE:600100 · unknown · P1 01 行
+								62 text P1 持仓 01
+								63 text SSE:600100
+							64 cell
+								65 text 2天
+							66 cell
+								67 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							68 cell
+								69 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							70 cell
+								71 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							72 cell
+								73 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							74 cell
+								75 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							76 cell
+								77 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-01%22%2C%22episode%3A%255B%2522p1-count-01%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D
+						78 row
+							79 cell P1 持仓 01 · SSE:600100 · unknown · P1 05 行
+								80 text P1 持仓 01
+								81 text SSE:600100
+							82 cell
+								83 text 2天
+							84 cell
+								85 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							86 cell
+								87 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							88 cell
+								89 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							90 cell
+								91 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							92 cell
+								93 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							94 cell
+								95 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-05%22%2C%22episode%3A%255B%2522p1-count-05%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D
+						96 row
+							97 cell P1 持仓 01 · SSE:600100 · unknown · P1 08 行
+								98 text P1 持仓 01
+								99 text SSE:600100
+							100 cell
+								101 text 2天
+							102 cell
+								103 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							104 cell
+								105 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							106 cell
+								107 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							108 cell
+								109 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							110 cell
+								111 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							112 cell
+								113 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-08%22%2C%22episode%3A%255B%2522p1-count-08%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D
+						114 row
+							115 cell P1 持仓 01 · SSE:600100 · unknown · P1 09 行
+								116 text P1 持仓 01
+								117 text SSE:600100
+							118 cell
+								119 text 2天
+							120 cell
+								121 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							122 cell
+								123 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							124 cell
+								125 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							126 cell
+								127 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							128 cell
+								129 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							130 cell
+								131 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-09%22%2C%22episode%3A%255B%2522p1-count-09%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D
+						132 row
+							133 cell P1 持仓 01 · SSE:600100 · unknown · P1 50 行
+								134 text P1 持仓 01
+								135 text SSE:600100
+							136 cell
+								137 text 2天
+							138 cell
+								139 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							140 cell
+								141 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							142 cell
+								143 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							144 cell
+								145 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							146 cell
+								147 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							148 cell
+								149 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-50%22%2C%22episode%3A%255B%2522p1-count-50%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D
+						150 row
+							151 cell P1 持仓 01 · SSE:600100 · unknown · P1 p1-edge-short 行
+								152 text P1 持仓 01
+								153 text SSE:600100
+							154 cell
+								155 text 1天
+							156 cell
+								157 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							158 cell
+								159 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							160 cell
+								161 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							162 cell
+								163 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							164 cell
+								165 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							166 cell
+								167 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-edge-short%22%2C%22episode%3A%255B%2522p1-edge-short%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-21T16%253A05%253A00.000Z%2522%252C%2522sell%2522%252C%25223.5%2522%252C%2522100%2522%255D%3A1%22%5D
+						168 row
+							169 cell P1 持仓 02 · SSE:600101 · unknown · P1 05 行
+								170 text P1 持仓 02
+								171 text SSE:600101
+							172 cell
+								173 text 2天
+							174 cell
+								175 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							176 cell
+								177 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							178 cell
+								179 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							180 cell
+								181 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							182 cell
+								183 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							184 cell
+								185 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-05%22%2C%22episode%3A%255B%2522p1-count-05%253ACN-SH%253A600101%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522101%2522%255D%3A1%22%5D
+						186 row
+							187 cell P1 持仓 02 · SSE:600101 · unknown · P1 08 行
+								188 text P1 持仓 02
+								189 text SSE:600101
+							190 cell
+								191 text 2天
+							192 cell
+								193 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+							194 cell
+								195 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+							196 cell
+								197 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+							198 cell
+								199 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+							200 cell
+								201 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+							202 cell
+								203 button Description: 查看持仓详情, ID: hp-holding-%5B%22p1-count-08%22%2C%22episode%3A%255B%2522p1-count-08%253ACN-SH%253A600101%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522101%2522%255D%3A1%22%5D
+				204 text 共  74  条持仓 ·  50  个标的
+				205 button (disabled) 上一页持仓
+				206 text 1  /  10
+				207 button 下一页持仓
+			208 container 历史已平仓，尚未接入
+				209 heading 历史已平仓, Value: 2
+					210 text 历史已平仓
+				211 text 历史统计与贡献将在后续阶段接入
+			212 text 按当前市场、账户与期间查看成交，包含未平仓成交
+			213 button 进入交易库, ID: hp-open-trades
+
+The focused UI element is 0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all

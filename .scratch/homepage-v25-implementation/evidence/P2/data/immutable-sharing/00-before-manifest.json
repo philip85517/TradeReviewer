@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-23T04:58:02.407631+08:00",
+  "model": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "scope": "P2 same ticket formal0/3; bounded immutable public sharing plus non-destructive oversized admission",
+  "before": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 88843,
+      "sha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 82666,
+      "sha256": "f6d26840afd1a5bbc3dacf1151a05c6e947b14e20df4ffd31c8b91c95f04e683"
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 28876,
+      "sha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 43237,
+      "sha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9"
+    },
+    ".scratch/homepage-v25-implementation/CONTINUE-2026-10-23.md": {
+      "bytes": 3460,
+      "sha256": "2f73ce390151efdd504503ce0e4303836c72f6a91617f6ab55fec1b212532096"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/FREEZE-REPORT.md": {
+      "bytes": 13811,
+      "sha256": "bc4f09f8270d2cc15aad89c4dcb1af6486ca121130fc13faff1dbc23a6a447a6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/MULTIMARKET-ARCHITECTURE.md": {
+      "bytes": 13964,
+      "sha256": "7718e8741c8e321e34e920313289ecf662ff065a50d215892dea34ce5fea8c37"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/PRE-DISPATCH-CONTRACT.md": {
+      "bytes": 50813,
+      "sha256": "a882d59c3d6b2ed532250b207897bf0166e560426e58d6797e586faa28e7618a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/COORDINATOR-CONTRACT-DECISIONS.md": {
+      "bytes": 2863,
+      "sha256": "0f99df9bd7cbbb7a900470c9273579817dd2df319de08109d7714423ab2f3538"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": {
+      "bytes": 62054,
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": {
+      "bytes": 66828,
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/period.svg": {
+      "bytes": 9532,
+      "sha256": "4fbe2cdd0d411a25adc92c555784c09b82eabcd5927691edab01aca70e31b6d8"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover.svg": {
+      "bytes": 8111,
+      "sha256": "286c5e7d49196e84666da6f9f14fa67330ca822f76b3ab0ec3a99074edc686b4"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover--keyboard.svg": {
+      "bytes": 7850,
+      "sha256": "cdd873716557fa8d0e95cdbcd2ac74d7b4bfcb66c2bc0855bbe26ab999c3ca92"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg": {
+      "bytes": 5747,
+      "sha256": "d352fbadc9d4a47705310293d3eabb76f1555e7f209703439a7736a7981f7857"
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg": {
+      "bytes": 15535,
+      "sha256": "54923037457f3127e1a8baca6302b893a1926a6edfebe694b3634481d7751536"
+    }
+  },
+  "prefixes": {
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 32966,
+      "sha256": "67d6d0c33d741398bfa070f69dca5ec829833452edf14e21d1a792ec804d6aef"
+    }
+  },
+  "branch": "",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344"
+}

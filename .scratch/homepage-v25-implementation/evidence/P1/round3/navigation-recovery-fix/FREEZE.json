@@ -1,0 +1,26 @@
+{
+  "status": "candidate-frozen-awaiting-root",
+  "productCandidates": 1,
+  "productFilesChanged": [
+    "app/components/homepage-v25/use-homepage-host.ts"
+  ],
+  "testFilesAdded": [
+    "app/components/homepage-v25/navigation-recovery.test.tsx"
+  ],
+  "originalHostTestUnchanged": true,
+  "scopedTests": 43,
+  "newRecoveryTests": 17,
+  "originalHostAndSessionTests": 26,
+  "strictTypesExitCode": 0,
+  "targetedLintExitCode": 0,
+  "sources": {
+    "app/components/homepage-v25/use-homepage-host.ts": "85731c885096209b54cf5918cc9a9ee82aeab5f76e30905f8a2af9430484f5e0",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/navigation-recovery.test.tsx": "1f8e62d6d8ab1a1e4a59657c9e1e0ffdc644fd31e9351c8257d54be693ebbf09"
+  },
+  "reportSha256": "46c8d8dcac237aa2b9e2841affb3d1ed8b225aea7a32b0096d65b109773f57da",
+  "runtimeBrowserPersistence": "NOT VERIFIED",
+  "originalRecallRootCause": "OPEN",
+  "P1": "2/3 FAIL retained",
+  "P3": "0/3 retained"
+}

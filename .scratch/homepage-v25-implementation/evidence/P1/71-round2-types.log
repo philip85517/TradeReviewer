@@ -1,0 +1,3 @@
+app/api/storage/trades/route.test.ts(48,12): error TS18046: 'body' is of type 'unknown'.
+app/api/storage/trades/route.test.ts(49,12): error TS18046: 'body' is of type 'unknown'.
+app/components/homepage-v25/home-surface.test.tsx(101,101): error TS2741: Property 'provider' is missing in type '{ quoteDate: string; fetchedAt: string; source: "tencent"; currency: string; price: string; freshness: "current"; }' but required in type 'TradingRoomQuote'.

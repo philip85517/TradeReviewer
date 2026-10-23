@@ -1,0 +1,3 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all".
+There has been no change in the accessibility tree.
+The focused UI element is 10 button 中国铝业 HKEX:2600 · HKD · 股票, ID: hp-symbol-HKEX%3A2600%3Astock

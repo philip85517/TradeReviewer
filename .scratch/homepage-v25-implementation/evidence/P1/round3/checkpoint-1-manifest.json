@@ -1,0 +1,215 @@
+{
+  "kind": "P1 wiring checkpoint; NOT third formal candidate",
+  "time": "2026-10-22T18:58:31.720135+00:00",
+  "owner": "/root/integration_g61",
+  "model": "gpt-6.1-sol / ultra",
+  "formalRoundHistory": "1/3 FAIL; 2/3 FAIL; limited dependency gate preserved; no round3 submitted",
+  "ownedFiles": [
+    {
+      "path": "app/api/storage/instruments/metadata/route.test.ts",
+      "sha256": "765c39923162da4ad2da26ebb7b9d224822004199aa987264ba75c0fdebc509e",
+      "bytes": 3798,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/api/storage/trades/route.test.ts",
+      "sha256": "336374ced3af4b089cf08efbb3e3b9ccd9a46581b418920d5606f862d1620620",
+      "bytes": 3327,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/fx-adapter.ts",
+      "sha256": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+      "bytes": 1155,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.test.ts",
+      "sha256": "d188d3b717642a4699c56eeda6d4484ed6ec5abf7e8f64f7530315559525ff87",
+      "bytes": 11953,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "sha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+      "bytes": 12563,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "5e0817b26ec329735fbd07e73fe9500f47fa9ea4490e49e8b81ae366a80da3ca",
+      "bytes": 11992,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "sha256": "a5632309e210f0e0450c9b192c17e56d490e45337d26a8f2555c3b651672383f",
+      "bytes": 12353,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "sha256": "2c2c12f041666b8357e4756956feb30868479c9c4f8847e202e6dc3cc1158c1a",
+      "bytes": 25282,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "sha256": "26af3ce00e02f03ee1b0cda92512c54ba1acbaca24b5080fd9175cd408de0f5f",
+      "bytes": 4197,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "ece59d74c52a5ea5a64f4c8501fdd797e8b90cdf6ff8fa6c4e60396746c628d5",
+      "bytes": 2553,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "sha256": "e48d5d94322fe0d0546445ec555af358d00076b5270239d2751ee09c1d84e208",
+      "bytes": 19659,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "sha256": "b6fa6f855b6e2fc6a6a3de2c23d8d4465ddd634a4349cd7da2bcdd002efc02ec",
+      "bytes": 16805,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/components/library/library-browse-state.test.ts",
+      "sha256": "61279c857e7f945540b2ecd5a5485187248aa7aa8d54f276fe399e2032f23659",
+      "bytes": 21777,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/library/library-browse-state.ts",
+      "sha256": "380626c697c1edfa71fd09422545577733ff62297ee3205e4a175dd01e6849e7",
+      "bytes": 25343,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "sha256": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e",
+      "bytes": 64105,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "sha256": "abd51845f58ddba1bfa2aad4d48de66f4952ada2047952e48364fe50921ded6f",
+      "bytes": 238534,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "16a390e81b7a408017e53b1c6bedcef0a542ff17dc8a7f771a3071132d443ae7",
+      "bytes": 276715,
+      "changedFromFreeze2": true
+    },
+    {
+      "path": "app/home/page.tsx",
+      "sha256": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "bytes": 293,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.test.ts",
+      "sha256": "7da1485f8c40f2b0b8b089b4ede520c2f9e9a935c553b9719e2342c7d6509109",
+      "bytes": 5389,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.ts",
+      "sha256": "87f575ebb51764508ccc8d09e579b234c7ae76861949e9061cc380be71465d4d",
+      "bytes": 6037,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/providers/metadata-providers.test.ts",
+      "sha256": "d167f397b04eabe5d55593a72bad3bc6fe3576fe3896a62e2fbe70525cad5c9d",
+      "bytes": 24358,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/providers/nasdaq-directory.ts",
+      "sha256": "710f7d4592202a8d686d1633f81497021ae16a54a25a82bca224a70781241651",
+      "bytes": 8861,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/providers/sec-company-tickers.ts",
+      "sha256": "b76263fce461e2500bdc736dccd69de9249a1d887f8e061c14045e56df6a9f21",
+      "bytes": 5639,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.test.ts",
+      "sha256": "9dee69ebd704ca38962defb506067a8af02705794136c87142e5f680c17815cc",
+      "bytes": 15301,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.ts",
+      "sha256": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53",
+      "bytes": 10368,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.test.ts",
+      "sha256": "8fb083b780abf21a00a1c4b2c23043124ceda5055142a419f06a5c6efb4f035c",
+      "bytes": 5057,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.ts",
+      "sha256": "54e8d91e3c5da1b47567d0e16360d2d4f44edafa6e64cb0677ad14512179e323",
+      "bytes": 3375,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.test.ts",
+      "sha256": "139eeb8c8b6fa9aa1cc25e9f955fa53ec273e3870e089c2a86e44708de988f4e",
+      "bytes": 73980,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.ts",
+      "sha256": "e57f176f9c1299478fdfe3d2b99a0a72433e4da2eaaea0a157f4aff61dd5d486",
+      "bytes": 94894,
+      "changedFromFreeze2": false
+    },
+    {
+      "path": "app/trades/page.tsx",
+      "sha256": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "bytes": 295,
+      "changedFromFreeze2": false
+    }
+  ],
+  "consumerFiles": [
+    "app/components/homepage-v25/session-model.ts",
+    "app/components/homepage-v25/session-model.test.ts",
+    "app/components/homepage-v25/use-homepage-host.ts",
+    "app/components/homepage-v25/use-homepage-host.test.tsx",
+    "app/components/trade-review-workspace.tsx",
+    "app/components/trade-review-workspace.test.tsx"
+  ],
+  "consumedInputsObserved": [
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "bytes": 36223
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "f9112e208617262be1699aff3c9bbcb5f49cdcfa45f2ccf64aa493f33156bdd2",
+      "bytes": 83174
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/round2/INTERFACES.md",
+      "sha256": "7e62af4073f26344ea12e1e2ab15f894c8f01962107ef34df823f1825606ace4",
+      "bytes": 10193
+    }
+  ],
+  "checks": "05 full 118:110 PASS/8 FAIL;08 2 PASS/5 FAIL/109 skipped;10 2 PASS/2 FAIL/93 skipped;06 tsc exit0 before latest test edits;07 lint exit1"
+}

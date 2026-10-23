@@ -1,0 +1,71 @@
+{
+  "sourceSha": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+  "passed": 16,
+  "total": 16,
+  "checks": [
+    {
+      "name": "fresh native date and explicit All have one period authority",
+      "pass": true
+    },
+    {
+      "name": "pending-review set [] roundtrip",
+      "pass": true
+    },
+    {
+      "name": "pending-review set [false] roundtrip",
+      "pass": true
+    },
+    {
+      "name": "pending-review set [true] roundtrip",
+      "pass": true
+    },
+    {
+      "name": "pending-review set [true,false,true] roundtrip",
+      "pass": true
+    },
+    {
+      "name": "complete v2 migration false and nested rejection",
+      "pass": true
+    },
+    {
+      "name": "complete v2 migration true and nested rejection",
+      "pass": true
+    },
+    {
+      "name": "v3 strips business serialization and rejects inconsistent period",
+      "pass": true
+    },
+    {
+      "name": "navigation success commits URL date and clears attachments atomically",
+      "pass": true
+    },
+    {
+      "name": "navigation failure/retry retains old committed state and explicit target",
+      "pass": true
+    },
+    {
+      "name": "navigation to explicit All clears old native dates",
+      "pass": true
+    },
+    {
+      "name": "identity preserves committed period while clearing attachments",
+      "pass": true
+    },
+    {
+      "name": "refresh reads committed and preserves independently edited draft on retry",
+      "pass": true
+    },
+    {
+      "name": "period/history commute period then history",
+      "pass": true
+    },
+    {
+      "name": "period/history commute history then period",
+      "pass": true
+    },
+    {
+      "name": "restoration increments generation and contains no requests or business",
+      "pass": true
+    }
+  ]
+}

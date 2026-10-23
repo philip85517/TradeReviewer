@@ -1,0 +1,65 @@
+[
+  {
+    "shape": "rounds",
+    "sample": "1",
+    "exitCode": 0,
+    "startedAt": "2026-10-23T03:30:32.634678+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "rounds",
+    "sample": "2",
+    "exitCode": 0,
+    "startedAt": "2026-10-23T03:30:37.947768+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "rounds",
+    "sample": "3",
+    "exitCode": 0,
+    "startedAt": "2026-10-23T03:30:44.200644+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "long-prefix",
+    "sample": "1",
+    "exitCode": 1,
+    "startedAt": "2026-10-23T03:30:51.817320+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "long-prefix",
+    "sample": "2",
+    "exitCode": 0,
+    "startedAt": "2026-10-23T03:31:03.119678+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "long-prefix",
+    "sample": "3",
+    "exitCode": 0,
+    "startedAt": "2026-10-23T03:31:09.128475+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "multimarket",
+    "sample": "1",
+    "exitCode": 1,
+    "startedAt": "2026-10-23T03:31:13.965140+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "multimarket",
+    "sample": "2",
+    "exitCode": 1,
+    "startedAt": "2026-10-23T03:31:21.497988+00:00",
+    "timeout": false
+  },
+  {
+    "shape": "multimarket",
+    "sample": "3",
+    "exitCode": 1,
+    "startedAt": "2026-10-23T03:31:29.885285+00:00",
+    "timeout": false
+  }
+]

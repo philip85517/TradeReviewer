@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:28163) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/catalog-model.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/catalog-model.test.ts [ app/components/homepage-v25/catalog-model.test.ts ]
+Error: Failed to resolve import "./catalog-model" from "app/components/homepage-v25/catalog-model.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/catalog-model.test.ts:6:60
+  2  |  import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
+  3  |  import { buildTradeLibraryEntries } from "../../lib/trades/library";
+  4  |  import { buildHomepageCatalog, searchHomepageCatalog } from "./catalog-model";
+     |                                                               ^
+  5  |  const stored = (id, code, assetType = "stock") => ({
+  6  |  	id,
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:30486:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:30483:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:27725:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:27788:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:27756:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:30271:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:24532:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  03:08:07
+   Duration  1.63s (transform 30ms, setup 189ms, import 0ms, tests 0ms, environment 1.02s)
+

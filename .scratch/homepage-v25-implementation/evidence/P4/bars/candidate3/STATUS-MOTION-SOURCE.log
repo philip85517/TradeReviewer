@@ -1,0 +1,35 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate3/inspect-status-motion.mjs"]
+STDOUT
+CB-M04/02 FLAT JSDOM CASCADE (not actual browser):
+hp-contribution-bars__status hp-contribution-bars__status--pending rgb(167, 179, 196)
+hp-contribution-bars__status hp-contribution-bars__status--pending hp-contribution-bars__status--updating rgb(108, 168, 255)
+hp-contribution-bars__status hp-contribution-bars__status--error rgb(255, 133, 146)
+CB-M05 PARSED CSS SOURCE INVENTORY (not observed animation):
+{"line":13,"context":"base","selector":".hp-contribution-bars__list:not(:empty)::before","declarations":["pointer-events: none"]}
+{"line":82,"context":"base","selector":".hp-contribution-bars .hp-contribution-bars__action,\n.hp-contribution-bars .hp-contribution-bars__detail-trigger,\n.hp-contribution-bars__detail button","declarations":["transition: background-color 120ms ease-out"]}
+{"line":97,"context":"base","selector":".hp-contribution-bars__detail","declarations":["animation: hp-contribution-detail-enter 160ms ease-out both"]}
+{"line":119,"context":"base","selector":".hp-contribution-bars__detail--closing","declarations":["animation-name: hp-contribution-detail-exit","pointer-events: none"]}
+{"line":121,"context":"keyframes hp-contribution-detail-enter","selector":"from","declarations":["opacity: 0","transform: translateY(4px)"]}
+{"line":122,"context":"keyframes hp-contribution-detail-enter","selector":"to","declarations":["opacity: 1","transform: translateY(0)"]}
+{"line":125,"context":"keyframes hp-contribution-detail-exit","selector":"from","declarations":["opacity: 1","transform: translateY(0)"]}
+{"line":126,"context":"keyframes hp-contribution-detail-exit","selector":"to","declarations":["opacity: 0","transform: translateY(4px)"]}
+{"line":162,"context":"media (prefers-reduced-motion: reduce)","selector":".hp-contribution-bars .hp-contribution-bars__action,\n  .hp-contribution-bars .hp-contribution-bars__detail-trigger,\n  .hp-contribution-bars__detail button","declarations":["transition: none"]}
+{"line":165,"context":"media (prefers-reduced-motion: reduce)","selector":".hp-contribution-bars__detail","declarations":["animation: none","transform: none","opacity: 1"]}
+CB-M05 TSX DATA/LIFETIME SOURCE INVENTORY (not runtime motion):
+90: const hasCommitted = useRef(false);
+96: if (selection !== null && active === null) { setSelection(null); setClosing(false); }
+120: if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setSelection(null); setClosing(false); }
+126: const finish = () => { setSelection(null); setClosing(false); };
+127: const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+129: const timer = window.setTimeout(finish, 160);
+136: if (!hasCommitted.current) { hasCommitted.current = true; return; }
+138: const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+141: const animation = element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150, easing: "ease-out" });
+142: const preference = () => { if (media?.matches) animation.cancel(); };
+144: return () => { animation.cancel(); media?.removeEventListener("change", preference); };
+240: aria-hidden={closing ? true : undefined} inert={closing}
+No real paint, elapsed duration, movement, hover input or reduced-motion browser result is established. Those gates remain NOT VERIFIED.
+
+STDERR
+
+EXIT 0

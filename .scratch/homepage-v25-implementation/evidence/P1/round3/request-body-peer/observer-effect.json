@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "runtime": "v26.0.0",
+  "metadata": {
+    "method": "POST",
+    "url": "http://example.invalid/observer-only",
+    "host": "example.invalid"
+  },
+  "baseline": {
+    "materializerCalls": 0,
+    "bodyGetterCalls": 0,
+    "disturbed": false
+  },
+  "sampled": {
+    "bodyUsed": false,
+    "materializerCalls": 1,
+    "bodyGetterCalls": 1,
+    "disturbed": false
+  },
+  "conclusion": "bodyUsed=false still invokes srvx _request and body getters; this is not a passive first sample",
+  "network": false,
+  "database": false,
+  "originalOverlayRootCause": "OPEN"
+}

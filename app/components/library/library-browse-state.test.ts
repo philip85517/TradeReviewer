@@ -12,6 +12,7 @@ import {
   aggregateTradeLibraryStocks,
   applyTradeNature,
   buildTradeLibraryBrowseRows,
+  tradeLibraryPerformanceFilterState,
   createTradeLibraryBrowseCache,
   normalizeTradeLibraryBrowseState,
   resetTradeLibraryBrowseState,
@@ -102,6 +103,25 @@ function homepageRoomScope(markets: string[]): RoomScope {
 }
 
 describe("trade library browse state", () => {
+  it("selects execution-date collections including open rounds without truncating their review ledger", () => {
+    const entries = entriesFor([
+      execution("buy", "2026-09-20T14:00:00Z", "before", { tradeNature: "live", tradingDate: "2026-09-20" }),
+      execution("buy", "2026-10-22T14:00:00Z", "inside", { tradeNature: "live", tradingDate: "2026-10-22" }),
+    ]);
+    const state = normalizeTradeLibraryBrowseState({ executionDateFrom: "2026-10-22", executionDateTo: "2026-10-22", collectionInstrumentId: "US:TEST" });
+    const rows = buildTradeLibraryBrowseRows(entries, state, {});
+    expect(rows).toHaveLength(1);
+    expect(rows[0].item.episode.status).toBe("open");
+    expect(rows[0].item.episode.executions.map(fill => fill.id)).toEqual(["before", "inside"]);
+    const display = aggregateTradeLibraryStockDisplayEntries(rows, state);
+    expect(display[0].executions.map(fill => fill.id)).toEqual(["inside"]);
+    expect(display[0].tradeCount).toBe(1);
+    expect(display[0].episodes[0].episode.executions).toHaveLength(2);
+    expect(buildTradeLibraryBrowseRows(entries, normalizeTradeLibraryBrowseState({ ...state, collectionInstrumentId: "US:OTHER" }), {})).toHaveLength(0);
+    expect(tradeLibraryBrowseRangeKey(state)).not.toBe(tradeLibraryBrowseRangeKey(normalizeTradeLibraryBrowseState()));
+    expect(buildTradeLibraryBrowseRows(entries, normalizeTradeLibraryBrowseState({ closeDateFrom: "2026-10-22", closeDateTo: "2026-10-22" }), {})).toHaveLength(0);
+  });
+
   it("normalizes an unconstrained inherited room filter to null", () => {
     const state = normalizeTradeLibraryBrowseState({
       roomFilters: {
@@ -552,4 +572,19 @@ describe("trade library browse state", () => {
       ]),
     );
   });
+});
+
+it("projects homepage execution membership independently from final-close statistics", () => {
+  const entries = entriesFor([
+    execution("buy", "2026-10-01T01:00:00Z", "b1", { accountId: "closes-later", tradeNature: "live", tradingDate: "2026-10-01" }),
+    execution("sell", "2026-11-01T01:00:00Z", "s1", { accountId: "closes-later", tradeNature: "live", tradingDate: "2026-11-01" }),
+    execution("buy", "2026-09-01T01:00:00Z", "b2", { accountId: "closes-inside", tradeNature: "live", tradingDate: "2026-09-01" }),
+    execution("sell", "2026-10-02T01:00:00Z", "s2", { accountId: "closes-inside", tradeNature: "live", tradingDate: "2026-10-02" }),
+    execution("buy", "2026-10-03T01:00:00Z", "open", { accountId: "open", tradeNature: "live", tradingDate: "2026-10-03" }),
+  ]);
+  const state = normalizeTradeLibraryBrowseState({ executionDateFrom: "2026-10-01", executionDateTo: "2026-10-31" });
+  expect(buildTradeLibraryBrowseRows(entries, state, {}).map(row => row.item.episode.accountId).sort()).toEqual(["closes-inside", "closes-later", "open"]);
+  const statistics = buildTradeLibraryBrowseRows(entries, tradeLibraryPerformanceFilterState(state), {});
+  expect(statistics.map(row => row.item.episode.accountId)).toEqual(["closes-inside"]);
+  expect(statistics[0].item.episode.executions).toHaveLength(2);
 });

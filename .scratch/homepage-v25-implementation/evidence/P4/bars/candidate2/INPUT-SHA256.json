@@ -1,0 +1,8 @@
+{
+  "app/components/homepage-v25/contribution-bars.tsx": "8e01b337f4d3774e6778683247e0ab3f56c0676485db33065216733d377b3fcc",
+  "app/components/homepage-v25/contribution-bars.css": "67993922cb8f7def8b6693c2bda986ac2fa5edf4d537b850a67d0b44769935c2",
+  "app/components/homepage-v25/contribution-bars.test.tsx": "2cc9f4b7efcc5423cbfc45cab051000aff065b4be83571c1f158c4d32fc8152b",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-ACCEPTANCE-1.md": "7b61d70d91447127f39853dc33eee97195d08bf2751eb2db64a41b8a9dfe9bd6",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-CANDIDATE2-DISPATCH.md": "d4af6fbaa656933a23d3bdfacd3d179aa222d621fa7104dd830ae9d07e230b4b"
+}

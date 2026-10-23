@@ -1,0 +1,40 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:60520) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (167 tests | 1 failed | 166 skipped) 79ms
+     × keeps conflicting raw fees and unknown-fee movements unavailable independently of quantity 76ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam fee unknown gates > keeps conflicting raw fees and unknown-fee movements unavailable independently of quantity
+AssertionError: expected [ true, '4', '0' ] to deeply equal [ true, null, null ]
+
+- Expected
++ Received
+
+  [
+    true,
+-   null,
+-   null,
++   "4",
++   "0",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1280:105
+    1278|     entries[0].executions.push({ ...buys[0], fee: "5" });
+    1279|     const conflict = seamRead(preparedFixture(buys, [], { entries }));
+    1280|     expect([conflict.quantityCoverage.available, conflict.realizedFees…
+       |                                                                                                         ^
+    1281|     expect(conflict.realizedFees.reasons).toContain("duplicate-executi…
+    1282|     const unknown = seamRead(preparedFixture([{ ...buys[0], source: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 166 skipped (167)
+   Start at  11:17:49
+   Duration  3.83s (transform 946ms, setup 370ms, import 1.12s, tests 79ms, environment 1.71s)
+

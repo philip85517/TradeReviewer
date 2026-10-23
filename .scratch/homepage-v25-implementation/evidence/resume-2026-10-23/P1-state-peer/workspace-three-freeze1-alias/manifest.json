@@ -1,0 +1,114 @@
+{
+  "label": "freeze1-alias",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "startedAt": "2026-10-22T18:01:16.095Z",
+  "completedAt": "2026-10-22T18:01:24.551Z",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/vitest.config.ts",
+    "-t",
+    "returns to the library with its expanded stock context"
+  ],
+  "node": "v26.0.0",
+  "originalTestSha256": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab",
+  "transformedTestSha256": "47adf02b7286bb575a60c6b398c5d8ea3a71e3ebc64522dedd65ff4f97199b22",
+  "captures": {
+    "app/components/trade-review-workspace.tsx": {
+      "sha256": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__trade-review-workspace.tsx.txt"
+    },
+    "app/components/homepage-v25/use-homepage-host.ts": {
+      "sha256": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__homepage-v25__use-homepage-host.ts.txt"
+    },
+    "app/components/homepage-v25/session-model.ts": {
+      "sha256": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__homepage-v25__session-model.ts.txt"
+    },
+    "app/components/homepage-v25/holdings-model.ts": {
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__homepage-v25__holdings-model.ts.txt"
+    },
+    "app/components/homepage-v25/home-surface.tsx": {
+      "sha256": "11e9111792fb403bcbaa8c1f829ee72efab3a3586ee48692445873441d75d58e",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__homepage-v25__home-surface.tsx.txt"
+    },
+    "app/components/homepage-v25/fx-adapter.ts": {
+      "sha256": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+      "source": "freeze1 copy",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__homepage-v25__fx-adapter.ts.txt"
+    },
+    "app/lib/reviews/shared-scope.ts": {
+      "sha256": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__lib__reviews__shared-scope.ts.txt"
+    },
+    "app/lib/trades/types.ts": {
+      "sha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__lib__trades__types.ts.txt"
+    },
+    "app/components/test-support/legacy-sqlite-client.ts": {
+      "sha256": "68c209c2301f15a8d9ac730a8e71fcb7d1db102cfd7cf9b9a38430ed0234abec",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__test-support__legacy-sqlite-client.ts.txt"
+    },
+    "app/components/data-management/cash-baseline-panel.tsx": {
+      "sha256": "d43b8aff2f443ea3ebbe4c4e84bde4cfa0ec2d8501adb715c67d7cc9eb44e20a",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__data-management__cash-baseline-panel.tsx.txt"
+    },
+    "app/components/dashboard/room-allocation.tsx": {
+      "sha256": "0a4e3848c7a7c4a8420ad707b8c3450ae819fc8fe8350535c39c6075af7f9130",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__dashboard__room-allocation.tsx.txt"
+    },
+    "app/components/trade-review-workspace.test.tsx": {
+      "sha256": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab",
+      "source": "observed current",
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1-alias/app__components__trade-review-workspace.test.tsx.txt"
+    }
+  },
+  "before": {
+    "app/components/trade-review-workspace.tsx": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+    "app/components/homepage-v25/use-homepage-host.ts": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+    "app/components/homepage-v25/session-model.ts": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+    "app/components/homepage-v25/holdings-model.ts": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+    "app/components/homepage-v25/home-surface.tsx": "11e9111792fb403bcbaa8c1f829ee72efab3a3586ee48692445873441d75d58e",
+    "app/components/homepage-v25/fx-adapter.ts": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+    "app/lib/reviews/shared-scope.ts": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+    "app/lib/trades/types.ts": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+    "app/components/test-support/legacy-sqlite-client.ts": "68c209c2301f15a8d9ac730a8e71fcb7d1db102cfd7cf9b9a38430ed0234abec",
+    "app/components/data-management/cash-baseline-panel.tsx": "d43b8aff2f443ea3ebbe4c4e84bde4cfa0ec2d8501adb715c67d7cc9eb44e20a",
+    "app/components/dashboard/room-allocation.tsx": "0a4e3848c7a7c4a8420ad707b8c3450ae819fc8fe8350535c39c6075af7f9130",
+    "app/components/trade-review-workspace.test.tsx": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab"
+  },
+  "after": {
+    "app/components/trade-review-workspace.tsx": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+    "app/components/homepage-v25/use-homepage-host.ts": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+    "app/components/homepage-v25/session-model.ts": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+    "app/components/homepage-v25/holdings-model.ts": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+    "app/components/homepage-v25/home-surface.tsx": "b560b23a7d25ede09a7b4ca8f9eaa81986e1df9b2e3bbed5bf6870632067b821",
+    "app/components/homepage-v25/fx-adapter.ts": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+    "app/lib/reviews/shared-scope.ts": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+    "app/lib/trades/types.ts": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+    "app/components/test-support/legacy-sqlite-client.ts": "68c209c2301f15a8d9ac730a8e71fcb7d1db102cfd7cf9b9a38430ed0234abec",
+    "app/components/data-management/cash-baseline-panel.tsx": "d43b8aff2f443ea3ebbe4c4e84bde4cfa0ec2d8501adb715c67d7cc9eb44e20a",
+    "app/components/dashboard/room-allocation.tsx": "0a4e3848c7a7c4a8420ad707b8c3450ae819fc8fe8350535c39c6075af7f9130",
+    "app/components/trade-review-workspace.test.tsx": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab"
+  },
+  "changedWhileReading": [
+    "app/components/homepage-v25/home-surface.tsx"
+  ],
+  "exitCode": 1,
+  "error": null,
+  "boundaries": "Only mocked fetch, in-process fake-indexeddb, jsdom and test-local local/sessionStorage; no browser, service or real database"
+}

@@ -1,0 +1,41 @@
+{
+  "records": [
+    {
+      "log": "green-workspace-final.log",
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx -t 'searches the owned metadata-only directory|does not re-read every instrument market cache|keeps saved intraday replay state pending until lazy data settles|does not block the selected replay on another stock|keeps the selected intraday phase|keeps a persisted hourly provider failure|refreshes every trade episode regardless|keeps the library chart available after a cancelled import|keeps library context through a confirmed import|opens a library queue entry|keeps the committed homepage scope on an independent FX' > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-workspace-final.log 2>&1",
+      "result": "11 PASS / 90 skipped; 24.40s",
+      "sourceBinding": "Before final pendingRestore observation enhancement; not frozen final test source"
+    },
+    {
+      "log": "final-workspace-timeout.log",
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx -t 'searches the owned metadata-only directory|does not re-read every instrument market cache|keeps saved intraday replay state pending until lazy data settles|does not block the selected replay on another stock|keeps the selected intraday phase|keeps a persisted hourly provider failure|refreshes every trade episode regardless|keeps the library chart available after a cancelled import|keeps library context through a confirmed import|opens a library queue entry|keeps the committed homepage scope on an independent FX' > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-workspace.log 2>&1",
+      "logMove": "final-workspace.log moved to final-workspace-timeout.log after completion",
+      "result": "10 PASS / 1 FAIL (refresh-all 5000ms timeout) / 90 skipped; 25.74s",
+      "sourceBinding": "Frozen final four source files"
+    },
+    {
+      "log": "final-late-refresh.log",
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx -t 'keeps the selected intraday phase|refreshes every trade episode regardless' > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-late-refresh.log 2>&1",
+      "result": "2 PASS / 99 skipped; 10.96s",
+      "sourceBinding": "Frozen final four source files"
+    },
+    {
+      "log": "final-host.log",
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/homepage-v25/use-homepage-host.test.tsx > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-host.log 2>&1",
+      "result": "24 PASS; 2.40s",
+      "sourceBinding": "Frozen final four source files"
+    },
+    {
+      "log": "final-workspace-remaining.log",
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx -t 'searches the owned metadata-only directory|does not re-read every instrument market cache|keeps saved intraday replay state pending until lazy data settles|does not block the selected replay on another stock|keeps a persisted hourly provider failure|keeps the library chart available after a cancelled import|keeps library context through a confirmed import|opens a library queue entry|keeps the committed homepage scope on an independent FX|connects the production homepage holding detail|retries a failed cold scoped collection|carries a nondefault homepage navigation' > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-workspace-remaining.log 2>&1",
+      "result": "12 PASS / 89 skipped; 21.81s",
+      "sourceBinding": "Frozen final four source files"
+    },
+    {
+      "log": "final-eslint.log",
+      "command": "./scripts/native-node.sh node_modules/eslint/bin/eslint.js app/components/trade-review-workspace.tsx app/components/trade-review-workspace.test.tsx app/components/homepage-v25/use-homepage-host.ts app/components/homepage-v25/use-homepage-host.test.tsx > .scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-eslint.log 2>&1",
+      "result": "0 errors / 10 warnings",
+      "sourceBinding": "Before final late-test stock/round expansion; source runtime hashes not captured"
+    }
+  ]
+}

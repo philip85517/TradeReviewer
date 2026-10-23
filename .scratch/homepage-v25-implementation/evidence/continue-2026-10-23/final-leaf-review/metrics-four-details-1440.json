@@ -1,0 +1,102 @@
+[
+  {
+    "label": "期间净盈亏",
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 四项指标独立验收, Value: 1\n\t\t\t\t5 text 四项指标独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准指标\n\t\t\t\t\t10 正负与零\n\t\t\t\t\t11 更新保留旧值\n\t\t\t\t\t12 首次加载\n\t\t\t\t\t13 空范围\n\t\t\t\t\t14 更新失败保留旧值\n\t\t\t\t\t15 首次读取失败\n\t\t\t\t\t16 缺失净值\n\t\t\t\t\t17 未来期间\n\t\t\t\t\t18 币种不一致\n\t\t\t\t\t19 极长金额与来源\n\t\t\t20 button 提交另一期间\n\t\t\t21 text 版本 1\n\t\t\t22 container 当前表现指标\n\t\t\t\t23 container 期间净盈亏\n\t\t\t\t\t24 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t\t25 text 期间净盈亏 ( CNY )\n\t\t\t\t\t26 text +1.84 万\n\t\t\t\t\t27 pop up button (expanded) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Collapse\n\t\t\t\t28 container 期间已实现\n\t\t\t\t\t29 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t\t30 text 期间已实现 ( CNY )\n\t\t\t\t\t31 text +1.22 万\n\t\t\t\t\t32 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t\t33 container 期间浮盈变动\n\t\t\t\t\t34 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t\t35 text 期间浮盈变动 ( CNY )\n\t\t\t\t\t36 text +6,180.00\n\t\t\t\t\t37 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t\t38 container 当前持仓市值\n\t\t\t\t\t39 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t\t40 text 当前持仓市值 ( CNY )\n\t\t\t\t\t41 text 26.01 万\n\t\t\t\t\t42 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t43 heading 下一模块边界, Value: 2\n\t\t\t\t44 text 下一模块边界\n\t\t\t45 text 详情须完整可读并可返回原触发卡。\n\t\t\t46 button 外部动作\n\t\t47 container 期间净盈亏 · 口径详情\n\t\t\t48 heading 期间净盈亏 · 口径详情, Value: 4\n\t\t\t\t49 text 期间净盈亏  · 口径详情\n\t\t\t50 button 关闭详情\n\t\t\t51 text 期间已实现，加上期末与期初浮盈的差额。期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。\n\t\t\t52 text 期间 2026-01-01 至 2026-10-15 · 上海时区\n\t\t\t53 definition list\n\t\t\t\t54 container 完整金额\n\t\t\t\t\t55 text 完整金额\n\t\t\t\t56 text 18420.567800 CNY\n\t\t\t\t57 container 覆盖数量\n\t\t\t\t\t58 text 覆盖数量\n\t\t\t\t59 text 3 / 3\n\t\t\t\t60 container 原币金额\n\t\t\t\t\t61 text 原币金额\n\t\t\t\t62 container\n\t\t\t\t\t63 text 18420.567800 CNY\n\t\t\t\t64 container 汇率来源\n\t\t\t\t\t65 text 汇率来源\n\t\t\t\t66 text 同币种，无需换汇\n\nThe focused UI element is 47 container 期间净盈亏 · 口径详情",
+    "d": {
+      "active": null,
+      "dialog": "期间净盈亏 · 口径详情×期间已实现，加上期末与期初浮盈的差额。期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。期间 2026-01-01 至 2026-10-15 · 上海时区完整金额18420.567800 CNY覆盖数量3 / 3原币金额18420.567800 CNY汇率来源同币种，无需换汇",
+      "height": 1000,
+      "rect": {
+        "bottom": 501,
+        "height": 254,
+        "left": 145,
+        "right": 585,
+        "top": 247,
+        "width": 440,
+        "x": 145,
+        "y": 247
+      },
+      "width": 1440
+    },
+    "closed": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand",
+    "after": {
+      "active": "期间净盈亏，口径详情，完整金额 18420.567800 CNY",
+      "dialog": false
+    }
+  },
+  {
+    "label": "期间已实现",
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 四项指标独立验收, Value: 1\n\t\t\t\t5 text 四项指标独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准指标\n\t\t\t\t\t10 正负与零\n\t\t\t\t\t11 更新保留旧值\n\t\t\t\t\t12 首次加载\n\t\t\t\t\t13 空范围\n\t\t\t\t\t14 更新失败保留旧值\n\t\t\t\t\t15 首次读取失败\n\t\t\t\t\t16 缺失净值\n\t\t\t\t\t17 未来期间\n\t\t\t\t\t18 币种不一致\n\t\t\t\t\t19 极长金额与来源\n\t\t\t20 button 提交另一期间\n\t\t\t21 text 版本 1\n\t\t\t22 container 当前表现指标\n\t\t\t\t23 container 期间净盈亏\n\t\t\t\t\t24 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t\t25 text 期间净盈亏 ( CNY )\n\t\t\t\t\t26 text +1.84 万\n\t\t\t\t\t27 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t\t28 container 期间已实现\n\t\t\t\t\t29 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t\t30 text 期间已实现 ( CNY )\n\t\t\t\t\t31 text +1.22 万\n\t\t\t\t\t32 pop up button (expanded) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Collapse\n\t\t\t\t33 container 期间浮盈变动\n\t\t\t\t\t34 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t\t35 text 期间浮盈变动 ( CNY )\n\t\t\t\t\t36 text +6,180.00\n\t\t\t\t\t37 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t\t38 container 当前持仓市值\n\t\t\t\t\t39 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t\t40 text 当前持仓市值 ( CNY )\n\t\t\t\t\t41 text 26.01 万\n\t\t\t\t\t42 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t43 heading 下一模块边界, Value: 2\n\t\t\t\t44 text 下一模块边界\n\t\t\t45 text 详情须完整可读并可返回原触发卡。\n\t\t\t46 button 外部动作\n\t\t47 container 期间已实现 · 口径详情\n\t\t\t48 heading 期间已实现 · 口径详情, Value: 4\n\t\t\t\t49 text 期间已实现  · 口径详情\n\t\t\t50 button 关闭详情\n\t\t\t51 text 按实际平仓日归属、扣除费用的已实现结果；部分平仓逐笔按平仓日期和金额归属。\n\t\t\t52 text 期间 2026-01-01 至 2026-10-15 · 上海时区\n\t\t\t53 definition list\n\t\t\t\t54 container 完整金额\n\t\t\t\t\t55 text 完整金额\n\t\t\t\t56 text 12240.5678 CNY\n\t\t\t\t57 container 覆盖数量\n\t\t\t\t\t58 text 覆盖数量\n\t\t\t\t59 text 3 / 3\n\t\t\t\t60 container 原币金额\n\t\t\t\t\t61 text 原币金额\n\t\t\t\t62 container\n\t\t\t\t\t63 text 12240.5678 CNY\n\t\t\t\t64 container 汇率来源\n\t\t\t\t\t65 text 汇率来源\n\t\t\t\t66 text 同币种，无需换汇\n\nThe focused UI element is 47 container 期间已实现 · 口径详情",
+    "d": {
+      "active": null,
+      "dialog": "期间已实现 · 口径详情×按实际平仓日归属、扣除费用的已实现结果；部分平仓逐笔按平仓日期和金额归属。期间 2026-01-01 至 2026-10-15 · 上海时区完整金额12240.5678 CNY覆盖数量3 / 3原币金额12240.5678 CNY汇率来源同币种，无需换汇",
+      "height": 1000,
+      "rect": {
+        "bottom": 501,
+        "height": 254,
+        "left": 436,
+        "right": 876,
+        "top": 247,
+        "width": 440,
+        "x": 436,
+        "y": 247
+      },
+      "width": 1440
+    },
+    "closed": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand",
+    "after": {
+      "active": "期间已实现，口径详情，完整金额 12240.5678 CNY",
+      "dialog": false
+    }
+  },
+  {
+    "label": "期间浮盈变动",
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 四项指标独立验收, Value: 1\n\t\t\t\t5 text 四项指标独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准指标\n\t\t\t\t\t10 正负与零\n\t\t\t\t\t11 更新保留旧值\n\t\t\t\t\t12 首次加载\n\t\t\t\t\t13 空范围\n\t\t\t\t\t14 更新失败保留旧值\n\t\t\t\t\t15 首次读取失败\n\t\t\t\t\t16 缺失净值\n\t\t\t\t\t17 未来期间\n\t\t\t\t\t18 币种不一致\n\t\t\t\t\t19 极长金额与来源\n\t\t\t20 button 提交另一期间\n\t\t\t21 text 版本 1\n\t\t\t22 container 当前表现指标\n\t\t\t\t23 container 期间净盈亏\n\t\t\t\t\t24 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t\t25 text 期间净盈亏 ( CNY )\n\t\t\t\t\t26 text +1.84 万\n\t\t\t\t\t27 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t\t28 container 期间已实现\n\t\t\t\t\t29 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t\t30 text 期间已实现 ( CNY )\n\t\t\t\t\t31 text +1.22 万\n\t\t\t\t\t32 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t\t33 container 期间浮盈变动\n\t\t\t\t\t34 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t\t35 text 期间浮盈变动 ( CNY )\n\t\t\t\t\t36 text +6,180.00\n\t\t\t\t\t37 pop up button (expanded) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Collapse\n\t\t\t\t38 container 当前持仓市值\n\t\t\t\t\t39 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t\t40 text 当前持仓市值 ( CNY )\n\t\t\t\t\t41 text 26.01 万\n\t\t\t\t\t42 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t43 heading 下一模块边界, Value: 2\n\t\t\t\t44 text 下一模块边界\n\t\t\t45 text 详情须完整可读并可返回原触发卡。\n\t\t\t46 button 外部动作\n\t\t47 container 期间浮盈变动 · 口径详情\n\t\t\t48 heading 期间浮盈变动 · 口径详情, Value: 4\n\t\t\t\t49 text 期间浮盈变动  · 口径详情\n\t\t\t50 button 关闭详情\n\t\t\t51 text 期末浮盈减期初浮盈，表示所选期间的浮盈变化。\n\t\t\t52 text 期间 2026-01-01 至 2026-10-15 · 上海时区\n\t\t\t53 definition list\n\t\t\t\t54 container 完整金额\n\t\t\t\t\t55 text 完整金额\n\t\t\t\t56 text 6180 CNY\n\t\t\t\t57 container 覆盖数量\n\t\t\t\t\t58 text 覆盖数量\n\t\t\t\t59 text 3 / 3\n\t\t\t\t60 container 原币金额\n\t\t\t\t\t61 text 原币金额\n\t\t\t\t62 container\n\t\t\t\t\t63 text 6180 CNY\n\t\t\t\t64 container 汇率来源\n\t\t\t\t\t65 text 汇率来源\n\t\t\t\t66 text 同币种，无需换汇\n\nThe focused UI element is 47 container 期间浮盈变动 · 口径详情",
+    "d": {
+      "active": null,
+      "dialog": "期间浮盈变动 · 口径详情×期末浮盈减期初浮盈，表示所选期间的浮盈变化。期间 2026-01-01 至 2026-10-15 · 上海时区完整金额6180 CNY覆盖数量3 / 3原币金额6180 CNY汇率来源同币种，无需换汇",
+      "height": 1000,
+      "rect": {
+        "bottom": 481,
+        "height": 234,
+        "left": 727,
+        "right": 1167,
+        "top": 247,
+        "width": 440,
+        "x": 727,
+        "y": 247
+      },
+      "width": 1440
+    },
+    "closed": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand",
+    "after": {
+      "active": "期间浮盈变动，口径详情，完整金额 6180 CNY",
+      "dialog": false
+    }
+  },
+  {
+    "label": "当前持仓市值",
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 四项指标独立验收, Value: 1\n\t\t\t\t5 text 四项指标独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准指标\n\t\t\t\t\t10 正负与零\n\t\t\t\t\t11 更新保留旧值\n\t\t\t\t\t12 首次加载\n\t\t\t\t\t13 空范围\n\t\t\t\t\t14 更新失败保留旧值\n\t\t\t\t\t15 首次读取失败\n\t\t\t\t\t16 缺失净值\n\t\t\t\t\t17 未来期间\n\t\t\t\t\t18 币种不一致\n\t\t\t\t\t19 极长金额与来源\n\t\t\t20 button 提交另一期间\n\t\t\t21 text 版本 1\n\t\t\t22 container 当前表现指标\n\t\t\t\t23 container 期间净盈亏\n\t\t\t\t\t24 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t\t25 text 期间净盈亏 ( CNY )\n\t\t\t\t\t26 text +1.84 万\n\t\t\t\t\t27 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t\t28 container 期间已实现\n\t\t\t\t\t29 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t\t30 text 期间已实现 ( CNY )\n\t\t\t\t\t31 text +1.22 万\n\t\t\t\t\t32 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t\t33 container 期间浮盈变动\n\t\t\t\t\t34 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t\t35 text 期间浮盈变动 ( CNY )\n\t\t\t\t\t36 text +6,180.00\n\t\t\t\t\t37 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t\t38 container 当前持仓市值\n\t\t\t\t\t39 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t\t40 text 当前持仓市值 ( CNY )\n\t\t\t\t\t41 text 26.01 万\n\t\t\t\t\t42 pop up button (expanded) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Collapse\n\t\t\t43 heading 下一模块边界, Value: 2\n\t\t\t\t44 text 下一模块边界\n\t\t\t45 text 详情须完整可读并可返回原触发卡。\n\t\t\t46 button 外部动作\n\t\t47 container 当前持仓市值 · 口径详情\n\t\t\t48 heading 当前持仓市值 · 口径详情, Value: 4\n\t\t\t\t49 text 当前持仓市值  · 口径详情\n\t\t\t50 button 关闭详情\n\t\t\t51 text 最新可用行情下的当前持仓市值，独立于所选期间；不随期间切换。\n\t\t\t52 text 当前时点 2026-10-23T08:00:00Z\n\t\t\t53 definition list\n\t\t\t\t54 container 完整金额\n\t\t\t\t\t55 text 完整金额\n\t\t\t\t56 text 260102.123400 CNY\n\t\t\t\t57 container 覆盖数量\n\t\t\t\t\t58 text 覆盖数量\n\t\t\t\t59 text 3 / 3\n\t\t\t\t60 container 原币金额\n\t\t\t\t\t61 text 原币金额\n\t\t\t\t62 container\n\t\t\t\t\t63 text 260102.123400 CNY\n\t\t\t\t64 container 汇率来源\n\t\t\t\t\t65 text 汇率来源\n\t\t\t\t66 text 同币种，无需换汇\n\t\t\t67 container 当前浮盈\n\t\t\t\t68 heading 当前浮盈, Value: 5\n\t\t\t\t\t69 text 当前浮盈\n\t\t\t\t70 definition list\n\t\t\t\t\t71 container 完整金额\n\t\t\t\t\t\t72 text 完整金额\n\t\t\t\t\t73 text 23153.2500 CNY\n\t\t\t\t\t74 container 覆盖数量\n\t\t\t\t\t\t75 text 覆盖数量\n\t\t\t\t\t76 text 3 / 3\n\t\t\t\t\t77 container 原币金额\n\t\t\t\t\t\t78 text 原币金额\n\t\t\t\t\t79 container\n\t\t\t\t\t\t80 text 23153.2500 CNY\n\t\t\t\t\t81 container 汇率来源\n\t\t\t\t\t\t82 text 汇率来源\n\t\t\t\t\t83 text 同币种，无需换汇\n\nThe focused UI element is 47 container 当前持仓市值 · 口径详情",
+    "d": {
+      "active": null,
+      "dialog": "当前持仓市值 · 口径详情×最新可用行情下的当前持仓市值，独立于所选期间；不随期间切换。当前时点 2026-10-23T08:00:00Z完整金额260102.123400 CNY覆盖数量3 / 3原币金额260102.123400 CNY汇率来源同币种，无需换汇当前浮盈完整金额23153.2500 CNY覆盖数量3 / 3原币金额23153.2500 CNY汇率来源同币种，无需换汇",
+      "height": 1000,
+      "rect": {
+        "bottom": 653,
+        "height": 406,
+        "left": 976,
+        "right": 1416,
+        "top": 247,
+        "width": 440,
+        "x": 976,
+        "y": 247
+      },
+      "width": 1440
+    },
+    "closed": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand",
+    "after": {
+      "active": "当前持仓市值，口径详情，完整金额 260102.123400 CNY",
+      "dialog": false
+    }
+  }
+]

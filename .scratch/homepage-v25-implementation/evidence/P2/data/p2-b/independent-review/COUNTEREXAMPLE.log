@@ -1,0 +1,109 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:51648) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | .scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/future-currency-isolation.test.ts > a future-only HKD group cannot erase an eligible USD group's historical/current conversion
+{
+  "expected": [
+    "0",
+    "770",
+    "840",
+    "140"
+  ],
+  "control": [
+    "0",
+    "770",
+    "840",
+    "140"
+  ],
+  "withFuture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "endpointFx": {
+    "state": "partial",
+    "businessDate": "2026-01-30",
+    "observationIds": [
+      "historical-usd-fx"
+    ],
+    "requiredPairs": [
+      "HKD/CNY",
+      "USD/CNY"
+    ],
+    "pairKnowledge": {
+      "USD/CNY": {
+        "publishedAt": "2026-01-30T00:00:00Z",
+        "knownAt": "2026-01-30T00:00:00Z",
+        "fetchedAt": "2026-01-30T00:00:00Z",
+        "source": "broker-history"
+      }
+    },
+    "reasons": [
+      "fx-knowledge-unavailable"
+    ]
+  },
+  "currentFx": {
+    "state": "partial",
+    "businessDate": "2026-02-02",
+    "observationIds": [
+      "current-usd-fx"
+    ],
+    "requiredPairs": [
+      "HKD/CNY",
+      "USD/CNY"
+    ],
+    "pairKnowledge": {
+      "USD/CNY": {
+        "publishedAt": "2026-02-02T00:00:00Z",
+        "knownAt": "2026-02-02T00:01:00Z",
+        "fetchedAt": "2026-02-02T00:01:00Z",
+        "source": "broker"
+      }
+    },
+    "reasons": [
+      "current-fx-knowledge-unavailable"
+    ]
+  }
+}
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/future-currency-isolation.test.ts (1 test | 1 failed) 61ms
+   × a future-only HKD group cannot erase an eligible USD group's historical/current conversion 58ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/future-currency-isolation.test.ts > a future-only HKD group cannot erase an eligible USD group's historical/current conversion
+AssertionError: expected [ null, null, null, null ] to deeply equal [ '0', '770', '840', '140' ]
+
+- Expected
++ Received
+
+  [
+-   "0",
+-   "770",
+-   "840",
+-   "140",
++   null,
++   null,
++   null,
++   null,
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/future-currency-isolation.test.ts:64:30
+     62|   console.log(JSON.stringify({ expected, control: values(control), wit…
+     63|     endpointFx: point.fxCoverage, currentFx: withFuture.current.fxCove…
+     64|   expect(values(withFuture)).toEqual(expected);
+       |                              ^
+     65| });
+     66|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  07:03:54
+   Duration  863ms (transform 294ms, setup 0ms, import 394ms, tests 61ms, environment 0ms)
+

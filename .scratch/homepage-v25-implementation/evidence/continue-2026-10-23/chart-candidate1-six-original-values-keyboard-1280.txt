@@ -1,0 +1,39 @@
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			34 container 已固定 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+~					40 container Description: 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1, Help: 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1
+~					44 container 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1
++					63 text 原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1
+The focused UI element is 44 container 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1
+
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			34 container 已固定 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+~					44 container Description: 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1, Help: +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1
+~					48 container 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1
++					63 text 原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1
+The focused UI element is 48 container 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1
+
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			34 container 已固定 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+~					48 container Description: 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1, Help: +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1
+~					52 container 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1
++					63 text 原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1
+The focused UI element is 52 container 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1
+
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			34 container 已固定 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+~					52 container Description: 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1, Help: +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1
+~					56 container 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1
++					63 text 原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1
+The focused UI element is 56 container 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1
+
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			34 container 已固定 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1 原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+~					56 container Description: 期间净盈亏 CNY +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1, Help: +13,900.00；原币：CNY 13,900.00；同币种，无需换汇；覆盖 1/1
+~					60 container 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
++					63 text 原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+The focused UI element is 60 container 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1

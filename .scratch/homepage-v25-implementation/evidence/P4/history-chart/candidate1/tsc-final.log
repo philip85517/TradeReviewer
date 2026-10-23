@@ -1,0 +1,8 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ES2017", "--lib", "dom,dom.iterable,esnext", "--skipLibCheck", "--esModuleInterop", "--module", "esnext", "--moduleResolution", "bundler", "--resolveJsonModule", "--isolatedModules", "--jsx", "react-jsx", "--incremental", "false", "app/components/homepage-v25/history-chart.tsx", "app/components/homepage-v25/history-chart.test.tsx"]
+STDOUT
+app/lib/replay/position-ledger.ts(569,33): error TS2367: This comparison appears to be unintentional because the types 'TradeTimePrecision | undefined' and '"day"' have no overlap.
+app/lib/replay/position-ledger.ts(569,84): error TS2367: This comparison appears to be unintentional because the types 'TradeTimePrecision | undefined' and '"month"' have no overlap.
+
+STDERR
+
+EXIT 2

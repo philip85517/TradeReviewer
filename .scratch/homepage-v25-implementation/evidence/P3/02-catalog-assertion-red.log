@@ -1,0 +1,99 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:28877) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/catalog-model.test.ts (4 tests | 4 failed) 47ms
+     × includes metadata-only instruments without inventing holdings, across exchanges and classes 12ms
+     × deduplicates one trustworthy identity into its exact collection rather than taking a first instrument 2ms
+     × retains real imported instruments with unknown category and does not infer live or stock 30ms
+     × fails closed on historical invalid exchange and conflicting metadata evidence 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > includes metadata-only instruments without inventing holdings, across exchanges and classes
+AssertionError: expected [] to deeply equal [ 'NASDAQ:SAME:etf', …(2) ]
+
+- Expected
++ Received
+
+- [
+-   "NASDAQ:SAME:etf",
+-   "NASDAQ:SAME:stock",
+-   "NYSE:SAME:stock",
+- ]
++ []
+
+ ❯ app/components/homepage-v25/catalog-model.test.ts:15:54
+     13|   it("includes metadata-only instruments without inventing holdings, a…
+     14|     const catalog = buildHomepageCatalog([], [stored("one", "NASDAQ"),…
+     15|     expect(catalog.items.map(item => item.identity)).toEqual(["NASDAQ:…
+       |                                                      ^
+     16|     expect(searchHomepageCatalog(catalog, "同名")).toHaveLength(3);
+     17|     expect(searchHomepageCatalog(catalog, "")).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > deduplicates one trustworthy identity into its exact collection rather than taking a first instrument
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ app/components/homepage-v25/catalog-model.test.ts:23:27
+     21|   it("deduplicates one trustworthy identity into its exact collection …
+     22|     const catalog = buildHomepageCatalog([], [stored("one", "NASDAQ"),…
+     23|     expect(catalog.items).toHaveLength(1);
+       |                           ^
+     24|     expect(catalog.identities["NASDAQ:SAME:stock"]).toEqual(["one", "t…
+     25|     expect(catalog.identities["NASDAQ:SAME"]).toEqual(["one", "two"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > retains real imported instruments with unknown category and does not infer live or stock
+AssertionError: expected undefined to match object { exchange: 'SSE', …(3) }
+
+- Expected:
+{
+  "assetType": "unknown",
+  "exchange": "SSE",
+  "hasExecutions": true,
+  "identity": null,
+}
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/catalog-model.test.ts:30:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > fails closed on historical invalid exchange and conflicting metadata evidence
+AssertionError: expected [] to have a length of 2 but got +0
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ app/components/homepage-v25/catalog-model.test.ts:39:27
+     37|     const conflict = [stored("conflict", "NASDAQ"), stored("conflict",…
+     38|     const catalog = buildHomepageCatalog([], [invalid, ...conflict]);
+     39|     expect(catalog.items).toHaveLength(2);
+       |                           ^
+     40|     expect(catalog.items.every(item => item.identity === null && item.…
+     41|     expect(catalog.identities).toEqual({});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  03:14:06
+   Duration  1.67s (transform 204ms, setup 158ms, import 214ms, tests 47ms, environment 915ms)
+

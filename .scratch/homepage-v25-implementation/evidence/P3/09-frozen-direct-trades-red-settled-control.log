@@ -1,0 +1,41 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:29888) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx (3 tests | 1 failed) 140ms
+     × RED: a cold direct scoped /trades must publish ready bootstrap entries rather than the first empty bundle 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx > frozen P3 direct ordinary collection diagnosis > RED: a cold direct scoped /trades must publish ready bootstrap entries rather than the first empty bundle
+AssertionError: expected { entryCount: +0, …(2) } to deeply equal { entryCount: 1, …(2) }
+
+- Expected
++ Received
+
+  {
+-   "collectionCount": 1,
+-   "entryCount": 1,
+-   "ownedReads": 1,
++   "collectionCount": 0,
++   "entryCount": 0,
++   "ownedReads": 0,
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx:65:138
+     63|     // This is the same source used by Workspace ordinaryEntries at li…
+     64|     const collection = filterEntriesBySharedScope(explicitLiveEntries(…
+     65|     expect({ entryCount: result.current.data.entries.length, collectio…
+       |                                                                                                                                          ^
+     66|   });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  03:24:53
+   Duration  2.96s (transform 534ms, setup 444ms, import 677ms, tests 140ms, environment 1.35s)
+

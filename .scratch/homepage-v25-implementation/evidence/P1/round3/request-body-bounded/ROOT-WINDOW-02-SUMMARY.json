@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-22T21:18:58.040729+00:00",
+  "source": "root-window-02.41322.ndjson",
+  "events": 303,
+  "phases": {
+    "observer-ready": 1,
+    "srvx-prototype-discovered": 1,
+    "request-entry": 100,
+    "materialize-enter": 1,
+    "materialize-return": 1,
+    "response-finish": 99,
+    "response-close": 99,
+    "observer-stop": 1
+  },
+  "methods": {
+    "GET": 100
+  },
+  "routes": {
+    "/home": 1,
+    "<redacted-path>": 99
+  },
+  "stop": {
+    "phase": "observer-stop",
+    "at": "2026-10-22T21:14:19.154Z",
+    "pid": 41322,
+    "reason": "requests",
+    "lastSeq": 302,
+    "requests": 100,
+    "elapsedMs": 18469,
+    "regularBytes": 85132,
+    "restoration": {
+      "restored": 34,
+      "skipped": 0,
+      "failed": 0,
+      "ownedRemaining": 0
+    }
+  }
+}

@@ -1,0 +1,43 @@
+--- before/app/components/homepage-v25/home-surface.tsx
++++ after/app/components/homepage-v25/home-surface.tsx
+@@ -324,6 +324,9 @@
+       <div><dt>最新价({detail.settlementCurrency ?? "—"})</dt><dd><Value value={detail.quoteStatus === "available" ? detail.quote?.price ?? null : null} label="最新价" kind="price" unknown="待更新" reason={detail.statusReason ?? "行情待更新"} /></dd></div>
+       <div><dt>账户</dt><dd>{detail.accountLabel}</dd></div>
+       <div><dt>持仓天数</dt><dd title={detail.daysReason ?? undefined}>{detail.days === null ? "—" : `${detail.days}天`}</dd></div>
+-    </dl><p className="hp-detail-evidence">{detail.financialEvidence}</p>{(detail.statusReason || detail.conversionReason || detail.daysReason || detail.identityReason) && <div className="hp-detail-reasons">{[...new Set([detail.statusReason, detail.conversionReason, detail.daysReason, detail.identityReason].filter(Boolean))].map(reason => <p key={reason}>{reason}</p>)}<button type="button" disabled={pending} onClick={onRepair}>更新数据</button></div>}<footer><button className="hp-primary" type="button" disabled={!detail.identity || pending || navigating} title={detail.identityReason ?? undefined} onClick={() => { void forwardDetail(); }}>查看交易</button></footer></div></div>}
++    </dl><p className="hp-detail-evidence">{detail.financialEvidence}</p>{(detail.statusReason || detail.conversionReason || detail.daysReason || detail.identityReason) && <div className="hp-detail-reasons">{[...new Set([detail.statusReason, detail.conversionReason, detail.daysReason, detail.identityReason].filter(Boolean))].map(reason => <p key={reason}>{reason}</p>)}<button type="button" disabled={pending} onClick={onRepair}>更新数据</button></div>}<footer>
++      <button className="hp-detail-trades" type="button" disabled={!detail.identity || pending || navigating} title={detail.identityReason ?? undefined} onClick={() => { void forwardDetail(); }}>查看交易</button>
++      <button className="hp-detail-return" type="button" onClick={closeDetail}>{detailOrigin === "search" ? "返回原搜索结果 · 恢复原滚动位置" : `返回原持仓行第 ${page} 页 · 恢复原滚动位置`}</button>
++    </footer></div></div>}
+   </section>;
+ }
+--- before/app/components/homepage-v25/home-surface.css
++++ after/app/components/homepage-v25/home-surface.css
+@@ -89,8 +89,11 @@
+ .hp-library-entry { display:flex; align-items:center; justify-content:space-between; color:#A8B6CB; padding-bottom:16px; }
+ .hp-home-surface .hp-primary, .hp-library-entry button { color:#0B1019; background:#6CA8FF; border-color:#6CA8FF; }
+ .hp-detail-backdrop { position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center; background:#030810b3; padding:24px; }
+-.hp-detail-dialog { width:1020px; max-width:100%; max-height:calc(100vh - 48px); overflow:auto; border:1px solid #283448; border-radius:8px; background:#162233; padding:24px; box-shadow:0 24px 72px #0008; }
++.hp-detail-dialog { width:1020px; max-width:100%; min-height:500px; max-height:calc(100vh - 48px); max-height:calc(100dvh - 48px); overflow:auto; display:flex; flex-direction:column; border:1px solid #283448; border-radius:8px; background:#111A26; padding:24px; box-shadow:0 24px 72px #0008; }
++.hp-detail-dialog > * { flex-shrink:0; }
+ .hp-detail-dialog header { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
++.hp-detail-dialog header > div { min-width:0; }
++.hp-detail-dialog h2 { font-size:24px; line-height:32px; overflow-wrap:anywhere; }
+ .hp-detail-dialog header p { margin-top:8px; font-size:12px; line-height:16px; color:#A8B6CB; }
+ .hp-detail-values { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:32px 0 24px; }
+ .hp-detail-values > div { min-width:0; height:88px; padding:12px 16px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#111A26; border:1px solid #283448; border-radius:8px; }
+@@ -106,9 +109,12 @@
+ .hp-value-explanation strong { color:#A8B6CB; font-size:12px; font-weight:400; }
+ .hp-detail-reasons { background:#111A26; padding:16px; border-radius:6px; font-size:12px; line-height:20px; color:#FFC66D; }
+ .hp-detail-reasons button { margin-top:8px; }
+-.hp-detail-dialog footer { display:flex; justify-content:center; margin-top:24px; }
+-.hp-detail-dialog footer button { min-width:160px; }
++.hp-detail-dialog footer { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:auto; padding-top:24px; }
++.hp-detail-dialog .hp-detail-trades { width:120px; height:36px; flex-shrink:0; color:#E6EDF7; background:#162233; border-color:#6CA8FF; }
++.hp-detail-dialog .hp-detail-return { max-width:100%; min-height:36px; height:auto; padding:0 8px; border:0; color:#6CA8FF; white-space:normal; text-align:center; }
+ @media(max-width:900px) { .hp-page-header { flex-wrap:wrap; height:auto; min-height:64px; padding:12px 16px; } .hp-updated { display:none; } .hp-home-content { padding:16px; } .hp-holdings { min-width:960px; } .hp-home-scroll { overflow:auto; } .hp-holdings-toolbar { gap:8px; } .hp-holdings-summary { gap:16px; } .hp-detail-values { grid-template-columns:1fr 1fr; } }
++@media(max-width:900px), (max-height:548px) { .hp-detail-dialog { min-height:0; } }
++@media(max-width:600px) { .hp-detail-values { grid-template-columns:minmax(0,1fr); } }
+ @media(prefers-reduced-motion:reduce) { .hp-home-surface * { animation:none !important; transition:none !important; } }
+ 
+ .hp-detail-evidence { color:#71829B; font-size:12px; line-height:20px; overflow-wrap:anywhere; margin-bottom:16px !important; }

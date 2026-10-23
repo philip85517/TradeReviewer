@@ -1,0 +1,40 @@
+--- a/app/components/homepage-v25/history-controls.tsx
++++ b/app/components/homepage-v25/history-controls.tsx
+@@ -67,7 +67,8 @@
+   const appliedKey = rangeKey(appliedRange);
+   const selectedRange = rangeOptions.findIndex(option => rangeKey(option.range) === appliedKey);
+   const selectedMetric = CHART_MODES.indexOf(chartMode);
+-  const label = rangeOptions[selectedRange]?.label ?? rangeLabel(appliedRange);
++  const label = rangeLabel(appliedRange);
++  const fullLabel = rangeOptions[selectedRange]?.label ?? label;
+   // Primitive signature lets an actual caller option change refresh focus, without refocusing on every render.
+   const optionsKey = JSON.stringify(rangeOptions.map(option => [option.id, option.label, rangeKey(option.range)]));
+   const hasInvalidRange = rangeOptions.some(option => !validRange(option.range));
+@@ -159,7 +160,7 @@
+     <div className="hp-history-controls__combo">
+       <button ref={element => { triggers.current.range = element; }} type="button"
+         className="hp-history-controls__trigger hp-history-controls__trigger--range"
+-        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${label}`} aria-haspopup="listbox" aria-expanded={open === "range"}
++        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${fullLabel}`} title={fullLabel} aria-haspopup="listbox" aria-expanded={open === "range"}
+         aria-controls={open === "range" ? `${id}-range` : undefined} aria-describedby={messages}
+         aria-busy={pending || undefined} onClick={() => setOpen(open === "range" ? null : "range")}
+         onKeyDown={event => triggerKeyDown(event, "range")}>
+--- a/app/components/homepage-v25/history-controls.css
++++ b/app/components/homepage-v25/history-controls.css
+@@ -40,7 +40,7 @@
+   background: transparent;
+   color: inherit;
+   font: inherit;
+-  white-space: normal;
++  white-space: nowrap;
+   cursor: pointer;
+   transition: background-color 120ms ease;
+ }
+@@ -67,7 +67,6 @@
+ 
+ .hp-history-controls .hp-history-controls__label {
+   min-width: 0;
+-  overflow-wrap: anywhere;
+ }
+ 
+ .hp-history-controls .hp-history-controls__arrow {

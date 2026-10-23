@@ -1,0 +1,386 @@
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { HomepageV25BoundaryPoint, HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
+import type { HomepageV25SeriesBundle } from "../../lib/reviews/homepage-v25-series";
+import { PerformanceChart } from "./performance-chart";
+
+// Independent literal caller data: no projection/builder/clock/database involved.
+function metric(value: string | null, currency = "CNY", reasons: string[] = []): HomepageV25Metric {
+  return { value, available: value !== null, coverage: { total: 1, available: value === null ? 0 : 1 }, reasons,
+    money: { originalByCurrency: value === null ? {} : { [currency]: value }, targetCurrency: currency,
+      conversion: "same-currency", fx: null } };
+}
+function point(key: string, net: string | null, changes: Partial<HomepageV25BoundaryPoint> = {}): HomepageV25BoundaryPoint {
+  return { key, requestedAt: key, businessDate: key, effectiveCursor: `${key}T15:59:59Z`, boundaryPrecision: "day",
+    state: net === null ? "source-missing" : "value", plottable: net !== null,
+    marketValue: metric("260102.123400"), unrealizedNet: metric("-23153.25"), lifetimeRealizedNet: metric("0"),
+    lifetimeNet: metric("35393.34"), net: metric(net), periodFees: metric("640.0010"),
+    periodRealized: metric("100"), openingUnrealized: metric("200"), closingUnrealized: metric("300"),
+    unrealizedChange: metric("100"), openFees: metric("4"), instruments: [], quoteCoverage: {}, lifetimeCoverage: [],
+    fxCoverage: { state: "not-required", businessDate: key, observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: [] },
+    reasons: net === null ? ["行情缺失：未收到收盘价"] : [], ...changes };
+}
+function bundle(points: readonly HomepageV25BoundaryPoint[]): HomepageV25SeriesBundle {
+  return { sourceId: "literal-source", requestGeneration: "literal-generation", points,
+    revisions: { trades: "literal", metadata: "literal", quotes: "literal", fx: "literal" },
+    policies: { finance: "F3-2026-10-23", feePool: "F3-canonical-prefix", feeFacts: "P2-incurred-knowledge-1",
+      calendar: "exchange-2010-2030-F3", dailyCoverage: "P2-strict-completed-1", fx: "P2-historical-pair-knowledge-1",
+      quoteKnowledgeMode: "retrospective-completed-session" },
+    scope: { nature: "live", simulationRunId: null, includedExecutions: 1, excludedExecutions: 0, excludedByReason: {} },
+    boundary: { businessTimezone: "Asia/Shanghai", asOf: "2026-10-07T10:00:00Z", periodStart: "2026-10-01",
+      requestedEnd: "2026-10-10", effectiveEnd: "2026-10-07" },
+    periodSummary: points.at(-1) ?? null, summaryState: points.at(-1)?.state ?? "future", feeFacts: [],
+    tooltipFields: ["marketValue", "unrealizedNet", "lifetimeRealizedNet", "lifetimeNet", "net", "periodFees"],
+    current: { asOf: "2026-10-07T10:00:00Z", currentMarketValue: metric("999999999"),
+      currentUnrealized: metric("999999999"), currentOpenFees: metric("999999999"), instruments: [], quoteCoverage: {},
+      fxCoverage: { state: "not-required", businessDate: "2026-10-07", observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: [] } } };
+}
+const ready = () => bundle([point("2026-10-01", "0"), point("2026-10-02", "18420.5678"), point("2026-10-03", "-12000")]);
+const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）" });
+const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}`);
+const detail = () => screen.getByRole("tooltip");
+function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
+
+describe("controlled daily PerformanceChart", () => {
+  it("starts with a single line, a currency axis, no tooltip or persistent marker", () => {
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    expect(graph()).toHaveAttribute("tabindex", "0");
+    expect(screen.getByText("CNY")).toBeVisible();
+    expect(screen.getAllByTestId("hp-chart-segment")).toHaveLength(1);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("hp-chart-marker")).not.toBeInTheDocument();
+    expect(screen.getAllByTestId("hp-chart-money-tick").length).toBeLessThanOrEqual(7);
+    expect(screen.queryByText(/查看该日敞口|重试|✓|行情完整|汇率完整/)).not.toBeInTheDocument();
+  });
+
+  it("delays mouse detail 300ms, shows a 6px point immediately, and closes 100ms after leave", () => {
+    vi.useFakeTimers();
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.mouseEnter(hit("2026-10-02"));
+    expect(screen.getByTestId("hp-chart-marker")).toHaveAttribute("r", "3");
+    tick(299); expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    tick(1); expect(detail()).toHaveTextContent("2026-10-02");
+    fireEvent.mouseLeave(hit("2026-10-02"));
+    tick(99); expect(detail()).toBeInTheDocument();
+    tick(1); expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("never displays an old point while waiting on another and cancels a departed hover timer", () => {
+    vi.useFakeTimers();
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.mouseEnter(hit("2026-10-01")); tick(300);
+    fireEvent.mouseLeave(hit("2026-10-01")); fireEvent.mouseEnter(hit("2026-10-02"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    tick(250); fireEvent.mouseLeave(hit("2026-10-02")); tick(400);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("focuses immediately, reads six exact historical fields in order, and preserves full precision", () => {
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.focus(graph()); fireEvent.keyDown(graph(), { key: "ArrowRight" });
+    expect(detail()).toHaveTextContent("2026-10-02");
+    expect(within(detail()).getAllByTestId("hp-chart-field").map(row => row.getAttribute("data-field")))
+      .toEqual(["marketValue", "unrealizedNet", "lifetimeRealizedNet", "lifetimeNet", "net", "periodFees"]);
+    expect(detail()).toHaveTextContent("260,102.123400");
+    expect(detail()).toHaveTextContent("-23,153.25");
+    expect(detail()).toHaveTextContent("+18,420.5678");
+    expect(detail()).toHaveTextContent("640.0010");
+    expect(detail()).not.toHaveTextContent("999,999,999");
+    expect(within(detail()).getByTestId("hp-chart-value-marketValue")).not.toHaveClass("hp-performance-chart__positive");
+    expect(within(detail()).getByTestId("hp-chart-value-unrealizedNet")).toHaveClass("hp-performance-chart__negative");
+    expect(within(detail()).getByTestId("hp-chart-value-lifetimeRealizedNet")).toHaveClass("hp-performance-chart__neutral");
+    expect(within(detail()).getByTestId("hp-chart-value-periodFees")).toHaveClass("hp-performance-chart__neutral");
+  });
+
+  it("moves only among valid points and Home/End select actual boundaries", () => {
+    const input = bundle([point("2026-10-01", "0"), point("2026-10-02", null), point("2026-10-03", "20"),
+      point("2026-10-04", "99999", { state: "future", plottable: true })]);
+    render(<PerformanceChart series={input} reportCurrency="CNY" />);
+    fireEvent.focus(graph()); expect(detail()).toHaveTextContent("2026-10-01");
+    fireEvent.keyDown(graph(), { key: "ArrowRight" }); expect(detail()).toHaveTextContent("2026-10-03");
+    fireEvent.keyDown(graph(), { key: "ArrowRight" }); expect(detail()).toHaveTextContent("2026-10-03");
+    fireEvent.keyDown(graph(), { key: "Home" }); expect(detail()).toHaveTextContent("2026-10-01");
+    fireEvent.keyDown(graph(), { key: "End" }); expect(detail()).toHaveTextContent("2026-10-03");
+    fireEvent.keyDown(graph(), { key: "ArrowLeft" }); expect(detail()).toHaveTextContent("2026-10-01");
+  });
+
+  it("pins with Enter, ignores other hover, and Escape suppresses reopening until point reentry", () => {
+    vi.useFakeTimers();
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    act(() => graph().focus());
+    fireEvent.keyDown(graph(), { key: "Enter" });
+    expect(detail()).toHaveAttribute("data-pinned", "true");
+    fireEvent.mouseEnter(hit("2026-10-02")); tick(400);
+    expect(detail()).toHaveTextContent("2026-10-01");
+    fireEvent.keyDown(graph(), { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(graph()).toHaveFocus();
+    fireEvent.keyDown(graph(), { key: "Enter" });
+    fireEvent.click(hit("2026-10-01"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    fireEvent.mouseEnter(hit("2026-10-01")); tick(400);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    fireEvent.mouseLeave(hit("2026-10-01")); fireEvent.mouseEnter(hit("2026-10-01")); tick(300);
+    expect(detail()).toHaveTextContent("2026-10-01");
+  });
+
+  it("shows true zero as 0.00 without a positive color and never substitutes zero for unknown", () => {
+    render(<PerformanceChart series={bundle([point("2026-10-01", "0"), point("2026-10-02", null)])} reportCurrency="CNY" />);
+    fireEvent.focus(graph());
+    expect(within(detail()).getByTestId("hp-chart-value-net")).toHaveTextContent(/^0\.00$/);
+    expect(within(detail()).getByTestId("hp-chart-value-net")).toHaveClass("hp-performance-chart__neutral");
+    fireEvent.focus(screen.getByTestId("hp-chart-gap-2026-10-02"));
+    expect(within(detail()).getByTestId("hp-chart-value-net")).toHaveTextContent(/^—$/);
+    expect(detail()).toHaveTextContent("行情缺失：未收到收盘价");
+  });
+
+  it("splits internal gaps and retains leading/trailing missing-date ranges", () => {
+    const dates = [point("2026-10-01", null), point("2026-10-02", "10"), point("2026-10-03", "20"),
+      point("2026-10-04", null), point("2026-10-05", "-10"), point("2026-10-06", "0"), point("2026-10-07", null)];
+    render(<PerformanceChart series={bundle(dates)} reportCurrency="CNY" />);
+    expect(screen.getAllByTestId("hp-chart-segment")).toHaveLength(2);
+    expect(screen.getByTestId("hp-chart-gap-2026-10-01")).toHaveAccessibleName(/2026-10-01.*数据缺失/);
+    expect(screen.getByTestId("hp-chart-gap-2026-10-04")).toHaveAccessibleName(/2026-10-04.*数据缺失/);
+    expect(screen.getByTestId("hp-chart-gap-2026-10-07")).toHaveAccessibleName(/2026-10-07.*数据缺失/);
+    expect(screen.queryByTestId("hp-chart-point-2026-10-04")).not.toBeInTheDocument();
+  });
+
+  it("greys future coverage with cutoff, excludes it from the axis and never leaks supplied values", () => {
+    render(<PerformanceChart series={bundle([point("2026-10-01", "10"),
+      point("2026-10-08", "99999999999999", { state: "future" }), point("2026-10-09", "99999999999999", { state: "future" })])} reportCurrency="CNY" />);
+    expect(screen.getByTestId("hp-chart-future-region")).toBeInTheDocument();
+    expect(screen.getByText("截至 2026-10-07")).toBeInTheDocument();
+    expect(screen.queryByTestId("hp-chart-point-2026-10-08")).not.toBeInTheDocument();
+    expect(screen.getAllByTestId("hp-chart-money-tick").some(node => /亿/.test(node.textContent ?? ""))).toBe(false);
+    fireEvent.focus(screen.getByTestId("hp-chart-gap-2026-10-08"));
+    expect(detail()).toHaveTextContent("未来未覆盖");
+    expect(within(detail()).getAllByTestId(/^hp-chart-value-/).every(node => node.textContent === "—")).toBe(true);
+    expect(detail()).not.toHaveTextContent("999");
+  });
+
+  it.each(["loading", "error"] as const)("%s overrides prior successful values and line, preserving exact date and reason", state => {
+    render(<PerformanceChart series={ready()} reportCurrency="CNY"
+      pointStatus={{ "2026-10-02": { state, reason: state === "loading" ? "等待该日行情" : "该日读取失败" } }} />);
+    expect(screen.queryByTestId("hp-chart-point-2026-10-02")).not.toBeInTheDocument();
+    fireEvent.focus(screen.getByTestId("hp-chart-gap-2026-10-02"));
+    expect(detail()).toHaveTextContent("2026-10-02");
+    expect(detail()).toHaveTextContent(state === "loading" ? "等待该日行情" : "该日读取失败");
+    expect(within(detail()).getAllByTestId(/^hp-chart-value-/).every(node => node.textContent === "—")).toBe(true);
+    expect(screen.queryByRole("button", { name: /重试/ })).not.toBeInTheDocument();
+    fireEvent.focus(graph()); fireEvent.keyDown(graph(), { key: "End" });
+    expect(detail()).toHaveTextContent("2026-10-03");
+  });
+
+  it("renders unavailable and empty contexts without fake points or stale detail", () => {
+    const view = render(<PerformanceChart series={null} reportCurrency="CNY" unavailableReason="尚无数据范围" />);
+    expect(screen.getByText("尚无数据范围")).toBeVisible();
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    view.rerender(<PerformanceChart series={bundle([])} reportCurrency="CNY" />);
+    expect(screen.getByText(/期间内没有可用日期/)).toBeVisible();
+    expect(screen.queryAllByTestId("hp-chart-segment")).toHaveLength(0);
+    expect(screen.queryAllByTestId("hp-chart-money-tick")).toHaveLength(0);
+    view.rerender(<PerformanceChart series={bundle([point("2026-10-01", null), point("2026-10-02", null)])} reportCurrency="CNY" />);
+    expect(screen.getByTestId("hp-chart-gap-2026-10-01")).toHaveAccessibleName(/2026-10-01.*2026-10-02/);
+    expect(screen.queryAllByTestId("hp-chart-segment")).toHaveLength(0);
+  });
+
+  it("clears timers and selection when controlled data changes, without updating an unmounted chart", () => {
+    vi.useFakeTimers();
+    const view = render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.mouseEnter(hit("2026-10-02")); tick(200);
+    view.rerender(<PerformanceChart series={bundle([point("2026-10-06", "4")])} reportCurrency="CNY" />);
+    tick(200); expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    fireEvent.mouseEnter(hit("2026-10-06"));
+    view.unmount(); tick(400); expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("hides stale values immediately when the selected key becomes loading", () => {
+    const input = ready();
+    const view = render(<PerformanceChart series={input} reportCurrency="CNY" />);
+    fireEvent.focus(graph()); fireEvent.keyDown(graph(), { key: "ArrowRight" });
+    expect(detail()).toHaveTextContent("+18,420.5678");
+    view.rerender(<PerformanceChart series={input} reportCurrency="CNY" pointStatus={{ "2026-10-02": { state: "loading", reason: "新行情加载中" } }} />);
+    expect(screen.queryByText("+18,420.5678")).not.toBeInTheDocument();
+  });
+
+  it("reads updated non-net metrics and source reasons for the same selected controlled key", () => {
+    const first = point("2026-10-01", "10");
+    const view = render(<PerformanceChart series={bundle([first])} reportCurrency="CNY" />);
+    fireEvent.focus(graph());
+    view.rerender(<PerformanceChart series={bundle([{ ...first, marketValue: metric("712345.9900"), reasons: ["新覆盖证据"] }])} reportCurrency="CNY" />);
+    expect(within(detail()).getByTestId("hp-chart-value-marketValue")).toHaveTextContent("712,345.9900");
+    expect(detail()).not.toHaveTextContent("260,102.123400");
+    expect(within(detail()).getByRole("button", { name: /数据说明/ })).toHaveAttribute("title", "新覆盖证据");
+  });
+
+  it("associates each focused missing range with its current detail", () => {
+    render(<PerformanceChart series={bundle([point("2026-10-01", null)])} reportCurrency="CNY" />);
+    const missing = screen.getByTestId("hp-chart-gap-2026-10-01");
+    fireEvent.focus(missing);
+    expect(missing).toHaveAttribute("aria-describedby", detail().id);
+  });
+
+  it("keeps pointer detail open while reading its sources, then closes 100ms after leaving it", () => {
+    vi.useFakeTimers();
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
+    fireEvent.mouseLeave(hit("2026-10-02")); fireEvent.mouseEnter(detail()); tick(150);
+    expect(detail()).toBeInTheDocument();
+    fireEvent.mouseEnter(within(detail()).getByTestId("hp-chart-value-marketValue"));
+    expect(detail()).toHaveTextContent("原币：CNY 260,102.123400");
+    fireEvent.mouseLeave(detail()); tick(99); expect(detail()).toBeInTheDocument();
+    tick(1); expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("closes unpinned keyboard detail when focus leaves the chart through a detail value", () => {
+    render(<><PerformanceChart series={ready()} reportCurrency="CNY" /><button type="button">图表之后</button></>);
+    act(() => graph().focus());
+    act(() => within(detail()).getByTestId("hp-chart-value-marketValue").focus());
+    expect(detail()).toBeInTheDocument();
+    act(() => screen.getByRole("button", { name: "图表之后" }).focus());
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("measures a 390px card without shrinking SVG text and keeps natural tooltip width inside the viewport", () => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const tooltip = this.classList.contains("hp-performance-chart__detail");
+      return { x: 0, y: 0, left: 0, top: 0, right: tooltip ? 264 : 390, bottom: tooltip ? 500 : 280,
+        width: tooltip ? 264 : 390, height: tooltip ? 500 : 280, toJSON: () => ({}) };
+    });
+    const view = render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    expect(graph().querySelector("svg")).toHaveAttribute("viewBox", "0 0 390 280");
+    fireEvent.focus(graph()); fireEvent.keyDown(graph(), { key: "End" });
+    expect(Number.parseFloat(detail().style.left)).toBeGreaterThanOrEqual(12);
+    expect(Number.parseFloat(detail().style.left) + 264).toBeLessThanOrEqual(378);
+    expect(detail().style.height).toBe("");
+    expect(detail().style.maxHeight).toBe("");
+    expect(within(detail()).getAllByTestId("hp-chart-field")).toHaveLength(6);
+    view.unmount();
+  });
+
+  it("places the complete measured detail away from the main curve when card space permits", () => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const tooltip = this.classList.contains("hp-performance-chart__detail");
+      return { x: 0, y: 0, left: 0, top: 0, right: tooltip ? 264 : 1020, bottom: tooltip ? 166 : 320,
+        width: tooltip ? 264 : 1020, height: tooltip ? 166 : 320, toJSON: () => ({}) };
+    });
+    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
+    fireEvent.focus(graph()); fireEvent.keyDown(graph(), { key: "ArrowRight" });
+    const left = Number.parseFloat(detail().style.left), top = Number.parseFloat(detail().style.top);
+    const positions = [...screen.getByTestId("hp-chart-segment").getAttribute("d")!.matchAll(/[ML]([\d.]+),([\d.]+)/g)]
+      .map(match => ({ x: Number(match[1]), y: Number(match[2]) }));
+    for (let segment = 1; segment < positions.length; segment++) {
+      for (let part = 0; part <= 100; part++) {
+        const ratio = part / 100, previous = positions[segment - 1], next = positions[segment];
+        const x = previous.x + (next.x - previous.x) * ratio, y = previous.y + (next.y - previous.y) * ratio;
+        expect(x > left && x < left + 264 && y > top && y < top + 166).toBe(false);
+      }
+    }
+  });
+
+  it("reserves normal flow for 390px long detail after the plot and restores the default card when closed", () => {
+    vi.useFakeTimers();
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const tooltip = this.classList.contains("hp-performance-chart__detail");
+      return { x: 0, y: 0, left: 0, top: 0, right: tooltip ? 264 : 390, bottom: tooltip ? 500 : 280,
+        width: tooltip ? 264 : 390, height: tooltip ? 500 : 280, toJSON: () => ({}) };
+    });
+    render(<><PerformanceChart series={ready()} reportCurrency="CNY" /><section data-testid="next-module">下一模块</section></>);
+    fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
+    const card = screen.getByRole("region", { name: "当前表现日曲线" });
+    const stage = screen.getByTestId("hp-chart-stage");
+    expect(stage).toHaveStyle({ height: "280px" });
+    expect(detail()).toHaveAttribute("data-placement", "below");
+    expect(detail()).toHaveStyle({ position: "relative", marginTop: "12px", marginBottom: "12px" });
+    expect(detail().parentElement).toBe(card);
+    expect(stage.nextElementSibling).toBe(detail());
+    expect(card.nextElementSibling).toBe(screen.getByTestId("next-module"));
+    expect(card).not.toHaveStyle({ height: "280px" });
+    expect(detail().style.height).toBe("");
+    expect(detail().style.maxHeight).toBe("");
+    fireEvent.mouseLeave(hit("2026-10-02")); fireEvent.mouseEnter(detail()); tick(150);
+    act(() => within(detail()).getByTestId("hp-chart-value-marketValue").focus());
+    expect(detail()).toHaveTextContent("原币：CNY 260,102.123400");
+    fireEvent.keyDown(detail(), { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(card.children).toHaveLength(1);
+    expect(stage).toHaveStyle({ height: "280px" });
+  });
+
+  it("uses a flow detail for a narrow alternating curve when every fitting in-card rectangle intersects it", () => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const tooltip = this.classList.contains("hp-performance-chart__detail");
+      return { x: 0, y: 0, left: 0, top: 0, right: tooltip ? 264 : 390, bottom: tooltip ? 166 : 280,
+        width: tooltip ? 264 : 390, height: tooltip ? 166 : 280, toJSON: () => ({}) };
+    });
+    const dates = Array.from({ length: 7 }, (_, i) => point(`2026-10-0${i + 1}`, i % 2 ? "1000" : "-1000"));
+    render(<PerformanceChart series={bundle(dates)} reportCurrency="CNY" />);
+    fireEvent.focus(graph());
+    expect(detail()).toHaveAttribute("data-placement", "below");
+    expect(detail()).toHaveStyle({ position: "relative" });
+    expect(Number.parseFloat(detail().style.left) + 264).toBeLessThanOrEqual(378);
+  });
+
+  it.each(["CNY", "HKD", "USD"])("labels actual %s historical money without conversion or currency relabeling", currency => {
+    const source = point("2026-10-01", "10");
+    const data = { ...source, marketValue: metric("260102.123400", currency), unrealizedNet: metric("-23153.25", currency),
+      lifetimeRealizedNet: metric("0", currency), lifetimeNet: metric("35393.34", currency), net: metric("10", currency), periodFees: metric("640.0010", currency) };
+    render(<PerformanceChart series={bundle([data])} reportCurrency={currency} />);
+    expect(screen.getByText(currency)).toBeVisible();
+    fireEvent.focus(graph());
+    expect(detail()).toHaveTextContent(`2026-10-01 ${currency}`);
+    expect(within(detail()).getByTestId("hp-chart-value-net")).toHaveTextContent("+10.00");
+    expect(within(detail()).getByTestId("hp-chart-value-net")).toHaveAttribute("data-raw-value", "10");
+  });
+
+  it("uses explicit currency authority: mixed/missing target currency or partial FX never relabel values", () => {
+    const mixed = point("2026-10-01", "100", { net: metric("100", "USD"), marketValue: { ...metric("700"), money: { ...metric("700").money, targetCurrency: null } },
+      unrealizedNet: { ...metric("9"), money: { ...metric("9").money, conversion: "partial" } } });
+    render(<PerformanceChart series={bundle([mixed])} reportCurrency="CNY" />);
+    expect(screen.queryByTestId("hp-chart-point-2026-10-01")).not.toBeInTheDocument();
+    fireEvent.focus(screen.getByTestId("hp-chart-gap-2026-10-01"));
+    for (const key of ["net", "marketValue", "unrealizedNet"]) expect(within(detail()).getByTestId(`hp-chart-value-${key}`)).toHaveTextContent(/^—$/);
+    expect(detail()).toHaveTextContent(/币种.*不一致|缺少报告币种/);
+    expect(detail()).toHaveTextContent(/汇率/);
+  });
+
+  it("exposes literal quote/FX anomaly and original/source evidence without normal success badges", () => {
+    const fx = { ...metric("100"), money: { originalByCurrency: { USD: "13.123456" }, targetCurrency: "CNY", conversion: "complete" as const,
+      fx: { id: "hist-fx", source: "历史央行报价", asOf: "2026-10-02", status: "complete" as const } } };
+    const data = point("2026-10-02", "20", { marketValue: fx, reasons: ["部分证券行情未覆盖"],
+      fxCoverage: { state: "partial", businessDate: "2026-10-02", observationIds: ["hist-fx"], requiredPairs: ["USD/CNY"],
+        pairKnowledge: { "USD/CNY": { source: "历史央行报价", publishedAt: "2026-10-02", knownAt: "2026-10-02", fetchedAt: "2026-10-03" } }, reasons: ["EUR/CNY 汇率缺失"] } });
+    render(<PerformanceChart series={bundle([data])} reportCurrency="CNY" />);
+    fireEvent.focus(graph());
+    const reason = within(detail()).getByRole("button", { name: /数据说明/ });
+    fireEvent.focus(reason);
+    expect(screen.getByText(/EUR\/CNY 汇率缺失/)).toBeVisible();
+    fireEvent.focus(within(detail()).getByTestId("hp-chart-value-marketValue"));
+    expect(detail()).toHaveTextContent("USD 13.123456");
+    expect(detail()).toHaveTextContent("历史央行报价");
+  });
+
+  it("keeps extreme and all-zero domains finite and displays at most seven two-decimal ticks", () => {
+    const view = render(<PerformanceChart series={bundle([point("2026-10-01", "-120000000"), point("2026-10-02", "200000000")])} reportCurrency="HKD" />);
+    // This caller intentionally has the wrong report currency; no fake HKD axis data.
+    expect(screen.queryAllByTestId("hp-chart-money-tick")).toHaveLength(0);
+    view.rerender(<PerformanceChart series={bundle([point("2026-10-01", "-120000000"), point("2026-10-02", "200000000")])} reportCurrency="CNY" />);
+    expect(screen.getAllByTestId("hp-chart-money-tick").length).toBeLessThanOrEqual(7);
+    expect(screen.getAllByTestId("hp-chart-money-tick").some(node => /\d\.\d{2}亿/.test(node.textContent ?? ""))).toBe(true);
+    expect(screen.getByTestId("hp-chart-segment").getAttribute("d")).not.toMatch(/NaN|Infinity/);
+    view.rerender(<PerformanceChart series={bundle([point("2026-10-01", "0"), point("2026-10-02", "0")])} reportCurrency="CNY" />);
+    expect(screen.getByTestId("hp-chart-segment").getAttribute("d")).not.toMatch(/NaN|Infinity/);
+  });
+
+  it("retains sparse single points and fully readable long reasons without invented line connections", () => {
+    const long = "缺少可信行情及历史汇率来源，保持原始日期和未知金额。".repeat(12);
+    render(<PerformanceChart series={bundle([point("2026-10-01", null, { reasons: [long] }), point("2026-10-02", "7")])} reportCurrency="CNY" />);
+    expect(screen.getAllByTestId("hp-chart-segment")).toHaveLength(1);
+    fireEvent.focus(screen.getByTestId("hp-chart-gap-2026-10-01"));
+    expect(detail()).toHaveTextContent(long);
+    expect(within(detail()).getAllByTestId("hp-chart-field")).toHaveLength(6);
+    expect(detail()).not.toHaveStyle({ maxHeight: "112px" });
+  });
+});

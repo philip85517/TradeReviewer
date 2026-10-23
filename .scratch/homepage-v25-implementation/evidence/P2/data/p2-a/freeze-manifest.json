@@ -1,0 +1,1158 @@
+{
+  "status": "FROZEN; required multi-market performance MISS; NOT implementation-ready; NOT accepted; P2 0/3",
+  "generatedAt": "2026-10-22T19:22:47.752Z",
+  "runtime": "v26.0.0",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "allowedScope": "4 product files frozen; new P2 data evidence only after root stop; no more benchmark or repair authorization",
+  "products": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 88843,
+      "sha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 82666,
+      "sha256": "f6d26840afd1a5bbc3dacf1151a05c6e947b14e20df4ffd31c8b91c95f04e683"
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 28876,
+      "sha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 43237,
+      "sha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9"
+    }
+  },
+  "acceptedPrefixes": [
+    {
+      "snapshot": "F3-test.snapshot.ts",
+      "current": "app/lib/reviews/homepage-v25-performance.test.ts",
+      "bytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7",
+      "unchanged": true
+    },
+    {
+      "snapshot": "canonical-original-test.snapshot.ts",
+      "current": "app/lib/replay/position-ledger.test.ts",
+      "bytes": 32966,
+      "sha256": "67d6d0c33d741398bfa070f69dca5ec829833452edf14e21d1a792ec804d6aef",
+      "unchanged": true
+    }
+  ],
+  "approvedContract": {
+    "path": ".scratch/homepage-v25-implementation/evidence/P2/data/PRE-DISPATCH-CONTRACT.md",
+    "bytes": 50813,
+    "sha256": "a882d59c3d6b2ed532250b207897bf0166e560426e58d6797e586faa28e7618a"
+  },
+  "verification": [
+    {
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/vitest.config.ts",
+      "log": "37-fee-boundaries-green.log",
+      "recordedExit": 0,
+      "files": 1,
+      "testsPassed": 138,
+      "scope": "F source tests including unchanged original 100"
+    },
+    {
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --project .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-tsconfig.json --noEmit",
+      "log": "38-final-tsc.log",
+      "recordedExit": 0,
+      "scope": "strict owned four-file tsc; empty log"
+    },
+    {
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/lib/reviews/homepage-v25-performance.ts app/lib/reviews/homepage-v25-performance.test.ts app/lib/replay/position-ledger.ts app/lib/replay/position-ledger.test.ts",
+      "log": "39-final-lint.log",
+      "recordedExit": 0,
+      "scope": "owned four-file eslint; empty log"
+    },
+    {
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/final-regressions.vitest.config.ts",
+      "log": "40-final-regressions.log",
+      "recordedExit": 0,
+      "files": 20,
+      "testsPassed": 403,
+      "scope": "targeted accepted F/canonical/IPO/episode/library/evidence/calendar/holdings neighborhood"
+    },
+    {
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/final-variants.vitest.config.ts",
+      "log": "43-final-variants.log",
+      "recordedExit": 0,
+      "files": 1,
+      "testsPassed": 2,
+      "scope": "finite numerical probes and measurement; does NOT assert multi-market latency target"
+    }
+  ],
+  "exitEvidenceNote": "recordedExit values are the actual completed tool exits; test logs are preserved verbatim. Empty tsc/lint logs contain no diagnostics. No new tests/benchmarks run to generate this manifest.",
+  "primaryThreeSampleWindow": {
+    "notifiedAtCST": "2026-10-23 03:11:41",
+    "endedAtCST": "2026-10-23 03:12:29",
+    "quietWindow": "root and integration paused heavy work",
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/run-performance-v3.mjs final-N rounds",
+    "samples": [
+      {
+        "measurement": "benchmark-v3-rounds-final-1.json",
+        "log": "benchmark-v3-rounds-final-1.log",
+        "exitEvidence": "benchmark-v3-rounds-final-1-exit.json",
+        "runtime": "v26.0.0",
+        "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+        "sample": "final-1",
+        "shape": "rounds",
+        "fixture": {
+          "fills": 1866,
+          "endpoints": 365,
+          "nature": "controlled explicit live original lineage; no database"
+        },
+        "startedAt": "2026-10-22T19:11:59.153Z",
+        "stage": "complete",
+        "stageStartedAt": 1792696321876,
+        "upstreamMs": 94.57439199999999,
+        "heapBeforePrepare": 31226432,
+        "entries": 1,
+        "rawFillsInEntries": 1866,
+        "quotes": 252,
+        "prepareMs": 366.46066499999995,
+        "heapAfterPrepare": 54849312,
+        "batchMs": 865.3603249999999,
+        "coldMs": 1232.222686,
+        "afterCold": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 0,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterCold": 68957928,
+        "work": {
+          "preparations": 1,
+          "ordinaryTransitions": 1866,
+          "preparedQueries": 366,
+          "legacyCalls": 0
+        },
+        "repeatMs": 1.889114999999947,
+        "repeatAdditionalCanonicalQueries": 0,
+        "afterRepeat": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 1,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterRepeat": 106370752,
+        "serializationMs": 130.68950199999995,
+        "serializationBytes": 27701101,
+        "lastNet": "933",
+        "currentMV": "0",
+        "all365OraclesMatch": true,
+        "coldGoalMet": true,
+        "repeatGoalMet": true,
+        "exit": {
+          "code": 0,
+          "signal": null,
+          "timeout": false,
+          "runtime": "v26.0.0"
+        }
+      },
+      {
+        "measurement": "benchmark-v3-rounds-final-2.json",
+        "log": "benchmark-v3-rounds-final-2.log",
+        "exitEvidence": "benchmark-v3-rounds-final-2-exit.json",
+        "runtime": "v26.0.0",
+        "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+        "sample": "final-2",
+        "shape": "rounds",
+        "fixture": {
+          "fills": 1866,
+          "endpoints": 365,
+          "nature": "controlled explicit live original lineage; no database"
+        },
+        "startedAt": "2026-10-22T19:12:10.706Z",
+        "stage": "complete",
+        "stageStartedAt": 1792696333406,
+        "upstreamMs": 92.56080900000006,
+        "heapBeforePrepare": 31249584,
+        "entries": 1,
+        "rawFillsInEntries": 1866,
+        "quotes": 252,
+        "prepareMs": 358.7413939999999,
+        "heapAfterPrepare": 57915280,
+        "batchMs": 845.6492099999998,
+        "coldMs": 1204.750047,
+        "afterCold": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 0,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterCold": 69970152,
+        "work": {
+          "preparations": 1,
+          "ordinaryTransitions": 1866,
+          "preparedQueries": 366,
+          "legacyCalls": 0
+        },
+        "repeatMs": 2.242829000000029,
+        "repeatAdditionalCanonicalQueries": 0,
+        "afterRepeat": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 1,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterRepeat": 107712960,
+        "serializationMs": 127.83715499999971,
+        "serializationBytes": 27701101,
+        "lastNet": "933",
+        "currentMV": "0",
+        "all365OraclesMatch": true,
+        "coldGoalMet": true,
+        "repeatGoalMet": true,
+        "exit": {
+          "code": 0,
+          "signal": null,
+          "timeout": false,
+          "runtime": "v26.0.0"
+        }
+      },
+      {
+        "measurement": "benchmark-v3-rounds-final-3.json",
+        "log": "benchmark-v3-rounds-final-3.log",
+        "exitEvidence": "benchmark-v3-rounds-final-3-exit.json",
+        "runtime": "v26.0.0",
+        "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+        "sample": "final-3",
+        "shape": "rounds",
+        "fixture": {
+          "fills": 1866,
+          "endpoints": 365,
+          "nature": "controlled explicit live original lineage; no database"
+        },
+        "startedAt": "2026-10-22T19:12:21.595Z",
+        "stage": "complete",
+        "stageStartedAt": 1792696344310,
+        "upstreamMs": 94.60579800000005,
+        "heapBeforePrepare": 31174176,
+        "entries": 1,
+        "rawFillsInEntries": 1866,
+        "quotes": 252,
+        "prepareMs": 367.6015010000001,
+        "heapAfterPrepare": 49537928,
+        "batchMs": 864.842353,
+        "coldMs": 1232.801859,
+        "afterCold": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 0,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterCold": 64343224,
+        "work": {
+          "preparations": 1,
+          "ordinaryTransitions": 1866,
+          "preparedQueries": 366,
+          "legacyCalls": 0
+        },
+        "repeatMs": 1.2946049999998195,
+        "repeatAdditionalCanonicalQueries": 0,
+        "afterRepeat": {
+          "canonicalSweeps": 1,
+          "canonicalTransitions": 1866,
+          "batchCacheHits": 1,
+          "canonicalCalls": 0,
+          "canonicalCacheHits": 0,
+          "feeSteps": 1866,
+          "feeCheckpointHits": 0,
+          "quoteLookups": 731,
+          "fxLookups": 366,
+          "distinctCanonicalContexts": 0,
+          "cacheEntries": 140,
+          "cacheEstimatedBytes": 67096768,
+          "evictions": 228,
+          "batchEntries": 1,
+          "sourceEstimatedBytes": 17165242,
+          "indexEstimatedBytes": 37246434
+        },
+        "heapAfterRepeat": 100725032,
+        "serializationMs": 121.33125599999994,
+        "serializationBytes": 27701101,
+        "lastNet": "933",
+        "currentMV": "0",
+        "all365OraclesMatch": true,
+        "coldGoalMet": true,
+        "repeatGoalMet": true,
+        "exit": {
+          "code": 0,
+          "signal": null,
+          "timeout": false,
+          "runtime": "v26.0.0"
+        }
+      }
+    ],
+    "allSingleGroupTargetsMet": true,
+    "scope": "controlled explicit-live single-US-group 1866 fills x 365 endpoints; not database records"
+  },
+  "longPrefix": {
+    "path": "benchmark-v3-long-prefix-final-long-prefix.json",
+    "exitEvidence": "benchmark-v3-long-prefix-final-long-prefix-exit.json",
+    "measurement": {
+      "runtime": "v26.0.0",
+      "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "sample": "final-long-prefix",
+      "shape": "long-prefix",
+      "fixture": {
+        "fills": 1866,
+        "endpoints": 365,
+        "nature": "controlled explicit live original lineage; no database"
+      },
+      "startedAt": "2026-10-22T19:13:23.770Z",
+      "stage": "complete",
+      "stageStartedAt": 1792696406405,
+      "upstreamMs": 49.67433500000004,
+      "heapBeforePrepare": 19440264,
+      "entries": 1,
+      "rawFillsInEntries": 1866,
+      "quotes": 252,
+      "prepareMs": 322.8280259999999,
+      "heapAfterPrepare": 50657376,
+      "batchMs": 868.4731499999999,
+      "coldMs": 1191.6671809999998,
+      "afterCold": {
+        "canonicalSweeps": 1,
+        "canonicalTransitions": 1866,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1866,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 731,
+        "fxLookups": 366,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 139,
+        "cacheEstimatedBytes": 67047492,
+        "evictions": 229,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 11209606,
+        "indexEstimatedBytes": 37321748
+      },
+      "heapAfterCold": 81818192,
+      "work": {
+        "preparations": 1,
+        "ordinaryTransitions": 1866,
+        "preparedQueries": 366,
+        "legacyCalls": 0
+      },
+      "repeatMs": 1.4896550000000843,
+      "repeatAdditionalCanonicalQueries": 0,
+      "afterRepeat": {
+        "canonicalSweeps": 1,
+        "canonicalTransitions": 1866,
+        "batchCacheHits": 1,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1866,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 731,
+        "fxLookups": 366,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 139,
+        "cacheEstimatedBytes": 67047492,
+        "evictions": 229,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 11209606,
+        "indexEstimatedBytes": 37321748
+      },
+      "heapAfterRepeat": 89204680,
+      "serializationMs": 127.952722,
+      "serializationBytes": 27719355,
+      "lastNet": "18660",
+      "currentMV": "205260",
+      "all365OraclesMatch": true,
+      "coldGoalMet": true,
+      "repeatGoalMet": true
+    },
+    "scope": "additional single-group all-buy numerical/performance probe, not replacement for 3 fresh cold samples"
+  },
+  "requiredMultiMarket": {
+    "path": "41-final-multimarket.json",
+    "result": "MISS",
+    "coldGoalMet": false,
+    "repeatGoalMet": false,
+    "measurement": {
+      "startedAt": "2026-10-22T19:14:39.848Z",
+      "endedAt": "2026-10-22T19:14:52.259Z",
+      "runtime": "v26.0.0",
+      "fixture": {
+        "fills": 1866,
+        "accounts": 3,
+        "markets": 3,
+        "endpoints": 365,
+        "entries": 3,
+        "rawFillsInEntries": 1866,
+        "quotes": 743,
+        "historicalFxObservations": 365,
+        "nature": "controlled explicit live original lineage; no database"
+      },
+      "upstreamMs": 54.345856000000026,
+      "prepareMs": 379.3887480000001,
+      "batchMs": 2592.125663,
+      "coldMs": 2972.6251819999998,
+      "repeats": [
+        {
+          "ms": 2951.5570860000003,
+          "identical": false
+        },
+        {
+          "ms": 3016.7661989999997,
+          "identical": false
+        },
+        {
+          "ms": 3024.7934110000006,
+          "identical": false
+        }
+      ],
+      "beforeRepeat": {
+        "canonicalSweeps": 3,
+        "canonicalTransitions": 1866,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1866,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 2193,
+        "fxLookups": 366,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 0,
+        "cacheEstimatedBytes": 0,
+        "evictions": 1099,
+        "batchEntries": 0,
+        "sourceEstimatedBytes": 13933098,
+        "indexEstimatedBytes": 37447760
+      },
+      "afterRepeat": {
+        "canonicalSweeps": 3,
+        "canonicalTransitions": 1866,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1866,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 8772,
+        "fxLookups": 1464,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 0,
+        "cacheEstimatedBytes": 0,
+        "evictions": 4396,
+        "batchEntries": 0,
+        "sourceEstimatedBytes": 13933098,
+        "indexEstimatedBytes": 37447760
+      },
+      "heapBefore": 21380408,
+      "heapAfterSerialization": 264773792,
+      "serializationMs": 168.74160699999993,
+      "serializationBytes": 29038003,
+      "all365OraclesMatch": true,
+      "lastNet": "55358"
+    },
+    "notes": [
+      "complete public graph not admitted under 64MiB conservative retained memo estimate",
+      "all365 numerical oracles true does not imply engineering performance PASS",
+      "source/index reported separately; exact rejected candidate bytes unknown",
+      "afterSerialization heap is process heap including caller inputs, source/index, results and uncollected temporaries"
+    ]
+  },
+  "lateRefund": {
+    "path": "42-final-late-refund.json",
+    "measurement": {
+      "startedAt": "2026-10-22T19:14:52.269Z",
+      "endedAt": "2026-10-22T19:14:52.291Z",
+      "runtime": "v26.0.0",
+      "fixture": {
+        "fills": 1,
+        "events": 4,
+        "accounts": 1,
+        "markets": 1,
+        "endpoints": 2,
+        "quotes": 3,
+        "historicalFxObservations": 0
+      },
+      "prepareMs": 6.232122999999774,
+      "batchMs": 11.60705599999892,
+      "coldMs": 22.579024000000572,
+      "repeats": [
+        {
+          "ms": 0.23512900000059744,
+          "identical": true
+        },
+        {
+          "ms": 0.06222200000047451,
+          "identical": true
+        },
+        {
+          "ms": 0.035262999999758904,
+          "identical": true
+        }
+      ],
+      "diagnostics": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 3,
+        "canonicalCalls": 10,
+        "canonicalCacheHits": 0,
+        "feeSteps": 6,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 9,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 10,
+        "cacheEntries": 23,
+        "cacheEstimatedBytes": 504654,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 41586,
+        "indexEstimatedBytes": 33290
+      },
+      "first": [
+        {
+          "key": "late",
+          "fees": "3",
+          "realized": "18",
+          "unrealized": "9",
+          "net": "27",
+          "openFees": "1",
+          "canonicalFees": "3"
+        },
+        {
+          "key": "early",
+          "fees": "3",
+          "realized": null,
+          "unrealized": null,
+          "net": null,
+          "openFees": null,
+          "canonicalFees": "1"
+        }
+      ],
+      "reverse": [
+        {
+          "key": "early",
+          "fees": "3",
+          "realized": null,
+          "unrealized": null,
+          "net": null,
+          "openFees": null,
+          "canonicalFees": "1"
+        },
+        {
+          "key": "late",
+          "fees": "3",
+          "realized": "18",
+          "unrealized": "9",
+          "net": "27",
+          "openFees": "1",
+          "canonicalFees": "3"
+        }
+      ]
+    },
+    "scope": "tiny exact attached-evidence fallback; no 1866-scale guarantee"
+  },
+  "architecture": {
+    "path": "MULTIMARKET-ARCHITECTURE.md",
+    "status": "read-only proposal; no implementation; shared-graph feasibility and compact materialization <=200ms UNKNOWN",
+    "staticFieldModel": "44-retained-field-model.json"
+  },
+  "preservedFailures": [
+    "manifest.json",
+    "report.md",
+    "08-watchdog.json",
+    "PERF-V3-MISS.md",
+    "benchmark-v3-rounds-1.json",
+    "benchmark-v3-rounds-2.json",
+    "benchmark-v3-rounds-3.json",
+    "benchmark-v3-rounds-candidate1.json",
+    "benchmark-v3-rounds-candidate1-packed-array.json",
+    "41-final-multimarket.json"
+  ],
+  "limits": [
+    "root independent acceptance pending",
+    "no UI/series/current page delivery claim",
+    "not a production historical FX archive claim",
+    "no further benchmark or product mutation after root stop",
+    "no fourth hidden performance candidate"
+  ],
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 88843,
+      "sha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 82666,
+      "sha256": "f6d26840afd1a5bbc3dacf1151a05c6e947b14e20df4ffd31c8b91c95f04e683"
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 28876,
+      "sha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 43237,
+      "sha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/PRE-DISPATCH-CONTRACT.md": {
+      "bytes": 50813,
+      "sha256": "a882d59c3d6b2ed532250b207897bf0166e560426e58d6797e586faa28e7618a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/COORDINATOR-CONTRACT-DECISIONS.md": {
+      "bytes": 2863,
+      "sha256": "0f99df9bd7cbbb7a900470c9273579817dd2df319de08109d7714423ab2f3538"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/01-api-red.log": {
+      "bytes": 6484,
+      "sha256": "0d3539507c028477c3610aba5f40a0061f2975669f8d8fd2729f4688254ffe48"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/02-batch-first.log": {
+      "bytes": 1837,
+      "sha256": "e652f80a627cfeb676c8d398f66f92dd6b2d9fbc40355545b83afcddf93c6591"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/03-fees-checkpoint-red-green.log": {
+      "bytes": 2400,
+      "sha256": "19c8b4d9d57a543befdaf36ae9e70961c60e20d112466a2690b8dd131eca07d5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/04-opening-trace.json": {
+      "bytes": 21822,
+      "sha256": "a98a7e634494cf9f3efa1646ec55294afed85dfb6a31e90a3b7f0483b5b81138"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/04-opening-trace.log": {
+      "bytes": 423,
+      "sha256": "26a185c8b26a71ec5dd2ae39b232b0e5ac3930ed78039e839c9f569d83e3c6db"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/05-basic-green.log": {
+      "bytes": 428,
+      "sha256": "7e3e89707c9f44d5e9ac20d67316064912de32454529f4201d10ef62c71b544f"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/06-measured-source.snapshot.ts": {
+      "bytes": 75182,
+      "sha256": "7013a292e8e6089d3da0c9553c68e41ce85222f60264a2693b82afa6d15971f8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/06-measurement-notes.md": {
+      "bytes": 698,
+      "sha256": "3612f98ec7977fe275deab8a6553489bc5e0a6af383127f04416f68859f69705"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/06-performance.log": {
+      "bytes": 256,
+      "sha256": "15ac6772aa645949ae06643594f4981ef9c05747a6998e29ca69df5060fdc0e0"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/06-stop-record.md": {
+      "bytes": 367,
+      "sha256": "2b4e48f7c1c1201edfa4ffa5dcdb23e3607989b17201dff8355b1881365a136a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/07-typecheck.log": {
+      "bytes": 843,
+      "sha256": "836c5c2b0b1adf5dca82a98003d3576f1c4146df28949e94235a55246005e75c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/08-performance-v2.json": {
+      "bytes": 516,
+      "sha256": "f930d8d10050f4f82c2822a6693c55a23b28c9ce5bc6de416d8e3a37ff360192"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/08-performance-v2.log": {
+      "bytes": 256,
+      "sha256": "2747f3285016159d4e9117d516216db6f922a10289120373d0a4e0078c43fc89"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/08-watchdog.json": {
+      "bytes": 682,
+      "sha256": "29629d3627ebc9b61a2da198ae1eaad298bf32aa2384c9c00a2a8835d0ebdf31"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/09-F3-regression.log": {
+      "bytes": 431,
+      "sha256": "cecbfdae365cf29215cd4ce7542c8a03c780cebd566cd87e043461fc323368ea"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/10-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/11-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/12-canonical-original-oracles.json": {
+      "bytes": 26389,
+      "sha256": "af7baa886398814c625bb4981200b5507d7c21cd3b7b5c46c0c2c2f2f3edc428"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/12-canonical-original-oracles.log": {
+      "bytes": 423,
+      "sha256": "4430a267194e67f5b52d4bb037aee7bd1555bc99810bd3f689dcbdcb58594fdb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/13-canonical-seam-red.log": {
+      "bytes": 3174,
+      "sha256": "8d33fbc8a03d573e0f7d92f74ecdfe7eb963703ec0aff05da0c611c62c928b8b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/14-canonical-seam-green.log": {
+      "bytes": 429,
+      "sha256": "aa895a3ddba43ec026d1ffd85a52de979fb9da83838ee0345dcdb3ca34d03a73"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/15-fast-current-lru-red.log": {
+      "bytes": 3613,
+      "sha256": "774dc0362e0bcc7045d0fe363aa9d1a4010eabba3cda0588d302209a0887e736"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/16-fast-current-lru-green.log": {
+      "bytes": 1567,
+      "sha256": "1e6d614cd1284f6cd611bf5aa9a784596dbcfc4cb7f322c91def6d9ec29207a8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/17-fast-current-lru-green.log": {
+      "bytes": 428,
+      "sha256": "398b3fb9c3af517c7783730b1ee2ba30318adb9d0cad255da3a8ee4aad4c4af6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/18-complete-equivalence.log": {
+      "bytes": 2493,
+      "sha256": "0ae2bcdbb4ee97fd8cc2cb8cb706f249eff63ea4f224f004d72b7f08d4d0df24"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/19-typecheck.log": {
+      "bytes": 1141,
+      "sha256": "f1d132df6b4bbe10ebde99a5492eddc996f39323d3238682feda0d8c8f64dc04"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/20-unknown-history-green.log": {
+      "bytes": 428,
+      "sha256": "81ab4fb2d1cced6f48b2993c10e63068effa67d986af513181a75776f680ecc4"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/21-F3-canonical-regression.log": {
+      "bytes": 431,
+      "sha256": "4d8b2de900bbb8324685f8744c9fc8e7b632fed28ceacf4953ea82e57e23d664"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/22-fee-fx-source-red.log": {
+      "bytes": 4256,
+      "sha256": "c283ec9cc15e2712d90aa7d2625b2176efbda45db973a3ae8d1545458114928e"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/23-fee-fx-source-green.log": {
+      "bytes": 428,
+      "sha256": "46d76ea074e385b372cc8fa24165b6c3df70826ee9b054c713fa5466120b7e42"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/24-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/25-canonical-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/26-canonical-evidence-order.log": {
+      "bytes": 429,
+      "sha256": "87f51db031aeebd185c6956721d1023000ec8a6a9efff462217250290f30b539"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/27-market-day-immutable.log": {
+      "bytes": 1473,
+      "sha256": "3867bb6a18569e8d5a9d3f0bfd549e393ba62d55f3311b7fdcb510ee945f8483"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/28-diagnostic-profile.log": {
+      "bytes": 1150,
+      "sha256": "eecef1e7a59b5695706c6733d1a64a95775708acaca088f4baa51976b81fdb45"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/29-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/30-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/31-shared-memo-red.log": {
+      "bytes": 1391,
+      "sha256": "7845dfda25d22cf6f57126902dfcd3a8af8f0eb4b5e6232516ca97c64bf768d7"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/32-shared-memo-red.log": {
+      "bytes": 1545,
+      "sha256": "7ea10a3f4d6041f038541ec9cba4c3ee1efee2587eb18f3493335411bac8f814"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/33-shared-memo-green.log": {
+      "bytes": 428,
+      "sha256": "c1920c8a118f4689f1e26a428dbe4e7bf2424c68892a0f5ef0cb440418ba982c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/34-fee-index-red.log": {
+      "bytes": 1502,
+      "sha256": "5391bdf9d82e344a10b1f4f1597a018b78f5ad92995d63e9707b5074b5354a2e"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/35-fee-index-red.log": {
+      "bytes": 1540,
+      "sha256": "d8f9d3bc53e13490ac6578d2332d2c764503191aedd112a9c502244243958769"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/36-fee-index-green.log": {
+      "bytes": 1536,
+      "sha256": "7442c7dc3c813cc1626910e112801ee91abe7889fc01e3e4955bb5aada7d5dc5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/37-fee-boundaries-green.log": {
+      "bytes": 428,
+      "sha256": "628a7f58769011c739c83dc2b9e72acd76eb9be44d8671b971f795b31abd39d5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/38-final-tsc.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/39-final-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/40-final-regressions.log": {
+      "bytes": 431,
+      "sha256": "05966c0df932c0c81110abf2f81ce7dddcb69eb4a14b198856d8f3323ced454b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/41-final-multimarket.json": {
+      "bytes": 1875,
+      "sha256": "6c654ad2f334051536ec312a51f3f3af38024bb18d73415e3f6b17231473876c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/42-final-late-refund.json": {
+      "bytes": 1783,
+      "sha256": "c8c74ad539df7e5c75a26c9980f2cff0c801ea2b554e61f2b709858f4f884c6a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/43-final-variants.log": {
+      "bytes": 426,
+      "sha256": "f8b9b662c1a2480333107156197de62cd713638693c90ad849ad68a72782d367"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/44-retained-field-model.json": {
+      "bytes": 1141,
+      "sha256": "d0e9895d56af15fe572758f0e802f8a91624704c88bf15a03cd62540e8242aa8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/CANONICAL-EXTRACTION-PROPOSAL.md": {
+      "bytes": 6248,
+      "sha256": "26f0ca04e6bb0ede6aa63990c17a84b84f17c8b5cc7f4d7fa433575cf626b1da"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/F3-source.snapshot.ts": {
+      "bytes": 37176,
+      "sha256": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/F3-test.snapshot.ts": {
+      "bytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/FREEZE-REPORT.md": {
+      "bytes": 13811,
+      "sha256": "bc4f09f8270d2cc15aad89c4dcb1af6486ca121130fc13faff1dbc23a6a447a6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/INTERFACES.md": {
+      "bytes": 3821,
+      "sha256": "0a688f35009c1ee64fd2df8efff256734576e86b38fefe5c38b393d5675e7e41"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/MULTIMARKET-ARCHITECTURE.md": {
+      "bytes": 13964,
+      "sha256": "7718e8741c8e321e34e920313289ecf662ff065a50d215892dea34ce5fea8c37"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/PERF-V3-MISS.md": {
+      "bytes": 4531,
+      "sha256": "47f24c9c106fb90314e965e8e7160c3b60190a0d90df41959308d1e8f447ccdc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/PREPARED-INTERFACES.md": {
+      "bytes": 7628,
+      "sha256": "8333c2fcb986bf4c824c99e8d75638b9284e529f5697609db7426f2efc0e9074"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/ROOT-CANONICAL-AUTHORIZATION.md": {
+      "bytes": 2544,
+      "sha256": "64da7b7203c49f52c172c325457993d2407d335c29cf344ce91b7da969b211ea"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-diagnostic-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-diagnostic.json": {
+      "bytes": 2069,
+      "sha256": "dff9c8c815a29e8747c28deff6c9ffca0ece4284af60e3a237541439191e36c6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-diagnostic.log": {
+      "bytes": 1133,
+      "sha256": "108ca7c596aa71d23d57bfff61bc4d1ffc30dac493e6bbddcdc04676b53f91be"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-final-long-prefix-exit.json": {
+      "bytes": 77,
+      "sha256": "faac2f99185fb8ef5791cbab36949d48c06e1003a59c319cda788331aff78acb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-final-long-prefix.json": {
+      "bytes": 2087,
+      "sha256": "73a575a99df6c00627ace348160a967228504fcbc99d2513afaf20ff6e9dca29"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-long-prefix-final-long-prefix.log": {
+      "bytes": 424,
+      "sha256": "fa406feb52a77416e4c7edb7e6532515124ee77ab6017696afa25b45a381f983"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-1-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-1.json": {
+      "bytes": 2048,
+      "sha256": "3011fefb38249d9cedf4332225532ef9c2d0668220f07fc7252cc85775fdd3e7"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-1.log": {
+      "bytes": 1126,
+      "sha256": "7f7c33121f188d6d43274ef2edbca90aab3c837237d64da6e1eebc3b1cc70a15"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-2-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-2.json": {
+      "bytes": 2048,
+      "sha256": "55cfad9b6b7c3b3354062b0272fa02d8bac88f1dce841e16779e2a0b39d14af1"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-2.log": {
+      "bytes": 1133,
+      "sha256": "0f95ffdad8333cd78eb52a9e47797d7037e6672e72955eee13641f3581c897d9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-3-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-3.json": {
+      "bytes": 2043,
+      "sha256": "67915ae088ccc88bad47820c56d374f90e82e4341b4d54592e687089e86e67ce"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-3.log": {
+      "bytes": 1126,
+      "sha256": "42cc136e6fdd88e70c96e57e473a111b3d3b55dce8242a085f6bb100c3de1802"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1-packed-array-exit.json": {
+      "bytes": 77,
+      "sha256": "82e6e13cfd918b316c1fc0a917051e9cfb60e636ee409459d74b852ecb0d6dc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1-packed-array.json": {
+      "bytes": 2071,
+      "sha256": "4d804361760792dbd4f8914b3b0b688ea17d23b0145a0c4fec2b05608250ef89"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1-packed-array.log": {
+      "bytes": 1126,
+      "sha256": "3ed6cf8456dbaa70b8fb8dc6d45087ce504c7ed580a7efbd6670d8344748924f"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1.json": {
+      "bytes": 2052,
+      "sha256": "8c08e848052d73f57011e56fff4fa6b7713f9f14d6baa21c2bc5389e4a48a9a3"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate1.log": {
+      "bytes": 1642,
+      "sha256": "5fb830410aadd6a4dc38a30d692b707d71e566ec929c4c6e21fc0ac2058d77cd"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate2-exit.json": {
+      "bytes": 77,
+      "sha256": "faac2f99185fb8ef5791cbab36949d48c06e1003a59c319cda788331aff78acb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate2.json": {
+      "bytes": 2073,
+      "sha256": "191213803436bc8f68b78ce264f314cb9a2117eb5e7593af2dc4f07a59548332"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-candidate2.log": {
+      "bytes": 424,
+      "sha256": "781439b7ed15557870d02f67182e5f5ecf2af99a709854b8ae92a75782083d86"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-diagnostic-profile.cpuprofile": {
+      "bytes": 52318,
+      "sha256": "77339dfc450f9e2a7293d0f69496b21dca71b95a674cd1e3e9ce70940671321a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-diagnostic-profile.json": {
+      "bytes": 2063,
+      "sha256": "872ba636e9d1a2ce5ae421371d94bac0a5463771b2485f4a328185747ef23192"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-diagnostic-profile.summary.txt": {
+      "bytes": 7851,
+      "sha256": "e158265c6f71726865e088a5f8085bf5d7e4619eea45a6ca3d8918d29ac750b4"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-1-exit.json": {
+      "bytes": 77,
+      "sha256": "faac2f99185fb8ef5791cbab36949d48c06e1003a59c319cda788331aff78acb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-1.json": {
+      "bytes": 2067,
+      "sha256": "492fa64ee3099d5a72d54a414b507aa591ce9c1a94b47101d77dc60bed01cae0"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-1.log": {
+      "bytes": 424,
+      "sha256": "2b7d1260a140e9feabce24f3334ab46da747d4847c3d703964bbceb045cbeb29"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-2-exit.json": {
+      "bytes": 77,
+      "sha256": "faac2f99185fb8ef5791cbab36949d48c06e1003a59c319cda788331aff78acb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-2.json": {
+      "bytes": 2066,
+      "sha256": "72b30631b35fe1eb78deb63b5c723d7369bc5bea98fe3b166ca094f26505f3aa"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-2.log": {
+      "bytes": 424,
+      "sha256": "29c31af7a363f0c4780bdbe8acc7c9e9ab03d6a1c9e1418175745fe06cb9e35a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-3-exit.json": {
+      "bytes": 77,
+      "sha256": "faac2f99185fb8ef5791cbab36949d48c06e1003a59c319cda788331aff78acb"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-3.json": {
+      "bytes": 2060,
+      "sha256": "9e5e42b946c768c8d50959c2ae8aa280f244255f6b3f766ad8f691159ee75865"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/benchmark-v3-rounds-final-3.log": {
+      "bytes": 424,
+      "sha256": "ae5eb18a1f7bc9735e1d13b22dc789d3fae3a48955a8be5edf27650c4c63c005"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/calendar-probe.config.ts": {
+      "bytes": 176,
+      "sha256": "909d3f02b12f98f9c89bda690a165ca140219d5b9fdb25fb1d92b060ec30a060"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/calendar-probe.test.ts": {
+      "bytes": 580,
+      "sha256": "b6e5a14caef0a6b7062f3b1132f8cc8d677fa909e6ea2c3bca26630a420321c7"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-original-oracles.config.ts": {
+      "bytes": 235,
+      "sha256": "4d22936876aadc9b3421c688d38bb33f3541ed3c6a8fc78f1f6f96d88f34b2b2"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-original-oracles.test.ts": {
+      "bytes": 1974,
+      "sha256": "732851fa6cdf543d9f0e77d72cefd1fe77bb5d12ed28aa8ad77e00c0163f3045"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-original-test.snapshot.ts": {
+      "bytes": 32966,
+      "sha256": "67d6d0c33d741398bfa070f69dca5ec829833452edf14e21d1a792ec804d6aef"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-original.snapshot.ts": {
+      "bytes": 22780,
+      "sha256": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/canonical-tsconfig.json": {
+      "bytes": 371,
+      "sha256": "c3bf7f47eeae0a8ae07b9401e5ce8e467b0efbe705a960f86b72a72762759e03"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/diagnostic.config.ts": {
+      "bytes": 219,
+      "sha256": "076b7e908398317262c4fa0de5fcc1d179549409be8d8a1baec50fa76693bb04"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/diagnostic.test.ts": {
+      "bytes": 1950,
+      "sha256": "0e97d938c809f57df8d2d2cad4c2165d35712400f8180dd89dc60b052926db38"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/final-regressions.vitest.config.ts": {
+      "bytes": 1751,
+      "sha256": "6320cb34a69c93c2111de388db851a286237fb462a49aca1453192655635ba30"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/final-variants.test.ts": {
+      "bytes": 8228,
+      "sha256": "9ccf18ed4f826f857d6230a3faf303d9b55c7eb68fd7f52d475194df5d90835a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/final-variants.vitest.config.ts": {
+      "bytes": 223,
+      "sha256": "2c5f17c8d07b65bfc44d511d0444589dc49e871e0bb6dfb52227bb6f66c44449"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/manifest.json": {
+      "bytes": 9039,
+      "sha256": "447ba9a7368b22c73b4a9f0aa5a1e0e607ba0c5e03a52057c1eda68b4982f1cd"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v2.config.ts": {
+      "bytes": 235,
+      "sha256": "be15aee16d6740a9d6288f4f96756c315f4adf13d45d3947256693a185ef9349"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v2.test.ts": {
+      "bytes": 4933,
+      "sha256": "02718fd72a1cec0db0a4c6d8c677ca0d471888675708d8bc99264abd0b2402a5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3-profile.config.ts": {
+      "bytes": 231,
+      "sha256": "6e7c4f1be34f0cfdfea9cb7f7a8d2f155af96a02c82c28a9c92647c2ddb068c2"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3-profile.test.ts": {
+      "bytes": 6872,
+      "sha256": "3c5fff3a3c37749819b0c3771db9fba45533a195dbaa8e6dc5f5e8589f3a6fc9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3.config.ts": {
+      "bytes": 223,
+      "sha256": "b7640bde42d011860ada3fe2059807ff7883da9b098528c3a622a9b52636e6ad"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3.test.ts": {
+      "bytes": 6307,
+      "sha256": "3757fb0f03a31e77c46a9f8b394e3c9e273e72c8e15df49ef3092054abc20c44"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance.config.ts": {
+      "bytes": 217,
+      "sha256": "3bd980b107af1854af928226793b2ced267a3d2c18f39f577f41246d9275de1e"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance.test.ts": {
+      "bytes": 4298,
+      "sha256": "0ced7db01eb3ecc9294498da65e7e210efc6596bbdf5e527c432e0cd4b7c08cc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/report.md": {
+      "bytes": 5186,
+      "sha256": "cb3342a5c5f387d8b40e1b6e8afdc325752b794ee7a7b170d43c7131a921f7d0"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/run-performance-v2.mjs": {
+      "bytes": 1214,
+      "sha256": "46b054c00567321293effebbf45c1fefc99b518690d40d1be94e96485e657fac"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/run-performance-v3.mjs": {
+      "bytes": 1007,
+      "sha256": "390b7145f76873d647c087c8f8cb329e17f9a63d4f2ad2c5678948d57e49d922"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/tsconfig.json": {
+      "bytes": 258,
+      "sha256": "2af00070cf6b12452a7265923c7ae005149b6523a66c6fffe4d171e4ea1e4a32"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/vitest.config.ts": {
+      "bytes": 202,
+      "sha256": "de8428ad0454633e43ab03789b15ee5254166f6adcce5719531412423f129d19"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/write-freeze-manifest.mjs": {
+      "bytes": 8004,
+      "sha256": "5134bf45fe78f0ec1ee7e594f6399fb5caec402a3666a413b3c018c1bfd63d69"
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-a/write-manifest.mjs": {
+      "bytes": 2216,
+      "sha256": "6758e1198fd0f7145edd9e2326b4be658a43a202abbd25a6f207c8e1615b0a6c"
+    }
+  }
+}

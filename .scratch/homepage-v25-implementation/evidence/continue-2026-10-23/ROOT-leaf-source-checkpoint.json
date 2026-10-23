@@ -1,0 +1,7 @@
+{
+  "app/components/homepage-v25/performance-chart.tsx": "001e22fe2fbc9ca7479f942c9451c9753270a7beb376ee76494e09a7bdf371bd",
+  "app/components/homepage-v25/performance-chart.css": "849139d7b76fc49a460b01c75f8e1991a002e2eb25c49ffa150f4f700e5c97e0",
+  "app/components/homepage-v25/performance-chart.test.tsx": "7677b85b1f159a0242cea20d488d369371e5c1dfdb0b9a9bcf95bc1e0976719f",
+  "app/components/homepage-v25/history-controls.tsx": "a2090b6c52b85665431b0ad63517cdd8aa6112588f7705410f0b8709a355e3cd",
+  "app/components/homepage-v25/period-selector.tsx": "3aa54639958f90abd3b33d1103463c90ee00d7f78db4c332cbec636d091ca29b"
+}

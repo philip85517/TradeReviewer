@@ -1,0 +1,17 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "app/components/homepage-v25/contribution-bars.test.tsx", "--maxWorkers=1"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  07:17:44
+   Duration  4.34s (transform 206ms, setup 305ms, import 317ms, tests 1.72s, environment 1.50s)
+
+
+STDERR
+(node:53128) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+EXIT 0

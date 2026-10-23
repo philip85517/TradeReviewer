@@ -1,0 +1,4738 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/vitest.config.mts", "--maxWorkers=1", "--reporter=verbose"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/history-chart.test.tsx > controlled HistoryChart minimal real journey > draws supplied values, reads an actual point and gap, exits with Esc, and selects all four modes in one fixed plot 315ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > uses semantic annual labels and selects literal rates rather than dividing supplied counts 28ms
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > plots an independently known count and rate when only monetary source data is missing 18ms
+   → Unable to find an element by: [data-testid="hp-history-point-01"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_2_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_2_-title"[39m
+          [36m>[39m
+            [0m各期回合数[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0m回合[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"各期回合数，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"1228"[39m
+              [33mx[39m=[32m"84"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，—，该期源文件缺失；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > only draws explicitly available no-round cumulative values and never carries or fills a gap 27ms
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a future point 21ms
+   → expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—future精确原因尚未到达或未覆盖每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a loading point 12ms
+   → expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—loading精确原因正在读取该期间每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a error point 13ms
+   → expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—error精确原因该期间读取失败每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > separates adjacent gap semantics and never connects across unavailable endpoints 9ms
+   → Unable to find an element by: [data-testid="hp-history-region-02"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_7_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"245.60000000000002"[39m
+              [33mx[39m=[32m"206.8"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"245.59999999999997"[39m
+              [33mx[39m=[32m"452.40000000000003"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--future"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"122.79999999999995"[39m
+              [33mx[39m=[32m"1189.2"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m10[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m20[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m30[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,209.33333333333331"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"820.8,142.66666666666666 1066.4,76"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"209.33333333333331"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"820.8"[39m
+              [33mcy[39m=[32m"142.66666666666666"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-04"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1066.4"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-05"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，10 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期源文件缺失；缺少已提交金额；该期间无已关闭回合"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"206.8"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，—，该期源文件缺失；缺少已提交金额；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"452.40000000000003"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"4月，20 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-04"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"5月，30 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-05"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"943.6"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"6月，—，尚未到达或未覆盖"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-06"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"1189.2"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"329.6"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"575.2"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"820.8"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m4月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1066.4"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m5月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m6月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > retains real zero at the zero axis while missing values remain unavailable 5ms
+   → Unable to find an element by: [data-testid="hp-history-zero-line"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_8_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_8_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"698"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,276"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"276"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期源文件缺失；缺少已提交金额；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fixes rate endpoints at0/100 and count ticks are integers covering actual known counts 7ms
+   → Unable to find an element by: [data-testid="hp-history-y-tick"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_9_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_9_-title"[39m
+          [36m>[39m
+            [0m各期胜率[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0m%[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"各期胜率，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m25%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m50%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m75%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m100%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,276 1312,76"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"276"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-02"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0%，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，100%，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=101 with an explanation 5ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="74"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=-0.1 with an explanation 4ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="276.2"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=1.5 with an explanation 3ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="201"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=-1 with an explanation 8ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="326"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=NaN with an explanation 10ms
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  读数格式无效
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—每期净盈亏来源金额NaN CNY覆盖数量7 / 7原币金额NaN CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数NaN盈利回合数2各期胜率NaN%
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=Infinity with an explanation 12ms
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  读数格式无效
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—每期净盈亏来源金额Infinity CNY覆盖数量7 / 7原币金额Infinity CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数Infinity盈利回合数2各期胜率Infinity%
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on currency mismatch and preserves source currency without relabeling it 11ms
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > preserves exact huge signed monetary strings, original currencies, FX and coverage for a single thin point 6ms
+   → Unable to find an element by: [data-testid="hp-history-y-tick"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_h_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_h_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"87,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50e+21亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00e+21亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5.00e+20亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"699.5,240.6090520164609"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"699.5"[39m
+              [33mcy[39m=[32m"240.6090520164609"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，-123456789012345678901234567890.12345678901234567890 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1225"[39m
+                [33mx[39m=[32m"82"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"699.5"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial pending space with no fake curve 33ms
+   → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_i_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_i_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，尚无已提交范围":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-history-chart__empty"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_i_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_i_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+        [36m</svg>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-history-chart__empty"[39m
+        [36m>[39m
+          [0m初始pending原因[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial error space with no fake curve 21ms
+   → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_j_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_j_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，尚无已提交范围":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-history-chart__empty"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_j_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_j_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+        [36m</svg>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-history-chart__empty"[39m
+        [36m>[39m
+          [0m初始error原因[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on pending without caching facts 29ms
+   → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_k_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_k_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_k_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_k_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on error without caching facts 35ms
+   → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_l_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_l_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_l_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_l_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > honors successful empty range without plotting contradictory supplied values or adding repair entry 27ms
+   → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_m_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_m_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_m_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_m_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > uses real Tab focus, arrows, Home and End to reach all periods including gaps then allows downstream focus 104ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > gives mouse and keyboard identical reading facts and clears on blur or leave 28ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through data A→B→A 17ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through source A→B→A 21ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through generation A→B→A 16ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through mode A→B→A 14ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through currency A→B→A 17ms
+ ✓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > contains endpoint focus rectangles and all-mode plot bounds after a390px resize 22ms
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > fades one atomic surface150ms for a replacement, never morphs units, and cancels obsolete animation 9ms
+   → expected "vi.fn()" to be called 1 times, but got 0 times
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > shows reduced-motion replacement directly and cancels a running fade when preference changes 7ms
+   → expected "vi.fn()" to be called 1 times, but got 0 times
+
+ Test Files  1 failed (1)
+      Tests  21 failed | 12 passed (33)
+   Start at  10:54:25
+   Duration  2.58s (transform 140ms, setup 180ms, import 222ms, tests 917ms, environment 884ms)
+
+
+STDERR
+(node:58779) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > plots an independently known count and rate when only monetary source data is missing
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-point-01"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_2_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_2_-title"[39m
+          [36m>[39m
+            [0m各期回合数[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0m回合[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"各期回合数，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"1228"[39m
+              [33mx[39m=[32m"84"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，—，该期源文件缺失；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:82:21
+     80|     for (const [mode, expected] of [["round-count", "3 回合"], ["win-rat…
+     81|       rerender(<HistoryChart data={committed} mode={mode} reportCurren…
+     82|       expect(screen.getByTestId("hp-history-point-01")).toBeInTheDocum…
+       |                     ^
+     83|       fireEvent.focus(hit("01")); expect(within(reading()).getByTestId…
+     84|       expect(reading()).toHaveTextContent("该期源文件缺失");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a future point
+Error: expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—future精确原因尚未到达或未覆盖每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ ❯ app/components/homepage-v25/history-chart.test.tsx:107:27
+    105|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+    106|     fireEvent.focus(hit("01")); expect(reading()).toHaveTextContent(`$…
+    107|     expect(reading()).not.toHaveTextContent(forbidden);
+       |                           ^
+    108|     expect(reading()).not.toHaveTextContent("7 / 7");
+    109|     expect(hit("01").getAttribute("aria-label")).not.toContain(forbidd…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a loading point
+Error: expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—loading精确原因正在读取该期间每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ ❯ app/components/homepage-v25/history-chart.test.tsx:107:27
+    105|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+    106|     fireEvent.focus(hit("01")); expect(reading()).toHaveTextContent(`$…
+    107|     expect(reading()).not.toHaveTextContent(forbidden);
+       |                           ^
+    108|     expect(reading()).not.toHaveTextContent("7 / 7");
+    109|     expect(hit("01").getAttribute("aria-label")).not.toContain(forbidd…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a error point
+Error: expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  987654321.123456789
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—error精确原因该期间读取失败每期净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇累计净盈亏来源金额987654321.123456789 CNY覆盖数量7 / 7原币金额987654321.123456789 CNY汇率来源同币种，无需换汇回合数987654321.123456789盈利回合数987654321.123456789各期胜率987654321.123456789%
+ ❯ app/components/homepage-v25/history-chart.test.tsx:107:27
+    105|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+    106|     fireEvent.focus(hit("01")); expect(reading()).toHaveTextContent(`$…
+    107|     expect(reading()).not.toHaveTextContent(forbidden);
+       |                           ^
+    108|     expect(reading()).not.toHaveTextContent("7 / 7");
+    109|     expect(hit("01").getAttribute("aria-label")).not.toContain(forbidd…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > separates adjacent gap semantics and never connects across unavailable endpoints
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-region-02"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_7_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"245.60000000000002"[39m
+              [33mx[39m=[32m"206.8"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"245.59999999999997"[39m
+              [33mx[39m=[32m"452.40000000000003"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--future"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"122.79999999999995"[39m
+              [33mx[39m=[32m"1189.2"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m10[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m20[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m30[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,209.33333333333331"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"820.8,142.66666666666666 1066.4,76"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"209.33333333333331"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"820.8"[39m
+              [33mcy[39m=[32m"142.66666666666666"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-04"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1066.4"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-05"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，10 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期源文件缺失；缺少已提交金额；该期间无已关闭回合"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"206.8"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，—，该期源文件缺失；缺少已提交金额；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"452.40000000000003"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"4月，20 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-04"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"5月，30 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-05"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"943.6"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"6月，—，尚未到达或未覆盖"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-06"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"245.6"[39m
+                [33mx[39m=[32m"1189.2"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"329.6"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"575.2"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"820.8"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m4月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1066.4"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m5月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m6月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:117:29
+    115|     render(<HistoryChart data={committed} mode="period-pnl" reportCurr…
+    116|     expect(screen.getAllByTestId("hp-history-segment")).toHaveLength(2…
+    117|     const noRounds = screen.getByTestId("hp-history-region-02"); const…
+       |                             ^
+    118|     expect(noRounds).toHaveAttribute("data-state", "no-rounds"); expec…
+    119|     expect(screen.getByTestId("hp-history-region-06")).toHaveAttribute…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > retains real zero at the zero axis while missing values remain unavailable
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-zero-line"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_8_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_8_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--source-missing"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"698"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,276"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"276"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期源文件缺失；缺少已提交金额；数据缺失"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:126:49
+    124|     render(<HistoryChart data={data([point("01", "1月", "0"), point("02…
+    125|     const zero = screen.getByTestId("hp-history-point-01");
+    126|     expect(zero.getAttribute("cy")).toBe(screen.getByTestId("hp-histor…
+       |                                                 ^
+    127|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    128|     fireEvent.focus(hit("02")); expect(within(reading()).getByTestId("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fixes rate endpoints at0/100 and count ticks are integers covering actual known counts
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-y-tick"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_9_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_9_-title"[39m
+          [36m>[39m
+            [0m各期胜率[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0m%[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"各期胜率，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m25%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m50%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m75%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m100%[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,276 1312,76"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"276"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-02"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0%，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，100%，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1228"[39m
+                [33mx[39m=[32m"698"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-chart.test.tsx:135:19
+    133|       point("02", "2月", "1", { winRate: scalar("100"), roundCount: sca…
+    134|     const { rerender } = render(<HistoryChart data={committed} mode="w…
+    135|     expect(screen.getAllByTestId("hp-history-y-tick").map(node => node…
+       |                   ^
+    136|     expect(Number(screen.getByTestId("hp-history-point-01").getAttribu…
+    137|     expect(Number(screen.getByTestId("hp-history-point-02").getAttribu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=101 with an explanation
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="74"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ ❯ app/components/homepage-v25/history-chart.test.tsx:150:61
+    148|     const committed = data([point("01", "1月", value, { winRate: scalar…
+    149|     render(<HistoryChart data={committed} mode={mode} reportCurrency="…
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+       |                                                             ^
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=-0.1 with an explanation
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="276.2"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ ❯ app/components/homepage-v25/history-chart.test.tsx:150:61
+    148|     const committed = data([point("01", "1月", value, { winRate: scalar…
+    149|     render(<HistoryChart data={committed} mode={mode} reportCurrency="…
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+       |                                                             ^
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=1.5 with an explanation
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="201"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ ❯ app/components/homepage-v25/history-chart.test.tsx:150:61
+    148|     const committed = data([point("01", "1月", value, { winRate: scalar…
+    149|     render(<HistoryChart data={committed} mode={mode} reportCurrency="…
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+       |                                                             ^
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=-1 with an explanation
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <circle
+  class="hp-history-chart__point"
+  cx="698"
+  cy="326"
+  data-testid="hp-history-point-01"
+  r="3"
+/> instead
+ ❯ app/components/homepage-v25/history-chart.test.tsx:150:61
+    148|     const committed = data([point("01", "1月", value, { winRate: scalar…
+    149|     render(<HistoryChart data={committed} mode={mode} reportCurrency="…
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+       |                                                             ^
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=NaN with an explanation
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  读数格式无效
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—每期净盈亏来源金额NaN CNY覆盖数量7 / 7原币金额NaN CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数NaN盈利回合数2各期胜率NaN%
+ ❯ app/components/homepage-v25/history-chart.test.tsx:152:23
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+       |                       ^
+    153|   });
+    154|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=Infinity with an explanation
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  读数格式无效
+Received:
+  1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai—每期净盈亏来源金额Infinity CNY覆盖数量7 / 7原币金额Infinity CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数Infinity盈利回合数2各期胜率Infinity%
+ ❯ app/components/homepage-v25/history-chart.test.tsx:152:23
+    150|     expect(screen.queryByTestId("hp-history-point-01")).not.toBeInTheD…
+    151|     fireEvent.focus(hit("01")); expect(within(reading()).getByTestId("…
+    152|     expect(reading()).toHaveTextContent(reason);
+       |                       ^
+    153|   });
+    154|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > preserves exact huge signed monetary strings, original currencies, FX and coverage for a single thin point
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-y-tick"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_h_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_h_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"87,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50e+21亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00e+21亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5.00e+20亿[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"87"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"73"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"699.5,240.6090520164609"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"699.5"[39m
+              [33mcy[39m=[32m"240.6090520164609"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，-123456789012345678901234567890.12345678901234567890 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"1225"[39m
+                [33mx[39m=[32m"82"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"699.5"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-chart.test.tsx:172:19
+    170|     const single = screen.getByTestId("hp-history-point-01"); expect(s…
+    171|     expect(Number.isFinite(Number(single.getAttribute("cy")))).toBe(tr…
+    172|     expect(screen.getAllByTestId("hp-history-y-tick").some(tick => tic…
+       |                   ^
+    173|     fireEvent.focus(hit("01")); expect(reading()).toHaveTextContent(ex…
+    174|     expect(reading()).toHaveTextContent("-1.00000000000000000001 HKD")…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial pending space with no fake curve
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_i_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_i_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，尚无已提交范围":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-history-chart__empty"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_i_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_i_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+        [36m</svg>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-history-chart__empty"[39m
+        [36m>[39m
+          [0m初始pending原因[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:182:19
+    180|   it.each(["pending", "error"] as const)("keeps initial %s space with …
+    181|     render(<HistoryChart data={null} mode="period-pnl" reportCurrency=…
+    182|     expect(screen.getByRole("status")).toHaveTextContent(`初始${kind}原因`…
+       |                   ^
+    183|     expect(screen.getByRole("status")).toHaveAttribute("data-tone", ki…
+    184|     expect(screen.queryByTestId("hp-history-segment")).not.toBeInTheDo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial error space with no fake curve
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_j_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_j_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，尚无已提交范围":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-history-chart__empty"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_j_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_j_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，尚无已提交范围"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"226"[39m
+                [33my2[39m=[32m"226"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"230"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"176"[39m
+                [33my2[39m=[32m"176"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"180"[39m
+              [36m>[39m
+                [0m2[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"126"[39m
+                [33my2[39m=[32m"126"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"130"[39m
+              [36m>[39m
+                [0m3[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m4[0m
+              [36m</text>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+        [36m</svg>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-history-chart__empty"[39m
+        [36m>[39m
+          [0m初始error原因[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:182:19
+    180|   it.each(["pending", "error"] as const)("keeps initial %s space with …
+    181|     render(<HistoryChart data={null} mode="period-pnl" reportCurrency=…
+    182|     expect(screen.getByRole("status")).toHaveTextContent(`初始${kind}原因`…
+       |                   ^
+    183|     expect(screen.getByRole("status")).toHaveAttribute("data-tone", ki…
+    184|     expect(screen.queryByTestId("hp-history-segment")).not.toBeInTheDo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on pending without caching facts
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_k_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_k_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_k_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_k_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:192:19
+    190|     rerender(<HistoryChart data={old} mode="period-pnl" reportCurrency…
+    191|     expect(screen.getAllByTestId("hp-history-segment").map(node => nod…
+    192|     expect(screen.getByRole("status")).toHaveTextContent("2025未应用，仍显示2…
+       |                   ^
+    193|     expect(screen.getByRole("status")).toHaveAttribute("data-tone", ki…
+    194|     expect(screen.getByRole("group", { name: "每月净盈亏，2026" })).toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on error without caching facts
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_l_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_l_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_l_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_l_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:192:19
+    190|     rerender(<HistoryChart data={old} mode="period-pnl" reportCurrency…
+    191|     expect(screen.getAllByTestId("hp-history-segment").map(node => nod…
+    192|     expect(screen.getByRole("status")).toHaveTextContent("2025未应用，仍显示2…
+       |                   ^
+    193|     expect(screen.getByRole("status")).toHaveAttribute("data-tone", ki…
+    194|     expect(screen.getByRole("group", { name: "每月净盈亏，2026" })).toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > honors successful empty range without plotting contradictory supplied values or adding repair entry
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "每月净盈亏":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_m_-title"[39m
+    [33mclass[39m=[32m"hp-history-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-history-chart__header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "每月净盈亏":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_m_-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "每月净盈亏，2026":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+    [33mclass[39m=[32m"hp-history-chart__svg"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 1328 320"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "1月，0 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"1月，0 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "2月，—，该期间无已关闭回合；缺少已提交金额":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "3月，-12345.678900 CNY，":
+  [36m<g[39m
+    [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+    [33mclass[39m=[32m"hp-history-chart__hit"[39m
+    [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_m_-title"[39m
+      [33mclass[39m=[32m"hp-history-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-chart__card"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-history-chart__header"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_m_-title"[39m
+          [36m>[39m
+            [0m每月净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<svg[39m
+          [33maria-label[39m=[32m"每月净盈亏，2026"[39m
+          [33mclass[39m=[32m"hp-history-chart__svg"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mviewBox[39m=[32m"0 0 1328 320"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33mdata-bounds[39m=[32m"84,66,1312,276"[39m
+            [33mdata-testid[39m=[32m"hp-history-plot"[39m
+          [36m>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-history-chart__region hp-history-chart__region--no-rounds"[39m
+              [33mheight[39m=[32m"210"[39m
+              [33mwidth[39m=[32m"614"[39m
+              [33mx[39m=[32m"391"[39m
+              [33my[39m=[32m"66"[39m
+            [36m/>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"276"[39m
+                [33my2[39m=[32m"276"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"280"[39m
+              [36m>[39m
+                [0m-1.50万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"209.33333333333331"[39m
+                [33my2[39m=[32m"209.33333333333331"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"213.33333333333331"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"142.66666666666666"[39m
+                [33my2[39m=[32m"142.66666666666666"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"146.66666666666666"[39m
+              [36m>[39m
+                [0m-5,000[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-history-chart__grid hp-history-chart__grid--zero"[39m
+                [33mx1[39m=[32m"84"[39m
+                [33mx2[39m=[32m"1312"[39m
+                [33my1[39m=[32m"76"[39m
+                [33my2[39m=[32m"76"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mclass[39m=[32m"hp-history-chart__tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"70"[39m
+                [33my[39m=[32m"80"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"84,76"[39m
+            [36m/>[39m
+            [36m<polyline[39m
+              [33mclass[39m=[32m"hp-history-chart__line"[39m
+              [33mdata-testid[39m=[32m"hp-history-segment"[39m
+              [33mpoints[39m=[32m"1312,240.609052"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"84"[39m
+              [33mcy[39m=[32m"76"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-01"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mclass[39m=[32m"hp-history-chart__point"[39m
+              [33mcx[39m=[32m"1312"[39m
+              [33mcy[39m=[32m"240.609052"[39m
+              [33mdata-testid[39m=[32m"hp-history-point-03"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"1月，0 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-01"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"79"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"2月，—，该期间无已关闭回合；缺少已提交金额"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-02"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"391"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+            [36m<g[39m
+              [33maria-label[39m=[32m"3月，-12345.678900 CNY，"[39m
+              [33mclass[39m=[32m"hp-history-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-history-hit-03"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"210"[39m
+                [33mwidth[39m=[32m"614"[39m
+                [33mx[39m=[32m"1005"[39m
+                [33my[39m=[32m"66"[39m
+              [36m/>[39m
+            [36m</g>[39m
+          [36m</g>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"84"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m1月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"698"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m2月[0m
+          [36m</text>[39m
+          [36m<text[39m
+            [33mclass[39m=[32m"hp-history-chart__tick"[39m
+            [33mtext-anchor[39m=[32m"middle"[39m
+            [33mx[39m=[32m"1312"[39m
+            [33my[39m=[32m"312"[39m
+          [36m>[39m
+            [0m3月[0m
+          [36m</text>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-chart.test.tsx:200:19
+    198|   it("honors successful empty range without plotting contradictory sup…
+    199|     render(<HistoryChart data={data()} mode="period-pnl" reportCurrenc…
+    200|     expect(screen.getByRole("status")).toHaveTextContent("范围无已平仓回合");
+       |                   ^
+    201|     expect(screen.queryByTestId("hp-history-segment")).not.toBeInTheDo…
+    202|     expect(screen.queryByTestId("hp-history-hit-01")).not.toBeInTheDoc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > fades one atomic surface150ms for a replacement, never morphs units, and cancels obsolete animation
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ app/components/homepage-v25/history-chart.test.tsx:263:28
+    261|     expect(motion.animate).not.toHaveBeenCalled();
+    262|     rerender(<HistoryChart data={data([point("01", "1月", "42")])} mode…
+    263|     expect(motion.animate).toHaveBeenCalledTimes(1);
+       |                            ^
+    264|     expect(motion.animate).toHaveBeenCalledWith([{ opacity: 0 }, { opa…
+    265|     expect(screen.getByRole("heading", { name: "各期胜率" })).toBeInTheDoc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/21]⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > shows reduced-motion replacement directly and cancels a running fade when preference changes
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ app/components/homepage-v25/history-chart.test.tsx:272:28
+    270|     rerender(<HistoryChart data={data()} mode="round-count" reportCurr…
+    271|     motion.preference(false); rerender(<HistoryChart data={data()} mod…
+    272|     expect(motion.animate).toHaveBeenCalledTimes(1); motion.preference…
+       |                            ^
+    273|   });
+    274| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/21]⎯
+
+
+EXIT 1

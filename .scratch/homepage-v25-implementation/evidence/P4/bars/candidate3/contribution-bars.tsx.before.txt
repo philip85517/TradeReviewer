@@ -1,0 +1,213 @@
+"use client";
+
+import Decimal from "decimal.js";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import type { HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
+import "./contribution-bars.css";
+
+export type ContributionMetric = Readonly<Omit<HomepageV25Metric, "coverage" | "reasons" | "money"> & {
+  coverage: Readonly<HomepageV25Metric["coverage"]>;
+  reasons: readonly string[];
+  money: Readonly<Omit<HomepageV25Metric["money"], "fx"> & { fx: Readonly<NonNullable<HomepageV25Metric["money"]["fx"]>> | null }>;
+}>;
+export type ContributionIdentity = Readonly<{ kind: "market"; market: string }> | Readonly<{
+  kind: "instrument"; accountId: string; instrumentId: string; market: string;
+  nature: "live" | "simulation" | "unknown" | "caller-scoped"; simulationRunId: string | null;
+}>;
+type RowBase = Readonly<{ key: string; label: string; accessibleLabel: string; identity: ContributionIdentity }>;
+export type CurrentContributionRow = RowBase & Readonly<{
+  periodRealized: ContributionMetric; unrealizedChange: ContributionMetric; net: ContributionMetric;
+}>;
+export type HistoricalContributionRow = RowBase & Readonly<{ closedResult: ContributionMetric }>;
+export type ContributionReadState = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
+export type ContributionBarsProps = Readonly<{
+  reportCurrency: string; readState: ContributionReadState; fullTotal: ContributionMetric | null;
+  onActivate: (identity: ContributionIdentity) => void;
+}> & (Readonly<{ mode: "current"; rows: readonly CurrentContributionRow[] | null }> |
+  Readonly<{ mode: "history"; rows: readonly HistoricalContributionRow[] | null }>);
+
+type Readout = { metric: ContributionMetric | null; amount: Decimal | null; mismatch: boolean; reasons: readonly string[] };
+type Field = { kind: "realized" | "unrealized" | "closed" | "net"; label: string; read: Readout };
+type ViewRow = { source: RowBase; fields: readonly Field[]; net: Readout };
+// References are readout lifetime guards only; rendered financial facts always come from current props.
+type Selection = { key: string; rows: ContributionBarsProps["rows"]; total: ContributionMetric | null; mode: ContributionBarsProps["mode"]; currency: string };
+const Amount = Decimal.clone({ precision: 80, rounding: Decimal.ROUND_HALF_UP });
+const TOTAL_KEY = "total";
+
+// Only validates presentation consistency. Qualification, conversion, net and total belong to the caller.
+function readMetric(metric: ContributionMetric | null, currency: string): Readout {
+  const mismatch = metric !== null && metric.money.targetCurrency !== currency;
+  let amount: Decimal | null = null;
+  if (metric?.available && metric.value !== null && !mismatch) {
+    try { const value = new Amount(metric.value); if (value.isFinite()) amount = value; } catch { /* Unknown is rendered explicitly below. */ }
+  }
+  const reasons = [...(metric?.reasons ?? []), ...(mismatch ? ["币种与报表不一致"] : []),
+    ...(!metric ? ["未提供已提交的贡献金额"] : !mismatch && amount === null && metric.available && metric.value !== null ? ["金额格式无效"]
+      : !mismatch && amount === null && !metric.reasons.length ? ["金额未知"] : [])];
+  return { metric, amount, mismatch, reasons: [...new Set(reasons)] };
+}
+
+function shown(read: Readout): { text: string; tone: "positive" | "negative" | "neutral" } {
+  if (!read.amount) return { text: read.mismatch ? "—" : "不可计算", tone: "neutral" };
+  const cents = read.amount.toDecimalPlaces(2);
+  if (cents.isZero()) return { text: "0.00", tone: "neutral" };
+  const unit = cents.abs().gte(100_000_000) ? "亿" : cents.abs().gte(10_000) ? "万" : "";
+  const value = unit === "亿" ? cents.div(100_000_000) : unit === "万" ? cents.div(10_000) : cents;
+  const number = value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return { text: `${cents.gt(0) ? "+" : ""}${number}${unit ? ` ${unit}` : ""}`, tone: cents.gt(0) ? "positive" : "negative" };
+}
+
+function visibleAmount(field: Field): Decimal | null {
+  const amount = field.read.amount;
+  return amount && !amount.toDecimalPlaces(2).isZero() ? amount : null;
+}
+
+function MetricFacts({ field, currency }: { field: Field; currency: string }) {
+  const { metric, amount, reasons } = field.read;
+  return <section className="hp-contribution-bars__facts-section" aria-label={field.label}>
+    <h5>{field.label}</h5>
+    <dl className="hp-contribution-bars__facts">
+      <dt>完整金额</dt><dd>{amount && metric ? `${metric.value} ${currency}` : field.read.mismatch ? "—" : "不可计算"}</dd>
+      <dt>覆盖数量</dt><dd>{metric ? `${metric.coverage.available} / ${metric.coverage.total}` : "—"}</dd>
+      <dt>原币金额</dt><dd>{metric && Object.keys(metric.money.originalByCurrency).length
+        ? Object.entries(metric.money.originalByCurrency).map(([code, value]) => <span key={code}>{value} {code}</span>) : "未提供原币金额"}</dd>
+      <dt>汇率来源</dt><dd>{metric?.money.fx ? <><span>{metric.money.fx.source}</span><span>{metric.money.fx.asOf} · {metric.money.fx.id} · {metric.money.fx.status}</span></>
+        : metric?.money.conversion === "same-currency" ? "同币种，无需换汇" : "未提供汇率来源"}</dd>
+      {metric?.value !== null && metric?.value !== undefined && !amount && <><dt>来源金额</dt><dd>{metric.value} {metric.money.targetCurrency ?? "币种未知"}</dd></>}
+    </dl>
+    {reasons.length > 0 && <ul className="hp-contribution-bars__reasons">{reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>}
+  </section>;
+}
+
+/** Controlled prepared rows only. No financial projection, IO, page state or source-value cache. */
+export function ContributionBars(props: ContributionBarsProps) {
+  const { rows, reportCurrency, readState, fullTotal, onActivate } = props;
+  const id = useId();
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const triggers = useRef(new Map<string, HTMLButtonElement>());
+  const dialog = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
+  const active = selection && selection.rows === rows && selection.total === fullTotal && selection.mode === props.mode && selection.currency === reportCurrency ? selection.key : null;
+  // Invalidation is permanent: returning to an old context must require a fresh activation.
+  if (selection !== null && active === null) setSelection(null);
+  const viewRows: ViewRow[] = props.mode === "current" ? (props.rows ?? []).map(source => ({ source,
+    fields: [{ kind: "realized", label: "期间已实现", read: readMetric(source.periodRealized, reportCurrency) },
+      { kind: "unrealized", label: "期间浮盈变动", read: readMetric(source.unrealizedChange, reportCurrency) }], net: readMetric(source.net, reportCurrency) }))
+    : (props.rows ?? []).map(source => ({ source, fields: [{ kind: "closed", label: "已闭环结果", read: readMetric(source.closedResult, reportCurrency) }], net: readMetric(source.closedResult, reportCurrency) }));
+  // A shared symmetric display scale; sums here place same-sign pieces, never derive financial net/total.
+  let extent: Decimal = new Amount(0);
+  for (const row of viewRows) {
+    let positive: Decimal = new Amount(0); let negative: Decimal = new Amount(0);
+    for (const field of row.fields) {
+      const amount = visibleAmount(field);
+      if (amount?.gt(0)) positive = positive.plus(amount);
+      else if (amount?.lt(0)) negative = negative.plus(amount.abs());
+    }
+    extent = Amount.max(extent, positive, negative);
+  }
+  const total = readMetric(fullTotal, reportCurrency);
+  const selectedRow = viewRows.find(row => `row:${row.source.key}` === active);
+  const title = active === TOTAL_KEY ? "完整贡献合计" : selectedRow?.source.label;
+  const selectedFields: readonly Field[] = active === TOTAL_KEY ? [{ kind: "net", label: props.mode === "history" ? "完整已闭环合计" : "完整贡献净值合计", read: total }]
+    : selectedRow ? [...selectedRow.fields, ...(props.mode === "current" ? [{ kind: "net" as const, label: "贡献净值", read: selectedRow.net }] : [])] : [];
+  const open = active !== null && title !== undefined;
+
+  useLayoutEffect(() => {
+    if (open) dialog.current?.focus();
+    else if (opener.current?.isConnected) { opener.current.focus(); opener.current = null; }
+  }, [open, active]);
+
+  useLayoutEffect(() => {
+    if (!open || active === null) return;
+    function place() {
+      const anchor = triggers.current.get(active!)?.getBoundingClientRect();
+      const panel = dialog.current;
+      if (!anchor || !panel) return;
+      const box = panel.getBoundingClientRect();
+      const width = document.documentElement.clientWidth || window.innerWidth;
+      const height = document.documentElement.clientHeight || window.innerHeight;
+      const left = Math.max(12, Math.min(anchor.right - box.width, width - box.width - 12));
+      const preferredTop = anchor.bottom + 8 + box.height <= height - 12 ? anchor.bottom + 8 : anchor.top - box.height - 8;
+      const top = Math.max(12, Math.min(preferredTop, height - box.height - 12));
+      panel.style.left = `${left}px`; panel.style.top = `${top}px`;
+    }
+    place();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(place);
+    if (dialog.current) observer?.observe(dialog.current);
+    window.addEventListener("resize", place); window.addEventListener("scroll", place, true);
+    return () => { observer?.disconnect(); window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); };
+  }, [open, active]);
+
+  useEffect(() => {
+    if (!open) return;
+    function escape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      event.preventDefault(); event.stopPropagation(); setSelection(null);
+    }
+    function outside(event: MouseEvent) {
+      const target = event.target;
+      if (!(target instanceof Node) || dialog.current?.contains(target) || [...triggers.current.values()].some(trigger => trigger.contains(target))) return;
+      setSelection(null);
+    }
+    document.addEventListener("click", outside);
+    document.addEventListener("keydown", escape, true);
+    return () => { document.removeEventListener("click", outside); document.removeEventListener("keydown", escape, true); };
+  }, [open]);
+
+  function detailButton(key: string, label: string) {
+    return <button type="button" className="hp-contribution-bars__detail-trigger" aria-label={`${label}，贡献详情`} aria-haspopup="dialog"
+      aria-expanded={open && active === key} aria-controls={open && active === key ? `${id}-detail` : undefined}
+      ref={node => { if (node) triggers.current.set(key, node); else triggers.current.delete(key); }}
+      onClick={event => { opener.current = event.currentTarget; setSelection(active === key ? null : { key, rows, total: fullTotal, mode: props.mode, currency: reportCurrency }); }}>
+      <span aria-hidden="true">ⓘ</span>
+    </button>;
+  }
+
+  return <section className="hp-contribution-bars" aria-label={`贡献${props.mode === "current" ? "当前" : "历史"}列表（${reportCurrency}）`} aria-busy={readState.kind === "pending"}>
+    {readState.kind !== "ready" && <p className={`hp-contribution-bars__status hp-contribution-bars__status--${readState.kind}`} role="status">{readState.reason}</p>}
+    {rows === null && readState.kind === "pending" ? <div className="hp-contribution-bars__loading" aria-label="贡献首次加载中">{Array.from({ length: 8 }, (_, index) => <div className="hp-contribution-bars__skeleton" data-testid="contribution-skeleton" aria-hidden="true" key={index} />)}</div>
+      : <ul className={`hp-contribution-bars__list${viewRows.length > 0 && viewRows.every(row => row.source.identity.kind === "market") ? " hp-contribution-bars__list--market" : ""}`} aria-label="已提交贡献行">
+        {viewRows.map(row => {
+          let positive: Decimal = new Amount(0); let negative: Decimal = new Amount(0);
+          const formatted = shown(row.net);
+          const unknown = row.fields.filter(field => field.read.amount === null).map(field => `${field.label}：${shown(field.read).text} · ${field.read.reasons.join("；")}`);
+          const reasons = [...new Set([...unknown, ...(row.net.amount === null ? row.net.reasons : [])])];
+          return <li className={`hp-contribution-bars__row hp-contribution-bars__row--${row.source.identity.kind}`} aria-label={`${row.source.label} 贡献`} key={row.source.key}>
+            <div className="hp-contribution-bars__row-main">
+              <button type="button" className="hp-contribution-bars__action" aria-label={row.source.accessibleLabel} aria-describedby={`${id}-${encodeURIComponent(row.source.key)}-value${reasons.length ? ` ${id}-${encodeURIComponent(row.source.key)}-reason` : ""}`} onClick={() => onActivate(row.source.identity)}>
+                <span className="hp-contribution-bars__identity" title={row.source.label}>{row.source.label}</span>
+                <span className="hp-contribution-bars__track" aria-hidden="true"><span className="hp-contribution-bars__zero" />
+                  {row.fields.map(field => {
+                    const amount = visibleAmount(field); if (!amount || extent.isZero()) return null;
+                    const width = amount.abs().div(extent).mul(50);
+                    const offset = amount.gt(0) ? positive : negative;
+                    const left = amount.gt(0) ? new Amount(50).plus(offset) : new Amount(50).minus(offset).minus(width);
+                    if (amount.gt(0)) positive = positive.plus(width); else negative = negative.plus(width);
+                    return <span key={field.kind} data-testid="contribution-segment" data-kind={field.kind} data-sign={amount.gt(0) ? "positive" : "negative"}
+                      className={`hp-contribution-bars__segment hp-contribution-bars__segment--${field.kind === "unrealized" ? "hollow" : "solid"} hp-contribution-bars__segment--${amount.gt(0) ? "positive" : "negative"}`}
+                      style={{ left: `${left.toString()}%`, width: `${width.toString()}%` }} />;
+                  })}
+                </span>
+                <span className="hp-contribution-bars__value" id={`${id}-${encodeURIComponent(row.source.key)}-value`} data-testid="contribution-value" data-tone={formatted.tone}>{formatted.text}</span>
+              </button>
+              {detailButton(`row:${row.source.key}`, row.source.label)}
+            </div>
+            {reasons.length > 0 && <p className="hp-contribution-bars__row-reason" id={`${id}-${encodeURIComponent(row.source.key)}-reason`}>{reasons.join("；")}</p>}
+          </li>;
+        })}
+      </ul>}
+    {fullTotal !== null && <div className="hp-contribution-bars__total"><span>合计（{reportCurrency}）</span>
+      <span className="hp-contribution-bars__value" data-testid="contribution-total-value" data-tone={shown(total).tone}>{shown(total).text}</span>
+      {detailButton(TOTAL_KEY, "完整贡献合计")}</div>}
+    {fullTotal !== null && total.amount === null && <p className="hp-contribution-bars__row-reason">{total.reasons.join("；")}</p>}
+    {open && createPortal(<div id={`${id}-detail`} ref={dialog} role="dialog" aria-modal="false" aria-labelledby={`${id}-detail-title`} tabIndex={-1}
+      className="hp-contribution-bars__detail" onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); setSelection(null); } }}>
+      <div className="hp-contribution-bars__detail-heading"><h4 id={`${id}-detail-title`}>{title} · 贡献详情</h4>
+        <button type="button" aria-label="关闭贡献详情" onClick={() => setSelection(null)}>×</button></div>
+      <p className="hp-contribution-bars__context">{props.mode === "current" ? "当前贡献" : "历史贡献"} · 报表币种 {reportCurrency}</p>
+      {readState.kind !== "ready" && <p className="hp-contribution-bars__notice">{readState.reason}</p>}
+      {selectedFields.map(field => <MetricFacts key={field.kind} field={field} currency={reportCurrency} />)}
+    </div>, document.body)}
+  </section>;
+}

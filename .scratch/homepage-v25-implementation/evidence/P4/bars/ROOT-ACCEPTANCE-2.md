@@ -1,0 +1,7 @@
+# Contribution bars round2/3 — FAIL
+
+Frozen TSX50bf4799… / CSS38fec37c… / test35ec7785…. Root pinned Node original28/28 PASS3.99s and unchanged independent1/1 PASS2.03s, see candidate2/ROOT-product.log and ROOT-independent-counterexample.log. Independent review2 finds C0/I0/M1 with exact hashes.
+
+CB-M01 real1280 CNY→USD closes detail→outside focus→CNY leaves0dialogs/outside focus: PASS. CB-M02 actual390 error computed rgb(255,133,146): PASS. CB-M03 actual DOM1440/1280 and container737/736 show one list-level line at track center; at735 and390 the approved second-line row zero fallback applies. Segments both14px high; signed widths remain proportional. See continue-2026-10-23/bars-candidate2-{currency-roundtrip.txt,error-390.txt,axis-boundaries.json}. Correctly sized screenshots require separate pixel binding; first7 wide-state screenshots462px are invalid for wide visual and retained. Their DOM observations remain finite geometry only.
+
+New CB-M04 FAIL: retained old contribution update text is rgb(167,179,196), violating original source visual-design.candidate.md469/471/476 (updates blue, initial loading gray-blue). Independent review2 confirms exact scope. Candidate3 is the final bounded correction opportunity; prior round1 failures preserved. A remains frozen; no financial/host integration bypass. Full CB01–CB15 control/visual/host data chain, real hover/reduced-motion/emulated/physical touch remain NV with separate evidence boundaries; leaf IO writes N/A. P4 formal0/3 unchanged. Root does not accept the full leaf or page.

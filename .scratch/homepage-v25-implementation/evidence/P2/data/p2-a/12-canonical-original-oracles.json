@@ -1,0 +1,1056 @@
+[
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "1",
+      "averageCost": "100",
+      "realizedPnl": "0",
+      "unrealizedPnl": "60",
+      "netPnl": "59",
+      "fees": "1",
+      "grossCapitalDeployed": "100",
+      "returnPercent": "59"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0",
+        "1"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "2",
+      "averageCost": "150",
+      "realizedPnl": "0",
+      "unrealizedPnl": "20",
+      "netPnl": "18",
+      "fees": "2",
+      "grossCapitalDeployed": "300",
+      "returnPercent": "6"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0",
+        "1",
+        "2"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "1",
+      "averageCost": "150",
+      "realizedPnl": "30",
+      "unrealizedPnl": "10",
+      "netPnl": "37",
+      "fees": "3",
+      "grossCapitalDeployed": "300",
+      "returnPercent": "12.33333333"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "-1",
+      "averageCost": "190",
+      "realizedPnl": "70",
+      "unrealizedPnl": "30",
+      "netPnl": "96",
+      "fees": "4",
+      "grossCapitalDeployed": "490",
+      "returnPercent": "19.59183673"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "-0.5",
+      "averageCost": "190",
+      "realizedPnl": "75",
+      "unrealizedPnl": "15",
+      "netPnl": "85",
+      "fees": "5",
+      "grossCapitalDeployed": "490",
+      "returnPercent": "17.34693878"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "2",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "1",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-07T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 2,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "3",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "sell",
+          "quantity": "2",
+          "price": "190",
+          "fee": "1",
+          "executedAt": "2026-01-08T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 3,
+            "tradeNature": "live",
+            "positionEffect": "open-short"
+          }
+        },
+        {
+          "id": "4",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "0.5",
+          "price": "180",
+          "fee": "1",
+          "executedAt": "2026-01-09T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 4,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "2"
+      ],
+      "cursor": "2026-01-01T00:00:00Z"
+    },
+    "result": {
+      "quantity": "-1",
+      "averageCost": "180",
+      "realizedPnl": "0",
+      "unrealizedPnl": "20",
+      "netPnl": "19",
+      "fees": "1",
+      "grossCapitalDeployed": "180",
+      "returnPercent": "10.55555556"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long",
+            "feeStatus": "unknown"
+          }
+        }
+      ],
+      "markPrice": "160"
+    },
+    "result": {
+      "costKnown": false,
+      "accuracy": {
+        "pnl": "unavailable",
+        "reasons": [
+          "unknown-fees"
+        ]
+      },
+      "quantity": "1",
+      "averageCost": "0",
+      "realizedPnl": "0",
+      "unrealizedPnl": "0",
+      "netPnl": "0",
+      "fees": "1",
+      "grossCapitalDeployed": "100",
+      "returnPercent": "0"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long",
+            "historyIncomplete": [
+              "prior"
+            ]
+          }
+        }
+      ],
+      "markPrice": "160"
+    },
+    "result": {
+      "costKnown": false,
+      "accuracy": {
+        "pnl": "unavailable",
+        "reasons": [
+          "history-incomplete"
+        ]
+      },
+      "quantityKnown": false,
+      "quantity": "0",
+      "averageCost": "0",
+      "realizedPnl": "0",
+      "unrealizedPnl": "0",
+      "netPnl": "0",
+      "fees": "1",
+      "grossCapitalDeployed": "100",
+      "returnPercent": "0"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-06T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160",
+      "visibleExecutionIds": [
+        "0"
+      ]
+    },
+    "result": {
+      "quantity": "2",
+      "averageCost": "150",
+      "realizedPnl": "0",
+      "unrealizedPnl": "20",
+      "netPnl": "18",
+      "fees": "2",
+      "grossCapitalDeployed": "300",
+      "returnPercent": "6"
+    }
+  },
+  {
+    "input": {
+      "executions": [
+        {
+          "id": "0",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "100",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 0,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        },
+        {
+          "id": "1",
+          "accountId": "a",
+          "accountLabel": "A",
+          "instrument": {
+            "id": "US:AAPL",
+            "market": "US",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "currency": "USD"
+          },
+          "side": "buy",
+          "quantity": "1",
+          "price": "200",
+          "fee": "1",
+          "executedAt": "2026-01-05T15:00:00Z",
+          "source": {
+            "platform": "original-oracle",
+            "row": 1,
+            "tradeNature": "live",
+            "positionEffect": "open-long"
+          }
+        }
+      ],
+      "markPrice": "160"
+    },
+    "result": {
+      "quantity": "2",
+      "averageCost": "150",
+      "realizedPnl": "0",
+      "unrealizedPnl": "20",
+      "netPnl": "18",
+      "fees": "2",
+      "grossCapitalDeployed": "300",
+      "returnPercent": "6"
+    }
+  }
+]

@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { sha256 } from "../recall/retained-digest";
 
 import {
   hasSettlementCurrencyMismatch,
@@ -80,7 +81,7 @@ function ledgerEventAt(event: StatementEvent): string {
   return statementEventAt(event);
 }
 
-export function replayPositionAtPrice(input: {
+export type PositionLedgerInput = {
   executions: TradeExecution[];
   markPrice: string;
   cursor?: string;
@@ -89,7 +90,15 @@ export function replayPositionAtPrice(input: {
   /** Explicit identity for statement-only inventory; used only when no executions exist. */
   inventoryIdentity?: { accountId: string; symbol: string; market: string };
   evidence?: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[];
-}): PositionLedgerSnapshot {
+};
+type Checkpoint = {
+  quantity: Decimal; averageCost: Decimal; realizedPnl: Decimal; fees: Decimal; grossCapitalDeployed: Decimal;
+  reasons: string[]; warnings: NonNullable<PositionLedgerSnapshot["warnings"]>; quantityUncertain: boolean;
+};
+type LedgerEntry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
+type MovementObservation = { entry: LedgerEntry; ordinal: number; before: Checkpoint; after: Checkpoint; closed: Decimal | null; opened: Decimal | null; effect: CanonicalMovementFact["effect"]; evidenceIds: string[]; beforeFeeUnavailable: boolean; afterFeeUnavailable: boolean };
+type FactObserver = { context(cursor: string | null, selected: TradeExecution[]): void; movement(value: MovementObservation): void; terminal(value: Checkpoint, feeUnavailable: boolean): void };
+function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void, facts?: FactObserver): PositionLedgerSnapshot {
   let quantity = new Decimal(0);
   let averageCost = new Decimal(0);
   let realizedPnl = new Decimal(0);
@@ -113,7 +122,7 @@ export function replayPositionAtPrice(input: {
     Boolean(input.executions.length === 0 && input.inventoryIdentity && item.symbol && item.market &&
       input.inventoryIdentity.accountId === item.accountId &&
       canonicalInstrumentId(input.inventoryIdentity.symbol, input.inventoryIdentity.market) === canonicalInstrumentId(item.symbol, item.market));
-  type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
+  type Entry = LedgerEntry;
   const timeline: Entry[] = input.executions.map(execution => ({ at: replayExecutionAt(execution), execution }));
   const seen = new Set<string>();
   for (const position of [...(input.evidence ?? []).flatMap(e => e.positions), ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])]) {
@@ -164,12 +173,24 @@ export function replayPositionAtPrice(input: {
   let lastActivity: string | undefined;
   let quantityUncertain = false;
   const pendingTransfers = new Set<string>();
-
+  const checkpoint = (): Checkpoint => ({ quantity, averageCost, realizedPnl, fees, grossCapitalDeployed,
+    reasons: [...reasons], warnings: warnings.map(item => ({ ...item })), quantityUncertain: quantityUncertain || pendingTransfers.size > 0 });
+  observe?.(checkpoint());
+  facts?.context(cursor ?? null, timeline.flatMap(entry => entry.execution && selectedExecution(entry.execution) ? [entry.execution] : []));
+  let ordinal = -1, factFeeUnavailable = false;
   for (const entry of timeline) {
+    ordinal++;
     if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
     if (cursor && Date.parse(entry.at) > Date.parse(cursor)
       && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
+    const before = facts ? checkpoint() : undefined;
+    const beforeFeeUnavailable = factFeeUnavailable;
+    let closed: Decimal | null = null, opened: Decimal | null = null;
+    let effect: CanonicalMovementFact["effect"] = "applied";
+    let movementEvidence: string[] | undefined;
+    try {
     if (entry.pendingTransfer) {
+      effect = "unresolved";
       pendingTransfers.add(`${entry.pendingTransfer.accountId}:${entry.pendingTransfer.id}`);
       reasons.add("ambiguous-event-order");
       continue;
@@ -200,10 +221,10 @@ export function replayPositionAtPrice(input: {
     }
     if (entry.event) {
       const event = entry.event;
-      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) continue;
+      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) { effect = "suppressed-duplicate"; continue; }
       const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
       const isBonusShare = isBonusShareEvidence(event);
-      if (isIpoAllocation && isZero(event.quantity)) continue;
+      if (isIpoAllocation && isZero(event.quantity)) { effect = "suppressed-duplicate"; continue; }
       const sameDayExecution = event.date.length === 10 && actualVisibleExecutions.some(e =>
         e.accountId === event.accountId &&
         canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol ?? "", event.market ?? "") &&
@@ -284,6 +305,7 @@ export function replayPositionAtPrice(input: {
           continue;
         }
         const size = quantityValue;
+        if (facts) { closed = new Decimal(0); opened = size; }
         const instrumentCurrencies = new Set(actualVisibleExecutions.filter(e =>
           e.accountId === event.accountId &&
           event.symbol &&
@@ -294,11 +316,12 @@ export function replayPositionAtPrice(input: {
         const cashCost = cost ? new Decimal(cost.cashCost) : undefined;
         const allocationCost = cashCost?.div(size);
         if (!cost || !allocationCost) {
+          if (facts) factFeeUnavailable = true;
           reasons.add("position-event");
           if (!hasHistory) reasons.add("initial-position");
           reasons.add("unknown-cost");
         }
-        if (cost) fees = fees.plus(cost.feeCost);
+        if (cost) { fees = fees.plus(cost.feeCost); if (facts) movementEvidence = cost.evidenceIds; }
         if (quantity.gte(0)) {
           const newQuantity = quantity.plus(size);
           if (allocationCost) {
@@ -310,6 +333,7 @@ export function replayPositionAtPrice(input: {
           quantity = newQuantity;
         } else {
           const covered = Decimal.min(quantity.abs(), size);
+          if (facts) { closed = covered; opened = size.minus(covered); }
           if (allocationCost) realizedPnl = realizedPnl.plus(averageCost.minus(allocationCost).mul(covered));
           quantity = quantity.plus(size);
           if (quantity.isPositive() && allocationCost) {
@@ -319,6 +343,7 @@ export function replayPositionAtPrice(input: {
           if (quantity.isZero()) averageCost = new Decimal(0);
         }
       } else {
+        effect = "contextual";
         // Cash, fee, dividend, and other statement rows are contextual
         // evidence only; they do not establish inventory history.
         continue;
@@ -358,6 +383,7 @@ export function replayPositionAtPrice(input: {
     lastActivity = execution.source.tradingDate ?? execution.executedAt;
     hasHistory = true;
     const size = new Decimal(execution.quantity).abs();
+    if (facts) { closed = new Decimal(0); opened = size; }
     const settlement = execution.source.settlement;
     const price = settlement && settlement.currency === execution.instrument.currency
       ? new Decimal(settlement.grossAmount).div(settlement.quantity)
@@ -374,6 +400,7 @@ export function replayPositionAtPrice(input: {
         grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
       } else {
         const covered = Decimal.min(quantity.abs(), size);
+        if (facts) { closed = covered; opened = size.minus(covered); }
         realizedPnl = realizedPnl.plus(averageCost.minus(price).mul(covered));
         quantity = quantity.plus(size);
         if (quantity.isPositive()) {
@@ -393,8 +420,9 @@ export function replayPositionAtPrice(input: {
       quantity = quantity.minus(size);
       grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
     } else {
-      const closed = Decimal.min(quantity, size);
-      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(closed));
+      const matched = Decimal.min(quantity, size);
+      if (facts) { closed = matched; opened = size.minus(matched); }
+      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(matched));
       quantity = quantity.minus(size);
       if (quantity.isNegative()) {
         averageCost = price;
@@ -402,9 +430,20 @@ export function replayPositionAtPrice(input: {
       }
       if (quantity.isZero()) averageCost = new Decimal(0);
     }
+    observe?.(checkpoint());
+    } finally {
+      if (facts && before) facts.movement({ entry, ordinal, before, after: checkpoint(), closed, opened, effect, evidenceIds: movementEvidence ?? [], beforeFeeUnavailable, afterFeeUnavailable: factFeeUnavailable });
+    }
   }
+  const terminal = checkpoint();
+  facts?.terminal(terminal, factFeeUnavailable);
+  return finalizePosition(terminal, input.markPrice);
+}
 
-  const markPrice = new Decimal(input.markPrice);
+function finalizePosition(state: Checkpoint, price: string): PositionLedgerSnapshot {
+  const { quantity, averageCost, realizedPnl, fees, grossCapitalDeployed, warnings, quantityUncertain } = state;
+  const reasons = new Set(state.reasons);
+  const markPrice = new Decimal(price);
   const unrealizedPnl = quantity.isPositive()
     ? markPrice.minus(averageCost).mul(quantity)
     : averageCost.minus(markPrice).mul(quantity.abs());
@@ -416,8 +455,8 @@ export function replayPositionAtPrice(input: {
   return {
     ...(reasons.size ? { costKnown: false as const, accuracy: { pnl: "unavailable" as const, reasons: [...reasons] } } : {}),
     ...(warnings.length ? { warnings } : {}),
-    ...(quantityUncertain || pendingTransfers.size ? { quantityKnown: false as const } : {}),
-    quantity: quantityUncertain || pendingTransfers.size ? "0" : decimalString(quantity),
+    ...(quantityUncertain ? { quantityKnown: false as const } : {}),
+    quantity: quantityUncertain ? "0" : decimalString(quantity),
     averageCost: reasons.size ? "0" : decimalString(averageCost),
     realizedPnl: reasons.size ? "0" : decimalString(realizedPnl),
     unrealizedPnl: reasons.size ? "0" : decimalString(unrealizedPnl),
@@ -426,4 +465,166 @@ export function replayPositionAtPrice(input: {
     grossCapitalDeployed: decimalString(grossCapitalDeployed),
     returnPercent: reasons.size ? "0" : decimalString(returnPercent),
   };
+}
+
+/** The legacy query semantics, including explicit IDs beyond cursor, remain unchanged. */
+export function replayPositionAtPrice(input: PositionLedgerInput): PositionLedgerSnapshot {
+  return evaluatePositionAtPrice(input);
+}
+
+export type PreparedPositionLedger = Readonly<{
+  kind: "ordinary-sweep" | "exact-context-fallback";
+  diagnostics: Readonly<{ sweeps: number; transitions: number }>;
+  storage: Readonly<{ checkpoints: number; checkpointEstimatedBytes: number }>;
+  transitions: readonly Readonly<{ executionId: string; before: Readonly<{ quantity: string; quantityKnown: boolean }>; after: Readonly<{ quantity: string; quantityKnown: boolean }> }>[];
+}>;
+type PreparedLedgerState = { input: Omit<PositionLedgerInput, "markPrice" | "cursor" | "visibleExecutionIds">; ordered: TradeExecution[]; checkpoints: Checkpoint[]; index: Map<string, number> };
+const preparedLedgers = new WeakMap<PreparedPositionLedger, PreparedLedgerState>();
+function freezeLedgerValue<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const item of Object.values(value)) freezeLedgerValue(item);
+  }
+  return value;
+}
+/** Captures original evidence. Only evidence-free, uniquely ordered original fills admit a prefix sweep. */
+export function preparePositionLedger(input: Omit<PositionLedgerInput, "markPrice" | "cursor" | "visibleExecutionIds">): PreparedPositionLedger {
+  const captured = structuredClone(input);
+  const ordered = [...captured.executions].sort((a,b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)));
+  const ids = new Set<string>(), times = new Set<string>();
+  let ordinary = !(captured.evidence?.length);
+  for (const execution of ordered) {
+    const at = replayExecutionAt(execution);
+    if (execution.source.positionEvents?.length || execution.source.statementPositions?.length || execution.source.openingPosition || ids.has(execution.id) || times.has(at) || !Number.isFinite(Date.parse(at))) ordinary = false;
+    ids.add(execution.id); times.add(at);
+  }
+  const checkpoints: Checkpoint[] = [];
+  if (ordinary) evaluatePositionAtPrice({ ...captured, markPrice: "0" }, state => checkpoints.push(state));
+  const facts = ordered.map((execution,index) => ({executionId:execution.id,
+    before:{quantity:checkpoints[index] && !checkpoints[index].quantityUncertain ? decimalString(checkpoints[index].quantity) : "0",quantityKnown:!checkpoints[index]?.quantityUncertain},
+    after:{quantity:checkpoints[index+1] && !checkpoints[index+1].quantityUncertain ? decimalString(checkpoints[index+1].quantity) : "0",quantityKnown:!checkpoints[index+1]?.quantityUncertain}}));
+  const handle = freezeLedgerValue({kind:ordinary ? "ordinary-sweep" as const : "exact-context-fallback" as const,
+    diagnostics:{sweeps:ordinary?1:0,transitions:ordinary?ordered.length:0},
+    storage:{checkpoints:checkpoints.length,checkpointEstimatedBytes:2*JSON.stringify(checkpoints.map(state=>({quantity:state.quantity.toString(),averageCost:state.averageCost.toString(),realizedPnl:state.realizedPnl.toString(),fees:state.fees.toString(),grossCapitalDeployed:state.grossCapitalDeployed.toString(),reasons:state.reasons,warnings:state.warnings,quantityUncertain:state.quantityUncertain}))).length},transitions:ordinary?facts:[]});
+  preparedLedgers.set(handle,{input:captured,ordered,checkpoints,index:new Map(ordered.map((execution,index)=>[execution.id,index]))});
+  return handle;
+}
+/** Queries private full-precision canonical checkpoints; ambiguous contexts evaluate the same original function. */
+export function replayPreparedPositionBoundaries(source: PreparedPositionLedger, queries: readonly Omit<PositionLedgerInput, "executions" | "inventoryIdentity" | "evidence">[]) {
+  const state = preparedLedgers.get(source);
+  if (!state) throw new TypeError("Unknown prepared position ledger");
+  let evaluations = 0, transitions = 0;
+  const results = queries.map(query => {
+    let prefix = 0, valid = source.kind === "ordinary-sweep";
+    if (query.visibleExecutionIds) {
+      const selected = new Set(query.visibleExecutionIds);
+      // Unknown IDs are ignored by the original evaluator as well.
+      prefix = [...selected].filter(id=>state.index.has(id)).length;
+      for (let index=0;index<prefix;index++) if (!selected.has(state.ordered[index].id)) valid = false;
+    } else {
+      const cursor = query.cursor ? Date.parse(replayCursorAt(query.cursor)) : Number.POSITIVE_INFINITY;
+      let low=0,high=state.ordered.length;
+      while(low<high) { const middle=(low+high)>>>1; if(Date.parse(replayExecutionAt(state.ordered[middle]))<=cursor) low=middle+1; else high=middle; }
+      prefix=low;
+    }
+    if (valid) return {snapshot:finalizePosition(state.checkpoints[prefix],query.markPrice), mode:"ordinary-sweep" as const,prefixLength:prefix};
+    evaluations++;
+    transitions += query.visibleExecutionIds ? state.ordered.filter(execution=>query.visibleExecutionIds!.includes(execution.id)).length : state.ordered.length;
+    return {snapshot:evaluatePositionAtPrice({...state.input,...query}),mode:"exact-context-fallback" as const};
+  });
+  return freezeLedgerValue({results,diagnostics:{evaluations,transitions}});
+}
+
+export type PositionFactValue = Readonly<{ value: string | null; available: boolean; reasons: readonly string[] }>;
+export type PositionFactCoverage = Readonly<{ available: boolean; reasons: readonly string[] }>;
+export type CanonicalStateFact = Readonly<{
+  quantity: PositionFactValue; averageCost: PositionFactValue; realizedPnl: PositionFactValue;
+  fees: PositionFactValue; grossCapitalDeployed: PositionFactValue;
+  reasons: readonly string[]; warnings: readonly NonNullable<PositionLedgerSnapshot["warnings"]>[number][];
+}>;
+export type CanonicalMovementFact = Readonly<{
+  factId: string; contextId: string; ordinal: number;
+  kind: "execution" | "ipo-allocation" | "bonus" | "transfer" | "position-reconciliation" | "evidence-status";
+  effect: "applied" | "suppressed-duplicate" | "unresolved" | "contextual";
+  executionId: string | null; eventId: string | null; evidenceIds: readonly string[];
+  time: Readonly<{ at: string; sourceDate: string; precision: "instant" | "day" | "month" }>;
+  before: CanonicalStateFact; after: CanonicalStateFact;
+  matchedClosedQuantity: PositionFactValue; openedQuantity: PositionFactValue; realizedDelta: PositionFactValue;
+}>;
+export type PositionFactQuery = Readonly<{ cursor?: string; visibleExecutionIds?: readonly string[] }>;
+export type CanonicalFactResult = Readonly<{
+  contextId: string; sourceId: string; effectiveKnowledgeCursor: string | null; selectedExecutionIds: readonly string[];
+  mode: "ordinary-sweep" | "exact-context-fallback"; terminal: CanonicalStateFact; facts: readonly CanonicalMovementFact[];
+  coverage: Readonly<{ quantity: PositionFactCoverage; chronology: PositionFactCoverage; costAndRealized: PositionFactCoverage }>;
+}>;
+function factValue(value: Decimal | null, reasons: readonly string[] = []): PositionFactValue {
+  return { value: reasons.length || value === null ? null : value.isZero() ? "0" : value.toFixed(), available: !reasons.length && value !== null, reasons: [...reasons] };
+}
+function stateFact(state: Checkpoint, feeUnavailable = false): CanonicalStateFact {
+  return { quantity: factValue(state.quantity, state.quantityUncertain ? ["quantity-unavailable", ...state.reasons] : []),
+    averageCost: factValue(state.averageCost, state.reasons), realizedPnl: factValue(state.realizedPnl, state.reasons),
+    fees: factValue(state.fees, [...state.reasons.filter(reason => reason.includes("fee")), ...(feeUnavailable ? ["ipo-fee-allocation-unavailable"] : [])]),
+    grossCapitalDeployed: factValue(state.grossCapitalDeployed, state.reasons), reasons: [...state.reasons], warnings: state.warnings.map(warning => ({ ...warning })) };
+}
+function observedFact(value: MovementObservation): Omit<CanonicalMovementFact, "factId" | "contextId"> {
+  const { entry, before, after, ordinal, closed, opened, effect } = value;
+  const event = entry.event ?? entry.pendingTransfer, execution = entry.execution, position = entry.position;
+  const sourceDate = execution ? execution.source.tradingDate ?? execution.executedAt : event?.date ?? position!.date;
+  const precision = execution ? execution.source.timePrecision === "date-only" || execution.executedAt.length === 10 ? "day" : "instant" : sourceDate.length === 7 ? "month" : "day";
+  const quantityReasons = before.quantityUncertain || after.quantityUncertain ? ["quantity-unavailable"] : [];
+  const realizedReasons = [...new Set([...before.reasons, ...after.reasons])];
+  return { ordinal, kind: execution ? "execution" : position ? "position-reconciliation" : entry.pendingTransfer ? "evidence-status" : event?.kind === "ipo" && event.quantity !== undefined ? "ipo-allocation" : event && isBonusShareEvidence(event) ? "bonus" : event?.kind === "transfer-in" || event?.kind === "transfer-out" ? "transfer" : "evidence-status",
+    effect, executionId: execution?.id ?? null, eventId: event?.id ?? null,
+    evidenceIds: execution ? [execution.id] : event ? [...new Set([event.id, ...value.evidenceIds])] : [JSON.stringify([position!.accountId, position!.market, position!.symbol, position!.phase, position!.date, position!.quantity])],
+    time: { at: entry.at, sourceDate, precision }, before: stateFact(before, value.beforeFeeUnavailable), after: stateFact(after, value.afterFeeUnavailable),
+    matchedClosedQuantity: factValue(closed, quantityReasons), openedQuantity: factValue(opened, quantityReasons),
+    realizedDelta: factValue(after.realizedPnl.minus(before.realizedPnl), realizedReasons) };
+}
+/** Explicit, transient observation of the canonical evaluator. No fact graph is retained in a prepared handle. */
+export function readPreparedPositionFacts(source: PreparedPositionLedger, queries: readonly PositionFactQuery[]) {
+  const prepared = preparedLedgers.get(source);
+  if (!prepared) throw new TypeError("Unknown prepared position ledger");
+  const sourceId = `sha256:${sha256(JSON.stringify({ input: prepared.input, policy: "canonical-movement-1" }))}`;
+  let evaluations = 0, transitions = 0, indexProbes = 0;
+  const evaluate = (query: PositionFactQuery) => {
+    const observations: Omit<CanonicalMovementFact, "factId" | "contextId">[] = [];
+    let terminal: CanonicalStateFact | undefined, cursor: string | null = null, selected: string[] = [];
+    evaluations++;
+    evaluatePositionAtPrice({ ...prepared.input, ...query, markPrice: "0" }, undefined, {
+      context(at, executions) { cursor = at; selected = executions.map(execution => execution.id); },
+      movement(value) { observations.push(observedFact(value)); transitions++; },
+      terminal(value, feeUnavailable) { terminal = stateFact(value, feeUnavailable); },
+    });
+    return { observations, terminal: terminal!, cursor, selected };
+  };
+  // Resolve prefix queries through the existing index/binary search. One shared
+  // observed sweep serves the batch; each prefix then materializes only its facts/IDs.
+  let swept: ReturnType<typeof evaluate> | undefined;
+  const results: CanonicalFactResult[] = queries.map(query => {
+    let length = 0, prefix = source.kind === "ordinary-sweep";
+    const cursor = query.cursor ? replayCursorAt(query.cursor) : null;
+    if (prefix && query.visibleExecutionIds) {
+      let maximum = -1;
+      for (const id of new Set(query.visibleExecutionIds)) {
+        indexProbes++;
+        const index = prepared.index.get(id);
+        if (index !== undefined) { length++; maximum = Math.max(maximum, index); }
+      }
+      prefix = maximum === length - 1;
+    } else if (prefix) {
+      let low = 0, high = prepared.ordered.length;
+      while (low < high) { indexProbes++; const middle = (low + high) >>> 1; if (!cursor || replayExecutionAt(prepared.ordered[middle]) <= cursor) low = middle + 1; else high = middle; }
+      length = low;
+    }
+    if (prefix && !swept) swept = evaluate({});
+    const evaluated = prefix && swept ? { observations: swept.observations.slice(0, length), terminal: stateFact(prepared.checkpoints[length]), cursor: cursor ?? swept.cursor, selected: prepared.ordered.slice(0, length).map(execution => execution.id) } : evaluate(query);
+    const contextId = `sha256:${sha256(JSON.stringify([sourceId, evaluated.cursor, evaluated.selected]))}`;
+    const facts = evaluated.observations.map(fact => ({ ...fact, contextId, factId: `${contextId}:${fact.ordinal}` }));
+    const terminal = evaluated.terminal;
+    const chronologyReasons = [...new Set([...(!terminal.quantity.available ? terminal.quantity.reasons : []), ...terminal.reasons.filter(reason => ["position-gap", "ambiguous-event-order", "ambiguous-opening", "history-incomplete"].includes(reason)), ...(facts.some(fact => fact.kind !== "ipo-allocation" && !fact.before.reasons.includes("initial-position") && fact.after.reasons.includes("initial-position")) ? ["initial-position"] : [])])];
+    return { contextId, sourceId, effectiveKnowledgeCursor: evaluated.cursor, selectedExecutionIds: evaluated.selected,
+      mode: prefix ? "ordinary-sweep" : "exact-context-fallback", terminal, facts,
+      coverage: { quantity: { available: terminal.quantity.available, reasons: terminal.quantity.reasons }, chronology: { available: !chronologyReasons.length, reasons: chronologyReasons }, costAndRealized: { available: terminal.realizedPnl.available, reasons: terminal.realizedPnl.reasons } } };
+  });
+  return freezeLedgerValue({ results, diagnostics: { evaluations, transitions, indexProbes, retainedFactBytes: 0 } });
 }

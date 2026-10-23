@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-10-22T18:29:35.872Z",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "round": "same S issue, recovery 2/3",
+  "files": [
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.test.ts",
+      "sha256": "25c0af4452056c1763017a96f76fe45fd5a375159dde10013b98c32a80b19a68"
+    }
+  ]
+}

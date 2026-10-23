@@ -1,0 +1,52 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:39717) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (141 tests | 2 failed | 138 skipped) 180ms
+     × shares identical complete metric content and common metadata without dropping public fields 57ms
+     × rejects an oversized candidate without evicting the existing admitted batch 107ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 exact immutable public graph sharing > shares identical complete metric content and common metadata without dropping public fields
+AssertionError: expected { value: '70', available: true, …(3) } to be { value: '70', available: true, …(3) } // Object.is equality
+
+If it should pass with deep equality, replace "toBe" with "toStrictEqual"
+
+Expected: { value: '70', available: true, …(3) }
+Received: serializes to the same string
+
+
+Compared values have no visual difference.
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:922:37
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 exact immutable public graph sharing > rejects an oversized candidate without evicting the existing admitted batch
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:966:32
+    964|     expect(rejected.points[0].key).toBe(hugeKey); expect(rejected.poin…
+    965|     const after = preparedPerformance.inspectHomepageV25PreparedSource…
+    966|     expect(after.batchEntries).toBe(before.batchEntries);
+       |                                ^
+    967|     expect(after.evictions).toBe(before.evictions);
+    968|     expect(after.cacheEstimatedBytes).toBe(before.cacheEstimatedBytes);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 138 skipped (141)
+   Start at  04:59:05
+   Duration  947ms (transform 354ms, setup 0ms, import 459ms, tests 180ms, environment 0ms)
+

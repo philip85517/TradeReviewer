@@ -1,41 +1,50 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import type { DatabaseSync } from "node:sqlite";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mergeTradeData, getExecutions, getImportHistory, getInstruments, openSqliteDatabase } = vi.hoisted(() => ({
-  mergeTradeData: vi.fn(), getExecutions: vi.fn(), getImportHistory: vi.fn(), getInstruments: vi.fn(), openSqliteDatabase: vi.fn(),
+vi.mock("../../../../db/sqlite", async importOriginal => ({
+  ...await importOriginal<typeof import("../../../../db/sqlite")>(),
+  openSqliteDatabase: vi.fn(),
 }));
-vi.mock("../../../lib/storage/sqlite-store", () => ({ getSqliteStore: vi.fn(() => ({ mergeTradeData, getExecutions, getImportHistory, getInstruments })) }));
-vi.mock("../../../../db/sqlite", () => ({ openSqliteDatabase }));
+import { openSqliteDatabase } from "../../../../db/sqlite";
 import { GET, PUT } from "./route";
 
-const instrument = { id: "HK:700", symbol: "700", name: "腾讯", market: "HK", currency: "HKD", metadata: { market: "HK", symbol: "700", name: "腾讯", assetType: "stock", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" } };
-const execution = { id: "e1", source: { platform: "broker", row: 1 }, accountId: "a", accountLabel: "A", instrument, side: "buy", executedAt: "2025-01-01T00:00:00Z", quantity: "1", price: "1", fee: "0" };
+const originalDatabase = await vi.importActual<typeof import("../../../../db/sqlite")>("../../../../db/sqlite");
+let directory: string;
+let path: string;
+let database: DatabaseSync;
+const metadata = { market: "US", symbol: "AAPL", name: "Apple Inc.", assetType: "stock", source: "sec", confidence: "official", resolvedAt: "2026-10-22T00:00:00.000Z", exchange: { code: "NASDAQ", source: "sec", resolvedAt: "2026-10-22T00:00:00.000Z" } };
+const instrument = { id: "US:AAPL", market: "US", symbol: "AAPL", name: "Apple Inc.", currency: "USD", metadata };
+const execution = { id: "broad-fill", source: { platform: "futu", row: 1, tradeNature: "live" }, accountId: "one", accountLabel: "实盘一", instrument, side: "buy", executedAt: "2026-10-22T01:00:00Z", quantity: "2", price: "100", fee: "0" };
 const request = (body: unknown) => new Request("http://localhost/api/storage/trades", { method: "PUT", body: JSON.stringify(body) });
-afterEach(() => vi.clearAllMocks());
-
-describe("storage trades route", () => {
-  it("reads and writes a validated merge with no-store", async () => {
-    openSqliteDatabase.mockReturnValue({}); mergeTradeData.mockReturnValue({ inserted: 1, duplicate: 0, conflict: 0 });
-    getExecutions.mockReturnValue([execution]); getImportHistory.mockReturnValue([]); getInstruments.mockReturnValue([instrument]);
-    expect((await PUT(request({ executions: [execution], instruments: [instrument], replaceExecutionIds: ["old-id"] }))).status).toBe(200);
-    expect(mergeTradeData).toHaveBeenCalledWith({ executions: [execution], instruments: [instrument], replaceExecutionIds: ["old-id"] });
-    const response = await GET(); expect(response.headers.get("cache-control")).toBe("no-store"); expect(await response.json()).toMatchObject({ executions: [execution] });
-  });
-  it("rejects malformed payloads and maps unknown instruments", async () => {
-    expect((await PUT(new Request("http://localhost", { method: "PUT", body: "{" }))).status).toBe(400);
-    openSqliteDatabase.mockReturnValue({}); mergeTradeData.mockImplementation(() => { throw new Error("Unknown instrument: X"); });
-    const response = await PUT(request({ executions: [execution], instruments: [] })); expect(response.status).toBe(404); expect(await response.json()).toMatchObject({ error: { code: "not-found" } });
-  });
-  it("returns duplicate and rolls back a failed batch", async () => {
-    openSqliteDatabase.mockReturnValue({}); mergeTradeData.mockReturnValue({ inserted: 0, duplicate: 1, conflict: 0 });
-    expect(await (await PUT(request({ executions: [execution] }))).json()).toMatchObject({ duplicate: 1 });
-    mergeTradeData.mockImplementation(() => { throw new Error("Invalid execution"); });
-    expect((await PUT(request({ executions: [execution, { bad: true }] }))).status).toBe(400);
-  });
+beforeEach(() => {
+  directory = mkdtempSync(join(tmpdir(), "tradereview-p1-broad-metadata-"));
+  path = join(directory, "isolated.sqlite");
+  database = originalDatabase.openSqliteDatabase(path);
+  vi.mocked(openSqliteDatabase).mockImplementation(() => database);
 });
+afterEach(() => { database.close(); rmSync(directory, { recursive: true, force: true }); vi.clearAllMocks(); });
 
-it("returns a conflict for an already-associated simulation CSV", async()=>{
- mergeTradeData.mockImplementation(()=>{throw new Error('Simulation context conflict');});
- const result=await PUT(request({executions:[execution]}));
- expect(result.status).toBe(409);
- expect(await result.json()).toMatchObject({error:{code:'conflict'}});
+describe("broad trades metadata write boundary", () => {
+  it.each([
+    ["guessed market code", { code: "US", source: "sec", resolvedAt: metadata.resolvedAt }],
+    ["untrusted exchange provider", { code: "NASDAQ", source: "tencent", resolvedAt: metadata.resolvedAt }],
+    ["invalid evidence time", { code: "NASDAQ", source: "sec", resolvedAt: "not-a-date" }],
+  ])("rejects %s from both instrument and embedded execution before any persistence", async (_label, exchange) => {
+    const invalid = { ...instrument, metadata: { ...metadata, exchange } };
+    for (const payload of [{ instruments: [invalid], executions: [] }, { executions: [{ ...execution, instrument: invalid }] }]) {
+      const response = await PUT(request(payload));
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: { code: "invalid-request", message: "invalid request" } });
+      expect(await (await GET()).json()).toEqual({ instruments: [], executions: [], importHistory: [] });
+    }
+  });
+  it("retains valid exchange across the broad HTTP write, disk reopen and read", async () => {
+    expect((await PUT(request({ instruments: [instrument], executions: [execution] }))).status).toBe(200);
+    database.close(); database = originalDatabase.openSqliteDatabase(path);
+    const body = await (await GET()).json();
+    expect(body).toMatchObject({ instruments: [{ id: instrument.id, metadata: { exchange: metadata.exchange } }], executions: [{ instrument: { id: instrument.id } }] });
+  });
 });

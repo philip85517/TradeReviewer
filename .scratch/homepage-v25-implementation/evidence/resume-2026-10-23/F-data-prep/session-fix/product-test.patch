@@ -1,0 +1,212 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/before-test.ts.txt	2026-10-23 01:47:27
++++ app/lib/reviews/homepage-v25-performance.test.ts	2026-10-23 01:49:02
+@@ -27,7 +27,7 @@
+   instrumentId: instrument.id, tradingDate: date, open: close, high: close, low: close, close, volume: "1", currency: instrument.currency,
+   adjustmentMode: "raw", provider: "eastmoney", providerSymbol: instrument.symbol, fetchedAt: `${date}T23:00:00Z`,
+ });
+-function real(executions: TradeExecution[], overrides: Partial<HomepageV25Input> = {}, quotes = [raw("2025-12-31", "100"), raw("2026-01-31", "110")]) {
++function real(executions: TradeExecution[], overrides: Partial<HomepageV25Input> = {}, quotes = [raw("2025-12-31", "100"), raw("2026-01-30", "110")]) {
+   const candlesByInstrument = Object.fromEntries([...new Set(quotes.map(item => item.instrumentId))].map(id => [id, quotes.filter(item => item.instrumentId === id)]));
+   return buildHomepageV25Performance(base({ period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31",
+     entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, Object.fromEntries(executions.map(item => [item.instrument.id, "ready" as const]))),
+@@ -95,11 +95,11 @@
+     expect([result.net.value, result.currentMarketValue.value]).toEqual(["0", "110"]);
+   });
+   it("selects an eligible raw quote before considering later bars", () => {
+-    const result = real([fill("known", "2026-01-15T15:00:00Z")], {}, [raw("2026-01-31", "110"), raw("2026-02-02", "999")]);
++    const result = real([fill("known", "2026-01-15T15:00:00Z")], {}, [raw("2026-01-30", "110"), raw("2026-02-02", "999")]);
+     expect(result.currentMarketValue.value).toBe("110");
+   });
+   it("uses the pre-period mark so the first day's gain remains in the period", () => {
+-    const result = real([fill("old", "2025-12-15T15:00:00Z")], {}, [raw("2025-12-31", "100"), raw("2026-01-01", "120"), raw("2026-01-31", "130")]);
++    const result = real([fill("old", "2025-12-15T15:00:00Z")], { period: { start: "2026-01-02", end: "2026-01-31" } }, [raw("2025-12-31", "100"), raw("2026-01-02", "120"), raw("2026-01-30", "130")]);
+     expect([result.openingUnrealized.value, result.closingUnrealized.value, result.net.value]).toEqual(["0", "30", "30"]);
+   });
+   it("preserves date-only knowledge instead of inventing an intraday fill", () => {
+@@ -172,12 +172,12 @@
+   });
+   it("allocates carried opening fees to the same close under either period", () => {
+     const executions = [fill("open", "2025-12-15T15:00:00Z", { fee: "2" }), fill("close", "2026-01-20T15:00:00Z", { side: "sell", price: "120", fee: "1" })];
+-    const jan = real(executions), full = real(executions, { period: { start: "2025-12-01", end: "2026-01-31" } });
++    const jan = real(executions, { period: { start: "2026-01-02", end: "2026-01-31" } }), full = real(executions, { period: { start: "2025-12-01", end: "2026-01-31" } });
+     expect([jan.periodRealized.value, jan.openingUnrealized.value, jan.closingUnrealized.value, jan.net.value]).toEqual(["17", "-2", "0", "19"]);
+     expect([full.periodRealized.value, full.net.value]).toEqual(["17", "17"]);
+   });
+   it("uses average cost in realized and unrealized components independently", () => {
+-    const result = real([fill("old100", "2025-12-15T15:00:00Z"), fill("old200", "2025-12-16T15:00:00Z", { price: "200" }), fill("new300", "2026-01-15T15:00:00Z", { price: "300" }), fill("close400", "2026-01-20T15:00:00Z", { side: "sell", price: "400" })], {}, [raw("2025-12-31", "200"), raw("2026-01-31", "350")]);
++    const result = real([fill("old100", "2025-12-15T15:00:00Z"), fill("old200", "2025-12-16T15:00:00Z", { price: "200" }), fill("new300", "2026-01-15T15:00:00Z", { price: "300" }), fill("close400", "2026-01-20T15:00:00Z", { side: "sell", price: "400" })], { period: { start: "2026-01-02", end: "2026-01-31" } }, [raw("2025-12-31", "200"), raw("2026-01-30", "350")]);
+     expect([result.periodRealized.value, result.openingUnrealized.value, result.closingUnrealized.value, result.net.value]).toEqual(["200", "100", "300", "400"]);
+   });
+   it("allocates opening and closing fees proportionally on a partial close", () => {
+@@ -196,7 +196,7 @@
+   });
+   it("does not let an unseen future short episode change the historical long direction", () => {
+     const executions = [fill("old", "2025-12-15T15:00:00Z"), fill("close", "2026-01-20T15:00:00Z", { side: "sell", price: "120" }), fill("future", "2026-02-02T15:00:00Z", { side: "sell", source: { platform: "statement", row: 1, positionEffect: "open-short" } })];
+-    expect(real(executions).net.value).toBe("20");
++    expect(real(executions, { period: { start: "2026-01-02", end: "2026-01-31" } }).net.value).toBe("20");
+   });
+   it("defaults the real source to live and reports excluded simulation and unknown scope", () => {
+     const result = real([fill("live", "2026-01-15T15:00:00Z"), fill("sim", "2026-01-15T15:00:00Z", { source: { platform: "tradingview", row: 1, tradeNature: "simulation", simulationRunId: "r1" } }), fill("unknown", "2026-01-15T15:00:00Z", { source: { platform: "statement", row: 1, tradeNature: "unknown" } })]);
+@@ -230,8 +230,8 @@
+     expect(real([fill("buy", "2026-01-15T15:00:00Z")], { targetCurrency: "USD" }).currentMarketValue.value).toBe("110");
+   });
+   it("preserves original subtotals instead of summing different currencies", () => {
+-    const cny = { ...usdInstrument, id: "CN:BBB", symbol: "BBB", market: "CN", currency: "CNY" };
+-    const result = real([fill("usd", "2026-01-15T15:00:00Z"), fill("cny", "2026-01-15T15:00:00Z", { instrument: cny })], {}, [raw("2026-01-31", "110"), raw("2026-01-31", "120", cny)]);
++    const cny = { ...usdInstrument, id: "CN-SH:BBB", symbol: "BBB", market: "CN-SH", currency: "CNY" };
++    const result = real([fill("usd", "2026-01-15T15:00:00Z"), fill("cny", "2026-01-15T15:00:00Z", { instrument: cny })], {}, [raw("2026-01-30", "110"), raw("2026-01-30", "120", cny)]);
+     expect(result.currentMarketValue.value).toBeNull();
+     expect(result.currentMarketValue.money.originalByCurrency).toEqual({ USD: "110", CNY: "120" });
+     expect(result.currentMarketValue.reasons).toContain("target-currency-required");
+@@ -249,7 +249,7 @@
+   });
+   it("requires the explicit production entry cutoff while preserving the same result", () => {
+     const executions = [fill("buy", "2026-01-15T15:00:00Z")];
+-    const candlesByInstrument = { [usdInstrument.id]: [raw("2026-01-31", "110")] };
++    const candlesByInstrument = { [usdInstrument.id]: [raw("2026-01-30", "110")] };
+     const result = buildHomepageV25PerformanceFromEntries({ entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [usdInstrument.id]: "ready" }), candlesByInstrument, period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31" });
+     expect(result.currentMarketValue.value).toBe("110");
+     expect(result.instruments[0].evidence.current.quantity).toBe("1");
+@@ -259,7 +259,7 @@
+     expect(result.currentMarketValue.value).toBe("110");
+     expect(result.instruments[0].evidence.current.executionIds).toEqual(["known"]);
+   });
+-  it("does not reveal a full same-day daily bar at an intraday cutoff", () => {
++  it("uses the completed US session and rejects an unfinished or weekend raw bar", () => {
+     const result = real([fill("known", "2026-01-15T15:00:00Z")], { asOf: "2026-01-31T02:00:00Z" }, [raw("2026-01-30", "110"), raw("2026-01-31", "999")]);
+     expect(result.currentMarketValue.value).toBe("110");
+   });
+@@ -270,7 +270,7 @@
+     expect(result.currentMarketValue.value).toBe("0");
+   });
+   it("classifies malformed statement quantity instead of throwing or publishing zero", () => {
+-    const quotes = { [usdInstrument.id]: [raw("2026-01-31", "110")] };
++    const quotes = { [usdInstrument.id]: [raw("2026-01-30", "110")] };
+     const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries([fill("known", "2026-01-15T15:00:00Z")]), quotes, { [usdInstrument.id]: "ready" });
+     const malformedEntries = entries.map(entry => ({ ...entry, executions: entry.executions.map(e => ({ ...e, source: { ...e.source, openingPosition: { accountId: "a", market: "US", symbol: "AAPL", phase: "opening" as const, date: "2026-01-01", quantity: "unavailable", source: [{ page: 1, row: 1 }] } } })) }));
+     const result = buildHomepageV25PerformanceFromEntries({ entries: malformedEntries, candlesByInstrument: quotes, period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31" });
+@@ -278,7 +278,7 @@
+     expect(result.currentMarketValue.reasons).toContain("evidence-invalid");
+   });
+   it("does not turn absent original lineage into a complete empty book", () => {
+-    const quotes = { [usdInstrument.id]: [raw("2026-01-31", "110")] };
++    const quotes = { [usdInstrument.id]: [raw("2026-01-30", "110")] };
+     const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries([fill("buy", "2026-01-15T15:00:00Z")]), quotes, { [usdInstrument.id]: "ready" });
+     const result = buildHomepageV25PerformanceFromEntries({ entries: entries.map(entry => ({ ...entry, executions: [] })), candlesByInstrument: quotes, period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31" });
+     expect(result.currentMarketValue.value).toBeNull();
+@@ -296,13 +296,13 @@
+   });
+   it("retains partial conversion status when only one source currency has a usable rate", () => {
+     const hkd = { ...usdInstrument, id: "HK:00005", symbol: "00005", market: "HK", currency: "HKD" };
+-    const result = real([fill("hkd", "2026-01-15T15:00:00Z", { instrument: hkd }), fill("usd", "2026-01-15T15:00:00Z")], { targetCurrency: "CNY", fxSnapshot: { id: "fx", baseCurrency: "CNY", asOf: "2026-01-31", source: "broker", status: "complete", rates: { "USD/CNY": "7" } } }, [raw("2026-01-31", "110", hkd), raw("2026-01-31", "110")]);
++    const result = real([fill("hkd", "2026-01-15T15:00:00Z", { instrument: hkd }), fill("usd", "2026-01-15T15:00:00Z")], { targetCurrency: "CNY", fxSnapshot: { id: "fx", baseCurrency: "CNY", asOf: "2026-01-31", source: "broker", status: "complete", rates: { "USD/CNY": "7" } } }, [raw("2026-01-30", "110", hkd), raw("2026-01-30", "110")]);
+     expect(result.currentMarketValue.value).toBeNull();
+     expect(result.currentMarketValue.money.conversion).toBe("partial");
+     expect(result.currentMarketValue.coverage).toEqual({ total: 2, available: 1 });
+   });
+   it("requires real FX even for a zero PnL amount in a different source currency", () => {
+-    const result = real([fill("buy", "2026-01-15T15:00:00Z")], { targetCurrency: "CNY" }, [raw("2026-01-31", "100")]);
++    const result = real([fill("buy", "2026-01-15T15:00:00Z")], { targetCurrency: "CNY" }, [raw("2026-01-30", "100")]);
+     expect(result.net.value).toBeNull();
+     expect(result.net.money.originalByCurrency).toEqual({ USD: "0" });
+     expect(result.net.reasons).toContain("fx-missing");
+@@ -357,7 +357,7 @@
+     expect(result.currentMarketValue.reasons).toContain("fx-future");
+   });
+   it("retains a real live multiple-episode aggregate before valuation", () => {
+-    const result = real([fill("old-buy", "2025-12-01T02:00:00Z", { price: "50" }), fill("old-sell", "2025-12-02T02:00:00Z", { side: "sell", price: "60" }), fill("new-buy", "2026-01-15T02:00:00Z")], {}, [raw("2025-12-31", "70"), raw("2026-01-31", "110")]);
++    const result = real([fill("old-buy", "2025-12-01T02:00:00Z", { price: "50" }), fill("old-sell", "2025-12-02T02:00:00Z", { side: "sell", price: "60" }), fill("new-buy", "2026-01-15T02:00:00Z")], {}, [raw("2025-12-31", "70"), raw("2026-01-30", "110")]);
+     expect([result.net.value, result.currentMarketValue.value]).toEqual(["10", "110"]);
+     expect(result.instruments[0].evidence.current.executionIds).toEqual(["old-buy", "old-sell", "new-buy"]);
+   });
+@@ -372,6 +372,66 @@
+   ...overrides,
+ });
+ 
++describe("homepage completed exchange session quote contract", () => {
++  function sessionProjection(market: string, asOf: string, dates: string[], overrides: Partial<HomepageV25Input> = {}) {
++    const instrument = { id: `${market}:SESSION`, symbol: "SESSION", name: "Session", market, currency: market === "US" ? "USD" : market === "HK" ? "HKD" : "CNY" };
++    return real([fill("session-buy", "2025-12-01T05:00:00Z", { instrument, fee: "2" })], {
++      period: { start: "2026-01-01", end: "2031-12-31" }, asOf, ...overrides,
++    }, dates.map((day, index) => raw(day, ["100", "110", "999"][index], instrument)));
++  }
++  it.each([
++    { market: "US", label: "summer intraday across Shanghai midnight", asOf: "2026-10-22T17:30:00Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-21", price: "110" },
++    { market: "US", label: "summer close", asOf: "2026-10-22T20:00:00Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-22", price: "999" },
++    { market: "US", label: "winter before close", asOf: "2026-11-03T20:30:00Z", dates: ["2026-10-30", "2026-11-02", "2026-11-03"], expected: "2026-11-02", price: "110" },
++    { market: "US", label: "winter close", asOf: "2026-11-03T21:00:00Z", dates: ["2026-10-30", "2026-11-02", "2026-11-03"], expected: "2026-11-03", price: "999" },
++    { market: "US", label: "before verified half-day close", asOf: "2026-11-27T17:59:59Z", dates: ["2026-11-24", "2026-11-25", "2026-11-27"], expected: "2026-11-25", price: "110" },
++    { market: "US", label: "verified half-day close", asOf: "2026-11-27T18:00:00Z", dates: ["2026-11-24", "2026-11-25", "2026-11-27"], expected: "2026-11-27", price: "999" },
++    { market: "HK", label: "before conservative auction close", asOf: "2026-10-22T08:09:59Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-21", price: "110" },
++    { market: "HK", label: "auction close", asOf: "2026-10-22T08:10:00Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-22", price: "999" },
++    { market: "HK", label: "before verified half-day auction close", asOf: "2026-12-24T04:09:59Z", dates: ["2026-12-22", "2026-12-23", "2026-12-24"], expected: "2026-12-23", price: "110" },
++    { market: "HK", label: "verified half-day auction close", asOf: "2026-12-24T04:10:00Z", dates: ["2026-12-22", "2026-12-23", "2026-12-24"], expected: "2026-12-24", price: "999" },
++    { market: "CN-SH", label: "before close", asOf: "2026-10-22T06:59:59Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-21", price: "110" },
++    { market: "CN-SH", label: "close", asOf: "2026-10-22T07:00:00Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-22", price: "999" },
++    { market: "CN-SZ", label: "before close", asOf: "2026-10-22T06:59:59Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-21", price: "110" },
++    { market: "CN-SZ", label: "close", asOf: "2026-10-22T07:00:00Z", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-22", price: "999" },
++    { market: "US", label: "Shanghai date-only boundary before US close", asOf: "2026-10-22", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-21", price: "110" },
++    { market: "CN-SH", label: "Shanghai date-only boundary after close", asOf: "2026-10-22", dates: ["2026-10-20", "2026-10-21", "2026-10-22"], expected: "2026-10-22", price: "999" },
++    { market: "US", label: "weekend raw fallback", asOf: "2026-10-25", dates: ["2026-10-22", "2026-10-23", "2026-10-24"], expected: "2026-10-23", price: "110" },
++    { market: "HK", label: "weekend raw fallback", asOf: "2026-10-25", dates: ["2026-10-22", "2026-10-23", "2026-10-24"], expected: "2026-10-23", price: "110" },
++    { market: "US", label: "old weekend raw rejected even below cutoff", asOf: "2026-10-28", dates: ["2026-10-22", "2026-10-23", "2026-10-24"], expected: "2026-10-23", price: "110" },
++    { market: "CN-SH", label: "holiday raw rejected", asOf: "2026-10-08", dates: ["2026-09-29", "2026-09-30", "2026-10-01"], expected: "2026-09-30", price: "110" },
++  ])("$market $label", ({ market, asOf, dates, expected, price }) => {
++    const result = sessionProjection(market, asOf, dates);
++    expect(result.instruments[0].evidence.current.quote?.date).toBe(expected);
++    expect(result.currentMarketValue.value).toBe(price);
++    expect(result.currentUnrealized.value).toBe(String(Number(price) - 102));
++    expect(result.currentOpenFees.value).toBe("2");
++  });
++  it.each([
++    { market: "CN", asOf: "2026-10-22T08:30:00Z", reason: "quote-market-unsupported", dates: ["2026-10-21"] },
++    { market: "US", asOf: "2031-10-22T22:00:00Z", reason: "quote-session-unavailable", dates: ["2031-10-21"] },
++    { market: "US", asOf: "2025-12-31T15:00:00Z", reason: "quote-session-unavailable", dates: ["2025-12-30"] },
++  ])("classifies $market/$asOf session uncertainty without erasing inventory or fees", ({ market, asOf, reason, dates }) => {
++    const result = sessionProjection(market, asOf, dates);
++    expect(result.currentMarketValue).toMatchObject({ value: null, reasons: expect.arrayContaining([reason]) });
++    expect(result.currentUnrealized).toMatchObject({ value: null, reasons: expect.arrayContaining([reason]) });
++    expect(result.currentOpenFees.value).toBe("2");
++    expect(result.instruments[0].evidence.current).toMatchObject({ quantity: "1", costKnown: true, feesKnown: true, openFees: "2", quote: null, reasons: expect.arrayContaining([reason]) });
++  });
++  it("rejects a weekend-only raw quote without manufacturing zero value", () => {
++    const result = sessionProjection("US", "2026-10-28", ["2026-10-24"]);
++    expect(result.currentMarketValue).toMatchObject({ value: null, reasons: expect.arrayContaining(["quote-missing"]) });
++    expect(result.instruments[0].evidence.current.quote).toBeNull();
++  });
++  it("resolves opening, historical closing and independent current sessions separately", () => {
++    const result = sessionProjection("US", "2026-10-24T02:00:00Z", ["2026-10-20", "2026-10-21", "2026-10-23"], { period: { start: "2026-10-22", end: "2026-10-22" } });
++    expect(result.instruments[0].evidence.opening.quote?.date).toBe("2026-10-20");
++    expect(result.instruments[0].evidence.closing.quote?.date).toBe("2026-10-21");
++    expect(result.instruments[0].evidence.current.quote?.date).toBe("2026-10-23");
++    expect([result.openingUnrealized.value, result.closingUnrealized.value, result.net.value, result.currentMarketValue.value, result.currentUnrealized.value]).toEqual(["-2", "8", "10", "999", "897"]);
++  });
++});
++
+ describe("homepage v2.5 financial projection", () => {
+   it("classifies valuation inventory mismatch with an explicit current cutoff", () => {
+     const result = buildHomepageV25Performance(base({ openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "CNY" }], valuations: [{ date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", kind: "period-end", quantity: "0", price: "120", currency: "CNY" }] }));
+@@ -522,18 +582,11 @@
+   });
+ 
+   it("derives a real entry and candle ledger, while current value survives an earlier coverage gap", () => {
+-    const buy = execution({ id: "buy", side: "buy", quantity: "1", price: "100", fee: "0", executedAt: "2026-01-02T00:00:00Z" });
+-    const entry = {
+-      instrument: buy.instrument, executions: [buy], episodes: [{ episode: { id: "ep", accountId: "account-a", accountLabel: "A", instrument: buy.instrument, direction: "long", status: "open", startedAt: buy.executedAt, openingQuantity: "1", remainingQuantity: "1", executions: [buy] }, metrics: {} as never, reviewStatus: "pending", confirmedTagIds: [], tagDictionaryVersion: 1, rMultiple: null }],
+-      accountCount: 1, tradeCount: 1, episodeCount: 1, firstTradeAt: buy.executedAt, lastTradeAt: buy.executedAt, status: "open", netPnl: null, returnPercent: null, reviewedEpisodeCount: 0, confirmedTagIds: [], cumulativeR: null,
+-    } as never;
+-    const result = buildHomepageV25Performance(base({
+-      entries: [entry],
+-      valuations: [],
+-      candlesByInstrument: { "CN:AAA": [
+-        { instrumentId: "CN:AAA", tradingDate: "2026-10-22", open: "130", high: "130", low: "130", close: "130", volume: "1", currency: "CNY", provider: "eastmoney", providerSymbol: "AAA", adjustmentMode: "raw", fetchedAt: "2026-10-22T00:00:00Z" },
+-      ] },
+-    }));
++    const instrument = { id: "CN-SH:AAA", symbol: "AAA", name: "AAA", market: "CN-SH", currency: "CNY" };
++    const buy = execution({ id: "buy", instrument, side: "buy", quantity: "1", price: "100", fee: "0", executedAt: "2026-01-05T02:00:00Z" });
++    const candlesByInstrument = { [instrument.id]: [raw("2026-10-22", "130", instrument)] };
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries([buy]), candlesByInstrument, { [instrument.id]: "ready" });
++    const result = buildHomepageV25Performance(base({ entries, candlesByInstrument }));
+     expect(result.currentMarketValue.value).toBe("130");
+     expect(result.currentMarketValue.available).toBe(true);
+   });

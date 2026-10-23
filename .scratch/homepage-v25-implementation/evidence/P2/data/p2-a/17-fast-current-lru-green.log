@@ -1,0 +1,11 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25489) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  116 passed (116)
+   Start at  02:52:38
+   Duration  1.78s (transform 578ms, setup 0ms, import 705ms, tests 746ms, environment 0ms)
+

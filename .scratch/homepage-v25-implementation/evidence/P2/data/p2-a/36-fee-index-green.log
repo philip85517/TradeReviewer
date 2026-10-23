@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:28267) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (136 tests | 1 failed) 905ms
+     × indexes ordinary incurred fee knowledge once instead of reparsing it at every endpoint 43ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 per-market and evidence isolation > indexes ordinary incurred fee knowledge once instead of reparsing it at every endpoint
+AssertionError: expected [ Array(3) ] to have a length of 2 but got 3
+
+- Expected
++ Received
+
+- 2
++ 3
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:848:103
+    846|       const result=projectHomepageV25Boundaries(source,{...batchQuery,…
+    847|       expect(result.points.map(p=>p.periodFees.value)).toEqual(Array(2…
+    848|       expect(parse.mock.calls.filter(([value])=>value===new Date(fills…
+       |                                                                                                       ^
+    849|     }finally{parse.mockRestore();}
+    850|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 135 passed (136)
+   Start at  03:08:56
+   Duration  1.81s (transform 409ms, setup 0ms, import 524ms, tests 905ms, environment 0ms)
+

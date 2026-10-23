@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47368) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/performance-chart.test.tsx (27 tests | 1 failed) 1019ms
+     × places the complete measured detail away from the main curve when card space permits 36ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > controlled daily PerformanceChart > places the complete measured detail away from the main curve when card space permits
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:275:72
+    273|         const ratio = part / 100, previous = positions[segment - 1], n…
+    274|         const x = previous.x + (next.x - previous.x) * ratio, y = prev…
+    275|         expect(x > left && x < left + 264 && y > top && y < top + 166)…
+       |                                                                        ^
+    276|       }
+    277|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 passed (27)
+   Start at  06:24:56
+   Duration  4.06s (transform 208ms, setup 355ms, import 391ms, tests 1.02s, environment 1.90s)
+

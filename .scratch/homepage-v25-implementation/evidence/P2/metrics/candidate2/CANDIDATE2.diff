@@ -1,0 +1,71 @@
+--- candidate1/app/components/homepage-v25/metric-cards.tsx
++++ candidate2/app/components/homepage-v25/metric-cards.tsx
+@@ -73,6 +73,8 @@
+   const [position, setPosition] = useState({ left: 24, top: 24 });
+   const active = selection && selection.generation === (series?.requestGeneration ?? null)
+     && selection.sourceId === (series?.sourceId ?? null) && selection.currency === reportCurrency ? selection.key : null;
++  // Invalidate before commit; returning to an earlier context is not a new activation.
++  if (selection && !active) setSelection(null);
+   const definition = CARDS.find(card => card.key === active);
+   const unavailablePeriod = status.kind === "empty" ? status.reason
+     : series?.summaryState === "future" || series?.periodSummary?.state === "future" ? "未来未覆盖，金额未知" : undefined;
+--- candidate1/app/components/homepage-v25/metric-cards.css
++++ candidate2/app/components/homepage-v25/metric-cards.css
+@@ -16,7 +16,7 @@
+   border-radius: 8px;
+   background: var(--hp-surface, #111a26);
+ }
+-.hp-metric-cards .hp-metric-cards__card h3 { margin: 0; color: var(--hp-secondary, #a8b6cb); font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; }
++.hp-metric-cards .hp-metric-cards__card h3 { margin: 0 56px 0 0; color: var(--hp-secondary, #a8b6cb); font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; }
+ .hp-metric-cards .hp-metric-cards__value { display: flex; margin: 4px 0 0; font-size: 28px; font-weight: 600; line-height: 34px; white-space: nowrap; }
+ .hp-metric-cards__number { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+ .hp-metric-cards__unit { flex: 0 0 auto; white-space: pre; }
+@@ -29,13 +29,14 @@
+   position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #6ca8ff; cursor: pointer; font: inherit;
+ }
+ .hp-metric-cards .hp-metric-cards__trigger:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+-.hp-metric-cards__affordance { position: absolute; right: 8px; bottom: 8px; padding: 2px 4px; border-radius: 4px; background: #162233; font-size: 12px; line-height: 20px; opacity: 0; transition: opacity 120ms ease, color 120ms ease; }
++/* Header reservation leaves the full 28/34 value line available in every action state. */
++.hp-metric-cards__affordance { position: absolute; right: 8px; top: 10px; padding: 2px 4px; border-radius: 4px; background: #162233; font-size: 12px; line-height: 20px; opacity: 0; transition: opacity 120ms ease, color 120ms ease; }
+ .hp-metric-cards__trigger:hover .hp-metric-cards__affordance,
+ .hp-metric-cards__trigger:focus-visible .hp-metric-cards__affordance,
+ .hp-metric-cards__affordance--error { opacity: 1; }
+ .hp-metric-cards__affordance--error { color: #ff8592; }
+ .hp-metric-cards__skeleton { width: 60%; height: 28px; margin-top: 6px; border-radius: 4px; background: #283448; }
+-.hp-metric-cards__loading { position: absolute; top: 7px; right: 10px; color: #a8b6cb; font-size: 12px; line-height: 16px; }
++.hp-metric-cards__loading { position: absolute; bottom: 0; right: 10px; color: #a8b6cb; font-size: 12px; line-height: 16px; }
+ .hp-metric-cards .hp-metric-cards__status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+ .hp-metric-cards__detail,
+ .hp-metric-cards__detail * { box-sizing: border-box; }
+--- candidate1/app/components/homepage-v25/metric-cards.test.tsx
++++ candidate2/app/components/homepage-v25/metric-cards.test.tsx
+@@ -224,4 +224,29 @@
+     await user.click(trigger("期间净盈亏"));
+     expect(screen.getByRole("dialog")).toHaveTextContent(`${exact} CNY`); expect(screen.getByRole("dialog")).toHaveTextContent(reason);
+   });
++
++  it.each(["currency", "generation", "source"] as const)("M18 invalidating %s permanently closes the old detail and preserves an outside reading position when context returns", async context => {
++    const user = userEvent.setup(); const data = frozen(bundle());
++    const renderCards = (series: HomepageV25SeriesBundle, reportCurrency: string) => <><button>外部阅读位置</button><MetricCards series={series} reportCurrency={reportCurrency} status={ready} /></>;
++    const mounted = render(renderCards(data, "CNY"));
++    const opener = trigger("期间净盈亏");
++    await user.click(opener);
++    expect(screen.getByRole("dialog")).toHaveFocus();
++
++    const changed = context === "generation" ? { ...data, requestGeneration: "g2" }
++      : context === "source" ? { ...data, sourceId: "source-2" } : data;
++    mounted.rerender(renderCards(changed, context === "currency" ? "USD" : "CNY"));
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
++    expect(opener).toHaveFocus();
++    const outside = screen.getByRole("button", { name: "外部阅读位置" });
++    outside.focus();
++
++    mounted.rerender(renderCards(data, "CNY"));
++    expect(screen.queryByRole("dialog"), "returning context must not reactivate an invalidated detail").not.toBeInTheDocument();
++    expect(outside).toHaveFocus();
++    await user.click(opener);
++    expect(screen.getByRole("dialog")).toHaveTextContent("18420.567800 CNY");
++    await user.keyboard("{Escape}");
++    expect(opener).toHaveFocus();
++  });
+ });

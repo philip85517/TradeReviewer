@@ -1,0 +1,13 @@
+{
+  "atUtc": "2026-10-23T03:38:39.616854+00:00",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    ".scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate2/tsconfig.scoped.json",
+    "--pretty",
+    "false"
+  ],
+  "exitCode": 0,
+  "log": "03-types.log"
+}

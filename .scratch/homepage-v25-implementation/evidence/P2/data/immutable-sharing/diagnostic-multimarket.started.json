@@ -1,0 +1,20 @@
+{
+  "startedAt": "2026-10-22T21:11:37.915Z",
+  "runtime": "v26.0.0",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "sourceSha": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+  "inputSha256": "befe3b83a976e5016b0602d475f18980a1d323e9d83316073240943f3e2c490c",
+  "requestSha256": "7e6b24950ade6eb6b41899df76771ad999bb01bf6712908a276fffa9522285e9",
+  "fixture": {
+    "fills": 1866,
+    "endpoints": 365,
+    "accounts": 3,
+    "markets": 3,
+    "quotes": 743,
+    "historicalFxObservations": 365
+  },
+  "upstreamMs": 53.2566710000001,
+  "formalPerformanceSample": false,
+  "formalP2": "0/3; preserved cold failure and remaining NOT VERIFIED",
+  "scope": "One CPU diagnostic; profiler overhead forbids using these durations as formal threshold evidence"
+}

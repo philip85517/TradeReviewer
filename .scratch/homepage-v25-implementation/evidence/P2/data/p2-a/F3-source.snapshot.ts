@@ -1,0 +1,416 @@
+import Decimal from "decimal.js";
+import { tradeNatureOf, type Instrument, type TradeExecution, type TradeNature } from "../trades/types";
+import type { TradeLibraryEntry } from "../trades/library";
+import type { DailyCandleRecord } from "../market/contracts";
+import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
+import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
+import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
+import type { StatementEvent } from "../import/monthly-statement";
+import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
+import { canonicalInstrumentId } from "../instruments/display-name";
+import { CalendarOutOfRangeError, expectedTradingDates } from "../market/calendar";
+import { requiredMarketDataRange } from "../market/sync-range";
+
+export type HomepageV25Period = { start: string; end: string };
+export type HomepageV25Scope = { nature: "live" | "simulation"; simulationRunId?: string; accountIds?: readonly string[]; markets?: readonly string[] };
+export type HomepageV25OpeningPosition = { accountId: string; instrumentId: string; direction: "long" | "short"; quantity: string; unitCost: string; currency: string };
+export type HomepageV25Valuation = {
+  date: string; accountId: string; instrumentId: string; quantity: string; price: string | null; currency: string;
+  kind: "period-start" | "period-end" | "current";
+  /** Legacy field. Conversion requires a complete, source-backed fxSnapshot. */
+  fxRateToTarget?: string;
+  reason?: string;
+};
+export type HomepageV25Input = {
+  period: HomepageV25Period; executions: readonly TradeExecution[]; openingPositions: readonly HomepageV25OpeningPosition[];
+  valuations: readonly HomepageV25Valuation[]; targetCurrency?: string; entries?: readonly TradeLibraryEntry[];
+  candlesByInstrument?: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>;
+  fxSnapshot?: RoomFxSnapshot;
+  /** Required at runtime. Optional only to classify older callers without throwing. */
+  asOf?: string;
+  scope?: HomepageV25Scope;
+  instrumentMetadata?: TradingRoomMetadataInput;
+};
+export type HomepageV25EntriesInput = Omit<HomepageV25Input, "executions" | "openingPositions" | "valuations" | "entries" | "asOf"> & { entries: readonly TradeLibraryEntry[]; asOf: string };
+export type HomepageV25Money = {
+  originalByCurrency: Readonly<Record<string, string>>;
+  targetCurrency: string | null;
+  conversion: "same-currency" | "complete" | "partial" | "missing";
+  fx: Pick<RoomFxSnapshot, "id" | "source" | "asOf" | "status"> | null;
+};
+export type HomepageV25Metric = { value: string | null; available: boolean; coverage: { total: number; available: number }; reasons: string[]; money: HomepageV25Money };
+type Identity = { accountId: string; instrumentId: string; nature: TradeNature | "caller-scoped"; simulationRunId: string | null };
+type SnapshotEvidence = { knowledgeCursor: string; executionIds: string[]; quantity: string | null; costKnown: boolean; feesKnown: boolean; openFees: string | null; reasons: string[]; quote: { date: string; price: string | null; currency: string; source: string } | null };
+export type HomepageV25InstrumentResult = {
+  key: string; identity: Identity; periodRealized: HomepageV25Metric; openingUnrealized: HomepageV25Metric;
+  closingUnrealized: HomepageV25Metric; net: HomepageV25Metric;
+  currentMarketValue: HomepageV25Metric; currentUnrealized: HomepageV25Metric; currentOpenFees: HomepageV25Metric;
+  evidence: { executionIds: string[]; opening: SnapshotEvidence; closing: SnapshotEvidence; current: SnapshotEvidence };
+};
+export type HomepageV25Performance = {
+  periodRealized: HomepageV25Metric; openingUnrealized: HomepageV25Metric; closingUnrealized: HomepageV25Metric; net: HomepageV25Metric;
+  currentMarketValue: HomepageV25Metric; instruments: HomepageV25InstrumentResult[]; reasons: string[];
+  /** Independent asOf projection: net unrealized and fees retained by open exposure, not cumulative fees. */
+  currentUnrealized: HomepageV25Metric; currentOpenFees: HomepageV25Metric;
+  boundary: { businessTimezone: "Asia/Shanghai"; asOf: string | null; effectiveEnd: string | null; periodStart: string; requestedEnd: string };
+  scope: { nature: "live" | "simulation" | "caller-scoped"; simulationRunId: string | null; includedExecutions: number; excludedExecutions: number; excludedByReason: Readonly<Record<string, number>> };
+};
+
+type Boundary = { day: string; cursor: string; instant?: number };
+type Quote = { date: string; price: string | null; currency: string; source: string; quantity?: string; reason?: string };
+type QuoteSelection = { quote: Quote | null; reason?: string };
+type Group = { key: string; identity: Identity; instrument: Instrument; executions: TradeExecution[]; valuations: HomepageV25Valuation[]; seeds: HomepageV25OpeningPosition[]; conflicts: Set<string>; inventoryConflict: boolean };
+type State = { boundary: Boundary; ledger: PositionLedgerSnapshot; quantity: Decimal | null; grossRealized: Decimal | null; openFees: Decimal | null; netRealized: Decimal | null; pnlReasons: string[]; quantityReasons: string[]; executions: TradeExecution[] };
+type Amount = { currency: string; value: Decimal | null; reasons: string[]; eligible: boolean };
+const D = (value: string | null | undefined): Decimal | null => {
+  if (typeof value !== "string" || !value.trim()) return null;
+  try { const d = new Decimal(value); return d.isFinite() ? d : null; } catch { return null; }
+};
+const text = (value: Decimal) => value.isZero() ? "0" : value.toDecimalPlaces(8).toString();
+const unique = (items: Iterable<string>) => [...new Set(items)];
+const currency = (value: string) => value.trim().toUpperCase();
+const shanghai = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" });
+const validDay = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+const previousDay = (day: string) => new Date(Date.parse(`${day}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+// A business date bounds precise and attached knowledge in Shanghai. Source
+// date-only fills retain their day-granular selection through visible IDs.
+const dayBoundary = (day: string): Boundary => ({ day, cursor: `${day}T15:59:59.999Z` });
+// Keep the canonical month-only knowledge rule even if a display hint exists.
+const eventAt = (event: StatementEvent) => statementEventAt(event.date.length === 7 ? { ...event, displayTimePolicy: undefined } : event);
+function parseAsOf(value: string | undefined): Boundary | null {
+  if (!value) return null;
+  if (validDay(value)) return dayBoundary(value);
+  if (!/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) || !Number.isFinite(Date.parse(value))) return null;
+  return { day: shanghai.format(new Date(value)), cursor: new Date(value).toISOString(), instant: Date.parse(value) };
+}
+function executionDay(execution: TradeExecution): string | null {
+  try {
+    if (execution.source.timePrecision === "date-only" || execution.executedAt.length === 10) return replayExecutionAt(execution).slice(0, 10);
+    return Number.isFinite(Date.parse(execution.executedAt)) ? shanghai.format(new Date(execution.executedAt)) : null;
+  } catch { return null; }
+}
+function visible(execution: TradeExecution, boundary: Boundary): boolean {
+  const day = executionDay(execution);
+  if (!day) return false;
+  if (day > boundary.day) return false;
+  if (boundary.instant === undefined) return true;
+  const at = execution.source.timePrecision === "date-only" || execution.executedAt.length === 10 ? replayExecutionAt(execution) : execution.executedAt;
+  return Date.parse(at) <= boundary.instant;
+}
+function normalizedExecution(execution: TradeExecution): { execution: TradeExecution; pnl: string[]; quantity: string[] } {
+  const pnl: string[] = [], quantity: string[] = [];
+  const size = D(execution.quantity), price = D(execution.price), fee = D(execution.fee);
+  if (!size || size.lte(0)) quantity.push("quantity-invalid");
+  if (!price || price.lt(0)) pnl.push("execution-price-invalid");
+  if (!fee || fee.lt(0)) pnl.push("fees-invalid");
+  let settlement = execution.source.settlement;
+  const normalizedFee = fee && fee.gte(0) ? fee : new Decimal(0);
+  if (settlement) {
+    const sq = D(settlement.quantity), gross = D(settlement.grossAmount), fees = Object.values(settlement.fees).map(D);
+    if (!sq || sq.lte(0) || !gross || gross.lt(0)) { pnl.push("settlement-value-invalid"); settlement = undefined; }
+    else if (fees.some(value => !value || value.lt(0))) { pnl.push("fees-invalid"); settlement = undefined; }
+    else {
+      const settlementFee = fees.reduce<Decimal>((sum, value) => sum.plus(value!), new Decimal(0));
+      if (fee && !fee.eq(settlementFee)) pnl.push("fees-conflict");
+    }
+  }
+  // Invalid values never reach Decimal in the canonical ledger. The explicit
+  // evidence gates below retain the failure while allowing known quantity.
+  return { execution: { ...execution, quantity: size?.gt(0) ? size.toString() : "0", price: price?.gte(0) ? price.toString() : "0", fee: normalizedFee.toString(), source: { ...execution.source, settlement } }, pnl, quantity };
+}
+function collect(input: HomepageV25Input): { groups: Group[]; scope: HomepageV25Performance["scope"] } {
+  const real = input.entries !== undefined;
+  const requested = input.scope ?? { nature: "live" as const };
+  const scope: HomepageV25Performance["scope"] = { nature: real ? requested.nature : "caller-scoped", simulationRunId: requested.simulationRunId ?? null, includedExecutions: 0, excludedExecutions: 0, excludedByReason: {} };
+  const excluded = scope.excludedByReason as Record<string, number>;
+  const groups = new Map<string, Group>();
+  const groupFor = (accountId: string, instrument: Instrument, nature: Identity["nature"], run: string | null) => {
+    const key = `${accountId}|${instrument.id}${real ? `|${nature}|${run ?? ""}` : ""}`;
+    let group = groups.get(key);
+    if (!group) { group = { key, identity: { accountId, instrumentId: instrument.id, nature, simulationRunId: run }, instrument, executions: [], valuations: [], seeds: [], conflicts: new Set(), inventoryConflict: false }; groups.set(key, group); }
+    return group;
+  };
+  const raw = real ? input.entries!.flatMap(entry => entry.executions ?? []) : [...input.executions];
+  const seen = new Map<string, TradeExecution>();
+  for (const execution of raw) {
+    const nature = tradeNatureOf(execution), run = execution.source.simulationRunId ?? null;
+    const reject = real && (nature !== requested.nature ? `nature:${nature}` : requested.nature === "simulation" && (!requested.simulationRunId || run !== requested.simulationRunId) ? "simulation-run" : requested.accountIds && !requested.accountIds.includes(execution.accountId) ? "account" : requested.markets && !requested.markets.includes(execution.instrument.market) ? "market" : null);
+    if (reject) { scope.excludedExecutions++; excluded[reject] = (excluded[reject] ?? 0) + 1; continue; }
+    const group = groupFor(execution.accountId, execution.instrument, real ? nature : "caller-scoped", real ? run : null);
+    const identity = `${group.key}|${execution.id}`;
+    const prior = seen.get(identity);
+    if (prior) {
+      if (JSON.stringify(prior) !== JSON.stringify(execution)) {
+        group.conflicts.add("duplicate-execution-conflict");
+        const inventory = (e: TradeExecution) => JSON.stringify([D(e.quantity)?.toString() ?? e.quantity, e.side, e.executedAt, e.instrument.symbol, e.instrument.market, e.source.timePrecision, e.source.tradingDate, e.source.marketCalendarDate, e.source.positionEffect]);
+        if (inventory(prior) !== inventory(execution)) group.inventoryConflict = true;
+      }
+      continue;
+    }
+    seen.set(identity, execution); group.executions.push(execution); scope.includedExecutions++;
+    if (currency(group.instrument.currency) !== currency(execution.instrument.currency)) group.conflicts.add("currency-conflict");
+  }
+  if (real) {
+    // entry.executions is the original fill lineage. Episode parts can retain
+    // the whole settlement, so they must never be flattened as fresh fills.
+    for (const entry of input.entries!) for (const item of entry.episodes) {
+      const episode = item.episode;
+      const nature = episode.tradeNature ?? (episode.executions[0] ? tradeNatureOf(episode.executions[0]) : "unknown");
+      const run = episode.simulationRunId ?? null;
+      if (nature !== requested.nature || requested.nature === "simulation" && run !== requested.simulationRunId || requested.accountIds && !requested.accountIds.includes(episode.accountId) || requested.markets && !requested.markets.includes(episode.instrument.market)) continue;
+      const group = groupFor(episode.accountId, episode.instrument, nature, run);
+      if (!entry.executions?.length) { group.conflicts.add("execution-lineage-unavailable"); continue; }
+      if (!group?.executions.length) continue;
+      const carrier = group.executions[0];
+      const events = [...(episode.positionEvents ?? []), ...episode.executions.flatMap(e => e.source.positionEvents ?? [])];
+      const positions = [...(episode.initialPosition ? [episode.initialPosition] : []), ...episode.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])];
+      group.executions[0] = { ...carrier, source: { ...carrier.source, positionEvents: [...(carrier.source.positionEvents ?? []), ...events], statementPositions: [...(carrier.source.statementPositions ?? []), ...positions] } };
+    }
+  } else {
+    const instrumentFor = (id: string, code: string): Instrument => ({ id, symbol: id.split(":").at(-1) ?? id, market: id.split(":")[0], name: id, currency: code });
+    for (const p of input.openingPositions) groupFor(p.accountId, instrumentFor(p.instrumentId, p.currency), "caller-scoped", null).seeds.push(p);
+    for (const v of input.valuations) groupFor(v.accountId, instrumentFor(v.instrumentId, v.currency), "caller-scoped", null).valuations.push(v);
+  }
+  return { groups: [...groups.values()], scope };
+}
+function seedExecutions(group: Group, start: string): TradeExecution[] {
+  return group.seeds.map((position, index) => ({ id: `homepage-boundary:${index}`, accountId: position.accountId, accountLabel: position.accountId, instrument: { ...group.instrument, currency: position.currency }, side: position.direction === "long" ? "buy" : "sell", quantity: position.quantity, price: position.unitCost, fee: "0", executedAt: `${previousDay(start)}T00:00:00Z`, source: { platform: "homepage-boundary", row: index, positionEffect: position.direction === "long" ? "open-long" : "open-short" } }));
+}
+function replay(group: Group, boundary: Boundary, start: string): State {
+  const originals = [...seedExecutions(group, start), ...group.executions];
+  const selected = originals.filter(e => visible(e, boundary)).sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)) || (a.source.sourceOrder ?? a.source.row) - (b.source.sourceOrder ?? b.source.row) || a.id.localeCompare(b.id));
+  const pnl = new Set<string>(group.conflicts), quantityReasons = new Set<string>([...group.conflicts].filter(reason => reason === "execution-lineage-unavailable"));
+  if (group.inventoryConflict) quantityReasons.add("duplicate-execution-conflict");
+  if (originals.some(e => executionDay(e) === null)) { pnl.add("execution-time-invalid"); quantityReasons.add("execution-time-invalid"); }
+  const normalized = originals.map(normalizedExecution);
+  const normalizedById = new Map(normalized.map(e => [e.execution.id, e]));
+  for (const e of selected) {
+    const errors = normalizedById.get(e.id)!;
+    errors.pnl.forEach(reason => pnl.add(reason)); errors.quantity.forEach(reason => quantityReasons.add(reason));
+  }
+  const safe = normalized.map(e => e.execution);
+  const snapshot = (ids: string[], cursor: string, executions = safe): PositionLedgerSnapshot => {
+    try { return replayPositionAtPrice({ executions, markPrice: "0", cursor, visibleExecutionIds: ids }); }
+    catch (error) {
+      // Imported evidence can contain malformed decimal fields. Classify that
+      // evidence at this adapter boundary; placeholders never become money.
+      if (!(error instanceof Error) || !error.message.includes("DecimalError")) throw error;
+      return { quantity: "0", averageCost: "0", realizedPnl: "0", unrealizedPnl: "0", netPnl: "0", fees: "0", grossCapitalDeployed: "0", returnPercent: "0", quantityKnown: false, costKnown: false, accuracy: { pnl: "unavailable", reasons: ["evidence-invalid"] } };
+    }
+  };
+  const actual = selected.map(e => normalizedById.get(e.id)!.execution).filter(e => tradeNatureOf(e) !== "simulation");
+  const knownEvents = [...new Map(safe.flatMap(e => e.source.positionEvents ?? []).map(event => [`${event.accountId}:${event.id}`, event])).values()].filter(event => eventAt(event) <= boundary.cursor);
+  const allocations = safe.some(e => tradeNatureOf(e) !== "simulation") ? knownEvents.filter(event => event.kind === "ipo" && D(event.quantity)?.gt(0) && event.accountId === group.identity.accountId && event.symbol && event.market && canonicalInstrumentId(event.symbol, event.market) === canonicalInstrumentId(group.instrument.symbol, group.instrument.market) && !isExecutionBackedIpoAllocation(event, actual)) : [];
+  // The same selected fills that make canonical skip a repeated allotment
+  // must also suppress that allotment in every fee movement prefix.
+  const feeExecutions = knownEvents.some(event => isExecutionBackedIpoAllocation(event, actual)) ? safe.map(e => ({ ...e, source: { ...e.source, positionEvents: e.source.positionEvents?.filter(event => !isExecutionBackedIpoAllocation(event, actual)) } })) : safe;
+  type Step = { at: string; rank: number; execution?: TradeExecution; allocation?: StatementEvent };
+  const steps: Step[] = [
+    ...selected.map(e => ({ at: replayExecutionAt(e), rank: 3, execution: normalizedById.get(e.id)!.execution })),
+    ...allocations.map(allocation => ({ at: eventAt(allocation), rank: 2, allocation })),
+  ].sort((a, b) => a.at.localeCompare(b.at) || a.rank - b.rank);
+  // An IPO may acquire stock before its refund is known. Project only fees,
+  // using this boundary's cash knowledge and canonical inventory at each
+  // movement prefix. Never reconstruct cost or realized profit here.
+  const beforeStep = (ids: string[], step: Step) => {
+    if (!allocations.length) return snapshot(ids, step.at > boundary.cursor ? boundary.cursor : step.at, feeExecutions);
+    const precedes = (at: string, rank: number) => at < step.at || at === step.at && rank < step.rank;
+    const prefix = feeExecutions.map(e => ({ ...e, source: { ...e.source,
+      positionEvents: e.source.positionEvents?.filter(event => event.kind === "fee" || event.kind === "ipo" && event.quantity === undefined || precedes(eventAt(event), 2)),
+      statementPositions: e.source.statementPositions?.filter(position => precedes(statementPositionAt(position), position.phase === "opening" ? 0 : 4)),
+      openingPosition: e.source.openingPosition && precedes(statementPositionAt(e.source.openingPosition), e.source.openingPosition.phase === "opening" ? 0 : 4) ? e.source.openingPosition : undefined,
+    } }));
+    return snapshot(ids, boundary.cursor, prefix);
+  };
+  let ids: string[] = [], pool: Decimal | null = new Decimal(0), projectedFees = new Decimal(0);
+  for (const step of steps) {
+    const before = beforeStep(ids, step);
+    if (before.quantityKnown === false) pool = null;
+    const beforeQuantity = D(before.quantity)!;
+    const e = step.execution;
+    const cost = step.allocation ? resolveIpoAcquisitionCost(step.allocation, knownEvents, actual, group.instrument.currency) : undefined;
+    const size = D(e?.quantity ?? step.allocation!.quantity)!;
+    const fee = e ? D(e.fee)! : cost ? D(cost.feeCost)! : null;
+    if (!fee || fee.lt(0)) { pool = null; pnl.add("ipo-fee-allocation-unavailable"); }
+    else projectedFees = projectedFees.plus(fee);
+    const side = e?.side ?? "buy";
+    const closes = (side === "sell" && beforeQuantity.gt(0)) || (side === "buy" && beforeQuantity.lt(0));
+    const closed = closes ? Decimal.min(beforeQuantity.abs(), size) : new Decimal(0);
+    const opensShort = e?.side === "sell" && size.gt(Decimal.max(beforeQuantity, 0));
+    if (opensShort && e?.source.positionEffect !== "open-short") { pnl.add("execution-direction-unavailable"); quantityReasons.add("execution-direction-unavailable"); }
+    if (e && ((e.source.positionEffect === "close-long" && (beforeQuantity.lte(0) || size.gt(beforeQuantity))) || (e.source.positionEffect === "close-short" && (beforeQuantity.gte(0) || size.gt(beforeQuantity.abs()))))) {
+      pnl.add("position-coverage-missing"); quantityReasons.add("position-coverage-missing");
+    }
+    if (pool && fee && size.gt(0)) {
+      const allocated: Decimal = closed.gt(0) ? pool.mul(closed).div(beforeQuantity.abs()) : new Decimal(0);
+      pool = pool.minus(allocated).plus(fee.mul(size.minus(closed)).div(size));
+    }
+    if (e) ids = [...ids, e.id];
+  }
+  const ledger = snapshot(ids, boundary.cursor);
+  if (text(projectedFees) !== ledger.fees) { pool = null; pnl.add("fee-allocation-unavailable"); }
+  ledger.accuracy?.reasons.forEach(reason => pnl.add(reason));
+  if (ledger.quantityKnown === false) {
+    quantityReasons.add("quantity-unavailable");
+    ledger.accuracy?.reasons.forEach(reason => quantityReasons.add(reason));
+  }
+  if (quantityReasons.size) quantityReasons.forEach(reason => pnl.add(reason));
+  const quantity = quantityReasons.size ? null : D(ledger.quantity);
+  const grossRealized = pnl.size || ledger.costKnown === false ? null : D(ledger.realizedPnl);
+  if ([...pnl].some(reason => reason.includes("fee"))) pool = null;
+  return { boundary, ledger, quantity, grossRealized, openFees: pool, netRealized: grossRealized && pool ? grossRealized.minus(D(ledger.fees)!).plus(pool) : null,
+    pnlReasons: [...pnl], quantityReasons: [...quantityReasons], executions: selected.filter(e => e.source.platform !== "homepage-boundary") };
+}
+function quoteFor(input: HomepageV25Input, group: Group, kind: HomepageV25Valuation["kind"], boundary: Boundary): QuoteSelection {
+  if (input.entries !== undefined) {
+    const market = group.instrument.market;
+    if (market !== "US" && market !== "HK" && market !== "CN-SH" && market !== "CN-SZ") return { quote: null, reason: "quote-market-unsupported" };
+    let completed: string;
+    try {
+      // Shanghai dates bound executions and reporting. Daily raw closes have
+      // the exchange's independent knowledge cutoff, including DST/half days.
+      completed = requiredMarketDataRange(boundary.cursor, boundary.cursor, { market, open: true, now: new Date(boundary.cursor) }).endDate;
+    } catch (error) {
+      if (!(error instanceof CalendarOutOfRangeError)) throw error;
+      return { quote: null, reason: "quote-session-unavailable" };
+    }
+    const candles = input.candlesByInstrument?.[group.instrument.id] ?? [];
+    const candidates = candles.filter(c => c.instrumentId === group.instrument.id && c.adjustmentMode === "raw" && validDay(c.tradingDate) && c.tradingDate <= completed).sort((a, b) => b.tradingDate.localeCompare(a.tradingDate));
+    let unconfirmed = false;
+    for (const candidate of candidates) {
+      try {
+        // A stale weekend/holiday raw row can be below the cutoff, so the
+        // candidate itself must also belong to the supported calendar.
+        if (!expectedTradingDates(market, candidate.tradingDate, candidate.tradingDate).length) continue;
+      } catch (error) {
+        if (!(error instanceof CalendarOutOfRangeError)) throw error;
+        unconfirmed = true;
+        continue;
+      }
+      return { quote: { date: candidate.tradingDate, price: candidate.close, currency: candidate.currency, source: candidate.provider } };
+    }
+    return { quote: null, reason: unconfirmed ? "quote-session-unavailable" : "quote-missing" };
+  }
+  // In the compatibility API an explicit period-start record is a supplied
+  // boundary mark, not a first-day candle. Raw-candle callers use entries.
+  const quotes = group.valuations.filter(v => v.kind === kind && validDay(v.date) && (v.date <= boundary.day || kind === "period-start" && v.date === input.period.start)).sort((a, b) => b.date.localeCompare(a.date));
+  const quote = quotes[0];
+  return { quote: quote ? { ...quote, source: "caller-boundary" } : null };
+}
+function amount(group: Group, state: State, quote: Quote | null, type: "unrealized" | "market", eligible = true, quoteReason?: string): Amount {
+  const reasons = new Set(type === "market" ? state.quantityReasons : state.pnlReasons);
+  let quantity = state.quantity;
+  if (quote?.quantity !== undefined) {
+    const supplied = D(quote.quantity);
+    if (!supplied) reasons.add("quantity-invalid");
+    else if (type === "market") quantity = supplied;
+    else if (quantity && !quantity.eq(supplied)) reasons.add("valuation-quantity-mismatch");
+  }
+  if (!quantity) reasons.add("quantity-unavailable");
+  if (quantity?.isZero() && !state.quantityReasons.length && (quote?.quantity === undefined || D(quote.quantity)?.isZero())) return { currency: currency(group.instrument.currency), value: new Decimal(0), reasons: [], eligible };
+  if (!quote || !D(quote.price) || D(quote.price)!.lt(0)) reasons.add(quote?.reason ?? quoteReason ?? "quote-missing");
+  if (quote && currency(quote.currency) !== currency(group.instrument.currency)) reasons.add("quote-currency-mismatch");
+  if (quote?.reason) reasons.add(quote.reason);
+  if (type === "unrealized" && (state.ledger.costKnown === false || !state.openFees)) reasons.add("cost-unavailable");
+  const price = quote ? D(quote.price) : null;
+  const value = reasons.size || !quantity || !price ? null : type === "market" ? price.mul(quantity) : price.minus(D(state.ledger.averageCost)!).mul(quantity).minus(state.openFees!);
+  return { currency: currency(group.instrument.currency), value, reasons: [...reasons], eligible };
+}
+function metric(amounts: Amount[], input: HomepageV25Input, asOf: Boundary | null): HomepageV25Metric {
+  const eligible = amounts.filter(a => a.eligible);
+  const reasons = new Set(eligible.flatMap(a => a.reasons));
+  const original = new Map<string, Decimal>();
+  for (const a of eligible) if (a.value !== null) original.set(a.currency, (original.get(a.currency) ?? new Decimal(0)).plus(a.value));
+  const target = input.targetCurrency ? currency(input.targetCurrency) : null;
+  const snapshot = input.fxSnapshot;
+  const provenance = snapshot ? { id: snapshot.id, source: snapshot.source, asOf: snapshot.asOf, status: snapshot.status } : null;
+  const money: HomepageV25Money = { originalByCurrency: Object.fromEntries([...original].map(([code, value]) => [code, text(value)])), targetCurrency: target, conversion: "same-currency", fx: provenance };
+  const rate = (code: string): Decimal | null => {
+    if (code === "CNY") return new Decimal(1);
+    for (const key of [`${code}/CNY`, `${code}:CNY`]) { const value = D(snapshot?.rates[key]); if (value?.gt(0)) return value; }
+    return null;
+  };
+  const convert = (a: Amount): Decimal | null => {
+    if (a.value === null) return null;
+    if (!target || target === a.currency) return a.value;
+    if (!snapshot) { reasons.add("fx-missing"); money.conversion = "missing"; return null; }
+    if (snapshot.status !== "complete") { reasons.add("fx-incomplete"); money.conversion = "partial"; return null; }
+    const fxBoundary = parseAsOf(snapshot.asOf);
+    if (!fxBoundary || !asOf || Date.parse(fxBoundary.cursor) > Date.parse(asOf.cursor)) { reasons.add("fx-future"); money.conversion = "partial"; return null; }
+    const sourceRate = rate(a.currency), targetRate = rate(target);
+    if (!sourceRate || !targetRate) { reasons.add("fx-rate-invalid"); money.conversion = "partial"; return null; }
+    if (money.conversion === "same-currency") money.conversion = "complete";
+    return a.value.mul(sourceRate).div(targetRate);
+  };
+  const values = eligible.map(convert);
+  if (!target && original.size > 1) reasons.add("target-currency-required");
+  const complete = values.every(value => value !== null) && !(original.size > 1 && !target);
+  if (!complete && money.conversion !== "missing") money.conversion = "partial";
+  const sum = complete ? values.reduce<Decimal>((total, value) => total.plus(value!), new Decimal(0)) : null;
+  return { value: sum === null ? null : text(sum), available: sum !== null, coverage: { total: eligible.length, available: values.filter(value => value !== null).length }, reasons: [...reasons], money };
+}
+function evidence(state: State, quote: Quote | null, quoteReason?: string): SnapshotEvidence {
+  // Fee-only adapter failures do not erase cost already proved by canonical
+  // inventory. Canonical unknown-cost and non-fee ambiguities remain gates.
+  const costKnown = state.quantity !== null && state.ledger.costKnown !== false && state.pnlReasons.every(reason => reason.startsWith("fees-") || reason === "fee-allocation-unavailable" || reason === "ipo-fee-allocation-unavailable");
+  return { knowledgeCursor: state.boundary.cursor, executionIds: state.executions.map(e => e.id), quantity: state.quantity === null ? null : text(state.quantity), costKnown, feesKnown: state.openFees !== null, openFees: state.openFees === null ? null : text(state.openFees), reasons: unique([...state.pnlReasons, ...state.quantityReasons, ...(quoteReason ? [quoteReason] : [])]), quote: quote ? { date: quote.date, price: quote.price, currency: quote.currency, source: quote.source } : null };
+}
+/** Preferred production API: explicit current cutoff, original library fills and live scope by default. */
+export function buildHomepageV25PerformanceFromEntries(input: HomepageV25EntriesInput): HomepageV25Performance {
+  return buildHomepageV25Performance({ ...input, executions: [], openingPositions: [], valuations: [] });
+}
+/** Pure compatibility input is caller-scoped; real entries are always scope-checked here. */
+export function buildHomepageV25Performance(input: HomepageV25Input): HomepageV25Performance {
+  const asOf = parseAsOf(input.asOf);
+  const validPeriod = validDay(input.period.start) && validDay(input.period.end) && input.period.start <= input.period.end;
+  const effectiveEnd = asOf && validPeriod ? (input.period.end < asOf.day ? input.period.end : asOf.day) : null;
+  const boundary: HomepageV25Performance["boundary"] = { businessTimezone: "Asia/Shanghai", asOf: asOf ? input.asOf! : null, effectiveEnd, periodStart: input.period.start, requestedEnd: input.period.end };
+  const collected = collect(input);
+  const invalid = !asOf ? input.asOf ? "as-of-invalid" : "as-of-required" : !validPeriod ? "period-invalid" : input.scope?.nature === "simulation" && !input.scope.simulationRunId ? "simulation-run-required" : null;
+  if (invalid) {
+    const failed = metric([{ currency: input.targetCurrency ?? "", value: null, reasons: [invalid], eligible: true }], input, asOf);
+    return { boundary, scope: collected.scope, periodRealized: failed, openingUnrealized: failed, closingUnrealized: failed, net: failed, currentMarketValue: failed, currentUnrealized: failed, currentOpenFees: failed, instruments: [], reasons: [invalid] };
+  }
+  const periodNotStarted = input.period.start > effectiveEnd!;
+  const startBoundary = periodNotStarted ? asOf! : dayBoundary(previousDay(input.period.start));
+  const endBoundary = effectiveEnd === asOf!.day ? asOf! : dayBoundary(effectiveEnd!);
+  const realizedAmounts: Amount[] = [], openingAmounts: Amount[] = [], closingAmounts: Amount[] = [], netAmounts: Amount[] = [], currentAmounts: Amount[] = [];
+  const currentUnrealizedAmounts: Amount[] = [], currentOpenFeeAmounts: Amount[] = [];
+  const instruments: HomepageV25InstrumentResult[] = [];
+  for (const group of collected.groups) {
+    const states = new Map<string, State>();
+    const atBoundary = (b: Boundary) => {
+      const key = `${b.day}|${b.cursor}|${b.instant ?? "day"}`;
+      let state = states.get(key);
+      if (!state) { state = replay(group, b, input.period.start); states.set(key, state); }
+      return state;
+    };
+    const start = atBoundary(startBoundary), end = atBoundary(endBoundary), current = atBoundary(asOf!);
+    const { quote: startQuote, reason: startQuoteReason } = quoteFor(input, group, "period-start", startBoundary);
+    const { quote: endQuote, reason: endQuoteReason } = quoteFor(input, group, "period-end", endBoundary);
+    const { quote: currentQuote, reason: currentQuoteReason } = quoteFor(input, group, "current", asOf!);
+    const code = currency(group.instrument.currency);
+    const eligible = start.executions.length > 0 || end.executions.length > 0 || group.seeds.length > 0 || group.valuations.some(v => v.kind !== "current") || start.quantity === null || end.quantity === null || Boolean(start.quantity?.gt(0) || end.quantity?.abs().gt(0));
+    const realized: Amount = { currency: code, value: start.netRealized !== null && end.netRealized !== null ? end.netRealized.minus(start.netRealized) : null, reasons: unique([...start.pnlReasons, ...end.pnlReasons]), eligible };
+    const opening = amount(group, start, startQuote, "unrealized", eligible, startQuoteReason), closing = amount(group, end, endQuote, "unrealized", eligible, endQuoteReason);
+    const net: Amount = { currency: code, value: realized.value !== null && opening.value !== null && closing.value !== null ? realized.value.plus(closing.value).minus(opening.value) : null, reasons: unique([...realized.reasons, ...opening.reasons, ...closing.reasons]), eligible };
+    if (input.period.start > effectiveEnd!) { for (const a of [realized, opening, closing, net]) { a.value = null; a.eligible = true; a.reasons = ["period-not-started"]; } }
+    const missingCurrentEvidence = input.entries === undefined && !currentQuote && group.valuations.some(v => v.kind === "period-end" && v.date <= asOf!.day && (!D(v.quantity) || !D(v.quantity)!.isZero()));
+    const currentEligible = missingCurrentEvidence || current.quantity === null || !current.quantity.isZero() || Boolean(currentQuote?.quantity !== undefined && (!D(currentQuote.quantity) || !D(currentQuote.quantity)!.isZero()));
+    const currentAmount = amount(group, current, currentQuote, "market", currentEligible, currentQuoteReason);
+    const currentUnrealized = amount(group, current, currentQuote, "unrealized", currentEligible, currentQuoteReason);
+    const currentOpenFees: Amount = { currency: code, value: current.quantity === null ? null : current.openFees, eligible: currentEligible,
+      reasons: unique([...current.quantityReasons, ...(current.openFees === null ? [...current.pnlReasons.filter(reason => reason.includes("fee")), "fee-allocation-unavailable"] : [])]) };
+    if (missingCurrentEvidence) { for (const a of [currentAmount, currentUnrealized]) { a.value = null; a.reasons = unique([...a.reasons, "quote-missing"]); } }
+    realizedAmounts.push(realized); openingAmounts.push(opening); closingAmounts.push(closing); netAmounts.push(net); currentAmounts.push(currentAmount);
+    currentUnrealizedAmounts.push(currentUnrealized); currentOpenFeeAmounts.push(currentOpenFees);
+    instruments.push({ key: group.key, identity: group.identity, periodRealized: metric([realized], input, asOf), openingUnrealized: metric([opening], input, asOf), closingUnrealized: metric([closing], input, asOf), net: metric([net], input, asOf), currentMarketValue: metric([currentAmount], input, asOf), currentUnrealized: metric([currentUnrealized], input, asOf), currentOpenFees: metric([currentOpenFees], input, asOf), evidence: { executionIds: current.executions.map(e => e.id), opening: evidence(start, startQuote, startQuoteReason), closing: evidence(end, endQuote, endQuoteReason), current: evidence(current, currentQuote, currentQuoteReason) } });
+  }
+  // An empty input still has a meaningful time boundary. No source rows must
+  // not turn a future reporting period into an available zero.
+  if (periodNotStarted && collected.groups.length === 0) {
+    for (const amounts of [realizedAmounts, openingAmounts, closingAmounts, netAmounts]) amounts.push({ currency: input.targetCurrency ?? "", value: null, reasons: ["period-not-started"], eligible: true });
+  }
+  const result = { boundary, scope: collected.scope, periodRealized: metric(realizedAmounts, input, asOf), openingUnrealized: metric(openingAmounts, input, asOf), closingUnrealized: metric(closingAmounts, input, asOf), net: metric(netAmounts, input, asOf), currentMarketValue: metric(currentAmounts, input, asOf), currentUnrealized: metric(currentUnrealizedAmounts, input, asOf), currentOpenFees: metric(currentOpenFeeAmounts, input, asOf), instruments };
+  return { ...result, reasons: unique([result.periodRealized, result.openingUnrealized, result.closingUnrealized, result.net, result.currentMarketValue, result.currentUnrealized, result.currentOpenFees].flatMap(m => m.reasons)) };
+}

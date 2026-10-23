@@ -1,0 +1,30 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:14205) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (92 tests | 1 failed | 91 skipped) 1192ms
+     × connects the production homepage holding detail to an ordinary collection without choosing a first episode 1189ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > connects the production homepage holding detail to an ordinary collection without choosing a first episode
+Error: expect(element).toBeInTheDocument()
+
+element could not be found in the document
+ ❯ app/components/trade-review-workspace.test.tsx:720:64
+    718|     expect(screen.getByRole("dialog", { name: "首页真实持仓 持仓详情" })).toBeIn…
+    719|     fireEvent.click(screen.getByRole("button", { name: "查看交易", exact: …
+    720|     expect(await screen.findByRole("region", { name: "交易库" })).toBeInT…
+       |                                                                ^
+    721|     expect(location.pathname).toBe("/trades");
+    722|     expect(location.search).toContain("symbol=SSE%3A600519");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 91 skipped (92)
+   Start at  01:12:08
+   Duration  8.20s (transform 4.09s, setup 186ms, import 5.24s, tests 1.19s, environment 1.20s)
+

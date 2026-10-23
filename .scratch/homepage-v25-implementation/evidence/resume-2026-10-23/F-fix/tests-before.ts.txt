@@ -1,0 +1,171 @@
+import { describe, expect, it } from "vitest";
+import { buildHomepageV25Performance, type HomepageV25Input } from "./homepage-v25-performance";
+import type { TradeExecution } from "../trades/types";
+
+const execution = (overrides: Partial<TradeExecution> & Pick<TradeExecution, "id" | "side" | "quantity" | "price" | "fee" | "executedAt">): TradeExecution => ({
+  id: overrides.id,
+  accountId: "account-a",
+  accountLabel: "A",
+  instrument: { id: "CN:AAA", symbol: "AAA", name: "AAA", market: "CN", currency: "CNY" },
+  side: overrides.side,
+  quantity: overrides.quantity,
+  price: overrides.price,
+  fee: overrides.fee,
+  executedAt: overrides.executedAt,
+  source: { platform: "statement", row: 1, ...overrides.source },
+});
+
+const base = (overrides: Partial<HomepageV25Input> = {}): HomepageV25Input => ({
+  period: { start: "2026-01-01", end: "2026-12-31" },
+  executions: [],
+  openingPositions: [],
+  valuations: [],
+  ...overrides,
+});
+
+describe("homepage v2.5 financial projection", () => {
+  it("uses opening and closing unrealized values for a cross-year period", () => {
+    const result = buildHomepageV25Performance(base({
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "CNY" }],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "120", currency: "CNY", kind: "period-start" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "100", currency: "CNY", kind: "period-end" },
+      ],
+    }));
+    expect(result.periodRealized.value).toBe("0");
+    expect(result.openingUnrealized.value).toBe("20");
+    expect(result.closingUnrealized.value).toBe("0");
+    expect(result.net.value).toBe("-20");
+  });
+
+  it("realizes only the matched quantity for a partial close and charges each fee once", () => {
+    const result = buildHomepageV25Performance(base({
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "2", unitCost: "100", currency: "CNY" }],
+      executions: [execution({ id: "sell-1", side: "sell", quantity: "1", price: "180", fee: "0", executedAt: "2026-06-01T00:00:00Z", source: { platform: "statement", row: 1, positionEffect: "close-long" } })],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "2", price: "150", currency: "CNY", kind: "period-start" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "160", currency: "CNY", kind: "period-end" },
+      ],
+    }));
+    expect(result.periodRealized.value).toBe("80");
+    expect(result.openingUnrealized.value).toBe("100");
+    expect(result.closingUnrealized.value).toBe("60");
+    expect(result.net.value).toBe("40");
+  });
+
+  it("covers the real cross-year execution path: 100 cost, 150 close, zero closing float", () => {
+    const result = buildHomepageV25Performance(base({
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "CNY" }],
+      executions: [execution({ id: "year-close", side: "sell", quantity: "1", price: "150", fee: "0", executedAt: "2026-06-01T00:00:00Z", source: { platform: "statement", row: 1, positionEffect: "close-long" } })],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "100", currency: "CNY", kind: "period-start" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "0", price: "150", currency: "CNY", kind: "period-end" },
+      ],
+    }));
+    expect(result.periodRealized.value).toBe("50");
+    expect(result.openingUnrealized.value).toBe("0");
+    expect(result.closingUnrealized.value).toBe("0");
+    expect(result.net.value).toBe("50");
+  });
+
+  it("supports short executions without turning an unproven generic sell into a short", () => {
+    const result = buildHomepageV25Performance(base({
+      executions: [
+        execution({ id: "open", side: "sell", quantity: "2", price: "200", fee: "2", executedAt: "2026-02-01T00:00:00Z", source: { platform: "statement", row: 1, positionEffect: "open-short" } }),
+        execution({ id: "close", side: "buy", quantity: "1", price: "150", fee: "1", executedAt: "2026-03-01T00:00:00Z", source: { platform: "statement", row: 2, positionEffect: "close-short" } }),
+      ],
+      valuations: [{ date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "-1", price: "140", currency: "CNY", kind: "period-end" }],
+    }));
+    expect(result.periodRealized.value).toBe("48");
+    expect(result.closingUnrealized.value).toBe("59");
+    expect(result.net.value).toBe("107");
+
+    const ambiguous = buildHomepageV25Performance(base({
+      executions: [execution({ id: "sell", side: "sell", quantity: "1", price: "200", fee: "0", executedAt: "2026-02-01T00:00:00Z" })],
+    }));
+    expect(ambiguous.periodRealized.available).toBe(false);
+    expect(ambiguous.reasons).toContain("execution-direction-unavailable");
+  });
+
+  it("keeps current market value independent from period selection", () => {
+    const input = base({
+      valuations: [
+        { date: "2026-01-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "100", currency: "CNY", kind: "period-end" },
+        { date: "2026-10-22", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "130", currency: "CNY", kind: "current" },
+      ],
+    });
+    const result = buildHomepageV25Performance(input);
+    expect(result.currentMarketValue.value).toBe("130");
+  });
+
+  it("reports missing market data and FX instead of manufacturing zero", () => {
+    const result = buildHomepageV25Performance(base({
+      valuations: [{ date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: null, currency: "USD", kind: "period-end", reason: "quote-missing" }],
+      targetCurrency: "CNY",
+      fxSnapshot: { id: "fx", baseCurrency: "CNY", asOf: "2026-12-31", source: "test", status: "complete", rates: { USD: "7", HKD: "0.9", CNY: "1" } },
+    }));
+    expect(result.closingUnrealized.value).toBeNull();
+    expect(result.closingUnrealized.available).toBe(false);
+    expect(result.currentMarketValue.value).toBeNull();
+    expect(result.reasons).toEqual(expect.arrayContaining(["quote-missing"]));
+  });
+
+  it("keeps opening mark, realized sale, and zero closing inventory in the net bridge", () => {
+    const result = buildHomepageV25Performance(base({
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "CNY" }],
+      executions: [execution({ id: "cross-year-sale", side: "sell", quantity: "1", price: "250", fee: "0", executedAt: "2026-06-01T00:00:00Z", source: { platform: "statement", row: 1, positionEffect: "close-long" } })],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "200", currency: "CNY", kind: "period-start" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "0", price: "0", currency: "CNY", kind: "period-end" },
+      ],
+    }));
+    expect(result.openingUnrealized.value).toBe("100");
+    expect(result.periodRealized.value).toBe("150");
+    expect(result.closingUnrealized.value).toBe("0");
+    expect(result.net.value).toBe("50");
+  });
+
+  it("assigns executions without an explicit trading date in Shanghai business time", () => {
+    const result = buildHomepageV25Performance(base({
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "CNY" }],
+      executions: [execution({ id: "shanghai-midnight", side: "sell", quantity: "1", price: "150", fee: "0", executedAt: "2025-12-31T16:30:00Z", source: { platform: "statement", row: 1, positionEffect: "close-long" } })],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "100", currency: "CNY", kind: "period-start" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "0", price: "0", currency: "CNY", kind: "period-end" },
+      ],
+    }));
+    expect(result.periodRealized.value).toBe("50");
+  });
+
+  it("converts settlement realized PnL into the selected target currency", () => {
+    const result = buildHomepageV25Performance(base({
+      targetCurrency: "CNY",
+      fxSnapshot: { id: "fx", baseCurrency: "CNY", asOf: "2026-12-31", source: "test", status: "complete", rates: { USD: "7", HKD: "0.9", CNY: "1" } },
+      openingPositions: [{ accountId: "account-a", instrumentId: "CN:AAA", direction: "long", quantity: "1", unitCost: "100", currency: "USD" }],
+      executions: [execution({ id: "usd-sell", side: "sell", quantity: "1", price: "120", fee: "0", executedAt: "2026-02-01T00:00:00Z", source: { platform: "statement", row: 1, positionEffect: "close-long", settlement: { currency: "USD", quantity: "1", grossAmount: "120", netAmount: "120", fees: {} } } })],
+      valuations: [
+        { date: "2026-01-01", accountId: "account-a", instrumentId: "CN:AAA", quantity: "1", price: "100", currency: "USD", kind: "period-start", fxRateToTarget: "7" },
+        { date: "2026-12-31", accountId: "account-a", instrumentId: "CN:AAA", quantity: "0", price: "0", currency: "USD", kind: "period-end", fxRateToTarget: "7" },
+      ],
+    }));
+    expect(result.periodRealized.value).toBe("140");
+    expect(result.net.value).toBe("140");
+  });
+
+  it("derives a real entry and candle ledger, while current value survives an earlier coverage gap", () => {
+    const buy = execution({ id: "buy", side: "buy", quantity: "1", price: "100", fee: "0", executedAt: "2026-01-02T00:00:00Z" });
+    const entry = {
+      instrument: buy.instrument, executions: [buy], episodes: [{ episode: { id: "ep", accountId: "account-a", accountLabel: "A", instrument: buy.instrument, direction: "long", status: "open", startedAt: buy.executedAt, openingQuantity: "1", remainingQuantity: "1", executions: [buy] }, metrics: {} as never, reviewStatus: "pending", confirmedTagIds: [], tagDictionaryVersion: 1, rMultiple: null }],
+      accountCount: 1, tradeCount: 1, episodeCount: 1, firstTradeAt: buy.executedAt, lastTradeAt: buy.executedAt, status: "open", netPnl: null, returnPercent: null, reviewedEpisodeCount: 0, confirmedTagIds: [], cumulativeR: null,
+    } as never;
+    const result = buildHomepageV25Performance(base({
+      entries: [entry],
+      valuations: [],
+      candlesByInstrument: { "CN:AAA": [
+        { instrumentId: "CN:AAA", tradingDate: "2026-10-22", open: "130", high: "130", low: "130", close: "130", volume: "1", currency: "CNY", provider: "eastmoney", providerSymbol: "AAA", adjustmentMode: "raw", fetchedAt: "2026-10-22T00:00:00Z" },
+      ] },
+    }));
+    expect(result.currentMarketValue.value).toBe("130");
+    expect(result.currentMarketValue.available).toBe(true);
+  });
+});

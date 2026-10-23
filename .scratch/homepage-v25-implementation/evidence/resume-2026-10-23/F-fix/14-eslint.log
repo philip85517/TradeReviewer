@@ -1,0 +1,7 @@
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts
+  96:7  error  'normalizedFee' is never reassigned. Use 'const' instead  prefer-const
+
+✖ 1 problem (1 error, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

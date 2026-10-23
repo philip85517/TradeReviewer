@@ -1,0 +1,6 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ES2017", "--lib", "dom,dom.iterable,esnext", "--skipLibCheck", "--esModuleInterop", "--module", "esnext", "--moduleResolution", "bundler", "--resolveJsonModule", "--isolatedModules", "--jsx", "react-jsx", "--incremental", "false", "app/components/homepage-v25/contribution-bars.tsx", "app/components/homepage-v25/contribution-bars.test.tsx"]
+STDOUT
+
+STDERR
+
+EXIT 0

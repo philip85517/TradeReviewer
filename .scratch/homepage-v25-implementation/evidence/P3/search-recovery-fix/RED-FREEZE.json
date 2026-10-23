@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-22T20:20:59.299Z",
+  "model": "gpt-6.1-sol / ultra",
+  "phase": "causal RED only",
+  "tests": {
+    "total": 10,
+    "failed": 5,
+    "passed": 5,
+    "status": 1
+  },
+  "productAuthorizationUsed": false,
+  "files": {
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/SOURCE-MANIFEST.red-before.json": "cdea9d18688c6e4ffc570bd96f0c8514ee773a4b809cf088a1a05030caa1eaab",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/SOURCE-MANIFEST.red-after.json": "c83e27b48b2ba429c4b7eb2f05f642d7f129e82aac9b419976fb5a2f1e693732",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/01-red.log": "df207d0f3474651b2dce488058671e2c4c1df6be88b0085fbb99ac5ca6df2bd6",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/01-red.status.json": "f8612f718849a78b2d2d077182b442e3088cbfdf740a2b60f76dbece83f66b23",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/RED-REPORT.md": "86d82eda2938b6689d0e659fa34898c4a140e9f3f60e20bfded33a6e5ce6d30a",
+    "app/components/homepage-v25/search-recovery.test.tsx": "a78904f85eef64882bb9139b244539d596d88fa54faad1ff6f8c85f6394a82d3"
+  }
+}

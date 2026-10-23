@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63068) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (170 tests | 1 failed | 169 skipped) 93ms
+     × ISR03 marks missing episode execution association unknown without changing canonical money 89ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR03 marks missing episode execution association unknown without changing canonical money
+AssertionError: expected { available: true, reasons: [], …(2) } to deeply equal { available: false, …(3) }
+
+- Expected
++ Received
+
+  {
+-   "available": false,
++   "available": true,
+    "conflictingEpisodeIds": [],
+    "episodeIds": [
+      "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-05T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+    ],
+-   "reasons": [
+-     "episode-lineage-unavailable",
+-   ],
++   "reasons": [],
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1298:37
+    1296|     entries[0].episodes[0].episode.executions = [];
+    1297|     const missing = seamRead(preparedFixture(executions, [], { entries…
+    1298|     expect(missing.episodeCoverage).toEqual({ available: false, reason…
+       |                                     ^
+    1299|     expect(missing.canonical).toEqual(complete.canonical);
+    1300|     expect(missing.canonical.selectedExecutionIds).toEqual(["b", "s"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 169 skipped (170)
+   Start at  11:44:18
+   Duration  3.93s (transform 918ms, setup 381ms, import 1.04s, tests 93ms, environment 1.79s)
+

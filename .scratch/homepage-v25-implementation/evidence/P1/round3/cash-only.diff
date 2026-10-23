@@ -1,0 +1,30 @@
+--- before-cash
++++ app/components/trade-review-workspace.tsx
+@@ -1983,6 +1983,15 @@
+   const [cashError, setCashError] = useState<string | null>(null);
+   const [cashSavedFact, setCashSavedFact] = useState<CashSavedFact | null>(null);
+   const [cashSummaryRefreshError, setCashSummaryRefreshError] = useState<CashSummaryRefreshError | null>(null);
++  const [cashTransientScopeKey, setCashTransientScopeKey] = useState(cashScopeKey);
++  // Reset only this component's transient feedback on an identity change. The
++  // new key stabilizes the next render, including A -> B -> A transitions.
++  if (cashTransientScopeKey !== cashScopeKey) {
++    setCashTransientScopeKey(cashScopeKey);
++    setCashSaving(false);
++    setCashSavedFact(null);
++    setCashSummaryRefreshError(null);
++  }
+   const cashRequestSequence = useRef(0);
+   const cashWriteSequence = useRef(0);
+   const cashScopeKeyRef = useRef(cashScopeKey);
+@@ -1992,11 +2001,8 @@
+   useEffect(() => {
+     if (cashScopeKeyRef.current !== cashScopeKey) {
+       cashWriteSequence.current += 1;
+-      setCashSaving(false);
+     }
+     cashScopeKeyRef.current = cashScopeKey;
+-    setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
+-    setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
+     const requestId = ++cashRequestSequence.current;
+     if (!cashDataRequest) {
+       return () => {

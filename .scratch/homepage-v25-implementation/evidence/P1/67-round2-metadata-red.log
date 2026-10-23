@@ -1,0 +1,63 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:20268) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/api/storage/trades/route.test.ts (4 tests | 4 failed) 212ms
+     × rejects guessed market code from both instrument and embedded execution before any persistence 63ms
+     × rejects untrusted exchange provider from both instrument and embedded execution before any persistence 41ms
+     × rejects invalid evidence time from both instrument and embedded execution before any persistence 42ms
+     × retains valid exchange across the broad HTTP write, disk reopen and read 64ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/api/storage/trades/route.test.ts > broad trades metadata write boundary > rejects guessed market code from both instrument and embedded execution before any persistence
+ FAIL  app/api/storage/trades/route.test.ts > broad trades metadata write boundary > rejects untrusted exchange provider from both instrument and embedded execution before any persistence
+ FAIL  app/api/storage/trades/route.test.ts > broad trades metadata write boundary > rejects invalid evidence time from both instrument and embedded execution before any persistence
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ app/api/storage/trades/route.test.ts:39:31
+     37|     for (const payload of [{ instruments: [invalid], executions: [] },…
+     38|       const response = await PUT(request(payload));
+     39|       expect(response.status).toBe(400);
+       |                               ^
+     40|       expect(await response.json()).toEqual({ error: { code: "invalid-…
+     41|       expect(await (await GET()).json()).toEqual({ instruments: [], ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/api/storage/trades/route.test.ts > broad trades metadata write boundary > retains valid exchange across the broad HTTP write, disk reopen and read
+AssertionError: expected { code: 'NASDAQ', source: 'sec', …(1) } to deeply equal { code: 'NASDAQ', source: 'sec', …(1) }
+
+- Expected
++ Received
+
+  {
+    "code": "NASDAQ",
+-   "resolvedAt": "2026-10-22T00:00:00Z",
++   "resolvedAt": "2026-10-22T00:00:00.000Z",
+    "source": "sec",
+  }
+
+ ❯ app/api/storage/trades/route.test.ts:48:51
+     46|     database.close(); database = originalDatabase.openSqliteDatabase(p…
+     47|     const body = await (await GET()).json();
+     48|     expect(body.instruments[0].metadata.exchange).toEqual(metadata.exc…
+       |                                                   ^
+     49|     expect(body.executions[0].instrument.metadata.exchange).toEqual(me…
+     50|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  02:00:56
+   Duration  2.17s (transform 385ms, setup 176ms, import 470ms, tests 212ms, environment 986ms)
+

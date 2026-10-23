@@ -1,0 +1,33 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:52290) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/metric-cards.test.tsx (19 tests | 1 failed) 1189ms
+     × M09 future period values and details remain unknown while the independent current snapshot stays available 33ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M09 future period values and details remain unknown while the independent current snapshot stays available
+Error: expect(element).not.toHaveTextContent()
+
+Expected element not to have text content:
+  18420.567800
+Received:
+  期间净盈亏 · 口径详情×期间已实现，加上期末与期初浮盈的差额。期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。期间 2026-10-01 至 2026-10-02 · 上海时区完整金额—覆盖数量3 / 3原币金额18420.567800 CNY汇率来源同币种，无需换汇来源金额18420.567800 CNY未来未覆盖，金额未知
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:138:44
+    136|     await user.click(trigger("期间净盈亏"));
+    137|     expect(screen.getByRole("dialog")).toHaveTextContent("未来未覆盖，金额未知");
+    138|     expect(screen.getByRole("dialog")).not.toHaveTextContent("18420.56…
+       |                                            ^
+    139|     expect(screen.getByRole("dialog")).not.toHaveTextContent("来源金额");
+    140|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 18 passed (19)
+   Start at  07:11:23
+   Duration  4.03s (transform 153ms, setup 425ms, import 316ms, tests 1.19s, environment 1.71s)
+

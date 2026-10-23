@@ -1,0 +1,317 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:41879) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-series.test.ts (18 tests | 17 failed) 167ms
+     × O01 preserves historical day precision and clamps only today's point to the actual instant 59ms
+     × O02 includes the first Shanghai instant and changes the cutoff across one millisecond 13ms
+     × O03 enumerates inclusive cross-year days and exact common/leap years without presets 5ms
+     × O03 rejects invalid ranges atomically: '2026-02-29' → '2026-03-01' 2ms
+     × O03 rejects invalid ranges atomically: '2026-01-01' → '2026-02-30' 1ms
+     × O03 rejects invalid ranges atomically: '2026-1-01' → '2026-01-02' 1ms
+     × O03 rejects invalid ranges atomically: '2026-01-02' → '2026-01-01' 1ms
+     × O04 retains future daily placeholders and a separately usable current projection 15ms
+     × O04 uses the final nonfuture missing point as summary instead of an earlier plottable point 13ms
+     × O05 publishes six distinct precise fields with original metric coverage and lifetime provenance 7ms
+     × O05 does not manufacture lifetime amounts from a complete selected-period result 8ms
+     × O06 preserves partial-close fee allocation and actual period expenses without new arithmetic 5ms
+     × O06 keeps genuine zero plottable and excludes future placeholders from arithmetic 6ms
+     × O07 preserves native-first endpoint FX and its exact dated source 8ms
+     × O07 leaves latest-only historical FX unknown while current remains independent across periods 5ms
+     × O08 uses one real batch and wraps each generation without mutating the memoized authority 6ms
+     × O08 preserves source identity invalidation despite unchanged caller revision strings 8ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O01 preserves historical day precision and clamps only today's point to the actual instant
+AssertionError: expected undefined to match object { key: '2026-01-05', …(3) }
+
+- Expected:
+{
+  "boundaryPrecision": "day",
+  "effectiveCursor": "2026-01-05T15:59:59.999Z",
+  "key": "2026-01-05",
+  "requestedAt": "2026-01-05",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:52:24
+     50|     const period = { start: "2026-01-05", end: "2026-01-05" };
+     51|     const historical = buildHomepageV25Series(source, { ...query, peri…
+     52|     expect(historical).toMatchObject({ key: "2026-01-05", requestedAt:…
+       |                        ^
+     53|     expect(historical.instruments[0].evidence.endpoint.executionIds).t…
+     54|     const current = buildHomepageV25Series(source, { ...query, period,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O02 includes the first Shanghai instant and changes the cutoff across one millisecond
+AssertionError: expected null to be '2026-01-04' // Object.is equality
+
+- Expected:
+"2026-01-04"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:65:42
+     63|     const before = buildHomepageV25Series(source, { ...query, period, …
+     64|     const at = buildHomepageV25Series(source, { ...query, period, asOf…
+     65|     expect(before.boundary.effectiveEnd).toBe("2026-01-04");
+       |                                          ^
+     66|     expect(before.points[1].state).toBe("future");
+     67|     expect(before.current.instruments[0].evidence.current.executionIds…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O03 enumerates inclusive cross-year days and exact common/leap years without presets
+AssertionError: expected [] to deeply equal [ '2025-12-29', '2025-12-30', …(5) ]
+
+- Expected
++ Received
+
+- [
+-   "2025-12-29",
+-   "2025-12-30",
+-   "2025-12-31",
+-   "2026-01-01",
+-   "2026-01-02",
+-   "2026-01-03",
+-   "2026-01-04",
+- ]
++ []
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:78:58
+     76|     const source = prepared();
+     77|     const week = buildHomepageV25Series(source, { ...query, period: { …
+     78|     expect(week.points.map(point => point.businessDate)).toEqual(["202…
+       |                                                          ^
+     79|     const common = buildHomepageV25Series(source, { ...query, period: …
+     80|     const leap = buildHomepageV25Series(source, { ...query, period: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O03 rejects invalid ranges atomically: '2026-02-29' → '2026-03-01'
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O03 rejects invalid ranges atomically: '2026-1-01' → '2026-01-02'
+AssertionError: expected error to match asymmetric matcher
+
+- Expected
++ Received
+
+- ObjectContaining {
+-   "code": "period-invalid",
++ HomepageV25ProjectionInputError {
++   "message": "period-start-invalid",
++   "code": "period-start-invalid",
+    "name": "HomepageV25ProjectionInputError",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:94:76
+     92|     { start: "2026-01-02", end: "2026-01-01" },
+     93|   ])("O03 rejects invalid ranges atomically: $start → $end", period =>…
+     94|     expect(() => buildHomepageV25Series(prepared(), { ...query, period…
+       |                                                                            ^
+     95|   });
+     96|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O03 rejects invalid ranges atomically: '2026-01-01' → '2026-02-30'
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O03 rejects invalid ranges atomically: '2026-01-02' → '2026-01-01'
+AssertionError: expected function to throw an error, but it didn't
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:94:76
+     92|     { start: "2026-01-02", end: "2026-01-01" },
+     93|   ])("O03 rejects invalid ranges atomically: $start → $end", period =>…
+     94|     expect(() => buildHomepageV25Series(prepared(), { ...query, period…
+       |                                                                            ^
+     95|   });
+     96|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O04 retains future daily placeholders and a separately usable current projection
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+    "asOf": "2026-01-07T08:00:00.000Z",
+    "businessTimezone": "Asia/Shanghai",
+-   "effectiveEnd": "2026-01-07",
++   "effectiveEnd": null,
+    "periodStart": "2026-01-05",
+    "requestedEnd": "2026-01-09",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:105:29
+    103|     const input = { ...query, period: { start: "2026-01-05", end: "202…
+    104|     const result = buildHomepageV25Series(source, input);
+    105|     expect(result.boundary).toEqual({ businessTimezone: "Asia/Shanghai…
+       |                             ^
+    106|     expect(result.points.map(point => [point.key, point.net.value, poi…
+    107|       ["2026-01-05", "0", "value", true], ["2026-01-06", "5", "value",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O04 uses the final nonfuture missing point as summary instead of an earlier plottable point
+TypeError: Cannot read properties of undefined (reading 'net')
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:128:29
+    126|     const source = prepared([fill("old", "2025-12-15T15:00:00Z")], [ra…
+    127|     const result = buildHomepageV25Series(source, { ...query, period: …
+    128|     expect(result.points[1].net.value).toBe("5");
+       |                             ^
+    129|     expect(result.periodSummary).toBe(result.points[2]);
+    130|     expect(result.summaryState).toBe("source-missing");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O05 publishes six distinct precise fields with original metric coverage and lifetime provenance
+TypeError: Cannot read properties of null (reading 'marketValue')
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:142:46
+    140|     expect(Object.isFrozen(HOMEPAGE_V25_TOOLTIP_FIELDS)).toBe(true);
+    141|     expect(result.tooltipFields).toBe(HOMEPAGE_V25_TOOLTIP_FIELDS);
+    142|     expect(result.tooltipFields.map(field => point[field].value)).toEq…
+       |                                              ^
+    143|     expect([point.periodRealized.value, point.openingUnrealized.value,…
+    144|     for (const field of result.tooltipFields) expect(point[field]).toM…
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:142:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O05 does not manufacture lifetime amounts from a complete selected-period result
+TypeError: Cannot read properties of null (reading 'lifetimeRealizedNet')
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:154:19
+    152|   it("O05 does not manufacture lifetime amounts from a complete select…
+    153|     const point = buildHomepageV25Series(prepared(closedFills(), [raw(…
+    154|     expect([point.lifetimeRealizedNet.value, point.lifetimeNet.value, …
+       |                   ^
+    155|     expect(point.lifetimeRealizedNet.reasons).toContain("lifetime-sour…
+    156|     expect(point.lifetimeNet.coverage).toEqual({ total: 1, available: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O06 preserves partial-close fee allocation and actual period expenses without new arithmetic
+TypeError: Cannot read properties of null (reading 'openingUnrealized')
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:163:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O06 keeps genuine zero plottable and excludes future placeholders from arithmetic
+AssertionError: expected undefined to match object { state: 'value', …(2) }
+
+- Expected:
+{
+  "net": {
+    "available": true,
+    "value": "0",
+  },
+  "plottable": true,
+  "state": "value",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:177:18
+    175|     const result = buildHomepageV25Series(source, { ...query, period: …
+    176|     const zero = result.points.find(point => point.key === "2026-01-30…
+    177|     expect(zero).toMatchObject({ state: "value", plottable: true, net:…
+       |                  ^
+    178|     expect(result.points[result.points.length - 1]).toMatchObject({ st…
+    179|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O07 preserves native-first endpoint FX and its exact dated source
+TypeError: Cannot read properties of null (reading 'periodRealized')
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:184:19
+    182|     const source = prepared(closedFills(), [raw("2026-01-02", "120")],…
+    183|     const point = buildHomepageV25Series(source, { ...query, targetCur…
+    184|     expect([point.periodRealized.value, point.openingUnrealized.value,…
+       |                   ^
+    185|     expect(point.net.money.originalByCurrency).toEqual({ USD: "10" });
+    186|     expect(point.net.money).toMatchObject({ targetCurrency: "CNY", con…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O07 leaves latest-only historical FX unknown while current remains independent across periods
+AssertionError: expected undefined to match object { value: null, available: false, …(1) }
+
+- Expected:
+{
+  "available": false,
+  "money": {
+    "conversion": "missing",
+    "originalByCurrency": {
+      "USD": "10",
+    },
+  },
+  "value": null,
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:197:38
+    195|     const first = buildHomepageV25Series(source, { ...query, period: {…
+    196|     const second = buildHomepageV25Series(source, { ...query, period: …
+    197|     expect(first.periodSummary?.net).toMatchObject({ value: null, avai…
+       |                                      ^
+    198|     expect(first.periodSummary?.fxCoverage.state).toBe("missing");
+    199|     expect(first.current).toEqual(second.current);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O08 uses one real batch and wraps each generation without mutating the memoized authority
+AssertionError: expected null to be undefined // Object.is equality
+
+- Expected:
+undefined
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:221:33
+    219|     expect(first.policies).toBe(batch.policies);
+    220|     expect(first.scope).toBe(batch.scope);
+    221|     expect(first.periodSummary).toBe(batch.points[batch.points.length …
+       |                                 ^
+    222|     expect(batch).not.toHaveProperty("requestGeneration");
+    223|     expect(Object.isFrozen(first)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O08 preserves source identity invalidation despite unchanged caller revision strings
+AssertionError: expected [ undefined, undefined ] to deeply equal [ '10', '50' ]
+
+- Expected
++ Received
+
+  [
+-   "10",
+-   "50",
++   undefined,
++   undefined,
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:240:79
+    238|     expect(first.revisions).toEqual(second.revisions);
+    239|     expect(first.sourceId).not.toBe(second.sourceId);
+    240|     expect([first.periodSummary?.net.value, second.periodSummary?.net.…
+       |                                                                               ^
+    241|     expect(buildHomepageV25Series(firstSource, input).periodSummary?.n…
+    242|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  17 failed | 1 passed (18)
+   Start at  05:19:56
+   Duration  4.43s (transform 458ms, setup 532ms, import 535ms, tests 167ms, environment 2.37s)
+

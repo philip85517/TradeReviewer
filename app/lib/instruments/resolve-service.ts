@@ -4,6 +4,7 @@ import {
 } from "./display-name";
 import {
   validateResolvedInstrument,
+  mergeInstrumentExchange,
   type InstrumentLookup,
   type InstrumentMetadataFailure,
   type InstrumentMetadataSource,
@@ -272,7 +273,12 @@ export async function resolveInstrumentMetadataBatch(
       return;
     }
 
-    const cachedRecord = resolved.get(instrumentId);
+    let cachedRecord = resolved.get(instrumentId);
+    if (!cachedRecord && options.forceRefresh) {
+      try { const stored = await options.repository.get(instrumentId); if (stored) cachedRecord = validateResolvedInstrument(stored, lookup); }
+      catch { /* Missing cached evidence cannot block a valid fresh result. */ }
+    }
+    record = mergeInstrumentExchange(cachedRecord, record);
     if (cachedRecord?.localizedName && !record.localizedName) {
       record = {
         ...record,

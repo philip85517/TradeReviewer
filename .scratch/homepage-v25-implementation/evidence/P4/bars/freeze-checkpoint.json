@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-10-23T07:26:03.950282+08:00",
+  "HEAD": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "scope": "Only the 3 new product paths plus this evidence directory were authored by this worker; shared dirty worktree contains parallel work.",
+  "status_command": [
+    "git",
+    "status",
+    "--short",
+    "--",
+    "app/components/homepage-v25/contribution-bars.tsx",
+    "app/components/homepage-v25/contribution-bars.css",
+    "app/components/homepage-v25/contribution-bars.test.tsx"
+  ],
+  "status_stdout": "?? app/components/homepage-v25/contribution-bars.css\n?? app/components/homepage-v25/contribution-bars.test.tsx\n?? app/components/homepage-v25/contribution-bars.tsx\n",
+  "status_stderr": "",
+  "status_exit": 0,
+  "existing_final_verification_logs": {
+    "GREEN.log": {
+      "sha256": "8f7b1fcd6e1eb2f71aff9163063614938246fcfe970b7e316cff734aab6d545d",
+      "ends_exit_0": true
+    },
+    "typecheck.log": {
+      "sha256": "6048db6abf04a49f1c3f804a30e253934979a94bd462e874ffb5f478b29e04b8",
+      "ends_exit_0": true
+    },
+    "lint.log": {
+      "sha256": "9b5eabfe07054fd2de9200c0cd30889ff30b8b47701a3ffa05f9f3a28e717c59",
+      "ends_exit_0": true
+    },
+    "style-audit.log": {
+      "sha256": "f80553b8ee5cede37b39aa515cd49b19015cbda721b77966b0d13585536d55d5",
+      "ends_exit_0": true
+    }
+  },
+  "rerun_at_freeze": false,
+  "reason": "Root requested current candidate report and freeze without new tests or fixes; final checks already cover the unchanged product candidate."
+}

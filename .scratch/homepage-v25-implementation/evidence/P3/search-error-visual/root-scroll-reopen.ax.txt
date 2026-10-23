@@ -1,0 +1,1008 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all
+	2 container 标的搜索
+		3 container
+			4 heading 找到标的, Value: 2, ID: hp-search-results-title
+				5 text 找到标的
+			6 button 关闭标的搜索
+		7 search text field (settable) Description: 搜索标的, Value: 6
+		8 button 清除标的搜索
+		9 container 找到标的
+			10 button 中国铝业 HKEX:2600 · HKD · 股票, ID: hp-symbol-HKEX%3A2600%3Astock
+				11 text 中国铝业
+				12 text HKEX
+				13 text :
+				14 text 2600
+				15 text  · 
+				16 text HKD
+				17 text  · 
+				18 text 股票
+			19 button 林清轩 HKEX:2657 · HKD · 股票, ID: hp-symbol-HKEX%3A2657%3Astock
+				20 text 林清轩
+				21 text HKEX
+				22 text :
+				23 text 2657
+				24 text  · 
+				25 text HKD
+				26 text  · 
+				27 text 股票
+			28 button 卓正医疗 HKEX:2677 · HKD · 股票, ID: hp-symbol-HKEX%3A2677%3Astock
+				29 text 卓正医疗
+				30 text HKEX
+				31 text :
+				32 text 2677
+				33 text  · 
+				34 text HKD
+				35 text  · 
+				36 text 股票
+			37 button 金蝶国际 HKEX:268 · HKD · 股票, ID: hp-symbol-HKEX%3A268%3Astock
+				38 text 金蝶国际
+				39 text HKEX
+				40 text :
+				41 text 268
+				42 text  · 
+				43 text HKD
+				44 text  · 
+				45 text 股票
+			46 button 玖龙纸业 HKEX:2689 · HKD · 股票, ID: hp-symbol-HKEX%3A2689%3Astock
+				47 text 玖龙纸业
+				48 text HKEX
+				49 text :
+				50 text 2689
+				51 text  · 
+				52 text HKD
+				53 text  · 
+				54 text 股票
+			55 button 乐舒适 HKEX:2698 · HKD · 股票, ID: hp-symbol-HKEX%3A2698%3Astock
+				56 text 乐舒适
+				57 text HKEX
+				58 text :
+				59 text 2698
+				60 text  · 
+				61 text HKD
+				62 text  · 
+				63 text 股票
+			64 button 华勤技术 HKEX:3296 · HKD · 股票, ID: hp-symbol-HKEX%3A3296%3Astock
+				65 text 华勤技术
+				66 text HKEX
+				67 text :
+				68 text 3296
+				69 text  · 
+				70 text HKD
+				71 text  · 
+				72 text 股票
+			73 button 美团-W HKEX:3690 · HKD · 股票, ID: hp-symbol-HKEX%3A3690%3Astock
+				74 text 美团-W
+				75 text HKEX
+				76 text :
+				77 text 3690
+				78 text  · 
+				79 text HKD
+				80 text  · 
+				81 text 股票
+			82 button 兆易创新 HKEX:3986 · HKD · 股票, ID: hp-symbol-HKEX%3A3986%3Astock
+				83 text 兆易创新
+				84 text HKEX
+				85 text :
+				86 text 3986
+				87 text  · 
+				88 text HKD
+				89 text  · 
+				90 text 股票
+			91 button 保利物业 HKEX:6049 · HKD · 股票, ID: hp-symbol-HKEX%3A6049%3Astock
+				92 text 保利物业
+				93 text HKEX
+				94 text :
+				95 text 6049
+				96 text  · 
+				97 text HKD
+				98 text  · 
+				99 text 股票
+			100 button 碧桂园服务 HKEX:6098 · HKD · 股票, ID: hp-symbol-HKEX%3A6098%3Astock
+				101 text 碧桂园服务
+				102 text HKEX
+				103 text :
+				104 text 6098
+				105 text  · 
+				106 text HKD
+				107 text  · 
+				108 text 股票
+			109 button 自由黄金-DRS HKEX:6228 · HKD · 股票, ID: hp-symbol-HKEX%3A6228%3Astock
+				110 text 自由黄金-DRS
+				111 text HKEX
+				112 text :
+				113 text 6228
+				114 text  · 
+				115 text HKD
+				116 text  · 
+				117 text 股票
+			118 button IFBH HKEX:6603 · HKD · 股票, ID: hp-symbol-HKEX%3A6603%3Astock
+				119 text IFBH
+				120 text HKEX
+				121 text :
+				122 text 6603
+				123 text  · 
+				124 text HKD
+				125 text  · 
+				126 text 股票
+			127 button 京东健康 HKEX:6618 · HKD · 股票, ID: hp-symbol-HKEX%3A6618%3Astock
+				128 text 京东健康
+				129 text HKEX
+				130 text :
+				131 text 6618
+				132 text  · 
+				133 text HKD
+				134 text  · 
+				135 text 股票
+			136 button 澜起科技 HKEX:6809 · HKD · 股票, ID: hp-symbol-HKEX%3A6809%3Astock
+				137 text 澜起科技
+				138 text HKEX
+				139 text :
+				140 text 6809
+				141 text  · 
+				142 text HKD
+				143 text  · 
+				144 text 股票
+			145 button 福莱特玻璃 HKEX:6865 · HKD · 股票, ID: hp-symbol-HKEX%3A6865%3Astock
+				146 text 福莱特玻璃
+				147 text HKEX
+				148 text :
+				149 text 6865
+				150 text  · 
+				151 text HKD
+				152 text  · 
+				153 text 股票
+			154 button 长飞光纤光缆 HKEX:6869 · HKD · 股票, ID: hp-symbol-HKEX%3A6869%3Astock
+				155 text 长飞光纤光缆
+				156 text HKEX
+				157 text :
+				158 text 6869
+				159 text  · 
+				160 text HKD
+				161 text  · 
+				162 text 股票
+			163 button 双登股份 HKEX:6960 · HKD · 股票, ID: hp-symbol-HKEX%3A6960%3Astock
+				164 text 双登股份
+				165 text HKEX
+				166 text :
+				167 text 6960
+				168 text  · 
+				169 text HKD
+				170 text  · 
+				171 text 股票
+			172 button 思摩尔国际 HKEX:6969 · HKD · 股票, ID: hp-symbol-HKEX%3A6969%3Astock
+				173 text 思摩尔国际
+				174 text HKEX
+				175 text :
+				176 text 6969
+				177 text  · 
+				178 text HKD
+				179 text  · 
+				180 text 股票
+			181 button 德琪医药-B HKEX:6996 · HKD · 股票, ID: hp-symbol-HKEX%3A6996%3Astock
+				182 text 德琪医药-B
+				183 text HKEX
+				184 text :
+				185 text 6996
+				186 text  · 
+				187 text HKD
+				188 text  · 
+				189 text 股票
+			190 button CSOP Hang Seng TECH Index Daily (2x) Leveraged Product HKEX:7226 · HKD · ETF, ID: hp-symbol-HKEX%3A7226%3Aetf
+				191 text CSOP Hang Seng TECH Index Daily (2x) Leveraged Product
+				192 text HKEX
+				193 text :
+				194 text 7226
+				195 text  · 
+				196 text HKD
+				197 text  · 
+				198 text ETF
+			199 button 剂泰科技-P HKEX:7666 · HKD · 股票, ID: hp-symbol-HKEX%3A7666%3Astock
+				200 text 剂泰科技-P
+				201 text HKEX
+				202 text :
+				203 text 7666
+				204 text  · 
+				205 text HKD
+				206 text  · 
+				207 text 股票
+			208 button 信义光能 HKEX:968 · HKD · 股票, ID: hp-symbol-HKEX%3A968%3Astock
+				209 text 信义光能
+				210 text HKEX
+				211 text :
+				212 text 968
+				213 text  · 
+				214 text HKD
+				215 text  · 
+				216 text 股票
+			217 button 康圣环球 HKEX:9960 · HKD · 股票, ID: hp-symbol-HKEX%3A9960%3Astock
+				218 text 康圣环球
+				219 text HKEX
+				220 text :
+				221 text 9960
+				222 text  · 
+				223 text HKD
+				224 text  · 
+				225 text 股票
+			226 button P1 持仓 01 SSE:600100 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600100
+				227 text P1 持仓 01
+				228 text SSE
+				229 text :
+				230 text 600100
+				231 text  · 
+				232 text CNY
+				233 text  · 
+				234 text 类别未知
+				235 text 证券类别证据尚未解析
+			236 button P1 持仓 02 SSE:600101 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600101
+				237 text P1 持仓 02
+				238 text SSE
+				239 text :
+				240 text 600101
+				241 text  · 
+				242 text CNY
+				243 text  · 
+				244 text 类别未知
+				245 text 证券类别证据尚未解析
+			246 button P1 持仓 03 SSE:600102 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600102
+				247 text P1 持仓 03
+				248 text SSE
+				249 text :
+				250 text 600102
+				251 text  · 
+				252 text CNY
+				253 text  · 
+				254 text 类别未知
+				255 text 证券类别证据尚未解析
+			256 button P1 持仓 04 SSE:600103 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600103
+				257 text P1 持仓 04
+				258 text SSE
+				259 text :
+				260 text 600103
+				261 text  · 
+				262 text CNY
+				263 text  · 
+				264 text 类别未知
+				265 text 证券类别证据尚未解析
+			266 button P1 持仓 05 超长证券名称用于真实宽度和截断验证 SSE:600104 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600104
+				267 text P1 持仓 05 超长证券名称用于真实宽度和截断验证
+				268 text SSE
+				269 text :
+				270 text 600104
+				271 text  · 
+				272 text CNY
+				273 text  · 
+				274 text 类别未知
+				275 text 证券类别证据尚未解析
+			276 button P1 持仓 06 SSE:600105 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600105
+				277 text P1 持仓 06
+				278 text SSE
+				279 text :
+				280 text 600105
+				281 text  · 
+				282 text CNY
+				283 text  · 
+				284 text 类别未知
+				285 text 证券类别证据尚未解析
+			286 button P1 持仓 07 SSE:600106 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600106
+				287 text P1 持仓 07
+				288 text SSE
+				289 text :
+				290 text 600106
+				291 text  · 
+				292 text CNY
+				293 text  · 
+				294 text 类别未知
+				295 text 证券类别证据尚未解析
+			296 button P1 持仓 08 SSE:600107 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600107
+				297 text P1 持仓 08
+				298 text SSE
+				299 text :
+				300 text 600107
+				301 text  · 
+				302 text CNY
+				303 text  · 
+				304 text 类别未知
+				305 text 证券类别证据尚未解析
+			306 button P1 持仓 09 SSE:600108 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600108
+				307 text P1 持仓 09
+				308 text SSE
+				309 text :
+				310 text 600108
+				311 text  · 
+				312 text CNY
+				313 text  · 
+				314 text 类别未知
+				315 text 证券类别证据尚未解析
+			316 button P1 持仓 10 SSE:600109 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600109
+				317 text P1 持仓 10
+				318 text SSE
+				319 text :
+				320 text 600109
+				321 text  · 
+				322 text CNY
+				323 text  · 
+				324 text 类别未知
+				325 text 证券类别证据尚未解析
+			326 button P1 持仓 11 SSE:600110 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600110
+				327 text P1 持仓 11
+				328 text SSE
+				329 text :
+				330 text 600110
+				331 text  · 
+				332 text CNY
+				333 text  · 
+				334 text 类别未知
+				335 text 证券类别证据尚未解析
+			336 button P1 持仓 13 SSE:600112 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600112
+				337 text P1 持仓 13
+				338 text SSE
+				339 text :
+				340 text 600112
+				341 text  · 
+				342 text CNY
+				343 text  · 
+				344 text 类别未知
+				345 text 证券类别证据尚未解析
+			346 button P1 持仓 14 SSE:600113 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600113
+				347 text P1 持仓 14
+				348 text SSE
+				349 text :
+				350 text 600113
+				351 text  · 
+				352 text CNY
+				353 text  · 
+				354 text 类别未知
+				355 text 证券类别证据尚未解析
+			356 button P1 持仓 15 SSE:600114 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600114
+				357 text P1 持仓 15
+				358 text SSE
+				359 text :
+				360 text 600114
+				361 text  · 
+				362 text CNY
+				363 text  · 
+				364 text 类别未知
+				365 text 证券类别证据尚未解析
+			366 button P1 持仓 16 SSE:600115 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600115
+				367 text P1 持仓 16
+				368 text SSE
+				369 text :
+				370 text 600115
+				371 text  · 
+				372 text CNY
+				373 text  · 
+				374 text 类别未知
+				375 text 证券类别证据尚未解析
+			376 button P1 持仓 17 SSE:600116 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600116
+				377 text P1 持仓 17
+				378 text SSE
+				379 text :
+				380 text 600116
+				381 text  · 
+				382 text CNY
+				383 text  · 
+				384 text 类别未知
+				385 text 证券类别证据尚未解析
+			386 button P1 持仓 18 SSE:600117 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600117
+				387 text P1 持仓 18
+				388 text SSE
+				389 text :
+				390 text 600117
+				391 text  · 
+				392 text CNY
+				393 text  · 
+				394 text 类别未知
+				395 text 证券类别证据尚未解析
+			396 button P1 持仓 19 SSE:600118 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600118
+				397 text P1 持仓 19
+				398 text SSE
+				399 text :
+				400 text 600118
+				401 text  · 
+				402 text CNY
+				403 text  · 
+				404 text 类别未知
+				405 text 证券类别证据尚未解析
+			406 button P1 持仓 20 SSE:600119 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600119
+				407 text P1 持仓 20
+				408 text SSE
+				409 text :
+				410 text 600119
+				411 text  · 
+				412 text CNY
+				413 text  · 
+				414 text 类别未知
+				415 text 证券类别证据尚未解析
+			416 button P1 持仓 21 SSE:600120 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600120
+				417 text P1 持仓 21
+				418 text SSE
+				419 text :
+				420 text 600120
+				421 text  · 
+				422 text CNY
+				423 text  · 
+				424 text 类别未知
+				425 text 证券类别证据尚未解析
+			426 button P1 持仓 22 SSE:600121 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600121
+				427 text P1 持仓 22
+				428 text SSE
+				429 text :
+				430 text 600121
+				431 text  · 
+				432 text CNY
+				433 text  · 
+				434 text 类别未知
+				435 text 证券类别证据尚未解析
+			436 button P1 持仓 23 SSE:600122 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600122
+				437 text P1 持仓 23
+				438 text SSE
+				439 text :
+				440 text 600122
+				441 text  · 
+				442 text CNY
+				443 text  · 
+				444 text 类别未知
+				445 text 证券类别证据尚未解析
+			446 button P1 持仓 24 SSE:600123 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600123
+				447 text P1 持仓 24
+				448 text SSE
+				449 text :
+				450 text 600123
+				451 text  · 
+				452 text CNY
+				453 text  · 
+				454 text 类别未知
+				455 text 证券类别证据尚未解析
+			456 button P1 持仓 25 SSE:600124 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600124
+				457 text P1 持仓 25
+				458 text SSE
+				459 text :
+				460 text 600124
+				461 text  · 
+				462 text CNY
+				463 text  · 
+				464 text 类别未知
+				465 text 证券类别证据尚未解析
+			466 button P1 持仓 26 SSE:600125 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600125
+				467 text P1 持仓 26
+				468 text SSE
+				469 text :
+				470 text 600125
+				471 text  · 
+				472 text CNY
+				473 text  · 
+				474 text 类别未知
+				475 text 证券类别证据尚未解析
+			476 button P1 持仓 27 SSE:600126 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600126
+				477 text P1 持仓 27
+				478 text SSE
+				479 text :
+				480 text 600126
+				481 text  · 
+				482 text CNY
+				483 text  · 
+				484 text 类别未知
+				485 text 证券类别证据尚未解析
+			486 button P1 持仓 28 SSE:600127 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600127
+				487 text P1 持仓 28
+				488 text SSE
+				489 text :
+				490 text 600127
+				491 text  · 
+				492 text CNY
+				493 text  · 
+				494 text 类别未知
+				495 text 证券类别证据尚未解析
+			496 button P1 持仓 29 SSE:600128 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600128
+				497 text P1 持仓 29
+				498 text SSE
+				499 text :
+				500 text 600128
+				501 text  · 
+				502 text CNY
+				503 text  · 
+				504 text 类别未知
+				505 text 证券类别证据尚未解析
+			506 button P1 持仓 30 SSE:600129 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600129
+				507 text P1 持仓 30
+				508 text SSE
+				509 text :
+				510 text 600129
+				511 text  · 
+				512 text CNY
+				513 text  · 
+				514 text 类别未知
+				515 text 证券类别证据尚未解析
+			516 button P1 持仓 31 SSE:600130 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600130
+				517 text P1 持仓 31
+				518 text SSE
+				519 text :
+				520 text 600130
+				521 text  · 
+				522 text CNY
+				523 text  · 
+				524 text 类别未知
+				525 text 证券类别证据尚未解析
+			526 button P1 持仓 32 SSE:600131 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600131
+				527 text P1 持仓 32
+				528 text SSE
+				529 text :
+				530 text 600131
+				531 text  · 
+				532 text CNY
+				533 text  · 
+				534 text 类别未知
+				535 text 证券类别证据尚未解析
+			536 button P1 持仓 33 SSE:600132 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600132
+				537 text P1 持仓 33
+				538 text SSE
+				539 text :
+				540 text 600132
+				541 text  · 
+				542 text CNY
+				543 text  · 
+				544 text 类别未知
+				545 text 证券类别证据尚未解析
+			546 button P1 持仓 34 SSE:600133 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600133
+				547 text P1 持仓 34
+				548 text SSE
+				549 text :
+				550 text 600133
+				551 text  · 
+				552 text CNY
+				553 text  · 
+				554 text 类别未知
+				555 text 证券类别证据尚未解析
+			556 button P1 持仓 35 SSE:600134 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600134
+				557 text P1 持仓 35
+				558 text SSE
+				559 text :
+				560 text 600134
+				561 text  · 
+				562 text CNY
+				563 text  · 
+				564 text 类别未知
+				565 text 证券类别证据尚未解析
+			566 button P1 持仓 36 SSE:600135 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600135
+				567 text P1 持仓 36
+				568 text SSE
+				569 text :
+				570 text 600135
+				571 text  · 
+				572 text CNY
+				573 text  · 
+				574 text 类别未知
+				575 text 证券类别证据尚未解析
+			576 button P1 持仓 37 SSE:600136 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600136
+				577 text P1 持仓 37
+				578 text SSE
+				579 text :
+				580 text 600136
+				581 text  · 
+				582 text CNY
+				583 text  · 
+				584 text 类别未知
+				585 text 证券类别证据尚未解析
+			586 button P1 持仓 38 SSE:600137 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600137
+				587 text P1 持仓 38
+				588 text SSE
+				589 text :
+				590 text 600137
+				591 text  · 
+				592 text CNY
+				593 text  · 
+				594 text 类别未知
+				595 text 证券类别证据尚未解析
+			596 button P1 持仓 39 SSE:600138 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600138
+				597 text P1 持仓 39
+				598 text SSE
+				599 text :
+				600 text 600138
+				601 text  · 
+				602 text CNY
+				603 text  · 
+				604 text 类别未知
+				605 text 证券类别证据尚未解析
+			606 button P1 持仓 40 SSE:600139 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600139
+				607 text P1 持仓 40
+				608 text SSE
+				609 text :
+				610 text 600139
+				611 text  · 
+				612 text CNY
+				613 text  · 
+				614 text 类别未知
+				615 text 证券类别证据尚未解析
+			616 button P1 持仓 41 SSE:600140 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600140
+				617 text P1 持仓 41
+				618 text SSE
+				619 text :
+				620 text 600140
+				621 text  · 
+				622 text CNY
+				623 text  · 
+				624 text 类别未知
+				625 text 证券类别证据尚未解析
+			626 button P1 持仓 42 SSE:600141 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600141
+				627 text P1 持仓 42
+				628 text SSE
+				629 text :
+				630 text 600141
+				631 text  · 
+				632 text CNY
+				633 text  · 
+				634 text 类别未知
+				635 text 证券类别证据尚未解析
+			636 button P1 持仓 43 SSE:600142 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600142
+				637 text P1 持仓 43
+				638 text SSE
+				639 text :
+				640 text 600142
+				641 text  · 
+				642 text CNY
+				643 text  · 
+				644 text 类别未知
+				645 text 证券类别证据尚未解析
+			646 button P1 持仓 44 SSE:600143 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600143
+				647 text P1 持仓 44
+				648 text SSE
+				649 text :
+				650 text 600143
+				651 text  · 
+				652 text CNY
+				653 text  · 
+				654 text 类别未知
+				655 text 证券类别证据尚未解析
+			656 button P1 持仓 45 SSE:600144 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600144
+				657 text P1 持仓 45
+				658 text SSE
+				659 text :
+				660 text 600144
+				661 text  · 
+				662 text CNY
+				663 text  · 
+				664 text 类别未知
+				665 text 证券类别证据尚未解析
+			666 button P1 持仓 46 SSE:600145 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600145
+				667 text P1 持仓 46
+				668 text SSE
+				669 text :
+				670 text 600145
+				671 text  · 
+				672 text CNY
+				673 text  · 
+				674 text 类别未知
+				675 text 证券类别证据尚未解析
+			676 button P1 持仓 47 SSE:600146 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600146
+				677 text P1 持仓 47
+				678 text SSE
+				679 text :
+				680 text 600146
+				681 text  · 
+				682 text CNY
+				683 text  · 
+				684 text 类别未知
+				685 text 证券类别证据尚未解析
+			686 button P1 持仓 48 SSE:600147 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600147
+				687 text P1 持仓 48
+				688 text SSE
+				689 text :
+				690 text 600147
+				691 text  · 
+				692 text CNY
+				693 text  · 
+				694 text 类别未知
+				695 text 证券类别证据尚未解析
+			696 button P1 持仓 49 SSE:600148 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600148
+				697 text P1 持仓 49
+				698 text SSE
+				699 text :
+				700 text 600148
+				701 text  · 
+				702 text CNY
+				703 text  · 
+				704 text 类别未知
+				705 text 证券类别证据尚未解析
+			706 button P1 持仓 50 SSE:600149 · CNY · 类别未知 证券类别证据尚未解析, ID: hp-symbol-instrument%3ACN-SH%3A600149
+				707 text P1 持仓 50
+				708 text SSE
+				709 text :
+				710 text 600149
+				711 text  · 
+				712 text CNY
+				713 text  · 
+				714 text 类别未知
+				715 text 证券类别证据尚未解析
+			716 button 中证军工 SSE:512560 · CNY · ETF, ID: hp-symbol-SSE%3A512560%3Aetf
+				717 text 中证军工
+				718 text SSE
+				719 text :
+				720 text 512560
+				721 text  · 
+				722 text CNY
+				723 text  · 
+				724 text ETF
+			725 button 稀土基金 SSE:516150 · CNY · ETF, ID: hp-symbol-SSE%3A516150%3Aetf
+				726 text 稀土基金
+				727 text SSE
+				728 text :
+				729 text 516150
+				730 text  · 
+				731 text CNY
+				732 text  · 
+				733 text ETF
+			734 button 稀土ETF SSE:516780 · CNY · ETF, ID: hp-symbol-SSE%3A516780%3Aetf
+				735 text 稀土ETF
+				736 text SSE
+				737 text :
+				738 text 516780
+				739 text  · 
+				740 text CNY
+				741 text  · 
+				742 text ETF
+			743 button 工银黄金 SSE:518660 · CNY · ETF, ID: hp-symbol-SSE%3A518660%3Aetf
+				744 text 工银黄金
+				745 text SSE
+				746 text :
+				747 text 518660
+				748 text  · 
+				749 text CNY
+				750 text  · 
+				751 text ETF
+			752 button 北方稀土 SSE:600111 · CNY · 股票, ID: hp-symbol-SSE%3A600111%3Astock
+				753 text 北方稀土
+				754 text SSE
+				755 text :
+				756 text 600111
+				757 text  · 
+				758 text CNY
+				759 text  · 
+				760 text 股票
+			761 button 兖矿能源 SSE:600188 · CNY · 股票, ID: hp-symbol-SSE%3A600188%3Astock
+				762 text 兖矿能源
+				763 text SSE
+				764 text :
+				765 text 600188
+				766 text  · 
+				767 text CNY
+				768 text  · 
+				769 text 股票
+			770 button 天通股份 SSE:600330 · CNY · 股票, ID: hp-symbol-SSE%3A600330%3Astock
+				771 text 天通股份
+				772 text SSE
+				773 text :
+				774 text 600330
+				775 text  · 
+				776 text CNY
+				777 text  · 
+				778 text 股票
+			779 button 宁沪高速 SSE:600377 · CNY · 股票, ID: hp-symbol-SSE%3A600377%3Astock
+				780 text 宁沪高速
+				781 text SSE
+				782 text :
+				783 text 600377
+				784 text  · 
+				785 text CNY
+				786 text  · 
+				787 text 股票
+			788 button 中金黄金 SSE:600489 · CNY · 股票, ID: hp-symbol-SSE%3A600489%3Astock
+				789 text 中金黄金
+				790 text SSE
+				791 text :
+				792 text 600489
+				793 text  · 
+				794 text CNY
+				795 text  · 
+				796 text 股票
+			797 button 卧龙电驱 SSE:600580 · CNY · 股票, ID: hp-symbol-SSE%3A600580%3Astock
+				798 text 卧龙电驱
+				799 text SSE
+				800 text :
+				801 text 600580
+				802 text  · 
+				803 text CNY
+				804 text  · 
+				805 text 股票
+			806 button 福耀玻璃 SSE:600660 · CNY · 股票, ID: hp-symbol-SSE%3A600660%3Astock
+				807 text 福耀玻璃
+				808 text SSE
+				809 text :
+				810 text 600660
+				811 text  · 
+				812 text CNY
+				813 text  · 
+				814 text 股票
+			815 button 盛屯矿业 SSE:600711 · CNY · 股票, ID: hp-symbol-SSE%3A600711%3Astock
+				816 text 盛屯矿业
+				817 text SSE
+				818 text :
+				819 text 600711
+				820 text  · 
+				821 text CNY
+				822 text  · 
+				823 text 股票
+			824 button 中粮糖业 SSE:600737 · CNY · 股票, ID: hp-symbol-SSE%3A600737%3Astock
+				825 text 中粮糖业
+				826 text SSE
+				827 text :
+				828 text 600737
+				829 text  · 
+				830 text CNY
+				831 text  · 
+				832 text 股票
+			833 button 远东股份 SSE:600869 · CNY · 股票, ID: hp-symbol-SSE%3A600869%3Astock
+				834 text 远东股份
+				835 text SSE
+				836 text :
+				837 text 600869
+				838 text  · 
+				839 text CNY
+				840 text  · 
+				841 text 股票
+			842 button 晋控煤业 SSE:601001 · CNY · 股票, ID: hp-symbol-SSE%3A601001%3Astock
+				843 text 晋控煤业
+				844 text SSE
+				845 text :
+				846 text 601001
+				847 text  · 
+				848 text CNY
+				849 text  · 
+				850 text 股票
+			851 button 春秋航空 SSE:601021 · CNY · 股票, ID: hp-symbol-SSE%3A601021%3Astock
+				852 text 春秋航空
+				853 text SSE
+				854 text :
+				855 text 601021
+				856 text  · 
+				857 text CNY
+				858 text  · 
+				859 text 股票
+			860 button 中国神华 SSE:601088 · CNY · 股票, ID: hp-symbol-SSE%3A601088%3Astock
+				861 text 中国神华
+				862 text SSE
+				863 text :
+				864 text 601088
+				865 text  · 
+				866 text CNY
+				867 text  · 
+				868 text 股票
+			869 button 中国平安 SSE:601318 · CNY · 股票, ID: hp-symbol-SSE%3A601318%3Astock
+				870 text 中国平安
+				871 text SSE
+				872 text :
+				873 text 601318
+				874 text  · 
+				875 text CNY
+				876 text  · 
+				877 text 股票
+			878 button 拓普集团 SSE:601689 · CNY · 股票, ID: hp-symbol-SSE%3A601689%3Astock
+				879 text 拓普集团
+				880 text SSE
+				881 text :
+				882 text 601689
+				883 text  · 
+				884 text CNY
+				885 text  · 
+				886 text 股票
+			887 button 紫金矿业 SSE:601899 · CNY · 股票, ID: hp-symbol-SSE%3A601899%3Astock
+				888 text 紫金矿业
+				889 text SSE
+				890 text :
+				891 text 601899
+				892 text  · 
+				893 text CNY
+				894 text  · 
+				895 text 股票
+			896 button 玲珑轮胎 SSE:601966 · CNY · 股票, ID: hp-symbol-SSE%3A601966%3Astock
+				897 text 玲珑轮胎
+				898 text SSE
+				899 text :
+				900 text 601966
+				901 text  · 
+				902 text CNY
+				903 text  · 
+				904 text 股票
+			905 button 甘李药业 SSE:603087 · CNY · 股票, ID: hp-symbol-SSE%3A603087%3Astock
+				906 text 甘李药业
+				907 text SSE
+				908 text :
+				909 text 603087
+				910 text  · 
+				911 text CNY
+				912 text  · 
+				913 text 股票
+			914 button 福斯特 SSE:603806 · CNY · 股票, ID: hp-symbol-SSE%3A603806%3Astock
+				915 text 福斯特
+				916 text SSE
+				917 text :
+				918 text 603806
+				919 text  · 
+				920 text CNY
+				921 text  · 
+				922 text 股票
+			923 button 豪能股份 SSE:603809 · CNY · 股票, ID: hp-symbol-SSE%3A603809%3Astock
+				924 text 豪能股份
+				925 text SSE
+				926 text :
+				927 text 603809
+				928 text  · 
+				929 text CNY
+				930 text  · 
+				931 text 股票
+			932 button 诺泰生物 SSE:688076 · CNY · 股票, ID: hp-symbol-SSE%3A688076%3Astock
+				933 text 诺泰生物
+				934 text SSE
+				935 text :
+				936 text 688076
+				937 text  · 
+				938 text CNY
+				939 text  · 
+				940 text 股票
+			941 button 天岳先进 SSE:688234 · CNY · 股票, ID: hp-symbol-SSE%3A688234%3Astock
+				942 text 天岳先进
+				943 text SSE
+				944 text :
+				945 text 688234
+				946 text  · 
+				947 text CNY
+				948 text  · 
+				949 text 股票
+			950 button 长安汽车 SZSE:000625 · CNY · 股票, ID: hp-symbol-SZSE%3A000625%3Astock
+				951 text 长安汽车
+				952 text SZSE
+				953 text :
+				954 text 000625
+				955 text  · 
+				956 text CNY
+				957 text  · 
+				958 text 股票
+			959 button 格力电器 SZSE:000651 · CNY · 股票, ID: hp-symbol-SZSE%3A000651%3Astock
+				960 text 格力电器
+				961 text SZSE
+				962 text :
+				963 text 000651
+				964 text  · 
+				965 text CNY
+				966 text  · 
+				967 text 股票
+			968 button 爱康科技 SZSE:002610 · CNY · 股票, ID: hp-symbol-SZSE%3A002610%3Astock
+				969 text 爱康科技
+				970 text SZSE
+				971 text :
+				972 text 002610
+				973 text  · 
+				974 text CNY
+				975 text  · 
+				976 text 股票
+			977 button HK创新药 SZSE:159567 · CNY · ETF, ID: hp-symbol-SZSE%3A159567%3Aetf
+				978 text HK创新药
+				979 text SZSE
+				980 text :
+				981 text 159567
+				982 text  · 
+				983 text CNY
+				984 text  · 
+				985 text ETF
+			986 button 稀有金属 SZSE:159608 · CNY · ETF, ID: hp-symbol-SZSE%3A159608%3Aetf
+				987 text 稀有金属
+				988 text SZSE
+				989 text :
+				990 text 159608
+				991 text  · 
+				992 text CNY
+				993 text  · 
+				994 text ETF
+			995 button 游戏ETF SZSE:159869 · CNY · ETF, ID: hp-symbol-SZSE%3A159869%3Aetf
+				996 text 游戏ETF
+				997 text SZSE
+				998 text :
+				999 text 159869
+				1000 text  · 
+				1001 text CNY
+				1002 text  · 
+				1003 text ETF
+		1004 container
+			1005 text 目录来自已导入交易与已存证券资料，未覆盖全市场。 输入框内 × 清空查询 · ↑ ↓ 选择 · Enter 查看 · Esc 关闭
+
+The focused UI element is 7 search text field (settable) Description: 搜索标的, Value: 6

@@ -1,0 +1,7 @@
+Freeze product SHA verification 2026-10-22T23:15:45.265Z
+Initial helper exit1: it misclassified git diff --no-index --check exit1 with empty diagnostics as whitespace failure. Corrected helper below accepts expected new-file diff exit. No product edit resulted.
+MATCH app/components/homepage-v25/metric-cards.tsx 344ee710457cc95f2cf384a882b9c800e84cc5c1ea068216c44cc4e915284bea; git --no-index --check exit1 (expected new-file difference), no whitespace diagnostics
+MATCH app/components/homepage-v25/metric-cards.css 5a99e9f9a77cb2e7d20340d9a40e0757cbc7917222e74fbc358646c4c9267194; git --no-index --check exit1 (expected new-file difference), no whitespace diagnostics
+MATCH app/components/homepage-v25/metric-cards.test.tsx 4c4aeb1393c09bdc7a81d127002d3a032c2fb5850011cf502117426abf2e3d3a; git --no-index --check exit1 (expected new-file difference), no whitespace diagnostics
+Final behavior20/20 exit0:10-final-tests.log; strict types exit0:11-final-types.log; scoped lint exit0:12-final-lint.log. No product changes since these checks.
+Root formal acceptance0/3; page/browser/independent visual NOT VERIFIED. Worker writes frozen.

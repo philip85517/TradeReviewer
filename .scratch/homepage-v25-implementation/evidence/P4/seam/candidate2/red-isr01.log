@@ -1,0 +1,41 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:62968) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (168 tests | 1 failed | 167 skipped) 68ms
+     × ISR01 uses the exact selected nonprefix context for coarse business dates 64ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR01 uses the exact selected nonprefix context for coarse business dates
+AssertionError: expected [] to deeply equal [ [ 'coarse-jan5', '0', '2', …(5) ] ]
+
+- Expected
++ Received
+
+- [
+-   [
+-     "coarse-jan5",
+-     "0",
+-     "2",
+-     "0",
+-     "2",
+-     "0",
+-     "2",
+-     "0",
+-   ],
+- ]
++ []
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1297:250
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 167 skipped (168)
+   Start at  11:42:38
+   Duration  3.39s (transform 616ms, setup 453ms, import 729ms, tests 68ms, environment 1.74s)
+

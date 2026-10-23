@@ -1,0 +1,11 @@
+app/components/homepage-v25/session-model.test.ts(4,3): error TS2305: Module '"./session-model"' has no exported member 'completeHomepageGlobalRead'.
+app/components/homepage-v25/session-model.test.ts(4,31): error TS2305: Module '"./session-model"' has no exported member 'completeHomepagePeriodRead'.
+app/components/homepage-v25/session-model.test.ts(4,59): error TS2305: Module '"./session-model"' has no exported member 'completeHomepageHistoryRead'.
+app/components/homepage-v25/session-model.test.ts(71,82): error TS2554: Expected 2 arguments, but got 3.
+app/components/homepage-v25/session-model.test.ts(74,19): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.
+app/components/homepage-v25/session-model.test.ts(75,72): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.
+app/components/homepage-v25/session-model.test.ts(101,115): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.
+app/components/homepage-v25/session-model.test.ts(110,89): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.
+app/components/homepage-v25/session-model.test.ts(117,52): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.
+app/components/homepage-v25/session-model.test.ts(124,64): error TS7006: Parameter 'accepted' implicitly has an 'any' type.
+app/components/homepage-v25/session-model.test.ts(137,163): error TS2339: Property 'domainData' does not exist on type 'HomepageSession<{ current: string; holdings: string[]; }>'.

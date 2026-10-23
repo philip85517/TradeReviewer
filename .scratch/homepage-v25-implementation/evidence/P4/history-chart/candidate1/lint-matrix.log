@@ -1,0 +1,6 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/eslint/bin/eslint.js", "app/components/homepage-v25/history-chart.tsx", "app/components/homepage-v25/history-chart.test.tsx"]
+STDOUT
+
+STDERR
+
+EXIT 0

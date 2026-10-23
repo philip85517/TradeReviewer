@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17397) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/library/library-browse-state.test.ts (21 tests | 1 failed) 67ms
+   × projects homepage execution membership independently from final-close statistics 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/library/library-browse-state.test.ts > projects homepage execution membership independently from final-close statistics
+TypeError: tradeLibraryPerformanceFilterState is not a function
+ ❯ app/components/library/library-browse-state.test.ts:587:59
+    585|   const state = normalizeTradeLibraryBrowseState({ executionDateFrom: …
+    586|   expect(buildTradeLibraryBrowseRows(entries, state, {}).map(row => ro…
+    587|   const statistics = buildTradeLibraryBrowseRows(entries, tradeLibrary…
+       |                                                           ^
+    588|   expect(statistics.map(row => row.item.episode.accountId)).toEqual(["…
+    589|   expect(statistics[0].item.episode.executions).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 20 passed (21)
+   Start at  01:35:21
+   Duration  2.76s (transform 315ms, setup 470ms, import 342ms, tests 67ms, environment 1.56s)
+

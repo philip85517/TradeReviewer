@@ -1,0 +1,32 @@
+{
+  "runtime": "v26.0.0",
+  "results": [
+    {
+      "mode": "GET",
+      "ok": true,
+      "body": ""
+    },
+    {
+      "mode": "POST",
+      "ok": true,
+      "body": "{\"diagnostic\":true}"
+    },
+    {
+      "mode": "PUT",
+      "ok": true,
+      "body": "{\"diagnostic\":true}"
+    },
+    {
+      "mode": "POST-locked",
+      "ok": false,
+      "error": "Response body object should not be disturbed or locked",
+      "stack": "TypeError: Response body object should not be disturbed or locked\n    at extractBody (node:internal/deps/undici/undici:6746:17)\n    at new Request (node:internal/deps/undici/undici:12072:48)\n    at get _request (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/adapters/node.mjs:274:21)\n    at desc.get [as redirect] (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/_chunks/_url.mjs:11:16)\n    at cloneRequestWithHeaders (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/vinext/dist/server/request-pipeline.js:388:22)\n    at file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/[eval1]:13:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    },
+    {
+      "mode": "POST-consumed",
+      "ok": false,
+      "error": "Response body object should not be disturbed or locked",
+      "stack": "TypeError: Response body object should not be disturbed or locked\n    at extractBody (node:internal/deps/undici/undici:6746:17)\n    at new Request (node:internal/deps/undici/undici:12072:48)\n    at get _request (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/adapters/node.mjs:274:21)\n    at desc.get [as redirect] (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/_chunks/_url.mjs:11:16)\n    at cloneRequestWithHeaders (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/vinext/dist/server/request-pipeline.js:388:22)\n    at file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/[eval1]:13:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    }
+  ]
+}

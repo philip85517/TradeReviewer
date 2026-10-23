@@ -1,0 +1,112 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47115) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > keeps draft and committed bundle separate through failed apply and successful retry 45ms
+   → result.current.onAttachmentDraft is not a function
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > cancels pending ownership while retaining draft and rejects its late data before identity clears the draft 7ms
+   → result.current.onAttachmentDraft is not a function
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > carries compatible source attachments as read provenance through exact symbol collection, return and reload 14ms
+   → Cannot read properties of undefined (reading 'target')
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades 7ms
+   → Cannot read properties of undefined (reading 'attachments')
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=us&accounts=one&rangeMode=date&date=2026-10-22 5ms
+   → Cannot read properties of undefined (reading 'attachments')
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=hk&accounts=two&rangeMode=date&date=2026-10-22 5ms
+   → Cannot read properties of undefined (reading 'attachments')
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=hk&accounts=one&rangeMode=date&date=2026-10-21 7ms
+   → Cannot read properties of undefined (reading 'attachments')
+ × app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > retains complete fresh sources and qualifies against the final account fallback rather than the missing source account 17ms
+   → expected { Object (categories, openOnly, ...) } to deeply equal { Object (categories, openOnly, ...) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > keeps draft and committed bundle separate through failed apply and successful retry
+TypeError: result.current.onAttachmentDraft is not a function
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:28:30
+     26|     const { result } = renderHook(() => useHomepageHost({ enabled: tru…
+     27|     await waitFor(() => expect(result.current.initialized).toBe(true));
+     28|     act(() => result.current.onAttachmentDraft(selected));
+       |                              ^
+     29|     expect(result.current.ui.snapshot.attachments).toEqual(empty); exp…
+     30|     act(() => result.current.applyAttachments());
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:28:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > cancels pending ownership while retaining draft and rejects its late data before identity clears the draft
+TypeError: result.current.onAttachmentDraft is not a function
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:47:32
+     45|     const { result } = renderHook(() => useHomepageHost({ enabled: tru…
+     46|     await waitFor(() => expect(result.current.initialized).toBe(true));
+     47|     act(() => { result.current.onAttachmentDraft(selected); result.cur…
+       |                                ^
+     48|     act(() => result.current.cancelAttachmentRead());
+     49|     expect(result.current.ui.requests.global).toBeNull(); expect(resul…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:47:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > carries compatible source attachments as read provenance through exact symbol collection, return and reload
+TypeError: Cannot read properties of undefined (reading 'target')
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:64:32
+     62|     let host = renderHook(() => useHomepageHost(options));
+     63|     await waitFor(() => expect(h.reads).toHaveLength(1));
+     64|     expect(h.reads[0].context?.request.target.attachments).toEqual(emp…
+       |                                ^
+     65|     expect(h.reads[0].context?.readTarget).toMatchObject({ market: "hk…
+     66|     await act(async () => h.reads[0].resolve({ requestId: h.reads[0].i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=us&accounts=one&rangeMode=date&date=2026-10-22
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=hk&accounts=two&rangeMode=date&date=2026-10-22
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > does not inherit attachments into unrelated native destination /trades?scope=live&market=hk&accounts=one&rangeMode=date&date=2026-10-21
+TypeError: Cannot read properties of undefined (reading 'attachments')
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:85:32
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  app/components/homepage-v25/attachment-host.test.tsx > S-owned attachment request and return integration > retains complete fresh sources and qualifies against the final account fallback rather than the missing source account
+AssertionError: expected { Object (categories, openOnly, ...) } to deeply equal { Object (categories, openOnly, ...) }
+
+- Expected
++ Received
+
+@@ -1,9 +1,9 @@
+  {
+    "categories": [
+-     "stock",
+      "etf",
++     "stock",
+    ],
+    "openOnly": true,
+    "pendingReview": [
+      true,
+    ],
+
+ ❯ app/components/homepage-v25/attachment-host.test.tsx:98:52
+     96|     await act(async () => h.reads[0].resolve({ requestId: h.reads[0].i…
+     97|     expect(result.current.ui.snapshot.scope.accounts).toEqual(["*"]);
+     98|     expect(result.current.ui.snapshot.attachments).toEqual(selected);
+       |                                                    ^
+     99|     expect(result.current.data).toBe("complete-including-account-two")…
+    100|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  06:21:44
+   Duration  2.02s (transform 367ms, setup 182ms, import 448ms, tests 110ms, environment 950ms)
+

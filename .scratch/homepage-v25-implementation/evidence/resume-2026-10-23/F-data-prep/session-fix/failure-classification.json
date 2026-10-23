@@ -1,0 +1,100 @@
+[
+  {
+    "file": "holdings-model",
+    "name": "keeps partial or future FX unknown and accepts production colon rates from complete timely evidence",
+    "invalid": "US raw Oct23 / Shanghai asOf Oct23 date-only; NY23 session unfinished",
+    "observed": "null instead of 1636.25",
+    "correction": "Evidence copy only: Oct23 default US raw → Oct22; FX/asOf unchanged"
+  },
+  {
+    "file": "holdings-model",
+    "name": "reports US in USD without needing FX for USD, converting other settlement currencies only with evidence",
+    "invalid": "same unfinished US23 raw",
+    "observed": "null instead of 233.75",
+    "correction": "Evidence copy only: Oct23 default US raw → Oct22; CN23 and explicit stale US15 retained"
+  },
+  {
+    "file": "F-acceptance-2-interface-trace",
+    "name": "records real library, boundary, canonical and projection interfaces",
+    "invalid": "Jan31 US Saturday raw; Jan1 opening boundary sits in unverified 2025 session",
+    "observed": "missing current quote and unknown opening; trace array mismatch",
+    "correction": "raw Jan31→Jan30; default period start Jan1→Jan2 (same fill membership)"
+  },
+  {
+    "file": "F-acceptance-2-ipo-fee-contract",
+    "name": "projects attributable canonical fees when it covers a cross-period short",
+    "invalid": "period start Jan9; Jan8 Shanghai EOD precedes US Jan8 close",
+    "observed": "opening 36/net -12 instead of opening16/net8",
+    "correction": "opening raw Jan8→Jan7; current raw Jan31→Jan30"
+  },
+  {
+    "file": "F-contract",
+    "name": "converts using the production complete FX pair keys",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "null instead of net70/current770",
+    "correction": "raw Jan31→Jan30"
+  },
+  {
+    "file": "F-contract",
+    "name": "keeps unknown opening fees unknown without losing a known current quantity",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "null instead of current110",
+    "correction": "raw Jan31→Jan30"
+  },
+  {
+    "file": "coordinator-round3-boundaries",
+    "name": "does not seed a Shanghai first-day execution into pre-period inventory",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "net0 instead of net10; opening0 unchanged",
+    "correction": "raw Jan31→Jan30; period Jan1 and precise Jan1 fill retained"
+  },
+  {
+    "file": "coordinator-round3-boundaries",
+    "name": "excludes executions after asOf from current inventory as well as from prices",
+    "invalid": "Jan31 Saturday and Jan1 holiday raw",
+    "observed": "null instead of current110",
+    "correction": "raw Jan31→Jan30; future fill unchanged"
+  },
+  {
+    "file": "coordinator-round3-boundaries",
+    "name": "selects the latest eligible current candle when a later candle also exists",
+    "invalid": "Jan31 Saturday and Jan1 holiday raw",
+    "observed": "null instead of current110",
+    "correction": "raw Jan31→Jan30; future Feb2 raw unchanged"
+  },
+  {
+    "file": "invariant-red",
+    "name": "R04 production FX snapshot keys convert current value",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "700 instead of 770 via old Dec31 price100 fallback",
+    "correction": "raw Jan31→Jan30"
+  },
+  {
+    "file": "invariant-red",
+    "name": "R08 inclusive first-day PnL uses the pre-period mark",
+    "invalid": "Jan1 opening in unverified 2025 session; US Jan1 holiday/Jan31 Saturday raw",
+    "observed": "null instead of net30",
+    "correction": "period Jan1→Jan2; first-day raw Jan1→Jan2; closing raw Jan31→Jan30"
+  },
+  {
+    "file": "peer",
+    "name": "assigns the IPO fee across short close and new long inventory",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "closingUF48.5 instead of 8.5 from Dec31 150 fallback",
+    "correction": "raw Jan31→Jan30"
+  },
+  {
+    "file": "peer",
+    "name": "deduplicates identical raw executions without reducing known market value",
+    "invalid": "US Jan31 Saturday raw",
+    "observed": "150 instead of current110 from Dec31 fallback",
+    "correction": "raw Jan31→Jan30"
+  },
+  {
+    "file": "peer",
+    "name": "keeps ordinary cross-period fee bridge correct",
+    "invalid": "Jan1 opening in unverified US2025 intraday session",
+    "observed": "opening/net null instead of 48/-31",
+    "correction": "period Jan1→Jan2, preserving old Dec2 open / Jan2 close membership"
+  }
+]

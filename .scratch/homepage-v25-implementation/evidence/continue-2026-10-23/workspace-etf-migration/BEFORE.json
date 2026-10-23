@@ -1,0 +1,17 @@
+{
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "at_utc": "2026-10-22T23:30:20.442412+00:00",
+  "test_before_sha256": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5",
+  "protected_sha256": {
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/homepage-v25/home-surface.css": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/attachment-groups.ts": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+    "app/components/homepage-v25/attachment-filter.tsx": "e865b6aa071247e33158fd81833d7b86163af20b874a58a1b8d35c7dc859444f",
+    "app/components/homepage-v25/holdings-model.ts": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+    "vitest.config.ts": "e13d698288ac14428059e4da2e1c650c87b5b341afae688cc4a037234118ae2d",
+    "app/lib/reviews/trading-room-scope.ts": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16"
+  }
+}

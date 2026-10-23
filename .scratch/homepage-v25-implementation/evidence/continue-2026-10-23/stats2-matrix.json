@@ -1,0 +1,3935 @@
+[
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 208.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 834.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "standard",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 138.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "5",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 431.1015625,
+          "top": 189,
+          "width": 18.1015625,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 5 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "0%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 791.6484375,
+          "top": 189,
+          "width": 42.6484375,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1146.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "zero",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 208.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合14 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "100%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 827.8515625,
+          "top": 189,
+          "width": 78.8515625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "hundred",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 208.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 834.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "pending",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "initial",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 138.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "0",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 431.1015625,
+          "top": 189,
+          "width": 18.1015625,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 0 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 773.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1146.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "empty",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 208.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 834.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "error",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 101.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 437.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 773.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1109.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "firstError",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 101.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 773.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1109.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "missing",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 208.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 437.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 834.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "countMissing",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 101.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 834.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "currency",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1440,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "value": "-1,234,567,890,123,456,789,000.00 亿",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 355,
+          "top": 189.5,
+          "width": 278,
+          "x": 77,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "value": "123,456,789,012,345,678,901,234,567,890",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 691,
+          "top": 189,
+          "width": 278,
+          "x": 413,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合12,345,678,901,234,567,890,123,456,789 / 123,456,789,012,345,678,901,234,567,890 盈利回合",
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "value": "10%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 809.75,
+          "top": 189,
+          "width": 60.75,
+          "x": 749,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 406,
+      "height": 142,
+      "left": 57,
+      "right": 1383,
+      "top": 264,
+      "width": 1326,
+      "x": 57,
+      "y": 264
+    },
+    "scenario": "long",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 754.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "standard",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "5",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 374.6015625,
+          "top": 189,
+          "width": 18.1015625,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 5 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "0%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 711.6484375,
+          "top": 189,
+          "width": 42.6484375,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1042.6875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "zero",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合14 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "100%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 747.8515625,
+          "top": 189,
+          "width": 78.8515625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "hundred",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 754.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "pending",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "initial",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "0",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 374.6015625,
+          "top": 189,
+          "width": 18.1015625,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 0 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 693.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1042.6875,
+          "top": 189.5,
+          "width": 61.1875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "empty",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 754.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "error",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 380.71875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 693.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1005.71875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "firstError",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 693.21875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1005.71875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "missing",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 189.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 380.71875,
+          "top": 189,
+          "width": 24.21875,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 754.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "countMissing",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 189.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 392.703125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 754.7265625,
+          "top": 189,
+          "width": 85.7265625,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "currency",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 1280,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 24,
+          "right": 318.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 24,
+          "y": 152
+        },
+        "value": "-1,234,567,890,123,456,789,000.00 亿",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 44,
+          "right": 298.5,
+          "top": 189.5,
+          "width": 254.5,
+          "x": 44,
+          "y": 189.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 336.5,
+          "right": 631,
+          "top": 152,
+          "width": 294.5,
+          "x": 336.5,
+          "y": 152
+        },
+        "value": "123,456,789,012,345,678,901,234,567,890",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 356.5,
+          "right": 611,
+          "top": 189,
+          "width": 254.5,
+          "x": 356.5,
+          "y": 189
+        }
+      },
+      {
+        "ratio": "盈利回合12,345,678,901,234,567,890,123,456,789 / 123,456,789,012,345,678,901,234,567,890 盈利回合",
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 649,
+          "right": 943.5,
+          "top": 152,
+          "width": 294.5,
+          "x": 649,
+          "y": 152
+        },
+        "value": "10%",
+        "valueRect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 669,
+          "right": 729.75,
+          "top": 189,
+          "width": 60.75,
+          "x": 669,
+          "y": 189
+        }
+      },
+      {
+        "rect": {
+          "bottom": 256,
+          "height": 104,
+          "left": 961.5,
+          "right": 1256,
+          "top": 152,
+          "width": 294.5,
+          "x": 961.5,
+          "y": 152
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 981.5,
+          "right": 1103.8671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 981.5,
+          "y": 189.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 422,
+      "height": 142,
+      "left": 24,
+      "right": 1256,
+      "top": 280,
+      "width": 1232,
+      "x": 24,
+      "y": 280
+    },
+    "scenario": "long",
+    "viewport": {
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 257.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 129.7265625,
+          "top": 469,
+          "width": 85.7265625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "standard",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 257.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "5",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 62.1015625,
+          "top": 363,
+          "width": 18.1015625,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 5 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "0%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 86.6484375,
+          "top": 469,
+          "width": 42.6484375,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 575.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "zero",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 257.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合14 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "100%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 122.8515625,
+          "top": 469,
+          "width": 78.8515625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "hundred",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 257.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 129.7265625,
+          "top": 469,
+          "width": 85.7265625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "pending",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        }
+      },
+      {
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "initial",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 257.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "0",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 62.1015625,
+          "top": 363,
+          "width": 18.1015625,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合0 / 0 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 469,
+          "width": 24.21875,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "0.00",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 105.1875,
+          "top": 575.5,
+          "width": 61.1875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "empty",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 257.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 129.7265625,
+          "top": 469,
+          "width": 85.7265625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "error",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 257.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 363,
+          "width": 24.21875,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 469,
+          "width": 24.21875,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 575.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "firstError",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 257.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 469,
+          "width": 24.21875,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 575.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "missing",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "+32.15 万",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 175.3828125,
+          "top": 257.5,
+          "width": 131.3828125,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 363,
+          "width": 24.21875,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合— / — 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 129.7265625,
+          "top": 469,
+          "width": 85.7265625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "countMissing",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "—",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 68.21875,
+          "top": 257.5,
+          "width": 24.21875,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "14",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 80.203125,
+          "top": 363,
+          "width": 36.203125,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合9 / 14 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "64.3%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 129.7265625,
+          "top": 469,
+          "width": 85.7265625,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "currency",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  },
+  {
+    "bodyWidth": 390,
+    "cards": [
+      {
+        "rect": {
+          "bottom": 308,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 220,
+          "width": 342,
+          "x": 24,
+          "y": 220
+        },
+        "value": "-1,234,567,890,123,456,789,000.00 亿",
+        "valueRect": {
+          "bottom": 291.5,
+          "height": 34,
+          "left": 44,
+          "right": 346,
+          "top": 257.5,
+          "width": 302,
+          "x": 44,
+          "y": 257.5
+        }
+      },
+      {
+        "rect": {
+          "bottom": 414,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 326,
+          "width": 342,
+          "x": 24,
+          "y": 326
+        },
+        "value": "123,456,789,012,345,678,901,234,567,890",
+        "valueRect": {
+          "bottom": 397,
+          "height": 34,
+          "left": 44,
+          "right": 346,
+          "top": 363,
+          "width": 302,
+          "x": 44,
+          "y": 363
+        }
+      },
+      {
+        "ratio": "盈利回合12,345,678,901,234,567,890,123,456,789 / 123,456,789,012,345,678,901,234,567,890 盈利回合",
+        "rect": {
+          "bottom": 520,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 432,
+          "width": 342,
+          "x": 24,
+          "y": 432
+        },
+        "value": "10%",
+        "valueRect": {
+          "bottom": 503,
+          "height": 34,
+          "left": 44,
+          "right": 104.75,
+          "top": 469,
+          "width": 60.75,
+          "x": 44,
+          "y": 469
+        }
+      },
+      {
+        "rect": {
+          "bottom": 626,
+          "height": 88,
+          "left": 24,
+          "right": 366,
+          "top": 538,
+          "width": 342,
+          "x": 24,
+          "y": 538
+        },
+        "value": "4,680.12",
+        "valueRect": {
+          "bottom": 609.5,
+          "height": 34,
+          "left": 44,
+          "right": 166.3671875,
+          "top": 575.5,
+          "width": 122.3671875,
+          "x": 44,
+          "y": 575.5
+        }
+      }
+    ],
+    "next": {
+      "bottom": 792,
+      "height": 142,
+      "left": 24,
+      "right": 366,
+      "top": 650,
+      "width": 342,
+      "x": 24,
+      "y": 650
+    },
+    "scenario": "long",
+    "viewport": {
+      "height": 1000,
+      "width": 390
+    }
+  }
+]

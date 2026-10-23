@@ -1,0 +1,475 @@
+[
+  {
+    "scenario": "mixed",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "markets",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 三个市场, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 (selected) 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t28 content list 已提交贡献行\n\t\t\t\t77 container A股 贡献\n\t\t\t\t\t78 button 打开A股的准确贡献来源\n\t\t\t\t\t\t79 text A股\n\t\t\t\t\t\t80 text +8,000.00\n\t\t\t\t\t81 pop up button (collapsed) Description: A股，贡献详情, Secondary Actions: Expand\n\t\t\t\t82 container 港股 贡献\n\t\t\t\t\t83 button 打开港股的准确贡献来源\n\t\t\t\t\t\t84 text 港股\n\t\t\t\t\t\t85 text -6,000.00\n\t\t\t\t\t86 pop up button (collapsed) Description: 港股，贡献详情, Secondary Actions: Expand\n\t\t\t\t87 container 美股 贡献\n\t\t\t\t\t88 button 打开美股的准确贡献来源\n\t\t\t\t\t\t89 text 美股\n\t\t\t\t\t\t90 text +8,000.00\n\t\t\t\t\t91 pop up button (collapsed) Description: 美股，贡献详情, Secondary Actions: Expand\n\t\t\t69 text 合计（ CNY ） +9.88 万\n\t\t\t70 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 405,
+            "height": 253,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 599,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 429,
+            "width": 1152,
+            "x": 144,
+            "y": 429
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "positive",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同正连续堆叠, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 (selected) 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t28 content list 已提交贡献行\n\t\t\t\t77 container 招商银行 贡献\n\t\t\t\t\t78 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t79 text 招商银行\n\t\t\t\t\t\t80 text +1.50 万\n\t\t\t\t\t81 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t82 container 贵州茅台 贡献\n\t\t\t\t\t83 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t84 text 贵州茅台\n\t\t\t\t\t\t85 text +1.50 万\n\t\t\t\t\t86 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t87 container 中国平安 贡献\n\t\t\t\t\t88 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t89 text 中国平安\n\t\t\t\t\t\t90 text +1.50 万\n\t\t\t\t\t91 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t92 container 宁德时代 贡献\n\t\t\t\t\t93 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t94 text 宁德时代\n\t\t\t\t\t\t95 text +1.50 万\n\t\t\t\t\t96 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t97 container 中信证券 贡献\n\t\t\t\t\t98 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t99 text 中信证券\n\t\t\t\t\t\t100 text +1.50 万\n\t\t\t\t\t101 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t102 container 比亚迪 贡献\n\t\t\t\t\t103 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t104 text 比亚迪\n\t\t\t\t\t\t105 text +1.50 万\n\t\t\t\t\t106 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t107 container 长江电力 贡献\n\t\t\t\t\t108 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t109 text 长江电力\n\t\t\t\t\t\t110 text +1.50 万\n\t\t\t\t\t111 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t112 container 中国中免 贡献\n\t\t\t\t\t113 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t114 text 中国中免\n\t\t\t\t\t\t115 text +1.50 万\n\t\t\t\t\t116 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t69 text 合计（ CNY ） +9.88 万\n\t\t\t70 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "negative",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同负连续堆叠, Secondary Actions: Expand\n~\t\t\t\t10 同正连续堆叠\n~\t\t\t\t11 (selected) 同负连续堆叠\n~\t\t\t\t\t\t80 text -1.50 万\n~\t\t\t\t\t\t85 text -1.50 万\n~\t\t\t\t\t\t90 text -1.50 万\n~\t\t\t\t\t\t95 text -1.50 万\n~\t\t\t\t\t\t100 text -1.50 万\n~\t\t\t\t\t\t105 text -1.50 万\n~\t\t\t\t\t\t110 text -1.50 万\n~\t\t\t\t\t\t115 text -1.50 万\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "zero",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 零与小于一分, Secondary Actions: Expand\n~\t\t\t\t11 同负连续堆叠\n~\t\t\t\t12 (selected) 零与小于一分\n~\t\t\t\t\t\t80 text 0.00\n~\t\t\t\t\t\t85 text 0.00\n~\t\t\t\t\t\t90 text 0.00\n~\t\t\t\t\t\t95 text 0.00\n~\t\t\t\t\t\t100 text 0.00\n~\t\t\t\t\t\t105 text 0.00\n~\t\t\t\t\t\t110 text 0.00\n~\t\t\t\t\t\t115 text 0.00\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "unknown",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 估值缺失, Secondary Actions: Expand\n~\t\t\t\t12 零与小于一分\n~\t\t\t\t13 (selected) 估值缺失\n~\t\t\t\t\t\t80 text 不可计算\n+\t\t\t\t\t117 text 期间已实现：不可计算 · 缺少期末估值，未知不能当零；缺少期末估值，未知不能当零\n~\t\t\t\t\t\t85 text -6,000.00\n~\t\t\t\t\t\t90 text +8,000.00\n~\t\t\t\t\t\t95 text -6,000.00\n~\t\t\t\t\t\t100 text +8,000.00\n~\t\t\t\t\t\t105 text -6,000.00\n~\t\t\t\t\t\t110 text +8,000.00\n~\t\t\t\t\t\t115 text -6,000.00\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 567,
+            "height": 415,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 761,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 591,
+            "width": 1152,
+            "x": 144,
+            "y": 591
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "history",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 117\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 历史已平仓, Secondary Actions: Expand\n~\t\t\t\t13 估值缺失\n~\t\t\t\t14 (selected) 历史已平仓\n~\t\t27 container 贡献历史列表（CNY）\n~\t\t\t\t\t\t80 text +8,000.57\n~\t\t\t\t\t\t85 text -6,000.12\n~\t\t\t\t\t\t90 text +8,000.57\n~\t\t\t\t\t\t95 text -6,000.12\n~\t\t\t\t\t\t100 text +8,000.57\n~\t\t\t\t\t\t105 text -6,000.12\n~\t\t\t\t\t\t110 text +8,000.57\n~\t\t\t\t\t\t115 text -6,000.12\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "pending",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand\n~\t\t\t\t14 历史已平仓\n~\t\t\t\t15 (selected) 更新保留旧值\n~\t\t27 container 贡献当前列表（CNY）\n+\t\t\t117 text 更新中，继续显示已提交贡献\n~\t\t\t\t\t\t80 text +8,000.00\n~\t\t\t\t\t\t85 text -6,000.00\n~\t\t\t\t\t\t90 text +8,000.00\n~\t\t\t\t\t\t95 text -6,000.00\n~\t\t\t\t\t\t100 text +8,000.00\n~\t\t\t\t\t\t105 text -6,000.00\n~\t\t\t\t\t\t110 text +8,000.00\n~\t\t\t\t\t\t115 text -6,000.00\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 571,
+            "height": 419,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 765,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 595,
+            "width": 1152,
+            "x": 144,
+            "y": 595
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "initial",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次加载, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 (selected) 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t117 text 首次读取贡献中\n\t\t\t118 container 贡献首次加载中\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [
+        {
+          "color": "rgb(220, 228, 237)",
+          "text": ""
+        }
+      ],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 528,
+            "height": 376,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 722,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 552,
+            "width": 1152,
+            "x": 144,
+            "y": 552
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "error",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 读取失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 (selected) 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t117 text 读取失败，原范围与贡献保留\n\t\t\t118 content list 已提交贡献行\n\t\t\t\t119 container 招商银行 贡献\n\t\t\t\t\t120 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t121 text 招商银行\n\t\t\t\t\t\t122 text +8,000.00\n\t\t\t\t\t123 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t124 container 贵州茅台 贡献\n\t\t\t\t\t125 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t126 text 贵州茅台\n\t\t\t\t\t\t127 text -6,000.00\n\t\t\t\t\t128 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t129 container 中国平安 贡献\n\t\t\t\t\t130 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t131 text 中国平安\n\t\t\t\t\t\t132 text +8,000.00\n\t\t\t\t\t133 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t134 container 宁德时代 贡献\n\t\t\t\t\t135 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t136 text 宁德时代\n\t\t\t\t\t\t137 text -6,000.00\n\t\t\t\t\t138 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t139 container 中信证券 贡献\n\t\t\t\t\t140 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t141 text 中信证券\n\t\t\t\t\t\t142 text +8,000.00\n\t\t\t\t\t143 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t144 container 比亚迪 贡献\n\t\t\t\t\t145 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t146 text 比亚迪\n\t\t\t\t\t\t147 text -6,000.00\n\t\t\t\t\t148 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t149 container 长江电力 贡献\n\t\t\t\t\t150 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t151 text 长江电力\n\t\t\t\t\t\t152 text +8,000.00\n\t\t\t\t\t153 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t154 container 中国中免 贡献\n\t\t\t\t\t155 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t156 text 中国中免\n\t\t\t\t\t\t157 text -6,000.00\n\t\t\t\t\t158 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t159 text 合计（ CNY ） +9.88 万\n\t\t\t160 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 571,
+            "height": 419,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 765,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 595,
+            "width": 1152,
+            "x": 144,
+            "y": 595
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "empty",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 无结果, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 (selected) 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t117 text 当前范围没有贡献，不能当作零金额\n\t\t\t118 content list 已提交贡献行\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 528,
+            "height": 376,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 722,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 552,
+            "width": 1152,
+            "x": 144,
+            "y": 552
+          }
+        }
+      ],
+      "width": 1440
+    }
+  },
+  {
+    "scenario": "long",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 极长身份金额来源, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 (selected) 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t118 content list 已提交贡献行\n\t\t\t\t119 container 极长中文证券名称与账户来源保持完整可追溯的唯一目标 贡献\n\t\t\t\t\t120 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t121 text 极长中文证券名称与账户来源保持完整可追溯的唯一目标\n\t\t\t\t\t\t122 text -1,234,567,890,123,456,789,012.35 亿\n\t\t\t\t\t123 pop up button (collapsed) Description: 极长中文证券名称与账户来源保持完整可追溯的唯一目标，贡献详情, Secondary Actions: Expand\n\t\t\t\t124 container 贵州茅台 贡献\n\t\t\t\t\t125 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t126 text 贵州茅台\n\t\t\t\t\t\t127 text -6,000.00\n\t\t\t\t\t128 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t129 container 中国平安 贡献\n\t\t\t\t\t130 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t131 text 中国平安\n\t\t\t\t\t\t132 text +8,000.00\n\t\t\t\t\t133 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t134 container 宁德时代 贡献\n\t\t\t\t\t135 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t136 text 宁德时代\n\t\t\t\t\t\t137 text -6,000.00\n\t\t\t\t\t138 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t139 container 中信证券 贡献\n\t\t\t\t\t140 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t141 text 中信证券\n\t\t\t\t\t\t142 text +8,000.00\n\t\t\t\t\t143 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t144 container 比亚迪 贡献\n\t\t\t\t\t145 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t146 text 比亚迪\n\t\t\t\t\t\t147 text -6,000.00\n\t\t\t\t\t148 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t149 container 长江电力 贡献\n\t\t\t\t\t150 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t151 text 长江电力\n\t\t\t\t\t\t152 text +8,000.00\n\t\t\t\t\t153 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t154 container 中国中免 贡献\n\t\t\t\t\t155 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t156 text 中国中免\n\t\t\t\t\t\t157 text -6,000.00\n\t\t\t\t\t158 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t159 text 合计（ CNY ） +9.88 万\n\t\t\t160 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "bars": [],
+      "height": 1000,
+      "loading": [],
+      "scrollWidth": 1440,
+      "section": [
+        {
+          "class": "hp-contribution-bars",
+          "rect": {
+            "bottom": 539,
+            "height": 387,
+            "left": 144,
+            "right": 1296,
+            "top": 152,
+            "width": 1152,
+            "x": 144,
+            "y": 152
+          }
+        },
+        {
+          "class": "next-boundary",
+          "rect": {
+            "bottom": 733,
+            "height": 170,
+            "left": 144,
+            "right": 1296,
+            "top": 563,
+            "width": 1152,
+            "x": 144,
+            "y": 563
+          }
+        }
+      ],
+      "width": 1440
+    }
+  }
+]

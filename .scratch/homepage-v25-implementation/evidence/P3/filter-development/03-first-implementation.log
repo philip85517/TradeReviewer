@@ -1,0 +1,57 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:40298) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/attachment-groups.test.ts (8 tests | 3 failed) 61ms
+     × retains strict composite pending groups without an account × instrument cartesian product 42ms
+     × ORs category choices and ANDs category, open and pending dimensions 2ms
+     × does not infer stock or pending=no from missing metadata or incomplete/missing episode evidence 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > retains strict composite pending groups without an account × instrument cartesian product
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:39:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > ORs category choices and ANDs category, open and pending dimensions
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:48:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > does not infer stock or pending=no from missing metadata or incomplete/missing episode evidence
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:66:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 12 passed (15)
+   Start at  05:04:32
+   Duration  6.86s (transform 498ms, setup 768ms, import 605ms, tests 1.15s, environment 3.23s)
+

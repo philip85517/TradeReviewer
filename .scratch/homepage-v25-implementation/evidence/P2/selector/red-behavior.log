@@ -1,0 +1,33 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:43958) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/period-selector.test.tsx (28 tests | 1 failed | 27 skipped) 469ms
+     × PS01 keeps applied label and selected shortcut when the draft differs 465ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS01 keeps applied label and selected shortcut when the draft differs
+Error: expect(element).toHaveAttribute("aria-pressed", "true") // element.getAttribute("aria-pressed") === "true"
+
+Expected the element to have attribute:
+  aria-pressed="true"
+Received:
+  aria-pressed="false"
+ ❯ app/components/homepage-v25/period-selector.test.tsx:45:56
+     43|   it("PS01 keeps applied label and selected shortcut when the draft di…
+     44|     render(<PeriodSelector {...props()} />);
+     45|     expect(screen.getByRole("button", { name: "本年" })).toHaveAttribute…
+       |                                                        ^
+     46|     expect(screen.getByRole("button", { name: "本月" })).toHaveAttribute…
+     47|     expect(rangeTrigger()).toHaveAccessibleName("自定义日期，当前期间 2026-01-01…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 27 skipped (28)
+   Start at  05:43:06
+   Duration  3.33s (transform 157ms, setup 293ms, import 259ms, tests 469ms, environment 1.66s)
+

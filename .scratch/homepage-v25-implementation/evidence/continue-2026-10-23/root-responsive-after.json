@@ -1,0 +1,356 @@
+[
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 759,
+      "flexBasis": "auto",
+      "height": 1841,
+      "padding": "0px",
+      "scrollWidth": 759,
+      "width": 759,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 759,
+      "flexBasis": "auto",
+      "height": 64,
+      "padding": "12px 16px",
+      "scrollWidth": 759,
+      "width": 759,
+      "x": 0,
+      "y": 69
+    },
+    "holdings": {
+      "clientWidth": 958,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 958,
+      "width": 960,
+      "x": 16,
+      "y": 647
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 759,
+      "flexBasis": "auto",
+      "height": 69,
+      "padding": "6px 12px",
+      "scrollWidth": 759,
+      "width": 759,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 759
+    }
+  },
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 760,
+      "flexBasis": "auto",
+      "height": 844,
+      "padding": "0px",
+      "scrollWidth": 760,
+      "width": 760,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 688,
+      "flexBasis": "auto",
+      "height": 64,
+      "padding": "12px 16px",
+      "scrollWidth": 688,
+      "width": 688,
+      "x": 72,
+      "y": 0
+    },
+    "holdings": {
+      "clientWidth": 958,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 958,
+      "width": 960,
+      "x": 88,
+      "y": 578
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 71,
+      "flexBasis": "72px",
+      "height": 844,
+      "padding": "20px 8px",
+      "scrollWidth": 71,
+      "width": 72,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 760
+    }
+  },
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 900,
+      "flexBasis": "auto",
+      "height": 844,
+      "padding": "0px",
+      "scrollWidth": 900,
+      "width": 900,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 828,
+      "flexBasis": "auto",
+      "height": 64,
+      "padding": "12px 16px",
+      "scrollWidth": 828,
+      "width": 828,
+      "x": 72,
+      "y": 0
+    },
+    "holdings": {
+      "clientWidth": 958,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 958,
+      "width": 960,
+      "x": 88,
+      "y": 578
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 71,
+      "flexBasis": "72px",
+      "height": 844,
+      "padding": "20px 8px",
+      "scrollWidth": 71,
+      "width": 72,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 900
+    }
+  },
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 901,
+      "flexBasis": "auto",
+      "height": 844,
+      "padding": "0px",
+      "scrollWidth": 901,
+      "width": 901,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 829,
+      "flexBasis": "64px",
+      "height": 64,
+      "padding": "0px 24px",
+      "scrollWidth": 829,
+      "width": 829,
+      "x": 72,
+      "y": 0
+    },
+    "holdings": {
+      "clientWidth": 779,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 779,
+      "width": 781,
+      "x": 96,
+      "y": 586
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 71,
+      "flexBasis": "72px",
+      "height": 844,
+      "padding": "20px 8px",
+      "scrollWidth": 71,
+      "width": 72,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 901
+    }
+  },
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 1440,
+      "flexBasis": "auto",
+      "height": 1000,
+      "padding": "0px",
+      "scrollWidth": 1440,
+      "width": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 1368,
+      "flexBasis": "64px",
+      "height": 64,
+      "padding": "0px 24px",
+      "scrollWidth": 1368,
+      "width": 1368,
+      "x": 72,
+      "y": 0
+    },
+    "holdings": {
+      "clientWidth": 1318,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 1318,
+      "width": 1320,
+      "x": 96,
+      "y": 586
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 71,
+      "flexBasis": "72px",
+      "height": 1000,
+      "padding": "20px 8px",
+      "scrollWidth": 71,
+      "width": 72,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  {
+    "account": null,
+    "body": {
+      "clientWidth": 1280,
+      "flexBasis": "auto",
+      "height": 800,
+      "padding": "0px",
+      "scrollWidth": 1280,
+      "width": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "header": {
+      "clientWidth": 1208,
+      "flexBasis": "64px",
+      "height": 64,
+      "padding": "0px 24px",
+      "scrollWidth": 1208,
+      "width": 1208,
+      "x": 72,
+      "y": 0
+    },
+    "holdings": {
+      "clientWidth": 1158,
+      "flexBasis": "520px",
+      "height": 520,
+      "padding": "0px 16px",
+      "scrollWidth": 1158,
+      "width": 1160,
+      "x": 96,
+      "y": 586
+    },
+    "performance": null,
+    "sidebar": {
+      "clientWidth": 71,
+      "flexBasis": "72px",
+      "height": 800,
+      "padding": "20px 8px",
+      "scrollWidth": 71,
+      "width": 72,
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "clientWidth": 0,
+      "flexBasis": "auto",
+      "height": 0,
+      "padding": "0px",
+      "scrollWidth": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  }
+]

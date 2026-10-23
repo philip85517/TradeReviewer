@@ -1,0 +1,13 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts.before-fixture-correction.txt	2026-10-23 01:51:06
++++ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts	2026-10-23 01:51:06
+@@ -15,8 +15,8 @@
+ });
+ const raw = (date: string, close: string): DailyCandleRecord => ({ instrumentId: instrument.id, tradingDate: date, open: close, high: close, low: close, close, volume: "1", currency: "USD", adjustmentMode: "raw", provider: "eastmoney", providerSymbol: "AAPL", fetchedAt: `${date}T23:00:00Z` });
+ const traces: Record<string, unknown> = {};
+-function run(name: string, executions: TradeExecution[], period = { start: "2026-01-01", end: "2026-01-31" }) {
+-  const candlesByInstrument = { [instrument.id]: [raw("2025-12-31", "150"), raw("2026-01-31", "110")] };
++function run(name: string, executions: TradeExecution[], period = { start: "2026-01-02", end: "2026-01-31" }) {
++  const candlesByInstrument = { [instrument.id]: [raw("2025-12-31", "150"), raw("2026-01-30", "110")] };
+   const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [instrument.id]: "ready" });
+   const result = buildHomepageV25PerformanceFromEntries({ entries, candlesByInstrument, period, asOf: "2026-01-31" });
+   const canonical = replayPositionAtPrice({ executions, markPrice: "110", cursor: "2026-01-31T15:59:59.999Z" });

@@ -1,0 +1,83 @@
+{
+  "recordedAt": "2026-10-23",
+  "owner": "gpt-6.1-sol / ultra",
+  "authorization": "ROOT-DISPATCH + root explicit quiet-window release",
+  "entries": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92"
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/ROOT-DISPATCH.md",
+      "sha256": "d82ba2fecca9282d9a1b8768d463c7ca25db4a027c4e13cbd9f1e84945670ed9"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/PREPARATION.md",
+      "sha256": "deb96ba7164fb2884cf02354ab50d386e1f8ac23c0bdf467dba62c7b2be8ed36"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/PRE-DISPATCH-CONTRACT.md",
+      "sha256": "a882d59c3d6b2ed532250b207897bf0166e560426e58d6797e586faa28e7618a"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/COORDINATOR-CONTRACT-DECISIONS.md",
+      "sha256": "0f99df9bd7cbbb7a900470c9273579817dd2df319de08109d7714423ab2f3538"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.test.ts",
+      "sha256": "23f73d5a0e7c6758de5ac20f264083562ae41a502e4098b7ee6668e52fab70a8"
+    },
+    {
+      "path": "app/lib/trades/instruments.ts",
+      "sha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23"
+    },
+    {
+      "path": "app/lib/trades/library.ts",
+      "sha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/period.svg",
+      "sha256": "4fbe2cdd0d411a25adc92c555784c09b82eabcd5927691edab01aca70e31b6d8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover.svg",
+      "sha256": "286c5e7d49196e84666da6f9f14fa67330ca822f76b3ab0ec3a99074edc686b4"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover--keyboard.svg",
+      "sha256": "cdd873716557fa8d0e95cdbcd2ac74d7b4bfcb66c2bc0855bbe26ab999c3ca92"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg",
+      "sha256": "d352fbadc9d4a47705310293d3eabb76f1555e7f209703439a7736a7981f7857"
+    }
+  ]
+}

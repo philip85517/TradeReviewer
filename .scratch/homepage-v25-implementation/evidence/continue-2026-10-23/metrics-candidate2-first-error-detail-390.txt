@@ -1,0 +1,74 @@
+Browser tab: 13, Title: "四项指标独立验收", URL: "http://127.0.0.1:3334/metrics.html".
+1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html
+	2 container
+		3 container
+			4 heading 四项指标独立验收, Value: 1
+				5 text 四项指标独立验收
+			6 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 
+			7 pop up button (collapsed, settable) 验收情景, Value: 首次读取失败, Secondary Actions: Expand
+				8 menu
+					9 标准指标
+					10 正负与零
+					11 更新保留旧值
+					12 首次加载
+					13 空范围
+					14 更新失败保留旧值
+					15 (selected) 首次读取失败
+					16 缺失净值
+					17 未来期间
+					18 币种不一致
+					19 极长金额与来源
+			20 button 提交另一期间
+			21 text 版本 1
+			22 container 当前表现指标
+				23 container 期间净盈亏
+					24 heading 期间净盈亏(CNY), Value: 3
+						25 text 期间净盈亏 ( CNY )
+					26 text —
+					27 pop up button (expanded) Description: 期间净盈亏，查看原因，金额未知, Secondary Actions: Collapse
+				28 container 期间已实现
+					29 heading 期间已实现(CNY), Value: 3
+						30 text 期间已实现 ( CNY )
+					31 text —
+					32 pop up button (collapsed) Description: 期间已实现，查看原因，金额未知, Secondary Actions: Expand
+				33 container 期间浮盈变动
+					34 heading 期间浮盈变动(CNY), Value: 3
+						35 text 期间浮盈变动 ( CNY )
+					36 text —
+					37 pop up button (collapsed) Description: 期间浮盈变动，查看原因，金额未知, Secondary Actions: Expand
+				38 container 当前持仓市值
+					39 heading 当前持仓市值(CNY), Value: 3
+						40 text 当前持仓市值 ( CNY )
+					41 text —
+					42 pop up button (collapsed) Description: 当前持仓市值，查看原因，金额未知, Secondary Actions: Expand
+				43 text 首次读取指标超时，尚无已提交数据
+			44 heading 下一模块边界, Value: 2
+				45 text 下一模块边界
+			46 text 详情须完整可读并可返回原触发卡。
+			47 button 外部动作
+		48 container 期间净盈亏 · 口径详情
+			49 heading 期间净盈亏 · 口径详情, Value: 4
+				50 text 期间净盈亏  · 口径详情
+			51 button 关闭详情
+			52 text 期间已实现，加上期末与期初浮盈的差额。期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。
+			53 text 期间数据尚不可用
+			54 text 首次读取指标超时，尚无已提交数据
+			55 definition list
+				56 container 完整金额
+					57 text 完整金额
+				58 text —
+				59 container 覆盖数量
+					60 text 覆盖数量
+				61 text —
+				62 container 原币金额
+					63 text 原币金额
+				64 text 未提供原币金额
+				65 container 汇率来源
+					66 text 汇率来源
+				67 text 未提供汇率来源
+			68 content list
+				69 container
+					70 AXListMarker • 
+					71 text 当前范围没有可计算指标
+
+The focused UI element is 48 container 期间净盈亏 · 口径详情

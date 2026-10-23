@@ -34,6 +34,14 @@ function memoryRepository(seed: ResolvedInstrument[] = []) {
 }
 
 describe("resolveInstrumentMetadataBatch", () => {
+  it("preserves prior exchange evidence through forced name-only refresh in both cache and result", async () => {
+    const record = { market: "US" as const, symbol: "AAPL", name: "Apple Inc.", assetType: "stock" as const, source: "sec" as const, confidence: "official" as const, resolvedAt: "2026-10-22T00:00:00.000Z" };
+    const exchange = { code: "NASDAQ" as const, source: "sec" as const, resolvedAt: "2026-10-21T00:00:00.000Z" };
+    const repository = memoryRepository([{ ...record, exchange }]);
+    const result = await resolveInstrumentMetadataBatch([record], { repository, forceRefresh: true, fetcher: vi.fn<typeof fetch>().mockResolvedValue(Response.json(record)) });
+    expect(result.resolved.get("US:AAPL")?.exchange).toEqual(exchange);
+    expect(await repository.get("US:AAPL")).toMatchObject({ exchange });
+  });
   it.each([true, false])("uses HTTP no-store only for forced refresh: %s", async (forceRefresh) => {
     const repository = memoryRepository();
     const controller = new AbortController();

@@ -1,0 +1,27 @@
+{
+  "checkedAtUtc": "2026-10-23T03:39:09.308506+00:00",
+  "source": {
+    "app/components/homepage-v25/history-stats-cards.tsx": "1888be1251f49ac47ce30883a6a2a3fda70f23bc0d7b18b43aa37fe4392cdc86",
+    "app/components/homepage-v25/history-stats-cards.css": "2aa7ab4edad05a0aa0c76903577c8fa7ef30152d7280c4264b193f94c3d18842",
+    "app/components/homepage-v25/history-stats-cards.test.tsx": "7e15238ca40b4b31fc3ec2b47775eb5a54ac409395a52173651b6c542831f505"
+  },
+  "original29BytePrefixPreserved": true,
+  "cssByteIdentical": true,
+  "protectedSourcesCompared": 49,
+  "protectedSourceChanges": [],
+  "productTestCounts": {
+    "originalPreserved": 29,
+    "new": 10,
+    "total": 39,
+    "realRedFailed": 3,
+    "realRedPassed": 36,
+    "greenPassed": 39
+  },
+  "scopedTypecheckExit": 0,
+  "tsxAndTestLintExit": 0,
+  "wholeSuiteRun": false,
+  "browserRun": false,
+  "databaseAccess": false,
+  "serviceOperation": false,
+  "commit": false
+}

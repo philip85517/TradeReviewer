@@ -1,0 +1,26 @@
+{
+  "revisionBefore": 5,
+  "revisionAfter": 6,
+  "changes": [
+    {
+      "path": "/plans/drafts/0/recordedAt",
+      "before": "2026-10-22T19:40:40.668Z",
+      "after": "2026-10-22T22:53:16.401Z"
+    },
+    {
+      "path": "/plans/drafts/0/input/initialStop",
+      "before": "93",
+      "after": "94"
+    },
+    {
+      "path": "/updatedAt",
+      "before": "2026-10-22T19:41:17.197Z",
+      "after": "2026-10-22T22:53:45.351Z"
+    },
+    {
+      "path": "/revision",
+      "before": 5,
+      "after": 6
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+Browser tab: 3, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100".
+0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100
+	1 container
+		2 container 主导航
+			3 container Description: 主导航, ID: primary-navigation
+				4 button 我的交易室
+				5 button 交易库
+				6 button 分析
+				7 button 数据
+				8 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+			9 container 辅助导航
+				10 button 设置
+		11 container 导入交易回忆复盘工作区
+			12 container
+				13 heading P1 持仓 01 600100, Help: P1 持仓 01 · 600100, Value: 1
+					14 text P1 持仓 01 600100
+				15 text 草稿
+				16 container 图表工具栏
+					17 pop up button (collapsed) Description: 搜索标的, Secondary Actions: Expand
+					18 container K 线周期
+						19 button (disabled) 切换到 15m
+						20 button (disabled) 切换到 1h
+						21 button (disabled) 切换到 4h
+						22 button 切换到 1D
+						23 button 切换到 1W
+					24 pop up button (collapsed) Description: 行情数据详情, Secondary Actions: Expand
+					25 checkbox (disabled, collapsed) Description: 图层, Value: 0, Secondary Actions: Expand
+					26 pop up button (collapsed) Description: 图表设置, Secondary Actions: Expand
+				27 container 复盘阶段
+					28 checkbox 买入前判断, Value: 1
+					29 checkbox 持仓过程, Value: 0
+					30 checkbox 事后复盘, Value: 0
+				31 pop up button (collapsed, settable) Description: 交易回合, Value: 第 2 次, Secondary Actions: Expand
+					32 menu
+						33 第 7 次
+						34 第 6 次
+						35 第 5 次
+						36 第 4 次
+						37 第 3 次
+						38 (selected) 第 2 次
+						39 第 1 次
+				40 button Description: 展开复盘导航，切换到标准布局, Help: 切换到标准布局
+				41 checkbox Description: 统计, Value: 0
+				42 button 导出, Help: 导出已留存内容
+				43 pop up button 打开导入与数据管理
+				44 pop up button (collapsed) Description: 打开股票列表, Secondary Actions: Expand
+				45 button 返回交易库
+					46 text 返回
+					47 text 交易库
+				48 button 检查/修复数据
+				49 checkbox 专注图表, Value: 0
+			50 container
+				51 text 复盘补记 · 买入事实尚未揭示 有成交找不到对应 K 线；相关决策可编辑草稿，但不能留存冒充该时点的快照。
+				52 container 绘图工具
+					53 checkbox Description: 选择, Value: 1
+					54 checkbox Description: 文字标注, Value: 0
+					55 checkbox Description: 趋势线, Value: 0
+					56 checkbox Description: 水平线, Value: 0
+					57 checkbox Description: 平行通道, Value: 0
+					58 checkbox Description: 做多盈亏比, Value: 0
+					59 button (collapsed) 更多绘图工具, Secondary Actions: Expand
+						60 text 更多绘图工具
+					61 checkbox Description: 锁定全部图形, Value: 0
+					62 button (disabled) Description: 撤销绘图, Help: 撤销
+					63 button (disabled) Description: 重做绘图, Help: 重做
+					64 button 清空绘图
+				65 container
+					66 text 当前 K 线
+					67 container
+						68 container Charting by TradingView
+							69 link Description: Charting by TradingView, Value: tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/trades, ID: tv-attr-logo
+					70 button 显示计划价格
+					71 image 绘图画布
+				72 button 适应全部
+				73 container 阶段计划
+					74 container
+						75 heading 买入前计划, Value: 2
+							76 text 买入前计划
+						77 button 关闭计划侧栏
+					78 text 复盘补记
+					79 container
+						80 text 计划入场
+						81 text field (settable) Description: 计划入场, Value: 100
+					82 container
+						83 text 初始止损
+						84 text field (settable) Description: 初始止损, Value: 90
+					85 container
+						86 text 止盈目标
+						87 text field (settable) Description: 止盈目标, Value: 120
+					88 container 规模方式
+						89 text 规模方式
+						90 container 规模方式切换
+							91 checkbox 数量, Value: 1
+							92 checkbox 名义金额, Value: 0
+							93 checkbox 仓位比例（%）, Value: 0
+					94 container
+						95 text 计划数量
+						96 text field (settable) 计划数量
+					97 container
+						98 text 方向
+						99 pop up button (collapsed, settable) Description: 计划方向, Value: 待选择, Secondary Actions: Expand
+							100 menu
+								101 (selected) 待选择
+								102 做多
+								103 做空
+					104 container
+						105 text 数量单位
+						106 pop up button (collapsed, settable) Description: 计划数量单位, Value: 股, Secondary Actions: Expand
+							107 menu
+								108 (selected) 股
+								109 单位
+					110 text 选择计划方向后可计算风险与盈亏比。
+					111 button (collapsed) 币种、价格口径、参考资金与数量步长, Secondary Actions: Expand
+						112 text 币种、价格口径、参考资金与数量步长
+					113 definition list 计划派生指标
+						114 container 名义金额 / 仓位占比
+							115 text 名义金额 / 仓位占比
+						116 container
+							117 text 未知 /  未知
+						118 container 初始风险 / 风险占比
+							119 text 初始风险 / 风险占比
+						120 container
+							121 text 未知  /  未知
+						122 container 预期收益 / 风险
+							123 text 预期收益 / 风险
+						124 text 未知
+					125 text 请输入有效规模
+					126 text 计划价格超出当前视野时，可使用图上的“显示计划价格”按钮查看；计划数值仍保留在此栏。
+				127 container 决策 1
+					128 text 逐步  ·  决策 1
+				129 container 行情时间 2026-10-21 00:04:59 · Asia/Shanghai；成交尚未揭示
+					130 container 2026-10-21 00:04:59 · Asia/Shanghai
+						131 text 行情时间  10-21 00:04
+					132 text 成交尚未揭示
+				133 container 计划 · 预期R待补充 / 风险待补充
+					134 text 计划 · 预期R待补充 / 风险待补充
+				135 container 回放控制
+					136 button (disabled) 上一根 K 线
+					137 checkbox 播放, Value: 0
+					138 button 下一根 K 线
+					139 button 下一笔决策
+					140 button 留存当前快照
+					141 button (expanded) 计划侧栏, Secondary Actions: Collapse
+				142 container 更多记录与完成
+					143 button (collapsed) 更多 / 记录, Secondary Actions: Expand
+
+The focused UI element is 0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100

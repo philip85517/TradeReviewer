@@ -1,0 +1,282 @@
+import "@testing-library/jest-dom/vitest";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { ContributionBars, type ContributionBarsProps, type ContributionIdentity, type ContributionMetric, type CurrentContributionRow } from "./contribution-bars";
+
+afterEach(cleanup);
+
+function metric(value: string | null, overrides: Partial<ContributionMetric> = {}): ContributionMetric {
+  return Object.freeze({ value, available: value !== null, coverage: Object.freeze({ total: 3, available: value === null ? 2 : 3 }),
+    reasons: Object.freeze(value === null ? ["缺少期初价格"] : []), money: Object.freeze({ originalByCurrency: Object.freeze({ USD: "123.456789" }),
+      targetCurrency: "CNY", conversion: "complete" as const,
+      fx: Object.freeze({ id: "fx-exact-01", source: "人工汇率来源/完整名称", asOf: "2026-10-20T08:30:00Z", status: "complete" as const }) }), ...overrides });
+}
+function row(key: string, realized: string, unrealized: string, net: string): CurrentContributionRow {
+  return Object.freeze({ key, label: key, accessibleLabel: `查看 ${key} 贡献`,
+    identity: Object.freeze({ kind: "instrument", accountId: `account-${key}`, instrumentId: key, market: "CN", nature: "simulation", simulationRunId: "run-original" }),
+    periodRealized: metric(realized), unrealizedChange: metric(unrealized), net: metric(net) });
+}
+const suppliedRows = Object.freeze([row("same+", "100", "100", "777"), row("same-", "-60", "-40", "-100"),
+  row("mixed+", "100", "-50", "50"), row("mixed-", "-100", "50", "-50"), row("net0", "100", "-100", "0")]);
+type CurrentProps = Extract<ContributionBarsProps, { mode: "current" }>;
+function props(overrides: Partial<CurrentProps> = {}): CurrentProps {
+  return { mode: "current", rows: suppliedRows, reportCurrency: "CNY", readState: { kind: "ready" }, fullTotal: metric("987654.321987"), onActivate: vi.fn(), ...overrides };
+}
+function item(label: string) { return screen.getByRole("listitem", { name: `${label} 贡献` }); }
+function parts(label: string) { return within(item(label)).queryAllByTestId("contribution-segment"); }
+
+describe("controlled contribution bars consumer", () => {
+  it("CB01 activates each of three original market identities without local navigation", async () => {
+    const user = userEvent.setup();
+    const identities: readonly ContributionIdentity[] = Object.freeze([Object.freeze({ kind: "market", market: "CN" }), Object.freeze({ kind: "market", market: "HK" }), Object.freeze({ kind: "market", market: "US" })]);
+    const rows = Object.freeze(identities.map(identity => Object.freeze({ ...row(identity.market, "1", "2", "3"), identity })));
+    const onActivate = vi.fn(); render(<ContributionBars {...props({ rows, onActivate })} />);
+    for (const identity of identities) { await user.click(screen.getByRole("button", { name: `查看 ${identity.market} 贡献` })); expect(onActivate.mock.calls.at(-1)?.[0]).toBe(identity); }
+    for (const identity of identities) {
+      const trigger = screen.getByRole("button", { name: `${identity.market}，贡献详情` }); await user.click(trigger);
+      expect(screen.getByRole("dialog", { name: `${identity.market} · 贡献详情` })).toBeVisible(); await user.keyboard("{Escape}"); expect(trigger).toHaveFocus();
+    }
+    expect(onActivate).toHaveBeenCalledTimes(3); expect(screen.getAllByRole("listitem")).toHaveLength(3);
+  });
+  it("CB02 preserves all eight caller rows and complete instrument identity", async () => {
+    const user = userEvent.setup(); const rows = Object.freeze(Array.from({ length: 8 }, (_, index) => row(`symbol${index + 1}`, "1", "0", "1")));
+    const onActivate = vi.fn(); render(<ContributionBars {...props({ rows, onActivate })} />);
+    expect(screen.getAllByRole("listitem").map(node => node.getAttribute("aria-label"))).toEqual(rows.map(value => `${value.label} 贡献`));
+    for (const value of rows) await user.click(screen.getByRole("button", { name: value.accessibleLabel }));
+    rows.forEach((value, index) => expect(onActivate.mock.calls[index]?.[0]).toBe(value.identity));
+    for (const value of rows) {
+      const trigger = screen.getByRole("button", { name: `${value.label}，贡献详情` }); await user.click(trigger);
+      expect(screen.getByRole("dialog", { name: `${value.label} · 贡献详情` })).toBeVisible(); await user.keyboard("{Escape}"); expect(trigger).toHaveFocus();
+    }
+    expect(onActivate).toHaveBeenCalledTimes(8);
+  });
+  it("CB06/07 maps literal signed parts onto a common zero and scale without recomputing net", () => {
+    render(<ContributionBars {...props()} />);
+    const expected = [["same+", "50%", "25%", "75%", "25%"], ["same-", "35%", "15%", "25%", "10%"],
+      ["mixed+", "50%", "25%", "37.5%", "12.5%"], ["mixed-", "25%", "25%", "50%", "12.5%"], ["net0", "50%", "25%", "25%", "25%"]];
+    for (const [label, leftA, widthA, leftB, widthB] of expected) {
+      const [solid, hollow] = parts(label); expect(solid).toHaveStyle({ left: leftA, width: widthA }); expect(hollow).toHaveStyle({ left: leftB, width: widthB });
+      expect(solid).toHaveAttribute("data-kind", "realized"); expect(hollow).toHaveAttribute("data-kind", "unrealized");
+    }
+    expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+777.00");
+    expect(within(item("net0")).getByTestId("contribution-value")).toHaveAttribute("data-tone", "neutral");
+    expect(parts("same-").every(node => node.getAttribute("data-sign") === "negative")).toBe(true);
+  });
+  it("CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional", () => {
+    render(<ContributionBars {...props({ rows: Object.freeze([row("zero", "-0.0049", "0.0049", "-0.00001"), row("tiny", "0.01", "0", "0.01"), row("large", "1000", "0", "1000")]) })} />);
+    expect(parts("zero")).toHaveLength(0); expect(within(item("zero")).getByTestId("contribution-value")).toHaveTextContent(/^0\.00$/);
+    expect(within(item("zero")).getByTestId("contribution-value")).toHaveAttribute("data-tone", "neutral");
+    expect(parts("tiny")[0]).toHaveStyle({ width: "0.0005%" });
+  });
+  it("CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately", async () => {
+    const user = userEvent.setup(); const onActivate = vi.fn(); render(<ContributionBars {...props({ onActivate })} />);
+    await user.click(screen.getByRole("button", { name: "same+，贡献详情" }));
+    const dialog = screen.getByRole("dialog", { name: "same+ · 贡献详情" });
+    expect(within(dialog).getByText("777 CNY")).toBeVisible(); expect(within(dialog).getAllByText("123.456789 USD")).toHaveLength(3);
+    expect(within(dialog).getAllByText("人工汇率来源/完整名称")).toHaveLength(3);
+    expect(within(dialog).getAllByText("2026-10-20T08:30:00Z · fx-exact-01 · complete")).toHaveLength(3);
+    expect(within(dialog).getAllByText("3 / 3")).toHaveLength(3); expect(onActivate).not.toHaveBeenCalled();
+  });
+  it("CB03 supplied complete total remains independent when parent replaces the visible page", async () => {
+    const user = userEvent.setup(); const base = props(); const view = render(<ContributionBars {...base} />);
+    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
+    view.rerender(<ContributionBars {...base} rows={Object.freeze([row("another-page", "2", "0", "2")])} />);
+    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
+    await user.click(screen.getByRole("button", { name: "完整贡献合计，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("987654.321987 CNY");
+  });
+  it("CB08 keeps known parts when unknown and invalid data cannot become zero", async () => {
+    const user = userEvent.setup(); const unknown = Object.freeze({ ...row("unknown", "10", "0", "0"), unrealizedChange: metric(null), net: metric(null) });
+    const invalid = Object.freeze({ ...row("invalid", "1", "0", "0"), periodRealized: metric("NaN"), net: metric("Infinity") });
+    render(<ContributionBars {...props({ rows: Object.freeze([unknown, invalid]) })} />);
+    expect(parts("unknown")).toHaveLength(1); expect(within(item("unknown")).getByTestId("contribution-value")).toHaveTextContent("不可计算");
+    expect(item("unknown")).toHaveTextContent("缺少期初价格"); expect(parts("invalid")).toHaveLength(0);
+    expect(within(item("invalid")).getByTestId("contribution-value")).toHaveTextContent("不可计算");
+    await user.click(screen.getByRole("button", { name: "invalid，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("金额格式无效");
+  });
+  it("CB08 does not relabel a foreign target amount as the report currency", async () => {
+    const user = userEvent.setup(); const foreign = metric("12.3456", { money: Object.freeze({ originalByCurrency: Object.freeze({ USD: "12.3456" }), targetCurrency: "USD", conversion: "same-currency", fx: null }) });
+    render(<ContributionBars {...props({ rows: Object.freeze([Object.freeze({ ...row("foreign", "1", "0", "1"), net: foreign, periodRealized: foreign })]) })} />);
+    expect(parts("foreign")).toHaveLength(0); expect(within(item("foreign")).getByTestId("contribution-value")).toHaveTextContent("—");
+    expect(item("foreign")).toHaveTextContent("币种与报表不一致"); await user.click(screen.getByRole("button", { name: "foreign，贡献详情" }));
+    const dialog = screen.getByRole("dialog"); expect(dialog).toHaveTextContent("12.3456 USD"); expect(dialog).not.toHaveTextContent("12.3456 CNY");
+  });
+  it("CB09 history renders only the supplied closed result", async () => {
+    const user = userEvent.setup(); const original = row("closed", "900", "90", "990");
+    render(<ContributionBars mode="history" reportCurrency="CNY" rows={Object.freeze([{ key: original.key, label: original.label, accessibleLabel: original.accessibleLabel, identity: original.identity, closedResult: metric("-32.123456789") }])} readState={{ kind: "ready" }} fullTotal={metric("-32.123456789")} onActivate={vi.fn()} />);
+    expect(parts("closed")).toHaveLength(1); expect(parts("closed")[0]).toHaveAttribute("data-kind", "closed"); expect(parts("closed")[0]).toHaveAttribute("data-sign", "negative");
+    expect(within(item("closed")).getByTestId("contribution-value")).toHaveTextContent("-32.12");
+    await user.click(screen.getByRole("button", { name: "closed，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("-32.123456789 CNY"); expect(screen.getByRole("dialog")).not.toHaveTextContent("期间浮盈变动");
+  });
+  it("CB04 supports native Enter/Space for action and separate readout", async () => {
+    const user = userEvent.setup(); const onActivate = vi.fn(); render(<ContributionBars {...props({ rows: Object.freeze([suppliedRows[0]]), onActivate })} />);
+    await user.tab(); expect(screen.getByRole("button", { name: "查看 same+ 贡献" })).toHaveFocus(); await user.keyboard("{Enter} "); expect(onActivate).toHaveBeenCalledTimes(2);
+    await user.tab(); expect(screen.getByRole("button", { name: "same+，贡献详情" })).toHaveFocus(); await user.keyboard(" "); expect(screen.getByRole("dialog")).toHaveFocus(); expect(onActivate).toHaveBeenCalledTimes(2);
+  });
+  it("CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close", async () => {
+    const user = userEvent.setup(); render(<ContributionBars {...props()} />); const trigger = screen.getByRole("button", { name: "mixed-，贡献详情" });
+    await user.click(trigger); await user.click(screen.getByRole("dialog")); expect(screen.getByRole("dialog")).toBeVisible(); await user.keyboard("{Escape}"); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+    await user.click(trigger); await user.click(document.body); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+    await user.click(trigger); await user.click(screen.getByRole("button", { name: "关闭贡献详情" })); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+  });
+  it("CB05 scopes Escape so a parent Escape handler cannot consume the same event", async () => {
+    const user = userEvent.setup(); const parentEscape = vi.fn(); render(<div onKeyDown={event => { if (event.key === "Escape") parentEscape(); }}><ContributionBars {...props()} /></div>);
+    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); await user.keyboard("{Escape}"); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(parentEscape).not.toHaveBeenCalled();
+  });
+  it("CB10/12 keeps supplied committed rows and total during pending or error without adding retry", () => {
+    const base = props(); const view = render(<ContributionBars {...base} readState={{ kind: "pending", reason: "正在更新期间" }} />);
+    expect(screen.getByRole("status")).toHaveTextContent("正在更新期间"); expect(screen.getAllByRole("listitem")).toHaveLength(5); expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
+    view.rerender(<ContributionBars {...base} readState={{ kind: "error", reason: "保留上一版本：行情缺失" }} />);
+    expect(screen.getByRole("status")).toHaveTextContent("保留上一版本：行情缺失"); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+777.00"); expect(screen.queryByRole("button", { name: /重试|修复/ })).not.toBeInTheDocument();
+  });
+  it("CB11 initial pending reserves eight neutral slots without amounts or business rows", () => {
+    render(<ContributionBars {...props({ rows: null, fullTotal: null, readState: { kind: "pending", reason: "首次加载贡献" } })} />);
+    expect(screen.getAllByTestId("contribution-skeleton")).toHaveLength(8); expect(screen.queryAllByRole("listitem")).toHaveLength(0); expect(screen.queryAllByTestId("contribution-segment")).toHaveLength(0);
+    expect(screen.queryAllByTestId("contribution-value")).toHaveLength(0); expect(screen.getByRole("status")).toHaveTextContent("首次加载贡献"); expect(screen.queryByText("0.00")).not.toBeInTheDocument();
+  });
+  it("CB12/13 initial error and empty explain absence without invented zero or retry", () => {
+    const view = render(<ContributionBars {...props({ rows: null, fullTotal: null, readState: { kind: "error", reason: "没有已提交贡献数据" } })} />);
+    expect(screen.getByRole("status")).toHaveTextContent("没有已提交贡献数据"); expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    view.rerender(<ContributionBars {...props({ rows: Object.freeze([]), fullTotal: null, readState: { kind: "empty", reason: "期间内没有符合条件的贡献" } })} />);
+    expect(screen.getByRole("status")).toHaveTextContent("期间内没有符合条件的贡献"); expect(screen.queryByText("0.00")).not.toBeInTheDocument(); expect(screen.queryByRole("button", { name: /重试|修复/ })).not.toBeInTheDocument();
+  });
+  it("CB14 retains exact long identity, source and extreme precision in the readout", async () => {
+    const user = userEvent.setup(); const label = "中文很长的证券身份-ACCOUNT-US-NASDAQ-INSTRUMENT-123456789"; const raw = "123456789012345678901234567890.1234567890123456789";
+    const source = "原始完整汇率来源/".repeat(25); const exact = metric(raw, { money: Object.freeze({ originalByCurrency: Object.freeze({ USD: raw }), targetCurrency: "CNY", conversion: "complete", fx: Object.freeze({ id: "extreme-fx", source, asOf: "2026-10-22", status: "complete" }) }) });
+    render(<ContributionBars {...props({ rows: Object.freeze([Object.freeze({ ...row(label, "1", "0", "1"), periodRealized: exact, net: exact })]) })} />);
+    expect(screen.getByRole("button", { name: `查看 ${label} 贡献` })).toHaveTextContent(label); await user.click(screen.getByRole("button", { name: `${label}，贡献详情` }));
+    expect(screen.getByRole("dialog")).toHaveTextContent(`${raw} CNY`); expect(screen.getByRole("dialog")).toHaveTextContent(`${raw} USD`); expect(within(screen.getByRole("dialog")).getAllByText(source)).toHaveLength(2);
+    expect(parts(label)[0]).toHaveStyle({ width: "50%" });
+  });
+  it("CB15 immutable parent replacement invalidates an open readout and reads new supplied values", async () => {
+    const user = userEvent.setup(); const base = props(); const before = JSON.stringify(base.rows); const view = render(<ContributionBars {...base} />);
+    const trigger = screen.getByRole("button", { name: "same+，贡献详情" }); await user.click(trigger); expect(screen.getByRole("dialog")).toHaveTextContent("777 CNY");
+    const replacement = Object.freeze([row("same+", "1", "2", "555.123456")]); view.rerender(<ContributionBars {...base} rows={replacement} />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus(); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+555.12");
+    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveTextContent("555.123456 CNY"); expect(screen.getByRole("dialog")).not.toHaveTextContent("777 CNY"); expect(JSON.stringify(base.rows)).toBe(before);
+  });
+  it("CB05 Escape also closes after keyboard focus moves back to the original trigger", async () => {
+    const user = userEvent.setup(); render(<ContributionBars {...props()} />); const trigger = screen.getByRole("button", { name: "mixed+，贡献详情" });
+    await user.click(trigger); trigger.focus(); await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+  });
+  it("CB08 unknown complete total presents its supplied reason without fabricating a subtotal", () => {
+    render(<ContributionBars {...props({ fullTotal: metric(null, { reasons: Object.freeze(["完整范围缺少港股期末价"]) }) })} />);
+    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("不可计算"); expect(screen.getByText("完整范围缺少港股期末价")).toBeVisible();
+  });
+  it("CB07/14 rounds cents symmetrically while retaining exact source precision", async () => {
+    const user = userEvent.setup(); render(<ContributionBars {...props({ rows: Object.freeze([row("round+", "0.005", "0", "0.005"), row("round-", "-0.005", "0", "-0.005"), row("source-zero", "-0.0049", "0", "-0.0049")]) })} />);
+    expect(within(item("round+")).getByTestId("contribution-value")).toHaveTextContent("+0.01"); expect(within(item("round-")).getByTestId("contribution-value")).toHaveTextContent("-0.01");
+    expect(parts("source-zero")).toHaveLength(0); await user.click(screen.getByRole("button", { name: "source-zero，贡献详情" })); expect(within(screen.getByRole("dialog")).getAllByText("-0.0049 CNY")).toHaveLength(2);
+  });
+  it("CB15 currency or mode replacement cannot retain a stale currency readout", async () => {
+    const user = userEvent.setup(); const base = props(); const view = render(<ContributionBars {...base} />);
+    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); view.rerender(<ContributionBars {...base} reportCurrency="USD" />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("—");
+    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); view.rerender(<ContributionBars mode="history" rows={Object.freeze([{ ...suppliedRows[0], closedResult: metric("11") }])} reportCurrency="USD" fullTotal={null} readState={{ kind: "ready" }} onActivate={vi.fn()} />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(parts("same+")).toHaveLength(0);
+  });
+  it("CB05/15 clamps floating readout position when its trigger scrolls outside the viewport", async () => {
+    const user = userEvent.setup(); let anchor = new DOMRect(10, -400, 36, 36);
+    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      return this.getAttribute("role") === "dialog" ? new DOMRect(0, 0, 264, 500) : anchor;
+    });
+    try {
+      expect(window.innerWidth).toBe(1024); expect(window.innerHeight).toBe(768);
+      render(<ContributionBars {...props()} />); await user.click(screen.getByRole("button", { name: "same+，贡献详情" }));
+      expect(screen.getByRole("dialog")).toHaveStyle({ left: "12px", top: "12px" });
+      anchor = new DOMRect(900, 1000, 36, 36); window.dispatchEvent(new Event("scroll"));
+      expect(screen.getByRole("dialog")).toHaveStyle({ left: "672px", top: "256px" });
+    } finally { rect.mockRestore(); }
+  });
+  it.each<{ name: string; change: (base: CurrentProps) => ContributionBarsProps; target: string }>([
+    { name: "currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "same+，贡献详情" },
+    { name: "immutable row generation", change: base => ({ ...base, rows: Object.freeze([...suppliedRows]) }), target: "same+，贡献详情" },
+    { name: "source identity context", change: base => ({ ...base, rows: Object.freeze([Object.freeze({ ...suppliedRows[0],
+      identity: Object.freeze({ kind: "instrument", accountId: "other-account", instrumentId: "other-instrument", market: "US", nature: "live", simulationRunId: null }) })]) }), target: "same+，贡献详情" },
+    { name: "complete total generation", change: base => ({ ...base, fullTotal: metric("888.111") }), target: "same+，贡献详情" },
+    { name: "current/history mode", change: base => ({ ...base, mode: "history", rows: Object.freeze([Object.freeze({ ...suppliedRows[0], closedResult: metric("-11.234567") })]) }), target: "same+，贡献详情" },
+    { name: "total readout currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "完整贡献合计，贡献详情" },
+  ])("CB-M01 invalidated $name stays closed and leaves outside focus when the original context returns", async ({ change, target }) => {
+    const user = userEvent.setup(); const base = props();
+    const content = (value: ContributionBarsProps) => <><button>外部阅读位置</button><ContributionBars {...value} /></>;
+    const view = render(content(base)); const trigger = screen.getByRole("button", { name: target });
+    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
+    view.rerender(content(change(base))); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+    const outside = screen.getByRole("button", { name: "外部阅读位置" }); outside.focus(); expect(outside).toHaveFocus();
+    view.rerender(content(base));
+    expect.soft(screen.queryByRole("dialog"), "restoring an invalidated context must not reopen its old detail").not.toBeInTheDocument();
+    expect.soft(outside, "restoring a context must preserve the reader's outside focus").toHaveFocus();
+    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
+  });
+});
+
+
+// The DOM remains real; only the browser preference source and clock are controlled.
+function motionPreference(initial: boolean) {
+  const events = new EventTarget(); let reduced = initial;
+  const media = { get matches() { return reduced; }, media: "(prefers-reduced-motion: reduce)", onchange: null,
+    addEventListener: events.addEventListener.bind(events), removeEventListener: events.removeEventListener.bind(events),
+    dispatchEvent: events.dispatchEvent.bind(events), addListener: vi.fn(), removeListener: vi.fn() };
+  vi.stubGlobal("matchMedia", () => media);
+  return (next: boolean) => { reduced = next; act(() => { events.dispatchEvent(new Event("change")); }); };
+}
+
+describe("CB-M05 contribution detail motion lifetime", () => {
+  afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
+
+  it.each(["Escape", "outside", "close button"])("%s closes access and restores focus immediately, then removes the inert exit after160ms", method => {
+    vi.useFakeTimers(); motionPreference(false);
+    render(<><button>外部阅读位置</button><ContributionBars {...props()} /></>);
+    const trigger = screen.getByRole("button", { name: "same+，贡献详情" }); fireEvent.click(trigger);
+    const detail = screen.getByRole("dialog"); expect(detail).toHaveFocus();
+    if (method === "Escape") fireEvent.keyDown(document, { key: "Escape" });
+    else if (method === "outside") fireEvent.click(screen.getByRole("button", { name: "外部阅读位置" }));
+    else fireEvent.click(within(detail).getByRole("button", { name: "关闭贡献详情" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(detail).toBeInTheDocument(); expect(detail).toHaveAttribute("aria-hidden", "true"); expect(detail).toHaveAttribute("inert");
+    act(() => { vi.advanceTimersByTime(159); }); expect(detail).toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(1); }); expect(detail).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+  });
+
+  it("reopening during exit cancels the old removal and keeps the new readout focused", () => {
+    vi.useFakeTimers(); motionPreference(false); render(<ContributionBars {...props()} />);
+    const trigger = screen.getByRole("button", { name: "same+，贡献详情" }); fireEvent.click(trigger); fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.getByRole("dialog", { hidden: true })).toHaveAttribute("inert");
+    act(() => { vi.advanceTimersByTime(100); }); fireEvent.click(trigger);
+    expect(screen.getByRole("dialog")).toHaveFocus(); expect(screen.getByRole("dialog")).not.toHaveAttribute("inert");
+    act(() => { vi.advanceTimersByTime(200); }); expect(screen.getByRole("dialog")).toHaveFocus();
+    expect(within(screen.getByRole("dialog")).getByText("777 CNY")).toBeInTheDocument();
+  });
+
+  it.each(["currency", "rows"])("invalidating %s during exit removes every old fact immediately and cannot revive it", kind => {
+    vi.useFakeTimers(); motionPreference(false); const base = props();
+    const content = (value: ContributionBarsProps) => <><button>外部阅读位置</button><ContributionBars {...value} /></>;
+    const view = render(content(base)); const trigger = screen.getByRole("button", { name: "same+，贡献详情" });
+    fireEvent.click(trigger); fireEvent.keyDown(document, { key: "Escape" }); expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+    const outside = screen.getByRole("button", { name: "外部阅读位置" }); outside.focus();
+    view.rerender(content(kind === "currency" ? { ...base, reportCurrency: "USD" } : { ...base, rows: Object.freeze([...suppliedRows]) }));
+    expect(screen.queryByRole("dialog", { hidden: true })).not.toBeInTheDocument(); expect(outside).toHaveFocus();
+    view.rerender(content(base)); act(() => { vi.advanceTimersByTime(200); });
+    expect(screen.queryByRole("dialog", { hidden: true })).not.toBeInTheDocument(); expect(outside).toHaveFocus();
+    fireEvent.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
+  });
+
+  it("reduced motion closes directly to the removed terminal state", () => {
+    vi.useFakeTimers(); motionPreference(true); render(<ContributionBars {...props()} />);
+    const trigger = screen.getByRole("button", { name: "same+，贡献详情" }); fireEvent.click(trigger); fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { hidden: true })).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
+    act(() => { vi.advanceTimersByTime(200); }); expect(screen.queryByRole("dialog", { hidden: true })).not.toBeInTheDocument();
+  });
+
+  it("enabling reduced motion during exit removes it immediately without stealing outside focus", () => {
+    vi.useFakeTimers(); const changePreference = motionPreference(false);
+    render(<><button>外部阅读位置</button><ContributionBars {...props()} /></>);
+    fireEvent.click(screen.getByRole("button", { name: "same+，贡献详情" })); fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.getByRole("dialog", { hidden: true })).toHaveAttribute("inert");
+    const outside = screen.getByRole("button", { name: "外部阅读位置" }); outside.focus(); changePreference(true);
+    expect(screen.queryByRole("dialog", { hidden: true })).not.toBeInTheDocument(); expect(outside).toHaveFocus();
+    act(() => { vi.advanceTimersByTime(200); }); expect(outside).toHaveFocus();
+  });
+});

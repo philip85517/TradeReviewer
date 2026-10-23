@@ -1,0 +1,50 @@
+[
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/vitest.config.mjs --configLoader native",
+    "exitCode": 1,
+    "completeLog": "01-red-missing-component.log",
+    "meaning": "Compile precondition only: component absent; no tests collected"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/vitest.config.mjs --configLoader native",
+    "exitCode": 1,
+    "completeLog": "02-red-behavior.log",
+    "meaning": "Meaningful behavior RED:29 collected,29 failed with null skeleton"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/vitest.config.mjs --configLoader native",
+    "exitCode": 0,
+    "completeLog": "03-green-attempt.log",
+    "meaning": "First implementation29/29"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --project .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/tsconfig.scoped.json",
+    "exitCode": 0,
+    "completeLog": "04-types.log",
+    "meaning": "Initial scoped strict typecheck"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/components/homepage-v25/history-stats-cards.tsx app/components/homepage-v25/history-stats-cards.test.tsx",
+    "exitCode": 0,
+    "completeLog": "05-lint.log",
+    "meaning": "Initial TSX/test lint"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/vitest.config.mjs --configLoader native",
+    "exitCode": 0,
+    "completeLog": "06-final-product.log",
+    "meaning": "Final29/29 after source review and group replacement assertion"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --project .scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate1/tsconfig.scoped.json",
+    "exitCode": 0,
+    "completeLog": "07-final-types.log",
+    "meaning": "Final scoped strict typecheck"
+  },
+  {
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/components/homepage-v25/history-stats-cards.tsx app/components/homepage-v25/history-stats-cards.test.tsx",
+    "exitCode": 0,
+    "completeLog": "08-final-lint.log",
+    "meaning": "Final TSX/test lint"
+  }
+]

@@ -1,0 +1,8 @@
+Browser tab: 13, Title: "四项指标独立验收", URL: "http://127.0.0.1:3334/metrics.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand
+~				8 标准指标
+~				10 (selected) 更新保留旧值
++			46 text 正在更新，继续显示原期间
+The focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html
+{"height":844,"status":[{"color":"rgb(168, 182, 203)","text":"更新中"},{"color":"rgb(168, 182, 203)","text":"更新中"},{"color":"rgb(168, 182, 203)","text":"更新中"},{"color":"rgb(168, 182, 203)","text":"更新中"}],"width":390}

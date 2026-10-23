@@ -1,0 +1,92 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:59828) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/replay/position-ledger.test.ts (47 tests | 3 failed | 44 skipped) 71ms
+     × does not let missing IPO cash turn known inventory chronology into unknown or certify partial fees 35ms
+     × reports bounded prefix index work and one observed sweep for many empty queries 30ms
+     × records execution-backed suppression rather than a second IPO movement 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam exactness counterexamples > does not let missing IPO cash turn known inventory chronology into unknown or certify partial fees
+AssertionError: expected [ true, false, false ] to deeply equal [ true, true, false ]
+
+- Expected
++ Received
+
+  [
+    true,
+-   true,
++   false,
+    false,
+  ]
+
+ ❯ app/lib/replay/position-ledger.test.ts:1067:128
+    1065|     const source = preparedCanonical.preparePositionLedger({ execution…
+    1066|     const [early, late] = preparedCanonical.readPreparedPositionFacts(…
+    1067|     expect([early.coverage.quantity.available, early.coverage.chronolo…
+       |                                                                                                                                ^
+    1068|     expect(early.terminal.fees).toMatchObject({ value: null, available…
+    1069|     expect(late.terminal.fees.value).toBe("4");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam exactness counterexamples > reports bounded prefix index work and one observed sweep for many empty queries
+AssertionError: expected undefined to be 1152 // Object.is equality
+
+- Expected:
+1152
+
++ Received:
+undefined
+
+ ❯ app/lib/replay/position-ledger.test.ts:1076:44
+    1074|     const result = preparedCanonical.readPreparedPositionFacts(source,…
+    1075|     expect(result.diagnostics).toMatchObject({ evaluations: 1, transit…
+    1076|     expect(result.diagnostics.indexProbes).toBe(128 * 9);
+       |                                            ^
+    1077|     expect(result.results.every(value => value.facts.length === 0 && v…
+    1078|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam exactness counterexamples > records execution-backed suppression rather than a second IPO movement
+AssertionError: expected [ [ 'ipo-allocation', …(2) ], …(1) ] to deeply equal [ [ 'ipo-allocation', …(2) ], …(1) ]
+
+- Expected
++ Received
+
+  [
+    [
+      "ipo-allocation",
+-     "suppressed-duplicate",
+-     "0",
++     "applied",
++     "2",
+    ],
+    [
+      "execution",
+      "applied",
+-     "2",
++     "4",
+    ],
+  ]
+
+ ❯ app/lib/replay/position-ledger.test.ts:1084:79
+    1082|     buy.source.sourceTradeId = "ipo-allocation";
+    1083|     const result = preparedCanonical.readPreparedPositionFacts(prepare…
+    1084|     expect(result.facts.map(f => [f.kind, f.effect, f.after.quantity.v…
+       |                                                                               ^
+    1085|     expect(result.terminal.fees.value).toBe("2");
+    1086|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 44 skipped (47)
+   Start at  11:09:26
+   Duration  2.93s (transform 263ms, setup 233ms, import 273ms, tests 71ms, environment 1.65s)
+

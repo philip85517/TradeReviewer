@@ -1,0 +1,58 @@
+{
+  "frozenAtUtc": "2026-10-22T22:47:54.529649+00:00",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "gitHead": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "status": "READY FOR ROOT INDEPENDENT REVIEW; worker product and documentation frozen",
+  "formalStatus": {
+    "P3": "0/3",
+    "P1": "2/3 FAIL"
+  },
+  "manifestVerifiedFiles": 27,
+  "manifestMismatches": [],
+  "protectedViolations": [],
+  "workerCommit": false,
+  "fullSuiteRun": false,
+  "browserServiceRealDatabaseOperation": false,
+  "files": [
+    {
+      "path": "FINAL-MANIFEST.json",
+      "sha256": "0be37e8a2573a0563badbcf525e707c15a5ebef42c321c6ba54241e6ba2b98d7"
+    },
+    {
+      "path": "VERIFICATION.json",
+      "sha256": "7b660da2a996d2d5be6c001a0568b62a9a0ef07b2421f44442643c185d6d4470"
+    },
+    {
+      "path": "INTERFACE-PROPOSAL.md",
+      "sha256": "1ec07ef094baf60a6255b6e251e2769380681c7403af9890b57ec9e5d7f4c8de"
+    },
+    {
+      "path": "CONTROL-INVENTORY.md",
+      "sha256": "492867c47b17a3ab2a77976f864b300def355c486171e551a0f209f42f4c2aaa"
+    },
+    {
+      "path": "HANDOFF.md",
+      "sha256": "b4da9ba88565abd03696c102170720d02dc3901ca740edce442fba7fc6fbbf4a"
+    },
+    {
+      "path": "REGRESSION-bounded.log",
+      "sha256": "3674140bdac5765c63211042b17debad8b10c4d3495507f30b221a664d17bd8e"
+    },
+    {
+      "path": "REGRESSION-workspace.log",
+      "sha256": "4f2224d88a850dd517a03fdb3d496d1bbdffd1d3d9b2c946e125ccfab5e8d880"
+    },
+    {
+      "path": "GREEN-workspace-final.log",
+      "sha256": "595ffbc7258fd38b53379417a71efd11b03e406fc72a6a79c2765b40c90bf7f3"
+    },
+    {
+      "path": "TYPECHECK-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "LINT-final.log",
+      "sha256": "90b421c247f6f141b24a77af8b5e34a677eb1b192f5db74fb437a8d825953b98"
+    }
+  ]
+}

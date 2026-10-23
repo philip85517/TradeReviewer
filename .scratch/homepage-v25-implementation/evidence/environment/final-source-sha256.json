@@ -1,0 +1,7 @@
+{
+  "app/lib/reviews/homepage-v25-performance.ts": "81038783d8d2f8b7c5c680f6fd6179ebfceba6f960147cdda66076d474d99345",
+  "app/lib/reviews/homepage-v25-performance.test.ts": "dd947dfaf7c2f6816e254c2a581a3ba8de03e10f281e1084945cdf935696e3ce",
+  "app/lib/reviews/homepage-v25-state.ts": "a0285648e5874a2678763083fbb07163782fdd4e88345e74ab98c280d1f35029",
+  "app/lib/reviews/homepage-v25-state.test.ts": "05f50bae66f78cbda202f94781f77a37e0d2ea55b92805c08c22414b1355147c",
+  ".scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts": "a2ebd36091b77e3ae2fc1255079e92a6aca843f12152ef5980cb1d5096eb9593"
+}

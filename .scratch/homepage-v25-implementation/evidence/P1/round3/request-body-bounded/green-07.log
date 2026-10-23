@@ -1,0 +1,23 @@
+Command: /Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node --test .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs
+Exit: 0
+
+✔ disabled import has no global mutations; hard limits cannot be enlarged (12.004606ms)
+✔ natural srvx discovery, GET/RSC coverage, actual bodies and exact restoration (29.58851ms)
+✔ same stream lock precedes natural target throw, which immediately uninstalls (10.828326ms)
+✔ GET/HEAD do not create streams; POST bridge, tee, read and native body consumers preserve content (8.855013ms)
+✔ request entry never invokes lazy body/bodyUsed/redirect; observed errors and thenables retain identity (1.77995ms)
+✔ all hard budgets stop, remove wrappers, flush once, and permit no later events/patches (2.82936ms)
+✔ automatic real timer removes lifecycle listener and restores even without requests (25.802122ms)
+✔ source drift discovery fails closed; later third-party descriptor is preserved (1.611924ms)
+✔ sink failure does not escape the original synchronous operation (1.881445ms)
+✔ native Request json consumes its naturally mapped stream without altered payload or extra Promise handlers (3.408704ms)
+✔ custom error stack getters and global stack formatters are never invoked (1.192086ms)
+✔ opt-in preload is inert by default and flushes a real no-socket child once on beforeExit (795.652249ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1292.404452

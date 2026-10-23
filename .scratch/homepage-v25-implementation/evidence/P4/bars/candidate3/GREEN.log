@@ -1,0 +1,53 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate3/vitest-product.config.mjs", "--maxWorkers=1", "--reporter=verbose"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB01 activates each of three original market identities without local navigation 391ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB02 preserves all eight caller rows and complete instrument identity 481ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB06/07 maps literal signed parts onto a common zero and scale without recomputing net 46ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional 13ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately 53ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03 supplied complete total remains independent when parent replaces the visible page 27ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 keeps known parts when unknown and invalid data cannot become zero 33ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 does not relabel a foreign target amount as the report currency 23ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB09 history renders only the supplied closed result 25ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB04 supports native Enter/Space for action and separate readout 42ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close 130ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 scopes Escape so a parent Escape handler cannot consume the same event 48ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB10/12 keeps supplied committed rows and total during pending or error without adding retry 26ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB11 initial pending reserves eight neutral slots without amounts or business rows 6ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB12/13 initial error and empty explain absence without invented zero or retry 7ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB14 retains exact long identity, source and extreme precision in the readout 28ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB15 immutable parent replacement invalidates an open readout and reads new supplied values 56ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 Escape also closes after keyboard focus moves back to the original trigger 50ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 unknown complete total presents its supplied reason without fabricating a subtotal 8ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB07/14 rounds cents symmetrically while retaining exact source precision 32ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB15 currency or mode replacement cannot retain a stale currency readout 70ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05/15 clamps floating readout position when its trigger scrolls outside the viewport 41ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'currency' stays closed and leaves outside focus when the original context returns 73ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'immutable row generation' stays closed and leaves outside focus when the original context returns 69ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'source identity context' stays closed and leaves outside focus when the original context returns 61ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'complete total generation' stays closed and leaves outside focus when the original context returns 71ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'current/history mode' stays closed and leaves outside focus when the original context returns 62ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'total readout currency' stays closed and leaves outside focus when the original context returns 62ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > Escape closes access and restores focus immediately, then removes the inert exit after160ms 38ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > outside closes access and restores focus immediately, then removes the inert exit after160ms 43ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > close button closes access and restores focus immediately, then removes the inert exit after160ms 36ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > reopening during exit cancels the old removal and keeps the new readout focused 37ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > invalidating currency during exit removes every old fact immediately and cannot revive it 60ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > invalidating rows during exit removes every old fact immediately and cannot revive it 53ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > reduced motion closes directly to the removed terminal state 23ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > CB-M05 contribution detail motion lifetime > enabling reduced motion during exit removes it immediately without stealing outside focus 43ms
+
+ Test Files  1 passed (1)
+      Tests  36 passed (36)
+   Start at  10:31:19
+   Duration  4.02s (transform 135ms, setup 183ms, import 217ms, tests 2.37s, environment 912ms)
+
+
+STDERR
+(node:57536) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+EXIT 0

@@ -1,0 +1,91 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:46740) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS01 keeps applied label and selected shortcut when the draft differs 205ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS02 reports opening directly and waits for controlled open before showing fields 94ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS03 edits only draft and requests custom once without committing a new label 79ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS04 associates reversed range errors with both fields and blocks pointer and Enter submission 72ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks empty start and identifies its field 39ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks empty end and identifies its field 37ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks impossible day and identifies its field 31ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks non-leap century and identifies its field 30ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks wrong format and identifies its field 27ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS05 blocks invalid end and identifies its field 34ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS06 allows valid future dates and Gregorian leap-century dates 46ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS07 keeps applied and draft through pending/failure/retry until controlled success 135ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS08 cancel closes, preserves draft/applied and restores trigger focus 84ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS08 escape closes, preserves draft/applied and restores trigger focus 60ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS08 outside closes, preserves draft/applied and restores trigger focus 69ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS09 keeps a clear keyboard boundary and never submits Escape 93ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS10 arrows/Home/End move focus only; Enter and Space request the focused shortcut 69ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2026-10-19 本周 from Shanghai civil today with inclusive literal endpoints 18ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2026-10-25 本周 from Shanghai civil today with inclusive literal endpoints 19ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2027-01-01 本周 from Shanghai civil today with inclusive literal endpoints 19ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2024-03-01 本周 from Shanghai civil today with inclusive literal endpoints 21ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2024-02-29 本月 from Shanghai civil today with inclusive literal endpoints 18ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS11 derives 2024-02-29 本年 from Shanghai civil today with inclusive literal endpoints 18ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS12 uses caller Shanghai date across UTC midnight and ignores ambient clock changes 12ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS13 renders supplied all boundaries and never guesses them from draft or today 16ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS14 invalid today disables shortcuts with a readable reason without blocking custom editing 38ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS15 pending suppresses shortcut Enter/Space while arrows and failure feedback stay readable 33ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS16 form Enter submits a valid draft once rather than navigating or applying a shortcut 15ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS17 closing the pending editor only dismisses it; the caller still publishes its result 90ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS18 reports a complete draft without mutating caller input or committing the end-date edit 27ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本年 click cancels only; its next click requests normally 75ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本月 click cancels only; its next click requests normally 71ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本周 click cancels only; its next click requests normally 71ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS20 cancel leaves the next pointer and keyboard shortcut activation available 48ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS20 escape leaves the next pointer and keyboard shortcut activation available 37ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'left' keeps the default/responsive width inside 24px gutters below the toolbar 74ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1440' keeps the default/responsive width inside 24px gutters below the toolbar 34ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1280' keeps the default/responsive width inside 24px gutters below the toolbar 23ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'outside left gutter' keeps the default/responsive width inside 24px gutters below the toolbar 20ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 '390 wrapped row' keeps the default/responsive width inside 24px gutters below the toolbar 26ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS22 follows resize and scrollable ancestors, using the toolbar rather than extra feedback height 11ms
+ ✓ app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS23 renders server failure in the error token with the real stylesheet cascade 62ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 195ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 17ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 15ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 19ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 24ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"year","year":2038} compact while preserving the full caller label in accessible, title and menu text 45ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"this-year","year":2038} compact while preserving the full caller label in accessible, title and menu text 54ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"years","fromYear":2036,"toYear":2038} compact while preserving the full caller label in accessible, title and menu text 39ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"all"} compact while preserving the full caller label in accessible, title and menu text 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > refreshes caller descriptions without changing the compact applied range or issuing requests 25ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 68ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 52ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 32ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 37ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 34ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 58ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > handles Escape locally without closing another page state 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 48ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 57ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 35ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 74ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 32ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains compact applied text and full long descriptions through pending, error, retry, keyboard exit and caller commit 190ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 52ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 47ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 51ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 49ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 39ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 26ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 30ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 25ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 25ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 26ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 34ms
+
+ Test Files  2 passed (2)
+      Tests  80 passed (80)
+   Start at  06:15:45
+   Duration  7.80s (transform 207ms, setup 359ms, import 521ms, tests 3.88s, environment 2.25s)
+

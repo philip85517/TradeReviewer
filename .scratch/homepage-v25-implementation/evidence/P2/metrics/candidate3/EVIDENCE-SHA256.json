@@ -1,0 +1,27 @@
+{
+  "frozenProductManifest": "SOURCE-SHA256.json",
+  "artifacts": {
+    "01-red-product.log": "578e08b1df7c63a99f409cee937bb03628cde6c82a7b8956b83227009f7ccc3d",
+    "02-red-corrected-product.log": "bfc0e2955a68d41f6a36ca8e20f95cf3dd39790976047d3506b8c24565f2b821",
+    "03-green-product.log": "0e8e0db7434ba208a9131e43f6153279b287d11d125a6d456f960538727eafb7",
+    "04-independent-counterexample.log": "5bb62a677cb7b66688c1225e1d450bed733884b13f9b78241736aeeabe005c2e",
+    "05-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "06-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "07-freeze.log": "2118435a511dbdc7ace43b5b3541152d51cb61fe85aedb51c2da33a63e8a3ba6",
+    "08-handoff-readback.log": "79134941478302c107fc93a5ec8fe9770acd2184b612f53705f65d89d908d466",
+    "BASELINE-SHA256.json": "8bf963f557b5dce6dab1a440543679fba616935a1a040fbf555f7ac1256287b5",
+    "CANDIDATE3.diff": "c79feca4872bcfea7a7eae9dc56533c43757194d0eef988f6c3f8bbc001918d2",
+    "COMMANDS.md": "e8a1933cfcc2fe8d87ce03bd41bc379c071b12d4c6671bb384195121a02e6dac",
+    "CONTROL-STATE-MAP.md": "0d7a3dead03f298a93768cfd0c102683571ea93cde4350fb44d55da9b7aed6d0",
+    "IMPLEMENTATION-READY.md": "fb29a65853003d1394e13b21b2c1475822c1713acbefe95d0cf29b1df8a00ee9",
+    "PRODUCT-FULL.diff": "66a9188f6e014d8c1a7edee8a235d0d20d8af67f8aefdce55185f2c84fd900e5",
+    "REFERENCE-READS.md": "9b5cbdf8c91487fcdf6d4638f609345ebbbb9a64aaa74c6c9d23748ca64e4790",
+    "SOURCE-AUDIT.md": "75c09b042457b13dc6d9cba980947c78a695eb05d90ea4fe63affcd9aa90a77d",
+    "SOURCE-SHA256.json": "fe731b266bf56536404805d7e58301549bb08e1751c2c1d7f730ec354d1cb9d4",
+    "baseline/metric-cards.css": "1e391540fd971dc201cd74b7274eb563a80fe6c7f830cbd9a3fb82899ad55330",
+    "baseline/metric-cards.test.tsx": "fd36f70cff05d0420f027c8856c2055b95e87749656a697cf3d956748b266057",
+    "baseline/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+    "tsconfig.scoped.json": "34c8c2249b7d37edf808f4c18e5fcbb6e3c71608fb2371c4d88a39010f01a7cd",
+    "vitest.config.mjs": "0145f08cb271f9874c20a4a2b32c1936e40f4b3670106a72d1691e9177ae72b5"
+  }
+}

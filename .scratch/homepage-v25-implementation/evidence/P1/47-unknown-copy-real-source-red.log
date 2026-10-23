@@ -1,0 +1,329 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17855) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/home-surface.test.tsx (4 tests | 1 failed) 737ms
+     × distinguishes unknown cost from missing quote in the actual table and detail 245ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > distinguishes unknown cost from missing quote in the actual table and detail
+TestingLibraryElementError: Unable to find an element with the text: 暂无. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-label[39m=[32m"当前持仓"[39m
+  [33mclass[39m=[32m"hp-holdings-table"[39m
+  [33mrole[39m=[32m"table"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33maria-sort[39m=[32m"ascending"[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"按标的名称排序"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m标的 [0m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m↑[0m
+        [36m</span>[39m
+      [36m</button>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [0m持仓天数[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [0m数量[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [0m成本价[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [0m最新价[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"按持仓市值排序"[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mtitle[39m=[32m"行情、成本或汇率覆盖不足，暂不能按金额排序"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m持仓市值([0m
+        [0mCNY[0m
+        [0m)[0m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m/>[39m
+      [36m</button>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mtitle[39m=[32m"行情、成本或汇率覆盖不足，暂不能按金额排序"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0m持仓浮动盈亏([0m
+        [0mCNY[0m
+        [0m)[0m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m/>[39m
+      [36m</button>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mrole[39m=[32m"columnheader"[39m
+    [36m>[39m
+      [0m查看[0m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holdings-body"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-instrument"[39m
+        [33mrole[39m=[32m"cell"[39m
+        [33mtabindex[39m=[32m"0"[39m
+        [33mtitle[39m=[32m"贵州茅台 · SSE:600519 · unknown · 实盘一"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m贵州茅台[0m
+        [36m</strong>[39m
+        [36m<small>[39m
+          [0mSSE:600519[0m
+        [36m</small>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+        [33mtitle[39m=[32m"连续持仓起点证据不足"[39m
+      [36m>[39m
+        [0m—[0m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtitle[39m=[32m"持仓数量证据不足"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtitle[39m=[32m"暂无可信成本"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtitle[39m=[32m"持仓数量证据不足"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtitle[39m=[32m"持仓数量证据不足"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mtabindex[39m=[32m"0"[39m
+          [33mtitle[39m=[32m"持仓数量证据不足"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"查看持仓详情"[39m
+          [33mclass[39m=[32m"hp-icon-button hp-view-holding"[39m
+          [33mid[39m=[32m"hp-holding-%5B%22one%22%2C%22episode%3A%255B%2522one%253ACN-SH%253A600519%253Alive%2522%252C%25222026-10-22T01%253A00%253A00Z%2522%252C%2522buy%2522%252C%25222%2522%252C%2522100%2522%255D%3A1%22%5D"[39m
+          [33mtitle[39m=[32m"查看持仓详情"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-eye"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"16"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"16"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"12"[39m
+              [33mcy[39m=[32m"12"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+      [33mdata-testid[39m=[32m"holding-slot"[39m
+      [33mrole[39m=[32m"row"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"hp-empty-slot"[39m
+        [33mrole[39m=[32m"cell"[39m
+      [36m>[39m
+        [0m [0m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</div>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/home-surface.test.tsx:26:26
+     24|     render(<Harness holdings={unknown} />);
+     25|     const table = screen.getByRole("table", { name: "当前持仓" });
+     26|     expect(within(table).getByText("暂无")).toBeInTheDocument();
+       |                          ^
+     27|     expect(within(table).getByText("待更新")).toBeInTheDocument();
+     28|     fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  01:40:01
+   Duration  3.02s (transform 458ms, setup 217ms, import 708ms, tests 737ms, environment 990ms)
+

@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-22T16:14:32.571Z",
+  "access": "readOnly:true",
+  "tables": {
+    "executions": {
+      "count": 1866,
+      "sha256": "a247d100cb62ef55ada55c31d2d65e54579a6387c8eb41c3ce48ef8bd0002f26"
+    },
+    "import_batches": {
+      "count": 213,
+      "sha256": "714d7fe203bd00fa7e922fe6ab2b1eef76c9c5037ea802e13f37b17f7d501964"
+    },
+    "trade_revisions": {
+      "count": 11,
+      "sha256": "1b4882a2f166096de0c4c6d01f1fc21250b2e31d30b43dd06a2cef9e73475bfc"
+    },
+    "reviews": {
+      "count": 138,
+      "sha256": "b660f0828b4a661731b22349ab36db1d5890abc83da8733fc504350f2f694f2a"
+    }
+  }
+}

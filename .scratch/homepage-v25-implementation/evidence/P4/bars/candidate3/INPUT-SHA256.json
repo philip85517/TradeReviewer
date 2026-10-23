@@ -1,0 +1,9 @@
+{
+  "app/components/homepage-v25/contribution-bars.tsx": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+  "app/components/homepage-v25/contribution-bars.css": "38fec37c82993b162c9aeebd5763829e9c0cc7b5558e9a24e0a2c79cae346213",
+  "app/components/homepage-v25/contribution-bars.test.tsx": "35ec77854673a9a986eba6926e25c7df39fa9dfcbcb439e1be8b604312ddc198",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-ACCEPTANCE-2.md": "ed27d00ab6abcde0fb94db9ad9359456f5420411b658db475e72c62a409f75da",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-CANDIDATE3-DISPATCH.md": "61f4359ad6af5bc2bc45cb784ca704f857f095c9652c795fee02de40ee2bbd94",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/independent-review2/REVIEW.md": "9e18545747d72d698e1a16b7ed75b067685dc8d6c63fa45bc5ebcffa974e38d6",
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434"
+}

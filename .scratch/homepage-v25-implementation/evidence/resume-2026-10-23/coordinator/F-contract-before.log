@@ -1,0 +1,75 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:95371) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts (4 tests | 3 failed) 57ms
+     × converts using the production complete FX pair keys 48ms
+     × keeps unknown opening fees unknown without losing a known current quantity 3ms
+     × does not turn an uncertain inventory into a complete zero market value 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > converts using the production complete FX pair keys
+AssertionError: expected null to be '70' // Object.is equality
+
+- Expected:
+"70"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:33:30
+     31|       targetCurrency: "CNY", fxSnapshot: { id: "fx-real", baseCurrency…
+     32|     });
+     33|     expect(result.net.value).toBe("70");
+       |                              ^
+     34|     expect(result.currentMarketValue.value).toBe("770");
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > keeps unknown opening fees unknown without losing a known current quantity
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:47:30
+     45|     execution.source.feeStatus = "unknown";
+     46|     const result = project([execution]);
+     47|     expect(result.net.value).toBeNull();
+       |                              ^
+     48|     expect(result.net.available).toBe(false);
+     49|     expect(result.currentMarketValue.value).toBe("110");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > does not turn an uncertain inventory into a complete zero market value
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:55:45
+     53|     execution.source.historyIncomplete = ["unresolved-instrument-posit…
+     54|     const result = project([execution]);
+     55|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     56|     expect(result.currentMarketValue.available).toBe(false);
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  00:21:53
+   Duration  956ms (transform 242ms, setup 0ms, import 309ms, tests 57ms, environment 0ms)
+

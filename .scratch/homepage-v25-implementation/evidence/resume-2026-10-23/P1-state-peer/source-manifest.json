@@ -1,0 +1,50 @@
+{
+  "createdAt": "2026-10-22T17:12:55.833Z",
+  "reviewStatus": "in-progress pre-review, not frozen acceptance",
+  "files": {
+    "app/components/homepage-v25/session-model.ts": {
+      "sha256": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+      "bytes": 2818
+    },
+    "app/components/homepage-v25/use-homepage-host.ts": {
+      "sha256": "42666910338267bae27e293c8a5112b9887b6ee70455416fcc859c3737775a1f",
+      "bytes": 10913
+    },
+    "app/components/homepage-v25/session-model.test.ts": {
+      "sha256": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+      "bytes": 2688
+    },
+    "app/components/homepage-v25/use-homepage-host.test.tsx": {
+      "sha256": "5c52e9341965e4e6ffa7e32d8df7d69256251d1a1e3e8d07ea2468f6128e36d6",
+      "bytes": 2861
+    },
+    "app/components/homepage-v25/home-surface.tsx": {
+      "sha256": "cef561f8a113f4344a9d3dd13f2263ea5c6691361fb74e525ff6e187d379586b",
+      "bytes": 20694
+    },
+    "app/components/trade-review-workspace.tsx": {
+      "sha256": "a88059cd8f645f2e7c0d5786453efdc22c1d09b0e41709724743bea3f8fc30c5",
+      "bytes": 270640
+    },
+    "app/components/library/library-browse-state.ts": {
+      "sha256": "0cc575b84582a1386e5e0f80e8c40a516b83e9013cee0a54f1574efe598c6238",
+      "bytes": 24868
+    },
+    "app/components/library/trade-library.tsx": {
+      "sha256": "f08247ef045f620ac18d5c54c8b820ad220c41ddf8e4df47173ba1517adfbd75",
+      "bytes": 64007
+    },
+    "app/lib/reviews/homepage-v25-state.ts": {
+      "sha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "bytes": 30799
+    },
+    "app/home/page.tsx": {
+      "sha256": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "bytes": 293
+    },
+    "app/trades/page.tsx": {
+      "sha256": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "bytes": 295
+    }
+  }
+}

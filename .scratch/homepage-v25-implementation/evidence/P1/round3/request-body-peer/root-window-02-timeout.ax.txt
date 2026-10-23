@@ -1,0 +1,7 @@
+Browser tab: 4, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all
+	2 container SQLite 存储状态
+		3 text 正在连接交易数据
+		4 text 正在从 SQLite 读取交易记录…
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all

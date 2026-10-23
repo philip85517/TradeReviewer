@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-22T17:08:32.251433+00:00",
+  "sourceFreezeMatched": true,
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": "f1b493d77e6963f35a99ca15b4b5ac8756577c327205a82f87617c76b12ce2d1",
+    "app/lib/reviews/homepage-v25-performance.test.ts": "fa853b632b6d7c01b8e9befa7abef60ec56c48c96e703a8666e364cbf656f6f8"
+  },
+  "testFiles": 12,
+  "tests": 277,
+  "exitCodes": {
+    "tests": 0,
+    "scopedTypecheck": 0,
+    "eslint": 0
+  },
+  "fullProjectTypes": "not accepted; P1 under implementation",
+  "scope": "F pure contract only; all UI gates remain NOT VERIFIED"
+}

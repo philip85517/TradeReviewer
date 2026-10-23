@@ -1,0 +1,60 @@
+{
+  "downstream": {
+    "height": 558,
+    "width": 1320,
+    "x": 96,
+    "y": 650
+  },
+  "footer": {
+    "height": 47,
+    "width": 1286,
+    "x": 113,
+    "y": 578
+  },
+  "head": {
+    "height": 40,
+    "width": 1286,
+    "x": 113,
+    "y": 154
+  },
+  "header": {
+    "height": 64,
+    "width": 1368,
+    "x": 72,
+    "y": 0
+  },
+  "nav": {
+    "height": 1000,
+    "width": 72,
+    "x": 0,
+    "y": 0
+  },
+  "rowHeights": [
+    48,
+    48,
+    48,
+    48,
+    48,
+    48,
+    48,
+    48
+  ],
+  "scroll": 480,
+  "table": {
+    "height": 520,
+    "width": 1320,
+    "x": 96,
+    "y": 106
+  },
+  "toolbar": {
+    "height": 47,
+    "width": 1286,
+    "x": 113,
+    "y": 107
+  },
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  }
+}

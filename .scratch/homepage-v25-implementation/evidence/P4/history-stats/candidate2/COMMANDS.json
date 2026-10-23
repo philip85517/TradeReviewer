@@ -1,0 +1,57 @@
+[
+  {
+    "atUtc": "2026-10-23T03:38:01.511337+00:00",
+    "command": [
+      "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--config",
+      ".scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate2/vitest.config.mjs",
+      "--configLoader",
+      "native"
+    ],
+    "exitCode": 1,
+    "log": "01-real-red.log",
+    "productIsExactFrozenCandidate1": true,
+    "original29BytePrefixPreserved": true,
+    "redTestSha256": "7e15238ca40b4b31fc3ec2b47775eb5a54ac409395a52173651b6c542831f505"
+  },
+  {
+    "atUtc": "2026-10-23T03:38:40.503781+00:00",
+    "command": [
+      "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--config",
+      ".scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate2/vitest.config.mjs",
+      "--configLoader",
+      "native"
+    ],
+    "exitCode": 0,
+    "log": "02-green.log"
+  },
+  {
+    "atUtc": "2026-10-23T03:38:39.616854+00:00",
+    "command": [
+      "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "node_modules/typescript/bin/tsc",
+      "--project",
+      ".scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate2/tsconfig.scoped.json",
+      "--pretty",
+      "false"
+    ],
+    "exitCode": 0,
+    "log": "03-types.log"
+  },
+  {
+    "atUtc": "2026-10-23T03:38:40.875867+00:00",
+    "command": [
+      "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "node_modules/eslint/bin/eslint.js",
+      "app/components/homepage-v25/history-stats-cards.tsx",
+      "app/components/homepage-v25/history-stats-cards.test.tsx"
+    ],
+    "exitCode": 0,
+    "log": "04-lint.log"
+  }
+]

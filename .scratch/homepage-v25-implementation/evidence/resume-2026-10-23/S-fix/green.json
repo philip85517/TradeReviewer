@@ -1,0 +1,17 @@
+{
+  "mode": "green",
+  "node": "v26.0.0",
+  "executable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "app/lib/reviews/homepage-v25-state.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose"
+  ],
+  "exitStatus": 0,
+  "sourceHashes": {
+    "app/lib/reviews/homepage-v25-state.ts": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+    "app/lib/reviews/homepage-v25-state.test.ts": "25c0af4452056c1763017a96f76fe45fd5a375159dde10013b98c32a80b19a68"
+  }
+}

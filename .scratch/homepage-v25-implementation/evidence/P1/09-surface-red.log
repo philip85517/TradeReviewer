@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:12435) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/home-surface.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/home-surface.test.tsx [ app/components/homepage-v25/home-surface.test.tsx ]
+Error: Failed to resolve import "./home-surface" from "app/components/homepage-v25/home-surface.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/home-surface.test.tsx:9:28
+  6  |  import { buildTradeLibraryEntries } from "../../lib/trades/library";
+  7  |  import { buildHomepageHoldings } from "./holdings-model";
+  8  |  import { HomeSurface } from "./home-surface";
+     |                               ^
+  9  |  var _jsxFileName = "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/home-surface.test.tsx";
+  10 |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:30486:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:30483:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:27725:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:27788:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:27756:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:30271:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:24532:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:02:34
+   Duration  2.43s (transform 30ms, setup 420ms, import 0ms, tests 0ms, environment 1.58s)
+

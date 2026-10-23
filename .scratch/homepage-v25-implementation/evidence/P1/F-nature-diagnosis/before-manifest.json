@@ -1,0 +1,34 @@
+{
+  "mode": "read-only product / mock-storage + fake-indexeddb probe; no service or actual DB",
+  "originalTest": "app/components/trade-review-workspace.test.tsx",
+  "sources": [
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "983f0b173ba0f29d9058237ab6f34e8b1722d33f70bdcc59f4d48639c5d5d657"
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "sha256": "fb99532a53d88ddb60022a0f521b7bde9bf3de9e965598a84f19c438ab7af06f"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "sha256": "32fb69710d1bfdb86aef67253f39b162279473b4e70d375235e9ab0fa9f216a6"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "c930599635b8360d3fe380c2168f23314bda501a786ad1c905690bed24eaf16b"
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "sha256": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "3bdc3a35c4251f20fc271e1e81e63935e14c378c78d47303a849c48e9c734d4f"
+    }
+  ]
+}

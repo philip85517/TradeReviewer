@@ -1,0 +1,44 @@
+Command: /Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node --test .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs
+Exit: 1
+
+✔ disabled import has no global mutations; hard limits cannot be enlarged (8.368275ms)
+✔ natural srvx discovery, GET/RSC coverage, actual bodies and exact restoration (33.712446ms)
+✔ same stream lock precedes natural target throw, which immediately uninstalls (14.171804ms)
+✔ GET/HEAD do not create streams; POST bridge, tee, read and native body consumers preserve content (12.356126ms)
+✔ request entry never invokes lazy body/bodyUsed/redirect; observed errors and thenables retain identity (3.672944ms)
+✔ all hard budgets stop, remove wrappers, flush once, and permit no later events/patches (4.673942ms)
+✔ automatic real timer removes lifecycle listener and restores even without requests (27.917429ms)
+✔ source drift discovery fails closed; later third-party descriptor is preserved (0.81106ms)
+✔ sink failure does not escape the original synchronous operation (1.11738ms)
+✔ native Request json consumes its naturally mapped stream without altered payload or extra Promise handlers (4.157131ms)
+✖ native clone invalidates earlier exact stream identity while both payloads remain intact (15.579159ms)
+✔ custom error stack getters and global stack formatters are never invoked (1.222411ms)
+✔ opt-in preload is inert by default and flushes a real no-socket child once on beforeExit (508.01563ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 12
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 954.301893
+
+✖ failing tests:
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs:222:1
+✖ native clone invalidates earlier exact stream identity while both payloads remain intact (15.579159ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(consumer)
+  
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs:236:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

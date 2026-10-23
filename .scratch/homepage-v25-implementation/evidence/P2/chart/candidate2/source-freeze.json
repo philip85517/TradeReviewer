@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-10-22T22:56:13.112634+00:00",
+  "worktree": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "branch": "detached HEAD",
+  "owner": "/root/chart_focus_fix",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "productFiles": {
+    "app/components/homepage-v25/performance-chart.tsx": "387434f05ffded9744742d66a11abd761f2ec1a2c67b0b8117ef971f269e834c",
+    "app/components/homepage-v25/performance-chart.css": "849139d7b76fc49a460b01c75f8e1991a002e2eb25c49ffa150f4f700e5c97e0",
+    "app/components/homepage-v25/performance-chart.test.tsx": "0576c260323318752063a26baa5d7eae1e0a3fb4577cfd6b69cd74e15e9529dc"
+  },
+  "evidenceFiles": {
+    "01-RED-focus-lifetime.log": "8f785295bd8204ff46e2181417c490bff6e20a9df475044ec051de46ae5c6361",
+    "02-RED-independent-counterexample.log": "500e863b98f4efe2a3336587008b6467f06c74e9ccde961a5c22bd0a7c707319",
+    "03-GREEN-chart-tests.log": "c70671cba013bf45da4c27b002f6608d44ef8f53cb9a6d40683fd7d25f752d90",
+    "04-GREEN-independent-counterexample.log": "82b9b74b47ccff6555844b7cb022223b48a36486517b6198635f754a025b7bb9",
+    "05-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "06-eslint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "REPORT.md": "ac0780accacbee7dcba7510c24c3836e058ce45c23e1147a99684c4a62f022e0",
+    "before-manifest.json": "43df5a4a4a68a28e619eef154bbe20b459f37dc0387db4e458a8f0338496e553",
+    "commands.json": "d8ce3bf96ae4619027dd77769b275078bc2e284f38499d1b5e9cecdefc6b5945",
+    "performance-chart.css.before": "849139d7b76fc49a460b01c75f8e1991a002e2eb25c49ffa150f4f700e5c97e0",
+    "performance-chart.test.tsx.before": "7677b85b1f159a0242cea20d488d369371e5c1dfdb0b9a9bcf95bc1e0976719f",
+    "performance-chart.tsx.before": "001e22fe2fbc9ca7479f942c9451c9753270a7beb376ee76494e09a7bdf371bd",
+    "preservation.json": "970528cd484d7a272dde7b0176e7144f13f59101273571664d2aba80a65ab31d",
+    "product.diff": "115399f0d8fc637f7011238c12a40c29df7ee8a792303b8cbf5bd5a3ef1ee09d",
+    "tsconfig.chart.json": "378d841c6fd9f5bd1c9fffe74383a701b5445ed9b1cfec6e1a8521ab522787ac"
+  },
+  "status": "implementation-ready; pending independent root acceptance",
+  "priorRootChartRound": "1/3 FAIL retained; candidate2 pending",
+  "p2PageRound": "0/3 unchanged",
+  "p1Round": "2/3 FAIL unchanged"
+}

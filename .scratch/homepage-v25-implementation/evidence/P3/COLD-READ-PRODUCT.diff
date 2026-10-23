@@ -1,0 +1,119 @@
+--- a/app/components/homepage-v25/use-homepage-host.ts
++++ b/app/components/homepage-v25/use-homepage-host.ts
+@@ -35,6 +35,7 @@
+   const sessionRef = useRef(session);
+   const [initialized, setInitialized] = useState(false);
+   const initializedRef = useRef(false);
++  const initializingRead = useRef(false);
+   const [route, setRoute] = useState<Route>({ page: "home", scope: DEFAULT_SCOPE, collectionOrigin: "homepage", error: null, key: 0 });
+   const routeRef = useRef(route);
+   const [notice, setNotice] = useState<string | null>(null);
+@@ -105,12 +106,20 @@
+           setAddressRoute({ page: "home", scope: next.ui.snapshot.scope, error: null });
+           address.current = serializeHomepageNavigation(next.ui.snapshot.scope, "/home");
+           persist(encodeHomepageSnapshot(next.ui.snapshot)); replaceEntry();
++        } else if (routeRef.current.error) {
++          setAddressRoute({ ...routeRef.current, error: null });
+         }
++        if (initializingRead.current) { initializingRead.current = false; setInitialized(true); }
+       } else update(next);
+     }).catch(error => {
++      const current = pending.current?.token.generation === token.generation;
+       const result = completeHomepageRequest(sessionRef.current.ui, { generation: token.generation, scopeKey: token.scopeKey, ok: false, error: error instanceof Error ? error.message : "read-failed" });
+-      if (pending.current?.token.generation === token.generation) pending.current = null;
++      if (current) pending.current = null;
+       update({ ...sessionRef.current, ui: result.state });
++      if (current && (initializingRead.current || routeRef.current.error)) {
++        if (routeRef.current.page === "trades") setAddressRoute({ ...routeRef.current, error: error instanceof Error ? error.message : "目标交易集合读取失败，请重试。" });
++        initializingRead.current = false; setInitialized(true);
++      }
+     });
+   }, [persist, replaceEntry, setAddressRoute, update]);
+   const acceptAddress = useCallback((url: URL, restoredBytes?: string | null, read = false) => {
+@@ -144,12 +153,13 @@
+     if (!bytes) { try { bytes = window.sessionStorage.getItem(STORAGE_KEY) ?? window.sessionStorage.getItem(LEGACY_STORAGE_KEY); } catch { setNotice("浏览器无法读取来源 UI，已从当前地址加载。"); } }
+     source.current = bytes;
+     acceptAddress(new URL(address.current, window.location.origin), bytes);
+-    if (options.readOnInitialize && routeRef.current.page === "home" && !routeRef.current.error) {
++    if (options.readOnInitialize && !routeRef.current.error) {
+       const restored = validateSource(bytes);
+-      const matching = restored && homepageScopeKey(restored.snapshot.scope) === homepageScopeKey(routeRef.current.scope);
++      const matching = restored && (routeRef.current.page === "trades" || homepageScopeKey(restored.snapshot.scope) === homepageScopeKey(routeRef.current.scope));
++      initializingRead.current = true;
+       beginRead({ purpose: "navigation", scope: routeRef.current.scope }, matching ? encodeHomepageSnapshot(restored.snapshot) : undefined);
+-    }
+-    replaceEntry(); setInitialized(true);
++    } else setInitialized(true);
++    replaceEntry();
+   }, [acceptAddress, beginRead, options.enabled, options.readOnInitialize, options.ready, replaceEntry, validateSource]);
+   /* eslint-enable react-hooks/set-state-in-effect */
+ 
+@@ -169,10 +179,16 @@
+     if (!session.ui.requests.global) return;
+     const timer = window.setTimeout(() => {
+       const ui = markHomepageRequestTimedOut(sessionRef.current.ui);
+-      if (ui !== sessionRef.current.ui) { pending.current = null; update({ ...sessionRef.current, ui }); }
++      if (ui !== sessionRef.current.ui) {
++        pending.current = null; update({ ...sessionRef.current, ui });
++        if (initializingRead.current) {
++          if (routeRef.current.page === "trades") setAddressRoute({ ...routeRef.current, error: "目标交易集合读取超时，请重试。" });
++          initializingRead.current = false; setInitialized(true);
++        }
++      }
+     }, 15_010);
+     return () => window.clearTimeout(timer);
+-  }, [session.ui.requests.global, update]);
++  }, [session.ui.requests.global, setAddressRoute, update]);
+ 
+   const onUi = useCallback((patch: HomepageUiPatch) => {
+     const next = { ...sessionRef.current, ui: updateHomepageUi(sessionRef.current.ui, patch) };
+@@ -201,7 +217,10 @@
+   const openGlobalTrades = useCallback((commit?: () => void) => navigate("/trades", encodeHomepageSnapshot(sessionRef.current.ui.snapshot), commit), [navigate]);
+   const openHome = useCallback(() => navigate("/home"), [navigate]);
+   const onScope = useCallback((scope: HomepageScope) => beginRead({ purpose: "identity", scope }), [beginRead]);
+-  const reload = useCallback(() => beginRead(sessionRef.current.ui.errors.global ? "retry" : { purpose: "refresh" }), [beginRead]);
++  const reload = useCallback(() => {
++    const restored = routeRef.current.page === "trades" ? validateSource(source.current) : null;
++    beginRead(sessionRef.current.ui.errors.global ? "retry" : { purpose: "refresh" }, restored ? encodeHomepageSnapshot(restored.snapshot) : undefined);
++  }, [beginRead, validateSource]);
+ 
+   useEffect(() => {
+     if (!options.enabled || !initialized) return;
+--- a/app/components/trade-review-workspace.tsx
++++ b/app/components/trade-review-workspace.tsx
+@@ -189,7 +189,6 @@
+   migrateLegacyBrowserState,
+ } from "../lib/storage/browser-state-migration";
+ import { buildTradeEpisodes } from "../lib/trades/episodes";
+-import type { TradeLibraryEntry } from "../lib/trades/library";
+ import {
+   buildInstrumentTradeSummaries,
+   type InstrumentTradeSummary,
+@@ -2222,7 +2221,9 @@
+   // synchronizing that external route is deliberately limited to a new key.
+   /* eslint-disable react-hooks/set-state-in-effect */
+   useEffect(() => {
+-    if (showDemo || !homepage.initialized || homepage.route.page !== "trades" || homepage.route.error || ordinaryLibraryKey === homepage.route.key) return;
++    if (showDemo || homepage.route.page !== "trades") return;
++    setActiveViewState("library");
++    if (!homepage.initialized || homepage.route.error || ordinaryLibraryKey === homepage.route.key) return;
+     const scope = homepage.route.scope;
+     setLibraryTarget(undefined); setLibrarySourceSnapshot(null); setPlaying(false);
+     if (homepage.route.collectionOrigin === "global") {
+@@ -2233,7 +2234,6 @@
+       setOrdinaryLibraryScope({ nature: "live", accountIds: scope.accounts.includes("*") ? [] : scope.accounts, reportCurrency: "original", simulationRunId: null });
+     }
+     setOrdinaryLibraryKey(homepage.route.key);
+-    setActiveViewState("library");
+   }, [showDemo, homepage.initialized, homepage.route.key, homepage.route.error, homepage.route.page, homepage.route.scope, homepage.route.collectionOrigin, homepageCatalog, ordinaryLibraryKey]);
+   /* eslint-enable react-hooks/set-state-in-effect */
+   const ordinaryEntries = useMemo(() => ordinaryLibraryScope
+@@ -6056,7 +6056,7 @@
+         {activeView === "library" ? (
+           <div className="library-page-shell">
+             {!showDemo && homepage.initialized && <div className="hp-library-source"><button type="button" className="library-source-return" onClick={() => void homepage.openHome()}>返回首页</button><p role="status">{homepage.route.collectionOrigin === "global" ? "普通交易库 · 当前共享范围" : <>普通交易库 · 成交日期 {homepage.route.scope.rangeMode === "all" ? "全部" : homepage.route.scope.rangeMode === "date" ? homepage.route.scope.date : `${homepage.route.scope.from} 至 ${homepage.route.scope.to}`} · 包含未平仓成交{homepage.route.scope.symbolIdentity ? ` · ${homepage.route.scope.symbolIdentity}` : ""}</>}</p></div>}
+-            {!showDemo && homepage.route.error ? <div role="alert">{homepage.route.error}<button type="button" onClick={() => void homepage.openHome()}>返回首页选择范围</button></div> : (!showDemo && homepage.route.page === "trades" && ordinaryLibraryKey !== homepage.route.key) ? <p role="status">正在读取目标交易集合…</p> : <>
++            {!showDemo && homepage.route.error ? <div role="alert">{homepage.route.error}{homepage.ui.errors.global && <button type="button" disabled={Boolean(homepage.ui.requests.global)} onClick={homepage.reload}>{homepage.ui.requests.global ? "正在重试…" : "重新读取目标交易集合"}</button>}<button type="button" onClick={() => void homepage.openHome()}>返回首页选择范围</button></div> : (!showDemo && homepage.route.page === "trades" && ordinaryLibraryKey !== homepage.route.key) ? <p role="status">正在读取目标交易集合…</p> : <>
+             {librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
+           <TradeLibrary
+             sharedScope={ordinaryLibraryScope ?? sharedScope}

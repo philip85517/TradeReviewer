@@ -1,0 +1,20 @@
+[
+  {
+    "size": 20,
+    "elapsedMs": 30.166124999999965,
+    "net": "80",
+    "closedEpisodes": 10
+  },
+  {
+    "size": 100,
+    "elapsedMs": 264.63703399999997,
+    "net": "400",
+    "closedEpisodes": 50
+  },
+  {
+    "size": 200,
+    "elapsedMs": 2068.74517,
+    "net": "800",
+    "closedEpisodes": 100
+  }
+]

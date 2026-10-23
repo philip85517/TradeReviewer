@@ -1,0 +1,35 @@
+import { expectedTradingDates } from "../../../../../../app/lib/market/calendar";
+import { buildInstrumentTradeSummaries } from "../../../../../../app/lib/trades/instruments";
+import { buildTradeLibraryEntries } from "../../../../../../app/lib/trades/library";
+import type { DailyCandleRecord, SupportedMarket } from "../../../../../../app/lib/market/contracts";
+import type { TradeExecution } from "../../../../../../app/lib/trades/types";
+import type { HomepageV25BoundaryInput, HomepageV25BoundaryBatch } from "../../../../../../app/lib/reviews/homepage-v25-performance";
+
+export const base = ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/";
+export const day=(i:number)=>new Date(Date.UTC(2026,0,i+1)).toISOString().slice(0,10);
+export const instruments:{id:string;market:SupportedMarket;symbol:string;name:string;currency:string}[]=[{id:"US:AAPL",market:"US",symbol:"AAPL",name:"US",currency:"USD"},{id:"HK:00700",market:"HK",symbol:"00700",name:"HK",currency:"HKD"},{id:"CN-SH:600000",market:"CN-SH",symbol:"600000",name:"CN",currency:"CNY"}];
+export const raw=(instrument:typeof instruments[number],tradingDate:string):DailyCandleRecord=>({instrumentId:instrument.id,tradingDate,open:"110",high:"110",low:"110",close:"110",volume:"1",currency:instrument.currency,adjustmentMode:"raw" as const,provider:"controlled" as DailyCandleRecord["provider"],providerSymbol:instrument.symbol,fetchedAt:`${tradingDate}T23:00:00Z`});
+export function entriesFor(executions:TradeExecution[],candlesByInstrument:Record<string,DailyCandleRecord[]>) {
+  return buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions),candlesByInstrument,Object.fromEntries(executions.map(e=>[e.instrument.id,"ready" as const])));
+}
+export function publicJson(batch:HomepageV25BoundaryBatch):string {
+  return JSON.stringify(Object.fromEntries(Object.entries(batch).filter(([key])=>key!=="diagnostics")));
+}
+// Exact frozen fixture from p2-a/performance-v3.test.ts for rounds/long-prefix,
+// and p2-a/final-variants.test.ts for multimarket. No shape reduction.
+export function largeFixture(shape:"rounds"|"long-prefix"|"multimarket") {
+  const multi=shape==="multimarket";
+  const instrument={id:"US:AAPL",market:"US",symbol:"AAPL",name:"Apple",currency:"USD"};
+  const executions:TradeExecution[]=Array.from({length:1866},(_,i)=>multi?({id:`variant-${i}`,accountId:`a${i%3}`,accountLabel:`A${i%3}`,instrument:instruments[i%3],side:"buy",quantity:"1",price:"100",fee:"0",executedAt:new Date(Date.parse(`${day(Math.floor(i*365/1866))}T14:00:00Z`)+i).toISOString(),source:{platform:"controlled-scaling",row:i,tradeNature:"live",positionEffect:"open-long"}}):({id:`controlled-fill-${i}`,accountId:"a",accountLabel:"A",instrument,side:shape==="long-prefix"?"buy":i%2?"sell":"buy",quantity:"1",price:shape==="long-prefix"?"100":i%2?"101":"100",fee:"0",executedAt:new Date(Date.parse(`${day(Math.floor(i*365/1866))}T14:00:00Z`)+i).toISOString(),source:{platform:"controlled-scaling",row:i,tradeNature:"live",positionEffect:shape==="long-prefix"?"open-long":i%2?"close-long":"open-long"}}));
+  const candlesByInstrument=multi?Object.fromEntries(instruments.map(instrument=>[instrument.id,expectedTradingDates(instrument.market,"2025-12-31","2026-12-31").map(date=>raw(instrument,date))])):{"US:AAPL":expectedTradingDates("US","2025-12-31","2026-12-31").map(tradingDate=>({instrumentId:instrument.id,tradingDate,open:"110",high:"110",low:"110",close:"110",volume:"1",currency:"USD",adjustmentMode:"raw" as const,provider:"controlled" as DailyCandleRecord["provider"],providerSymbol:"AAPL",fetchedAt:`${tradingDate}T23:00:00Z`}))};
+  const fxObservations=multi?Array.from({length:365},(_,i)=>{const date=day(i),at=`${date}T00:00:00Z`;return {id:`controlled-fx-${date}`,source:"controlled-historical-fixture",sourceRevision:"fixture-1",businessDate:date,rates:{"USD/CNY":"7","HKD/CNY":"0.9"},status:"complete" as const,publishedAtByPair:{"USD/CNY":at,"HKD/CNY":at},knownAtByPair:{"USD/CNY":at,"HKD/CNY":at},fetchedAt:at,evidenceIds:[`fixture-fx-${date}`]};}):[];
+  const request:HomepageV25BoundaryInput={periodStart:"2026-01-01",asOf:"2027-01-01T23:00:00Z",...(multi?{targetCurrency:"CNY"}:{}),endpoints:Array.from({length:365},(_,i)=>({key:day(i),at:day(i)}))};
+  const expected=Array.from({length:365},(_,i)=>{
+    const cursor=Date.parse(`${day(i)}T15:59:59.999Z`);
+    if(multi){const counts=[0,0,0];executions.forEach((e,index)=>{if(Date.parse(e.executedAt)<=cursor)counts[index%3]++;});return String(counts[0]*70+counts[1]*9+counts[2]*10);}
+    const visible=executions.filter(e=>Date.parse(e.executedAt)<=cursor).length;
+    return shape==="long-prefix"?String(visible*10):String(Math.floor(visible/2)+(visible%2?10:0));
+  });
+  const revisions=multi?{trades:"controlled-variants",quotes:"complete-sessions",fx:"controlled-dated-observations",metadata:"none"}:{trades:`controlled1866-${shape}`,quotes:"full-sessions",fx:"none",metadata:"none"};
+  return {executions,candlesByInstrument,fxObservations,request,expected,revisions};
+}

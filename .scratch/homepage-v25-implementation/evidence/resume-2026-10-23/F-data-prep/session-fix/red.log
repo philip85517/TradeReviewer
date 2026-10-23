@@ -1,0 +1,244 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:18678) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (100 tests | 17 failed) 170ms
+     × 'US' 'summer intraday across Shanghai midni…' 10ms
+     × 'US' 'winter before close' 2ms
+     × 'US' 'before verified half-day close' 1ms
+     × 'HK' 'auction close' 1ms
+     × 'HK' 'verified half-day auction close' 1ms
+     × 'CN-SH' 'close' 1ms
+     × 'CN-SZ' 'close' 1ms
+     × 'US' 'Shanghai date-only boundary before US…' 3ms
+     × 'US' 'weekend raw fallback' 1ms
+     × 'HK' 'weekend raw fallback' 1ms
+     × 'US' 'old weekend raw rejected even below c…' 1ms
+     × 'CN-SH' 'holiday raw rejected' 1ms
+     × classifies 'CN'/'2026-10-22T08:30:00Z' session uncertainty without erasing inventory or fees 6ms
+     × classifies 'US'/'2031-10-22T22:00:00Z' session uncertainty without erasing inventory or fees 2ms
+     × classifies 'US'/'2025-12-31T15:00:00Z' session uncertainty without erasing inventory or fees 2ms
+     × rejects a weekend-only raw quote without manufacturing zero value 2ms
+     × resolves opening, historical closing and independent current sessions separately 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'summer intraday across Shanghai midni…'
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'Shanghai date-only boundary before US…'
+AssertionError: expected '2026-10-22' to be '2026-10-21' // Object.is equality
+
+Expected: "2026-10-21"
+Received: "2026-10-22"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'winter before close'
+AssertionError: expected '2026-11-03' to be '2026-11-02' // Object.is equality
+
+Expected: "2026-11-02"
+Received: "2026-11-03"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'before verified half-day close'
+AssertionError: expected '2026-11-27' to be '2026-11-25' // Object.is equality
+
+Expected: "2026-11-25"
+Received: "2026-11-27"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'HK' 'auction close'
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'CN-SH' 'close'
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'CN-SZ' 'close'
+AssertionError: expected '2026-10-21' to be '2026-10-22' // Object.is equality
+
+Expected: "2026-10-22"
+Received: "2026-10-21"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'HK' 'verified half-day auction close'
+AssertionError: expected '2026-12-23' to be '2026-12-24' // Object.is equality
+
+Expected: "2026-12-24"
+Received: "2026-12-23"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'weekend raw fallback'
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'HK' 'weekend raw fallback'
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'US' 'old weekend raw rejected even below c…'
+AssertionError: expected '2026-10-24' to be '2026-10-23' // Object.is equality
+
+Expected: "2026-10-23"
+Received: "2026-10-24"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > 'CN-SH' 'holiday raw rejected'
+AssertionError: expected '2026-10-01' to be '2026-09-30' // Object.is equality
+
+Expected: "2026-09-30"
+Received: "2026-10-01"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:405:64
+    403|   ])("$market $label", ({ market, asOf, dates, expected, price }) => {
+    404|     const result = sessionProjection(market, asOf, dates);
+    405|     expect(result.instruments[0].evidence.current.quote?.date).toBe(ex…
+       |                                                                ^
+    406|     expect(result.currentMarketValue.value).toBe(price);
+    407|     expect(result.currentUnrealized.value).toBe(String(Number(price) -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > classifies 'CN'/'2026-10-22T08:30:00Z' session uncertainty without erasing inventory or fees
+AssertionError: expected { value: '100', available: true, …(3) } to match object { value: null, …(1) }
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reasons": [
+-     "quote-market-unsupported",
+-   ],
+-   "value": null,
++   "reasons": [],
++   "value": "100",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:416:39
+    414|   ])("classifies $market/$asOf session uncertainty without erasing inv…
+    415|     const result = sessionProjection(market, asOf, dates);
+    416|     expect(result.currentMarketValue).toMatchObject({ value: null, rea…
+       |                                       ^
+    417|     expect(result.currentUnrealized).toMatchObject({ value: null, reas…
+    418|     expect(result.currentOpenFees.value).toBe("2");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > classifies 'US'/'2031-10-22T22:00:00Z' session uncertainty without erasing inventory or fees
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > classifies 'US'/'2025-12-31T15:00:00Z' session uncertainty without erasing inventory or fees
+AssertionError: expected { value: '100', available: true, …(3) } to match object { value: null, …(1) }
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reasons": [
+-     "quote-session-unavailable",
+-   ],
+-   "value": null,
++   "reasons": [],
++   "value": "100",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:416:39
+    414|   ])("classifies $market/$asOf session uncertainty without erasing inv…
+    415|     const result = sessionProjection(market, asOf, dates);
+    416|     expect(result.currentMarketValue).toMatchObject({ value: null, rea…
+       |                                       ^
+    417|     expect(result.currentUnrealized).toMatchObject({ value: null, reas…
+    418|     expect(result.currentOpenFees.value).toBe("2");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > rejects a weekend-only raw quote without manufacturing zero value
+AssertionError: expected { value: '100', available: true, …(3) } to match object { value: null, …(1) }
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "reasons": [
+-     "quote-missing",
+-   ],
+-   "value": null,
++   "reasons": [],
++   "value": "100",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:423:39
+    421|   it("rejects a weekend-only raw quote without manufacturing zero valu…
+    422|     const result = sessionProjection("US", "2026-10-28", ["2026-10-24"…
+    423|     expect(result.currentMarketValue).toMatchObject({ value: null, rea…
+       |                                       ^
+    424|     expect(result.instruments[0].evidence.current.quote).toBeNull();
+    425|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage completed exchange session quote contract > resolves opening, historical closing and independent current sessions separately
+AssertionError: expected '2026-10-21' to be '2026-10-20' // Object.is equality
+
+Expected: "2026-10-20"
+Received: "2026-10-21"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:428:64
+    426|   it("resolves opening, historical closing and independent current ses…
+    427|     const result = sessionProjection("US", "2026-10-24T02:00:00Z", ["2…
+    428|     expect(result.instruments[0].evidence.opening.quote?.date).toBe("2…
+       |                                                                ^
+    429|     expect(result.instruments[0].evidence.closing.quote?.date).toBe("2…
+    430|     expect(result.instruments[0].evidence.current.quote?.date).toBe("2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  17 failed | 83 passed (100)
+   Start at  01:47:36
+   Duration  923ms (transform 273ms, setup 0ms, import 362ms, tests 170ms, environment 0ms)
+

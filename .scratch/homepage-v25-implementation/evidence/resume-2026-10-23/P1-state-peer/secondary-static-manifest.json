@@ -1,0 +1,98 @@
+{
+  "started": "2026-10-22T17:49:25.145Z",
+  "finished": "2026-10-22T17:49:25.172Z",
+  "node": "v26.0.0",
+  "scope": "read-only secondary static pre-review, no DB/service/browser/test execution",
+  "files": [
+    {
+      "path": "app/api/storage/trades/route.ts",
+      "sha256": "9b65fec2067ae0dfd7b486a33ace58dc1a7570ecab3387ef9c5d65e32a98c8db",
+      "bytes": 2925
+    },
+    {
+      "path": "app/api/storage/instruments/metadata/route.ts",
+      "sha256": "1e71e08598bfd30708565372204bf5189e48af518694633b341ec64da923e5b7",
+      "bytes": 2534
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.ts",
+      "sha256": "878a0b0b21b0324a0219469ea90713238db116e409ab57f416e1a254474cd2ee",
+      "bytes": 94797
+    },
+    {
+      "path": "app/lib/storage/sqlite-repositories.ts",
+      "sha256": "f2d96a1794477ce9484514ab2759b30f97a0fe32a15f5934ce91b96f8b4a570f",
+      "bytes": 7326
+    },
+    {
+      "path": "app/lib/storage/sqlite-http-client.ts",
+      "sha256": "95609e23cf46ec49cd76ef5103e389150e9f32721a7feb11d234204d4f3844d5",
+      "bytes": 8246
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.ts",
+      "sha256": "69e82452c2b27e09ad87235e7eaf890d3a3678c2abd8d0814a633beb3c15dc67",
+      "bytes": 6030
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.ts",
+      "sha256": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53",
+      "bytes": 10368
+    },
+    {
+      "path": "app/lib/instruments/providers/nasdaq-directory.ts",
+      "sha256": "710f7d4592202a8d686d1633f81497021ae16a54a25a82bca224a70781241651",
+      "bytes": 8861
+    },
+    {
+      "path": "app/lib/instruments/providers/sec-company-tickers.ts",
+      "sha256": "b76263fce461e2500bdc736dccd69de9249a1d887f8e061c14045e56df6a9f21",
+      "bytes": 5639
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+      "bytes": 275869
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+      "bytes": 12286
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+      "bytes": 2818
+    },
+    {
+      "path": "app/components/library/library-browse-state.ts",
+      "sha256": "380626c697c1edfa71fd09422545577733ff62297ee3205e4a175dd01e6849e7",
+      "bytes": 25343
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "sha256": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e",
+      "bytes": 64105
+    },
+    {
+      "path": "app/lib/trades/library.ts",
+      "sha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "bytes": 11233
+    },
+    {
+      "path": "app/lib/reviews/review-queue.ts",
+      "sha256": "2f669a97182ef7ce90b83bc4a30a00b3a09462482416711508c00bf36b882212",
+      "bytes": 9801
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.test.ts",
+      "sha256": "7da1485f8c40f2b0b8b089b4ede520c2f9e9a935c553b9719e2342c7d6509109",
+      "bytes": 5389
+    },
+    {
+      "path": "app/components/library/library-browse-state.test.ts",
+      "sha256": "61279c857e7f945540b2ecd5a5485187248aa7aa8d54f276fe399e2032f23659",
+      "bytes": 21777
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "timeUTC": "2026-10-22T22:52:47.835444+00:00",
+  "servingPID": 41518,
+  "session": 88778,
+  "port": 3333,
+  "db": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite",
+  "sidecars": [
+    {
+      "name": "tradereview-test.sqlite-shm",
+      "bytes": 32768
+    },
+    {
+      "name": "tradereview-test.sqlite-wal",
+      "bytes": 4120032
+    },
+    {
+      "name": "tradereview-test.sqlite.tmp-85336-1792682643015-0e7c60cd534928-shm",
+      "bytes": 32768
+    },
+    {
+      "name": "tradereview-test.sqlite.tmp-85336-1792682643015-0e7c60cd534928-wal",
+      "bytes": 0
+    },
+    {
+      "name": "tradereview-test.sqlite.tmp-84896-1792682606273-9a386fb29adf78-shm",
+      "bytes": 32768
+    },
+    {
+      "name": "tradereview-test.sqlite",
+      "bytes": 47124480
+    },
+    {
+      "name": "tradereview-test.sqlite.tmp-84896-1792682606273-9a386fb29adf78-wal",
+      "bytes": 0
+    }
+  ],
+  "originalRunner": "scripts/start-local.mjs --dev --hostname 127.0.0.1 --port 3333",
+  "originalAddedEnvironment": {
+    "PATH": "pinned native Node dir + repository node_modules/.bin + inherited PATH",
+    "TRADEREVIEW_DB_PATH": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite"
+  },
+  "originalExplicitNODE_OPTIONS": "none in original launch command",
+  "plannedObserver": "one opt-in window, each process max60s/4 exact PUTs/128events/65536bytes; launcher trace cannot replace serving trace; restore original runner after stop; no DB reset",
+  "rootOfflineTests": "13/13 PASS; ROOT-offline-tests.log"
+}

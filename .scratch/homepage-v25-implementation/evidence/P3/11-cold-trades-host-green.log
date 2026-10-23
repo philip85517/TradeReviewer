@@ -1,0 +1,41 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:30379) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (22 tests | 1 failed) 1460ms
+     × keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source 1036ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source
+AssertionError: expected null to be 'bootstrap unavailable' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+- Expected:
+"bootstrap unavailable"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:54:60
+
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 25 passed (26)
+   Start at  03:28:09
+   Duration  6.24s (transform 1.32s, setup 1.51s, import 1.62s, tests 1.49s, environment 5.19s)
+

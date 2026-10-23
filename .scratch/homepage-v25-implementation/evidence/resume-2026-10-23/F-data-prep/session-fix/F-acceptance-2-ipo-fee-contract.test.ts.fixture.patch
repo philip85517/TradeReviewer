@@ -1,0 +1,11 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts.before-fixture-correction.txt	2026-10-23 01:51:06
++++ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts	2026-10-23 01:51:06
+@@ -33,7 +33,7 @@
+   { ...cases[2], name: "covers a cross-period short", refund: "2026-01-10", start: "2026-01-09", opening: "16", net: "8" },
+ ])("projects attributable canonical fees when it $name", (row) => {
+   const executions = [...row.fills, fill("future-carrier", "2026-02-05", "buy", "1", "100")].map((execution, index) => index === 0 ? { ...execution, source: { ...execution.source, positionEvents: events(row.quantity).map(event => event.id === "refund" ? { ...event, date: row.refund } : event) } } : execution);
+-  const candlesByInstrument = { [instrument.id]: [candle("2025-12-31", "100"), candle("2026-01-08", "110"), candle("2026-01-31", "110")] };
++  const candlesByInstrument = { [instrument.id]: [candle("2025-12-31", "100"), candle("2026-01-07", "110"), candle("2026-01-30", "110")] };
+   const summaries = buildInstrumentTradeSummaries(executions);
+   const entries = buildTradeLibraryEntries(summaries, candlesByInstrument, { [instrument.id]: "ready" });
+   const input = { entries, candlesByInstrument, period: { start: row.start, end: "2026-01-31" }, asOf: "2026-01-31" };

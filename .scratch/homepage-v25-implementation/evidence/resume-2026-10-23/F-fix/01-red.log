@@ -1,0 +1,729 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:98251) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (37 tests | 23 failed) 148ms
+     × clamps the period and exposes its effective knowledge boundary 13ms
+     × keeps current inventory at its own cutoff with a historical period 6ms
+     × selects an eligible raw quote before considering later or adjusted bars 3ms
+     × uses the pre-period mark so the first day's gain remains in the period 3ms
+     × preserves date-only knowledge instead of inventing an intraday fill 4ms
+     × classifies a missing asOf instead of deriving current from the period 3ms
+     × keeps a known current value usable when opening fees are unknown 2ms
+     × preserves uncertain quantity and its original reason 2ms
+     × does not treat a statement mark as acquisition cost 4ms
+     × allocates carried opening fees to the same close under either period 4ms
+     × uses average cost in realized and unrealized components independently 5ms
+     × uses the raw reverse fill once, retaining its whole settlement lineage 3ms
+     × does not let an unseen future short episode change the historical long direction 2ms
+     × defaults the real source to live and reports excluded simulation and unknown scope 3ms
+     × isolates one simulation run and its account and market filters 4ms
+     × converts through production pair keys and publishes source amounts and provenance 3ms
+     × keeps original money with a missing FX snapshot 2ms
+     × keeps original money with a partial FX snapshot 1ms
+     × rejects bare FX keys, zero rates and future FX knowledge 1ms
+     × preserves original subtotals instead of summing different currencies 3ms
+     × rejects quote/settlement currency mismatches without losing trusted quantity 2ms
+     × classifies malformed compatibility quantities without throwing 5ms
+     × converts settlement realized PnL into the selected target currency 2ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts (10 tests | 10 failed) 94ms
+     × R01 unknown fees cannot produce complete PnL 54ms
+     × R02 unknown ledger quantity cannot produce complete zero current value 4ms
+     × R03 mismatched settlement currency cannot be subtracted from quote currency 3ms
+     × R04 production FX snapshot keys convert current value 3ms
+     × R05 missing FX snapshot status cannot produce complete conversion 2ms
+     × R06 same close realized amount must not change when period start moves before its opening 9ms
+     × R07 adding a future opposite episode cannot change a known prior-period result 6ms
+     × R08 inclusive first-day PnL uses the pre-period mark 3ms
+     × R09 period realized uses the established average-cost ledger 5ms
+     × R10 optional asOf cannot make current value depend on selected period 3ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts (4 tests | 3 failed) 65ms
+     × converts using the production complete FX pair keys 53ms
+     × keeps unknown opening fees unknown without losing a known current quantity 4ms
+     × does not turn an uncertain inventory into a complete zero market value 2ms
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts (4 tests | 4 failed) 82ms
+     × does not seed a Shanghai first-day execution into pre-period inventory 69ms
+     × excludes executions after asOf from current inventory as well as from prices 4ms
+     × selects the latest eligible current candle when a later candle also exists 2ms
+     × does not publish post-asOf period gains as known results 3ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 40 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > clamps the period and exposes its effective knowledge boundary
+AssertionError: expected '20' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "20"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:47:30
+     45|   it("clamps the period and exposes its effective knowledge boundary",…
+     46|     const result = real([fill("known", "2026-01-15T15:00:00Z"), fill("…
+     47|     expect(result.net.value).toBe("10");
+       |                              ^
+     48|     expect(result.boundary).toMatchObject({ asOf: "2026-01-31", effect…
+     49|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps current inventory at its own cutoff with a historical period
+AssertionError: expected [ '0', '220' ] to deeply equal [ '0', '110' ]
+
+- Expected
++ Received
+
+  [
+    "0",
+-   "110",
++   "220",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:52:65
+     50|   it("keeps current inventory at its own cutoff with a historical peri…
+     51|     const result = real([fill("known", "2026-01-15T15:00:00Z"), fill("…
+     52|     expect([result.net.value, result.currentMarketValue.value]).toEqua…
+       |                                                                 ^
+     53|   });
+     54|   it("selects an eligible raw quote before considering later or adjust…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > selects an eligible raw quote before considering later or adjusted bars
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:56:45
+     54|   it("selects an eligible raw quote before considering later or adjust…
+     55|     const result = real([fill("known", "2026-01-15T15:00:00Z")], {}, […
+     56|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     57|   });
+     58|   it("uses the pre-period mark so the first day's gain remains in the …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses the pre-period mark so the first day's gain remains in the period
+AssertionError: expected [ '20', '30', '10' ] to deeply equal [ '0', '30', '30' ]
+
+- Expected
++ Received
+
+  [
+-   "0",
+-   "30",
++   "20",
+    "30",
++   "10",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:60:96
+     58|   it("uses the pre-period mark so the first day's gain remains in the …
+     59|     const result = real([fill("old", "2025-12-15T15:00:00Z")], {}, [ra…
+     60|     expect([result.openingUnrealized.value, result.closingUnrealized.v…
+       |                                                                                                ^
+     61|   });
+     62|   it("preserves date-only knowledge instead of inventing an intraday f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves date-only knowledge instead of inventing an intraday fill
+AssertionError: expected '110' to be '0' // Object.is equality
+
+Expected: "0"
+Received: "110"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:65:86
+     63|     const dated = fill("dated", "2026-01-31", { source: { platform: "s…
+     64|     expect(real([dated]).net.value).toBe("10");
+     65|     expect(real([dated], { asOf: "2026-01-31T12:00:00Z" }).currentMark…
+       |                                                                                      ^
+     66|   });
+     67|   it("classifies a missing asOf instead of deriving current from the p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > classifies a missing asOf instead of deriving current from the period
+AssertionError: expected '110' to be null
+
+- Expected:
+null
+
++ Received:
+"110"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:69:45
+     67|   it("classifies a missing asOf instead of deriving current from the p…
+     68|     const result = real([fill("known", "2026-01-15T15:00:00Z")], { asO…
+     69|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     70|     expect(result.currentMarketValue.reasons).toContain("as-of-require…
+     71|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps a known current value usable when opening fees are unknown
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:74:30
+     72|   it("keeps a known current value usable when opening fees are unknown…
+     73|     const result = real([fill("unknown-fees", "2026-01-15T15:00:00Z", …
+     74|     expect(result.net.value).toBeNull();
+       |                              ^
+     75|     expect(result.net.reasons).toContain("unknown-fees");
+     76|     expect(result.currentMarketValue.value).toBe("110");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves uncertain quantity and its original reason
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:80:45
+     78|   it("preserves uncertain quantity and its original reason", () => {
+     79|     const result = real([fill("unknown", "2026-01-15T15:00:00Z", { sou…
+     80|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     81|     expect(result.currentMarketValue.reasons).toContain("history-incom…
+     82|     expect(result.currentMarketValue.coverage).toEqual({ total: 1, ava…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not treat a statement mark as acquisition cost
+AssertionError: expected [ …(2) ] to include 'unknown-cost'
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:89:32
+     87|     } })]);
+     88|     expect(result.net.value).toBeNull();
+     89|     expect(result.net.reasons).toContain("unknown-cost");
+       |                                ^
+     90|     expect(result.currentMarketValue.value).toBe("110");
+     91|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > allocates carried opening fees to the same close under either period
+AssertionError: expected [ '19', '0', '0', '19' ] to deeply equal [ '17', '-2', '0', '19' ]
+
+- Expected
++ Received
+
+  [
+-   "17",
+-   "-2",
++   "19",
++   "0",
+    "0",
+    "19",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:99:113
+     97|     const executions = [fill("open", "2025-12-15T15:00:00Z", { fee: "2…
+     98|     const jan = real(executions), full = real(executions, { period: { …
+     99|     expect([jan.periodRealized.value, jan.openingUnrealized.value, jan…
+       |                                                                                                                 ^
+    100|     expect([full.periodRealized.value, full.net.value]).toEqual(["17",…
+    101|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses average cost in realized and unrealized components independently
+AssertionError: expected [ '250', '100', '250', '400' ] to deeply equal [ '200', '100', '300', '400' ]
+
+- Expected
++ Received
+
+  [
+-   "200",
++   "250",
+    "100",
+-   "300",
++   "250",
+    "400",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:104:125
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses the raw reverse fill once, retaining its whole settlement lineage
+AssertionError: expected [ '0', null, null, '-110' ] to deeply equal [ '19', '9', '28', '-110' ]
+
+- Expected
++ Received
+
+  [
+-   "19",
+-   "9",
+-   "28",
++   "0",
++   null,
++   null,
+    "-110",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:112:126
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not let an unseen future short episode change the historical long direction
+AssertionError: expected null to be '20' // Object.is equality
+
+- Expected:
+"20"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:122:40
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > defaults the real source to live and reports excluded simulation and unknown scope
+AssertionError: expected '330' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "330"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:126:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > isolates one simulation run and its account and market filters
+AssertionError: expected '220' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "220"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:132:45
+    130|     const executions = ["r1", "r2"].map(run => fill(run, "2026-01-15T1…
+    131|     const result = real(executions, { scope: { nature: "simulation", s…
+    132|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    133|     expect(result.instruments[0].identity).toMatchObject({ nature: "si…
+    134|     expect(real(executions, { scope: { nature: "simulation", simulatio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > converts through production pair keys and publishes source amounts and provenance
+AssertionError: expected null to be '770' // Object.is equality
+
+- Expected:
+"770"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:138:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps original money with a missing FX snapshot
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps original money with a partial FX snapshot
+TypeError: Cannot read properties of undefined (reading 'originalByCurrency')
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:144:44
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > rejects bare FX keys, zero rates and future FX knowledge
+AssertionError: expected '770' to be null
+
+- Expected:
+null
+
++ Received:
+"770"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:149:209
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves original subtotals instead of summing different currencies
+AssertionError: expected '230' to be null
+
+- Expected:
+null
+
++ Received:
+"230"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:158:45
+    156|     const cny = { ...usdInstrument, id: "CN:BBB", symbol: "BBB", marke…
+    157|     const result = real([fill("usd", "2026-01-15T15:00:00Z"), fill("cn…
+    158|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+    159|     expect(result.currentMarketValue.money.originalByCurrency).toEqual…
+    160|     expect(result.currentMarketValue.reasons).toContain("target-curren…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > rejects quote/settlement currency mismatches without losing trusted quantity
+AssertionError: expected '-590' to be null
+
+- Expected:
+null
+
++ Received:
+"-590"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:164:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > classifies malformed compatibility quantities without throwing
+Error: [DecimalError] Invalid argument: null
+ ❯ new Decimal node_modules/decimal.js/decimal.mjs:4398:11
+ ❯ Decimal.P.times.P.mul node_modules/decimal.js/decimal.mjs:1873:15
+ ❯ buildHomepageV25Performance app/lib/reviews/homepage-v25-performance.ts:242:55
+    240|     currentEligible++;
+    241|     if (!current || !decimal(current.price)) { currentReasons.add(curr…
+    242|     const converted = convert(decimal(current.price)!.mul(decimal(curr…
+       |                                                       ^
+    243|     if (converted) { currentValues.push(converted); currentAvailable++…
+    244|   }
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:169:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/40]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage v2.5 financial projection > converts settlement realized PnL into the selected target currency
+AssertionError: expected null to be '140' // Object.is equality
+
+- Expected:
+"140"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:309:41
+    307|       ],
+    308|     }));
+    309|     expect(result.periodRealized.value).toBe("140");
+       |                                         ^
+    310|     expect(result.net.value).toBe("140");
+    311|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > does not seed a Shanghai first-day execution into pre-period inventory
+AssertionError: expected { opening: null, net: null } to deeply equal { opening: '0', net: '10' }
+
+- Expected
++ Received
+
+  {
+-   "net": "10",
+-   "opening": "0",
++   "net": null,
++   "opening": null,
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:30:80
+     28|   it("does not seed a Shanghai first-day execution into pre-period inv…
+     29|     const result = project([buy("shanghai-first-day", "2025-12-31T16:3…
+     30|     expect({ opening: result.openingUnrealized.value, net: result.net.…
+       |                                                                                ^
+     31|   });
+     32|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > excludes executions after asOf from current inventory as well as from prices
+AssertionError: expected '220' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "220"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:35:45
+     33|   it("excludes executions after asOf from current inventory as well as…
+     34|     const result = project([buy("known", "2026-01-15T15:00:00Z"), buy(…
+     35|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > selects the latest eligible current candle when a later candle also exists
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:40:45
+     38|   it("selects the latest eligible current candle when a later candle a…
+     39|     const result = project([buy("known", "2026-01-15T15:00:00Z")], [ca…
+     40|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     41|   });
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > does not publish post-asOf period gains as known results
+AssertionError: expected [ null, '0' ] to include '899'
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:47:25
+     45|     // A complete 899 would require a future execution and future quot…
+     46|     // boundary may reject the range, or return zero/unknown through t…
+     47|     expect([null, "0"]).toContain(result.net.value);
+       |                         ^
+     48|   });
+     49| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R01 unknown fees cannot produce complete PnL
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:21:94
+     19| describe("confirmed financial boundary/evidence regression candidates …
+     20|   it("R01 unknown fees cannot produce complete PnL", () => {
+     21|     expect(project([{ ...buy, source: { ...buy.source, feeStatus: "unk…
+       |                                                                                              ^
+     22|   });
+     23|   it("R02 unknown ledger quantity cannot produce complete zero current…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R02 unknown ledger quantity cannot produce complete zero current value
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:24:131
+     22|   });
+     23|   it("R02 unknown ledger quantity cannot produce complete zero current…
+     24|     expect(project([{ ...buy, source: { ...buy.source, historyIncomple…
+       |                                                                                                                                   ^
+     25|   });
+     26|   it("R03 mismatched settlement currency cannot be subtracted from quo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R03 mismatched settlement currency cannot be subtracted from quote currency
+AssertionError: expected '-590' to be null
+
+- Expected:
+null
+
++ Received:
+"-590"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:27:168
+     25|   });
+     26|   it("R03 mismatched settlement currency cannot be subtracted from quo…
+     27|     expect(project([{ ...buy, source: { ...buy.source, settlement: { c…
+       |                                                                                                                                                                        ^
+     28|   });
+     29|   it("R04 production FX snapshot keys convert current value", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R04 production FX snapshot keys convert current value
+AssertionError: expected null to be '770' // Object.is equality
+
+- Expected:
+"770"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:30:96
+     28|   });
+     29|   it("R04 production FX snapshot keys convert current value", () => {
+     30|     expect(project([buy], { targetCurrency: "CNY", fxSnapshot: fx }).c…
+       |                                                                                                ^
+     31|   });
+     32|   it("R05 missing FX snapshot status cannot produce complete conversio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R05 missing FX snapshot status cannot produce complete conversion
+AssertionError: expected '770' to be null
+
+- Expected:
+null
+
++ Received:
+"770"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:33:143
+     31|   });
+     32|   it("R05 missing FX snapshot status cannot produce complete conversio…
+     33|     expect(project([buy], { targetCurrency: "CNY", fxSnapshot: { ...fx…
+       |                                                                                                                                               ^
+     34|   });
+     35|   it("R06 same close realized amount must not change when period start…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R06 same close realized amount must not change when period start moves before its opening
+AssertionError: expected '19' to be '17' // Object.is equality
+
+Expected: "17"
+Received: "19"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:39:56
+     37|     const close: TradeExecution = { ...buy, id: "close", side: "sell",…
+     38|     const full = project([old, close], { period: { start: "2025-12-01"…
+     39|     expect(project([old, close]).periodRealized.value).toBe(full.perio…
+       |                                                        ^
+     40|   });
+     41|   it("R07 adding a future opposite episode cannot change a known prior…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R07 adding a future opposite episode cannot change a known prior-period result
+AssertionError: expected null to be '19' // Object.is equality
+
+- Expected:
+"19"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:45:53
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R08 inclusive first-day PnL uses the pre-period mark
+AssertionError: expected '10' to be '30' // Object.is equality
+
+Expected: "30"
+Received: "10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:49:131
+     47|   it("R08 inclusive first-day PnL uses the pre-period mark", () => {
+     48|     const old = { ...buy, executedAt: "2025-12-15T15:00:00Z" };
+     49|     expect(project([old], {}, [candle("2025-12-31", "100"), candle("20…
+       |                                                                                                                                   ^
+     50|   });
+     51|   it("R09 period realized uses the established average-cost ledger", (…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R09 period realized uses the established average-cost ledger
+AssertionError: expected '250' to be '200' // Object.is equality
+
+Expected: "200"
+Received: "250"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:53:147
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R10 optional asOf cannot make current value depend on selected period
+AssertionError: expected '0' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:58:42
+     56|     const now = project([buy], { asOf: undefined });
+     57|     const old = project([buy], { asOf: undefined, period: { start: "20…
+     58|     expect(old.currentMarketValue.value).toBe(now.currentMarketValue.v…
+       |                                          ^
+     59|   });
+     60| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > converts using the production complete FX pair keys
+AssertionError: expected null to be '70' // Object.is equality
+
+- Expected:
+"70"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:33:30
+     31|       targetCurrency: "CNY", fxSnapshot: { id: "fx-real", baseCurrency…
+     32|     });
+     33|     expect(result.net.value).toBe("70");
+       |                              ^
+     34|     expect(result.currentMarketValue.value).toBe("770");
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > keeps unknown opening fees unknown without losing a known current quantity
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:47:30
+     45|     execution.source.feeStatus = "unknown";
+     46|     const result = project([execution]);
+     47|     expect(result.net.value).toBeNull();
+       |                              ^
+     48|     expect(result.net.available).toBe(false);
+     49|     expect(result.currentMarketValue.value).toBe("110");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/40]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts > coordinator restored F production contract > does not turn an uncertain inventory into a complete zero market value
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts:55:45
+     53|     execution.source.historyIncomplete = ["unresolved-instrument-posit…
+     54|     const result = project([execution]);
+     55|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     56|     expect(result.currentMarketValue.available).toBe(false);
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/40]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  40 failed | 15 passed (55)
+   Start at  00:30:01
+   Duration  2.76s (transform 354ms, setup 0ms, import 627ms, tests 388ms, environment 1ms)
+

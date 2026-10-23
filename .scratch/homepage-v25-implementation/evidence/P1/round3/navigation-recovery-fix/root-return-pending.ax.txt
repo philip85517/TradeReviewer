@@ -1,0 +1,77 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home
+	2 container
+		3 container 主导航
+			6 container Description: 主导航, ID: primary-navigation
+				7 button 我的交易室
+					16 text 我的交易室
+					17 text 首页
+				8 button 交易库
+				9 button 分析
+				10 button 数据
+				11 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+			14 container 辅助导航
+				15 button 设置
+		18 container
+			19 heading 首页, Value: 1
+				20 text 首页
+			21 container 市场
+				22 checkbox 全部, Value: 1
+				23 checkbox A股, Value: 0
+				24 checkbox 港股, Value: 0
+				25 checkbox 美股, Value: 0
+			26 pop up button (collapsed) 全部账户, Secondary Actions: Expand
+			27 pop up button (collapsed) Description: 搜索标的, ID: hp-symbol-search, Secondary Actions: Expand
+			28 button (disabled) Description: 附加筛选，尚未接入, Help: 附加筛选将在后续阶段接入
+			29 text 正在读取新范围…
+			30 container 当前表现，尚未接入
+				31 heading 当前表现, Value: 2
+					32 text 当前表现
+				33 text 期间表现尚未接入
+				34 text 当前期间统计与曲线将在后续阶段接入
+			35 container 当前持仓（最新）
+				36 heading 当前持仓（最新）, Value: 2, ID: hp-holdings-title
+					37 text 当前持仓（最新）
+				38 text 持仓市值( CNY )
+				39 button (collapsed) Description: 数值完整值, Secondary Actions: Expand
+				40 text 持仓浮动盈亏( CNY )
+				41 button (collapsed) Description: 数值完整值, Secondary Actions: Expand
+				42 button 搜索持仓
+				43 button (disabled) Description: 导出持仓 CSV, Help: 无可导出的持仓（0）
+				44 table 当前持仓
+					45 row
+						46 cell
+							47 button 按标的名称排序
+						48 cell
+							49 text 持仓天数
+						50 cell
+							51 text 数量
+						52 cell
+							53 text 成本价
+						54 cell
+							55 text 最新价
+						56 cell
+							57 button 按持仓市值排序
+								58 text 持仓市值(
+								59 text CNY
+								60 text )
+						61 cell
+							62 button 按持仓浮动盈亏排序
+								63 text 持仓浮动盈亏(
+								64 text CNY
+								65 text )
+						66 cell
+							67 text 查看
+					68 container
+						69 text 当前范围暂无持仓
+						70 text 仅显示来源明确的实盘未平仓回合
+						71 button 导入交易
+				72 text 共  0  条持仓 ·  0  个标的
+			73 container 历史已平仓，尚未接入
+				74 heading 历史已平仓, Value: 2
+					75 text 历史已平仓
+				76 text 历史统计与贡献将在后续阶段接入
+			77 text 按当前市场、账户与期间查看成交，包含未平仓成交
+			78 button (disabled) 进入交易库, ID: hp-open-trades
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home

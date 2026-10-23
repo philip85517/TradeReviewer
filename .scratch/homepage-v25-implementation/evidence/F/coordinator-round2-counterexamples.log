@@ -1,0 +1,107 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:88488) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts (5 tests | 5 failed) 41ms
+     × does not publish a complete number when valuation inventory contradicts the ledger 25ms
+     × never accepts a current quote later than asOf 1ms
+     × does not seed period-start executions into opening inventory and replay them twice 10ms
+     × propagates missing opening cost rather than manufacturing a complete zero 1ms
+     × does not silently turn invalid settlement fees into zero 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > does not publish a complete number when valuation inventory contradicts the ledger
+AssertionError: expected '-100' to be null
+
+- Expected:
+null
+
++ Received:
+"-100"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:17:30
+     15|   it("does not publish a complete number when valuation inventory cont…
+     16|     const result = build(base({ openingPositions: [position], valuatio…
+     17|     expect(result.net.value).toBeNull();
+       |                              ^
+     18|   });
+     19|   it("never accepts a current quote later than asOf", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > never accepts a current quote later than asOf
+AssertionError: expected '999' to be null
+
+- Expected:
+null
+
++ Received:
+"999"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:21:45
+     19|   it("never accepts a current quote later than asOf", () => {
+     20|     const result = build(base({ asOf: "2026-01-31", openingPositions: …
+     21|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     22|   });
+     23|   it("does not seed period-start executions into opening inventory and…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > does not seed period-start executions into opening inventory and replay them twice
+AssertionError: expected '-90' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "-90"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:26:44
+     24|     const result = build(base({ asOf: "2026-01-31", entries: [entry], …
+     25|     expect(result.openingUnrealized.value).toBe("0");
+     26|     expect(result.closingUnrealized.value).toBe("10");
+       |                                            ^
+     27|     expect(result.net.value).toBe("10");
+     28|     expect(result.reasons).not.toContain("valuation-quantity-mismatch"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > propagates missing opening cost rather than manufacturing a complete zero
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:32:30
+     30|   it("propagates missing opening cost rather than manufacturing a comp…
+     31|     const result = build(base({ openingPositions: [{ ...position, unit…
+     32|     expect(result.net.value).toBeNull();
+       |                              ^
+     33|   });
+     34|   it("does not silently turn invalid settlement fees into zero", () =>…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > does not silently turn invalid settlement fees into zero
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:36:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  23:39:04
+   Duration  713ms (transform 186ms, setup 0ms, import 236ms, tests 41ms, environment 0ms)
+

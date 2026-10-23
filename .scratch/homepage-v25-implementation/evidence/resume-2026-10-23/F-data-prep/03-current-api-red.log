@@ -1,0 +1,168 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:14607) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (75 tests | 6 failed | 69 skipped) 46ms
+     × publishes current net unrealized and open fees independently of the selected historical period 30ms
+     × exposes only the remaining fee pool after a partial close 3ms
+     × keeps trusted current market value when current fees are unavailable 3ms
+     × keeps per-account original money and the same production FX provenance for current metrics 5ms
+     × returns trusted current zero for truly flat inventory without requiring a quote 2ms
+     × classifies a missing current cutoff on every additive current metric 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > publishes current net unrealized and open fees independently of the selected historical period
+AssertionError: expected undefined to match object { value: '18', available: true, …(1) }
+
+- Expected:
+{
+  "available": true,
+  "coverage": {
+    "available": 1,
+    "total": 1,
+  },
+  "value": "18",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:41:38
+     39|   it("publishes current net unrealized and open fees independently of …
+     40|     const result = real([fill("buy", "2026-01-05T05:00:00Z", { quantit…
+     41|     expect(result.currentUnrealized).toMatchObject({ value: "18", avai…
+       |                                      ^
+     42|     expect(result.currentOpenFees).toMatchObject({ value: "2", availab…
+     43|     expect(result.closingUnrealized.value).toBe("0");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > exposes only the remaining fee pool after a partial close
+AssertionError: expected undefined to match object { value: '9' }
+
+- Expected:
+{
+  "value": "9",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:50:38
+     48|   it("exposes only the remaining fee pool after a partial close", () =…
+     49|     const result = real([fill("buy", "2026-01-05T05:00:00Z", { quantit…
+     50|     expect(result.currentUnrealized).toMatchObject({ value: "9" });
+       |                                      ^
+     51|     expect(result.currentOpenFees).toMatchObject({ value: "1" });
+     52|     expect(result.instruments[0]).toMatchObject({ currentMarketValue: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > keeps trusted current market value when current fees are unavailable
+AssertionError: expected undefined to match object { value: null, available: false, …(1) }
+
+- Expected:
+{
+  "available": false,
+  "reasons": ArrayContaining [
+    "unknown-fees",
+  ],
+  "value": null,
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:57:38
+     55|   it("keeps trusted current market value when current fees are unavail…
+     56|     const result = real([fill("unknown-fees", "2026-01-05T05:00:00Z", …
+     57|     expect(result.currentUnrealized).toMatchObject({ value: null, avai…
+       |                                      ^
+     58|     expect(result.currentOpenFees).toMatchObject({ value: null, availa…
+     59|     expect(result.instruments[0]).toMatchObject({ currentMarketValue: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > keeps per-account original money and the same production FX provenance for current metrics
+AssertionError: expected undefined to match object { value: '119', money: { …(4) } }
+
+- Expected:
+{
+  "money": {
+    "conversion": "complete",
+    "fx": {
+      "asOf": "2026-01-31",
+      "id": "current-fx",
+      "source": "broker",
+      "status": "complete",
+    },
+    "originalByCurrency": {
+      "USD": "17",
+    },
+    "targetCurrency": "CNY",
+  },
+  "value": "119",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:64:38
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > returns trusted current zero for truly flat inventory without requiring a quote
+AssertionError: expected undefined to match object { value: '0', available: true }
+
+- Expected:
+{
+  "available": true,
+  "value": "0",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:70:38
+     68|   it("returns trusted current zero for truly flat inventory without re…
+     69|     const result = real([fill("buy", "2026-01-05T05:00:00Z", { fee: "2…
+     70|     expect(result.currentUnrealized).toMatchObject({ value: "0", avail…
+       |                                      ^
+     71|     expect(result.currentOpenFees).toMatchObject({ value: "0", availab…
+     72|     expect(result.instruments[0]).toMatchObject({ currentMarketValue: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > classifies a missing current cutoff on every additive current metric
+AssertionError: expected undefined to match object { value: null, …(1) }
+
+- Expected:
+{
+  "reasons": [
+    "as-of-required",
+  ],
+  "value": null,
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:76:38
+     74|   it("classifies a missing current cutoff on every additive current me…
+     75|     const result = real([fill("buy", "2026-01-05T05:00:00Z")], { asOf:…
+     76|     expect(result.currentUnrealized).toMatchObject({ value: null, reas…
+       |                                      ^
+     77|     expect(result.currentOpenFees).toMatchObject({ value: null, reason…
+     78|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed | 5 skipped (6)
+      Tests  6 failed | 98 skipped (104)
+   Start at  01:14:35
+   Duration  2.74s (transform 368ms, setup 0ms, import 850ms, tests 46ms, environment 1ms)
+

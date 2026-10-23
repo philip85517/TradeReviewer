@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-10-22T21:11:37.915Z",
+  "runtime": "v26.0.0",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "sourceSha": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+  "inputSha256": "befe3b83a976e5016b0602d475f18980a1d323e9d83316073240943f3e2c490c",
+  "requestSha256": "7e6b24950ade6eb6b41899df76771ad999bb01bf6712908a276fffa9522285e9",
+  "fixture": {
+    "fills": 1866,
+    "endpoints": 365,
+    "accounts": 3,
+    "markets": 3,
+    "quotes": 743,
+    "historicalFxObservations": 365
+  },
+  "upstreamMs": 53.2566710000001,
+  "formalPerformanceSample": false,
+  "formalP2": "0/3; preserved cold failure and remaining NOT VERIFIED",
+  "scope": "One CPU diagnostic; profiler overhead forbids using these durations as formal threshold evidence",
+  "endedAt": "2026-10-22T21:11:43.746Z",
+  "prepareMs": 372.1532259999999,
+  "batchMs": 2242.1436299999996,
+  "profiledColdMs": 2614.299908,
+  "repeats": [
+    {
+      "ms": 1.5124390000000858,
+      "identical": true
+    },
+    {
+      "ms": 1.2722880000001169,
+      "identical": true
+    },
+    {
+      "ms": 1.1389180000001033,
+      "identical": true
+    }
+  ],
+  "inspect": {
+    "canonicalSweeps": 3,
+    "canonicalTransitions": 1866,
+    "batchCacheHits": 3,
+    "canonicalCalls": 0,
+    "canonicalCacheHits": 0,
+    "feeSteps": 1866,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 2193,
+    "fxLookups": 366,
+    "distinctCanonicalContexts": 0,
+    "cacheEntries": 496,
+    "cacheEstimatedBytes": 67101836,
+    "evictions": 604,
+    "batchEntries": 1,
+    "sourceEstimatedBytes": 13933098,
+    "indexEstimatedBytes": 37447760
+  },
+  "publicSha256": "566666fef5e824d5bd304bbb9b42c00644ee7c866c007f3b53f29c623c721f86",
+  "frozenPublicSha256": "566666fef5e824d5bd304bbb9b42c00644ee7c866c007f3b53f29c623c721f86",
+  "publicBytes": 29037709,
+  "completePublicBytesEqual": true,
+  "comparisonExcludedFields": [
+    "diagnostics"
+  ],
+  "all365OraclesMatch": true,
+  "formalThresholdEvaluation": "NOT APPLICABLE: explicitly instrumented diagnostic; root-independent-multimarket-1.json cold FAIL remains binding"
+}

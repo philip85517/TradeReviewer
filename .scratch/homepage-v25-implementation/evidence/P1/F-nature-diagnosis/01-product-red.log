@@ -1,0 +1,81 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:24363) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+F_NATURE_OBSERVED {"url":"/trades?scope=live&market=a&accounts=live-account&rangeMode=all","nature":"simulation","accounts":["all","live-account"],"runControl":false,"source":"普通交易库 · 成交日期 全部 · 包含未平仓成交"}
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx (2 tests | 1 failed) 1586ms
+     × F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source 1215ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+AssertionError: expected '/trades?scope=live&market=a&accounts=…' to be '/trades' // Object.is equality
+
+Expected: "/trades"
+Received: "/trades?scope=live&market=a&accounts=live-account&rangeMode=all"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:710:54
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: null
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:711:55
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+AssertionError: expected [ 'all', 'live-account' ] to include 'simulation-account'
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:712:25
+    710|     expect.soft(location.pathname + location.search).toBe("/trades");
+    711|     expect.soft(screen.queryByText("普通交易库 · 当前共享范围")).toBeInTheDocumen…
+    712|     expect.soft(values).toContain("simulation-account");
+       |                         ^
+    713|     expect.soft(values).not.toContain("live-account");
+    714|     expect.soft(within(current).queryByRole("combobox", { name: "共享模拟运…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+AssertionError: expected [ 'all', 'live-account' ] to not include 'live-account'
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:713:29
+    711|     expect.soft(screen.queryByText("普通交易库 · 当前共享范围")).toBeInTheDocumen…
+    712|     expect.soft(values).toContain("simulation-account");
+    713|     expect.soft(values).not.toContain("live-account");
+       |                             ^
+    714|     expect.soft(within(current).queryByRole("combobox", { name: "共享模拟运…
+    715|     await user.click(screen.getByRole("button", { name: "返回首页" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: null
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:714:78
+    712|     expect.soft(values).toContain("simulation-account");
+    713|     expect.soft(values).not.toContain("live-account");
+    714|     expect.soft(within(current).queryByRole("combobox", { name: "共享模拟运…
+       |                                                                              ^
+    715|     await user.click(screen.getByRole("button", { name: "返回首页" }));
+    716|     await screen.findByRole("heading", { name: "首页", level: 1 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  02:42:15
+   Duration  8.41s (transform 3.77s, setup 260ms, import 4.94s, tests 1.59s, environment 1.31s)
+

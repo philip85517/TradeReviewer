@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:27586) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (135 tests | 1 failed) 707ms
+     × accounts shared retained memo objects without serializing original execution prefixes 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 per-market and evidence isolation > accounts shared retained memo objects without serializing original execution prefixes
+ReferenceError: vi is not defined
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:843:21
+    841|     const fills=Array.from({length:40},(_,i)=>fill(`memory-${i}`,`2026…
+    842|     const source=preparedFixture(fills,[raw("2026-01-30","110")]);
+    843|     const stringify=vi.spyOn(JSON,"stringify");
+       |                     ^
+    844|     try{
+    845|       const batch=projectHomepageV25Boundaries(source,{...batchQuery,e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 134 passed (135)
+   Start at  03:04:12
+   Duration  1.52s (transform 383ms, setup 0ms, import 491ms, tests 707ms, environment 0ms)
+

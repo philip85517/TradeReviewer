@@ -1,0 +1,11 @@
+Frozen product unchanged PASS app/components/homepage-v25/metric-cards.tsx: ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035
+Frozen product unchanged PASS app/components/homepage-v25/metric-cards.css: d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c
+Frozen product unchanged PASS app/components/homepage-v25/metric-cards.test.tsx: d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d
+Candidate2 baseline manifest preserved; original evidence files not rewritten.
+Original independent input unchanged PASS .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx
+Original independent input unchanged PASS .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/vitest.config.mjs
+Original23 test bodies byte-preserved PASS; three appended motion lifecycle tests.
+Required handoff artifacts present PASS 18/18.
+HEAD unchanged PASS 5a94ee3ff76e32993fe2c4791a83b40e877a7344. No commit performed.
+No production writes after final26/26, original independent1/1 and exit0 scoped type/lint checks. No browser/service/DB/host/finance/subagent work in this candidate.
+Final candidate3 is implementation-ready only. Latest root formal2/3FAIL; final3/3 ruling pending; no round reset or P2/page acceptance.

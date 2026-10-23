@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-10-22T17:19:35.359Z",
+  "cause": "Reused focused config ran tests with hardcoded writes to prior F-fix trace outputs. Restored exact prior bytes from accepted source reconstruction; all original hashes verified before restoration.",
+  "acceptedSourceSha256": "f1b493d77e6963f35a99ca15b4b5ac8756577c327205a82f87617c76b12ce2d1",
+  "records": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/interface-traces.json",
+      "reconstructedPath": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-interface-traces.json",
+      "sha256": "f1b9f916203ef60de7ce1ba05eca1ad41100c422da28483ffe3a525bda42fa76",
+      "bytes": 80289,
+      "overwrittenHash": "c6c3affecc4ae7248182cbbb1d95a1dcff84dcbfcbef32b848f253a30ced82de",
+      "restored": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-green.json",
+      "reconstructedPath": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-ipo-traces-green.json",
+      "sha256": "4784a006e69364ec27f7020a8038080671b7743c9f1d1b0877256d3a8de2cbde",
+      "bytes": 273164,
+      "overwrittenHash": "57c6020219bf03c2219f3acb14eb2ebd89aece445bf46fdfc2ebc71e50ec036b",
+      "restored": true
+    }
+  ]
+}

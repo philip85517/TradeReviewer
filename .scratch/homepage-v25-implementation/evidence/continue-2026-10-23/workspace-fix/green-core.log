@@ -1,0 +1,29 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:43870) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (100 tests | 1 failed | 97 skipped) 11206ms
+     × keeps saved intraday replay state pending until lazy data settles 5417ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps saved intraday replay state pending until lazy data settles
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:1965:3
+    1963|   });
+    1964|
+    1965|   it("keeps saved intraday replay state pending until lazy data settle…
+       |   ^
+    1966|     const user = userEvent.setup();
+    1967|     const execution = availabilityExecution({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 26 passed | 97 skipped (124)
+   Start at  05:42:26
+   Duration  23.73s (transform 6.73s, setup 1.10s, import 8.67s, tests 11.73s, environment 6.09s)
+

@@ -1,0 +1,60 @@
+import { describe, expect, it } from "vitest";
+import { buildHomepageV25Performance as build, type HomepageV25Input } from "../../../../../../app/lib/reviews/homepage-v25-performance";
+import { buildTradeLibraryEntries } from "../../../../../../app/lib/trades/library";
+import { buildInstrumentTradeSummaries } from "../../../../../../app/lib/trades/instruments";
+import type { TradeExecution } from "../../../../../../app/lib/trades/types";
+import type { DailyCandleRecord } from "../../../../../../app/lib/market/contracts";
+
+// These are RED regression candidates on unchanged source. They are distinct
+// from boundary-probe.test.ts, which verifies the observed causal mechanism.
+const instrument = { id: "US:AAPL", symbol: "AAPL", name: "Apple", market: "US", currency: "USD" };
+const buy: TradeExecution = { id: "buy", accountId: "a", accountLabel: "A", instrument, side: "buy", quantity: "1", price: "100", fee: "0", executedAt: "2026-01-15T15:00:00Z", source: { platform: "statement", row: 1, tradeNature: "live" } };
+const candle = (tradingDate: string, close: string): DailyCandleRecord => ({ instrumentId: instrument.id, tradingDate, open: close, high: close, low: close, close, volume: "1", currency: "USD", provider: "eastmoney", providerSymbol: "AAPL", adjustmentMode: "raw", fetchedAt: `${tradingDate}T23:00:00Z` });
+const candles = [candle("2025-12-31", "100"), candle("2026-01-02", "100"), candle("2026-01-30", "110")];
+function project(executions: TradeExecution[], overrides: Partial<HomepageV25Input> = {}, quotes = candles) {
+  const candlesByInstrument = { [instrument.id]: quotes };
+  return build({ period: { start: "2026-01-02", end: "2026-01-31" }, asOf: "2026-01-31", executions: [], openingPositions: [], valuations: [], entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [instrument.id]: "ready" }), candlesByInstrument, ...overrides });
+}
+const fx = { id: "fx", baseCurrency: "CNY" as const, asOf: "2026-01-31", source: "diagnostic", status: "complete" as const, rates: { "USD/CNY": "7" } };
+describe("confirmed financial boundary/evidence regression candidates (expected RED)", () => {
+  it("R01 unknown fees cannot produce complete PnL", () => {
+    expect(project([{ ...buy, source: { ...buy.source, feeStatus: "unknown" } }]).net.value).toBeNull();
+  });
+  it("R02 unknown ledger quantity cannot produce complete zero current value", () => {
+    expect(project([{ ...buy, source: { ...buy.source, historyIncomplete: ["unresolved-position"] } }]).currentMarketValue.value).toBeNull();
+  });
+  it("R03 mismatched settlement currency cannot be subtracted from quote currency", () => {
+    expect(project([{ ...buy, source: { ...buy.source, settlement: { currency: "CNY", quantity: "1", grossAmount: "700", netAmount: "700", fees: {} } } }]).net.value).toBeNull();
+  });
+  it("R04 production FX snapshot keys convert current value", () => {
+    expect(project([buy], { targetCurrency: "CNY", fxSnapshot: fx }).currentMarketValue.value).toBe("770");
+  });
+  it("R05 missing FX snapshot status cannot produce complete conversion", () => {
+    expect(project([buy], { targetCurrency: "CNY", fxSnapshot: { ...fx, status: "missing", rates: { USD: "7" } } }).currentMarketValue.value).toBeNull();
+  });
+  it("R06 same close realized amount must not change when period start moves before its opening", () => {
+    const old = { ...buy, executedAt: "2025-12-15T15:00:00Z", fee: "2" };
+    const close: TradeExecution = { ...buy, id: "close", side: "sell", price: "120", fee: "1", executedAt: "2026-01-20T15:00:00Z" };
+    const full = project([old, close], { period: { start: "2025-12-01", end: "2026-01-31" } });
+    expect(project([old, close]).periodRealized.value).toBe(full.periodRealized.value);
+  });
+  it("R07 adding a future opposite episode cannot change a known prior-period result", () => {
+    const old = { ...buy, executedAt: "2025-12-15T15:00:00Z", fee: "2" };
+    const close: TradeExecution = { ...buy, id: "close", side: "sell", price: "120", fee: "1", executedAt: "2026-01-20T15:00:00Z" };
+    const future: TradeExecution = { ...buy, id: "future-short", side: "sell", executedAt: "2026-02-01T15:00:00Z", source: { ...buy.source, positionEffect: "open-short", positionEffectEvidence: { kind: "explicit", confidence: "high", reason: "broker short" } } };
+    expect(project([old, close, future]).net.value).toBe(project([old, close]).net.value);
+  });
+  it("R08 inclusive first-day PnL uses the pre-period mark", () => {
+    const old = { ...buy, executedAt: "2025-12-15T15:00:00Z" };
+    expect(project([old], {}, [candle("2025-12-31", "100"), candle("2026-01-02", "120"), candle("2026-01-30", "130")]).net.value).toBe("30");
+  });
+  it("R09 period realized uses the established average-cost ledger", () => {
+    const executions: TradeExecution[] = [{ ...buy, id: "old100", executedAt: "2025-12-15T15:00:00Z" }, { ...buy, id: "old200", price: "200", executedAt: "2025-12-16T15:00:00Z" }, { ...buy, id: "new300", price: "300" }, { ...buy, id: "close400", side: "sell", price: "400", executedAt: "2026-01-20T15:00:00Z" }];
+    expect(project(executions, {}, [candle("2025-12-31", "200"), candle("2026-01-02", "200"), candle("2026-01-30", "350")]).periodRealized.value).toBe("200");
+  });
+  it("R10 optional asOf cannot make current value depend on selected period", () => {
+    const now = project([buy], { asOf: undefined });
+    const old = project([buy], { asOf: undefined, period: { start: "2025-12-01", end: "2025-12-31" } });
+    expect(old.currentMarketValue.value).toBe(now.currentMarketValue.value);
+  });
+});

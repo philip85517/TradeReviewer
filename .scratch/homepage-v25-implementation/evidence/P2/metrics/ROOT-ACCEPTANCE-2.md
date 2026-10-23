@@ -1,0 +1,3 @@
+# Metrics round2/3 — FAIL
+
+Root actual independent evidence: [checkpoint](../../continue-2026-10-23/ROOT-METRICS-CANDIDATE2-CHECKPOINT.md). MC-M01 unit occlusion and MC-M02 stale detail revival finite counterexamples PASS on frozen candidate2; 23/23 product and1/1 original independent test PASS. Newly confirmed MC-M03: retained-old-data update text gray-blue instead of approved blue. Source/reference/rendered color and boundary corrections are preserved in checkpoint. Required full host/actual unsupported input checks remain NV. Same task round2/3 FAIL; no reset. Candidate3 is final permitted candidate pending root independent acceptance. No P2 or page acceptance.

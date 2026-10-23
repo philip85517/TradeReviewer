@@ -1,0 +1,44 @@
+[
+  {
+    "id": "01",
+    "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/homepage-v25/performance-chart.test.tsx",
+    "log": "01-RED-focus-lifetime.log",
+    "exit": 1,
+    "observed": "5 FAIL / 29 PASS; all five appended focus-lifetime cases fail by missing tooltip after 100ms"
+  },
+  {
+    "id": "02",
+    "command": "./scripts/native-node.sh .scratch/homepage-v25-implementation/evidence/P2/chart/independent-review/run-counterexample.mjs",
+    "log": "02-RED-independent-counterexample.log",
+    "exit": 1,
+    "observed": "1 FAIL / 1 PASS; original point-leave counterexample reproduced"
+  },
+  {
+    "id": "03",
+    "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/homepage-v25/performance-chart.test.tsx",
+    "log": "03-GREEN-chart-tests.log",
+    "exit": 0,
+    "observed": "34 PASS; original 29 plus five appended cases"
+  },
+  {
+    "id": "04",
+    "command": "./scripts/native-node.sh .scratch/homepage-v25-implementation/evidence/P2/chart/independent-review/run-counterexample.mjs",
+    "log": "04-GREEN-independent-counterexample.log",
+    "exit": 0,
+    "observed": "2 PASS; original independent file and runner unchanged"
+  },
+  {
+    "id": "05",
+    "command": "./scripts/native-node.sh node_modules/typescript/bin/tsc -p .scratch/homepage-v25-implementation/evidence/P2/chart/candidate2/tsconfig.chart.json",
+    "log": "05-typecheck.log",
+    "exit": 0,
+    "observed": "strict scoped check, empty diagnostics"
+  },
+  {
+    "id": "06",
+    "command": "./scripts/native-node.sh node_modules/eslint/bin/eslint.js app/components/homepage-v25/performance-chart.tsx app/components/homepage-v25/performance-chart.test.tsx",
+    "log": "06-eslint.log",
+    "exit": 0,
+    "observed": "scoped lint, empty diagnostics"
+  }
+]

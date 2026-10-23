@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "verification": "complete CSS syntax parse only",
+  "node": "v26.0.0",
+  "sourcePath": "app/components/homepage-v25/home-surface.css",
+  "sha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d",
+  "rules": 153,
+  "declarations": 594,
+  "timestamp": "2026-10-22T21:36:43.175Z",
+  "browser": "NOT VERIFIED",
+  "tests": "NOT RUN",
+  "serviceAndDb": "UNTOUCHED"
+}

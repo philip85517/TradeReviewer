@@ -1,0 +1,36 @@
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/use-homepage-host.test.tsx
+  393:52  warning  '_context' is defined but never used           @typescript-eslint/no-unused-vars
+  393:87  warning  '_accepted' is defined but never used          @typescript-eslint/no-unused-vars
+  604:49  warning  '_domains' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/use-homepage-host.ts
+   60:22  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/use-homepage-host.ts:60:22
+  58 |   useLayoutEffect(() => { latest.current = options; });
+  59 |   // Capability and data slots are mount seeds; ambient props never publish data.
+> 60 |   const configured = useRef(Boolean(options.domains)).current;
+     |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  61 |   const mounted = useRef(true);
+  62 |   const [session, setSession] = useState(() => createHomepageSession(createHomepageState(DEFAULT_SCOPE), options.data, options.domains?.seed));
+  63 |   const sessionRef = useRef(session);  react-hooks/refs
+   94:3   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  296:6   error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/use-homepage-host.ts:296:6
+  294 |     }, remaining);
+  295 |     return () => window.clearTimeout(timer);
+> 296 |   }, [configured, session.ui.requests.global, setAddressRoute, update]);
+      |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  297 |
+  298 |   const canReadDomain = useCallback(() => configured && mounted.current && latest.current.enabled && latest.current.ready &&
+  299 |     initializedRef.current && !initializingRead.current && routeRef.current.page === "home" && !routeRef.current.error &&                 react-hooks/refs
+
+✖ 6 problems (2 errors, 4 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

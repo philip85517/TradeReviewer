@@ -1,0 +1,79 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:60146) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (165 tests | 2 failed | 163 skipped) 116ms
+     × preserves incurred event-only fees without creating fills or known allocated results 83ms
+     × uses the existing suppression authority for IPO acquisition class without inventing disposal links 29ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam fee/source evidence > preserves incurred event-only fees without creating fills or known allocated results
+AssertionError: expected [] to deeply equal [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+- [
+-   ObjectContaining {
+-     "expense": "2",
+-     "incurred": {
+-       "at": null,
+-       "businessDate": "2026-01-08",
+-       "precision": "day",
+-     },
+-     "kind": "statement-fee",
+-     "lineage": {
+-       "eventIds": [
+-         "statement-fee",
+-       ],
+-       "executionIds": [],
+-       "sourceRows": [
+-         "statement:1:4",
+-       ],
+-     },
+-   },
+- ]
++ []
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1253:36
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam fee/source evidence > uses the existing suppression authority for IPO acquisition class without inventing disposal links
+AssertionError: expected { available: false, …(2) } to deeply equal { available: true, reasons: [], …(1) }
+
+- Expected
++ Received
+
+  {
+-   "available": true,
+-   "reasons": [],
++   "available": false,
++   "reasons": [
++     "provenance-ambiguous",
++   ],
+    "sourceClasses": [
+      "ipo",
++     "long",
+    ],
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1261:42
+    1259|     const sale = fill("sale", "2026-01-16T15:00:00Z", { side: "sell", …
+    1260|     const group = seamRead(preparedFixture([buy, sale], []));
+    1261|     expect(group.classificationCoverage).toEqual({ available: true, re…
+       |                                          ^
+    1262|     expect([group.canonical.terminal.realizedPnl.value, group.realized…
+    1263|     expect(group.canonical.facts.filter(f => f.executionId)).toHaveLen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 163 skipped (165)
+   Start at  11:13:38
+   Duration  4.78s (transform 1.24s, setup 333ms, import 1.38s, tests 116ms, environment 2.25s)
+

@@ -1,0 +1,22 @@
+{
+  "method": "Read-only input hash comparison; no application or test execution.",
+  "failure_count": 11,
+  "input_drift": [],
+  "artifacts": [
+    {
+      "file": "REPORT.md",
+      "bytes": 22477,
+      "sha256": "9e0842ffbf4e9a8147024fea7c0daafa14b586cf774725b637dac96a71c41ced"
+    },
+    {
+      "file": "inspect-inputs.py",
+      "bytes": 2985,
+      "sha256": "5b4d26bab5edf008547c3a4b841233deac19a5dd786bdf448d965df695506b2e"
+    },
+    {
+      "file": "static-inputs.json",
+      "bytes": 10145,
+      "sha256": "700fbb23a6155311c21925de5ef825ab94318b59d8a0bea7c365a4c0d51b8809"
+    }
+  ]
+}

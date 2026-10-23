@@ -1,0 +1,26 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability.test.ts (0 test)
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  02:04:08
+   Duration  404ms (transform 36ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
+(node:20758) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability.test.ts [ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability.test.ts ]
+Error: Cannot find module '../../../../../../app/lib/trades/instruments' imported from /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability.test.ts
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability.test.ts:2:1
+      1| import { describe, expect, it } from "vitest";
+      2| import { buildInstrumentTradeSummaries } from "../../../../../../app/l…
+       | ^
+      3| import { buildTradeLibraryEntries } from "../../../../../../app/lib/tr…
+      4| import { tradeNatureOf, type TradeExecution, type TradeNature } from "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

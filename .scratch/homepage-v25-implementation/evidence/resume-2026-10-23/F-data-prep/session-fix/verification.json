@@ -1,0 +1,77 @@
+{
+  "environment": {
+    "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "nodeVersion": "v26.0.0",
+    "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+    "timezone": "Asia/Shanghai"
+  },
+  "versions": {
+    "beforeSource": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5",
+    "beforeTest": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921",
+    "source": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0",
+    "test": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7"
+  },
+  "commands": {
+    "focused": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/focused.vitest.config.ts",
+    "green": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/green.vitest.config.ts",
+    "types": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --noEmit -p .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/tsconfig.f.json",
+    "lint": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/lib/reviews/homepage-v25-performance.ts app/lib/reviews/homepage-v25-performance.test.ts"
+  },
+  "results": {
+    "newTestsRed": {
+      "exit": 1,
+      "tests": 100,
+      "pass": 83,
+      "fail": 17,
+      "log": "red.log"
+    },
+    "initialImplementation": {
+      "exit": 1,
+      "tests": 100,
+      "pass": 61,
+      "fail": 39,
+      "log": "first-implementation.log"
+    },
+    "focusedGreen": {
+      "exit": 0,
+      "tests": 100,
+      "pass": 100,
+      "fail": 0,
+      "log": "fixtures-corrected.log"
+    },
+    "originalEvidenceFixtures": {
+      "exit": 1,
+      "files": 18,
+      "tests": 349,
+      "pass": 335,
+      "fail": 14,
+      "log": "original-evidence-fixtures.log"
+    },
+    "correctedEvidenceFrozenP1": {
+      "exit": 1,
+      "files": 18,
+      "tests": 349,
+      "pass": 347,
+      "fail": 2,
+      "log": "regressions-corrected-evidence.log"
+    },
+    "green": {
+      "exit": 0,
+      "files": 18,
+      "tests": 349,
+      "pass": 349,
+      "fail": 0,
+      "durationSeconds": 9.38,
+      "log": "green.log",
+      "p1": "corrected evidence copy only"
+    },
+    "types": {
+      "exit": 0,
+      "log": "types.log"
+    },
+    "lint": {
+      "exit": 0,
+      "log": "lint.log"
+    }
+  }
+}

@@ -1,0 +1,415 @@
+{
+  "controls": [
+    {
+      "disabled": false,
+      "id": "",
+      "label": "导入交易记录",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "导入 TradingView 模拟交易",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "从截图恢复交易",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "导航",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "我的交易室",
+      "tag": "BUTTON",
+      "title": "我的交易室"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "交易库",
+      "tag": "BUTTON",
+      "title": "交易库"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "分析",
+      "tag": "BUTTON",
+      "title": "分析"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "数据",
+      "tag": "BUTTON",
+      "title": "数据"
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "策略，未开放",
+      "tag": "BUTTON",
+      "title": "策略功能尚未开放"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "设置",
+      "tag": "BUTTON",
+      "title": "设置"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "全部",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "A股",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "港股",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "美股",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "P1 09 行",
+      "tag": "BUTTON",
+      "title": "P1 09 行"
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "标的搜索，尚未接入",
+      "tag": "BUTTON",
+      "title": "标的搜索将在后续阶段接入"
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "附加筛选，尚未接入",
+      "tag": "BUTTON",
+      "title": "附加筛选将在后续阶段接入"
+    },
+    {
+      "disabled": false,
+      "id": "hp-holdings-title",
+      "label": "当前持仓（最新）",
+      "tag": "H2",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "数值完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "数值完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "搜索持仓",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "清除持仓搜索",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "导出持仓 CSV",
+      "tag": "BUTTON",
+      "title": "导出全部筛选结果（9）"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "按标的名称排序",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "按持仓市值排序",
+      "tag": "BUTTON",
+      "title": "行情、成本或汇率覆盖不足，暂不能按金额排序"
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "按持仓浮动盈亏排序",
+      "tag": "BUTTON",
+      "title": "行情、成本或汇率覆盖不足，暂不能按金额排序"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "P1 持仓 01SSE:600100",
+      "tag": "DIV",
+      "title": "P1 持仓 01 · SSE:600100 · unknown · P1 09 行"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "数量完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "成本价完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "最新价完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "持仓市值完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "持仓浮动盈亏完整值",
+      "tag": "SPAN",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "hp-holding-%5B%22p1-count-09%22%2C%22episode%3A%255B%2522p1-count-09%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D",
+      "label": "查看持仓详情",
+      "tag": "BUTTON",
+      "title": "查看持仓详情"
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "上一页持仓",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": true,
+      "id": "",
+      "label": "下一页持仓",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "hp-open-trades",
+      "label": "进入交易库",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "data-management-tab-import",
+      "label": "导入记录",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "data-management-tab-quality",
+      "label": "数据健康",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "data-management-tab-settings",
+      "label": "账户与计价",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "导入交易记录",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "查看导入记录（213）",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "更新全部数据",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "重试失败的行情更新",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "恢复未完成行情",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "P1 港股（00700）数据记录",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "读取只读预览",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "恢复只读回退预检",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "保存参考资本",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "刷新汇率",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "余额",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "截至时间",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "来源",
+      "tag": "INPUT",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "保存现金基准",
+      "tag": "BUTTON",
+      "title": null
+    },
+    {
+      "disabled": false,
+      "id": "",
+      "label": "重置草稿",
+      "tag": "BUTTON",
+      "title": null
+    }
+  ],
+  "focus": {
+    "id": "hp-holding-%5B%22p1-count-09%22%2C%22episode%3A%255B%2522p1-count-09%253ACN-SH%253A600100%253Alive%2522%252C%25222026-10-20T16%253A05%253A00.000Z%2522%252C%2522buy%2522%252C%252220.125%2522%252C%2522100%2522%255D%3A1%22%5D",
+    "tag": "BUTTON"
+  },
+  "holding": "当前持仓（最新）持仓市值(CNY)—持仓浮动盈亏(CNY)—导出标的 ↓持仓天数数量成本价最新价持仓市值(CNY)持仓浮动盈亏(CNY)查看P1 持仓 01SSE:6001002天20.125100.00110.002,213.75+200.25       共 9 条持仓 · 9 个标的2 / 2",
+  "url": "http://127.0.0.1:3333/home?scope=live&market=a&accounts=p1-count-09&rangeMode=all",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "scrollY": 0,
+    "width": 1440
+  }
+}

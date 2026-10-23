@@ -1,0 +1,11 @@
+{
+  "phase": "inert-stub RED",
+  "tests": 31,
+  "failed": 31,
+  "exitCode": 1,
+  "hashes": {
+    "app/components/homepage-v25/history-controls.tsx": "c99cb8449b667a5e0d4ab40cd22d6e3f15aa26dc881d961934884ded3ba34a91",
+    "app/components/homepage-v25/history-controls.test.tsx": "a427585cbdc1dabd70d657fafb037e911ee51f77976243736a8499739bd35ae2",
+    "app/components/homepage-v25/home-surface.css": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d"
+  }
+}

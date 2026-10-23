@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-22T20:22:51.728Z",
+  "endedAt": "2026-10-22T20:22:57.583Z",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "nodeVersion": "v26.0.0",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "app/components/homepage-v25/search-recovery.test.tsx",
+    "--reporter=verbose",
+    "--maxWorkers=1"
+  ],
+  "status": 1,
+  "signal": null,
+  "error": null,
+  "testSHA256": "2106feb769e9bef989d042cb3c886274772831c0b260f7b725df2620051b82aa"
+}

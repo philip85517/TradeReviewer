@@ -1,0 +1,37 @@
+diff --git a/app/components/trade-review-workspace.test.tsx b/app/components/trade-review-workspace.test.tsx
+index 9da7b6de..45fe6843 100644
+--- a/app/components/trade-review-workspace.test.tsx
++++ b/app/components/trade-review-workspace.test.tsx
+@@ -639,6 +639,8 @@ describe("TradeReviewWorkspace", () => {
+ 
+   beforeEach(async () => {
+     chartProbe.enabled = false; chartProbe.candles = [];
++    window.history.replaceState(null, "", "/");
++    window.sessionStorage.clear();
+     window.localStorage.clear();
+     mockRecallRepository.documents.clear();
+     mockRecallRepository.saveError = undefined;
+@@ -708,6 +710,23 @@ describe("TradeReviewWorkspace", () => {
+     expect(screen.getAllByRole("button", { name: "打开待处理事项", hidden: true })).toHaveLength(1);
+   });
+ 
++  it("connects the production homepage holding detail to an ordinary collection without choosing a first episode", async () => {
++    history.replaceState(null, "", "/home"); sessionStorage.clear();
++    const fill: TradeExecution = { id: "hp-live", accountId: "hp-account", accountLabel: "首页实盘账户", source: { platform: "futu", row: 1, tradeNature: "live" }, instrument: { id: "CN-SH:600519", symbol: "600519", name: "首页真实持仓", market: "CN-SH", currency: "CNY" }, side: "buy", executedAt: "2026-10-22T01:00:00Z", quantity: "2", price: "100", fee: "0" };
++    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={productionStorageClient([fill])} />);
++    expect(await screen.findByRole("heading", { name: "首页", level: 1 })).toBeInTheDocument();
++    await waitFor(() => expect(screen.getByRole("button", { name: "查看持仓详情" })).toBeInTheDocument());
++    fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
++    expect(screen.getByRole("dialog", { name: "首页真实持仓 持仓详情" })).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "查看交易" }));
++    await waitFor(() => expect(screen.getByRole("region", { name: "交易库" })).toBeInTheDocument());
++    expect(location.pathname).toBe("/trades");
++    expect(location.search).toContain("symbol=SSE%3A600519");
++    expect(location.search).not.toContain("queue");
++    expect(screen.queryByRole("button", { name: "返回本股交易" })).not.toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "返回首页" })).toBeInTheDocument();
++  });
++
+   it("returns notification reviews to their real analysis and data sources", async () => {
+     const user = userEvent.setup();
+     saveImportedExecutions([

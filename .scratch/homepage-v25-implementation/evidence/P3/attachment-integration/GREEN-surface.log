@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47455) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > makes the surrounding navigation inert while detail owns focus and restores it on close 818ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > distinguishes unknown cost from missing quote in the actual table and detail 267ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > retains detail keyboard focus through a fresh row object and explains a removed row without clearing local UI 395ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps eight slots and a detail with one forward action; outside click stays open and Escape restores its exact trigger 508ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (Escape) 186ms
+ ✓ app/components/homepage-v25/attachment-surface.test.tsx > production Surface attachment editor with S host > opens the real trigger, preserves draft on Escape, retains old rows pending/failure and commits tokens with rows 2108ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (close) 248ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps the four core KPIs together and puts price, account and days in secondary information 161ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > returns to the exact non-default holding page through the visible source action without navigating 188ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > explains complete raw values with focus, Enter/Escape and synthetic pointer/click without false missing reasons 198ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > offers import for an empty account menu and a truly empty holding set, without a duplicate no-match action 455ms
+ ✓ app/components/homepage-v25/attachment-surface.test.tsx > production Surface attachment editor with S host > keeps clear/reset in draft and cancels pending ownership on outside dismissal 1384ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > does not query during IME composition and applies the inline search after 300 ms 403ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > edits only S draft, preserves Esc/outside drafts on reopen and returns focus to the exact trigger 628ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > keeps yes/no double selection visibly distinct from no selection while using stable S normalization 218ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > applies once through pending and keeps old applied fields plus draft and explicit error on failure 274ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > clears attachments or restores market/account defaults through distinct actions without changing the date period 201ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > cancels an in-flight draft without committing it and identity discard is controlled by the S owner 174ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > keeps fund unavailable with an explanation and does not silently drop unknown restored categories 44ms
+ ✓ app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > focuses the first field and keeps Tab/ShiftTab inside the editor until explicit dismissal 91ms
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  06:25:54
+   Duration  13.91s (transform 2.13s, setup 2.07s, import 3.09s, tests 8.96s, environment 6.60s)
+

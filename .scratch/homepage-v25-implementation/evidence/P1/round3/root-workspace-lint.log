@@ -1,0 +1,16 @@
+
+/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/trade-review-workspace.tsx
+    58:15  warning  'MonthlyStatement' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    94:3   warning  'combinedMarketDataStatus' is defined but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   129:10  warning  'resolveInstrumentMetadataBatch' is defined but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   201:10  warning  'tradingNatureLabel' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  1251:5   warning  React Hook useMemo has an unnecessary dependency: 'marketDataRepository'. Either exclude it or remove the dependency array                                                                                                                                                                     react-hooks/exhaustive-deps
+  1917:7   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  3058:35  warning  The ref value 'marketHydrationInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketHydrationInFlight.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  3062:6   warning  React Hook useEffect has a missing dependency: 'rawImportedInstruments'. Either include it or remove the dependency array                                                                                                                                                                      react-hooks/exhaustive-deps
+  3196:32  warning  The ref value 'marketIntradayInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketIntradayInFlight.current' to a variable inside the effect, and use that variable in the cleanup function    react-hooks/exhaustive-deps
+  3305:6   warning  React Hook useEffect has missing dependencies: 'enqueueDrawingState' and 'selectedImportedInstrument'. Either include them or remove the dependency array                                                                                                                                      react-hooks/exhaustive-deps
+
+✖ 10 problems (0 errors, 10 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

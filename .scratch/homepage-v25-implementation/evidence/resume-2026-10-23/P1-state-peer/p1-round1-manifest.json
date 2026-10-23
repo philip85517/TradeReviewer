@@ -1,0 +1,46 @@
+{
+  "startedAt": "2026-10-22T17:50:01.033Z",
+  "completedAt": "2026-10-22T17:50:07.023Z",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "nodeVersion": "v26.0.0",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/frozen-recheck.vitest.config.ts"
+  ],
+  "expectedHost": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+  "expectedWorkspace": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+  "before": {
+    "app/components/homepage-v25/use-homepage-host.ts": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+    "app/components/homepage-v25/session-model.ts": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+    "app/components/homepage-v25/home-surface.tsx": "11e9111792fb403bcbaa8c1f829ee72efab3a3586ee48692445873441d75d58e",
+    "app/components/homepage-v25/holdings-model.ts": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+    "app/components/homepage-v25/fx-adapter.ts": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+    "app/components/trade-review-workspace.tsx": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+    "app/lib/reviews/homepage-v25-state.ts": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/frozen-old-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/owned-read-recheck.test.tsx": "8fce4c4a4442c7b14213d0ef472faca5372e2bde30d815525309004a20a66c4d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/frozen-recheck.vitest.config.ts": "751ec775fcb6bbe34a30959be73484f5a506b6ef78307b84b4c390b8b3844577"
+  },
+  "after": {
+    "app/components/homepage-v25/use-homepage-host.ts": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+    "app/components/homepage-v25/session-model.ts": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+    "app/components/homepage-v25/home-surface.tsx": "11e9111792fb403bcbaa8c1f829ee72efab3a3586ee48692445873441d75d58e",
+    "app/components/homepage-v25/holdings-model.ts": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+    "app/components/homepage-v25/fx-adapter.ts": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+    "app/components/trade-review-workspace.tsx": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+    "app/lib/reviews/homepage-v25-state.ts": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/frozen-old-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/owned-read-recheck.test.tsx": "8fce4c4a4442c7b14213d0ef472faca5372e2bde30d815525309004a20a66c4d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/frozen-recheck.vitest.config.ts": "751ec775fcb6bbe34a30959be73484f5a506b6ef78307b84b4c390b8b3844577"
+  },
+  "stable": true,
+  "exitCode": 0,
+  "signal": null,
+  "error": null
+}

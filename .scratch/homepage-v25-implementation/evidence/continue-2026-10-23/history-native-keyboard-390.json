@@ -1,0 +1,121 @@
+[
+  {
+    "key": "Right",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t163 container 1981 · 年度读数 1981-01-01 — 1981-12-31 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n~\t\t\t\t164 heading 1981 · 年度读数, Value: 4\n~\t\t\t\t\t165 text 1981  ·  年度 读数\n~\t\t\t\t\t167 text 1981-01-01  —  1981-12-31  ·  Asia/Shanghai\nThe focused UI element is 110 button 1981，3 回合，",
+    "dom": {
+      "active": "1981，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "reading": "1981 · 年度读数1981-01-01 — 1981-12-31 · Asia/Shanghai3 回合每期净盈亏来源金额-12345.678900 CNY覆盖数量7 / 7原币金额-12345.678900 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%",
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "key": "Right",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t163 container 1982 · 年度读数 1982-01-01 — 1982-12-31 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n~\t\t\t\t164 heading 1982 · 年度读数, Value: 4\n~\t\t\t\t\t165 text 1982  ·  年度 读数\n~\t\t\t\t\t167 text 1982-01-01  —  1982-12-31  ·  Asia/Shanghai\nThe focused UI element is 111 button 1982，3 回合，",
+    "dom": {
+      "active": "1982，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "reading": "1982 · 年度读数1982-01-01 — 1982-12-31 · Asia/Shanghai3 回合每期净盈亏来源金额-12345.678900 CNY覆盖数量7 / 7原币金额-12345.678900 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%",
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "key": "End",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t163 container 2019 · 年度读数 2019-01-01 — 2019-12-31 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n~\t\t\t\t164 heading 2019 · 年度读数, Value: 4\n~\t\t\t\t\t165 text 2019  ·  年度 读数\n~\t\t\t\t\t167 text 2019-01-01  —  2019-12-31  ·  Asia/Shanghai\nThe focused UI element is 148 button 2019，3 回合，",
+    "dom": {
+      "active": "2019，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "reading": "2019 · 年度读数2019-01-01 — 2019-12-31 · Asia/Shanghai3 回合每期净盈亏来源金额-12345.678900 CNY覆盖数量7 / 7原币金额-12345.678900 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%",
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "key": "Left",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t163 container 2018 · 年度读数 2018-01-01 — 2018-12-31 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n~\t\t\t\t164 heading 2018 · 年度读数, Value: 4\n~\t\t\t\t\t165 text 2018  ·  年度 读数\n~\t\t\t\t\t167 text 2018-01-01  —  2018-12-31  ·  Asia/Shanghai\nThe focused UI element is 147 button 2018，3 回合，",
+    "dom": {
+      "active": "2018，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "reading": "2018 · 年度读数2018-01-01 — 2018-12-31 · Asia/Shanghai3 回合每期净盈亏来源金额-12345.678900 CNY覆盖数量7 / 7原币金额-12345.678900 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%",
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "key": "Home",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t163 container 1980 · 年度读数 1980-01-01 — 1980-12-31 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n~\t\t\t\t164 heading 1980 · 年度读数, Value: 4\n~\t\t\t\t\t165 text 1980  ·  年度 读数\n~\t\t\t\t\t167 text 1980-01-01  —  1980-12-31  ·  Asia/Shanghai\nThe focused UI element is 109 button 1980，3 回合，",
+    "dom": {
+      "active": "1980，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "reading": "1980 · 年度读数1980-01-01 — 1980-12-31 · Asia/Shanghai3 回合每期净盈亏来源金额-12345.678900 CNY覆盖数量7 / 7原币金额-12345.678900 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%",
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "key": "Escape",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 163-216\nThe focused UI element is 109 button 1980，3 回合，",
+    "dom": {
+      "active": "1980，3 回合，",
+      "plot": {
+        "bottom": 588,
+        "height": 320,
+        "left": 24,
+        "right": 366,
+        "top": 268,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  }
+]

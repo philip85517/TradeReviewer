@@ -1,0 +1,9 @@
+# CB-M05 behavioral RED and bounded GREEN
+
+Root explicitly included original public-norm motion in the still-unfrozen final candidate3. No fourth candidate or reset. New tests were appended before motion product changes, keeping every original28 body intact. The DOM and component remain real; only clock and browser preference source are controlled.
+
+`MOTION-RED.log`: original28 PASS; new8 yielded7 FAIL and1 PASS (the old immediate unmount already satisfied initial reduced-motion removal). All failures were the missing normal exit stage: the saved dialog was immediately detached or absent from hidden-role queries. No syntax/import/setup error caused RED. `MOTION-STATIC-RED.log` records no local transition/animation/keyframes/reduced-motion/WAAPI before the patch.
+
+`GREEN.log`:36/36 PASS. New meaningful checks catch premature removal, unhidden/interactive exiting contents, wrong immediate focus, stale timer removal after reopening, currency/immutable-row invalidation surviving in an exiting portal, restored-context resurrection, and reduced-motion changes failing to reach immediate terminal state. Original six other context round-trip cases and original exact independent source also pass. The original independent file was not copied or changed; the candidate3 config exact-includes its original path.
+
+Mutation reasoning: direct unmount breaks7 new cases; omitting aria-hidden/inert breaks accessibility checks; omitting timer cleanup breaks reopen-after200ms; failing context invalidation breaks exit invalidation and original28; ignoring media change breaks the final preference case; wrong focus return breaks3 new close cases and original focus tests. Exact160ms fallback is checked at159ms and160ms. Actual CSS interpolation/paint and real reduced-motion browser behavior are NOT VERIFIED. Data150ms and hover120ms have source evidence only; jsdom lacks a renderer and no fabricated animation mock is used to claim visual correctness.

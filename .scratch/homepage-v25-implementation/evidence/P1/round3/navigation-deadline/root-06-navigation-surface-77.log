@@ -1,0 +1,127 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR01 restores nonzero result scroll, query, selection and input focus after close/reopen on the same mount and restoreKey 495ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source 108ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source 100ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source 99ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source 98ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: becoming ready on the same mount permits Enter again 135ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: becoming ready on the same mount permits Enter again 126ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: becoming ready on the same mount permits Enter again 132ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: becoming ready on the same mount permits Enter again 135ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > keeps settled old candidates inert to Enter during IME and commits the completed word only after 300ms 158ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > makes the surrounding navigation inert while detail owns focus and restores it on close 822ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > distinguishes unknown cost from missing quote in the actual table and detail 313ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > retains detail keyboard focus through a fresh row object and explains a removed row without clearing local UI 251ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps eight slots and a detail with one forward action; outside click stays open and Escape restores its exact trigger 146ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (Escape) 78ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (close) 165ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps the four core KPIs together and puts price, account and days in secondary information 69ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > returns to the exact non-default holding page through the visible source action without navigating 91ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > explains complete raw values with focus, Enter/Escape and synthetic pointer/click without false missing reasons 142ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > offers import for an empty account menu and a truly empty holding set, without a duplicate no-match action 154ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > does not query during IME composition and applies the inline search after 300 ms 163ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps cross-market search independent of the applied scope and waits for IME completion plus 300ms 522ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > opens a metadata-only detail without borrowing holdings, and Escape restores its exact result before closing search 189ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps detail and source intact when navigation is refused, then uses the full unique identity 219ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > returns metadata-only detail to its selected search result and scroll through the visible source action 144ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades bundle before opening its collection after delayed readiness 49ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22&symbol=SSE%3A600519 bundle before opening its collection after delayed readiness 14ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source 121ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through null, reload and guarded return 16ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through SSE:600519, reload and guarded return 12ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=custom&from=2026-10-01&to=2026-10-22 through null, reload and guarded return 12ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=custom&from=2026-10-01&to=2026-10-22 through SSE:600519, reload and guarded return 12ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps the homepage navigation's applied scope and source UI while global addresses and indexed pops derive their own origin 12ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > derives collection origin from the direct address /trades 4ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > derives collection origin from the direct address /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22 4ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard cancel 6ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard throw 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > commits only the latest guarded global transition and preserves the homepage source for return 9ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > waits for the actual compensating pop before invoking a guarded back, and cancellation retains the current entry 19ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > reads a complete legacy v2 source only when v3 is absent, then persists a UI-only v3 snapshot 7ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > performs a first owned read after catalog readiness instead of freezing the pre-market initial bundle 56ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > settles the initial non-default URL and restored source with its own accepted bundle and callback 8ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > waits for catalogs before rejecting a target account and never silently widens it 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit route or source UI if the existing review guard cancels 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps labels and data together until a new bootstrap revision, then restores source UI with fresh data 10ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not publish an earlier reader's bundle under a later scope token 6ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > validates a returning source against its own fresh catalog and keeps non-scope UI on explicit fallback 6ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R01 preserves source bytes through a pending UI callback and hard remount, then accepts fresh owned data 78ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03 retains full source after return failure and retries the same navigation with a new generation 12ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R05 deduplicates reload during source navigation instead of refreshing the old committed scope 14ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03b retries a failed return with its captured full UI even without an intervening UI callback 19ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old resolve during retry 25ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old reject during retry 19ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves failure recovery manual despite focus/visibility and resumes normal refresh after acceptance 19ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves timeout recovery manual despite focus/visibility and resumes normal refresh after acceptance 16ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R07 protects full source when its scope equals the old committed scope but its search, page and focus differ 19ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed scoped departure captures its outgoing entry 9ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed global departure captures its outgoing entry 11ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps URL, source and commit unchanged when the outgoing global guard cancel 6ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps URL, source and commit unchanged when the outgoing global guard throw 6ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 commits only the newest allowed departure and never replaces protected source with the old committed UI 8ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A resolve cannot release its source protection 7ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A reject cannot release its source protection 10ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 retains protected source after explicit identity B failure but retries identity B without restoring source A 13ms
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-start","elapsedMs":0,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-after-ui","elapsedMs":10000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-original-deadline","elapsedMs":15010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-3000","elapsedMs":3000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-6000","elapsedMs":6000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-9000","elapsedMs":9000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-12000","elapsedMs":12000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-14900","elapsedMs":14900,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-original-deadline","elapsedMs":15010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D03 a UI patch retains the same logical request and its original start time
+[navigation-deadline] {"label":"D03-same-logical-request","elapsedMs":10000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D04 an untouched owned request reaches timeout at fifteen seconds
+[navigation-deadline] {"label":"D04-untouched-deadline","elapsedMs":15010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window
+[navigation-deadline] {"label":"D05-old-generation-deadline","elapsedMs":15010,"request":{"generation":5,"startedAt":1792717210000,"purpose":"identity","target":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-22","to":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3,5]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window
+[navigation-deadline] {"label":"D05-new-generation-deadline","elapsedMs":25010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3,5]}
+
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds 56ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline 13ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D03 a UI patch retains the same logical request and its original start time 8ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D04 an untouched owned request reaches timeout at fifteen seconds 6ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window 8ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > includes metadata-only instruments without inventing holdings, across exchanges and classes 10ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > deduplicates one trustworthy identity into its exact collection rather than taking a first instrument 1ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > retains real imported instruments with unknown category and does not infer live or stock 8ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > fails closed on historical invalid exchange and conflicting metadata evidence 1ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > commits matching business rows and applied labels atomically, ignoring an older completion 7ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > restores UI only alongside a fresh data result and uses period dates for the ordinary collection 7ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > refreshes committed attachments while preserving a separately edited draft, then hands off the native date 1ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > keeps every instrument of one directory identity in the ordinary collection without selecting a first record 1ms
+
+ Test Files  8 passed (8)
+      Tests  77 passed (77)
+   Start at  04:28:17
+   Duration  19.63s (transform 713ms, setup 1.48s, import 2.24s, tests 5.89s, environment 7.44s)
+
+(node:37003) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -1,0 +1,986 @@
+import { describe, expect, it } from "vitest";
+
+import type { TradeExecution } from "../trades/types";
+import type { StatementEvent, StatementPosition } from "../import/monthly-statement";
+import { replayPositionAtPrice } from "./position-ledger";
+
+const fixtureInstrument = { id: "HK:fixture-02050", symbol: "02050", name: "Fixture IPO", market: "HK", currency: "HKD" };
+
+function fixtureEvent(
+  event: Pick<StatementEvent, "id" | "date" | "kind" | "description"> & Partial<StatementEvent>,
+): StatementEvent {
+  const {
+    documentId,
+    accountId,
+    market,
+    symbol,
+    date,
+    kind,
+    quantity,
+    amount,
+    currency,
+    description,
+    source,
+    displayTimePolicy,
+  } = event;
+  return {
+    documentId: documentId ?? "fixture-document",
+    id: event.id,
+    accountId: accountId ?? "fixture-account",
+    market: market ?? fixtureInstrument.market,
+    symbol: symbol ?? fixtureInstrument.symbol,
+    date,
+    kind,
+    quantity,
+    amount,
+    currency: currency ?? fixtureInstrument.currency,
+    displayTimePolicy,
+    description,
+    source: source ?? [{ page: 1, row: 1, role: "fixture" }],
+  };
+}
+
+function fill(
+  side: TradeExecution["side"],
+  executedAt: string,
+  quantity: string,
+  price: string,
+  fee: string,
+  options: Partial<Pick<TradeExecution, "accountId" | "instrument">> = {},
+): TradeExecution {
+  return {
+    id: `${side}-${executedAt}-${quantity}`,
+    source: { platform: "test", row: 1 },
+    accountId: options.accountId ?? "fixture-account",
+    accountLabel: "Test account",
+    instrument: options.instrument ?? { id: "US:fixture-test", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side,
+    executedAt,
+    quantity,
+    price,
+    fee,
+  };
+}
+
+describe("replayPositionAtPrice", () => {
+  it("adds known zero-cash bonus shares while preserving total cost and ignoring a reference price", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-516780",
+      accountId: "fixture-account",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.8900",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "20000", "2", "0", { instrument });
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({
+      executions: [buy, sale],
+      cursor: "2026-05-21T23:59:59.999Z",
+      markPrice: "2",
+    })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+      grossCapitalDeployed: "25000",
+    });
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      grossCapitalDeployed: "25000",
+      realizedPnl: "15000",
+      netPnl: "15000",
+    });
+  });
+
+  it("keeps a bonus-share event cost-unknown when there is no eligible prior inventory", () => {
+    const bonus = fixtureEvent({
+      id: "orphan-bonus",
+      market: "US",
+      symbol: "TEST",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账",
+    });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "10000", "2", "0");
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["unknown-cost"]) },
+      realizedPnl: "0",
+      netPnl: "0",
+    });
+  });
+
+  it("does not apply non-zero-cash or unrelated corporate actions as bonus shares", () => {
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", {
+      instrument: { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" },
+    });
+    buy.source.positionEvents = [fixtureEvent({
+      id: "cash-action",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "18900",
+      currency: "CNY",
+      description: "送股现金补差",
+    })];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["position-event"]) },
+    });
+  });
+
+  it("keeps same-day bonus-share order ambiguity unavailable", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "same-day-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-22T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+  });
+
+  it("does not double-count a bonus row repeated by another source", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-primary",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const duplicate = { ...bonus, id: "bonus-copy" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "20000", "2", "0", { instrument });
+    buy.source.positionEvents = [bonus, duplicate];
+    sale.source.positionEvents = [bonus, duplicate];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["duplicate-position-event"]) },
+      realizedPnl: "0",
+      netPnl: "0",
+    });
+  });
+
+  it("does not double-count numerically equivalent bonus rows and marks their cost unavailable", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-primary",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.89",
+    });
+    const duplicate = { ...bonus, id: "bonus-copy", documentId: "other-document", quantity: "10000.00", amount: "0.00", description: "红股入账 1.8900" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [bonus, duplicate];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "20000",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["duplicate-position-event"]) },
+    });
+  });
+
+  it("does not let another account with the same source ID suppress the target account event", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const target = fixtureEvent({
+      id: "shared-source-row",
+      accountId: "fixture-account",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const foreign = { ...target, accountId: "other-account" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [foreign, target];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "20000",
+      averageCost: "1.25",
+    });
+  });
+
+  it("keeps a date-only bonus uncertain during the same-day intraday cursor", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "intraday-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    const sale = fill("sell", "2026-05-22T03:00:00Z", "20000", "2", "20", { instrument });
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-21T23:59:59.999Z" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+    });
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantityKnown: false,
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+  });
+
+  it("keeps a month-only bonus uncertain throughout that month without tainting a future month", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const monthlyBonus = fixtureEvent({
+      id: "monthly-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    const sale = fill("sell", "2026-05-22T03:00:00Z", "20000", "2", "20", { instrument });
+    buy.source.positionEvents = [monthlyBonus];
+    sale.source.positionEvents = [monthlyBonus];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantityKnown: false,
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+
+    const futureBonus = { ...monthlyBonus, id: "future-month-bonus", date: "2026-06" };
+    const futureOnlyBuy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    futureOnlyBuy.source.positionEvents = [futureBonus];
+    expect(replayPositionAtPrice({ executions: [futureOnlyBuy], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+    });
+    expect(replayPositionAtPrice({ executions: [futureOnlyBuy], markPrice: "2", cursor: "2026-05-22T04:00:00Z" }).accuracy).toBeUndefined();
+  });
+
+  it("keeps same-day transfer quantity unknown intraday and reconciles it at day end", () => {
+    const sale = fill("sell", "2025-01-03T14:30:00Z", "100", "10", "0");
+    sale.source.positionEvents = [{ id: "in", accountId: "fixture-account", market: "US", symbol: "TEST", date: "2025-01-03", kind: "transfer-in", quantity: "100", description: "transfer", source: [] }];
+    const during = replayPositionAtPrice({ executions: [sale], markPrice: "11", cursor: "2025-01-03T15:00:00Z" });
+    expect(during).toMatchObject({ quantityKnown: false, quantity: "0", accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) } });
+    const after = replayPositionAtPrice({ executions: [sale], markPrice: "11", cursor: "2025-01-04T00:00:00Z" });
+    expect(after.quantity).toBe("0");
+    expect(after.quantityKnown).toBeUndefined();
+  });
+  it("does not certify a monthly first sale with no initial inventory or short-opening evidence", () => {
+    const sale = fill("sell", "2025-01-03T14:30:00Z", "2", "10", "0");
+    sale.source.templateId = "monthly";
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "9" }).accuracy?.reasons).toContain("ambiguous-opening");
+    sale.source.positionEffect = "open-short";
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "9" }).accuracy).toBeUndefined();
+  });
+  it("marks unknown fees unavailable even when quantity and entry price are known", () => {
+    const buy = fill("buy", "2025-01-03T14:30:00Z", "2", "10", "0");
+    buy.source.feeStatus = "unknown";
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "11" })).toMatchObject({ accuracy: { pnl: "unavailable", reasons: ["unknown-fees"] }, netPnl: "0" });
+  });
+  it("blocks mixed quote and settlement currencies from producing PnL", () => {
+    const buy = fill("buy", "2025-01-03T14:30:00Z", "2", "10", "1", {
+      instrument: fixtureInstrument,
+    });
+    buy.source.settlement = {
+      currency: "CNY",
+      quantity: "2",
+      grossAmount: "20",
+      netAmount: "-21",
+      fees: { commission: "1" },
+    };
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "11" })).toMatchObject({
+      accuracy: {
+        pnl: "unavailable",
+        reasons: expect.arrayContaining(["settlement-currency-mismatch"]),
+      },
+      quantity: "2",
+      realizedPnl: "0",
+      unrealizedPnl: "0",
+      netPnl: "0",
+      fees: "1",
+    });
+  });
+  it("uses initial inventory and returns unavailable accuracy rather than false zero-cost profit", () => {
+    const sale = fill("sell", "2025-01-03T14:30:00Z", "40", "12", "1");
+    sale.source.openingPosition = { accountId: "fixture-account", market: "US", symbol: "TEST", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "11" })).toMatchObject({ quantity: "60", costKnown: false, accuracy: { pnl: "unavailable", reasons: expect.arrayContaining(["unknown-cost"]) }, realizedPnl: "0", netPnl: "0" });
+  });
+
+  it("keeps a stock-only IPO allotment cost unknown without a cash trail", () => {
+    const sale = fill("sell", "2025-06-24T05:20:12.000Z", "500", "24", "0");
+    sale.source.positionEvents = [{
+      id: "ipo-allotment",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "500",
+      amount: "11265",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment",
+      source: [],
+    }];
+
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "24" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["position-event", "initial-position", "unknown-cost"]) },
+      realizedPnl: "0",
+      netPnl: "0",
+      grossCapitalDeployed: "0",
+    });
+  });
+
+  it("uses only cursor-visible IPO cash evidence and separates cash cost from fees", () => {
+    const events = [
+      fixtureEvent({ id: "ipo-application", date: "2025-06-18", kind: "ipo", amount: "-68271.65", description: "2025/06/18 減少 港股IPO公開發售 HKD -68,271.65 Dr. - IPO Application Amount - #02050" }),
+      fixtureEvent({ id: "ipo-fee", date: "2025-06-18", kind: "fee", amount: "-100", description: "IPO Application Handling Fee - #02050" }),
+      fixtureEvent({ id: "ipo-refund", date: "2025-06-19", kind: "ipo", amount: "56893.04", description: "2025/06/19 增加 港股IPO公開發售 HKD 56,893.04 Cr. - IPO Refund - #02050" }),
+      fixtureEvent({ id: "ipo-allotment", date: "2025-06-19", kind: "ipo", quantity: "500", amount: "11265", displayTimePolicy: "session-open", description: "IPO allotment - #02050" }),
+    ];
+    const sale = fill("sell", "2025-06-24T05:20:12.000Z", "500", "24", "3", {
+      instrument: fixtureInstrument,
+    });
+    const evidence = [{ accountId: sale.accountId, month: "2025-06", events, positions: [] }];
+
+    const beforeRefund = replayPositionAtPrice({
+      executions: [sale],
+      evidence,
+      cursor: "2025-06-19T12:00:00.000Z",
+      markPrice: "24",
+    });
+    expect(beforeRefund).toMatchObject({ quantity: "500", costKnown: false, accuracy: { reasons: expect.arrayContaining(["position-event", "initial-position", "unknown-cost"]) } });
+
+    expect(replayPositionAtPrice({ executions: [sale], evidence, markPrice: "24" })).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      realizedPnl: "621.39",
+      netPnl: "518.39",
+      fees: "103",
+      grossCapitalDeployed: "11378.61",
+    });
+  });
+  it("does not let conflicting live currencies certify IPO cost by input order", () => {
+    const allocation: StatementEvent = {
+      documentId: "fixture-document",
+      id: "currency-conflict-allocation",
+      accountId: "fixture-account",
+      market: "HK",
+      symbol: "02050",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "50",
+      amount: "1000",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment - #02050",
+      source: [],
+    };
+    const events = [
+      fixtureEvent({ id: "currency-conflict-application", date: "2025-06-18", kind: "ipo", amount: "-1500", description: "IPO Application Amount - #02050" }),
+      fixtureEvent({ id: "currency-conflict-refund", date: "2025-06-19", kind: "ipo", amount: "500", description: "IPO Refund Amount - #02050" }),
+      fixtureEvent({ id: "currency-conflict-fee", date: "2025-06-18", kind: "fee", amount: "-10", currency: "USD", description: "IPO Application Handling Fee - #02050" }),
+      allocation,
+    ];
+    const hkdSale = fill("sell", "2025-06-24T05:20:12.000Z", "50", "24", "0", { instrument: fixtureInstrument });
+    const usdSale = fill("sell", "2025-06-25T05:20:12.000Z", "50", "24", "0", {
+      instrument: { ...fixtureInstrument, id: "HK:fixture-02050-usd", currency: "USD" },
+    });
+    const evidence = [{ accountId: "fixture-account", month: "2025-06", events, positions: [] }];
+    const replay = (executions: TradeExecution[]) => replayPositionAtPrice({ executions, evidence, markPrice: "24" });
+
+    expect(replay([hkdSale, usdSale])).toMatchObject({ costKnown: false, realizedPnl: "0", netPnl: "0", accuracy: { reasons: expect.arrayContaining(["unknown-cost"]) } });
+    expect(replay([usdSale, hkdSale])).toMatchObject({ costKnown: false, realizedPnl: "0", netPnl: "0", accuracy: { reasons: expect.arrayContaining(["unknown-cost"]) } });
+  });
+
+  it("does not add an IPO evidence row twice when the allotment is also a buy fill", () => {
+    const buy = fill("buy", "2025-06-10T01:00:00.000Z", "100", "10", "0");
+    const sale = fill("sell", "2025-06-12T01:00:00.000Z", "100", "12", "0");
+    const allotment = {
+      id: "ipo-allotment",
+      accountId: "fixture-account",
+      market: "US" as const,
+      symbol: "TEST",
+      date: "2025-06",
+      kind: "ipo" as const,
+      quantity: "100",
+      amount: "1000",
+      displayTimePolicy: "session-open" as const,
+      description: "IPO allotment repeated in the asset table",
+      source: [],
+    };
+    buy.source.grossAmount = "1000";
+    buy.source.positionEvents = [allotment];
+    sale.source.positionEvents = [allotment];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "12" })).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      realizedPnl: "200",
+      netPnl: "200",
+    });
+  });
+
+  it("does not mark an exact-date session-open IPO as ambiguously ordered", () => {
+    const sale = fill("sell", "2025-06-19T12:00:00.000Z", "100", "12", "0");
+    sale.source.positionEvents = [{
+      id: "dated-ipo",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "100",
+      amount: "1000",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment",
+      source: [],
+    }];
+
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "12" }).accuracy?.reasons).toEqual(expect.arrayContaining(["position-event", "initial-position", "unknown-cost"]));
+  });
+
+  it("keeps month-only session-open IPO evidence ambiguous", () => {
+    const sale = fill("sell", "2025-06-19T12:00:00.000Z", "100", "12", "0");
+    sale.source.statementMonth = "2025-06";
+    sale.source.positionEvents = [{
+      id: "month-only-ipo",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-06",
+      kind: "ipo",
+      quantity: "100",
+      amount: "1000",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment",
+      source: [],
+    }];
+
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "12" }).accuracy?.reasons).toEqual(expect.arrayContaining(["ambiguous-event-order"]));
+  });
+
+  it("does not let a future matching buy hide an IPO allocation from an earlier cursor", () => {
+    const allocation = fixtureEvent({ id: "future-cursor-ipo", date: "2025-06-19", kind: "ipo", quantity: "500", amount: "11265", displayTimePolicy: "session-open", description: "IPO allotment - #02050" });
+    const futureBuy = fill("buy", "2025-06-19T12:00:00.000Z", "500", "22.53", "0", {
+      accountId: allocation.accountId,
+      instrument: fixtureInstrument,
+    });
+    futureBuy.source.positionEffect = "open-long";
+    futureBuy.source.displayTimePolicy = "execution-time";
+    futureBuy.source.grossAmount = "11265";
+    const beforeBuy = replayPositionAtPrice({
+      executions: [futureBuy],
+      evidence: [{ accountId: allocation.accountId, month: "2025-06", events: [allocation], positions: [] }],
+      cursor: "2025-06-19T10:00:00.000Z",
+      markPrice: "22.53",
+    });
+
+    expect(beforeBuy.quantity).toBe("500");
+  });
+
+  it("does not let a zero-allotment fixture row contaminate a later ordinary round", () => {
+    const zeroAllotment = fixtureEvent({
+      id: "zero-ipo",
+      date: "2021-02",
+      kind: "ipo",
+      quantity: "0",
+      amount: "0.00",
+      description: "IPO allotment: 0 shares - #01024",
+      market: "HK",
+      symbol: "01024",
+    });
+    const buy = fill("buy", "2022-01-03T01:00:00Z", "100", "10", "0", {
+      accountId: zeroAllotment.accountId,
+      instrument: { id: "HK:fixture-01024", symbol: "01024", name: "Fixture ordinary", market: "HK", currency: "HKD" },
+    });
+    const sell = fill("sell", "2022-01-04T01:00:00Z", "100", "12", "0", {
+      accountId: zeroAllotment.accountId,
+      instrument: { id: "HK:fixture-01024", symbol: "01024", name: "Fixture ordinary", market: "HK", currency: "HKD" },
+    });
+
+    expect(replayPositionAtPrice({ executions: [buy, sell], evidence: [{ accountId: zeroAllotment.accountId, month: "2021-02", events: [zeroAllotment], positions: [] }], markPrice: "12" })).toMatchObject({
+      quantity: "0",
+      realizedPnl: "200",
+      netPnl: "200",
+    });
+  });
+
+  it("does not turn a negative IPO quantity into a positive inventory lot", () => {
+    const negativeAllotment: StatementEvent = {
+      id: "negative-ipo",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "-100",
+      amount: "0",
+      currency: "USD",
+      description: "IPO allotment cancelled",
+      source: [],
+    };
+    const buy = fill("buy", "2025-06-20T01:00:00Z", "100", "10", "0");
+    const sell = fill("sell", "2025-06-21T01:00:00Z", "100", "12", "0");
+
+    expect(replayPositionAtPrice({ executions: [buy, sell], evidence: [{ accountId: "fixture-account", month: "2025-06", events: [negativeAllotment], positions: [] }], markPrice: "12" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["position-event"]) },
+    });
+  });
+
+  it("deduplicates source transfers and reconciles later opening snapshots", () => {
+    const first = fill("sell", "2025-01-03T14:30:00Z", "1", "12", "0");
+    const second = fill("sell", "2025-02-03T14:30:00Z", "1", "12", "0");
+    first.source.positionEvents = [{ id: "transfer", accountId: "fixture-account", market: "US", symbol: "TEST", kind: "transfer-in", date: "2025-01-02", quantity: "2", description: "transfer", source: [] }];
+    second.source.positionEvents = first.source.positionEvents;
+    second.source.openingPosition = { accountId: "fixture-account", market: "US", symbol: "TEST", phase: "opening", date: "2025-02-01", quantity: "1", source: [] };
+    expect(replayPositionAtPrice({ executions: [first, second], markPrice: "11" })).toMatchObject({ quantity: "0", costKnown: false });
+    second.source.openingPosition.quantity = "3";
+    expect(replayPositionAtPrice({ executions: [first, second], markPrice: "11" })).toMatchObject({ quantity: "2", costKnown: false, accuracy: { reasons: expect.arrayContaining(["position-gap"]) } });
+  });
+
+  it("flags date-only same-day transfers and excludes another account's evidence", () => {
+    const sale = fill("sell", "2025-01-03T14:30:00Z", "2", "12", "0");
+    sale.source.positionEvents = [{ id: "transfer", accountId: "fixture-account", market: "US", symbol: "TEST", kind: "transfer-in", date: "2025-01-03", quantity: "2", description: "transfer", source: [] }];
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "11" }).accuracy?.reasons).toContain("ambiguous-event-order");
+    sale.source.positionEvents[0].accountId = "other";
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "11" })).toMatchObject({ quantity: "-2", averageCost: "12" });
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "11" }).accuracy).toBeUndefined();
+  });
+  it("reports a missing month as a warning when the inventory snapshot matches", () => {
+    const buy = fill("buy", "2025-01-03T14:30:00Z", "2", "10", "0");
+    const sale = fill("sell", "2025-03-03T14:30:00Z", "2", "12", "0");
+    buy.source.statementMonth = "2025-01";
+    sale.source.openingPosition = { accountId: "fixture-account", market: "US", symbol: "TEST", phase: "opening", date: "2025-03-01", quantity: "2", source: [] };
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "11" })).toMatchObject({
+      quantity: "0",
+      warnings: [{ code: "statement-coverage-gap", from: "2025-02", to: "2025-02" }],
+    });
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "11" }).accuracy).toBeUndefined();
+  });
+  it("does not let a same-account US snapshot cover a missing HK month", () => {
+    const buy = fill("buy", "2024-12-03T14:30:00Z", "2", "10", "0", { instrument: fixtureInstrument });
+    buy.source.statementMonth = "2024-12";
+    const hkOpening: StatementPosition = {
+      documentId: "fixture-document",
+      accountId: "fixture-account",
+      market: "HK",
+      symbol: "02050",
+      phase: "opening",
+      date: "2025-02-01",
+      quantity: "2",
+      source: [{ page: 2, row: 1, role: "position" }],
+    };
+    const usJanuary: StatementPosition = {
+      documentId: "fixture-document",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "FIXTURE-US",
+      phase: "closing",
+      date: "2025-01-31",
+      quantity: "1",
+      source: [{ page: 1, row: 1, role: "position" }],
+    };
+
+    expect(replayPositionAtPrice({
+      executions: [buy],
+      evidence: [
+        { accountId: "fixture-account", month: "2025-01", events: [], positions: [usJanuary] },
+        { accountId: "fixture-account", month: "2025-02", events: [], positions: [hkOpening] },
+      ],
+      markPrice: "10",
+    })).toMatchObject({
+      quantity: "2",
+      warnings: [{ code: "statement-coverage-gap", from: "2025-01", to: "2025-01" }],
+    });
+  });
+  it("does not treat an unknown-market event without a trade document as coverage", () => {
+    const buy = fill("buy", "2024-12-03T14:30:00Z", "2", "10", "0", { instrument: fixtureInstrument });
+    buy.source.statementMonth = "2024-12";
+    const hkOpening: StatementPosition = {
+      documentId: "fixture-document",
+      accountId: "fixture-account",
+      market: "HK",
+      symbol: "02050",
+      phase: "opening",
+      date: "2025-02-01",
+      quantity: "2",
+      source: [{ page: 2, row: 1, role: "position" }],
+    };
+    const unknownMarketEvent: StatementEvent = {
+      documentId: "fixture-document",
+      id: "unknown-market-january",
+      accountId: "fixture-account",
+      date: "2025-01",
+      kind: "other",
+      amount: "0",
+      description: "Monthly statement row with no trusted market",
+      source: [{ page: 1, row: 1, role: "other" }],
+    };
+
+    expect(replayPositionAtPrice({
+      executions: [buy],
+      evidence: [
+        { accountId: "fixture-account", month: "2025-01", events: [unknownMarketEvent], positions: [] },
+        { accountId: "fixture-account", month: "2025-02", events: [], positions: [hkOpening] },
+      ],
+      markPrice: "10",
+    })).toMatchObject({
+      quantity: "2",
+      warnings: [{ code: "statement-coverage-gap", from: "2025-01", to: "2025-01" }],
+    });
+  });
+  it("calculates a partially closed long position including fees and cumulative opening exposure", () => {
+    expect(
+      replayPositionAtPrice({
+        executions: [
+          fill("buy", "2025-01-02T14:30:00Z", "100", "10", "2"),
+          fill("sell", "2025-01-03T14:30:00Z", "40", "12", "1"),
+        ],
+        markPrice: "11",
+      }),
+    ).toEqual({
+      quantity: "60",
+      averageCost: "10",
+      realizedPnl: "80",
+      unrealizedPnl: "60",
+      netPnl: "137",
+      fees: "3",
+      grossCapitalDeployed: "1000",
+      returnPercent: "13.7",
+    });
+  });
+
+  it("calculates a partially covered short position", () => {
+    expect(
+      replayPositionAtPrice({
+        executions: [
+          fill("sell", "2025-01-02T14:30:00Z", "100", "10", "2"),
+          fill("buy", "2025-01-03T14:30:00Z", "40", "8", "1"),
+        ],
+        markPrice: "9",
+      }),
+    ).toMatchObject({
+      quantity: "-60",
+      averageCost: "10",
+      realizedPnl: "80",
+      unrealizedPnl: "60",
+      netPnl: "137",
+      fees: "3",
+      grossCapitalDeployed: "1000",
+      returnPercent: "13.7",
+    });
+  });
+
+  it("counts only the excess reversing fill as new capital deployment", () => {
+    expect(
+      replayPositionAtPrice({
+        executions: [
+          fill("buy", "2025-01-02T14:30:00Z", "100", "10", "1"),
+          fill("sell", "2025-01-03T14:30:00Z", "150", "12", "2"),
+        ],
+        markPrice: "11",
+      }),
+    ).toMatchObject({
+      quantity: "-50",
+      averageCost: "12",
+      realizedPnl: "200",
+      unrealizedPnl: "50",
+      netPnl: "247",
+      fees: "3",
+      grossCapitalDeployed: "1600",
+      returnPercent: "15.4375",
+    });
+  });
+});
+
+it("uses an explicit inventory identity for evidence-only replay without admitting other accounts or instruments", () => {
+  const positions: StatementPosition[] = [
+    { accountId: "evidence-account", market: "US", symbol: "TEST", phase: "opening", date: "2026-09-17", quantity: "5", source: [] },
+    { accountId: "other-account", market: "US", symbol: "TEST", phase: "opening", date: "2026-09-17", quantity: "90", source: [] },
+    { accountId: "evidence-account", market: "US", symbol: "OTHER", phase: "opening", date: "2026-09-17", quantity: "80", source: [] },
+  ];
+  expect(replayPositionAtPrice({ executions: [], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions, events: [] }], cursor: "2026-09-17", markPrice: "12" })).toMatchObject({ quantity: "5", costKnown: false });
+  expect(replayPositionAtPrice({ executions: [], evidence: [{ positions, events: [] }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("0");
+});
+
+it("scopes evidence-only inventory events and ignores identity overrides when real executions exist", () => {
+  const event = fixtureEvent({ id: "received", accountId: "evidence-account", symbol: "TEST", market: "US", date: "2026-09-17", kind: "transfer-in", quantity: "5", description: "received" });
+  const events = [event, { ...event, id: "other-account", accountId: "other-account", quantity: "90" }, { ...event, id: "other-instrument", symbol: "OTHER", quantity: "80" }];
+  expect(replayPositionAtPrice({ executions: [], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" })).toMatchObject({ quantity: "5", costKnown: false });
+  const execution = fill("buy", "2026-09-17", "2", "10", "0");
+  expect(replayPositionAtPrice({ executions: [execution], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("2");
+});
+
+// P2 prepared seam. The original canonical tests above are preserved.
+import * as preparedCanonical from "./position-ledger";
+const frozenOriginalSnapshots = [
+  {
+    "quantity": "1",
+    "averageCost": "100",
+    "realizedPnl": "0",
+    "unrealizedPnl": "60",
+    "netPnl": "59",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "59"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  },
+  {
+    "quantity": "1",
+    "averageCost": "150",
+    "realizedPnl": "30",
+    "unrealizedPnl": "10",
+    "netPnl": "37",
+    "fees": "3",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "12.33333333"
+  },
+  {
+    "quantity": "-1",
+    "averageCost": "190",
+    "realizedPnl": "70",
+    "unrealizedPnl": "30",
+    "netPnl": "96",
+    "fees": "4",
+    "grossCapitalDeployed": "490",
+    "returnPercent": "19.59183673"
+  },
+  {
+    "quantity": "-0.5",
+    "averageCost": "190",
+    "realizedPnl": "75",
+    "unrealizedPnl": "15",
+    "netPnl": "85",
+    "fees": "5",
+    "grossCapitalDeployed": "490",
+    "returnPercent": "17.34693878"
+  },
+  {
+    "quantity": "-1",
+    "averageCost": "180",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "19",
+    "fees": "1",
+    "grossCapitalDeployed": "180",
+    "returnPercent": "10.55555556"
+  },
+  {
+    "costKnown": false,
+    "accuracy": {
+      "pnl": "unavailable",
+      "reasons": [
+        "unknown-fees"
+      ]
+    },
+    "quantity": "1",
+    "averageCost": "0",
+    "realizedPnl": "0",
+    "unrealizedPnl": "0",
+    "netPnl": "0",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "0"
+  },
+  {
+    "costKnown": false,
+    "accuracy": {
+      "pnl": "unavailable",
+      "reasons": [
+        "history-incomplete"
+      ]
+    },
+    "quantityKnown": false,
+    "quantity": "0",
+    "averageCost": "0",
+    "realizedPnl": "0",
+    "unrealizedPnl": "0",
+    "netPnl": "0",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "0"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  }
+];
+function preparedOracleInputs() {
+  const make = (id: string, side: "buy" | "sell", quantity: string, price: string): TradeExecution => ({ id, accountId: "a", accountLabel: "A", instrument: { id: "US:AAPL", market: "US", symbol: "AAPL", name: "Apple", currency: "USD" }, side, quantity, price, fee: "1", executedAt: "2026-01-" + String(Number(id)+5).padStart(2,"0") + "T15:00:00Z", source: { platform: "original-oracle", row: Number(id), tradeNature: "live", positionEffect: side === "buy" ? "open-long" : "open-short" } });
+  const executions = [make("0","buy","1","100"),make("1","buy","1","200"),make("2","sell","1","180"),make("3","sell","2","190"),make("4","buy","0.5","180")];
+  return [
+    ...executions.map((_,i)=>({executions,markPrice:"160",visibleExecutionIds:executions.slice(0,i+1).map(e=>e.id),cursor:"2026-01-01T00:00:00Z"})),
+    {executions,markPrice:"160",visibleExecutionIds:["2"],cursor:"2026-01-01T00:00:00Z"},
+    {executions:[{...executions[0],source:{...executions[0].source,feeStatus:"unknown" as const}}],markPrice:"160"},
+    {executions:[{...executions[0],source:{...executions[0].source,historyIncomplete:["prior"]}}],markPrice:"160"},
+    {executions:[executions[0],{...executions[1],id:"0"}],markPrice:"160",visibleExecutionIds:["0"]},
+    {executions:[executions[0],{...executions[1],executedAt:executions[0].executedAt}],markPrice:"160"},
+  ];
+}
+describe("prepared canonical boundaries", () => {
+  it("preserves complete original numerical snapshots including explicit IDs after cursor", () => {
+    expect(preparedOracleInputs().map(input=>replayPositionAtPrice(input))).toEqual(frozenOriginalSnapshots);
+  });
+  it("traverses ordinary source once and answers all prefix marks without reevaluation", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    const inputs=preparedOracleInputs(), source=preparedCanonical.preparePositionLedger({executions:inputs[0].executions});
+    const result=preparedCanonical.replayPreparedPositionBoundaries(source,inputs.slice(0,5));
+    expect(result.results.map(r=>r.snapshot)).toEqual(frozenOriginalSnapshots.slice(0,5));
+    expect(source.kind).toBe("ordinary-sweep");
+    expect(source.diagnostics).toEqual({sweeps:1,transitions:5});
+    expect(result.diagnostics).toEqual({evaluations:0,transitions:0});
+    expect(source.transitions.map(t=>[t.before.quantity,t.after.quantity])).toEqual([["0","1"],["1","2"],["2","1"],["1","-1"],["-1","-0.5"]]);
+    expect(Object.isFrozen(source.transitions[0].before)).toBe(true);
+  });
+  it("keeps nonprefix IDs, duplicates, timestamp ties and future carrier evidence in exact fallback", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    const inputs=preparedOracleInputs();
+    for (const index of [5,8,9]) {
+      const input=inputs[index], source=preparedCanonical.preparePositionLedger({executions:input.executions});
+      const projected=preparedCanonical.replayPreparedPositionBoundaries(source,[input]);
+      expect(projected.results[0].snapshot).toEqual(frozenOriginalSnapshots[index]);
+      expect(projected.results[0].mode).toBe("exact-context-fallback");
+      expect(projected.diagnostics.evaluations).toBe(1);
+    }
+    const original=inputs[0].executions;
+    const executions=structuredClone(original);
+    executions[4].source.positionEvents=[fixtureEvent({id:"future-carrier",kind:"transfer-in",date:"2026-01-05",quantity:"2",accountId:"a",market:"US",symbol:"AAPL",description:"prior transfer"})];
+    const source=preparedCanonical.preparePositionLedger({executions});
+    expect(source.kind).toBe("exact-context-fallback");
+    const query={markPrice:"160",cursor:"2026-01-06T23:00:00Z",visibleExecutionIds:["0","1"]};
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,[query]).results[0].snapshot).toEqual(replayPositionAtPrice({executions,...query}));
+  });
+  it("captures caller evidence and keeps unknown flags for ordinary prefixes", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    for (const index of [6,7]) {
+      const input=preparedOracleInputs()[index], source=preparedCanonical.preparePositionLedger({executions:input.executions});
+      input.executions[0].price="999";
+      expect(preparedCanonical.replayPreparedPositionBoundaries(source,[{markPrice:"160"}]).results[0].snapshot).toEqual(frozenOriginalSnapshots[index]);
+    }
+  });
+});
+
+describe("prepared canonical evidence query-order isolation",()=>{
+  it("uses exact evaluation for attached positions, transfers, bonus and late IPO cash in either query order",()=>{
+    const base=preparedOracleInputs()[0].executions;
+    const common={accountId:"a",market:"US",symbol:"AAPL",currency:"USD",source:[{page:1,row:1}]};
+    const variants=[
+      [{...common,id:"bonus",kind:"corporate-action" as const,date:"2026-01-07",quantity:"1",amount:"0",description:"bonus shares"}],
+      [{...common,id:"transfer",kind:"transfer-in" as const,date:"2026-01-07",quantity:"1",description:"transfer"}],
+      [
+        {...common,id:"application",kind:"ipo" as const,date:"2026-01-02",amount:"-220",description:"IPO application"},
+        {...common,id:"fee",kind:"fee" as const,date:"2026-01-02",amount:"-2",description:"IPO fee"},
+        {...common,id:"allocation",kind:"ipo" as const,date:"2026-01-03",quantity:"2",displayTimePolicy:"session-open" as const,description:"IPO allocation"},
+        {...common,id:"refund",kind:"ipo" as const,date:"2026-01-20",amount:"20",description:"IPO refund"},
+      ],
+    ];
+    const queries=[{markPrice:"160",cursor:"2026-01-08T23:00:00Z"},{markPrice:"170",cursor:"2026-01-22T23:00:00Z"}];
+    for(const events of variants){
+      const executions=structuredClone(base);executions[4].source.positionEvents=events;
+      const source=preparedCanonical.preparePositionLedger({executions});
+      expect(source.kind).toBe("exact-context-fallback");
+      for(const order of [queries,[...queries].reverse()]){
+        const batch=preparedCanonical.replayPreparedPositionBoundaries(source,order);
+        expect(batch.results.map(r=>r.snapshot)).toEqual(order.map(query=>replayPositionAtPrice({executions,...query})));
+        expect(batch.diagnostics.evaluations).toBe(2);
+      }
+    }
+    const executions=structuredClone(base);
+    executions[4].source.statementPositions=[{accountId:"a",market:"US",symbol:"AAPL",date:"2026-01-01",phase:"opening",quantity:"5",source:[{page:1,row:1}]}];
+    const source=preparedCanonical.preparePositionLedger({executions});expect(source.kind).toBe("exact-context-fallback");
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,queries).results.map(r=>r.snapshot)).toEqual(queries.map(query=>replayPositionAtPrice({executions,...query})));
+  });
+  it("keeps repeating average-cost checkpoints unrounded and immutable",()=>{
+    const original=preparedOracleInputs()[0].executions;
+    const executions=[{...original[0],quantity:"3",price:"100.123456789"},{...original[1],price:"200.987654321"},{...original[2],quantity:"0.123456789",price:"180.987654321"}];
+    const source=preparedCanonical.preparePositionLedger({executions});
+    const queries=executions.map((_,i)=>({markPrice:"161.123456789",visibleExecutionIds:executions.slice(0,i+1).map(e=>e.id)}));
+    const first=preparedCanonical.replayPreparedPositionBoundaries(source,queries);
+    expect(first.results.map(r=>r.snapshot)).toEqual(queries.map(query=>replayPositionAtPrice({executions,...query})));
+    expect(Object.isFrozen(first.results[0].snapshot)).toBe(true);
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,[...queries].reverse()).results.map(r=>r.snapshot)).toEqual([...first.results].reverse().map(r=>r.snapshot));
+  });
+});

@@ -1,0 +1,458 @@
+[
+  {
+    "scenario": "standard",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)+1.84 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 46\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准指标, Secondary Actions: Expand\n~\t\t\t\t8 (selected) 标准指标\n~\t\t\t\t10 更新保留旧值\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "signs",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)+1.84 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)0.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)-6,180.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 30, 35\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 正负与零, Secondary Actions: Expand\n~\t\t\t\t8 标准指标\n~\t\t\t\t9 (selected) 正负与零\n+\t\t\t\t46 text 0.00\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 0 CNY, Secondary Actions: Expand\n+\t\t\t\t47 text -6,180.00\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 -6180 CNY, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "pending",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)+1.84 万更新中口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万更新中口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00更新中口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万更新中口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [
+        "rgb(108, 168, 255)",
+        "rgb(108, 168, 255)",
+        "rgb(108, 168, 255)",
+        "rgb(108, 168, 255)"
+      ],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand\n~\t\t\t\t9 正负与零\n~\t\t\t\t10 (selected) 更新保留旧值\n~\t\t\t\t46 text +1.22 万\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n~\t\t\t\t47 text +6,180.00\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n+\t\t\t48 text 正在更新，继续显示原期间\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "initial",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次加载, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 (selected) 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t49 container 金额加载中\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，金额未知, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t50 container 金额加载中\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，金额未知, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t51 container 金额加载中\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，金额未知, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t52 container 金额加载中\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，金额未知, Secondary Actions: Expand\n\t\t\t48 text 正在首次读取指标\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "empty",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 空范围, Secondary Actions: Expand\n~\t\t\t\t11 首次加载\n~\t\t\t\t12 (selected) 空范围\n~\t\t\t\t49 text —\n~\t\t\t\t50 text —\n~\t\t\t\t51 text —\n~\t\t\t\t52 text —\n~\t\t\t48 text 当前范围没有可计算指标\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "error",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)+1.84 万查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n~\t\t\t\t12 空范围\n~\t\t\t\t13 (selected) 更新失败保留旧值\n~\t\t\t\t49 text +1.84 万\n~\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n~\t\t\t\t50 text +1.22 万\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n~\t\t\t\t51 text +6,180.00\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n~\t\t\t\t52 text 26.01 万\n~\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n~\t\t\t48 text 读取超时，新范围未应用；继续显示原期间\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "firstError",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)—查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)—查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)—查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)—查看原因",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次读取失败, Secondary Actions: Expand\n~\t\t\t\t13 更新失败保留旧值\n~\t\t\t\t14 (selected) 首次读取失败\n~\t\t\t\t49 text —\n~\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，金额未知, Secondary Actions: Expand\n~\t\t\t\t50 text —\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，金额未知, Secondary Actions: Expand\n~\t\t\t\t51 text —\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，金额未知, Secondary Actions: Expand\n~\t\t\t\t52 text —\n~\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，金额未知, Secondary Actions: Expand\n~\t\t\t48 text 首次读取指标超时，尚无已提交数据\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "missing",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 48\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 缺失净值, Secondary Actions: Expand\n~\t\t\t\t14 首次读取失败\n~\t\t\t\t15 (selected) 缺失净值\n~\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，金额未知, Secondary Actions: Expand\n~\t\t\t\t50 text +1.22 万\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n~\t\t\t\t51 text +6,180.00\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\n~\t\t\t\t52 text 26.01 万\n~\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，口径详情，完整金额 260102.123400 CNY, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "future",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 50-51\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 未来期间, Secondary Actions: Expand\n~\t\t\t\t15 缺失净值\n~\t\t\t\t16 (selected) 未来期间\n+\t\t\t\t53 text —\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，金额未知, Secondary Actions: Expand\n+\t\t\t\t54 text —\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，金额未知, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "currency",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)—口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 币种不一致, Secondary Actions: Expand\n~\t\t\t\t16 未来期间\n~\t\t\t\t17 (selected) 币种不一致\n~\t\t\t\t53 text +1.22 万\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，口径详情，完整金额 12240.5678 CNY, Secondary Actions: Expand\n~\t\t\t\t54 text +6,180.00\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，口径详情，完整金额 6180 CNY, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  },
+  {
+    "scenario": "long",
+    "geometry": {
+      "cards": [
+        {
+          "h": 88,
+          "text": "期间净盈亏(CNY)-1,234,567,890,123,456,789,000.00 亿口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 204
+        },
+        {
+          "h": 88,
+          "text": "期间已实现(CNY)+1.22 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 304
+        },
+        {
+          "h": 88,
+          "text": "期间浮盈变动(CNY)+6,180.00口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 404
+        },
+        {
+          "h": 88,
+          "text": "当前持仓市值(CNY)26.01 万口径详情",
+          "w": 342,
+          "x": 24,
+          "y": 504
+        }
+      ],
+      "dpr": 1,
+      "h": 844,
+      "scroll": 390,
+      "updates": [],
+      "w": 390
+    },
+    "ax": "Browser tab: 12, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 49\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 极长金额与来源, Secondary Actions: Expand\n~\t\t\t\t17 币种不一致\n~\t\t\t\t18 (selected) 极长金额与来源\n+\t\t\t\t55 text -1,234,567,890,123,456,789,000.00 亿\n~\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，口径详情，完整金额 -123456789012345678901234567890.123456789000 CNY, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html"
+  }
+]

@@ -1,0 +1,68 @@
+--- candidate1/app/components/homepage-v25/history-stats-cards.tsx
++++ candidate2/app/components/homepage-v25/history-stats-cards.tsx
+@@ -170,7 +170,7 @@
+         const isMoney = card.key === "closedNet" || card.key === "allocatedFees";
+         const display = read.raw === null ? { number: "—", unit: "", tone: "unknown" }
+           : isMoney ? amountDisplay(read.raw, card.key === "closedNet")
+-          : { number: card.key === "winRate" ? `${new Decimal(read.raw).toFixed()}%` : grouped(new Decimal(read.raw).toFixed(0)), unit: "", tone: "neutral" };
++          : { number: card.key === "winRate" ? `${new Decimal(read.raw).toFixed(1).replace(/\.0$/, "")}%` : grouped(new Decimal(read.raw).toFixed(0)), unit: "", tone: "neutral" };
+         const exact = read.raw === null ? "读数未知" : `完整读数 ${read.raw}${isMoney ? ` ${reportCurrency}` : card.key === "winRate" ? "%" : " 回合"}`;
+         return <article key={card.key} className={`hp-history-stats__card hp-history-stats__card--${card.key}`} aria-label={card.name}>
+           <div className="hp-history-stats__content">
+--- candidate1/app/components/homepage-v25/history-stats-cards.test.tsx
++++ candidate2/app/components/homepage-v25/history-stats-cards.test.tsx
+@@ -275,3 +275,54 @@
+     expect(trigger(names[1])).toHaveFocus();
+   });
+ });
++
++describe("candidate2 bounded primary percentage with exact submitted evidence", () => {
++  it.each([
++    ["64.285714285714285714", "64.3%"],
++    ["33.333333333333333333", "33.3%"],
++    ["66.666666666666666666", "66.7%"],
++  ])("HS01/11 formats submitted %s as %s while preserving exact AX/detail precision", async (raw, formatted) => {
++    const user = userEvent.setup();
++    render(<HistoryStatsCards {...props({ summary: { ...summary(), winningRounds: scalar("0"), winRate: scalar(raw) } })} />);
++    expect(primary(names[2]).textContent).toBe(formatted);
++    const opener = trigger(names[2]);
++    expect(opener).toHaveAccessibleName(`胜率，口径详情，完整读数 ${raw}%，盈利回合 0 / 总回合 14`);
++    expect(within(card(names[2])).getByLabelText("盈利回合 0 / 总回合 14")).toBeInTheDocument();
++    await user.click(opener);
++    expect(within(screen.getByRole("dialog")).getByText(`${raw}%`, { exact: true })).toBeInTheDocument();
++    await user.keyboard("{Escape}");
++    expect(opener).toHaveFocus();
++  });
++
++  it.each([
++    ["0.000000000000000000", "0%"],
++    ["100.000000000000000000", "100%"],
++  ])("HS02/03/11 keeps endpoint %s exact in evidence and displays %s", async (raw, formatted) => {
++    const user = userEvent.setup();
++    render(<HistoryStatsCards {...props({ summary: { ...summary(), winningRounds: scalar("0"), winRate: scalar(raw) } })} />);
++    expect(primary(names[2]).textContent).toBe(formatted);
++    expect(trigger(names[2])).toHaveAccessibleName(`胜率，口径详情，完整读数 ${raw}%，盈利回合 0 / 总回合 14`);
++    await user.click(trigger(names[2]));
++    expect(within(screen.getByRole("dialog")).getByText(`${raw}%`, { exact: true })).toBeInTheDocument();
++  });
++
++  it.each([
++    { label: "non-finite", observation: scalar("NaN"), reason: "百分比格式无效" },
++    { label: "above one hundred", observation: scalar("100.000000000000000001"), reason: "百分比格式无效" },
++    { label: "negative", observation: scalar("-0.000000000000000001"), reason: "百分比格式无效" },
++    { label: "missing", observation: scalar(null, ["胜率来源缺失"]), reason: "胜率来源缺失" },
++    { label: "unavailable with stale precision", observation: { ...scalar("64.285714285714285714", ["胜率尚未提交"]), available: false }, reason: "胜率尚未提交" },
++  ])("HS05/11 keeps $label percentage unknown and leaves independent readings intact", async ({ observation, reason }) => {
++    const user = userEvent.setup();
++    render(<HistoryStatsCards {...props({ summary: { ...summary(), winRate: observation } })} />);
++    expect(primary(names[2]).textContent).toBe("—");
++    expect(trigger(names[2])).toHaveAccessibleName("胜率，口径详情，读数未知，盈利回合 9 / 总回合 14");
++    expect(primary(names[0])).toHaveTextContent("+3.00 万");
++    expect(primary(names[1])).toHaveTextContent(/^14$/);
++    expect(primary(names[3])).toHaveTextContent(/^2,440.00$/);
++    await user.click(trigger(names[2]));
++    const dialog = screen.getByRole("dialog");
++    expect(dialog).toHaveTextContent(reason);
++    expect(within(dialog).getByText("—", { exact: true })).toBeInTheDocument();
++  });
++});

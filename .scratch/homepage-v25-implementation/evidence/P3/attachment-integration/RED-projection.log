@@ -1,0 +1,39 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47854) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ × app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > projects one canonical instrument entry while retaining separate eligible account episodes 45ms
+   → expected [ { scopeKey: 'live', …(17) }, …(1) ] to have a length of 1 but got 2
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > feeds holdings and CSV from the exact eligible account/instrument groups 18ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > qualifies open exposure without quotes or unrealized money and retains complete selected histories 12ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > does not label completed-looking incomplete histories as pending=no or guess missing stock metadata 12ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > uses Recall completion from its owned entries and resolves source identity to concrete instruments 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > projects one canonical instrument entry while retaining separate eligible account episodes
+AssertionError: expected [ { scopeKey: 'live', …(17) }, …(1) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ app/components/homepage-v25/attachment-integration.test.ts:32:38
+     30|     const entries = source([fill("A", "X"), fill("B", "X")]);
+     31|     const result = buildHomepageHoldings(entries, { scope, asOf, instr…
+     32|     expect(result.selection.entries).toHaveLength(1);
+       |                                      ^
+     33|     expect(result.selection.entries[0].episodes.map(item => item.episo…
+     34|     expect(result.rows).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  06:30:01
+   Duration  4.31s (transform 453ms, setup 528ms, import 523ms, tests 98ms, environment 2.71s)
+

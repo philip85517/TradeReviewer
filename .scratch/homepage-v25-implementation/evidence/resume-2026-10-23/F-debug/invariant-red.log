@@ -1,0 +1,193 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:95260) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts (10 tests | 10 failed) 73ms
+     × R01 unknown fees cannot produce complete PnL 44ms
+     × R02 unknown ledger quantity cannot produce complete zero current value 3ms
+     × R03 mismatched settlement currency cannot be subtracted from quote currency 3ms
+     × R04 production FX snapshot keys convert current value 2ms
+     × R05 missing FX snapshot status cannot produce complete conversion 3ms
+     × R06 same close realized amount must not change when period start moves before its opening 6ms
+     × R07 adding a future opposite episode cannot change a known prior-period result 5ms
+     × R08 inclusive first-day PnL uses the pre-period mark 1ms
+     × R09 period realized uses the established average-cost ledger 3ms
+     × R10 optional asOf cannot make current value depend on selected period 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R01 unknown fees cannot produce complete PnL
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:21:94
+     19| describe("confirmed financial boundary/evidence regression candidates …
+     20|   it("R01 unknown fees cannot produce complete PnL", () => {
+     21|     expect(project([{ ...buy, source: { ...buy.source, feeStatus: "unk…
+       |                                                                                              ^
+     22|   });
+     23|   it("R02 unknown ledger quantity cannot produce complete zero current…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R02 unknown ledger quantity cannot produce complete zero current value
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:24:131
+     22|   });
+     23|   it("R02 unknown ledger quantity cannot produce complete zero current…
+     24|     expect(project([{ ...buy, source: { ...buy.source, historyIncomple…
+       |                                                                                                                                   ^
+     25|   });
+     26|   it("R03 mismatched settlement currency cannot be subtracted from quo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R03 mismatched settlement currency cannot be subtracted from quote currency
+AssertionError: expected '-590' to be null
+
+- Expected:
+null
+
++ Received:
+"-590"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:27:168
+     25|   });
+     26|   it("R03 mismatched settlement currency cannot be subtracted from quo…
+     27|     expect(project([{ ...buy, source: { ...buy.source, settlement: { c…
+       |                                                                                                                                                                        ^
+     28|   });
+     29|   it("R04 production FX snapshot keys convert current value", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R04 production FX snapshot keys convert current value
+AssertionError: expected null to be '770' // Object.is equality
+
+- Expected:
+"770"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:30:96
+     28|   });
+     29|   it("R04 production FX snapshot keys convert current value", () => {
+     30|     expect(project([buy], { targetCurrency: "CNY", fxSnapshot: fx }).c…
+       |                                                                                                ^
+     31|   });
+     32|   it("R05 missing FX snapshot status cannot produce complete conversio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R05 missing FX snapshot status cannot produce complete conversion
+AssertionError: expected '770' to be null
+
+- Expected:
+null
+
++ Received:
+"770"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:33:143
+     31|   });
+     32|   it("R05 missing FX snapshot status cannot produce complete conversio…
+     33|     expect(project([buy], { targetCurrency: "CNY", fxSnapshot: { ...fx…
+       |                                                                                                                                               ^
+     34|   });
+     35|   it("R06 same close realized amount must not change when period start…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R06 same close realized amount must not change when period start moves before its opening
+AssertionError: expected '19' to be '17' // Object.is equality
+
+Expected: "17"
+Received: "19"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:39:56
+     37|     const close: TradeExecution = { ...buy, id: "close", side: "sell",…
+     38|     const full = project([old, close], { period: { start: "2025-12-01"…
+     39|     expect(project([old, close]).periodRealized.value).toBe(full.perio…
+       |                                                        ^
+     40|   });
+     41|   it("R07 adding a future opposite episode cannot change a known prior…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R07 adding a future opposite episode cannot change a known prior-period result
+AssertionError: expected null to be '19' // Object.is equality
+
+- Expected:
+"19"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:45:53
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R08 inclusive first-day PnL uses the pre-period mark
+AssertionError: expected '10' to be '30' // Object.is equality
+
+Expected: "30"
+Received: "10"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:49:131
+     47|   it("R08 inclusive first-day PnL uses the pre-period mark", () => {
+     48|     const old = { ...buy, executedAt: "2025-12-15T15:00:00Z" };
+     49|     expect(project([old], {}, [candle("2025-12-31", "100"), candle("20…
+       |                                                                                                                                   ^
+     50|   });
+     51|   it("R09 period realized uses the established average-cost ledger", (…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R09 period realized uses the established average-cost ledger
+AssertionError: expected '250' to be '200' // Object.is equality
+
+Expected: "200"
+Received: "250"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:53:147
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R10 optional asOf cannot make current value depend on selected period
+AssertionError: expected '0' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts:58:42
+     56|     const now = project([buy], { asOf: undefined });
+     57|     const old = project([buy], { asOf: undefined, period: { start: "20…
+     58|     expect(old.currentMarketValue.value).toBe(now.currentMarketValue.v…
+       |                                          ^
+     59|   });
+     60| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  00:20:50
+   Duration  758ms (transform 234ms, setup 0ms, import 297ms, tests 73ms, environment 0ms)
+

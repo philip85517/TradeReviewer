@@ -1,0 +1,65 @@
+--- .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/before-performance.test.ts
++++ app/lib/reviews/homepage-v25-performance.test.ts
+@@ -910,3 +910,62 @@
+     expect(first.diagnostics.batchCacheHits).toBe(0);expect(preparedPerformance.inspectHomepageV25PreparedSource(source).batchCacheHits).toBe(1);
+   });
+ });
++
++describe("P2 exact immutable public graph sharing", () => {
++  it("shares identical complete metric content and common metadata without dropping public fields", () => {
++    // A factory that only returns equal newly allocated metadata or repeats the
++    // closing-unrealized calculation breaks the retained-graph contract.
++    const source = preparedFixture([fill("shared-buy", "2026-01-05T15:00:00Z")], [raw("2026-01-29", "110")], { fxObservations: [observation("2026-01-30", "7")] });
++    const query = { ...batchQuery, targetCurrency: "CNY", endpoints: [{ key: "a", at: "2026-01-30T10:00:00Z" }, { key: "b", at: "2026-01-30T10:00:00Z" }] };
++    const batch = projectHomepageV25Boundaries(source, query), [first, second] = batch.points, group = first.instruments[0];
++    expect(group.net).toEqual({ value: "70", available: true, coverage: { total: 1, available: 1 }, reasons: [], money: { originalByCurrency: { USD: "10" }, targetCurrency: "CNY", conversion: "complete", fx: { id: "fx-2026-01-30", source: "broker-history", asOf: "2026-01-30T10:00:00.000Z", status: "complete" } } });
++    expect(group.closingUnrealized).toBe(group.unrealizedNet);
++    expect(second.instruments[0].net).toBe(group.net);
++    expect(first.net).toBe(group.net);
++    expect(group.net.coverage).toBe(group.marketValue.coverage);
++    expect(group.net.reasons).toBe(group.marketValue.reasons);
++    expect(group.net.money.fx).toBe(group.marketValue.money.fx);
++    expect(group.net.money.originalByCurrency).toBe(group.closingUnrealized.money.originalByCurrency);
++    expect(Object.keys(first)).toEqual(["periodRealized", "openingUnrealized", "closingUnrealized", "unrealizedChange", "net", "lifetimeRealizedNet", "lifetimeNet", "marketValue", "unrealizedNet", "openFees", "periodFees", "key", "requestedAt", "businessDate", "effectiveCursor", "boundaryPrecision", "state", "plottable", "instruments", "quoteCoverage", "fxCoverage", "lifetimeCoverage", "reasons"]);
++    const seen = new Set<object>();
++    const checkFrozen = (value: unknown) => { if (value && typeof value === "object" && !seen.has(value)) { seen.add(value); expect(Object.isFrozen(value)).toBe(true); Object.values(value).forEach(checkFrozen); } };
++    checkFrozen(batch);
++    expect(Reflect.set(group.net.coverage, "available", 0)).toBe(false);
++    expect(Reflect.set(group.net.money.fx!, "asOf", "2099-01-01")).toBe(false);
++    expect(projectHomepageV25Boundaries(source, query)).toBe(batch);
++  });
++
++  it("keeps equal numbers with different exposure coverage and endpoint FX evidence distinct", () => {
++    // Numeric-only keys would merge zero/empty scopes or erase dated FX clocks.
++    const source = preparedFixture([fill("covered-zero", "2026-01-05T15:00:00Z")], [raw("2026-01-29", "110"), raw("2026-01-30", "110")], { fxObservations: [observation("2026-01-30", "7"), observation("2026-01-31", "7")] });
++    const points = projectHomepageV25Boundaries(source, { ...batchQuery, targetCurrency: "CNY", endpoints: [{ key: "empty", at: "2026-01-02" }, { key: "a", at: "2026-01-30T10:00:00Z" }, { key: "b", at: "2026-01-31T10:00:00Z" }] }).points;
++    expect(points.map(p => p.periodFees.value)).toEqual(["0", "0", "0"]);
++    expect(points[0].periodFees.coverage).toEqual({ total: 0, available: 0 });
++    expect(points[1].periodFees.coverage).toEqual({ total: 1, available: 1 });
++    expect(points[0].periodFees).not.toBe(points[1].periodFees);
++    expect(points[1].net.value).toBe("70"); expect(points[2].net.value).toBe("70");
++    expect(points[1].net.money.fx).not.toBe(points[2].net.money.fx);
++    expect(points[1].net.money.fx?.id).toBe("fx-2026-01-30");
++    expect(points[2].net.money.fx?.id).toBe("fx-2026-01-31");
++    expect(points[1].net).not.toBe(points[2].net);
++    expect(points[1].lifetimeNet.value).toBeNull();
++    expect(points[1].lifetimeNet.reasons).toEqual(["lifetime-source-incomplete"]);
++    expect(points[1].lifetimeNet.reasons).not.toBe(points[1].net.reasons);
++  });
++
++  it("rejects an oversized candidate without evicting the existing admitted batch", () => {
++    // Entry-key and public-key retention together exceed the unchanged 64MiB
++    // estimate; returning the complete oversized result remains valid.
++    const source = preparedFixture([fill("admitted-buy", "2026-01-05T15:00:00Z")], [raw("2026-01-29", "110")]);
++    const query = { ...batchQuery, endpoints: [{ key: "small", at: "2026-01-30T10:00:00Z" }] };
++    const first = projectHomepageV25Boundaries(source, query), before = preparedPerformance.inspectHomepageV25PreparedSource(source);
++    const hugeKey = "oversized-" + "x".repeat(17 * 1024 * 1024);
++    const rejected = projectHomepageV25Boundaries(source, { ...query, endpoints: [{ key: hugeKey, at: "2026-01-30T10:00:00Z" }] });
++    expect(rejected.points[0].key).toBe(hugeKey); expect(rejected.points[0].net.value).toBe("10");
++    const after = preparedPerformance.inspectHomepageV25PreparedSource(source);
++    expect(after.batchEntries).toBe(before.batchEntries);
++    expect(after.evictions).toBe(before.evictions);
++    expect(after.cacheEstimatedBytes).toBe(before.cacheEstimatedBytes);
++    expect(projectHomepageV25Boundaries(source, query)).toBe(first);
++  });
++});

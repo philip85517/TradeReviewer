@@ -1,0 +1,259 @@
+[
+  {
+    "scenario": "mixed",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 异号八标的, Secondary Actions: Expand\n~\t\t\t\t8 (selected) 异号八标的\n~\t\t\t\t19 极长身份金额来源\n~\t\t\t\t119 container 招商银行 贡献\n~\t\t\t\t\t\t121 text 招商银行\n~\t\t\t\t\t\t122 text +8,000.00\n~\t\t\t\t\t123 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "first": {
+        "bottom": 195,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "h": 1000,
+      "list": {
+        "bottom": 496,
+        "height": 344,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "next": {
+        "bottom": 733,
+        "height": 170,
+        "left": 144,
+        "right": 1296,
+        "top": 563,
+        "width": 1152,
+        "x": 144,
+        "y": 563
+      },
+      "section": {
+        "bottom": 539,
+        "height": 387,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "status": null,
+      "total": {
+        "bottom": 539,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 496,
+        "width": 1152,
+        "x": 144,
+        "y": 496
+      },
+      "w": 1440
+    }
+  },
+  {
+    "scenario": "pending",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand\n~\t\t\t\t8 异号八标的\n~\t\t\t\t15 (selected) 更新保留旧值\n+\t\t\t161 text 更新中，继续显示已提交贡献\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "first": {
+        "bottom": 227,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 184,
+        "width": 1152,
+        "x": 144,
+        "y": 184
+      },
+      "h": 1000,
+      "list": {
+        "bottom": 528,
+        "height": 344,
+        "left": 144,
+        "right": 1296,
+        "top": 184,
+        "width": 1152,
+        "x": 144,
+        "y": 184
+      },
+      "next": {
+        "bottom": 765,
+        "height": 170,
+        "left": 144,
+        "right": 1296,
+        "top": 595,
+        "width": 1152,
+        "x": 144,
+        "y": 595
+      },
+      "section": {
+        "bottom": 571,
+        "height": 419,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "status": {
+        "color": "rgb(108, 168, 255)",
+        "text": "更新中，继续显示已提交贡献"
+      },
+      "total": {
+        "bottom": 571,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 528,
+        "width": 1152,
+        "x": 144,
+        "y": 528
+      },
+      "w": 1440
+    }
+  },
+  {
+    "scenario": "error",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 读取失败保留旧值, Secondary Actions: Expand\n~\t\t\t\t15 更新保留旧值\n~\t\t\t\t17 (selected) 读取失败保留旧值\n~\t\t\t161 text 读取失败，原范围与贡献保留\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "first": {
+        "bottom": 227,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 184,
+        "width": 1152,
+        "x": 144,
+        "y": 184
+      },
+      "h": 1000,
+      "list": {
+        "bottom": 528,
+        "height": 344,
+        "left": 144,
+        "right": 1296,
+        "top": 184,
+        "width": 1152,
+        "x": 144,
+        "y": 184
+      },
+      "next": {
+        "bottom": 765,
+        "height": 170,
+        "left": 144,
+        "right": 1296,
+        "top": 595,
+        "width": 1152,
+        "x": 144,
+        "y": 595
+      },
+      "section": {
+        "bottom": 571,
+        "height": 419,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "status": {
+        "color": "rgb(255, 133, 146)",
+        "text": "读取失败，原范围与贡献保留"
+      },
+      "total": {
+        "bottom": 571,
+        "height": 43,
+        "left": 144,
+        "right": 1296,
+        "top": 528,
+        "width": 1152,
+        "x": 144,
+        "y": 528
+      },
+      "w": 1440
+    }
+  },
+  {
+    "scenario": "initial",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次加载, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 (selected) 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t161 text 首次读取贡献中\n\t\t\t162 container 贡献首次加载中\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "h": 1000,
+      "next": {
+        "bottom": 722,
+        "height": 170,
+        "left": 144,
+        "right": 1296,
+        "top": 552,
+        "width": 1152,
+        "x": 144,
+        "y": 552
+      },
+      "section": {
+        "bottom": 528,
+        "height": 376,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "status": {
+        "color": "rgb(167, 179, 196)",
+        "text": "首次读取贡献中"
+      },
+      "w": 1440
+    }
+  },
+  {
+    "scenario": "empty",
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 无结果, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 (selected) 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t161 text 当前范围没有贡献，不能当作零金额\n\t\t\t162 content list 已提交贡献行\n\t\t71 heading 来源激活与下一模块, Value: 2\n\t\t\t72 text 来源激活与下一模块\n\t\t73 container 准确来源对象\n\t\t\t74 text 尚未激活\n\t\t75 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t76 button 外部阅读位置\n\nThe focused UI element is 1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html",
+    "dom": {
+      "h": 1000,
+      "list": {
+        "bottom": 528,
+        "height": 344,
+        "left": 144,
+        "right": 1296,
+        "top": 184,
+        "width": 1152,
+        "x": 144,
+        "y": 184
+      },
+      "next": {
+        "bottom": 722,
+        "height": 170,
+        "left": 144,
+        "right": 1296,
+        "top": 552,
+        "width": 1152,
+        "x": 144,
+        "y": 552
+      },
+      "section": {
+        "bottom": 528,
+        "height": 376,
+        "left": 144,
+        "right": 1296,
+        "top": 152,
+        "width": 1152,
+        "x": 144,
+        "y": 152
+      },
+      "status": {
+        "color": "rgb(167, 179, 196)",
+        "text": "当前范围没有贡献，不能当作零金额"
+      },
+      "w": 1440
+    }
+  }
+]

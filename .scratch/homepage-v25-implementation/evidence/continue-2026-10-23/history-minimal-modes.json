@@ -1,0 +1,97 @@
+{
+  "before": {
+    "card": {
+      "bottom": 472,
+      "height": 320,
+      "left": 144,
+      "right": 1296,
+      "top": 152,
+      "width": 1152,
+      "x": 144,
+      "y": 152
+    },
+    "dpr": 1,
+    "h": 1000,
+    "plot": "84,66,1136,276",
+    "points": [
+      {
+        "cx": "84",
+        "cy": "76",
+        "id": "hp-history-point-01"
+      },
+      {
+        "cx": "1136",
+        "cy": "240.609052",
+        "id": "hp-history-point-03"
+      }
+    ],
+    "w": 1440
+  },
+  "esc": {
+    "active": "hp-history-hit-02",
+    "crosshair": false,
+    "tooltip": false
+  },
+  "modes": [
+    {
+      "mode": "cumulative-pnl",
+      "expected": "98765.432100 CNY",
+      "dom": {
+        "active": "hp-history-hit-02",
+        "card": {
+          "bottom": 472,
+          "height": 320,
+          "left": 144,
+          "right": 1296,
+          "top": 152,
+          "width": 1152,
+          "x": 144,
+          "y": 152
+        },
+        "plot": "84,66,1136,276",
+        "reading": "98765.432100 CNY",
+        "title": "累计净盈亏"
+      }
+    },
+    {
+      "mode": "win-rate",
+      "expected": "12.345%",
+      "dom": {
+        "active": "hp-history-hit-02",
+        "card": {
+          "bottom": 472,
+          "height": 320,
+          "left": 144,
+          "right": 1296,
+          "top": 152,
+          "width": 1152,
+          "x": 144,
+          "y": 152
+        },
+        "plot": "84,66,1136,276",
+        "reading": "—",
+        "title": "各期胜率"
+      }
+    },
+    {
+      "mode": "round-count",
+      "expected": "3 回合",
+      "dom": {
+        "active": "hp-history-hit-02",
+        "card": {
+          "bottom": 472,
+          "height": 320,
+          "left": 144,
+          "right": 1296,
+          "top": 152,
+          "width": 1152,
+          "x": 144,
+          "y": 152
+        },
+        "plot": "84,66,1136,276",
+        "reading": "—",
+        "title": "各期回合数"
+      }
+    }
+  ]
+}

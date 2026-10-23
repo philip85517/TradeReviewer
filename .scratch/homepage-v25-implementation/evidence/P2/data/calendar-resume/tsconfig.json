@@ -1,0 +1,21 @@
+{
+  "extends": "../../../../../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "types": [
+      "node",
+      "@cloudflare/workers-types"
+    ]
+  },
+  "include": [
+    "../../../../../../app/lib/reviews/homepage-v25-performance.ts",
+    "../../../../../../app/lib/reviews/homepage-v25-performance.test.ts",
+    "./fx-stage-oracle.ts",
+    "./input-oracle.ts",
+    "./equivalence.test.ts",
+    "./benchmark.test.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

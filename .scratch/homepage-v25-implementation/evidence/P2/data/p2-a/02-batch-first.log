@@ -1,0 +1,62 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:23491) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (110 tests | 2 failed) 655ms
+     × separates lifetime net from selected-period net using canonical endpoint states 39ms
+     × computes native period differences before applying one endpoint FX 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > separates lifetime net from selected-period net using canonical endpoint states
+AssertionError: expected [ '30', null, '0', null, null, …(3) ] to deeply equal [ '30', '20', '0', '-20', '10', …(3) ]
+
+- Expected
++ Received
+
+  [
+    "30",
+-   "20",
++   null,
+    "0",
+-   "-20",
+-   "10",
++   null,
++   null,
+    "30",
+    "30",
+    "0",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:610:233
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > computes native period differences before applying one endpoint FX
+AssertionError: expected [ '240', null, null, '240' ] to deeply equal [ '240', '-160', '80', '240' ]
+
+- Expected
++ Received
+
+  [
+    "240",
+-   "-160",
+-   "80",
++   null,
++   null,
+    "240",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:621:114
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 108 passed (110)
+   Start at  02:34:21
+   Duration  1.62s (transform 471ms, setup 0ms, import 586ms, tests 655ms, environment 0ms)
+

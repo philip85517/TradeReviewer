@@ -1,0 +1,9 @@
+{
+  "status": "STATIC_PREPARATION_PASS_NOT_EXECUTED",
+  "measurementBodyUnchangedAfterImportOutputMetadataNormalization": true,
+  "originalBenchmarkSha256": "a353ac435fe789b1492fed51cc917de3fe8c8e5723e9cdaef8863890b938821c",
+  "diagnosticMeasurerSha256": "4e83b39a1df2b82c8a17fc075ab5ed769d1c2eb9812bf02eddd90e169cfc48ce",
+  "freshProcesses": 12,
+  "formalPerformanceSamplesProduced": 0,
+  "quietWindowReleaseRequired": true
+}

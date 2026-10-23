@@ -1,0 +1,16 @@
+Browser tab: 13, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~					35 button Description: 2026-04-01 行情加载中，金额未知，查看原因, Help: 2026-04-01 · 行情加载中 · 该日行情正在加载
+~					37 button 2026-08-15 读取失败，金额未知，查看原因
+~			39 container 读取失败 · 2026-08-15 · 金额未知时显示 — 当日市值 当日市值 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 当日浮盈 当日浮盈 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 累计已实现 累计已实现 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 累计净盈亏 累计净盈亏 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 期间净盈亏 期间净盈亏 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 期间费用 期间费用 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用 该日读取失败，旧值不可使用
+~					41 text 2026-08-15 CNY
+~					42 button (collapsed) Description: 2026-08-15 数据说明, Help: 该日读取失败，旧值不可使用, Secondary Actions: Expand
+~					44 text 读取失败  ·  2026-08-15  · 金额未知时显示 —
+~					48 container Description: 当日市值 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~					52 container Description: 当日浮盈 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~					56 container Description: 累计已实现 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~					60 container Description: 累计净盈亏 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~					64 container Description: 期间净盈亏 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~					68 container Description: 期间费用 CNY —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用, Help: —；该日读取失败，旧值不可使用；该日读取失败，旧值不可使用
+~				70 text 该日读取失败，旧值不可使用
+The focused UI element is 37 button 2026-08-15 读取失败，金额未知，查看原因

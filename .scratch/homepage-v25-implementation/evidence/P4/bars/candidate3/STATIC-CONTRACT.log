@@ -1,0 +1,8 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate3/verify-static-contract.mjs"]
+STDOUT
+PASS: parsed scoped CSS; 14px equal outer segments; inset hollow; signed colors; common 50% zero; 43/70px desktop pitch; fixed 264px/12px detail; explicit parent nowrap reset; local max735px fallback; no segment minimum width.
+STATIC ONLY: jsdom/postcss do not lay out container queries, measure browser overflow, viewport/DPR, pointer targets or visual fidelity. All actual geometry/visual gates remain NOT VERIFIED for root.
+
+STDERR
+
+EXIT 0

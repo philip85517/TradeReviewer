@@ -1,0 +1,680 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:58450) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx (29 tests | 29 failed) 314ms
+     × HS01 preserves the four original card order and renders submitted 9/14 and 64.3 independently 165ms
+     × HS14 已平仓净盈亏 opens its own read-only explanation and returns focus to the same trigger 13ms
+     × HS14 已平仓回合数 opens its own read-only explanation and returns focus to the same trigger 5ms
+     × HS14 胜率 opens its own read-only explanation and returns focus to the same trigger 4ms
+     × HS14 已扣费用 opens its own read-only explanation and returns focus to the same trigger 8ms
+     × HS02–03 displays genuine zero and one hundred percent without deriving either from counts or money 5ms
+     × HS04 keeps explicit empty zero rounds and unknown rate without inventing net or fees zero 4ms
+     × HS04 renders amounts zero only when the complete empty summary explicitly supplies known zero 5ms
+     × HS05 unavailable amounts and rate do not erase independently known fourteen closed rounds 6ms
+     × HS06 unavailable closed count does not erase a separately known rate, winning count or amount 5ms
+     × HS06 respects available:false even if stale scalar and money strings are present 7ms
+     × HS07 first pending has four skeletons, no fabricated zero, and an available explanation 2ms
+     × HS08–09 pending and failure retain the entire frozen caller summary and expose their reasons 3ms
+     × HS10 initial failure shows unknown readouts and reason without synthetic zero or a local previous-summary cache 3ms
+     × HS11 preserves unrounded source amounts, huge counts, coverage, currencies and FX provenance in details 3ms
+     × HS11 invalid finite amount NaN cannot crash or become a visible known number 3ms
+     × HS11 invalid finite amount Infinity cannot crash or become a visible known number 2ms
+     × HS11 invalid finite amount not-an-amount cannot crash or become a visible known number 2ms
+     × HS11 rejects negative/fractional counts and rate outside 0..100 without changing unrelated evidence 2ms
+     × HS12 currency mismatch hides only money and preserves exact source currency in its explanation 2ms
+     × HS13 sourceId invalidation never resurrects old detail or steals subsequently external focus 16ms
+     × HS13 requestGeneration invalidation never resurrects old detail or steals subsequently external focus 5ms
+     × HS13 reportCurrency invalidation never resurrects old detail or steals subsequently external focus 7ms
+     × HS14 tabs through four triggers, opens with Enter/Space and Escape returns exact focus 14ms
+     × HS14 inside clicks and Tab preserve detail; outside click closes and returns its opener 7ms
+     × HS15 replaces all four displayed readings as one group while keeping trigger identity and focus stable 3ms
+     × HS15 closes access immediately but retains an inert visual exit for exactly 160ms 4ms
+     × HS15 reopening during exit cancels the former timer and focuses the newly selected card 3ms
+     × HS15 reduced motion has no delayed exit and enabling it mid-exit reaches the terminal state 4ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 29 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS01 preserves the four original card order and renders submitted 9/14 and 64.3 independently
+TestingLibraryElementError: Unable to find an accessible element with the role "article"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:34:19
+     32|   it("HS01 preserves the four original card order and renders submitte…
+     33|     render(<HistoryStatsCards {...props()} />);
+     34|     expect(screen.getAllByRole("article").map(node => node.getAttribut…
+       |                   ^
+     35|     expect(primary(names[0])).toHaveTextContent("+3.00 万");
+     36|     expect(primary(names[1])).toHaveTextContent(/^14$/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 已平仓净盈亏 opens its own read-only explanation and returns focus to the same trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:47:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 已平仓回合数 opens its own read-only explanation and returns focus to the same trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓回合数"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:47:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 胜率 opens its own read-only explanation and returns focus to the same trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "胜率"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:47:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 已扣费用 opens its own read-only explanation and returns focus to the same trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已扣费用"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:47:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS02–03 displays genuine zero and one hundred percent without deriving either from counts or money
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "胜率"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:62:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS04 keeps explicit empty zero rounds and unknown rate without inventing net or fees zero
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓回合数"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:75:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS04 renders amounts zero only when the complete empty summary explicitly supplies known zero
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:86:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS05 unavailable amounts and rate do not erase independently known fourteen closed rounds
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓回合数"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:96:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS06 unavailable closed count does not erase a separately known rate, winning count or amount
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:105:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS06 respects available:false even if stale scalar and money strings are present
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:116:50
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS07 first pending has four skeletons, no fabricated zero, and an available explanation
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-stat-skeleton"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:123:19
+    121|     const user = userEvent.setup();
+    122|     render(<HistoryStatsCards {...props({ summary: null, status: { kin…
+    123|     expect(screen.getAllByTestId("hp-history-stat-skeleton")).toHaveLe…
+       |                   ^
+    124|     expect(screen.queryByText(/^0(?:\.00|%)?$/)).not.toBeInTheDocument…
+    125|     await user.click(trigger(names[1])); expect(screen.getByRole("dial…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS08–09 pending and failure retain the entire frozen caller summary and expose their reasons
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:131:19
+    129|     const user = userEvent.setup(); const data = freeze(summary()); co…
+    130|     const view = render(<HistoryStatsCards {...props({ summary: data, …
+    131|     expect(screen.getByRole("status")).toHaveTextContent("更新中，继续显示原范围"…
+       |                   ^
+    132|     expect(screen.getAllByText("更新中", { exact: true })).toHaveLength(4…
+    133|     expect(primary(names[0])).toHaveTextContent("+3.00 万"); expect(pri…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS10 initial failure shows unknown readouts and reason without synthetic zero or a local previous-summary cache
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-history-stat-value"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:145:19
+    143|     const view = render(<HistoryStatsCards {...props()} />);
+    144|     view.rerender(<HistoryStatsCards {...props({ summary: null, status…
+    145|     expect(screen.getAllByTestId("hp-history-stat-value").every(node =…
+       |                   ^
+    146|     expect(screen.getByRole("status")).toHaveTextContent("历史数据不可用");
+    147|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS11 preserves unrounded source amounts, huge counts, coverage, currencies and FX provenance in details
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:156:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS11 invalid finite amount NaN cannot crash or become a visible known number
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS11 invalid finite amount Infinity cannot crash or become a visible known number
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS11 invalid finite amount not-an-amount cannot crash or become a visible known number
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:169:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS11 rejects negative/fractional counts and rate outside 0..100 without changing unrelated evidence
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓回合数"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:176:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS12 currency mismatch hides only money and preserves exact source currency in its explanation
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:185:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS13 sourceId invalidation never resurrects old detail or steals subsequently external focus
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS13 requestGeneration invalidation never resurrects old detail or steals subsequently external focus
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS13 reportCurrency invalidation never resurrects old detail or steals subsequently external focus
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "胜率"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "外部操作":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m外部操作[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:195:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 tabs through four triggers, opens with Enter/Space and Escape returns exact focus
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:208:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS14 inside clicks and Tab preserve detail; outside click closes and returns its opener
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "外部操作":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m外部操作[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:218:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS15 replaces all four displayed readings as one group while keeping trigger identity and focus stable
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ primary app/components/homepage-v25/history-stats-cards.test.tsx:27:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:229:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS15 closes access immediately but retains an inert visual exit for exactly 160ms
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:242:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS15 reopening during exit cancels the former timer and focuses the newly selected card
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "已平仓净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:252:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/29]⎯
+
+ FAIL  app/components/homepage-v25/history-stats-cards.test.tsx > controlled history statistics > HS15 reduced motion has no delayed exit and enabling it mid-exit reaches the terminal state
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "胜率"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/history-stats-cards.test.tsx:26:39
+     24|   return value;
+     25| }
+     26| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     27| const primary = (name: string) => within(card(name)).getByTestId("hp-h…
+     28| const trigger = (name: string) => within(card(name)).getByRole("button…
+ ❯ trigger app/components/homepage-v25/history-stats-cards.test.tsx:28:42
+ ❯ app/components/homepage-v25/history-stats-cards.test.tsx:265:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/29]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  29 failed (29)
+   Start at  10:45:46
+   Duration  1.93s (transform 78ms, setup 177ms, import 223ms, tests 314ms, environment 870ms)
+

@@ -1,0 +1,11 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/holdings-model.test.ts.before-fixture-correction.txt	2026-10-23 01:52:15
++++ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/holdings-model.test.ts	2026-10-23 01:52:15
+@@ -14,7 +14,7 @@
+ const scope = { live: true as const, market: "all" as const, accounts: ["*"], rangeMode: "all" as const };
+ const quotes = { "CN-SH:600519": { price: "110", currency: "CNY", quoteDate: "2026-10-23", fetchedAt: "2026-10-23T08:00:00Z", provider: "tencent", freshness: "current" as const } };
+ function candlesFromQuotes(source: Record<string, TradingRoomQuote>) {
+-  return Object.fromEntries(Object.entries(source).map(([instrumentId, quote]) => [instrumentId, [{ instrumentId, tradingDate: quote.quoteDate!, open: quote.price!, high: quote.price!, low: quote.price!, close: quote.price!, volume: "0", currency: quote.currency!, provider: "tencent" as const, providerSymbol: instrumentId, adjustmentMode: "raw" as const, fetchedAt: quote.fetchedAt! }]]));
++  return Object.fromEntries(Object.entries(source).map(([instrumentId, quote]) => [instrumentId, [{ instrumentId, tradingDate: instrumentId.startsWith("US:") && quote.quoteDate === "2026-10-23" ? "2026-10-22" : quote.quoteDate!, open: quote.price!, high: quote.price!, low: quote.price!, close: quote.price!, volume: "0", currency: quote.currency!, provider: "tencent" as const, providerSymbol: instrumentId, adjustmentMode: "raw" as const, fetchedAt: quote.fetchedAt! }]]));
+ }
+ 
+ describe("homepage holdings projection", () => {

@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-22T18:34:40.282Z",
+  "database": ".data/tradereview-test.sqlite",
+  "rows": [
+    {
+      "episode_id": "episode:%5B%22p1-count-09%3ACN-SH%3A600100%3Alive%22%2C%222026-10-20T16%3A05%3A00.000Z%22%2C%22buy%22%2C%2220.125%22%2C%22100%22%5D:1",
+      "revision": 1,
+      "updated_at": "2026-10-22T18:29:34.019Z",
+      "status": "in-progress",
+      "plans": [
+        {
+          "input": {
+            "direction": null,
+            "currency": "CNY",
+            "priceBasis": "raw",
+            "entry": "100",
+            "initialStop": "90",
+            "targets": [
+              {
+                "id": "target-1",
+                "price": "120",
+                "quantity": null,
+                "ratio": null
+              }
+            ],
+            "sizeInputMode": "quantity",
+            "sizeInputValue": null,
+            "resolvedQuantity": null,
+            "quantityUnit": "share",
+            "capital": null,
+            "sizing": {
+              "quantityStep": "1",
+              "stepSource": "manual-reference",
+              "rounding": "floor",
+              "derivedUnroundedQuantity": null,
+              "roundingDelta": null
+            }
+          },
+          "decisionId": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy"
+        }
+      ]
+    }
+  ]
+}

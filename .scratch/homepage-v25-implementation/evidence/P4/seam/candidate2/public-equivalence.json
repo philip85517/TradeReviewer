@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "cases": [
+    "cumulative",
+    "reverse",
+    "late-ipo",
+    "future-currency"
+  ],
+  "batches": 8,
+  "wrappers": 12,
+  "fullPublicJsonBytes": 195379,
+  "fullPublicSha256": "41cf1229bcc25ffebcdc2ac0189f15d198eb4c12565df027c25fff302949e643",
+  "compared": [
+    "every legacy wrapper field",
+    "complete A public result including reasons/coverage/FX/diagnostics",
+    "initial and retained source/index/cache counters",
+    "cached repeat public result"
+  ],
+  "explicitFactsRetainedGrowth": 0,
+  "baselineSources": {
+    "app/lib/replay/position-ledger.ts": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126",
+    "app/lib/reviews/homepage-v25-performance.ts": "1e64b1c23aa0d42b96331d1eb89b6ec4c16e7d26c13454edc7c7449567df0542"
+  }
+}

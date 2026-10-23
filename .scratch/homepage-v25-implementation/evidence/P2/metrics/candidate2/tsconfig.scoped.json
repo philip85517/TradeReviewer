@@ -1,0 +1,14 @@
+{
+  "extends": "../../../../../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "plugins": [],
+    "types": ["@cloudflare/workers-types", "node", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "../../../../../../next-env.d.ts",
+    "../../../../../../app/components/homepage-v25/metric-cards.tsx",
+    "../../../../../../app/components/homepage-v25/metric-cards.test.tsx"
+  ],
+  "exclude": ["../../../../../../node_modules"]
+}

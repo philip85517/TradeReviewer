@@ -1,0 +1,15 @@
+{
+  "result": "expected RED",
+  "exitCode": 1,
+  "tests": {
+    "passed": 31,
+    "failed": 7,
+    "total": 38
+  },
+  "reason": "Closed text follows caller label rather than canonical applied range; no import or runtime failure.",
+  "hashes": {
+    "app/components/homepage-v25/history-controls.tsx": "ff683de0f9d6768dc832e285eab62f58037c6eec3b74b565469e687f89720d54",
+    "app/components/homepage-v25/history-controls.css": "09eca11df78da441a7f16e2c5d6589540f1840b34d4921f5e3b282fe657a4ed0",
+    "app/components/homepage-v25/history-controls.test.tsx": "e6e58ed6a550d9d077444ee112c9b3910cf2885fd0658024755a712b80442e14"
+  }
+}

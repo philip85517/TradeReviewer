@@ -1,0 +1,28 @@
+{
+  "start": 1792701272807,
+  "startedAt": "2026-10-22T20:34:32.807Z",
+  "actions": [
+    {
+      "action": "close-search",
+      "elapsed": 4150
+    },
+    {
+      "action": "reopen-search",
+      "elapsed": 7446
+    },
+    {
+      "action": "loading-keys",
+      "elapsed": 7599
+    }
+  ],
+  "observedAt": 1792701291417,
+  "elapsed": 18610,
+  "dom": {
+    "detailCount": 0,
+    "error": true,
+    "focus": "搜索标的",
+    "loading": false,
+    "query": "6",
+    "url": "http://127.0.0.1:3334/home?scope=live&market=a&accounts=*&rangeMode=all"
+  }
+}

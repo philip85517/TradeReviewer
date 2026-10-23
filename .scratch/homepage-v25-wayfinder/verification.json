@@ -1,0 +1,36 @@
+{
+  "checked_at_utc": "2026-10-22T14:56:53.177415+00:00",
+  "assessment_type": "local-document-consistency-only",
+  "code_sha": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "checks": {
+    "markdown_files": 10,
+    "local_link_occurrences": 416,
+    "design_source_hashes": 6,
+    "planning_requirements": 55,
+    "control_states": 96,
+    "applicable_states": 85,
+    "not_applicable_states": 11,
+    "unresolved_source_asset_references": 96,
+    "decision_children": 6,
+    "frontier_children": 4,
+    "blocked_children": 2
+  },
+  "errors": [],
+  "document_validation": "PASS",
+  "product_build_tests_browser_visual_persistence": "NOT VERIFIED",
+  "limitation": "Links, hashes, source-state transcription and dependency structure checked; no product execution, design acceptance or financial projection proof.",
+  "artifact_sha256": {
+    "CONTROL-STATE-COVERAGE.md": "cd8d65dfdf6284c87ab9dfdb2c06962c1869f502bc99a0e0a6adde93dab0287a",
+    "DESIGN-COVERAGE.md": "43b099242a505b987092644a6820ffa28ec365877ffd3820f53256ca1054e4f2",
+    "README.md": "0084909247f202d3866fe5382f04f3643f81acd58406ce90073fba9181179957",
+    "baseline.json": "767fd0d9816dea4b24b25dafd2fad79bae81b171ef010c25e77f4ed831f9a2ad",
+    "frontier.py": "f3b07396861ccecfddca64a30572befa4dbc75e544e016eb3777710433dbf54c",
+    "issues/00-map.md": "52b1f55b0c6ed0f09ef42ad966f8837d59cb2a16a6ee2d8ad2e52610f4144b49",
+    "issues/01-period-evidence.md": "061aa21f0e554e243100832bc965340f5ad65477cd5b8195c968e3e5a97fa668",
+    "issues/02-applied-snapshot.md": "9bdec77c24b22252444ae40070a674a50966e5683877b7a2b55adcf45cccfb3b",
+    "issues/03-navigation-contract.md": "cfef9fdd2ab18f241f5fb3dbde9f0003d217011881fd84ea63a8776cb1cc8899",
+    "issues/04-shared-adoption.md": "dc8a692f0b859b96e8e3fb227b31263ce206ab8afdbb60cecc1a3d90afaa75ab",
+    "issues/05-search-universe.md": "20ab00bc8e8c8b420e7b305a13dd291c0a596b66097bded8343e18d722ec23e8",
+    "issues/06-first-slice-gates.md": "c0b722107a523837bcf0794ad995fb7f7cd7a1f43718a0eb7fae6239d72bee16"
+  }
+}

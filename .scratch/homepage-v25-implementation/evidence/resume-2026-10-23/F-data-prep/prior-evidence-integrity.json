@@ -1,0 +1,351 @@
+{
+  "generatedAt": "2026-10-22T17:21:27.955Z",
+  "status": "all prior F-fix files in accepted manifest byte-identical",
+  "checked": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/01-red.log",
+      "sha256": "fdf39b9ba862c2421e99c2f3b65a14a90103d56392a7a8ba317bc5c1bba90194",
+      "bytes": 33450
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/02-green-attempt.log",
+      "sha256": "ae8915053404899f822607d5c86420e8bff48cdf1addadeb8107133dd69a318b",
+      "bytes": 1399
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/03-green.log",
+      "sha256": "d24e2b217f8529d770c39113d1e46189574f2bf36e7a38b45ecdf740ebf7be9b",
+      "bytes": 426
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/04-boundary-red.log",
+      "sha256": "7a8e89865e92317bfd59fbd440465907d6399ebdeb9286c2c1e13ecff893cb2f",
+      "bytes": 6167
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/05-intraday-green.log",
+      "sha256": "7ba605f0e713b26d95562c74b1ad41e6bef074434b73d39cd10802e98f04e720",
+      "bytes": 447
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/06-future-period-green.log",
+      "sha256": "e3d1b510d8104c3986f97827ac0bab76707d4ef91c6b3b461752a0a64e0fe3a9",
+      "bytes": 448
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/07-malformed-evidence-green.log",
+      "sha256": "a60259473afe406731410d4eb51b52a10cd1bead8878f350fe3940ee83b7e355",
+      "bytes": 1423
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/07b-malformed-evidence-red.log",
+      "sha256": "6d35195ecfa3eee5820518a2dc55a90dae7c68083882888072b8b2eb1c522be0",
+      "bytes": 1900
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/08-lineage-green.log",
+      "sha256": "c14cf3fccf204973bba098d5607999d02d88eea3b6406721bfe322d9fb2221e0",
+      "bytes": 448
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/09-evidence-zero-green.log",
+      "sha256": "d0e72cc2bfebd983b6c6f1cb15c51711c81f997440a99bbccef32dfa1db74d65",
+      "bytes": 448
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/10-fees-fx-green.log",
+      "sha256": "24b060e939b325e3c70a797715c238783bc9376ae716b46b23207d3a225b5c42",
+      "bytes": 448
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/11-statement-boundary-red.log",
+      "sha256": "4a9301ba74d8e03f92b054e97adbbcdcfffdda6c09e5b6c5c1fc9485cbb5e168",
+      "bytes": 3540
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/12-focused-green.log",
+      "sha256": "5303cfe4b2a2bce47c477564bdd7bc5dd4d8b7582953ba9037d4dc903f66028a",
+      "bytes": 425
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/13-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/14-eslint.log",
+      "sha256": "445cdac34fd41d0c7442b48f149f22962aac761ac1dbcb876ce032cfc3ee0bfb",
+      "bytes": 288
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/15-neighbors.log",
+      "sha256": "08be2ff86d9b8fe88e65e2fe3047a63d2a07108c3f1f751e3f3625dadf13fbd1",
+      "bytes": 427
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/16-historical-fixtures.log",
+      "sha256": "f08c6ae554d2c714f82d450cc64cfbcb476cefbe2f19b0b59cc650d7c9deed1d",
+      "bytes": 5384
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/17-final-contract-red.log",
+      "sha256": "edafdd2724e5956174daeb94d2139e3b4ed5754deacdf5a68bfb81b305f422a2",
+      "bytes": 2810
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/18-final-focused-green.log",
+      "sha256": "53f8f0091a92b7a01bbbefa8a1f08637b38840dfdde4c1a010c5625bbc7921ec",
+      "bytes": 425
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/19-final-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/20-final-eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/21-fee-evidence-red.log",
+      "sha256": "d2a55e82a40dd335b8de056db9856642c1ca78003df0b669a198625c45303d21",
+      "bytes": 1565
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/22-final-focused-green.log",
+      "sha256": "21841a97e4d9d779ef3fdda2a19d6b67830cea01902ed395b828cb22edd15dbd",
+      "bytes": 425
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/23-interface-final-green.log",
+      "sha256": "4b41e352ad1b3ff86037e9e285b843d46fe9b719a2572c0bae55691cb3d07f24",
+      "bytes": 425
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/24-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/25-eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/26-ipo-red.log",
+      "sha256": "81503324afa7df404f6425889129f9b294c86554612c116e3de9d4779e582a0c",
+      "bytes": 2754
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/27-ipo-expanded-red.log",
+      "sha256": "047d3598988d2f16db7f7f581dd2db1e55ac42e01cf01e69ba9050924a51c86a",
+      "bytes": 4871
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/28-ipo-green-attempt.log",
+      "sha256": "3a0ef633e6c42ada4d3faa2366271833360e9730b16782c03e60eecaa2d2aec8",
+      "bytes": 448
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/29-ipo-focused-green.log",
+      "sha256": "cfc300f64905980c0043d197e5e7e1ddf39036b7345411c168e60e523bc8f54e",
+      "bytes": 425
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/30-duplicate-inventory-red.log",
+      "sha256": "5e740c49afa2df021b502f58845c45dfe5876c9283ebd70ef141acf94b93d0e9",
+      "bytes": 2038
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/31-ipo-duplicate-green.log",
+      "sha256": "96c2b40a6439324e4e638db4ef078678a16261b6920c0ac48b0286a2873f89c3",
+      "bytes": 426
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/32-ipo-execution-backed-red.log",
+      "sha256": "538987ea9da66d9f4cddfd66ec9925221abde10affd06afe6c0fd10adf9ad7ee",
+      "bytes": 1685
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/33-final-focused-green.log",
+      "sha256": "ba8a92b4ba481e5ca1d3b5e07c7e8688892f6adca66be8a0655b4b60d21b67f4",
+      "bytes": 426
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/34-final-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/35-final-eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/36-final-scaling.log",
+      "sha256": "925743b19e0adcb23e2b392f096f7ea271a71ad4ae338133bbb39f9dea522f46",
+      "bytes": 424
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/37-cost-evidence-red.log",
+      "sha256": "1591fd02a8e623deb801c095203e90bede9d0e0caf459bf9d527bb373a973fae",
+      "bytes": 1930
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/38-final-focused-green.log",
+      "sha256": "b859e7d70ec178e8ca8aa5c2d91de9d1f61432b55d38b98a814244e2e7cce64c",
+      "bytes": 426
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/39-final-typecheck.log",
+      "sha256": "c968fbf23cab5245e4017d70793b050cd2ab4bc3879f9da9f43cd29d7b8fb9e1",
+      "bytes": 664
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/40-final-eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/41-final-scaling.log",
+      "sha256": "4a800a04913062d4fc0bfc96a05b4d093574df7e40c36896da6abec13df598af",
+      "bytes": 424
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/42-final-focused-green.log",
+      "sha256": "04125de1ae36bec22daa043517e8495681ecd419465ee307c1b6a5704c7c67a8",
+      "bytes": 426
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/43-final-typecheck.log",
+      "sha256": "fb9ccf0aee33e3c1f5ca15bad3f30be1ed12197881a44f9577b9c1eeebd2aa82",
+      "bytes": 495
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/44-final-eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/45-f-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/INTERFACES.md",
+      "sha256": "1b29751095e6601e148c63a509b80430cd26264baadb93882b6c6acc5dd711ef",
+      "bytes": 12424
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/IPO-ROOT-CAUSE.md",
+      "sha256": "9c347c5942dc385d506ce68f095a4d01b9f56d85d62c17e7d4bd64ca6cf7bda8",
+      "bytes": 4380
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/focused.vitest.config.ts",
+      "sha256": "9c55a7358ddf5da6a32e9a250be3b5ac11ecea6df0157358768d7f0f267872f9",
+      "bytes": 681
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/interface-trace.test.ts",
+      "sha256": "11c08e3aaa7694da5ca6efccac1389b1951ae2ad16434e5dea88f951ad57eaf9",
+      "bytes": 4437
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/interface-traces.json",
+      "sha256": "f1b9f916203ef60de7ce1ba05eca1ad41100c422da28483ffe3a525bda42fa76",
+      "bytes": 80289
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts",
+      "sha256": "1f1d03a02be829a30f43481e54150a20ce1a7105eeea138b22779ff160592fd3",
+      "bytes": 6819
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-execution-backed-red.json",
+      "sha256": "791376b9b303e3d6ed7671f89a53591154481c92b663eb3b500d2b893e443b67",
+      "bytes": 21175
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-green-attempt.json",
+      "sha256": "a57134c24de100992ce6eba2dacea7bc0f08b8d358ebd54dcb5a2a8507745271",
+      "bytes": 251992
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-green.json",
+      "sha256": "4784a006e69364ec27f7020a8038080671b7743c9f1d1b0877256d3a8de2cbde",
+      "bytes": 273164
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-red-expanded.json",
+      "sha256": "0efd4f1bb5d3c099b2c6d99bda50cbec8be60e5897d33fb1e779730c64fab6d8",
+      "bytes": 251992
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-traces-red.json",
+      "sha256": "768c7d9c295383d51ee9a015d459bf58ab349d498f8fbe232bad98a340647929",
+      "bytes": 163965
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/malformed-guard.txt",
+      "sha256": "74d4b4462c5c2765fb2ee74bf39eb101f126a885bafe3f4576385e7745a8f34e",
+      "bytes": 738
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/neighbors.vitest.config.ts",
+      "sha256": "ae43fd05b01d2caa98873d644e72384f6c48bb51bd3e1da62dc6355966bc8758",
+      "bytes": 365
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/report.md",
+      "sha256": "eed14ce7946d64846b6cc386a4268678f6a655a5058da2d64fbc30cf614f4ac2",
+      "bytes": 15912
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/scaling.json",
+      "sha256": "b67299a4583db9cc0a92db5c291cbf9247f222705e6f9b569764ecb4831c79b5",
+      "bytes": 318
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/scaling.test.ts",
+      "sha256": "61f00dc49fa9c8ed4da7a623400630aff3e0e042552f67a5c8e6f46628b30748",
+      "bytes": 1760
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/scaling.vitest.config.ts",
+      "sha256": "cdef2847587a91d5774f06a56609bec674c6ed80294b4f49c2653398986f2182",
+      "bytes": 239
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/source-before.ts.txt",
+      "sha256": "81038783d8d2f8b7c5c680f6fd6179ebfceba6f960147cdda66076d474d99345",
+      "bytes": 20129
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/source.diff",
+      "sha256": "93dd3479925d22ca04f2eb5aa691f85fa9988a0f2dcedde1ddfbe6bd9b7f266a",
+      "bytes": 88201
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/tests-before.ts.txt",
+      "sha256": "dd947dfaf7c2f6816e254c2a581a3ba8de03e10f281e1084945cdf935696e3ce",
+      "bytes": 11129
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/tsconfig.f.json",
+      "sha256": "926d8eeb1436b6f10ed8d6efa43ea4a7662c5b6bf6fda3db02f361e789189839",
+      "bytes": 287
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/typecheck-01.log",
+      "sha256": "cc57f91f9cf4ac14f662f7b7e740e0b740f6c78e303be28dfdc158fee2baf910",
+      "bytes": 337
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/46-evidence-check.log",
+      "sha256": "e248695fd33e13f8625a3cf814a704db0a0f3e56f75a4414280b1581fd971f2a",
+      "bytes": 534
+    }
+  ]
+}

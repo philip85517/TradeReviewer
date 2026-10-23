@@ -1,0 +1,9 @@
+{
+  "prefix_before_original_test_unchanged": true,
+  "suffix_after_adjacent_negative_unchanged": true,
+  "one_original_positive_name": true,
+  "one_new_negative_name": true,
+  "old_return_test_still_present": true,
+  "all_ten_protected_source_and_config_sha_unchanged": true,
+  "HEAD_unchanged": true
+}

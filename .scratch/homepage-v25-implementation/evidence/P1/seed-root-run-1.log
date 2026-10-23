@@ -1,0 +1,67 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite",
+  "asOf": "2026-10-23",
+  "source": "homepage-p1-acceptance-v1",
+  "mode": "idempotent append via SqliteStore",
+  "accounts": [
+    {
+      "id": "p1-count-00",
+      "activeHoldingRows": 0
+    },
+    {
+      "id": "p1-count-01",
+      "activeHoldingRows": 1
+    },
+    {
+      "id": "p1-count-05",
+      "activeHoldingRows": 5
+    },
+    {
+      "id": "p1-count-08",
+      "activeHoldingRows": 8
+    },
+    {
+      "id": "p1-count-09",
+      "activeHoldingRows": 9
+    },
+    {
+      "id": "p1-count-50",
+      "activeHoldingRows": 50
+    }
+  ],
+  "instruments": 53,
+  "executions": 83,
+  "persistedDailyCandles": 52,
+  "excludedQuoteInstrument": "CN-SH:600105",
+  "additionalAccounts": [
+    "p1-edge-short",
+    "p1-edge-markets"
+  ],
+  "note": "Synthetic acceptance records are explicitly isolated and persist through production repositories. Existing records are preserved. Fresh FX is seeded only with --fx complete|missing|partial; business DB is never opened.",
+  "result": {
+    "inserted": 83,
+    "duplicate": 0,
+    "conflict": 0
+  },
+  "status": {
+    "schemaVersion": 14,
+    "migration": {
+      "sourceFingerprint": "07846437b2f432c04ed32c003de36247b088eca08e62d0f827b6482d48c2dfab",
+      "inserted": 6,
+      "duplicate": 0,
+      "conflict": 0,
+      "failed": 0,
+      "validationDigest": "c1dabe1821b1c1983ccd4b11cf6ab86255148c520284d60e7274a205d8a68467"
+    },
+    "counts": {
+      "instruments": 287,
+      "executions": 1949,
+      "import_batches": 213,
+      "reviews": 138,
+      "tag_suggestions": 0,
+      "market_data_jobs": 236,
+      "daily_candles": 154462,
+      "market_candles": 52781
+    }
+  }
+}

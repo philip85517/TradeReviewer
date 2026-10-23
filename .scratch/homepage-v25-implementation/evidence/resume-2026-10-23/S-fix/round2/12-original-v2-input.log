@@ -1,0 +1,15 @@
+file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-state.ts:90
+  if (value === null) throw new Error("invalid-homepage-ui-state");
+                            ^
+
+Error: invalid-homepage-ui-state
+    at required (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-state.ts:90:29)
+    at begin (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-state.ts:284:39)
+    at beginHomepageRead (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-state.ts:308:42)
+    at Module.beginHomepageApply (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-state.ts:312:122)
+    at file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/S/coordinator-round3.mjs:5:19
+    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:642:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v26.0.0

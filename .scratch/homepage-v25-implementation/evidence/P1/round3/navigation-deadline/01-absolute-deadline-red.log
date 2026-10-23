@@ -1,0 +1,138 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-start","elapsedMs":0,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-after-ui","elapsedMs":10000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+[navigation-deadline] {"label":"D01-original-deadline","elapsedMs":15010,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-3000","elapsedMs":3000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-6000","elapsedMs":6000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-9000","elapsedMs":9000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-12000","elapsedMs":12000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-ui-14900","elapsedMs":14900,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+[navigation-deadline] {"label":"D02-original-deadline","elapsedMs":15010,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D03 a UI patch retains the same logical request and its original start time
+[navigation-deadline] {"label":"D03-same-logical-request","elapsedMs":10000,"request":{"generation":3,"startedAt":1792717200000,"purpose":"navigation","target":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D04 an untouched owned request reaches timeout at fifteen seconds
+[navigation-deadline] {"label":"D04-untouched-deadline","elapsedMs":15010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window
+[navigation-deadline] {"label":"D05-old-generation-deadline","elapsedMs":15010,"request":{"generation":5,"startedAt":1792717210000,"purpose":"identity","target":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-22","to":"2026-10-22","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}},"error":null,"timedOut":false,"data":"seed-only","reads":[3,5]}
+
+stdout | app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window
+[navigation-deadline] {"label":"D05-new-generation-deadline","elapsedMs":25010,"request":null,"error":"timeout","timedOut":true,"data":"seed-only","reads":[3,5]}
+
+ × app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds 58ms
+   → expected { domain: 'global', …(5) } to be null
+ × app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline 13ms
+   → expected { domain: 'global', …(5) } to be null
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D03 a UI patch retains the same logical request and its original start time 7ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D04 an untouched owned request reaches timeout at fifteen seconds 6ms
+ ✓ app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D05 a newer identity generation receives its own full fifteen-second window 7ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  04:21:29
+   Duration  2.97s (transform 345ms, setup 426ms, import 446ms, tests 93ms, environment 1.66s)
+
+(node:36095) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D01 times out at the original deadline after a UI patch at ten seconds
+AssertionError: expected { domain: 'global', …(5) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "domain": "global",
+  "generation": 3,
+  "purpose": "navigation",
+  "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"one\"],\"rangeMode\":\"date\",\"date\":\"2026-10-22\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"custom\",\"from\":\"2026-10-22\",\"to\":\"2026-10-22\"},\"historyRange\":{\"mode\":\"all\"}}",
+  "startedAt": 1792717200000,
+  "target": {
+    "accounts": [
+      "one",
+    ],
+    "attachments": {
+      "categories": [],
+      "openOnly": false,
+      "pendingReview": [],
+    },
+    "date": "2026-10-22",
+    "live": true,
+    "market": "a",
+    "rangeMode": "date",
+  },
+}
+
+ ❯ app/components/homepage-v25/navigation-deadline.test.tsx:60:60
+     58|     await advance(5_010);
+     59|     trace("D01-original-deadline", current);
+     60|     expect(current.host.result.current.ui.requests.global).toBeNull();
+       |                                                            ^
+     61|     expect(current.host.result.current.ui.errors.global).toBe("timeout…
+     62|     expect(current.host.result.current.ui.timeouts.global).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/navigation-deadline.test.tsx > homepage absolute owned-read deadline > D02 repeated UI patches cannot prolong one request beyond its original deadline
+AssertionError: expected { domain: 'global', …(5) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "domain": "global",
+  "generation": 3,
+  "purpose": "navigation",
+  "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"one\"],\"rangeMode\":\"date\",\"date\":\"2026-10-22\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"custom\",\"from\":\"2026-10-22\",\"to\":\"2026-10-22\"},\"historyRange\":{\"mode\":\"all\"}}",
+  "startedAt": 1792717200000,
+  "target": {
+    "accounts": [
+      "one",
+    ],
+    "attachments": {
+      "categories": [],
+      "openOnly": false,
+      "pendingReview": [],
+    },
+    "date": "2026-10-22",
+    "live": true,
+    "market": "a",
+    "rangeMode": "date",
+  },
+}
+
+ ❯ app/components/homepage-v25/navigation-deadline.test.tsx:79:60
+     77|     await advance(110);
+     78|     trace("D02-original-deadline", current);
+     79|     expect(current.host.result.current.ui.requests.global).toBeNull();
+       |                                                            ^
+     80|     expect(current.host.result.current.ui.errors.global).toBe("timeout…
+     81|     expect(current.host.result.current.ui.timeouts.global).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

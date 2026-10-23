@@ -1,0 +1,19 @@
+{
+  "file": "app/components/trade-review-workspace.test.tsx",
+  "lines": [
+    5536,
+    5538,
+    5539,
+    5542,
+    5557,
+    5558,
+    5562,
+    5604,
+    5605
+  ],
+  "before_sha256": "1fbb9dc85466ed0677c4ef654631a6b83274ed7ff5753b871b1fe011ecd5b9af",
+  "after_sha256": "99d1cd4096dfd28c8ea42a8a3d5ed9b3c0c79390c66c0a1790a24438c2c2704e",
+  "reason": "ByRoleOptions has no exact field; string name uses exact matching by default; no name/semantic assertions changed",
+  "red_log": "../../P4/seam/tsc-initial.log",
+  "red_log_from_feature_evidence": "P4/seam/tsc-initial.log"
+}

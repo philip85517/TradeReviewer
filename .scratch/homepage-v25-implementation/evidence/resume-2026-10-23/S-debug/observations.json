@@ -1,0 +1,582 @@
+{
+  "diagnosticOnly": true,
+  "node": "v26.0.0",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "sourceHashes": {
+    "app/lib/reviews/homepage-v25-state.ts": "a0285648e5874a2678763083fbb07163782fdd4e88345e74ab98c280d1f35029",
+    "app/lib/reviews/homepage-v25-state.test.ts": "05f50bae66f78cbda202f94781f77a37e0d2ea55b92805c08c22414b1355147c",
+    "app/lib/reviews/dashboard-browse-preferences.ts": "ad8871cb36a036795d532082d1b559489f1d563407e40c2d86f4cc09e6b9b36f",
+    "app/components/library/library-browse-state.ts": "bff0f833131d7ac7200be64ca47c9ef58f1698da661912d563bc6e1a873f2047",
+    "app/components/trade-review-workspace.tsx": "608f67cf29284bad6c252ba4843b2bc20fe67e9ef43583247d88e8fdc729e74b",
+    "app/components/dashboard/review-dashboard.tsx": "c87940a65ca303a399e785c6df4242a8391fa1934d5628b7f0dcfecfbb276fa2",
+    "app/lib/reviews/trading-room-pending.ts": "3ac59ec8628d0c5d370ce22bf4933c67e5a54b9500d0f9a0ad4b8b14d67f9401",
+    "app/page.tsx": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    ".scratch/homepage-v25-implementation/evidence/S/coordinator-round3.mjs": "a9cb5c2375f56bb924522731a7a2c9446fbbddc1c8ca38f7ba9f933b4ac6837d"
+  },
+  "originalReproduction": {
+    "exitStatus": 1,
+    "stdoutFile": "original-six.stdout.txt",
+    "stderrFile": "original-six.stderr.txt"
+  },
+  "atomicApplyTrace": {
+    "initial": {
+      "applied": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [],
+          "openOnly": false,
+          "pendingReview": false
+        }
+      },
+      "snapshot": {
+        "version": 1,
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "holdings": {
+          "query": "",
+          "sort": "name",
+          "page": 1
+        },
+        "period": {
+          "preset": "all",
+          "from": null,
+          "to": null
+        },
+        "contribution": {
+          "mode": "current",
+          "currentCategory": "all",
+          "currentSort": "value",
+          "currentPage": 1,
+          "historyCategory": "all",
+          "historySort": "value",
+          "historyPage": 1,
+          "selectedMarket": null,
+          "selectedSymbol": null,
+          "currentMarket": null,
+          "currentSymbol": null,
+          "historyMarket": null,
+          "historySymbol": null,
+          "currentDrilldown": null,
+          "historyDrilldown": null
+        },
+        "history": {
+          "from": null,
+          "to": null,
+          "year": null
+        },
+        "attachments": {
+          "categories": [],
+          "openOnly": false,
+          "pendingReview": false
+        },
+        "search": {
+          "query": "",
+          "open": false,
+          "resultsScrollTop": 0,
+          "selectedSymbol": null,
+          "triggerFocusId": null
+        },
+        "returnState": {
+          "source": null,
+          "detailId": null,
+          "triggerFocusId": null,
+          "missingContainerTitle": null
+        },
+        "scrollTop": 0,
+        "focus": "title",
+        "futureDisclosureSources": []
+      }
+    },
+    "draft": {
+      "live": true,
+      "market": "all",
+      "accounts": [
+        "*"
+      ],
+      "rangeMode": "all",
+      "attachments": {
+        "categories": [
+          "long"
+        ],
+        "openOnly": true,
+        "pendingReview": false
+      }
+    },
+    "request": {
+      "generation": 1,
+      "scopeKey": "{\"scope\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\"},\"attachments\":{\"categories\":[\"long\"],\"openOnly\":true,\"pendingReview\":false}}",
+      "startedAt": 1000,
+      "target": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [
+            "long"
+          ],
+          "openOnly": true,
+          "pendingReview": false
+        }
+      }
+    },
+    "afterSuccess": {
+      "applied": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [
+            "long"
+          ],
+          "openOnly": true,
+          "pendingReview": false
+        }
+      },
+      "snapshotScope": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [
+            "long"
+          ],
+          "openOnly": true,
+          "pendingReview": false
+        }
+      },
+      "snapshotAttachments": {
+        "categories": [],
+        "openOnly": false,
+        "pendingReview": false
+      }
+    },
+    "decodeRawSnapshot": null,
+    "encoderOutput": {
+      "version": 1,
+      "scope": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all"
+      },
+      "holdings": {
+        "query": "",
+        "sort": "name",
+        "page": 1
+      },
+      "period": {
+        "preset": "all",
+        "from": null,
+        "to": null
+      },
+      "contribution": {
+        "mode": "current",
+        "currentCategory": "all",
+        "currentSort": "value",
+        "currentPage": 1,
+        "historyCategory": "all",
+        "historySort": "value",
+        "historyPage": 1,
+        "selectedMarket": null,
+        "selectedSymbol": null,
+        "currentMarket": null,
+        "currentSymbol": null,
+        "historyMarket": null,
+        "historySymbol": null,
+        "currentDrilldown": null,
+        "historyDrilldown": null
+      },
+      "history": {
+        "from": null,
+        "to": null,
+        "year": null
+      },
+      "attachments": {
+        "categories": [],
+        "openOnly": false,
+        "pendingReview": false
+      },
+      "search": {
+        "query": "",
+        "open": false,
+        "resultsScrollTop": 0,
+        "selectedSymbol": null,
+        "triggerFocusId": null
+      },
+      "returnState": {
+        "source": null,
+        "detailId": null,
+        "triggerFocusId": null,
+        "missingContainerTitle": null
+      },
+      "scrollTop": 0,
+      "focus": "title",
+      "futureDisclosureSources": []
+    },
+    "modeledStorageBytes": 887,
+    "decodedFromModeledStorage": {
+      "version": 1,
+      "scope": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all"
+      },
+      "holdings": {
+        "query": "",
+        "sort": "name",
+        "page": 1
+      },
+      "period": {
+        "preset": "all",
+        "from": null,
+        "to": null
+      },
+      "contribution": {
+        "mode": "current",
+        "currentCategory": "all",
+        "currentSort": "value",
+        "currentPage": 1,
+        "historyCategory": "all",
+        "historySort": "value",
+        "historyPage": 1,
+        "selectedMarket": null,
+        "selectedSymbol": null,
+        "currentMarket": null,
+        "currentSymbol": null,
+        "historyMarket": null,
+        "historySymbol": null,
+        "currentDrilldown": null,
+        "historyDrilldown": null
+      },
+      "history": {
+        "from": null,
+        "to": null,
+        "year": null
+      },
+      "attachments": {
+        "categories": [],
+        "openOnly": false,
+        "pendingReview": false
+      },
+      "search": {
+        "query": "",
+        "open": false,
+        "resultsScrollTop": 0,
+        "selectedSymbol": null,
+        "triggerFocusId": null
+      },
+      "returnState": {
+        "source": null,
+        "detailId": null,
+        "triggerFocusId": null,
+        "missingContainerTitle": null
+      },
+      "scrollTop": 0,
+      "focus": "title",
+      "futureDisclosureSources": []
+    },
+    "counterfactualProjection": {
+      "scope": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all"
+      },
+      "attachments": {
+        "categories": [
+          "long"
+        ],
+        "openOnly": true,
+        "pendingReview": false
+      },
+      "restoredAttachments": {
+        "categories": [
+          "long"
+        ],
+        "openOnly": true,
+        "pendingReview": false
+      }
+    }
+  },
+  "nestedLeakage": [
+    {
+      "field": "holdings",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "field": "period",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "field": "contribution",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "field": "history",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "field": "search",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "field": "returnState",
+      "serializedContainsBusinessRows": true,
+      "decoderAcceptsEncoderOutput": false
+    }
+  ],
+  "guardedFields": [
+    {
+      "field": "scope",
+      "serializedContainsBusinessRows": false,
+      "decoderAcceptsEncoderOutput": true
+    },
+    {
+      "field": "attachments",
+      "serializedContainsBusinessRows": false,
+      "decoderAcceptsEncoderOutput": true
+    }
+  ],
+  "chartModes": [
+    {
+      "chartMode": "period-pnl",
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "chartMode": "cumulative-pnl",
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "chartMode": "win-rate",
+      "decoderAcceptsEncoderOutput": false
+    },
+    {
+      "chartMode": "round-count",
+      "decoderAcceptsEncoderOutput": false
+    }
+  ],
+  "designState": {
+    "historyKeys": [
+      "from",
+      "to",
+      "year"
+    ],
+    "contributionKeys": [
+      "mode",
+      "currentCategory",
+      "currentSort",
+      "currentPage",
+      "historyCategory",
+      "historySort",
+      "historyPage",
+      "selectedMarket",
+      "selectedSymbol",
+      "currentMarket",
+      "currentSymbol",
+      "historyMarket",
+      "historySymbol",
+      "currentDrilldown",
+      "historyDrilldown"
+    ],
+    "contributionLocalOpenOnlyRestores": false,
+    "contradictoryContributionAccepted": true,
+    "malformedHistoryAccepted": true,
+    "negativeScrollAccepted": true
+  },
+  "urlCases": [
+    {
+      "name": "all sentinel without catalog",
+      "url": "/trades?scope=live&market=all&accounts=*&rangeMode=all",
+      "options": {},
+      "result": {
+        "ok": true,
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "?scope=live&market=all&accounts=*&rangeMode=all"
+      }
+    },
+    {
+      "name": "all sentinel with real account catalog",
+      "url": "/trades?scope=live&market=all&accounts=*&rangeMode=all",
+      "options": {
+        "allowedAccounts": [
+          "broker-a",
+          "broker-b"
+        ]
+      },
+      "result": {
+        "ok": false,
+        "error": "invalid-account",
+        "query": "?scope=live&market=all&accounts=*&rangeMode=all"
+      }
+    },
+    {
+      "name": "known concrete account",
+      "url": "/trades?scope=live&accounts=broker-a&rangeMode=all",
+      "options": {
+        "allowedAccounts": [
+          "broker-a"
+        ]
+      },
+      "result": {
+        "ok": true,
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "broker-a"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "?scope=live&accounts=broker-a&rangeMode=all"
+      }
+    },
+    {
+      "name": "unknown concrete account",
+      "url": "/trades?scope=live&accounts=unknown&rangeMode=all",
+      "options": {
+        "allowedAccounts": [
+          "broker-a"
+        ]
+      },
+      "result": {
+        "ok": false,
+        "error": "invalid-account",
+        "query": "?scope=live&accounts=unknown&rangeMode=all"
+      }
+    },
+    {
+      "name": "all mixed with concrete account",
+      "url": "/trades?scope=live&accounts=*,broker-a&rangeMode=all",
+      "options": {
+        "allowedAccounts": [
+          "broker-a"
+        ]
+      },
+      "result": {
+        "ok": false,
+        "error": "invalid-account",
+        "query": "?scope=live&accounts=*,broker-a&rangeMode=all"
+      }
+    },
+    {
+      "name": "invalid calendar date",
+      "url": "/trades?scope=live&accounts=broker-a&date=2026-02-31",
+      "options": {
+        "allowedAccounts": [
+          "broker-a"
+        ]
+      },
+      "result": {
+        "ok": false,
+        "error": "invalid-range",
+        "query": "?scope=live&accounts=broker-a&date=2026-02-31"
+      }
+    },
+    {
+      "name": "queue entry rejected",
+      "url": "/trades?scope=live&accounts=broker-a&queue=pending",
+      "options": {
+        "allowedAccounts": [
+          "broker-a"
+        ]
+      },
+      "result": {
+        "ok": false,
+        "error": "invalid-scope",
+        "query": "?scope=live&accounts=broker-a&queue=pending"
+      }
+    }
+  ],
+  "orderSensitivity": {
+    "originalScopeKey": "{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\"}",
+    "reorderedScopeKey": "{\"rangeMode\":\"all\",\"accounts\":[\"*\"],\"market\":\"all\",\"live\":true}",
+    "resultError": "update-failed",
+    "accepted": false
+  },
+  "requestLifecycle": {
+    "failed": {
+      "error": "network-error",
+      "requestStillActive": true
+    },
+    "sameGenerationSuccessAfterFailureAccepted": true,
+    "identityChange": {
+      "draft": {
+        "live": true,
+        "market": "hk",
+        "accounts": [
+          "broker-hk"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [],
+          "openOnly": false,
+          "pendingReview": false
+        }
+      },
+      "applied": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all",
+        "attachments": {
+          "categories": [],
+          "openOnly": false,
+          "pendingReview": false
+        }
+      },
+      "snapshotScope": {
+        "live": true,
+        "market": "all",
+        "accounts": [
+          "*"
+        ],
+        "rangeMode": "all"
+      },
+      "request": null
+    }
+  },
+  "allReadSourcesUnchanged": true
+}

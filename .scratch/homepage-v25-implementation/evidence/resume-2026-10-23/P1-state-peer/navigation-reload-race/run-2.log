@@ -1,0 +1,51 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx (6 tests | 2 failed) 120ms
+     × NR04 cold ordinary bootstrap failure + pending return UI callback must retain source across hard remount [candidate RED] 17ms
+     × NR06 host.reload during cold-failed pending return must not replace navigation A with committed all [API-only candidate RED] 5ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  03:51:45
+   Duration  1.97s (transform 342ms, setup 175ms, import 417ms, tests 120ms, environment 928ms)
+
+(node:32556) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx > source return navigation / immediate reload diagnostic > NR04 cold ordinary bootstrap failure + pending return UI callback must retain source across hard remount [candidate RED]
+AssertionError: expected 'all' to be 'a' // Object.is equality
+
+Expected: "a"
+Received: "all"
+
+ ❯ expectSourceA .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx:50:64
+     48| }
+     49| function expectSourceA(mounted: ReturnType<typeof mount>) {
+     50|   expect(mounted.host.result.current.ui.snapshot.scope.market).toBe("a…
+       |                                                                ^
+     51|   expect(mounted.host.result.current.ui.snapshot.search.query).toBe("R…
+     52| }
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx:96:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx > source return navigation / immediate reload diagnostic > NR06 host.reload during cold-failed pending return must not replace navigation A with committed all [API-only candidate RED]
+AssertionError: expected 'all' to be 'a' // Object.is equality
+
+Expected: "a"
+Received: "all"
+
+ ❯ expectSourceA .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx:50:64
+     48| }
+     49| function expectSourceA(mounted: ReturnType<typeof mount>) {
+     50|   expect(mounted.host.result.current.ui.snapshot.scope.market).toBe("a…
+       |                                                                ^
+     51|   expect(mounted.host.result.current.ui.snapshot.search.query).toBe("R…
+     52| }
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx:113:69
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

@@ -1,0 +1,14 @@
+{
+  "focus": "搜索标的",
+  "query": "6",
+  "results": {
+    "client": 406,
+    "height": 9753,
+    "top": 1440
+  },
+  "viewport": {
+    "dpr": 2,
+    "height": 720,
+    "width": 1280
+  }
+}

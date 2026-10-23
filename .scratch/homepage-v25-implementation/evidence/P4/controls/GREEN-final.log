@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45259) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 235ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 22ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 18ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 52ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 70ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 67ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 30ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 38ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 60ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > handles Escape locally without closing another page state 21ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 50ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 57ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 38ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 72ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 30ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 57ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 50ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 51ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 50ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 39ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 32ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 51ms
+
+ Test Files  1 passed (1)
+      Tests  32 passed (32)
+   Start at  05:54:29
+   Duration  3.14s (transform 109ms, setup 184ms, import 181ms, tests 1.51s, environment 925ms)
+

@@ -1,0 +1,26 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17334) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.test.ts [ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.test.ts ]
+Error: Cannot find package 'server-only' imported from /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/storage/sqlite-store.ts
+ ❯ app/lib/storage/sqlite-store.ts:1:1
+      1| import "server-only";
+       | ^
+      2|
+      3| import Decimal from "decimal.js";
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.test.ts:5:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:34:48
+   Duration  612ms (transform 139ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

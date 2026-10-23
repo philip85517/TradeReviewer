@@ -1,0 +1,95 @@
+{
+  "request": {
+    "asOf": "2026-10-23T05:00:00.000Z",
+    "nature": "default live",
+    "fx": "not supplied; per-group original currency coverage"
+  },
+  "scope": {
+    "nature": "live",
+    "simulationRunId": null,
+    "includedExecutions": 83,
+    "excludedExecutions": 1866,
+    "excludedByReason": {
+      "nature:unknown": 1784,
+      "nature:simulation": 82
+    }
+  },
+  "byMarket": {
+    "CN-SH": {
+      "liveFills": 80,
+      "validFeeFills": 80,
+      "nonzeroFeeFills": 80,
+      "groups": 75,
+      "currentMetricGroups": 74,
+      "marketValueAvailable": 67,
+      "unrealizedAvailable": 67,
+      "feeAvailable": 70,
+      "quantityKnown": 70,
+      "costKnown": 70,
+      "feesKnown": 74,
+      "quotePresent": 71,
+      "quoteDates": {
+        "2026-10-22": 71
+      },
+      "reasons": {
+        "quantity-unavailable": 4,
+        "history-incomplete": 4,
+        "cost-unavailable": 4,
+        "quote-missing": 3
+      }
+    },
+    "HK": {
+      "liveFills": 1,
+      "validFeeFills": 1,
+      "nonzeroFeeFills": 1,
+      "groups": 1,
+      "currentMetricGroups": 1,
+      "marketValueAvailable": 1,
+      "unrealizedAvailable": 1,
+      "feeAvailable": 1,
+      "quantityKnown": 1,
+      "costKnown": 1,
+      "feesKnown": 1,
+      "quotePresent": 1,
+      "quoteDates": {
+        "2026-10-22": 1
+      },
+      "reasons": {}
+    },
+    "US": {
+      "liveFills": 2,
+      "validFeeFills": 2,
+      "nonzeroFeeFills": 2,
+      "groups": 2,
+      "currentMetricGroups": 2,
+      "marketValueAvailable": 2,
+      "unrealizedAvailable": 2,
+      "feeAvailable": 2,
+      "quantityKnown": 2,
+      "costKnown": 2,
+      "feesKnown": 2,
+      "quotePresent": 2,
+      "quoteDates": {
+        "2026-10-22": 2
+      },
+      "reasons": {}
+    }
+  },
+  "total": {
+    "sourceFills": 1949,
+    "groups": 78,
+    "currentMarketValue": {
+      "total": 77,
+      "available": 70
+    },
+    "currentUnrealized": {
+      "total": 77,
+      "available": 70
+    },
+    "currentOpenFees": {
+      "total": 77,
+      "available": 73
+    }
+  },
+  "note": "Combined isolated backup contains original 1866 non-live fills and 83 live seed fills. No nature was inferred or changed. Fee validity counts only source top-level fields; F feeKnown/feeAvailable are the authoritative lineage-aware result. Aggregate group counts, not identities, trades or money values. Quote availability describes the frozen selector, not completed-session correctness."
+}

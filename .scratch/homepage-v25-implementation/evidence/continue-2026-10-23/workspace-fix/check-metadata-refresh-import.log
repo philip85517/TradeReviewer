@@ -1,0 +1,693 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:44416) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (101 tests | 2 failed | 98 skipped) 6013ms
+     × does not re-read every instrument market cache when metadata hydration updates presentation 2925ms
+     × keeps the library chart available after a cancelled import with failed market refresh 667ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation
+TestingLibraryElementError: Unable to find role="button" and name `/^(展开|收起)小鹏汽车（刷新）交易回合$/`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"trade-review-app  "[39m
+    [36m>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+        [33maria-label[39m=[32m"导入交易记录"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".csv,text/csv"[39m
+        [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m"image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"[39m
+        [33maria-label[39m=[32m"从截图恢复交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<aside[39m
+        [33maria-label[39m=[32m"主导航"[39m
+        [33mclass[39m=[32m"app-header app-sidebar "[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"brand"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brand-mark"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 5v16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m16 12 2 2 4-4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<strong>[39m
+              [0mTradeReview[0m
+            [36m</strong>[39m
+            [36m<span>[39m
+              [0m历史交易复盘[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-controls[39m=[32m"primary-navigation"[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"导航"[39m
+          [33mclass[39m=[32m"mobile-nav-trigger"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-menu"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"18"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"18"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 5h16"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 12h16"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 19h16"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [36m<span>[39m
+            [0m导航[0m
+          [36m</span>[39m
+        [36m</button>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"主导航"[39m
+          [33mclass[39m=[32m"app-nav"[39m
+          [33mid[39m=[32m"primary-navigation"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"我的交易室"[39m
+            [33mclass[39m=[32m""[39m
+            [33mtitle[39m=[32m"我的交易室"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-layout-dashboard"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"9"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"14"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"9"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"14"[39m
+                [33my[39m=[32m"12"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"16"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-nav-label"[39m
+            [36m>[39m
+              [0m我的交易室[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33maria-label[39m=[32m"交易库"[39m
+            [33mclass[39m=[32m"active"[39m
+            [33mtitle[39m=[32m"交易库"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"trade-review-app  "[39m
+    [36m>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+        [33maria-label[39m=[32m"导入交易记录"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".csv,text/csv"[39m
+        [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m"image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"[39m
+        [33maria-label[39m=[32m"从截图恢复交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<aside[39m
+        [33maria-label[39m=[32m"主导航"[39m
+        [33mclass[39m=[32m"app-header app-sidebar "[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"brand"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brand-mark"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 5v16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m16 12 2 2 4-4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<strong>[39m
+              [0mTradeReview[0m
+            [36m</strong>[39m
+            [36m<span>[39m
+              [0m历史交易复盘[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-controls[39m=[32m"primary-navigation"[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"导航"[39m
+          [33mclass[39m=[32m"mobile-nav-trigger"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-menu"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"18"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"18"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 5h16"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 12h16"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M4 19h16"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [36m<span>[39m
+            [0m导航[0m
+          [36m</span>[39m
+        [36m</button>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"主导航"[39m
+          [33mclass[39m=[32m"app-nav"[39m
+          [33mid[39m=[32m"primary-navigation"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"我的交易室"[39m
+            [33mclass[39m=[32m""[39m
+            [33mtitle[39m=[32m"我的交易室"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-layout-dashboard"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"9"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"14"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"9"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"14"[39m
+                [33my[39m=[32m"12"[39m
+              [36m/>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"7"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"16"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-nav-label"[39m
+            [36m>[39m
+              [0m我的交易室[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33maria-label[39m=[32m"交易库"[39m
+            [33mclass[39m=[32m"active"[39m
+            [33mtitle[39m=[32m"交易库"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/components/trade-review-workspace.test.tsx:1941:18
+    1939|     await waitFor(() => expect(getBootstrap.mock.calls.length).toBeGre…
+    1940|     await userEvent.setup().click(within(screen.getByRole("navigation"…
+    1941|     await screen.findByRole("button", { name: /^(展开|收起)小鹏汽车（刷新）交易回合$/ …
+       |                  ^
+    1942|     await waitFor(() => expect(putReviewState).toHaveBeenCalledTimes(w…
+    1943|     expect(getMarketData.mock.calls).toEqual(marketReadsBeforeMetadata…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the library chart available after a cancelled import with failed market refresh
+TestingLibraryElementError: Found multiple elements with the role "button" and name `/^打开小鹏汽车第\d+次交易/`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"打开小鹏汽车第2次交易 富途"[39m
+  [33mclass[39m=[32m"_roundRow_0578ee"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m第 [0m
+      [0m2[0m
+      [0m 次交易[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m2025/1/6[0m
+      [0m—[0m
+      [0m2025/1/6[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m2[0m
+      [0m 笔成交[0m
+      [0m · 富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<b[39m
+      [33mclass[39m=[32m"closed"[39m
+    [36m>[39m
+      [0m已平仓[0m
+    [36m</b>[39m
+    [36m<small>[39m
+      [0m待复盘[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"positive"[39m
+    [36m>[39m
+      [0m+US$10.00[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m加权收益率（按开仓金额）：10.00% · USD[0m
+    [36m</small>[39m
+  [36m</span>[39m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"打开小鹏汽车第1次交易 富途"[39m
+  [33mclass[39m=[32m"_roundRow_0578ee"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m第 [0m
+      [0m1[0m
+      [0m 次交易[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m2025/1/2[0m
+      [0m—[0m
+      [0m2025/1/2[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m2[0m
+      [0m 笔成交[0m
+      [0m · 富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<b[39m
+      [33mclass[39m=[32m"closed"[39m
+    [36m>[39m
+      [0m已平仓[0m
+    [36m</b>[39m
+    [36m<small>[39m
+      [0m待复盘[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"positive"[39m
+    [36m>[39m
+      [0m+US$10.00[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m加权收益率（按开仓金额）：10.00% · USD[0m
+    [36m</small>[39m
+  [36m</span>[39m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"小鹏汽车交易回合"[39m
+  [33mclass[39m=[32m"_roundPanel_0578ee"[39m
+  [33mid[39m=[32m"stock-rounds-US-XPEV"[39m
+[36m>[39m
+  [36m<header[39m
+    [33mclass[39m=[32m"_roundHeader_0578ee"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<strong>[39m
+        [0m小鹏汽车[0m
+        [0m · 交易回合[0m
+      [36m</strong>[39m
+      [36m<span>[39m
+        [0m2[0m
+        [0m 待复盘 · [0m
+        [0m0[0m
+        [0m 已复盘 · [0m
+        [0m2[0m
+        [0m 个匹配回合[0m
+      [36m</span>[39m
+    [36m</div>[39m
+  [36m</header>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"_runGroup_0578ee"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_runGroupHeader_0578ee"[39m
+    [36m>[39m
+      [36m<h3>[39m
+        [0m实盘回合[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_runGroupMetrics_0578ee"[39m
+      [36m>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"positive"[39m
+        [36m>[39m
+          [0m+US$20.00[0m
+        [36m</strong>[39m
+        [36m<small>[39m
+          [0mUSD原币已平仓净盈亏[0m
+        [36m</small>[39m
+        [36m<small>[39m
+          [0m净盈亏样本 2 · 收益率样本 2[0m
+          [0m · [0m
+          [0m加权收益率（按开仓金额）：10.00% · USD[0m
+        [36m</small>[39m
+        [36m<small>[39m
+          [0m原币金额：USD +US$20.00[0m
+        [36m</small>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_roundRowShell_0578ee"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"打开小鹏汽车第2次交易 富途"[39m
+        [33mclass[39m=[32m"_roundRow_0578ee"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m第 [0m
+            [0m2[0m
+            [0m 次交易[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m2025/1/6[0m
+            [0m—[0m
+            [0m2025/1/6[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m2[0m
+            [0m 笔成交[0m
+            [0m · 富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<b[39m
+            [33mclass[39m=[32m"closed"[39m
+          [36m>[39m
+            [0m已平仓[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0m待复盘[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"positive"[39m
+          [36m>[39m
+            [0m+US$10.00[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m加权收益率（按开仓金额）：10.00% · USD[0m
+          [36m</small>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_fullName_0578ee"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m查看完整原名[0m
+        [36m</summary>[39m
+        [36m<p>[39m
+          [0m原名：[0m
+          [0m小鹏汽车[0m
+        [36m</p>[39m
+        [36m<small>[39m
+          [0m账户：[0m
+          [0m富途[0m
+        [36m</small>[39m
+      [36m</details>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_roundRowShell_0578ee"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"打开小鹏汽车第1次交易 富途"[39m
+        [33mclass[39m=[32m"_roundRow_0578ee"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m第 [0m
+            [0m1[0m
+            [0m 次交易[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m2025/1/2[0m
+            [0m—[0m
+            [0m2025/1/2[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m2[0m
+            [0m 笔成交[0m
+            [0m · 富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<b[39m
+            [33mclass[39m=[32m"closed"[39m
+          [36m>[39m
+            [0m已平仓[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0m待复盘[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"positive"[39m
+          [36m>[39m
+            [0m+US$10.00[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m加权收益率（按开仓金额）：10.00% · USD[0m
+          [36m</small>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_fullName_0578ee"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m查看完整原名[0m
+        [36m</summary>[39m
+        [36m<p>[39m
+          [0m原名：[0m
+          [0m小鹏汽车[0m
+        [36m</p>[39m
+        [36m<small>[39m
+          [0m账户：[0m
+          [0m富途[0m
+        [36m</small>[39m
+      [36m</details>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:3912:79
+    3910|     const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车…
+    3911|     if (xpevStock.getAttribute("aria-expanded") !== "true") await user…
+    3912|     await user.click(within(screen.getByRole("region", { name: "小鹏汽车交易…
+       |                                                                               ^
+    3913|     await screen.findByLabelText("图表工具栏");
+    3914|     const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 98 skipped (101)
+   Start at  05:47:41
+   Duration  11.96s (transform 3.43s, setup 189ms, import 4.44s, tests 6.01s, environment 967ms)
+

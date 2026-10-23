@@ -1,0 +1,145 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:23229) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (110 tests | 10 failed) 339ms
+     × separates lifetime net from selected-period net using canonical endpoint states 10ms
+     × keeps cumulative amounts unknown without inception coverage while period and market value remain known 1ms
+     × computes native period differences before applying one endpoint FX 1ms
+     × does not backfill historical FX from the independent latest current snapshot 1ms
+     × rejects historical pair knowledge after the endpoint without erasing native amounts 1ms
+     × uses strict completed-session gaps only for daily metrics and retains the F3 current fallback 1ms
+     × allows legal US in-progress and weekend carry without a false missing-session gap 1ms
+     × keeps current independent and future points null without leaking future fills 1ms
+     × captures immutable evidence and invalidates content despite unchanged caller revisions 1ms
+     × rejects a whole invalid boundary request with a structured code 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > separates lifetime net from selected-period net using canonical endpoint states
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:608:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > keeps cumulative amounts unknown without inception coverage while period and market value remain known
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:613:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > computes native period differences before applying one endpoint FX
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:619:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > does not backfill historical FX from the independent latest current snapshot
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:626:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > rejects historical pair knowledge after the endpoint without erasing native amounts
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:633:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > uses strict completed-session gaps only for daily metrics and retains the F3 current fallback
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:638:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > allows legal US in-progress and weekend carry without a false missing-session gap
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:647:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > keeps current independent and future points null without leaking future fills
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:654:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > captures immutable evidence and invalidates content despite unchanged caller revisions
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:662:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 prepared boundary contract > rejects a whole invalid boundary request with a structured code
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:598:36
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:671:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 100 passed (110)
+   Start at  02:31:08
+   Duration  1.16s (transform 307ms, setup 0ms, import 402ms, tests 339ms, environment 0ms)
+

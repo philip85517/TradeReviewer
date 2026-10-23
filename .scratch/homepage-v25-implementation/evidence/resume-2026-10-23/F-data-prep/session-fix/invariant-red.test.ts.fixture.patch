@@ -1,0 +1,29 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts.before-fixture-correction.txt	2026-10-23 01:51:06
++++ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts	2026-10-23 01:51:06
+@@ -10,10 +10,10 @@
+ const instrument = { id: "US:AAPL", symbol: "AAPL", name: "Apple", market: "US", currency: "USD" };
+ const buy: TradeExecution = { id: "buy", accountId: "a", accountLabel: "A", instrument, side: "buy", quantity: "1", price: "100", fee: "0", executedAt: "2026-01-15T15:00:00Z", source: { platform: "statement", row: 1, tradeNature: "live" } };
+ const candle = (tradingDate: string, close: string): DailyCandleRecord => ({ instrumentId: instrument.id, tradingDate, open: close, high: close, low: close, close, volume: "1", currency: "USD", provider: "eastmoney", providerSymbol: "AAPL", adjustmentMode: "raw", fetchedAt: `${tradingDate}T23:00:00Z` });
+-const candles = [candle("2025-12-31", "100"), candle("2026-01-01", "100"), candle("2026-01-31", "110")];
++const candles = [candle("2025-12-31", "100"), candle("2026-01-02", "100"), candle("2026-01-30", "110")];
+ function project(executions: TradeExecution[], overrides: Partial<HomepageV25Input> = {}, quotes = candles) {
+   const candlesByInstrument = { [instrument.id]: quotes };
+-  return build({ period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31", executions: [], openingPositions: [], valuations: [], entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [instrument.id]: "ready" }), candlesByInstrument, ...overrides });
++  return build({ period: { start: "2026-01-02", end: "2026-01-31" }, asOf: "2026-01-31", executions: [], openingPositions: [], valuations: [], entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [instrument.id]: "ready" }), candlesByInstrument, ...overrides });
+ }
+ const fx = { id: "fx", baseCurrency: "CNY" as const, asOf: "2026-01-31", source: "diagnostic", status: "complete" as const, rates: { "USD/CNY": "7" } };
+ describe("confirmed financial boundary/evidence regression candidates (expected RED)", () => {
+@@ -46,11 +46,11 @@
+   });
+   it("R08 inclusive first-day PnL uses the pre-period mark", () => {
+     const old = { ...buy, executedAt: "2025-12-15T15:00:00Z" };
+-    expect(project([old], {}, [candle("2025-12-31", "100"), candle("2026-01-01", "120"), candle("2026-01-31", "130")]).net.value).toBe("30");
++    expect(project([old], {}, [candle("2025-12-31", "100"), candle("2026-01-02", "120"), candle("2026-01-30", "130")]).net.value).toBe("30");
+   });
+   it("R09 period realized uses the established average-cost ledger", () => {
+     const executions: TradeExecution[] = [{ ...buy, id: "old100", executedAt: "2025-12-15T15:00:00Z" }, { ...buy, id: "old200", price: "200", executedAt: "2025-12-16T15:00:00Z" }, { ...buy, id: "new300", price: "300" }, { ...buy, id: "close400", side: "sell", price: "400", executedAt: "2026-01-20T15:00:00Z" }];
+-    expect(project(executions, {}, [candle("2025-12-31", "200"), candle("2026-01-01", "200"), candle("2026-01-31", "350")]).periodRealized.value).toBe("200");
++    expect(project(executions, {}, [candle("2025-12-31", "200"), candle("2026-01-02", "200"), candle("2026-01-30", "350")]).periodRealized.value).toBe("200");
+   });
+   it("R10 optional asOf cannot make current value depend on selected period", () => {
+     const now = project([buy], { asOf: undefined });

@@ -1,0 +1,23 @@
+{
+  "frozenAt": "2026-10-22T20:43:13.576Z",
+  "productFrozen": true,
+  "artifacts": {
+    "01-before.json": "92535d1a9d0859c510e1a05fa07626ab15b950739342f131def8fcdebd6ba790",
+    "home-surface.before.tsx": "c6e14890fe36eb99e2dd03ba43608f7ced1ad482bdb57a757e09b8884f4d30b6",
+    "home-surface.before.css": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+    "02-CAUSE-AND-CANDIDATE.md": "30e8e73ba2b640143384cb1af5ff08172b4d52efcd12678a0a9e5bf3a6d1759d",
+    "run-check.mjs": "dadc0c55bae3a027ed3ed4c303f366589d993912bc80108f5946b6d9878c2eab",
+    "03-regression.log": "86d01c8f91054a05017ce158dedc6bda7e8fcd7746867454bb41f80f5daa3d82",
+    "03-regression.status.json": "0e67be339b7aa41df525b8d582cbe8756febe9d0bc961b4263fb475fd509adbf",
+    "04-lint.log": "06a5cd9364476218165a3dd0672aa62e450dfeeb6cae2eedc432bd79a5e63753",
+    "04-lint.status.json": "56f4de11c4873bbf2619bb73a309d6acebfee4cb288a08db07837a70070e2025",
+    "05-markup.diff": "16e62488a8ca1053f1f9c6f0c60278b7e408ca78b9ad54352353c74d68ba1777",
+    "06-local-css.diff": "8d309fc838c133b0400469ace2ba9fc0476e25fc9a360fd2caa06223d9099600",
+    "07-css-syntax.json": "f6e1eecdc299d893b6890f24f8a5fa19ece2163c23ad442ffe90eee70a8ebbe2",
+    "08-after.json": "53a14fd4c01c5f8b2e61149f0da21470961e2ed2adacee2b0e44499bc0589255",
+    "IMPLEMENTATION-READY.md": "002ed5a96727eb062204a8a961d9e902f75ee70ed3cf184f630c0ad477706217",
+    "SOURCE-MANIFEST.freeze.json": "6dbbe31f6e13c73febdc9d26b6e42c49d7f292aa7776c9082369c5305075670a"
+  },
+  "rootArtifacts": "Existing ROOT-DISPATCH and original failure screenshot are inputs bound in source manifest; future root acceptance additions are not worker artifacts.",
+  "independentVisual": "NOT VERIFIED"
+}

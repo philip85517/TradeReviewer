@@ -1,0 +1,38 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:4965) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:4995) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ app/lib/reviews/dashboard-browse-preferences.test.ts (5 tests | 5 failed) 12ms
+     × round-trips only applied page-local filters and a custom statistics period 7ms
+     × reinterprets date presets against today and records all as a derived-history marker 1ms
+     × rejects unknown versions, invalid enums, impossible or reversed dates, and future custom ranges 0ms
+     × keeps the shared business scope while applying validated page-local preferences 0ms
+     × does not throw when the storage getter or read/write methods fail 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/dashboard-browse-preferences.test.ts > dashboard browse preferences > round-trips only applied page-local filters and a custom statistics period
+ FAIL  app/lib/reviews/dashboard-browse-preferences.test.ts > dashboard browse preferences > reinterprets date presets against today and records all as a derived-history marker
+ FAIL  app/lib/reviews/dashboard-browse-preferences.test.ts > dashboard browse preferences > rejects unknown versions, invalid enums, impossible or reversed dates, and future custom ranges
+ FAIL  app/lib/reviews/dashboard-browse-preferences.test.ts > dashboard browse preferences > keeps the shared business scope while applying validated page-local preferences
+ FAIL  app/lib/reviews/dashboard-browse-preferences.test.ts > dashboard browse preferences > does not throw when the storage getter or read/write methods fail
+TypeError: Cannot read properties of undefined (reading 'removeItem')
+ ❯ app/lib/reviews/dashboard-browse-preferences.test.ts:30:33
+     28|
+     29| describe("dashboard browse preferences", () => {
+     30|   beforeEach(() => localStorage.removeItem(DASHBOARD_BROWSE_PREFERENCE…
+       |                                 ^
+     31|   afterEach(() => vi.restoreAllMocks());
+     32|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  5 failed | 93 passed (98)
+   Start at  00:45:16
+   Duration  2.42s (transform 546ms, setup 0ms, import 753ms, tests 160ms, environment 1ms)
+

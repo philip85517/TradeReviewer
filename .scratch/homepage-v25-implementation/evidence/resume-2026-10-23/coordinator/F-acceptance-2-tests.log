@@ -1,0 +1,77 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:15728) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts (3 tests | 3 failed) 38ms
+     × uses current exposure independently from a past selected period and future fills 26ms
+     × retains signed short exposure and prorates the remaining open fee 3ms
+     × requires complete current FX while retaining original per-account amounts 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts > coordinator current metrics supplement > uses current exposure independently from a past selected period and future fills
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts:23:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts > coordinator current metrics supplement > retains signed short exposure and prorates the remaining open fee
+AssertionError: expected null to be '-220' // Object.is equality
+
+- Expected:
+"-220"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts:30:45
+     28|   it("retains signed short exposure and prorates the remaining open fe…
+     29|     const result = project([fill("short", "sell", "3", "120", "3", "20…
+     30|     expect(result.currentMarketValue.value).toBe("-220");
+       |                                             ^
+     31|     expect(result.currentUnrealized.value).toBe("18");
+     32|     expect(result.currentOpenFees.value).toBe("2");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts > coordinator current metrics supplement > requires complete current FX while retaining original per-account amounts
+AssertionError: expected [ [ 'one', undefined, '1' ], …(1) ] to deeply equal [ [ 'one', '9', '1' ], …(1) ]
+
+- Expected
++ Received
+
+  [
+    [
+      "one",
+-     "9",
++     undefined,
+      "1",
+    ],
+    [
+      "two",
+-     "18",
++     undefined,
+      "2",
+    ],
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts:40:171
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  3 failed | 283 passed (286)
+   Start at  01:21:54
+   Duration  6.43s (transform 766ms, setup 0ms, import 1.71s, tests 677ms, environment 2ms)
+

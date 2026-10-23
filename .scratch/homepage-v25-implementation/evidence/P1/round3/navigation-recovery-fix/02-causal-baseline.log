@@ -1,0 +1,290 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx (17 tests | 15 failed) 324ms
+     × R01 preserves source bytes through a pending UI callback and hard remount, then accepts fresh owned data 119ms
+     × R03 retains full source after return failure and retries the same navigation with a new generation 18ms
+     × R05 deduplicates reload during source navigation instead of refreshing the old committed scope 17ms
+     × R03b retries a failed return with its captured full UI even without an intervening UI callback 21ms
+     × R04 preserves recovery through timeout and ignores a late old resolve during retry 15ms
+     × R04 preserves recovery through timeout and ignores a late old reject during retry 8ms
+     × R06 leaves failure recovery manual despite focus/visibility and resumes normal refresh after acceptance 15ms
+     × R06 leaves timeout recovery manual despite focus/visibility and resumes normal refresh after acceptance 12ms
+     × R07 protects full source when its scope equals the old committed scope but its search, page and focus differ 10ms
+     × R08 keeps protected source when an allowed scoped departure captures its outgoing entry 11ms
+     × R08 keeps protected source when an allowed global departure captures its outgoing entry 9ms
+     × R08 commits only the newest allowed departure and never replaces protected source with the old committed UI 11ms
+     × R09 lets explicit identity B commit its owned bundle while late A resolve cannot release its source protection 7ms
+     × R09 lets explicit identity B commit its owned bundle while late A reject cannot release its source protection 6ms
+     × R09 retains protected source after explicit identity B failure but retries identity B without restoring source A 16ms
+
+ Test Files  1 failed (1)
+      Tests  15 failed | 2 passed (17)
+   Start at  04:09:25
+   Duration  3.62s (transform 393ms, setup 442ms, import 497ms, tests 324ms, environment 1.79s)
+
+(node:34626) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R01 preserves source bytes through a pending UI callback and hard remount, then accepts fresh owned data
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":true,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":25,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:66:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03 retains full source after return failure and retries the same navigation with a new generation
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":25,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:84:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R05 deduplicates reload during source navigation instead of refreshing the old committed scope
+AssertionError: expected [ { id: 2, …(2) }, …(2) ] to have a length of 2 but got 3
+
+- Expected
++ Received
+
+- 2
++ 3
+
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:102:27
+    100|     const token = current.host.result.current.ui.requests.global;
+    101|     act(() => current.host.result.current.reload());
+    102|     expect(current.reads).toHaveLength(2);
+       |                           ^
+    103|     expect(current.host.result.current.ui.requests.global).toEqual(tok…
+    104|     expect(current.host.result.current.ui.snapshot.scope.market).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03b retries a failed return with its captured full UI even without an intervening UI callback
+AssertionError: expected { version: 3, scope: { …(5) }, …(10) } to deeply equal { version: 3, scope: { …(5) }, …(10) }
+
+- Expected
++ Received
+
+@@ -22,49 +22,49 @@
+        "sort": "profit-desc",
+        "symbol": null,
+      },
+      "mode": "current",
+    },
+-   "focus": "search",
++   "focus": "title",
+    "futureDisclosureSources": [],
+    "history": {
+      "chartMode": "period-pnl",
+      "range": {
+        "mode": "all",
+      },
+    },
+    "holdings": {
+-     "page": 2,
+-     "query": "来源持仓",
+-     "sort": "name-desc",
++     "page": 1,
++     "query": "",
++     "sort": "name",
+    },
+    "period": {
+      "from": "2026-10-22",
+      "preset": "custom",
+      "to": "2026-10-22",
+    },
+    "returnState": {
+-     "container": "search",
+-     "detailId": "NASDAQ:ROKU:stock",
+-     "missingContainerTitle": "证券搜索",
+-     "source": "detail",
+-     "triggerFocusId": "hp-symbol-search",
++     "container": null,
++     "detailId": null,
++     "missingContainerTitle": null,
++     "source": null,
++     "triggerFocusId": null,
+    },
+    "scope": {
+      "accounts": [
+        "one",
+      ],
+      "date": "2026-10-22",
+      "live": true,
+      "market": "a",
+      "rangeMode": "date",
+    },
+-   "scrollTop": 186,
++   "scrollTop": 0,
+    "search": {
+-     "open": true,
+-     "query": "ROKU",
+-     "resultsScrollTop": 73,
+-     "selectedSymbol": "NASDAQ:ROKU:stock",
+-     "triggerFocusId": "hp-symbol-search",
++     "open": false,
++     "query": "",
++     "resultsScrollTop": 0,
++     "selectedSymbol": null,
++     "triggerFocusId": null,
+    },
+    "version": 3,
+  }
+
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:119:53
+    117|     act(() => current.host.result.current.reload());
+    118|     await succeed(current.reads[2], "retry-without-ui-callback");
+    119|     expect(current.host.result.current.ui.snapshot).toEqual(source.sna…
+       |                                                     ^
+    120|     expect(current.accepted).toHaveBeenCalledExactlyOnceWith("retry-wi…
+    121|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old resolve during retry
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old reject during retry
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":25,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:132:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves failure recovery manual despite focus/visibility and resumes normal refresh after acceptance
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves timeout recovery manual despite focus/visibility and resumes normal refresh after acceptance
+AssertionError: expected [ { id: 2, …(2) }, …(2) ] to have a length of 2 but got 3
+
+- Expected
++ Received
+
+- 2
++ 3
+
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:156:27
+    154|     else await act(async () => vi.advanceTimersByTime(15_010));
+    155|     act(() => { window.dispatchEvent(new Event("focus")); document.dis…
+    156|     expect(current.reads).toHaveLength(2);
+       |                           ^
+    157|     expect(current.host.result.current.ui.requests.global).toBeNull();
+    158|     expectStored(source.bytes);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R07 protects full source when its scope equals the old committed scope but its search, page and focus differ
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":25,"focus":"holdings","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:180:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed scoped departure captures its outgoing entry
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed global departure captures its outgoing entry
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:196:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 commits only the newest allowed departure and never replaces protected source with the old committed UI
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:236:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A resolve cannot release its source protection
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A reject cannot release its source protection
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":41,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:248:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 retains protected source after explicit identity B failure but retries identity B without restoring source A
+AssertionError: expected '{"version":3,"scope":{"live":true,"ma…' to be '{"version":3,"scope":{"live":true,"ma…' // Object.is equality
+
+Expected: "{"version":3,"scope":{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"来源持仓","sort":"name-desc","page":2},"period":{"preset":"custom","from":"2026-10-22","to":"2026-10-22"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"ROKU","open":true,"resultsScrollTop":73,"selectedSymbol":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search"},"returnState":{"source":"detail","container":"search","detailId":"NASDAQ:ROKU:stock","triggerFocusId":"hp-symbol-search","missingContainerTitle":"证券搜索"},"scrollTop":186,"focus":"search","futureDisclosureSources":[]}"
+Received: "{"version":3,"scope":{"live":true,"market":"all","accounts":["*"],"rangeMode":"all"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"all","from":null,"to":null},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":42,"focus":"title","futureDisclosureSources":[]}"
+
+ ❯ expectStored app/components/homepage-v25/navigation-recovery.test.tsx:40:34
+     38| async function fail(read: Read) { await act(async () => read.reject(ne…
+     39| function expectStored(bytes: string) {
+     40|   expect(history.state.hpSource).toBe(bytes);
+       |                                  ^
+     41|   expect(sessionStorage.getItem(STORAGE_KEY)).toBe(bytes);
+     42| }
+ ❯ app/components/homepage-v25/navigation-recovery.test.tsx:270:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+

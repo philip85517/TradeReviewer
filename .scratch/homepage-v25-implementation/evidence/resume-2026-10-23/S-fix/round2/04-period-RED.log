@@ -1,0 +1,317 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:23283) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-state.test.ts (92 tests | 9 failed | 83 skipped) 38ms
+     × initializes native 'date' URL and round trips its applied period 20ms
+     × initializes native 'custom' URL and round trips its applied period 2ms
+     × clears native date fields only after a successful explicit All and preserves unrelated UI/draft 4ms
+     × keeps native date and committed period on failed All, rejecting its late success 1ms
+     × projects the applied period to navigation without leaking attachments or unsubmitted dates 1ms
+     × preserves period semantics during an attachment apply despite stale compatibility fields 2ms
+     × migrates v2 native ranges into period and preserves already applied non-All period precedence 2ms
+     × rejects a conflicting v3 period/scope instead of restoring a misleading All label 2ms
+     × keeps history in flight when period projects its new date fields into scope 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > initializes native 'date' URL and round trips its applied period
+AssertionError: expected { preset: 'all', from: null, to: null } to deeply equal { preset: 'custom', …(2) }
+
+- Expected
++ Received
+
+  {
+-   "from": "2026-09-18",
+-   "preset": "custom",
+-   "to": "2026-09-18",
++   "from": null,
++   "preset": "all",
++   "to": null,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:551:35
+    549|     if (!parsed.ok) throw new Error("valid address rejected");
+    550|     const state = createHomepageState(parsed.scope);
+    551|     expect(state.snapshot.period).toEqual(want);
+       |                                   ^
+    552|     expect(state.periodDraft).toEqual(want);
+    553|     expect(decodeHomepageSnapshot(encodeHomepageSnapshot(state.snapsho…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > initializes native 'custom' URL and round trips its applied period
+AssertionError: expected { preset: 'all', from: null, to: null } to deeply equal { preset: 'custom', …(2) }
+
+- Expected
++ Received
+
+  {
+-   "from": "2026-09-01",
+-   "preset": "custom",
+-   "to": "2026-09-30",
++   "from": null,
++   "preset": "all",
++   "to": null,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:551:35
+    549|     if (!parsed.ok) throw new Error("valid address rejected");
+    550|     const state = createHomepageState(parsed.scope);
+    551|     expect(state.snapshot.period).toEqual(want);
+       |                                   ^
+    552|     expect(state.periodDraft).toEqual(want);
+    553|     expect(decodeHomepageSnapshot(encodeHomepageSnapshot(state.snapsho…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > clears native date fields only after a successful explicit All and preserves unrelated UI/draft
+AssertionError: expected { live: true, market: 'hk', …(3) } to deeply equal { live: true, market: 'hk', …(2) }
+
+- Expected
++ Received
+
+  {
+    "accounts": [
+      "hk",
+    ],
++   "date": "2026-09-18",
+    "live": true,
+    "market": "hk",
+-   "rangeMode": "all",
++   "rangeMode": "date",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:566:34
+    564|     expect(completion.accepted).toBe(true);
+    565|     state = completion.state;
+    566|     expect(state.snapshot.scope).toEqual({ live: true, market: "hk", a…
+       |                                  ^
+    567|     expect(state.snapshot.period).toEqual({ preset: "all", from: null,…
+    568|     expect(state.draft).toEqual({ live: true, market: "hk", accounts: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > keeps native date and committed period on failed All, rejecting its late success
+AssertionError: expected { preset: 'all', from: null, to: null } to deeply equal { preset: 'custom', …(2) }
+
+- Expected
++ Received
+
+  {
+-   "from": "2026-01-01",
+-   "preset": "custom",
+-   "to": "2026-01-31",
++   "from": null,
++   "preset": "all",
++   "to": null,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:581:36
+    579|     const token = state.requests.period!;
+    580|     const failed = homepage.completeHomepageRequest(state, { domain: "…
+    581|     expect(failed.snapshot.period).toEqual({ preset: "custom", from: "…
+       |                                    ^
+    582|     expect(failed.snapshot.scope).toEqual(scope);
+    583|     expect(homepage.completeHomepageRequest(failed, { domain: "period"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > projects the applied period to navigation without leaking attachments or unsubmitted dates
+TypeError: homepageNavigationScope is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:589:29
+    587|     let state = createHomepageState(scope);
+    588|     state = homepage.editHomepagePeriodDraft(state, customPeriod);
+    589|     const target = homepage.homepageNavigationScope(state.snapshot, "H…
+       |                             ^
+    590|     expect(target).toEqual({ ...scope, symbolIdentity: "HKEX:00700:sto…
+    591|     expect(serializeHomepageNavigation(target)).toBe("/trades?scope=li…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > preserves period semantics during an attachment apply despite stale compatibility fields
+AssertionError: expected { live: true, market: 'all', …(3) } to match object { rangeMode: 'custom', …(2) }
+(7 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "from": "2026-01-01",
+-   "rangeMode": "custom",
+-   "to": "2026-01-31",
++   "rangeMode": "all",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:599:37
+    597|     const waiting = beginHomepageApply(state, { ...allScope, accounts:…
+    598|       attachments: { categories: [], openOnly: true, pendingReview: [f…
+    599|     expect(waiting.request!.target).toMatchObject({ rangeMode: "custom…
+       |                                     ^
+    600|     const applied = success(waiting);
+    601|     expect(applied.snapshot.scope).toEqual(scope);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > migrates v2 native ranges into period and preserves already applied non-All period precedence
+AssertionError: expected { ok: true, snapshot: { …(12) } } to match object { ok: true, …(1) }
+(30 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,12 +1,12 @@
+  {
+    "ok": true,
+    "snapshot": {
+      "period": {
+-       "from": "2026-01-01",
+-       "preset": "custom",
+-       "to": "2026-01-31",
++       "from": null,
++       "preset": "all",
++       "to": null,
+      },
+      "scope": {
+        "accounts": [
+          "paper",
+        ],
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:610:25
+    608|       period: { preset: "all", from: null, to: null } };
+    609|     const initialized = homepage.readHomepageSnapshot(JSON.stringify(l…
+    610|     expect(initialized).toMatchObject({ ok: true, snapshot: { version:…
+       |                         ^
+    611|       period: { preset: "custom", from: "2026-01-01", to: "2026-01-31"…
+    612|     const selected = homepage.readHomepageSnapshot(JSON.stringify({ ..…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > rejects a conflicting v3 period/scope instead of restoring a misleading All label
+AssertionError: expected { ok: true, snapshot: { …(12) } } to deeply equal { Object (ok, error) }
+
+- Expected
++ Received
+
+  {
+-   "error": "invalid-snapshot",
+-   "ok": false,
++   "ok": true,
++   "snapshot": {
++     "attachments": {
++       "categories": [],
++       "openOnly": false,
++       "pendingReview": [],
++     },
++     "contribution": {
++       "current": {
++         "category": "long",
++         "drilldown": "markets",
++         "market": null,
++         "openOnly": false,
++         "page": 1,
++         "sort": "profit-desc",
++         "symbol": null,
++       },
++       "history": {
++         "category": "long",
++         "drilldown": "markets",
++         "market": null,
++         "page": 1,
++         "sort": "profit-desc",
++         "symbol": null,
++       },
++       "mode": "current",
++     },
++     "focus": "title",
++     "futureDisclosureSources": [],
++     "history": {
++       "chartMode": "period-pnl",
++       "range": {
++         "mode": "all",
++       },
++     },
++     "holdings": {
++       "page": 1,
++       "query": "",
++       "sort": "name",
++     },
++     "period": {
++       "from": null,
++       "preset": "all",
++       "to": null,
++     },
++     "returnState": {
++       "container": null,
++       "detailId": null,
++       "missingContainerTitle": null,
++       "source": null,
++       "triggerFocusId": null,
++     },
++     "scope": {
++       "accounts": [
++         "paper",
++       ],
++       "from": "2026-01-01",
++       "live": true,
++       "market": "all",
++       "rangeMode": "custom",
++       "to": "2026-01-31",
++     },
++     "scrollTop": 0,
++     "search": {
++       "open": false,
++       "query": "",
++       "resultsScrollTop": 0,
++       "selectedSymbol": null,
++       "triggerFocusId": null,
++     },
++     "version": 3,
++   },
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:620:69
+    618|     const state = createHomepageState(scope);
+    619|     const conflict = { ...state.snapshot, period: { preset: "all", fro…
+    620|     expect(homepage.readHomepageSnapshot(JSON.stringify(conflict))).to…
+       |                                                                     ^
+    621|   });
+    622|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 period authority > keeps history in flight when period projects its new date fields into scope
+AssertionError: expected { live: true, market: 'all', …(2) } to deeply equal { live: true, market: 'all', …(4) }
+
+- Expected
++ Received
+
+  {
+    "accounts": [
+      "*",
+    ],
+-   "from": "2026-02-02",
+    "live": true,
+    "market": "all",
+-   "rangeMode": "custom",
+-   "to": "2026-02-06",
++   "rangeMode": "all",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:629:34
+    627|     const period = state.requests.period!;
+    628|     state = homepage.completeHomepageRequest(state, { domain: "period"…
+    629|     expect(state.snapshot.scope).toEqual({ ...allScope, rangeMode: "cu…
+       |                                  ^
+    630|     const completion = homepage.completeHomepageRequest(state, { domai…
+    631|     expect(completion.accepted).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 83 skipped (92)
+   Start at  02:31:48
+   Duration  1.51s (transform 105ms, setup 180ms, import 101ms, tests 38ms, environment 859ms)
+

@@ -1,0 +1,3166 @@
+{
+  "method": "For each sample, use its timeDelta as weight. Self belongs to the leaf; inclusive is counted once per distinct function+URL in that sample, with anonymous closures separated by transformed position. Categories assign the sample to its deepest recognized owner. Inclusive rows overlap and must not be summed; category rows partition all weights.",
+  "caveats": [
+    "Vite-transformed callFrame locations are not original TypeScript line numbers.",
+    "Sampled CPU weight is not exact function duration or call count. Native Intl/JSON work can be charged to the JS caller.",
+    "GC and incomplete stacks are left unallocated. No allocation count, native Intl construction/format split, or causal speedup is measured.",
+    "Only the existing one-shot capture is read. No fixture, test or product code is executed by this analysis.",
+    "Diagnostic timing is not formal threshold evidence; original cold FAIL and remaining NOT VERIFIED stay binding.",
+    "The preliminary diagnostic-analysis.json matched the retained-digest path under reviews instead of recall, leaving its 53.354ms in remaining preparation. This v2 corrects only that read-only classification; raw profile and function totals are unchanged."
+  ],
+  "profile": {
+    "nodes": 366,
+    "samples": 1905,
+    "samplingIntervalUs": 1000,
+    "weightedMs": 2650.948,
+    "profilerElapsedMs": 2651.501,
+    "phaseMs": {
+      "other": 103.104,
+      "prepare": 346.328,
+      "project": 2201.516
+    }
+  },
+  "partition": [
+    {
+      "phase": "project",
+      "category": "quote selection, session calendar and timezone",
+      "ms": 1424.133,
+      "pctAllSamples": 53.72164976453706,
+      "pctPhase": 64.68874175795224
+    },
+    {
+      "phase": "project",
+      "category": "memo and source/index graph accounting",
+      "ms": 186.356,
+      "pctAllSamples": 7.0297870799427224,
+      "pctPhase": 8.464894191093773
+    },
+    {
+      "phase": "project",
+      "category": "sharing keys, probes and content interning",
+      "ms": 117.311,
+      "pctAllSamples": 4.425247119143793,
+      "pctPhase": 5.32864626012257
+    },
+    {
+      "phase": "project",
+      "category": "state and prefix-key assembly outside ledger/graph",
+      "ms": 101.262,
+      "pctAllSamples": 3.8198410530874236,
+      "pctPhase": 4.599648605778927
+    },
+    {
+      "phase": "project",
+      "category": "unchanged metric money/FX oracle",
+      "ms": 92.179,
+      "pctAllSamples": 3.4772089079076616,
+      "pctPhase": 4.187069274082042
+    },
+    {
+      "phase": "project",
+      "category": "canonical ledger preparation/query",
+      "ms": 90.414,
+      "pctAllSamples": 3.410628952359684,
+      "pctPhase": 4.106897247169678
+    },
+    {
+      "phase": "prepare",
+      "category": "stable source/request key serialization",
+      "ms": 76.902,
+      "pctAllSamples": 2.900924499462079,
+      "pctPhase": 22.204961770344877
+    },
+    {
+      "phase": "prepare",
+      "category": "memo and source/index graph accounting",
+      "ms": 61.913,
+      "pctAllSamples": 2.3355041290889145,
+      "pctPhase": 17.876983668660923
+    },
+    {
+      "phase": "other",
+      "category": "unallocated garbage collection",
+      "ms": 54.185,
+      "pctAllSamples": 2.043985774145702,
+      "pctPhase": 52.55373215394165
+    },
+    {
+      "phase": "prepare",
+      "category": "source/group digest hashing",
+      "ms": 53.354,
+      "pctAllSamples": 2.012638497624246,
+      "pctPhase": 15.405627035642512
+    },
+    {
+      "phase": "project",
+      "category": "execution prefix selection",
+      "ms": 47.927,
+      "pctAllSamples": 1.807919280197122,
+      "pctPhase": 2.1769998491948277
+    },
+    {
+      "phase": "prepare",
+      "category": "remaining preparation/group/index work",
+      "ms": 45.699,
+      "pctAllSamples": 1.723873874553556,
+      "pctPhase": 13.195294633988588
+    },
+    {
+      "phase": "prepare",
+      "category": "canonical ledger preparation/query",
+      "ms": 42.149,
+      "pctAllSamples": 1.5899595163692384,
+      "pctPhase": 12.170254787369199
+    },
+    {
+      "phase": "project",
+      "category": "fee fact selection and assembly",
+      "ms": 40.234,
+      "pctAllSamples": 1.5177212076585433,
+      "pctPhase": 1.8275588276442234
+    },
+    {
+      "phase": "other",
+      "category": "inspector start overhead",
+      "ms": 36.493,
+      "pctAllSamples": 1.3766018797803654,
+      "pctPhase": 35.3943590937306
+    },
+    {
+      "phase": "project",
+      "category": "remaining endpoint/current assembly",
+      "ms": 31.164,
+      "pctAllSamples": 1.1755794530862167,
+      "pctPhase": 1.4155699981285623
+    },
+    {
+      "phase": "project",
+      "category": "public graph freezing",
+      "ms": 30.329,
+      "pctAllSamples": 1.1440812871470885,
+      "pctPhase": 1.3776415887960842
+    },
+    {
+      "phase": "prepare",
+      "category": "source snapshot clone",
+      "ms": 26.546,
+      "pctAllSamples": 1.0013776203833498,
+      "pctPhase": 7.664988103762907
+    },
+    {
+      "phase": "prepare",
+      "category": "fee fact selection and assembly",
+      "ms": 25.093,
+      "pctAllSamples": 0.9465670394138248,
+      "pctPhase": 7.245443625695872
+    },
+    {
+      "phase": "prepare",
+      "category": "ordinary fee checkpoint construction",
+      "ms": 14.672,
+      "pctAllSamples": 0.5534623840226214,
+      "pctPhase": 4.236446374535123
+    },
+    {
+      "phase": "project",
+      "category": "dated FX selection and provenance assembly",
+      "ms": 13.59,
+      "pctAllSamples": 0.5126467965422181,
+      "pctPhase": 0.6173018956028482
+    },
+    {
+      "phase": "other",
+      "category": "unallocated runtime/harness or incomplete stack",
+      "ms": 12.426,
+      "pctAllSamples": 0.4687379759995292,
+      "pctPhase": 12.051908752327746
+    },
+    {
+      "phase": "project",
+      "category": "native amount construction",
+      "ms": 12.368,
+      "pctAllSamples": 0.4665500794432784,
+      "pctPhase": 0.5617946905677724
+    },
+    {
+      "phase": "project",
+      "category": "lifetime coverage assembly",
+      "ms": 8.147,
+      "pctAllSamples": 0.307324021444404,
+      "pctPhase": 0.37006317464874205
+    },
+    {
+      "phase": "project",
+      "category": "public evidence assembly",
+      "ms": 6.102,
+      "pctAllSamples": 0.23018180665935356,
+      "pctPhase": 0.2771726392177027
+    }
+  ],
+  "functions": [
+    {
+      "function": "(root)",
+      "url": "",
+      "transformedLocations": [
+        [
+          0,
+          0
+        ]
+      ],
+      "inclusiveMs": 2650.948,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 100.0,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1905,
+      "inclusiveMsByPhase": {
+        "other": 103.104,
+        "prepare": 346.328,
+        "project": 2201.516
+      },
+      "inclusivePctProjection": 100.0
+    },
+    {
+      "function": "(anonymous transformed 17:123)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/profile-opt-in.test.ts",
+      "transformedLocations": [
+        [
+          17,
+          123
+        ]
+      ],
+      "inclusiveMs": 2595.369,
+      "selfMs": 11.032,
+      "inclusivePctAllSamples": 97.90342926379545,
+      "selfPctAllSamples": 0.4161530139406733,
+      "inclusiveSamples": 1865,
+      "inclusiveMsByPhase": {
+        "other": 47.525,
+        "prepare": 346.328,
+        "project": 2201.516
+      },
+      "inclusivePctProjection": 100.0
+    },
+    {
+      "function": "processTicksAndRejections",
+      "url": "node:internal/process/task_queues",
+      "transformedLocations": [
+        [
+          72,
+          35
+        ]
+      ],
+      "inclusiveMs": 2595.369,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 97.90342926379545,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1865,
+      "inclusiveMsByPhase": {
+        "other": 47.525,
+        "prepare": 346.328,
+        "project": 2201.516
+      },
+      "inclusivePctProjection": 100.0
+    },
+    {
+      "function": "projectHomepageV25Boundaries",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1623,
+          38
+        ]
+      ],
+      "inclusiveMs": 2201.516,
+      "selfMs": 21.815,
+      "inclusivePctAllSamples": 83.04636680915657,
+      "selfPctAllSamples": 0.8229131616312353,
+      "inclusiveSamples": 1568,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2201.516
+      },
+      "inclusivePctProjection": 100.0
+    },
+    {
+      "function": "indexedQuote",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1214,
+          22
+        ]
+      ],
+      "inclusiveMs": 1424.133,
+      "selfMs": 185.438,
+      "inclusivePctAllSamples": 53.72164976453706,
+      "selfPctAllSamples": 6.995157958586891,
+      "inclusiveSamples": 999,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1424.133
+      },
+      "inclusivePctProjection": 64.68874175795224
+    },
+    {
+      "function": "requiredMarketDataRange",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          125,
+          33
+        ]
+      ],
+      "inclusiveMs": 1228.7,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 46.34945687354109,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 858,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1228.7
+      },
+      "inclusivePctProjection": 55.81154077462985
+    },
+    {
+      "function": "dailyEndForOpenPosition",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          119,
+          33
+        ]
+      ],
+      "inclusiveMs": 1215.95,
+      "selfMs": 1.401,
+      "inclusivePctAllSamples": 45.86849685471009,
+      "selfPctAllSamples": 0.05284901853978275,
+      "inclusiveSamples": 849,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1215.95
+      },
+      "inclusivePctProjection": 55.232394404583026
+    },
+    {
+      "function": "latestCompletedSession",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          86,
+          32
+        ]
+      ],
+      "inclusiveMs": 1214.549,
+      "selfMs": 31.702,
+      "inclusivePctAllSamples": 45.81564783617031,
+      "selfPctAllSamples": 1.195874079763164,
+      "inclusiveSamples": 848,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1214.549
+      },
+      "inclusivePctProjection": 55.168756438744936
+    },
+    {
+      "function": "marketLocalTimestampToIso",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/providers/errors.ts",
+      "transformedLocations": [
+        [
+          33,
+          35
+        ]
+      ],
+      "inclusiveMs": 1047.457,
+      "selfMs": 30.325,
+      "inclusivePctAllSamples": 39.5125441917382,
+      "selfPctAllSamples": 1.143930397729416,
+      "inclusiveSamples": 731,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1047.457
+      },
+      "inclusivePctProjection": 47.578895633736025
+    },
+    {
+      "function": "marketTimeParts",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/providers/errors.ts",
+      "transformedLocations": [
+        [
+          13,
+          25
+        ]
+      ],
+      "inclusiveMs": 1017.132,
+      "selfMs": 1017.132,
+      "inclusivePctAllSamples": 38.36861379400879,
+      "selfPctAllSamples": 38.36861379400879,
+      "inclusiveSamples": 710,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1017.132
+      },
+      "inclusivePctProjection": 46.20143573791878
+    },
+    {
+      "function": "prepareHomepageV25Source",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1022,
+          34
+        ]
+      ],
+      "inclusiveMs": 346.328,
+      "selfMs": 21.162,
+      "inclusivePctAllSamples": 13.06430756091783,
+      "selfPctAllSamples": 0.7982804641962046,
+      "inclusiveSamples": 288,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 346.328,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "projectedState",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1142,
+          24
+        ]
+      ],
+      "inclusiveMs": 333.486,
+      "selfMs": 43.491,
+      "inclusivePctAllSamples": 12.579877085480364,
+      "selfPctAllSamples": 1.6405829159983523,
+      "inclusiveSamples": 238,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 333.486
+      },
+      "inclusivePctProjection": 15.148016185210555
+    },
+    {
+      "function": "(anonymous transformed 971:10)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          971,
+          10
+        ]
+      ],
+      "inclusiveMs": 217.743,
+      "selfMs": 32.361,
+      "inclusivePctAllSamples": 8.213778618064179,
+      "selfPctAllSamples": 1.2207331113247035,
+      "inclusiveSamples": 162,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 217.743
+      },
+      "inclusivePctProjection": 9.890593572792566
+    },
+    {
+      "function": "set",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          892,
+          5
+        ]
+      ],
+      "inclusiveMs": 159.374,
+      "selfMs": 28.667,
+      "inclusivePctAllSamples": 6.011962513033073,
+      "selfPctAllSamples": 1.081386734104177,
+      "inclusiveSamples": 113,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 159.374
+      },
+      "inclusivePctProjection": 7.239284202340569
+    },
+    {
+      "function": "(anonymous transformed 1719:62)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1719,
+          62
+        ]
+      ],
+      "inclusiveMs": 156.959,
+      "selfMs": 2.076,
+      "inclusivePctAllSamples": 5.920863027113319,
+      "selfPctAllSamples": 0.07831160777201213,
+      "inclusiveSamples": 115,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 156.959
+      },
+      "inclusivePctProjection": 7.1295870663669945
+    },
+    {
+      "function": "shape",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          822,
+          7
+        ]
+      ],
+      "inclusiveMs": 149.611,
+      "selfMs": 146.957,
+      "inclusivePctAllSamples": 5.643679166848991,
+      "selfPctAllSamples": 5.543564038223307,
+      "inclusiveSamples": 111,
+      "inclusiveMsByPhase": {
+        "other": 1.394,
+        "prepare": 43.723,
+        "project": 104.494
+      },
+      "inclusivePctProjection": 4.746456532680208
+    },
+    {
+      "function": "ordinaryState",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1201,
+          23
+        ]
+      ],
+      "inclusiveMs": 137.517,
+      "selfMs": 6.632,
+      "inclusivePctAllSamples": 5.187465012516277,
+      "selfPctAllSamples": 0.2501746545009559,
+      "inclusiveSamples": 97,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 137.517
+      },
+      "inclusivePctProjection": 6.246468342723833
+    },
+    {
+      "function": "metric",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          521,
+          16
+        ]
+      ],
+      "inclusiveMs": 92.179,
+      "selfMs": 22.783,
+      "inclusivePctAllSamples": 3.4772089079076616,
+      "selfPctAllSamples": 0.8594284007079731,
+      "inclusiveSamples": 70,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 92.179
+      },
+      "inclusivePctProjection": 4.187069274082042
+    },
+    {
+      "function": "replayPreparedPositionBoundaries",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          469,
+          42
+        ]
+      ],
+      "inclusiveMs": 90.414,
+      "selfMs": 4.418,
+      "inclusivePctAllSamples": 3.410628952359684,
+      "selfPctAllSamples": 0.16665736181924354,
+      "inclusiveSamples": 64,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 90.414
+      },
+      "inclusivePctProjection": 4.106897247169678
+    },
+    {
+      "function": "exact",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          959,
+          7
+        ]
+      ],
+      "inclusiveMs": 88.482,
+      "selfMs": 80.229,
+      "inclusivePctAllSamples": 3.337749363623881,
+      "selfPctAllSamples": 3.0264267726111567,
+      "inclusiveSamples": 64,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 88.482
+      },
+      "inclusivePctProjection": 4.019139538390818
+    },
+    {
+      "function": "(anonymous transformed 473:30)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          473,
+          30
+        ]
+      ],
+      "inclusiveMs": 81.482,
+      "selfMs": 45.985,
+      "inclusivePctAllSamples": 3.073692882697058,
+      "selfPctAllSamples": 1.7346624679171376,
+      "inclusiveSamples": 58,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 81.482
+      },
+      "inclusivePctProjection": 3.7011768254239352
+    },
+    {
+      "function": "stableProjectionJson",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          999,
+          30
+        ]
+      ],
+      "inclusiveMs": 76.902,
+      "selfMs": 56.813,
+      "inclusivePctAllSamples": 2.900924499462079,
+      "selfPctAllSamples": 2.1431201215565148,
+      "inclusiveSamples": 65,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 76.902,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "expectedTradingDates",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/calendar.ts",
+      "transformedLocations": [
+        [
+          8,
+          30
+        ]
+      ],
+      "inclusiveMs": 73.366,
+      "selfMs": 73.366,
+      "inclusivePctAllSamples": 2.767538254239615,
+      "selfPctAllSamples": 2.767538254239615,
+      "inclusiveSamples": 51,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.083,
+        "project": 70.283
+      },
+      "inclusivePctProjection": 3.192481907921632
+    },
+    {
+      "function": "(anonymous transformed 1001:155)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1001,
+          155
+        ]
+      ],
+      "inclusiveMs": 67.058,
+      "selfMs": 12.883,
+      "inclusivePctAllSamples": 2.5295856425701295,
+      "selfPctAllSamples": 0.48597709196860894,
+      "inclusiveSamples": 56,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 67.058,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1760:61)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1760,
+          61
+        ]
+      ],
+      "inclusiveMs": 64.225,
+      "selfMs": 1.551,
+      "inclusivePctAllSamples": 2.4227182125036024,
+      "selfPctAllSamples": 0.05850737170250039,
+      "inclusiveSamples": 46,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 64.225
+      },
+      "inclusivePctProjection": 2.91730789147115
+    },
+    {
+      "function": "accountPermanent",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          851,
+          18
+        ]
+      ],
+      "inclusiveMs": 61.913,
+      "selfMs": 17.957,
+      "inclusivePctAllSamples": 2.3355041290889145,
+      "selfPctAllSamples": 0.6773803182861377,
+      "inclusiveSamples": 50,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 61.913,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 855:46)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          855,
+          46
+        ]
+      ],
+      "inclusiveMs": 61.913,
+      "selfMs": 0.233,
+      "inclusivePctAllSamples": 2.3355041290889145,
+      "selfPctAllSamples": 0.008789308579421399,
+      "inclusiveSamples": 50,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 61.913,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "convert",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          548,
+          18
+        ]
+      ],
+      "inclusiveMs": 59.774,
+      "selfMs": 2.491,
+      "inclusivePctAllSamples": 2.2548160129885613,
+      "selfPctAllSamples": 0.09396638485553092,
+      "inclusiveSamples": 44,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 59.774
+      },
+      "inclusivePctProjection": 2.715129029268922
+    },
+    {
+      "function": "(garbage collector)",
+      "url": "",
+      "transformedLocations": [
+        [
+          0,
+          0
+        ]
+      ],
+      "inclusiveMs": 54.185,
+      "selfMs": 54.185,
+      "inclusivePctAllSamples": 2.043985774145702,
+      "selfPctAllSamples": 2.043985774145702,
+      "inclusiveSamples": 39,
+      "inclusiveMsByPhase": {
+        "other": 54.185,
+        "prepare": 0.0,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "sha256",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/recall/retained-digest.ts",
+      "transformedLocations": [
+        [
+          4,
+          16
+        ]
+      ],
+      "inclusiveMs": 53.354,
+      "selfMs": 49.404,
+      "inclusivePctAllSamples": 2.012638497624246,
+      "selfPctAllSamples": 1.8636351976726817,
+      "inclusiveSamples": 48,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 53.354,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "Decimal",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          4287,
+          19
+        ]
+      ],
+      "inclusiveMs": 52.023,
+      "selfMs": 23.479,
+      "inclusivePctAllSamples": 1.9624300438937317,
+      "selfPctAllSamples": 0.885683159382983,
+      "inclusiveSamples": 39,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 18.831,
+        "project": 33.192
+      },
+      "inclusivePctProjection": 1.5076883383995392
+    },
+    {
+      "function": "preparePositionLedger",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          412,
+          31
+        ]
+      ],
+      "inclusiveMs": 50.686,
+      "selfMs": 4.099,
+      "inclusivePctAllSamples": 1.9119952560367084,
+      "selfPctAllSamples": 0.15462393075986403,
+      "inclusiveSamples": 41,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 50.686,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "selectedPrepared",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1139,
+          26
+        ]
+      ],
+      "inclusiveMs": 47.927,
+      "selfMs": 34.371,
+      "inclusivePctAllSamples": 1.807919280197122,
+      "selfPctAllSamples": 1.2965550437051199,
+      "inclusiveSamples": 35,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 47.927
+      },
+      "inclusivePctProjection": 2.1769998491948277
+    },
+    {
+      "function": "parseAsOf",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          56,
+          19
+        ]
+      ],
+      "inclusiveMs": 45.62,
+      "selfMs": 42.584,
+      "inclusivePctAllSamples": 1.7208938085545247,
+      "selfPctAllSamples": 1.6063687405411196,
+      "inclusiveSamples": 32,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 45.62
+      },
+      "inclusivePctProjection": 2.072208423649885
+    },
+    {
+      "function": "feeAmount",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1498,
+          19
+        ]
+      ],
+      "inclusiveMs": 37.605,
+      "selfMs": 23.859,
+      "inclusivePctAllSamples": 1.4185491378933122,
+      "selfPctAllSamples": 0.9000176540618677,
+      "inclusiveSamples": 26,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 37.605
+      },
+      "inclusivePctProjection": 1.708141117302804
+    },
+    {
+      "function": "post",
+      "url": "node:inspector",
+      "transformedLocations": [
+        [
+          115,
+          7
+        ]
+      ],
+      "inclusiveMs": 36.493,
+      "selfMs": 36.493,
+      "inclusivePctAllSamples": 1.3766018797803654,
+      "selfPctAllSamples": 1.3766018797803654,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 36.493,
+        "prepare": 0.0,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 499:24)",
+      "url": "node:internal/util",
+      "transformedLocations": [
+        [
+          499,
+          24
+        ]
+      ],
+      "inclusiveMs": 36.493,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 1.3766018797803654,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 36.493,
+        "prepare": 0.0,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "fn",
+      "url": "node:internal/util",
+      "transformedLocations": [
+        [
+          498,
+          14
+        ]
+      ],
+      "inclusiveMs": 36.493,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 1.3766018797803654,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 36.493,
+        "prepare": 0.0,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "marketTradingDate",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/trading-date.ts",
+      "transformedLocations": [
+        [
+          33,
+          27
+        ]
+      ],
+      "inclusiveMs": 36.241,
+      "selfMs": 36.241,
+      "inclusivePctAllSamples": 1.3670958464669998,
+      "selfPctAllSamples": 1.3670958464669998,
+      "inclusiveSamples": 25,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 36.241
+      },
+      "inclusivePctProjection": 1.6461838115189715
+    },
+    {
+      "function": "freezeProjection",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          945,
+          26
+        ]
+      ],
+      "inclusiveMs": 30.329,
+      "selfMs": 30.329,
+      "inclusivePctAllSamples": 1.1440812871470885,
+      "selfPctAllSamples": 1.1440812871470885,
+      "inclusiveSamples": 22,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 30.329
+      },
+      "inclusivePctProjection": 1.3776415887960842
+    },
+    {
+      "function": "structuredClone",
+      "url": "node:internal/worker/js_transferable",
+      "transformedLocations": [
+        [
+          112,
+          25
+        ]
+      ],
+      "inclusiveMs": 26.546,
+      "selfMs": 26.546,
+      "inclusivePctAllSamples": 1.0013776203833498,
+      "selfPctAllSamples": 1.0013776203833498,
+      "inclusiveSamples": 19,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 26.546,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "D",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          25,
+          11
+        ]
+      ],
+      "inclusiveMs": 25.707,
+      "selfMs": 4.165,
+      "inclusivePctAllSamples": 0.969728565026549,
+      "selfPctAllSamples": 0.15711360615145978,
+      "inclusiveSamples": 19,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 4.995,
+        "project": 20.712
+      },
+      "inclusivePctProjection": 0.9408062444242967
+    },
+    {
+      "function": "evaluatePositionAtPrice",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          72,
+          33
+        ]
+      ],
+      "inclusiveMs": 24.325,
+      "selfMs": 9.061,
+      "inclusivePctAllSamples": 0.9175962712207105,
+      "selfPctAllSamples": 0.34180225338256354,
+      "inclusiveSamples": 21,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 24.325,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "get",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          885,
+          5
+        ]
+      ],
+      "inclusiveMs": 24.324,
+      "selfMs": 24.324,
+      "inclusivePctAllSamples": 0.9175585488662924,
+      "selfPctAllSamples": 0.9175585488662924,
+      "inclusiveSamples": 18,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 24.324
+      },
+      "inclusivePctProjection": 1.1048750043152082
+    },
+    {
+      "function": "retain",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          861,
+          8
+        ]
+      ],
+      "inclusiveMs": 24.052,
+      "selfMs": 22.543,
+      "inclusivePctAllSamples": 0.9072980684645644,
+      "selfPctAllSamples": 0.850375035647625,
+      "inclusiveSamples": 16,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 24.052
+      },
+      "inclusivePctProjection": 1.0925198817542094
+    },
+    {
+      "function": "(anonymous transformed 1143:44)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1143,
+          44
+        ]
+      ],
+      "inclusiveMs": 23.957,
+      "selfMs": 23.957,
+      "inclusivePctAllSamples": 0.9037144447948432,
+      "selfPctAllSamples": 0.9037144447948432,
+      "inclusiveSamples": 16,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 23.957
+      },
+      "inclusivePctProjection": 1.0882046735068016
+    },
+    {
+      "function": "CalendarOutOfRangeError",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/calendar.ts",
+      "transformedLocations": [
+        [
+          7,
+          1
+        ]
+      ],
+      "inclusiveMs": 22.49,
+      "selfMs": 22.49,
+      "inclusivePctAllSamples": 0.8483757508634647,
+      "selfPctAllSamples": 0.8483757508634647,
+      "inclusiveSamples": 16,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 22.49
+      },
+      "inclusivePctProjection": 1.0215687735178849
+    },
+    {
+      "function": "(anonymous transformed 874:26)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          874,
+          26
+        ]
+      ],
+      "inclusiveMs": 21.393,
+      "selfMs": 1.509,
+      "inclusivePctAllSamples": 0.8069943280667897,
+      "selfPctAllSamples": 0.05692303281693945,
+      "inclusiveSamples": 14,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 21.393
+      },
+      "inclusivePctProjection": 0.9717394740715034
+    },
+    {
+      "function": "collectFeeFacts",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1366,
+          25
+        ]
+      ],
+      "inclusiveMs": 20.88,
+      "selfMs": 4.089,
+      "inclusivePctAllSamples": 0.7876427602502953,
+      "selfPctAllSamples": 0.15424670721568284,
+      "inclusiveSamples": 17,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 20.88,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "finalizePosition",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          372,
+          26
+        ]
+      ],
+      "inclusiveMs": 19.692,
+      "selfMs": 6.55,
+      "inclusivePctAllSamples": 0.7428286032015716,
+      "selfPctAllSamples": 0.24708142143867023,
+      "inclusiveSamples": 18,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.032,
+        "project": 18.66
+      },
+      "inclusivePctProjection": 0.8475977462802905
+    },
+    {
+      "function": "shiftIsoDate",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          81,
+          22
+        ]
+      ],
+      "inclusiveMs": 17.35,
+      "selfMs": 17.35,
+      "inclusivePctAllSamples": 0.6544828491543403,
+      "selfPctAllSamples": 0.6544828491543403,
+      "inclusiveSamples": 12,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 17.35
+      },
+      "inclusivePctProjection": 0.7880932957107738
+    },
+    {
+      "function": "replayExecutionAt",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/import/statement-evidence.ts",
+      "transformedLocations": [
+        [
+          611,
+          27
+        ]
+      ],
+      "inclusiveMs": 17.318,
+      "selfMs": 1.496,
+      "inclusivePctAllSamples": 0.6532757338129604,
+      "selfPctAllSamples": 0.05643264220950392,
+      "inclusiveSamples": 13,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 17.318,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "executionDay",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          66,
+          22
+        ]
+      ],
+      "inclusiveMs": 17.066,
+      "selfMs": 17.066,
+      "inclusivePctAllSamples": 0.6437697004995948,
+      "selfPctAllSamples": 0.6437697004995948,
+      "inclusiveSamples": 14,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 17.066,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "parseDecimal",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          3518,
+          22
+        ]
+      ],
+      "inclusiveMs": 16.996,
+      "selfMs": 16.996,
+      "inclusivePctAllSamples": 0.6411291356903266,
+      "selfPctAllSamples": 0.6411291356903266,
+      "inclusiveSamples": 12,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 7.372,
+        "project": 9.624
+      },
+      "inclusivePctProjection": 0.4371533070847543
+    },
+    {
+      "function": "(anonymous transformed 478:34)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          478,
+          34
+        ]
+      ],
+      "inclusiveMs": 16.837,
+      "selfMs": 16.837,
+      "inclusivePctAllSamples": 0.6351312813378459,
+      "selfPctAllSamples": 0.6351312813378459,
+      "inclusiveSamples": 12,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 16.837
+      },
+      "inclusivePctProjection": 0.7647911711747722
+    },
+    {
+      "function": "replayCursorAt",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/import/statement-evidence.ts",
+      "transformedLocations": [
+        [
+          608,
+          24
+        ]
+      ],
+      "inclusiveMs": 15.822,
+      "selfMs": 15.822,
+      "inclusivePctAllSamples": 0.5968430916034566,
+      "selfPctAllSamples": 0.5968430916034566,
+      "inclusiveSamples": 12,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 15.822,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "prepareOrdinaryProjection",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1155,
+          35
+        ]
+      ],
+      "inclusiveMs": 14.672,
+      "selfMs": 2.771,
+      "inclusivePctAllSamples": 0.5534623840226214,
+      "selfPctAllSamples": 0.10452864409260386,
+      "inclusiveSamples": 13,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 14.672,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "fxFor",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1289,
+          15
+        ]
+      ],
+      "inclusiveMs": 13.59,
+      "selfMs": 5.748,
+      "inclusivePctAllSamples": 0.5126467965422181,
+      "selfPctAllSamples": 0.21682809319533994,
+      "inclusiveSamples": 14,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 13.59
+      },
+      "inclusivePctProjection": 0.6173018956028482
+    },
+    {
+      "function": "amount",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          492,
+          16
+        ]
+      ],
+      "inclusiveMs": 12.368,
+      "selfMs": 0.535,
+      "inclusivePctAllSamples": 0.4665500794432784,
+      "selfPctAllSamples": 0.02018145961369291,
+      "inclusiveSamples": 10,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 12.368
+      },
+      "inclusivePctProjection": 0.5617946905677724
+    },
+    {
+      "function": "normalizedExecution",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          82,
+          29
+        ]
+      ],
+      "inclusiveMs": 12.229,
+      "selfMs": 3.39,
+      "inclusivePctAllSamples": 0.46130667217916005,
+      "selfPctAllSamples": 0.12787878147741866,
+      "inclusiveSamples": 10,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 12.229,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "finishState",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          409,
+          21
+        ]
+      ],
+      "inclusiveMs": 12.119,
+      "selfMs": 3.063,
+      "inclusivePctAllSamples": 0.4571572131931671,
+      "selfPctAllSamples": 0.1155435715826942,
+      "inclusiveSamples": 8,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 12.119
+      },
+      "inclusivePctProjection": 0.5504843026350933
+    },
+    {
+      "function": "strictAmount",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1277,
+          22
+        ]
+      ],
+      "inclusiveMs": 11.833,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.4463686198295855,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 11.833
+      },
+      "inclusivePctProjection": 0.5374932546481607
+    },
+    {
+      "function": "isDecimalInstance",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          4546,
+          27
+        ]
+      ],
+      "inclusiveMs": 11.548,
+      "selfMs": 11.548,
+      "inclusivePctAllSamples": 0.435617748820422,
+      "selfPctAllSamples": 0.435617748820422,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.541,
+        "project": 8.007
+      },
+      "inclusivePctProjection": 0.3637039203894044
+    },
+    {
+      "function": "P.comparedTo.P.cmp",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          242,
+          33
+        ]
+      ],
+      "inclusiveMs": 11.295,
+      "selfMs": 3.976,
+      "inclusivePctAllSamples": 0.4260739931526382,
+      "selfPctAllSamples": 0.14998408116643555,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 7.82,
+        "project": 3.475
+      },
+      "inclusivePctProjection": 0.15784577536570255
+    },
+    {
+      "function": "(anonymous transformed 1205:20)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1205,
+          20
+        ]
+      ],
+      "inclusiveMs": 10.494,
+      "selfMs": 10.494,
+      "inclusivePctAllSamples": 0.395858387263726,
+      "selfPctAllSamples": 0.395858387263726,
+      "inclusiveSamples": 7,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 10.494
+      },
+      "inclusivePctProjection": 0.4766715299820669
+    },
+    {
+      "function": "(anonymous transformed 1140:47)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1140,
+          47
+        ]
+      ],
+      "inclusiveMs": 10.413,
+      "selfMs": 10.413,
+      "inclusivePctAllSamples": 0.3928028765558585,
+      "selfPctAllSamples": 0.3928028765558585,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 10.413
+      },
+      "inclusivePctProjection": 0.47299224716059296
+    },
+    {
+      "function": "P.plus.P.add",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1523,
+          27
+        ]
+      ],
+      "inclusiveMs": 10.02,
+      "selfMs": 2.626,
+      "inclusivePctAllSamples": 0.3779779912695383,
+      "selfPctAllSamples": 0.0990589027019768,
+      "inclusiveSamples": 7,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.191,
+        "project": 6.829
+      },
+      "inclusivePctProjection": 0.310195338121549
+    },
+    {
+      "function": "P.dividedBy.P.div",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          464,
+          32
+        ]
+      ],
+      "inclusiveMs": 9.43,
+      "selfMs": 3.043,
+      "inclusivePctAllSamples": 0.35572180216284893,
+      "selfPctAllSamples": 0.11478912449433185,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 2.391,
+        "project": 7.039
+      },
+      "inclusivePctProjection": 0.3197342195105555
+    },
+    {
+      "function": "(anonymous transformed 432:31)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          432,
+          31
+        ]
+      ],
+      "inclusiveMs": 9.056,
+      "selfMs": 9.056,
+      "inclusivePctAllSamples": 0.3416136416104729,
+      "selfPctAllSamples": 0.3416136416104729,
+      "inclusiveSamples": 6,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 9.056
+      },
+      "inclusivePctProjection": 0.41135290408972724
+    },
+    {
+      "function": "(anonymous transformed 1076:55)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1076,
+          55
+        ]
+      ],
+      "inclusiveMs": 8.808,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.3322584977147798,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 7,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 8.808,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "lifetimeFor",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1547,
+          21
+        ]
+      ],
+      "inclusiveMs": 8.147,
+      "selfMs": 8.147,
+      "inclusivePctAllSamples": 0.307324021444404,
+      "selfPctAllSamples": 0.307324021444404,
+      "inclusiveSamples": 6,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 8.147
+      },
+      "inclusivePctProjection": 0.37006317464874205
+    },
+    {
+      "function": "lower",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1501,
+          17
+        ]
+      ],
+      "inclusiveMs": 7.644,
+      "selfMs": 1.483,
+      "inclusivePctAllSamples": 0.28834967717209087,
+      "selfPctAllSamples": 0.055942251602068394,
+      "inclusiveSamples": 5,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 7.644
+      },
+      "inclusivePctProjection": 0.347215282559836
+    },
+    {
+      "function": "projectedCurrent",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1577,
+          26
+        ]
+      ],
+      "inclusiveMs": 7.353,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.2773724720364187,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 14,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 7.353
+      },
+      "inclusivePctProjection": 0.33399711834935564
+    },
+    {
+      "function": "(anonymous transformed 1001:117)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1001,
+          117
+        ]
+      ],
+      "inclusiveMs": 7.206,
+      "selfMs": 7.206,
+      "inclusivePctAllSamples": 0.2718272859369554,
+      "selfPctAllSamples": 0.2718272859369554,
+      "inclusiveSamples": 5,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 7.206,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "freezeLedgerValue",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          404,
+          27
+        ]
+      ],
+      "inclusiveMs": 7.081,
+      "selfMs": 7.081,
+      "inclusivePctAllSamples": 0.2671119916346907,
+      "selfPctAllSamples": 0.2671119916346907,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 2.567,
+        "project": 4.514
+      },
+      "inclusivePctProjection": 0.20504052661892985
+    },
+    {
+      "function": "(anonymous transformed 1160:28)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1160,
+          28
+        ]
+      ],
+      "inclusiveMs": 6.454,
+      "selfMs": 1.185,
+      "inclusivePctAllSamples": 0.24346007541453096,
+      "selfPctAllSamples": 0.04470098998546935,
+      "inclusiveSamples": 6,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 6.454,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 2723:19)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          2723,
+          19
+        ]
+      ],
+      "inclusiveMs": 6.387,
+      "selfMs": 4.037,
+      "inclusivePctAllSamples": 0.2409326776685171,
+      "selfPctAllSamples": 0.15228514478594074,
+      "inclusiveSamples": 7,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.863,
+        "project": 5.524
+      },
+      "inclusivePctProjection": 0.2509180037755801
+    },
+    {
+      "function": "P.toString",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          2434,
+          23
+        ]
+      ],
+      "inclusiveMs": 6.275,
+      "selfMs": 3.391,
+      "inclusivePctAllSamples": 0.2367077739736879,
+      "selfPctAllSamples": 0.12791650383183675,
+      "inclusiveSamples": 9,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.496,
+        "project": 4.779
+      },
+      "inclusivePctProjection": 0.21707768646696185
+    },
+    {
+      "function": "P.lessThan.P.lt",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1082,
+          30
+        ]
+      ],
+      "inclusiveMs": 6.275,
+      "selfMs": 1.518,
+      "inclusivePctAllSamples": 0.2367077739736879,
+      "selfPctAllSamples": 0.05726253400670251,
+      "inclusiveSamples": 5,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 2.328,
+        "project": 3.947
+      },
+      "inclusivePctProjection": 0.17928554686861237
+    },
+    {
+      "function": "evidence",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          592,
+          18
+        ]
+      ],
+      "inclusiveMs": 6.102,
+      "selfMs": 4.566,
+      "inclusivePctAllSamples": 0.23018180665935356,
+      "selfPctAllSamples": 0.17224027027312494,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 6.102
+      },
+      "inclusivePctProjection": 0.2771726392177027
+    },
+    {
+      "function": "decimalString",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          16,
+          23
+        ]
+      ],
+      "inclusiveMs": 6.065,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.2287860795458832,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 6,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.789,
+        "project": 5.276
+      },
+      "inclusivePctProjection": 0.23965303908761054
+    },
+    {
+      "function": "rate",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          540,
+          15
+        ]
+      ],
+      "inclusiveMs": 6.005,
+      "selfMs": 4.469,
+      "inclusivePctAllSamples": 0.22652273828079617,
+      "selfPctAllSamples": 0.16858120189456752,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 6.005
+      },
+      "inclusivePctProjection": 0.27276658448087593
+    },
+    {
+      "function": "(anonymous transformed 1326:197)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1326,
+          197
+        ]
+      ],
+      "inclusiveMs": 5.856,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.22090210747249664,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 5,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 5.856
+      },
+      "inclusivePctProjection": 0.2659985210191523
+    },
+    {
+      "function": "(anonymous transformed 1080:12)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1080,
+          12
+        ]
+      ],
+      "inclusiveMs": 5.424,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.20460605036386983,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 5.424,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 414:48)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          414,
+          48
+        ]
+      ],
+      "inclusiveMs": 5.422,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.2045306056550336,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 5.422,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 974:43)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          974,
+          43
+        ]
+      ],
+      "inclusiveMs": 4.721,
+      "selfMs": 3.055,
+      "inclusivePctAllSamples": 0.17808723520793315,
+      "selfPctAllSamples": 0.11524179274734925,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 4.721
+      },
+      "inclusivePctProjection": 0.21444313827380768
+    },
+    {
+      "function": "(anonymous transformed 1510:115)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1510,
+          115
+        ]
+      ],
+      "inclusiveMs": 4.642,
+      "selfMs": 4.642,
+      "inclusivePctAllSamples": 0.17510716920890187,
+      "selfPctAllSamples": 0.17510716920890187,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 4.642
+      },
+      "inclusivePctProjection": 0.21085470194175288
+    },
+    {
+      "function": "P.minus.P.sub",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1259,
+          28
+        ]
+      ],
+      "inclusiveMs": 4.514,
+      "selfMs": 4.514,
+      "inclusivePctAllSamples": 0.1702787078433828,
+      "selfPctAllSamples": 0.1702787078433828,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 4.514
+      },
+      "inclusivePctProjection": 0.20504052661892985
+    },
+    {
+      "function": "P.times.P.mul",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1868,
+          28
+        ]
+      ],
+      "inclusiveMs": 4.232,
+      "selfMs": 1.343,
+      "inclusivePctAllSamples": 0.15964100389747365,
+      "selfPctAllSamples": 0.050661121983531926,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.36,
+        "project": 2.872
+      },
+      "inclusivePctProjection": 0.13045555880584106
+    },
+    {
+      "function": "ordinaryFeeIndex",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1478,
+          26
+        ]
+      ],
+      "inclusiveMs": 4.213,
+      "selfMs": 2.541,
+      "inclusivePctAllSamples": 0.1589242791635294,
+      "selfPctAllSamples": 0.09585250257643681,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 4.213,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "finalise",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          2941,
+          19
+        ]
+      ],
+      "inclusiveMs": 4.212,
+      "selfMs": 4.212,
+      "inclusivePctAllSamples": 0.15888655680911132,
+      "selfPctAllSamples": 0.15888655680911132,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 4.212
+      },
+      "inclusivePctProjection": 0.19132270671664434
+    },
+    {
+      "function": "(anonymous transformed 580:39)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          580,
+          39
+        ]
+      ],
+      "inclusiveMs": 4.108,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.15496343194962708,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 4.108
+      },
+      "inclusivePctProjection": 0.18659868926685066
+    },
+    {
+      "function": "#encode",
+      "url": "node:internal/encoding",
+      "transformedLocations": [
+        [
+          344,
+          10
+        ]
+      ],
+      "inclusiveMs": 3.95,
+      "selfMs": 2.436,
+      "inclusivePctAllSamples": 0.1490032999515645,
+      "selfPctAllSamples": 0.09189165536253446,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.95,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "encode",
+      "url": "node:internal/encoding",
+      "transformedLocations": [
+        [
+          360,
+          9
+        ]
+      ],
+      "inclusiveMs": 3.95,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.1490032999515645,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.95,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "validKnowledge",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1286,
+          24
+        ]
+      ],
+      "inclusiveMs": 3.317,
+      "selfMs": 3.317,
+      "inclusivePctAllSamples": 0.12512504960489607,
+      "selfPctAllSamples": 0.12512504960489607,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 3.317
+      },
+      "inclusivePctProjection": 0.15066890270159292
+    },
+    {
+      "function": "P.toDecimalPlaces.P.toDP",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1960,
+          39
+        ]
+      ],
+      "inclusiveMs": 3.245,
+      "selfMs": 0.62,
+      "inclusivePctAllSamples": 0.1224090400867916,
+      "selfPctAllSamples": 0.023387859739232908,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.62,
+        "project": 2.625
+      },
+      "inclusivePctProjection": 0.11923601736258106
+    },
+    {
+      "function": "(anonymous transformed 1140:175)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1140,
+          175
+        ]
+      ],
+      "inclusiveMs": 3.143,
+      "selfMs": 3.143,
+      "inclusivePctAllSamples": 0.1185613599361436,
+      "selfPctAllSamples": 0.1185613599361436,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 3.143
+      },
+      "inclusivePctProjection": 0.1427652581221304
+    },
+    {
+      "function": "(anonymous transformed 1088:95)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1088,
+          95
+        ]
+      ],
+      "inclusiveMs": 3.083,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.11629801867105655,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.083,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "collect",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          120,
+          17
+        ]
+      ],
+      "inclusiveMs": 3.06,
+      "selfMs": 1.238,
+      "inclusivePctAllSamples": 0.11543040451943984,
+      "selfPctAllSamples": 0.04670027476962958,
+      "inclusiveSamples": 4,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 3.06,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1511:51)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1511,
+          51
+        ]
+      ],
+      "inclusiveMs": 3.059,
+      "selfMs": 3.059,
+      "inclusivePctAllSamples": 0.11539268216502171,
+      "selfPctAllSamples": 0.11539268216502171,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 3.059
+      },
+      "inclusivePctProjection": 0.1389497055665278
+    },
+    {
+      "function": "unique",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          35,
+          16
+        ]
+      ],
+      "inclusiveMs": 2.953,
+      "selfMs": 2.953,
+      "inclusivePctAllSamples": 0.11139411259670126,
+      "selfPctAllSamples": 0.11139411259670126,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.953
+      },
+      "inclusivePctProjection": 0.13413484162731498
+    },
+    {
+      "function": "finiteToString",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          3108,
+          24
+        ]
+      ],
+      "inclusiveMs": 2.884,
+      "selfMs": 1.501,
+      "inclusivePctAllSamples": 0.10879127014185114,
+      "selfPctAllSamples": 0.05662125398159451,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.884
+      },
+      "inclusivePctProjection": 0.13100063774235574
+    },
+    {
+      "function": "(anonymous transformed 447:65)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          447,
+          65
+        ]
+      ],
+      "inclusiveMs": 2.66,
+      "selfMs": 1.333,
+      "inclusivePctAllSamples": 0.1003414627521928,
+      "selfPctAllSamples": 0.05028389843935075,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 2.66,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "accountSourceStrings",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          858,
+          22
+        ]
+      ],
+      "inclusiveMs": 2.658,
+      "selfMs": 2.658,
+      "inclusivePctAllSamples": 0.10026601804335657,
+      "selfPctAllSamples": 0.10026601804335657,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.658
+      },
+      "inclusivePctProjection": 0.12073498443799636
+    },
+    {
+      "function": "visibleFeeFacts",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1470,
+          25
+        ]
+      ],
+      "inclusiveMs": 2.629,
+      "selfMs": 1.04,
+      "inclusivePctAllSamples": 0.09917206976523116,
+      "selfPctAllSamples": 0.0392312485948423,
+      "inclusiveSamples": 3,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.629
+      },
+      "inclusivePctProjection": 0.11941771034141928
+    },
+    {
+      "function": "P.greaterThan.P.gt",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          505,
+          33
+        ]
+      ],
+      "inclusiveMs": 2.532,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.09551300138667375,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.486,
+        "project": 1.046
+      },
+      "inclusivePctProjection": 0.047512713966194206
+    },
+    {
+      "function": "P.greaterThanOrEqualTo.P.gte",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          515,
+          43
+        ]
+      ],
+      "inclusiveMs": 2.442,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.09211798948904316,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 2.442,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "release",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          876,
+          9
+        ]
+      ],
+      "inclusiveMs": 2.161,
+      "selfMs": 2.161,
+      "inclusivePctAllSamples": 0.08151800789755212,
+      "selfPctAllSamples": 0.08151800789755212,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.161
+      },
+      "inclusivePctProjection": 0.09815963181734769
+    },
+    {
+      "function": "delete",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          935,
+          8
+        ]
+      ],
+      "inclusiveMs": 2.161,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.08151800789755212,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 2.161
+      },
+      "inclusivePctProjection": 0.09815963181734769
+    },
+    {
+      "function": "(anonymous transformed 1209:37)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1209,
+          37
+        ]
+      ],
+      "inclusiveMs": 1.575,
+      "selfMs": 1.575,
+      "inclusivePctAllSamples": 0.05941270820853521,
+      "selfPctAllSamples": 0.05941270820853521,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.575
+      },
+      "inclusivePctProjection": 0.07154161041754864
+    },
+    {
+      "function": "currency",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          36,
+          18
+        ]
+      ],
+      "inclusiveMs": 1.55,
+      "selfMs": 1.55,
+      "inclusivePctAllSamples": 0.05846964934808227,
+      "selfPctAllSamples": 0.05846964934808227,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.55
+      },
+      "inclusivePctProjection": 0.07040602929980977
+    },
+    {
+      "function": "(anonymous transformed 1661:47)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1661,
+          47
+        ]
+      ],
+      "inclusiveMs": 1.55,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.05846964934808227,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.55
+      },
+      "inclusivePctProjection": 0.07040602929980977
+    },
+    {
+      "function": "(anonymous transformed 837:60)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          837,
+          60
+        ]
+      ],
+      "inclusiveMs": 1.545,
+      "selfMs": 1.545,
+      "inclusivePctAllSamples": 0.058281037575991686,
+      "selfPctAllSamples": 0.058281037575991686,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.545,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "marketTimeZone",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/trading-date.ts",
+      "transformedLocations": [
+        [
+          14,
+          24
+        ]
+      ],
+      "inclusiveMs": 1.533,
+      "selfMs": 1.533,
+      "inclusivePctAllSamples": 0.05782836932297427,
+      "selfPctAllSamples": 0.05782836932297427,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.533
+      },
+      "inclusivePctProjection": 0.06963383413974734
+    },
+    {
+      "function": "(anonymous transformed 428:28)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          428,
+          28
+        ]
+      ],
+      "inclusiveMs": 1.53,
+      "selfMs": 0.91,
+      "inclusivePctAllSamples": 0.05771520225971992,
+      "selfPctAllSamples": 0.03432734252048701,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.53,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1326:43)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1326,
+          43
+        ]
+      ],
+      "inclusiveMs": 1.524,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.05748886813321121,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.524
+      },
+      "inclusivePctProjection": 0.06922502493736135
+    },
+    {
+      "function": "RegExp: ^\\d{4}-\\d{2}-\\d{2}T.*(?:Z|[+-]\\d{2}:\\d{2})$",
+      "url": "",
+      "transformedLocations": [
+        [
+          0,
+          0
+        ]
+      ],
+      "inclusiveMs": 1.52,
+      "selfMs": 1.52,
+      "inclusivePctAllSamples": 0.057337978715538744,
+      "selfPctAllSamples": 0.057337978715538744,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.52
+      },
+      "inclusivePctProjection": 0.06904333195852312
+    },
+    {
+      "function": "(anonymous transformed 1510:208)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1510,
+          208
+        ]
+      ],
+      "inclusiveMs": 1.519,
+      "selfMs": 1.519,
+      "inclusivePctAllSamples": 0.05730025636112063,
+      "selfPctAllSamples": 0.05730025636112063,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.519
+      },
+      "inclusivePctProjection": 0.06899790871381357
+    },
+    {
+      "function": "validDay",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          43,
+          18
+        ]
+      ],
+      "inclusiveMs": 1.516,
+      "selfMs": 1.516,
+      "inclusivePctAllSamples": 0.05718708929786627,
+      "selfPctAllSamples": 0.05718708929786627,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.516
+      },
+      "inclusivePctProjection": 0.0688616389796849
+    },
+    {
+      "function": "encodeUtf8String",
+      "url": "",
+      "transformedLocations": [
+        [
+          0,
+          0
+        ]
+      ],
+      "inclusiveMs": 1.514,
+      "selfMs": 1.514,
+      "inclusivePctAllSamples": 0.057111644589030036,
+      "selfPctAllSamples": 0.057111644589030036,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.514,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "hasVerifiedSessionSchedule",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          64,
+          36
+        ]
+      ],
+      "inclusiveMs": 1.505,
+      "selfMs": 1.505,
+      "inclusivePctAllSamples": 0.05677214339926698,
+      "selfPctAllSamples": 0.05677214339926698,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.505
+      },
+      "inclusivePctProjection": 0.0683619832878798
+    },
+    {
+      "function": "P.isZero",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          1073,
+          21
+        ]
+      ],
+      "inclusiveMs": 1.498,
+      "selfMs": 1.498,
+      "inclusivePctAllSamples": 0.05650808691834015,
+      "selfPctAllSamples": 0.05650808691834015,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.498
+      },
+      "inclusivePctProjection": 0.06804402057491292
+    },
+    {
+      "function": "collectBonusShareEvidence",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/trades/bonus-share-evidence.ts",
+      "transformedLocations": [
+        [
+          50,
+          35
+        ]
+      ],
+      "inclusiveMs": 1.497,
+      "selfMs": 1.497,
+      "inclusivePctAllSamples": 0.056470364563922036,
+      "selfPctAllSamples": 0.056470364563922036,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.497,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1144:63)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1144,
+          63
+        ]
+      ],
+      "inclusiveMs": 1.488,
+      "selfMs": 1.488,
+      "inclusivePctAllSamples": 0.05613086337415898,
+      "selfPctAllSamples": 0.05613086337415898,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.488
+      },
+      "inclusivePctProjection": 0.06758978812781738
+    },
+    {
+      "function": "tradeNatureOf",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/trades/types.ts",
+      "transformedLocations": [
+        [
+          27,
+          23
+        ]
+      ],
+      "inclusiveMs": 1.422,
+      "selfMs": 1.422,
+      "inclusivePctAllSamples": 0.05364118798256322,
+      "selfPctAllSamples": 0.05364118798256322,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.422,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "getZeroString",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          3189,
+          23
+        ]
+      ],
+      "inclusiveMs": 1.383,
+      "selfMs": 1.383,
+      "inclusivePctAllSamples": 0.052170016160256634,
+      "selfPctAllSamples": 0.052170016160256634,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.383
+      },
+      "inclusivePctProjection": 0.06282034743331413
+    },
+    {
+      "function": "visibleAt",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          125,
+          20
+        ]
+      ],
+      "inclusiveMs": 1.376,
+      "selfMs": 1.376,
+      "inclusivePctAllSamples": 0.05190595967932981,
+      "selfPctAllSamples": 0.05190595967932981,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.376,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "selectedExecution",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          127,
+          28
+        ]
+      ],
+      "inclusiveMs": 1.376,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.05190595967932981,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.376,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "quoteFor",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          435,
+          18
+        ]
+      ],
+      "inclusiveMs": 1.263,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.047643333630082524,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.263
+      },
+      "inclusivePctProjection": 0.05736955806816757
+    },
+    {
+      "function": "P.absoluteValue.P.abs",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/decimal.js/decimal.mjs",
+      "transformedLocations": [
+        [
+          196,
+          36
+        ]
+      ],
+      "inclusiveMs": 1.214,
+      "selfMs": 1.214,
+      "inclusivePctAllSamples": 0.04579493826359476,
+      "selfPctAllSamples": 0.04579493826359476,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.214,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "groupFor",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          132,
+          19
+        ]
+      ],
+      "inclusiveMs": 1.209,
+      "selfMs": 1.209,
+      "inclusivePctAllSamples": 0.04560632649150417,
+      "selfPctAllSamples": 0.04560632649150417,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.209,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1471:22)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1471,
+          22
+        ]
+      ],
+      "inclusiveMs": 1.139,
+      "selfMs": 1.139,
+      "inclusivePctAllSamples": 0.04296576168223594,
+      "selfPctAllSamples": 0.04296576168223594,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.139
+      },
+      "inclusivePctProjection": 0.05173707572418279
+    },
+    {
+      "function": "primitiveBytes",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          819,
+          16
+        ]
+      ],
+      "inclusiveMs": 1.109,
+      "selfMs": 1.109,
+      "inclusivePctAllSamples": 0.041834091049692414,
+      "selfPctAllSamples": 0.041834091049692414,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.109,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 523:43)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          523,
+          43
+        ]
+      ],
+      "inclusiveMs": 1.107,
+      "selfMs": 1.107,
+      "inclusivePctAllSamples": 0.04175864634085618,
+      "selfPctAllSamples": 0.04175864634085618,
+      "inclusiveSamples": 2,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 1.107
+      },
+      "inclusivePctProjection": 0.05028353189347704
+    },
+    {
+      "function": "checkpoint",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.ts",
+      "transformedLocations": [
+        [
+          146,
+          21
+        ]
+      ],
+      "inclusiveMs": 1.063,
+      "selfMs": 1.063,
+      "inclusivePctAllSamples": 0.040098862746459005,
+      "selfPctAllSamples": 0.040098862746459005,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 1.063,
+        "project": 0.0
+      },
+      "inclusivePctProjection": 0.0
+    },
+    {
+      "function": "(anonymous transformed 1471:133)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          1471,
+          133
+        ]
+      ],
+      "inclusiveMs": 0.45,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.016975059488152918,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 0.45
+      },
+      "inclusivePctProjection": 0.02044046011929961
+    },
+    {
+      "function": "marketSessionClose",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/market/sync-range.ts",
+      "transformedLocations": [
+        [
+          67,
+          28
+        ]
+      ],
+      "inclusiveMs": 0.234,
+      "selfMs": 0.234,
+      "inclusivePctAllSamples": 0.008827030933839517,
+      "selfPctAllSamples": 0.008827030933839517,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 0.234
+      },
+      "inclusivePctProjection": 0.010629039262035797
+    },
+    {
+      "function": "text",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          34,
+          14
+        ]
+      ],
+      "inclusiveMs": 0.211,
+      "selfMs": 0.211,
+      "inclusivePctAllSamples": 0.007959416782222813,
+      "selfPctAllSamples": 0.007959416782222813,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 0.211
+      },
+      "inclusivePctProjection": 0.00958430463371604
+    },
+    {
+      "function": "(anonymous transformed 535:60)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          535,
+          60
+        ]
+      ],
+      "inclusiveMs": 0.211,
+      "selfMs": 0.0,
+      "inclusivePctAllSamples": 0.007959416782222813,
+      "selfPctAllSamples": 0.0,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 0.211
+      },
+      "inclusivePctProjection": 0.00958430463371604
+    },
+    {
+      "function": "(anonymous transformed 522:34)",
+      "url": "file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/reviews/homepage-v25-performance.ts",
+      "transformedLocations": [
+        [
+          522,
+          34
+        ]
+      ],
+      "inclusiveMs": 0.054,
+      "selfMs": 0.054,
+      "inclusivePctAllSamples": 0.00203700713857835,
+      "selfPctAllSamples": 0.00203700713857835,
+      "inclusiveSamples": 1,
+      "inclusiveMsByPhase": {
+        "other": 0.0,
+        "prepare": 0.0,
+        "project": 0.054
+      },
+      "inclusivePctProjection": 0.0024528552143159533
+    }
+  ],
+  "frozenFilesAndOriginalPrefixesVerified": true,
+  "artifacts": {
+    "diagnostic-multimarket.cpuprofile": {
+      "bytes": 116058,
+      "sha256": "e56e17c2cd52460351bd4126cea69c7da5be1ff2839220f9c40699177d2b8af7"
+    },
+    "diagnostic-multimarket.batch.json": {
+      "bytes": 29038003,
+      "sha256": "520a61f0f94f0c191554855bad73ac379c24fc2da5b75f17f122e81f525d824f"
+    },
+    "diagnostic-multimarket.report.json": {
+      "bytes": 2153,
+      "sha256": "e5ab7cd507e91105e5185a83233e904347abc329ff4673976be7174b085a7631"
+    },
+    "diagnostic-multimarket.started.json": {
+      "bytes": 838,
+      "sha256": "9e321f7ba52da54ee401c9c3a770bad5fb93a889ee1b238fe8786f859ba09123"
+    },
+    "diagnostic-multimarket.log": {
+      "bytes": 424,
+      "sha256": "296e6171fe7c5d41f89cc1b3e3b66146cf8a5696ac7094417851786d44ae0b42"
+    }
+  },
+  "formalP2": "0/3; root-independent multimarket cold 2617.548995ms FAIL; samples 2/3 NOT VERIFIED"
+}

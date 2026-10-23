@@ -1,0 +1,134 @@
+{
+  "frozenAtUtc": "2026-10-22T21:24:39.861Z",
+  "owner": "/root/filter_preparation",
+  "actualModel": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "status": "implementation-ready-only",
+  "p2Formal": "0/3",
+  "aPerformance": "FAIL",
+  "seriesOverhead": "NOT MEASURED",
+  "uiP4Release": "NOT RELEASED",
+  "independentRootAcceptance": "PENDING",
+  "runtime": "v26.0.0",
+  "validation": {
+    "newVitest": {
+      "exitCode": 0,
+      "testsPassed": 18,
+      "log": "GREEN-02.log"
+    },
+    "adjacentVitest": {
+      "exitCode": 0,
+      "files": 2,
+      "testsPassed": 159,
+      "log": "FINAL-targeted-tests.log"
+    },
+    "scopedTypeScript": {
+      "exitCode": 0,
+      "log": "FINAL-typecheck.log"
+    },
+    "scopedEslint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "FINAL-lint.log"
+    }
+  },
+  "unchangedInputs": {
+    "checked": 19,
+    "changed": []
+  },
+  "unchangedP3": {
+    "checked": 5,
+    "changed": []
+  },
+  "authoredProductAndTestFiles": [
+    "app/lib/reviews/homepage-v25-series.ts",
+    "app/lib/reviews/homepage-v25-series.test.ts"
+  ],
+  "files": [
+    {
+      "path": "app/lib/reviews/homepage-v25-series.ts",
+      "bytes": 3194,
+      "sha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-series.test.ts",
+      "bytes": 19488,
+      "sha256": "49b799ab415c20898d71c1d29a426ba2d10ff0052ec3defa6f329c224f5474ff"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/DESIGN-COVERAGE.md",
+      "bytes": 5906,
+      "sha256": "f2f078b58bc6d9d3f3d238464101d5fb30f90f44d09717344b98e9999826e843"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/FINAL-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/FINAL-targeted-tests.log",
+      "bytes": 432,
+      "sha256": "67add13f4c201e9d6ad78b68e33cb526d750a2ab813c2df52e16e5727acdbef3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/FINAL-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/GREEN-01.log",
+      "bytes": 2411,
+      "sha256": "4f2efb4825ae9458ebdc7afb8d96eb5f6202250adeedabf13ab4856f8cd64e0f"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/GREEN-02.log",
+      "bytes": 430,
+      "sha256": "d6a18d010464929a30f8ec8e96f9a9112c08675f01d1f129c4a2ba6a25698a0d"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/IMPLEMENTATION-READY.md",
+      "bytes": 10716,
+      "sha256": "6fc64060befaf2a147d05a7cea4408ea5a1ecf9aaaa71f477da1bfa8b5dac455"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/INPUT-MANIFEST.json",
+      "bytes": 3433,
+      "sha256": "3aa270f75fc9b8b7fe8efaa3f19305cddb01192605a050db1a4c43d2c0e3a122"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/RED-01-missing-module.log",
+      "bytes": 1978,
+      "sha256": "9e70c6ced84bbc82deb5d2e5114b6e36110bc77abbbb8019a8a5c44ce9dd04e3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/RED-02-callable-boundary.log",
+      "bytes": 15390,
+      "sha256": "bb8def3c3cbe058c6abcf7f8b3152d81868a8d9326e0e0d1807baa14b52b7d1e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-gap.png",
+      "bytes": 72590,
+      "sha256": "275bd52c84c53b9e188a08936e21047094c867c743ffc4cdfef5491f8242e35e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-hover--keyboard.png",
+      "bytes": 39105,
+      "sha256": "03d6b4a3b8a03f7aeb3b68a08979fe202bef15124a5723c39b6527d8fb0a57ba"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-hover.png",
+      "bytes": 40419,
+      "sha256": "9d2d3c593f8d50b460c79ceae01cd61f5e2ddb6748350480db69a9ac93f85ee3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/period.png",
+      "bytes": 92016,
+      "sha256": "2b799a786ff774980e15eeec5f20c22fd6f8112c571d23dc3f03159de6defba0"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/typecheck.config.json",
+      "bytes": 494,
+      "sha256": "a86b81c37fad823c2c2d5c24b8b591f13ac77890301e54a79f3ae8d5b56fb4f4"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:29572) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (98 tests | 1 failed | 97 skipped) 2867ms
+     × searches the owned metadata-only directory and returns from its exact empty ordinary collection to the search source 2864ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > searches the owned metadata-only directory and returns from its exact empty ordinary collection to the search source
+AssertionError: expected "vi.fn()" to be called 3 times, but got 4 times
+ ❯ app/components/trade-review-workspace.test.tsx:778:33
+    776|     expect(within(returnedSearch).getByRole("region", { name: "找到标的" }…
+    777|     expect(location.search).toContain("market=a"); expect(location.sea…
+    778|     expect(client.getBootstrap).toHaveBeenCalledTimes(3); // Initial, …
+       |                                 ^
+    779|   });
+    780|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 1 passed | 100 skipped (102)
+   Start at  03:20:42
+   Duration  14.16s (transform 6.58s, setup 1.32s, import 8.33s, tests 2.88s, environment 5.63s)
+

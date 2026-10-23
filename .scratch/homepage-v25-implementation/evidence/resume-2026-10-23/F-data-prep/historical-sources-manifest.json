@@ -1,0 +1,141 @@
+{
+  "capturedAt": "2026-10-22T17:44:31.938Z",
+  "phase": "read-only audit before root-authorized current-session fix",
+  "node": "v26.0.0",
+  "files": {
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/HISTORICAL-SOURCES.md": {
+      "bytes": 30705,
+      "sha256": "302a8dc3cfe54162c2f5eb0ee319808e012605d3e7c0fa6e6455f6726d9cbf66"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts": {
+      "bytes": 4292,
+      "sha256": "1476351df7fddc074d5792a0b3d365e6c7eede69ddc1e3ebbc8b8b44ebba197d"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.vitest.config.ts": {
+      "bytes": 365,
+      "sha256": "8c1d81a8c7e5caf8f4de464a19246c1dd4836805fd7b1990ea9f735960d0608e"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.log": {
+      "bytes": 2859,
+      "sha256": "95eba2673c1112fbe65af9a00dccf4d5de38e3104bfc16f505170b496d9b19db"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-US.json": {
+      "bytes": 2906,
+      "sha256": "0a5ae874b7c3d1151caec0dff5741510aacb919207e178ec7ece698d5f4b567b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-CN-SH.json": {
+      "bytes": 2919,
+      "sha256": "6ce4cde3a7eec345cf33b61ef0d92afb3292fb79acf186463254e7b1fbb3baf4"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-HK.json": {
+      "bytes": 2902,
+      "sha256": "12cc8775fbef8b4edb043672391b9de9d6a07f0a2e6f85511b76b553b7c17400"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/market-fee-coverage.test.ts": {
+      "bytes": 4738,
+      "sha256": "989df7b133886c2062febc378f100f670233fed6d5f79e23a87a1f3e271abc51"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/market-fee-coverage.vitest.config.ts": {
+      "bytes": 370,
+      "sha256": "8336fb4853716d17b1541ac37b488b59b860d99333bf8a739a1b07c070fd51b5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/market-fee-coverage.log": {
+      "bytes": 424,
+      "sha256": "23029ea369200b83b6dfe7bf785213fddc19ded744a4dce153d4b203707c7f1c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/market-fee-coverage.json": {
+      "bytes": 2452,
+      "sha256": "0d63a403cc2082be638e1d6ae306a1ebcb780cb67374c8bfd653c3f7692183bc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.test.ts": {
+      "bytes": 4535,
+      "sha256": "11de870672f47ca6414c71e8aea0809d21bb5ecb75e48680d31230edb7d0841d"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.vitest.config.ts": {
+      "bytes": 377,
+      "sha256": "7ff1647e070494a9a45502f24b5f9c62eb4f6ef47ffc0ef67d9b6bfac1c57bc8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.log": {
+      "bytes": 1307,
+      "sha256": "2933bfae52e0b29796ab0cb9f8f37397f0e1f1f4b3e059cefd5b1df38d2f7b7a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection-retry.log": {
+      "bytes": 424,
+      "sha256": "25f07c2bd7683769de3716a5b1a22459ec64786b145fd10b5e0e76048d1b89d1"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/isolated-single-projection.json": {
+      "bytes": 2586,
+      "sha256": "1159c788787de4d1be3eb0682c8268289f7a29798d108566ae8fec59a77a2568"
+    },
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 35372,
+      "sha256": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 44531,
+      "sha256": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921"
+    },
+    "app/components/homepage-v25/holdings-model.ts": {
+      "bytes": 12286,
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c"
+    },
+    "app/components/trade-review-workspace.tsx": {
+      "bytes": 275570,
+      "sha256": "1246ab6d451cebf025c2bd7984fcfc85027bae53400d8ba56e0c0246d9869291"
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 22780,
+      "sha256": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113"
+    },
+    "app/lib/market/sync-range.ts": {
+      "bytes": 7185,
+      "sha256": "5ffd1557d399a32c5dab69ad6404df570e62b81ea55ad6a9b6d26cda9d77b34b"
+    },
+    "app/lib/market/types.ts": {
+      "bytes": 2066,
+      "sha256": "3ce6f78be1fecc87822d7b01b8c87306c00ee4008add823ec9ad8390fa50e27d"
+    },
+    "app/lib/market/calendar.ts": {
+      "bytes": 1219,
+      "sha256": "69546efe2af049a58c2f9c9f3877f38b3feb040172610576dc0d0945f46056bc"
+    },
+    "app/data/exchange-holidays-2010-2030.json": {
+      "bytes": 22736,
+      "sha256": "4c9e151d12e778aeb75666fdf5ae9db349bfd14704cb41a38efb906c16720aac"
+    },
+    "app/lib/fx/fx-service.ts": {
+      "bytes": 8573,
+      "sha256": "e64bcdc649d1f79dce459f38b996a6740dc2d63441f0d47fa32cbc7a4d6101ea"
+    },
+    "app/lib/fx/boc-parser.ts": {
+      "bytes": 6020,
+      "sha256": "331dcd4808f42f1a15e10ab2d3aabc887a4a02b1cb323b42bc2c27095ee07b62"
+    },
+    "app/lib/fx/room-contracts.ts": {
+      "bytes": 2293,
+      "sha256": "bd45cde7331b8a9e8e9ff48002a7a0a2c888e011bd3b948025644a5ee7a96dc4"
+    },
+    "app/lib/fx/provider.ts": {
+      "bytes": 5202,
+      "sha256": "3e3d36b1595f7e0a5f7aff2ad7a86ab6992951f1e8779941b49cccc282d3087d"
+    },
+    "app/lib/fx/storage.ts": {
+      "bytes": 1209,
+      "sha256": "91086f7b770439d86e76c379165a2d5371adaee26da88b1bd6a8570133429dc8"
+    },
+    "app/lib/storage/sqlite-store.ts": {
+      "bytes": 94797,
+      "sha256": "878a0b0b21b0324a0219469ea90713238db116e409ab57f416e1a254474cd2ee"
+    },
+    "db/sqlite-schema.ts": {
+      "bytes": 26193,
+      "sha256": "55c3f10bfbb097155acf4963fae9d3e1eeb92f062cae415ff3ea5d2989b4e7e5"
+    }
+  },
+  "results": {
+    "isolatedSingle": "1PASS after initial server-only import failure",
+    "marketFeeCoverage": "1PASS",
+    "sessionCutoff": "3FAIL confirmed by root",
+    "productWrites": false
+  }
+}

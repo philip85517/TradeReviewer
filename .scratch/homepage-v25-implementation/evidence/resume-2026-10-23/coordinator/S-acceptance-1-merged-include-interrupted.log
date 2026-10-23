@@ -1,0 +1,16 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:5125) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ scripts/deploy.test.mjs (58 tests | 4 failed) 37701ms
+     × backup and restore resolve the quoted external SQLite directory 32ms
+     × restores a checked database through an atomic swap and returns healthy 27ms
+     × health failure after a restore swap rolls back the database and restarts the original app 22ms
+     × stages the tracked build and application data sources from the real repository 5009ms
+ ❯ app/lib/market/baostock-client.test.ts (8 tests | 5 failed) 88ms
+     × logs in anonymously, sends the documented query and decodes compressed pages 53ms
+     × accepts BaoStock's empty data field as a valid empty page 10ms
+     × stops at the configured page limit and marks a full final page truncated 1ms
+     × closes the socket and reports abort when the caller cancels a hanging response 1ms
+     × enforces a total deadline and response byte limit 1ms

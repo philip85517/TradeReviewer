@@ -1,0 +1,10 @@
+app/components/homepage-v25/use-homepage-host.test.tsx(499,36): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ generation: { generation: number; }; scopeKey: { scopeKey: string; }; startedAt: { startedAt: number; }; target: { target: { mode: string; year: number; }; }; domain: { domain: string; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ generation: { generation: number; }; scopeKey: { scopeKey: string; }; startedAt: { startedAt: number; }; target: { target: { mode: string; year: number; }; }; domain: { domain: string; }; }'.
+app/components/homepage-v25/use-homepage-host.test.tsx(532,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<HomepageRequestDomain, boolean>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<HomepageRequestDomain, boolean>'.
+app/components/homepage-v25/use-homepage-host.test.tsx(556,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<HomepageRequestDomain, string | null>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<HomepageRequestDomain, string | null>'.
+app/components/homepage-v25/use-homepage-host.test.tsx(556,65): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Requests'.
+  No index signature with a parameter of type 'string' was found on type 'Requests'.
+app/components/homepage-v25/use-homepage-host.test.tsx(557,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'HomepageDomainData<PeriodPackage, HistoryPackage>'.
+  No index signature with a parameter of type 'string' was found on type 'HomepageDomainData<PeriodPackage, HistoryPackage>'.

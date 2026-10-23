@@ -1,0 +1,74 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ES2017", "--lib", "dom,dom.iterable,esnext", "--skipLibCheck", "--esModuleInterop", "--module", "esnext", "--moduleResolution", "bundler", "--resolveJsonModule", "--isolatedModules", "--jsx", "react-jsx", "--incremental", "false", "app/components/homepage-v25/contribution-bars.tsx", "app/components/homepage-v25/contribution-bars.test.tsx"]
+STDOUT
+app/components/homepage-v25/contribution-bars.test.tsx(48,59): error TS2339: Property 'toHaveStyle' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(48,119): error TS2339: Property 'toHaveStyle' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(49,21): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(49,78): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(51,69): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(52,68): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(57,107): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(58,68): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(59,30): error TS2339: Property 'toHaveStyle' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(65,49): error TS2339: Property 'toBeVisible' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(72,60): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(73,20): error TS2322: Type '{ rows: readonly CurrentContributionRow[]; reportCurrency: string; readState: ContributionReadState; fullTotal: Readonly<Omit<HomepageV25Metric, "money" | ... 1 more ... | "coverage"> & { ...; }> | null; onActivate: (identity: ContributionIdentity) => void; mode: "history"; }' is not assignable to type 'IntrinsicAttributes & ContributionBarsProps'.
+  Types of property 'rows' are incompatible.
+    Type 'readonly CurrentContributionRow[]' is not assignable to type 'readonly HistoricalContributionRow[]'.
+      Type 'CurrentContributionRow' is not assignable to type 'HistoricalContributionRow'.
+        Property 'closedResult' is missing in type 'CurrentContributionRow' but required in type 'Readonly<{ closedResult: Readonly<Omit<HomepageV25Metric, "money" | "reasons" | "coverage"> & { coverage: Readonly<{ total: number; available: number; }>; reasons: readonly string[]; money: Readonly<...>; }>; }>'.
+app/components/homepage-v25/contribution-bars.test.tsx(74,60): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(75,111): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(81,113): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(82,29): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(83,71): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(84,112): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(89,113): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(90,29): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(91,63): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(91,116): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(96,73): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(96,140): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(97,70): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(98,111): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(98,190): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(102,83): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(103,82): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(103,158): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(107,113): error TS2339: Property 'toBeVisible' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(107,202): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(107,239): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(108,106): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(108,143): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(109,139): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(109,176): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(113,149): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(117,40): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(117,181): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(119,40): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(119,138): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(119,228): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(124,111): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(124,179): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(128,40): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(130,40): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(130,114): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(130,195): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(136,68): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(137,40): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(137,108): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(138,29): error TS2339: Property 'toHaveStyle' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(142,135): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(143,95): error TS2322: Type '{ rows: readonly CurrentContributionRow[]; reportCurrency: string; readState: ContributionReadState; fullTotal: Readonly<Omit<HomepageV25Metric, "money" | ... 1 more ... | "coverage"> & { ...; }> | null; onActivate: (identity: ContributionIdentity) => void; mode: "history"; }' is not assignable to type 'IntrinsicAttributes & ContributionBarsProps'.
+  Types of property 'rows' are incompatible.
+    Type 'readonly CurrentContributionRow[]' is not assignable to type 'readonly HistoricalContributionRow[]'.
+      Type 'CurrentContributionRow' is not assignable to type 'HistoricalContributionRow'.
+        Property 'closedResult' is missing in type 'CurrentContributionRow' but required in type 'Readonly<{ closedResult: Readonly<Omit<HomepageV25Metric, "money" | "reasons" | "coverage"> & { coverage: Readonly<{ total: number; available: number; }>; reasons: readonly string[]; money: Readonly<...>; }>; }>'.
+app/components/homepage-v25/contribution-bars.test.tsx(144,46): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/contribution-bars.test.tsx(144,83): error TS2339: Property 'toHaveFocus' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(144,162): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(145,67): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/contribution-bars.test.tsx(145,143): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+
+STDERR
+
+EXIT 2

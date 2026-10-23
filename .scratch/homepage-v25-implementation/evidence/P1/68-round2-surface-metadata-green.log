@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:20401) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/api/storage/trades/route.test.ts (4 tests | 1 failed) 221ms
+     × retains valid exchange across the broad HTTP write, disk reopen and read 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/api/storage/trades/route.test.ts > broad trades metadata write boundary > retains valid exchange across the broad HTTP write, disk reopen and read
+TypeError: Cannot read properties of undefined (reading 'exchange')
+ ❯ app/api/storage/trades/route.test.ts:49:51
+     47|     const body = await (await GET()).json();
+     48|     expect(body.instruments[0].metadata.exchange).toEqual(metadata.exc…
+     49|     expect(body.executions[0].instrument.metadata.exchange).toEqual(me…
+       |                                                   ^
+     50|   });
+     51| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 13 passed (14)
+   Start at  02:02:14
+   Duration  5.26s (transform 999ms, setup 946ms, import 1.48s, tests 1.68s, environment 3.62s)
+

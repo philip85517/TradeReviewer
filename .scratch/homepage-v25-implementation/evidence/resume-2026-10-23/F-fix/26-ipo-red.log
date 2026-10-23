@@ -1,0 +1,87 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:8322) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts (6 tests | 3 failed) 59ms
+   × projects attributable canonical fees when it 'covers an entire short' 13ms
+   × projects attributable canonical fees when it 'covers part of a short and releases i…' 6ms
+   × projects attributable canonical fees when it 'reverses a short into IPO long invent…' 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts > projects attributable canonical fees when it 'covers an entire short'
+AssertionError: expected [ '20', '0', '0', '20', '0', '2' ] to deeply equal [ '18', '0', '0', '18', '0', '0' ]
+
+- Expected
++ Received
+
+  [
+-   "18",
+-   "0",
++   "20",
+    "0",
+-   "18",
+    "0",
++   "20",
+    "0",
++   "2",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts:41:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts > projects attributable canonical fees when it 'covers part of a short and releases i…'
+AssertionError: expected [ '20', '0', '4', '24', '-110', '6' ] to deeply equal [ '16', '0', '8', '24', '-110', '2' ]
+
+- Expected
++ Received
+
+  [
+-   "16",
++   "20",
+    "0",
+-   "8",
++   "4",
+    "24",
+    "-110",
+-   "2",
++   "6",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts:41:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts > projects attributable canonical fees when it 'reverses a short into IPO long invent…'
+AssertionError: expected [ '20', '0', '6', '26', '110', '4' ] to deeply equal [ '17', '0', '9', '26', '110', '1' ]
+
+- Expected
++ Received
+
+  [
+-   "17",
++   "20",
+    "0",
+-   "9",
++   "6",
+    "26",
+    "110",
+-   "1",
++   "4",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts:41:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 5 skipped (6)
+      Tests  3 failed | 3 passed | 80 skipped (86)
+   Start at  00:53:04
+   Duration  2.98s (transform 360ms, setup 0ms, import 964ms, tests 59ms, environment 1ms)
+

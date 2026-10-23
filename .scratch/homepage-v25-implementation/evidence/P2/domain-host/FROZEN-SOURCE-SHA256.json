@@ -1,0 +1,73 @@
+{
+  "stage": "candidate1-implementation-frozen-root-acceptance-pending",
+  "recordedAt": "2026-10-23T03:24:03.593800+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "sourceTracking": "four files were and remain untracked; SOURCE-SNAPSHOT.patch is full current file content against /dev/null, not a tracked before/after diff",
+  "sourceFiles": {
+    "app/components/homepage-v25/session-model.ts": "5ae3597d31f51122e6666bfa1869ea45a804914d16a12eca8d7f14eb44023b64",
+    "app/components/homepage-v25/session-model.test.ts": "4a9a30e707f2288c044a4d1341d7e2645f5b25849dbe45b2118126c0b0a211a9",
+    "app/components/homepage-v25/use-homepage-host.ts": "bf9a5b1cadffbba59807923f503757df38ff0803d00d8d11d0d754a99e332da1",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "6359aad6abad0abb69eef65702654ac6be5de0b3c2478f74d334baa2e8eebc05"
+  },
+  "protectedBaselineComparison": {
+    "app/lib/reviews/homepage-v25-state.ts": {
+      "before": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "now": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "unchanged": true
+    },
+    "app/lib/reviews/homepage-v25-state.test.ts": {
+      "before": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+      "now": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+      "unchanged": true
+    },
+    "app/components/trade-review-workspace.tsx": {
+      "before": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+      "now": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/metric-cards.tsx": {
+      "before": "ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035",
+      "now": "ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/metric-cards.css": {
+      "before": "d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c",
+      "now": "d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/metric-cards.test.tsx": {
+      "before": "d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d",
+      "now": "d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/history-stats-cards.tsx": {
+      "before": "24f6cd248f57e918c51bf81da45d99618f47a6e9d9e908cd9f5258cdf4d1498c",
+      "now": "24f6cd248f57e918c51bf81da45d99618f47a6e9d9e908cd9f5258cdf4d1498c",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/history-stats-cards.css": {
+      "before": "2aa7ab4edad05a0aa0c76903577c8fa7ef30152d7280c4264b193f94c3d18842",
+      "now": "2aa7ab4edad05a0aa0c76903577c8fa7ef30152d7280c4264b193f94c3d18842",
+      "unchanged": true
+    },
+    "app/components/homepage-v25/history-stats-cards.test.tsx": {
+      "before": "f2bf240a36bd0b050515c9b1abd1420361308e8f9655f5092f5154681d711348",
+      "now": "f2bf240a36bd0b050515c9b1abd1420361308e8f9655f5092f5154681d711348",
+      "unchanged": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/domain-host/ROOT-DISPATCH.md": {
+      "before": "3b9f848c3ce0d593ad39eeeb8da6eebf1b47a6e40c3ed7582e9a01be839668c2",
+      "now": "3b9f848c3ce0d593ad39eeeb8da6eebf1b47a6e40c3ed7582e9a01be839668c2",
+      "unchanged": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/P2/domain-host/INTERFACE-AND-ATOMIC-COMMIT-DESIGN.md": {
+      "before": "f84cbf3e5483ae03af73dbe1cee6688cb311dc16ea102b3f2423ef180f383e43",
+      "now": "f84cbf3e5483ae03af73dbe1cee6688cb311dc16ea102b3f2423ef180f383e43",
+      "unchanged": true
+    }
+  },
+  "approvalProposalSHA256": "f84cbf3e5483ae03af73dbe1cee6688cb311dc16ea102b3f2423ef180f383e43",
+  "formalAcceptance": "PENDING ROOT; no existing FAIL or NOT VERIFIED status is closed"
+}

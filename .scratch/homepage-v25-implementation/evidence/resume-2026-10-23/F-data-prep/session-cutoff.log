@@ -1,0 +1,51 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17827) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts (3 tests | 3 failed) 84ms
+   × US: F and P1 must select the completed exchange session 56ms
+   × CN-SH: F and P1 must select the completed exchange session 13ms
+   × HK: F and P1 must select the completed exchange session 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts > US: F and P1 must select the completed exchange session
+AssertionError: expected '2026-10-22' to be '2026-10-21' // Object.is equality
+
+Expected: "2026-10-21"
+Received: "2026-10-22"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts:34:63
+     32|   writeFileSync(`.scratch/homepage-v25-implementation/evidence/resume-…
+     33|   expect(range.endDate).toBe(scenario.expectedDate);
+     34|   expect(current.instruments[0].evidence.current.quote?.date).toBe(ran…
+       |                                                               ^
+     35|   expect(current.currentMarketValue.value).toBe(scenario.expectedPrice…
+     36|   expect(p1.rows[0]?.quote?.quoteDate).toBe(range.endDate);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts > CN-SH: F and P1 must select the completed exchange session
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts > HK: F and P1 must select the completed exchange session
+AssertionError: expected '2026-10-21' to be '2026-10-22' // Object.is equality
+
+Expected: "2026-10-22"
+Received: "2026-10-21"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts:34:63
+     32|   writeFileSync(`.scratch/homepage-v25-implementation/evidence/resume-…
+     33|   expect(range.endDate).toBe(scenario.expectedDate);
+     34|   expect(current.instruments[0].evidence.current.quote?.date).toBe(ran…
+       |                                                               ^
+     35|   expect(current.currentMarketValue.value).toBe(scenario.expectedPrice…
+     36|   expect(p1.rows[0]?.quote?.quoteDate).toBe(range.endDate);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  01:39:52
+   Duration  1.00s (transform 434ms, setup 0ms, import 551ms, tests 84ms, environment 0ms)
+

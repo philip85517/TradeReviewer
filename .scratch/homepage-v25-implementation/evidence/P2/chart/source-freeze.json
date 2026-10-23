@@ -1,0 +1,131 @@
+{
+  "candidate": 1,
+  "owner": "/root/daily_chart",
+  "model": "gpt-6.1-sol / ultra",
+  "frozen": true,
+  "worker_checks": {
+    "tests": "29/29 PASS",
+    "strict_scoped_typecheck_exit": 0,
+    "scoped_eslint_exit": 0
+  },
+  "acceptance": "NOT VERIFIED/root; P2 formal0/3 unchanged",
+  "product_files": [
+    {
+      "path": "app/components/homepage-v25/performance-chart.tsx",
+      "bytes": 31953,
+      "sha256": "001e22fe2fbc9ca7479f942c9451c9753270a7beb376ee76494e09a7bdf371bd"
+    },
+    {
+      "path": "app/components/homepage-v25/performance-chart.css",
+      "bytes": 5325,
+      "sha256": "849139d7b76fc49a460b01c75f8e1991a002e2eb25c49ffa150f4f700e5c97e0"
+    },
+    {
+      "path": "app/components/homepage-v25/performance-chart.test.tsx",
+      "bytes": 27104,
+      "sha256": "7677b85b1f159a0242cea20d488d369371e5c1dfdb0b9a9bcf95bc1e0976719f"
+    }
+  ],
+  "read_only_authorities": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "bytes": 62054,
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "bytes": 66828,
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "bytes": 91696,
+      "sha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-series.ts",
+      "bytes": 3194,
+      "sha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover.svg",
+      "bytes": 8111,
+      "sha256": "286c5e7d49196e84666da6f9f14fa67330ca822f76b3ab0ec3a99074edc686b4"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover--keyboard.svg",
+      "bytes": 7850,
+      "sha256": "cdd873716557fa8d0e95cdbcd2ac74d7b4bfcb66c2bc0855bbe26ab999c3ca92"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg",
+      "bytes": 5747,
+      "sha256": "d352fbadc9d4a47705310293d3eabb76f1555e7f209703439a7736a7981f7857"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale.svg",
+      "bytes": 17245,
+      "sha256": "fdc1d06b7bf48f1f5f18ce4c3200e06ccb38a6430d7d181d0102ab556da3e9db"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--normal.svg",
+      "bytes": 17240,
+      "sha256": "7ee84e1e4aa57bcd8fa48bc348f93f10bb9e4ab21001cb283eaf5e6403bc80b0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--wide.svg",
+      "bytes": 17368,
+      "sha256": "637d62153ec63126594a5ceb951b5a14fa477398e5aedef7a58dc39ebacb40d8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--extreme.svg",
+      "bytes": 17377,
+      "sha256": "cf0129188fed68d006b739a03adfca8eeb4ee50dd28e3747726da2f26e627180"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg",
+      "bytes": 15535,
+      "sha256": "54923037457f3127e1a8baca6302b893a1926a6edfebe694b3634481d7751536"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-hover.png",
+      "bytes": 40419,
+      "sha256": "9d2d3c593f8d50b460c79ceae01cd61f5e2ddb6748350480db69a9ac93f85ee3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-hover--keyboard.png",
+      "bytes": 39105,
+      "sha256": "03d6b4a3b8a03f7aeb3b68a08979fe202bef15124a5723c39b6527d8fb0a57ba"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/implementation/references/chart-gap.png",
+      "bytes": 72590,
+      "sha256": "275bd52c84c53b9e188a08936e21047094c867c743ffc4cdfef5491f8242e35e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/chart/reference-readback/chart-scale.png",
+      "bytes": 28966,
+      "sha256": "00dd90358c0b939abe5bd718bf619f9f30faecdd42d6406b576d63201651c540"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/chart/reference-readback/chart-scale--normal.png",
+      "bytes": 42254,
+      "sha256": "5ea8cab365766e80a93d023874f346c1fd12795e2b720e06479b6704dea3e580"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/chart/reference-readback/chart-scale--wide.png",
+      "bytes": 28876,
+      "sha256": "febec44d7e4ab56a05de43db73563f2cf0a4dc47fe51857978ee44d2ea0995f2"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/chart/reference-readback/chart-scale--extreme.png",
+      "bytes": 29056,
+      "sha256": "108ce00f4cbfa244fdf4eb697d045d46071b10500a622c1ed098ccce57d0a50e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/chart/reference-readback/atom-charttooltip.png",
+      "bytes": 95226,
+      "sha256": "497f42bd8f7759b0489d8e6f3c7029af63611bb7274731d0f2f7106142624935"
+    }
+  ]
+}

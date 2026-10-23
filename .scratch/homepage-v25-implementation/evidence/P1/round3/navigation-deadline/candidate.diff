@@ -1,0 +1,26 @@
+--- host-at-causal-red
++++ host-absolute-deadline-candidate
+@@ -186,8 +186,13 @@
+   }, [initialized, options.accounts]);
+ 
+   useEffect(() => {
+-    if (!session.ui.requests.global) return;
++    const request = session.ui.requests.global;
++    if (!request) return;
++    // UI-only state cloning must keep the owned read's original deadline.
++    const remaining = Math.max(0, request.startedAt + 15_010 - Date.now());
+     const timer = window.setTimeout(() => {
++      const current = sessionRef.current.ui.requests.global;
++      if (!current || current.generation !== request.generation || current.scopeKey !== request.scopeKey || current.startedAt !== request.startedAt) return;
+       const ui = markHomepageRequestTimedOut(sessionRef.current.ui);
+       if (ui !== sessionRef.current.ui) {
+         pending.current = null; update({ ...sessionRef.current, ui });
+@@ -196,7 +201,7 @@
+           initializingRead.current = false; setInitialized(true);
+         }
+       }
+-    }, 15_010);
++    }, remaining);
+     return () => window.clearTimeout(timer);
+   }, [session.ui.requests.global, setAddressRoute, update]);
+ 

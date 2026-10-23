@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:16350) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (6 tests | 1 failed | 5 skipped) 1064ms
+     × performs a first owned read after catalog readiness instead of freezing the pre-market initial bundle 1061ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > performs a first owned read after catalog readiness instead of freezing the pre-market initial bundle
+AssertionError: expected 'pre-market' to be 'persisted-market-ready' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+Expected: "persisted-market-ready"
+Received: "pre-market"
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:15:53
+     13|     expect(reload).not.toHaveBeenCalled();
+     14|     rerender({ ready: true });
+     15|     await waitFor(() => expect(result.current.data).toBe("persisted-ma…
+       |                                                     ^
+     16|     expect(reload).toHaveBeenCalledTimes(1);
+     17|   });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  01:26:39
+   Duration  4.87s (transform 340ms, setup 486ms, import 428ms, tests 1.06s, environment 2.42s)
+

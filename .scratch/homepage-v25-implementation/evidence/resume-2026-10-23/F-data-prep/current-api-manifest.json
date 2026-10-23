@@ -1,0 +1,195 @@
+{
+  "generatedAt": "2026-10-22T17:21:27.984Z",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "node": "v26.0.0",
+  "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "intlTimezone": "Asia/Shanghai",
+  "scope": "F additive current projection only; restored acceptance round 2/3 pending; UI NOT VERIFIED",
+  "acceptedRound1SourceSha256": "f1b493d77e6963f35a99ca15b4b5ac8756577c327205a82f87617c76b12ce2d1",
+  "acceptedRound1TestSha256": "fa853b632b6d7c01b8e9befa7abef60ec56c48c96e703a8666e364cbf656f6f8",
+  "verification": {
+    "red": {
+      "log": "03-current-api-red.log",
+      "failed": 6,
+      "skipped": 98
+    },
+    "focused": {
+      "log": "06-current-api-final-green.log",
+      "files": 7,
+      "tests": 107,
+      "passed": 107,
+      "exitCode": 0
+    },
+    "typecheck": {
+      "log": "07-current-api-typecheck.log",
+      "exitCode": 0
+    },
+    "lint": {
+      "log": "08-current-api-eslint.log",
+      "exitCode": 0
+    },
+    "commands": {
+      "focused": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/current-api.vitest.config.ts",
+      "typecheck": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --project .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/tsconfig.f.json --pretty false",
+      "lint": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/lib/reviews/homepage-v25-performance.ts app/lib/reviews/homepage-v25-performance.test.ts"
+    }
+  },
+  "probes": [
+    {
+      "kind": "repeated-builder-work",
+      "fills": 20,
+      "requestedDays": 4,
+      "elapsedMs": 78.59537499999988,
+      "canonicalCalls": 151,
+      "identicalCanonicalInputs": 25,
+      "selectedPrefixSizes": 1470,
+      "net": "80",
+      "note": "spy calls through original canonical implementation; four projections only, no production data/database"
+    },
+    {
+      "kind": "repeated-builder-work",
+      "fills": 100,
+      "requestedDays": 4,
+      "elapsedMs": 582.5926299999999,
+      "canonicalCalls": 711,
+      "identicalCanonicalInputs": 105,
+      "selectedPrefixSizes": 35350,
+      "net": "400",
+      "note": "spy calls through original canonical implementation; four projections only, no production data/database"
+    }
+  ],
+  "priorEvidenceIntegrity": {
+    "files": 69,
+    "status": "byte-identical"
+  },
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "sha256": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5",
+      "bytes": 35372
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "sha256": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921",
+      "bytes": 44531
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/01-probes.log": {
+      "sha256": "22d1695da4c43b0b7fd5bb6ba253db3d724dd5fb3bda3982115d11d9979c3170",
+      "bytes": 424
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/02-current-api-red.log": {
+      "sha256": "39c9b8df107663279af12bf91b970f71a0b25112ed1964e830e42294cdd00b3f",
+      "bytes": 6655
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/03-current-api-red.log": {
+      "sha256": "a86df867788fbcf46c31a87048b5dfc8fa57c83fb82f7651a2945d3cb09921ae",
+      "bytes": 6576
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/04-current-api-green.log": {
+      "sha256": "a24e59cb5e06b4babca6e784d54ae7e4e4a879f154f01543b6f47301915246ce",
+      "bytes": 428
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/05-accepted-trace-reconstruction.log": {
+      "sha256": "c71397ff9ee6505ecb035967ba1e3cd15aaa66b2de3a118f6bcd1e990a0dedd2",
+      "bytes": 425
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/06-current-api-final-green.log": {
+      "sha256": "085df404b9df6078aca318e93d770e200518e2c327e953b00e3dc970148e5208",
+      "bytes": 428
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/07-current-api-typecheck.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/08-current-api-eslint.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/CURRENT-INTERFACES.md": {
+      "sha256": "f42d15173e045f55ea0caab66d6664e7377480ecd8dc1ae74dbcd153c8e1a60d",
+      "bytes": 3295
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/CURRENT-REPORT.md": {
+      "sha256": "80743be29f50adbcea85b2b5cc3a99baaf7bc66e927853c099c6bdc54179476f",
+      "bytes": 3781
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-hashes.json": {
+      "sha256": "81b5147320dba9c7b34398bbab28c805074446753f9368a63cadc71e6cd60283",
+      "bytes": 306
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-interface-trace.test.ts": {
+      "sha256": "4537802820fed1d4806101230766ebb3e39202e9fef56acc1959f2b5532360be",
+      "bytes": 4433
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-interface-traces.json": {
+      "sha256": "f1b9f916203ef60de7ce1ba05eca1ad41100c422da28483ffe3a525bda42fa76",
+      "bytes": 80289
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-ipo-fee-contract.test.ts": {
+      "sha256": "1f0c5e7adf058b7bf3246af862289eaf4eb6ea0e5de107cb9fca381ec5c8fe64",
+      "bytes": 6815
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-ipo-traces-green.json": {
+      "sha256": "4784a006e69364ec27f7020a8038080671b7743c9f1d1b0877256d3a8de2cbde",
+      "bytes": 273164
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-performance.ts": {
+      "sha256": "196b7ad3326b56aa38f74f699b4d98529dcafb257f3f4a6f5cd7e7db5427acb8",
+      "bytes": 34191
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-source.txt": {
+      "sha256": "f1b493d77e6963f35a99ca15b4b5ac8756577c327205a82f87617c76b12ce2d1",
+      "bytes": 34031
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-round1-test.txt": {
+      "sha256": "fa853b632b6d7c01b8e9befa7abef60ec56c48c96e703a8666e364cbf656f6f8",
+      "bytes": 40251
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/accepted-trace.vitest.config.ts": {
+      "sha256": "5888148322fcb7b52c31cfc52843165ad57986f127c199229db49fbf2bfc8983",
+      "bytes": 389
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/current-api-interface-traces.json": {
+      "sha256": "c6c3affecc4ae7248182cbbb1d95a1dcff84dcbfcbef32b848f253a30ced82de",
+      "bytes": 91852
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/current-api.vitest.config.ts": {
+      "sha256": "0f617e951c377f85da9d06b5734f6e826b231e57b4727247e4c4e15ea6811065",
+      "bytes": 797
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/evidence-restoration.json": {
+      "sha256": "b1e7858e00682bd70007c5ef37f5ac1b2a5fbe3028eec42912430fafedc90d04",
+      "bytes": 1349
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/interface-trace.test.ts": {
+      "sha256": "d9269abc235863e08ed2e7f496788240d759fd0fd86d34137d6d020c94e4739b",
+      "bytes": 4443
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/interface-traces.json": {
+      "sha256": "c6c3affecc4ae7248182cbbb1d95a1dcff84dcbfcbef32b848f253a30ced82de",
+      "bytes": 91852
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/ipo-fee-contract.test.ts": {
+      "sha256": "93d1b25ae6d28868716535c7448a5144229f6953934133dc5b4690e3f03af2da",
+      "bytes": 6825
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/ipo-traces-green.json": {
+      "sha256": "57c6020219bf03c2219f3acb14eb2ebd89aece445bf46fdfc2ebc71e50ec036b",
+      "bytes": 293680
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/prior-evidence-integrity.json": {
+      "sha256": "0172f5e62bd32ccaadc64e85a67cd42395786dbbbe212a7f8e92b5fb9463846f",
+      "bytes": 15711
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/probe-results.json": {
+      "sha256": "1de178a89ab1f6693446147713d5c9e5ead1e23e0f09e585b5a7dcbe87c11d40",
+      "bytes": 87055
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/probe.vitest.config.ts": {
+      "sha256": "c2990a0fd9421caa7155d863a8c59bb8e19c5dab72448af43bea45826a2bdceb",
+      "bytes": 254
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/read-only-probes.test.ts": {
+      "sha256": "56107bb599b203c38227821e113a8e4e3424200efdcbdd49f0880cab9d3df0f4",
+      "bytes": 6980
+    }
+  }
+}

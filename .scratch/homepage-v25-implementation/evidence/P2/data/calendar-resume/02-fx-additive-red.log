@@ -1,0 +1,104 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:57733) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (147 tests | 4 failed | 141 skipped) 135ms
+     × does not require future-only HKD to convert independent endpoint and current USD 61ms
+     × keeps an actual HKD exposure unavailable without its own rate 22ms
+     × retains closed-period realized HKD while independent flat current needs no HKD 20ms
+     × requires FX for an early fee attached to a future carrier even without stock exposure 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 boundary FX eligibility follows native dependencies > does not require future-only HKD to convert independent endpoint and current USD
+AssertionError: expected [ null, null, null, null ] to deeply equal [ '0', '770', '840', '140' ]
+
+- Expected
++ Received
+
+  [
+-   "0",
+-   "770",
+-   "840",
+-   "140",
++   null,
++   null,
++   null,
++   null,
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:984:135
+    982|     const source = preparedFixture([usdBuy(), futureHkd()], quotes(), …
+    983|     const batch = projectHomepageV25Boundaries(source, query), point =…
+    984|     expect([point.net.value, point.marketValue.value, batch.current.cu…
+       |                                                                                                                                       ^
+    985|     expect(point.fxCoverage.requiredPairs).toEqual(["USD/CNY"]);
+    986|     expect(batch.current.fxCoverage.requiredPairs).toEqual(["USD/CNY"]…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 boundary FX eligibility follows native dependencies > keeps an actual HKD exposure unavailable without its own rate
+AssertionError: expected { state: 'partial', …(5) } to match object { state: 'partial', …(1) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "requiredPairs": [
+-     "HKD/CNY",
+      "USD/CNY",
++     "HKD/CNY",
+    ],
+    "state": "partial",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:993:40
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 boundary FX eligibility follows native dependencies > retains closed-period realized HKD while independent flat current needs no HKD
+AssertionError: expected [ 'HKD/CNY', 'USD/CNY' ] to deeply equal [ 'USD/CNY' ]
+
+- Expected
++ Received
+
+  [
++   "HKD/CNY",
+    "USD/CNY",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1003:52
+    1001|     expect(batch.points[0].periodRealized.value).toBeNull();
+    1002|     expect(batch.points[0].fxCoverage.requiredPairs).toEqual(["HKD/CNY…
+    1003|     expect(batch.current.fxCoverage.requiredPairs).toEqual(["USD/CNY"]…
+       |                                                    ^
+    1004|     expect(batch.current.currentMarketValue.value).toBe("840");
+    1005|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 boundary FX eligibility follows native dependencies > requires FX for an early fee attached to a future carrier even without stock exposure
+AssertionError: expected 'missing' to be 'not-required' // Object.is equality
+
+Expected: "not-required"
+Received: "missing"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1027:44
+    1025|     expect(batch.points[0].instruments[0].evidence.endpoint.executionI…
+    1026|     expect(batch.points[0].instruments[0].feeFactIds).toHaveLength(1);
+    1027|     expect(batch.current.fxCoverage.state).toBe("not-required");
+       |                                            ^
+    1028|   });
+    1029|   it("keeps early statement inventory attached to a future carrier eli…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed | 141 skipped (147)
+   Start at  10:34:55
+   Duration  1.05s (transform 434ms, setup 0ms, import 552ms, tests 135ms, environment 0ms)
+

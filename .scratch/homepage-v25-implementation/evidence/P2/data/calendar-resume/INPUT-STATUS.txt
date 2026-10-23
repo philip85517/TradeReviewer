@@ -1,0 +1,31 @@
+ M app/api/storage/instruments/metadata/route.test.ts
+ M app/api/storage/trades/route.test.ts
+ M app/components/library/library-browse-state.test.ts
+ M app/components/library/library-browse-state.ts
+ M app/components/library/trade-library.tsx
+ M app/components/trade-review-workspace.test.tsx
+ M app/components/trade-review-workspace.tsx
+ M app/lib/instruments/metadata-contracts.test.ts
+ M app/lib/instruments/metadata-contracts.ts
+ M app/lib/instruments/providers/metadata-providers.test.ts
+ M app/lib/instruments/providers/nasdaq-directory.ts
+ M app/lib/instruments/providers/sec-company-tickers.ts
+ M app/lib/instruments/resolve-service.test.ts
+ M app/lib/instruments/resolve-service.ts
+ M app/lib/replay/position-ledger.test.ts
+ M app/lib/replay/position-ledger.ts
+ M app/lib/storage/indexeddb-instrument-metadata-repository.test.ts
+ M app/lib/storage/indexeddb-instrument-metadata-repository.ts
+ M app/lib/storage/sqlite-store.test.ts
+ M app/lib/storage/sqlite-store.ts
+?? .scratch/homepage-v25-implementation/
+?? .scratch/homepage-v25-wayfinder/
+?? app/components/homepage-v25/
+?? app/home/
+?? app/lib/reviews/homepage-v25-performance.test.ts
+?? app/lib/reviews/homepage-v25-performance.ts
+?? app/lib/reviews/homepage-v25-series.test.ts
+?? app/lib/reviews/homepage-v25-series.ts
+?? app/lib/reviews/homepage-v25-state.test.ts
+?? app/lib/reviews/homepage-v25-state.ts
+?? app/trades/

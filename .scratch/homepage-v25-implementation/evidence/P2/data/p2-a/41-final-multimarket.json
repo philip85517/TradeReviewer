@@ -1,0 +1,76 @@
+{
+  "startedAt": "2026-10-22T19:14:39.848Z",
+  "endedAt": "2026-10-22T19:14:52.259Z",
+  "runtime": "v26.0.0",
+  "fixture": {
+    "fills": 1866,
+    "accounts": 3,
+    "markets": 3,
+    "endpoints": 365,
+    "entries": 3,
+    "rawFillsInEntries": 1866,
+    "quotes": 743,
+    "historicalFxObservations": 365,
+    "nature": "controlled explicit live original lineage; no database"
+  },
+  "upstreamMs": 54.345856000000026,
+  "prepareMs": 379.3887480000001,
+  "batchMs": 2592.125663,
+  "coldMs": 2972.6251819999998,
+  "repeats": [
+    {
+      "ms": 2951.5570860000003,
+      "identical": false
+    },
+    {
+      "ms": 3016.7661989999997,
+      "identical": false
+    },
+    {
+      "ms": 3024.7934110000006,
+      "identical": false
+    }
+  ],
+  "beforeRepeat": {
+    "canonicalSweeps": 3,
+    "canonicalTransitions": 1866,
+    "batchCacheHits": 0,
+    "canonicalCalls": 0,
+    "canonicalCacheHits": 0,
+    "feeSteps": 1866,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 2193,
+    "fxLookups": 366,
+    "distinctCanonicalContexts": 0,
+    "cacheEntries": 0,
+    "cacheEstimatedBytes": 0,
+    "evictions": 1099,
+    "batchEntries": 0,
+    "sourceEstimatedBytes": 13933098,
+    "indexEstimatedBytes": 37447760
+  },
+  "afterRepeat": {
+    "canonicalSweeps": 3,
+    "canonicalTransitions": 1866,
+    "batchCacheHits": 0,
+    "canonicalCalls": 0,
+    "canonicalCacheHits": 0,
+    "feeSteps": 1866,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 8772,
+    "fxLookups": 1464,
+    "distinctCanonicalContexts": 0,
+    "cacheEntries": 0,
+    "cacheEstimatedBytes": 0,
+    "evictions": 4396,
+    "batchEntries": 0,
+    "sourceEstimatedBytes": 13933098,
+    "indexEstimatedBytes": 37447760
+  },
+  "heapBefore": 21380408,
+  "heapAfterSerialization": 264773792,
+  "serializationMs": 168.74160699999993,
+  "serializationBytes": 29038003,
+  "all365OraclesMatch": true,
+  "lastNet": "55358"
+}

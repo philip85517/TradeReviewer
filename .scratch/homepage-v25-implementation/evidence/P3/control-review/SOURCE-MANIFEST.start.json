@@ -1,0 +1,110 @@
+{
+  "reviewer": "/root/state_g61",
+  "model": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "capturedAt": "2026-10-22T20:07:02.609Z",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "scope": "source-only P3 first search/detail/source-return pre-browser audit; no product mutation or execution",
+  "records": [
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "bytes": 35439,
+      "sha256": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "bytes": 15000,
+      "sha256": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "bytes": 13842,
+      "sha256": "799c185a031d35f5f8141a1166eab1c930bb495b457d4544f6c88abeb4ad465f"
+    },
+    {
+      "path": "app/components/homepage-v25/search-surface.test.tsx",
+      "bytes": 7617,
+      "sha256": "c2369ebcb6daf32097f54653a9732e45e6bc0318bf2ea3e4e3831143c6c8c788"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "bytes": 17995,
+      "sha256": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "bytes": 24419,
+      "sha256": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "bytes": 2880,
+      "sha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "bytes": 4822,
+      "sha256": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06"
+    },
+    {
+      "path": "app/components/homepage-v25/catalog-model.ts",
+      "bytes": 5483,
+      "sha256": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3"
+    },
+    {
+      "path": "app/components/homepage-v25/catalog-model.test.ts",
+      "bytes": 3418,
+      "sha256": "d62403d945af96ce372e42f697424c7694cc3f6a5daf2ff3645572f4e5d1d47d"
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "bytes": 277184,
+      "sha256": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22"
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "bytes": 244265,
+      "sha256": "4e9a6823ec30acb94672aac5180824209d9d960ac1a704baf944c6bc3ab030c5"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "bytes": 36223,
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/PRE-DISPATCH-STATE-CONTRACT.md",
+      "bytes": 36555,
+      "sha256": "016580e865e3e0be2bcab814dbdf62292836c7a16071ddbba98a7b40de618057"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/06-search-filter.md",
+      "bytes": 6549,
+      "sha256": "b084f5f6faa2716f1dea93597cb2dce405fff5462af3dd35503fa8d0026372bc"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "bytes": 49765,
+      "sha256": "89593e2fabe317ab4a155fc7f70315345f8ac66c8decb2ad98ff7cf805bd6a94"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "bytes": 21905,
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "bytes": 15501,
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "bytes": 62054,
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "bytes": 66828,
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    }
+  ]
+}

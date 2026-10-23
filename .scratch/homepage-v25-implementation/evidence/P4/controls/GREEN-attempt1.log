@@ -1,0 +1,272 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45014) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 218ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 22ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 17ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 54ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 25ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 73ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 77ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 31ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 42ms
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 44ms
+   → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  aria-expanded="false"
+  aria-haspopup="listbox"
+  aria-label="历史指标：每月净盈亏"
+  class="hp-history-controls__trigger hp-history-controls__trigger--metric"
+  type="button"
+>
+  <span
+    class="hp-history-controls__label"
+  >
+    每月净盈亏
+  </span>
+  <svg
+    aria-hidden="true"
+    class="hp-history-controls__arrow"
+    focusable="false"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="m6 9 6 6 6-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+    />
+  </svg>
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="hp-history-controls"
+    >
+      <div
+        class="hp-history-controls__combo"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="历史范围：2026"
+          class="hp-history-controls__trigger hp-history-controls__trigger--range"
+          type="button"
+        >
+          <span
+            class="hp-history-controls__label"
+          >
+            2026
+          </span>
+          <svg
+            aria-hidden="true"
+            class="hp-history-controls__arrow"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+            />
+          </svg>
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="历史指标：每月净盈亏"
+          class="hp-history-controls__trigger hp-history-controls__trigger--metric"
+          type="button"
+        >
+          <span
+            class="hp-history-controls__label"
+          >
+            每月净盈亏
+          </span>
+          <svg
+            aria-hidden="true"
+            class="hp-history-controls__arrow"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 31ms
+   → Cannot read properties of undefined (reading 'nodeType')
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 55ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 64ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 42ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 90ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 34ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 64ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 69ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 59ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 56ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 64ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 44ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 26ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 35ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 34ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  aria-expanded="false"
+  aria-haspopup="listbox"
+  aria-label="历史指标：每月净盈亏"
+  class="hp-history-controls__trigger hp-history-controls__trigger--metric"
+  type="button"
+>
+  <span
+    class="hp-history-controls__label"
+  >
+    每月净盈亏
+  </span>
+  <svg
+    aria-hidden="true"
+    class="hp-history-controls__arrow"
+    focusable="false"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="m6 9 6 6 6-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+    />
+  </svg>
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="hp-history-controls"
+    >
+      <div
+        class="hp-history-controls__combo"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="历史范围：2026"
+          class="hp-history-controls__trigger hp-history-controls__trigger--range"
+          type="button"
+        >
+          <span
+            class="hp-history-controls__label"
+          >
+            2026
+          </span>
+          <svg
+            aria-hidden="true"
+            class="hp-history-controls__arrow"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+            />
+          </svg>
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="历史指标：每月净盈亏"
+          class="hp-history-controls__trigger hp-history-controls__trigger--metric"
+          type="button"
+        >
+          <span
+            class="hp-history-controls__label"
+          >
+            每月净盈亏
+          </span>
+          <svg
+            aria-hidden="true"
+            class="hp-history-controls__arrow"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ app/components/homepage-v25/history-controls.test.tsx:101:29
+     99|     await user.click(rangeTrigger()); await user.tab();
+    100|     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    101|     expect(metricTrigger()).toHaveFocus(); expect(p.onRangeApply).not.…
+       |                             ^
+    102|   });
+    103|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control
+TypeError: Cannot read properties of undefined (reading 'nodeType')
+ ❯ isDocument node_modules/@testing-library/user-event/dist/esm/utils/misc/getWindow.js:11:17
+ ❯ getWindow node_modules/@testing-library/user-event/dist/esm/utils/misc/getWindow.js:3:9
+ ❯ isVisible node_modules/@testing-library/user-event/dist/esm/utils/misc/isVisible.js:4:20
+ ❯ getTabDestination node_modules/@testing-library/user-event/dist/esm/utils/focus/getTabDestination.js:72:99
+ ❯ node_modules/@testing-library/user-event/dist/esm/event/behavior/keydown.js:111:26
+ ❯ Object.dispatchEvent node_modules/@testing-library/user-event/dist/esm/event/dispatchEvent.js:39:13
+ ❯ Object.dispatchUIEvent node_modules/@testing-library/user-event/dist/esm/event/dispatchEvent.js:20:26
+ ❯ KeyboardHost.keydown node_modules/@testing-library/user-event/dist/esm/system/keyboard.js:62:38
+ ❯ keyboardAction node_modules/@testing-library/user-event/dist/esm/keyboard/index.js:20:35
+ ❯ Object.keyboard node_modules/@testing-library/user-event/dist/esm/keyboard/index.js:9:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 29 passed (31)
+   Start at  05:52:12
+   Duration  3.40s (transform 131ms, setup 206ms, import 203ms, tests 1.55s, environment 1.05s)
+

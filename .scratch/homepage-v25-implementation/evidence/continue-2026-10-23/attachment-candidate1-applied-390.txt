@@ -1,0 +1,3 @@
+Browser tab: 9, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all".
+There has been no change in the accessibility tree.
+The focused UI element is 26 heading 当前持仓（最新）, Value: 2, ID: hp-holdings-title

@@ -1,0 +1,562 @@
+{
+  "date": "2026-10-23",
+  "owner": "/root/financial_g61",
+  "model": "gpt-6.1-sol / ultra",
+  "status": "preparation-ready; P4 0/3; product implementation not authorized; all product/UI acceptance NOT VERIFIED",
+  "newDocuments": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/preparation/ACCEPTANCE-DATA-CONTRACT.md",
+      "bytes": 24534,
+      "sha256": "bddda8ca7a2da319c38430cd35687f7ddc73d1456f971bae693e5110fb2e15fb"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/preparation/LITERAL-ORACLES.md",
+      "bytes": 17643,
+      "sha256": "1dfd3d5a69d88a02988cab5f6bd428fb5288311b892d430e897e373a351bf1ac"
+    }
+  ],
+  "frozenProducts": [
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "bytes": 88843,
+      "sha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b",
+      "matchesFrozenVersion": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.test.ts",
+      "bytes": 82666,
+      "sha256": "f6d26840afd1a5bbc3dacf1151a05c6e947b14e20df4ffd31c8b91c95f04e683",
+      "matchesFrozenVersion": true
+    },
+    {
+      "path": "app/lib/replay/position-ledger.ts",
+      "bytes": 28876,
+      "sha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126",
+      "matchesFrozenVersion": true
+    },
+    {
+      "path": "app/lib/replay/position-ledger.test.ts",
+      "bytes": 43237,
+      "sha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9",
+      "matchesFrozenVersion": true
+    }
+  ],
+  "acceptedTestPrefixes": [
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.test.ts",
+      "prefixBytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7",
+      "matchesAcceptedPrefix": true
+    },
+    {
+      "path": "app/lib/replay/position-ledger.test.ts",
+      "prefixBytes": 32966,
+      "sha256": "67d6d0c33d741398bfa070f69dca5ec829833452edf14e21d1a792ec804d6aef",
+      "matchesAcceptedPrefix": true
+    }
+  ],
+  "references": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 6578,
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "bytes": 27120,
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "bytes": 10287,
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/07-history-contribution.md",
+      "bytes": 5429,
+      "sha256": "56e061106133342797c4de91c5f0185f8da632589f7afea518f7300dd1c9c2c3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "bytes": 49765,
+      "sha256": "89593e2fabe317ab4a155fc7f70315345f8ac66c8decb2ad98ff7cf805bd6a94"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/PRE-DISPATCH-CONTRACT.md",
+      "bytes": 37852,
+      "sha256": "1140ad8c6430562f2f6cb6478f1244717ef07ad5215058eda41784dcf095b803"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/ROOT-FINANCIAL-DECISIONS.md",
+      "bytes": 2438,
+      "sha256": "5ebe2ff314be1126baec8359390fbf0f810dd6e9f040fa5d0f34a887df28118e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/CANONICAL-READ-FACT-SEAM-PROPOSAL.md",
+      "bytes": 26509,
+      "sha256": "31783b8fa9f46e01e3d50180b2d7e530570c71b8348ae6f8149636d6c7b4175b"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/data/P4-COORDINATOR-PROVENANCE-DECISION.md",
+      "bytes": 3389,
+      "sha256": "0c0bb00c0d52ec0f278c52e375cb9a4b7def8f1de366cd517401e9297f30a378"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "bytes": 62054,
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "bytes": 66828,
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    }
+  ],
+  "exactSvgReferences": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/account.svg",
+      "bytes": 3352,
+      "sha256": "e13e8ad14cf7809341967983b1bd84d311323f460c1967cb410b55261cbc0f65"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg",
+      "bytes": 15535,
+      "sha256": "54923037457f3127e1a8baca6302b893a1926a6edfebe694b3634481d7751536"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atoms.svg",
+      "bytes": 13392,
+      "sha256": "d9218c2a03551b2bdc2c9ab05925f946d74eb093c8fe8c67f595b06c7bda8af8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg",
+      "bytes": 5747,
+      "sha256": "d352fbadc9d4a47705310293d3eabb76f1555e7f209703439a7736a7981f7857"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-current-a-share.svg",
+      "bytes": 3191,
+      "sha256": "cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-empty.svg",
+      "bytes": 1286,
+      "sha256": "26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-error.svg",
+      "bytes": 1394,
+      "sha256": "e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-extreme.svg",
+      "bytes": 1305,
+      "sha256": "b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-historical-a-share.svg",
+      "bytes": 2497,
+      "sha256": "528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-loading.svg",
+      "bytes": 1282,
+      "sha256": "9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-mixed-sign-demo.svg",
+      "bytes": 2100,
+      "sha256": "50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-states.svg",
+      "bytes": 1712,
+      "sha256": "f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution.svg",
+      "bytes": 1457,
+      "sha256": "944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg",
+      "bytes": 14248,
+      "sha256": "51b6bc493b2a67b198ad88a982de578ac3bdb4230e43c02176b486256151fa82"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error.svg",
+      "bytes": 5146,
+      "sha256": "d97d6e67e0eedebb80646c8e88bd86ad4634733f697cd5f668df10cbc1db6646"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/hcr06-final-return.svg",
+      "bytes": 841,
+      "sha256": "ec40db6ee1f6f8ce415365b3eb09671534d72c984713d9f9b4736745ae9118d8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-cumulative.svg",
+      "bytes": 9674,
+      "sha256": "cc4bc9283a706fb9a37e5bc8aceccdcc95c1aba2eac4a2c6e91c10a62cfc9e55"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-empty.svg",
+      "bytes": 8381,
+      "sha256": "144dc173ab80f3f3f6dc25037bba757cb2da8c2d3da66d2096cef66f37334433"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-error.svg",
+      "bytes": 8751,
+      "sha256": "1ef32ed2b9190a74dc3e84585cf032e68257c20dfb4f0fb0eda6bd246ba41ad7"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-extreme.svg",
+      "bytes": 7352,
+      "sha256": "7fb4467c615f760c5fa510f3da66db1f150482638dc4538dad875c831742f47d"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-rounds.svg",
+      "bytes": 9646,
+      "sha256": "3eaf1c879a09e30d472b08f54ca8aaa14ec4db2bc1aab3ee6446555372021fdb"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-source-missing.svg",
+      "bytes": 8857,
+      "sha256": "159ba8368e6a7f5befbb14fb24f343cc628e9690b906987de79ac28910979fc0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-win.svg",
+      "bytes": 9686,
+      "sha256": "176a93311ac90da19eb28f29dabf3816e750432cddfc7c6ac7bb29d9785f4472"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history.svg",
+      "bytes": 9688,
+      "sha256": "67dfad0dd305b2798abe41dcf7f7a5e67a8498e54ca3685fa14fea5429c2f008"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1280.svg",
+      "bytes": 39744,
+      "sha256": "b5d78d3960c58faeaac87b0d4129a38d7042f1b6ce5579abb34c6c03402a3ef7"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1440.svg",
+      "bytes": 39695,
+      "sha256": "dc59a13d9a92ee155b2ff3465ac3da22486dc346db09e0c74eaab89660c8b517"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-library-entry.svg",
+      "bytes": 1111,
+      "sha256": "e19759842eca960be7fea11771a538369ad3e030d15acc15623551dc2ed373fe"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-year.svg",
+      "bytes": 6788,
+      "sha256": "a3ed3e8374553021eb65fad089faeb5c24daa920328464e8f5e81797c9eb39de"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/library-return.svg",
+      "bytes": 1583,
+      "sha256": "3c053d7e355ec692977e9090bb4dfd3179920e895ecceb9e0622403debbda55f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg",
+      "bytes": 20744,
+      "sha256": "b6e2677a96a661bb174fb3af0cbcda63350b8f8345a4c5cb8cb9fa45cbab3efe"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading.svg",
+      "bytes": 13131,
+      "sha256": "672a83549388f28ec5a53c77f78e676347636a652bccdc1cff85f658c2fcd6b2"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/repair.svg",
+      "bytes": 3479,
+      "sha256": "1a2f995c264f4200a4a6cf423bff32097a3fcb359862423f85afc7681948f2ae"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg",
+      "bytes": 19980,
+      "sha256": "9e44de3e8c22de4d22ee3029f7ea1be21b966e1aa37968866a45eb237ecd2397"
+    }
+  ],
+  "staticVerification": {
+    "markdownLinks": [
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "../../../issues/07-history-contribution.md",
+        "exists": true
+      },
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "../PRE-DISPATCH-CONTRACT.md",
+        "exists": true
+      },
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "../ROOT-FINANCIAL-DECISIONS.md",
+        "exists": true
+      },
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "../CANONICAL-READ-FACT-SEAM-PROPOSAL.md",
+        "exists": true
+      },
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "../../P2/data/P4-COORDINATOR-PROVENANCE-DECISION.md",
+        "exists": true
+      },
+      {
+        "document": "ACCEPTANCE-DATA-CONTRACT.md",
+        "reference": "LITERAL-ORACLES.md",
+        "exists": true
+      },
+      {
+        "document": "LITERAL-ORACLES.md",
+        "reference": "ACCEPTANCE-DATA-CONTRACT.md",
+        "exists": true
+      }
+    ],
+    "trackingIds": [
+      15,
+      16,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "localElementRows": 20,
+    "literalOracleGroups": [
+      "O01",
+      "O02",
+      "O03",
+      "O04",
+      "O05",
+      "O06",
+      "O07",
+      "O08",
+      "O09",
+      "O10",
+      "O11",
+      "O12"
+    ],
+    "independentDecimalArithmeticOnly": [
+      {
+        "name": "O01 average basis/quantity",
+        "actual": "150",
+        "expected": "150",
+        "equal": true
+      },
+      {
+        "name": "O01 partial released fee + exit fee",
+        "actual": "5",
+        "expected": "5",
+        "equal": true
+      },
+      {
+        "name": "O01 opening netUF",
+        "actual": "14",
+        "expected": "14",
+        "equal": true
+      },
+      {
+        "name": "O01 partial netUF",
+        "actual": "27",
+        "expected": "27",
+        "equal": true
+      },
+      {
+        "name": "O01 partial period net",
+        "actual": "38",
+        "expected": "38",
+        "equal": true
+      },
+      {
+        "name": "O01 final gross",
+        "actual": "70",
+        "expected": "70",
+        "equal": true
+      },
+      {
+        "name": "O01 final round net",
+        "actual": "60",
+        "expected": "60",
+        "equal": true
+      },
+      {
+        "name": "O01 final period net",
+        "actual": "46",
+        "expected": "46",
+        "equal": true
+      },
+      {
+        "name": "O02 first reversed closed round net",
+        "actual": "16",
+        "expected": "16",
+        "equal": true
+      },
+      {
+        "name": "O02 second closed round net",
+        "actual": "7",
+        "expected": "7",
+        "equal": true
+      },
+      {
+        "name": "O02 reversal totals",
+        "actual": "23",
+        "expected": "23",
+        "equal": true
+      },
+      {
+        "name": "O02 quantity residual",
+        "actual": "1E-10",
+        "expected": "1E-10",
+        "equal": true
+      },
+      {
+        "name": "O03 period net",
+        "actual": "10",
+        "expected": "10",
+        "equal": true
+      },
+      {
+        "name": "O04 combined round count",
+        "actual": "10",
+        "expected": "10",
+        "equal": true
+      },
+      {
+        "name": "O04 weighted range rate",
+        "actual": "0.2",
+        "expected": "0.2",
+        "equal": true
+      },
+      {
+        "name": "O04 combined native net",
+        "actual": "-6",
+        "expected": "-6",
+        "equal": true
+      },
+      {
+        "name": "O05 complete native net",
+        "actual": "1E-10",
+        "expected": "1E-10",
+        "equal": true
+      },
+      {
+        "name": "O05 native winner fraction",
+        "actual": "0.5",
+        "expected": "0.5",
+        "equal": true
+      },
+      {
+        "name": "O06 strict historical net",
+        "actual": "130",
+        "expected": "130",
+        "equal": true
+      },
+      {
+        "name": "O06 strict historical fee",
+        "actual": "13",
+        "expected": "13",
+        "equal": true
+      },
+      {
+        "name": "O06 current difference then endpoint conversion",
+        "actual": "350",
+        "expected": "350",
+        "equal": true
+      },
+      {
+        "name": "O07 partial trusted category net sum",
+        "actual": "38",
+        "expected": "38",
+        "equal": true
+      },
+      {
+        "name": "O07 final trusted category net sum",
+        "actual": "46",
+        "expected": "46",
+        "equal": true
+      },
+      {
+        "name": "O07 cost transfers zero sum",
+        "actual": "0",
+        "expected": "0",
+        "equal": true
+      },
+      {
+        "name": "O07 fee transfers zero sum",
+        "actual": "0",
+        "expected": "0",
+        "equal": true
+      },
+      {
+        "name": "O08 complete native net",
+        "actual": "46",
+        "expected": "46",
+        "equal": true
+      },
+      {
+        "name": "O08 short IPO cover net",
+        "actual": "36",
+        "expected": "36",
+        "equal": true
+      },
+      {
+        "name": "O11 all historical net",
+        "actual": "20",
+        "expected": "20",
+        "equal": true
+      },
+      {
+        "name": "O12 unpaged total",
+        "actual": "1275",
+        "expected": "1275",
+        "equal": true
+      }
+    ],
+    "limitation": "Static document/link/hash and literal arithmetic checks only; these are not executed product oracles, RED/GREEN, visual acceptance, or performance measurements.",
+    "referenceImagesReadAndRenderedInMemory": 23,
+    "referenceImagesRenderIsVisualAcceptance": false
+  },
+  "notExecuted": [
+    "product tests",
+    "product changes",
+    "configs/dependencies changes",
+    "DB access",
+    "browser/service",
+    "performance measurement",
+    "new agents",
+    "commit/push"
+  ],
+  "nextDependencies": [
+    "root explicitly authorizes product scope",
+    "canonical all-event read facts + full precision",
+    "F existing fee allocation observation",
+    "P2 architecture decision and acceptance for current contribution",
+    "history-domain atomic data commit",
+    "independent root financial/functional/persistence/visual acceptance"
+  ]
+}

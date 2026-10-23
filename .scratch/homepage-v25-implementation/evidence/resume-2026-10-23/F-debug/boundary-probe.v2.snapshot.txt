@@ -1,0 +1,161 @@
+import { afterAll, describe, expect, it, vi } from "vitest";
+import { writeFileSync } from "node:fs";
+import { buildHomepageV25Performance as build, type HomepageV25Input } from "../../../../../app/lib/reviews/homepage-v25-performance";
+import { buildTradeLibraryEntries } from "../../../../../app/lib/trades/library";
+import { buildInstrumentTradeSummaries } from "../../../../../app/lib/trades/instruments";
+import { buildRoomMoneyView } from "../../../../../app/lib/reviews/trading-room-scope";
+import type { TradeExecution } from "../../../../../app/lib/trades/types";
+import type { DailyCandleRecord } from "../../../../../app/lib/market/contracts";
+
+// Instrument calls without replacing ledger behavior. These tests assert observed
+// behavior to distinguish causes; they are diagnosis evidence, not acceptance.
+const ledgerTrace = vi.hoisted(() => ({ calls: [] as unknown[] }));
+vi.mock("../../../../../app/lib/replay/position-ledger", async importOriginal => {
+  const actual = await importOriginal<typeof import("../../../../../app/lib/replay/position-ledger")>();
+  return { ...actual, replayPositionAtPrice: (input: Parameters<typeof actual.replayPositionAtPrice>[0]) => {
+    const output = actual.replayPositionAtPrice(input);
+    ledgerTrace.calls.push(structuredClone({ input, output }));
+    return output;
+  } };
+});
+const traces: Record<string, unknown> = {};
+const instrument = { id: "US:AAPL", symbol: "AAPL", name: "Apple", market: "US", currency: "USD" };
+function execution(id: string, executedAt: string, patch: Partial<TradeExecution> = {}): TradeExecution {
+  return { id, accountId: "a", accountLabel: "A", instrument, side: "buy", quantity: "1", price: "100", fee: "0", executedAt, source: { platform: "statement", row: 1, tradeNature: "live" }, ...patch };
+}
+function candle(tradingDate: string, close: string, patch: Partial<DailyCandleRecord> = {}): DailyCandleRecord {
+  return { instrumentId: instrument.id, tradingDate, open: close, high: close, low: close, close, volume: "1", currency: "USD", provider: "eastmoney", providerSymbol: "AAPL", adjustmentMode: "raw", fetchedAt: `${tradingDate}T23:00:00Z`, ...patch };
+}
+const standardCandles = [candle("2025-12-31", "100"), candle("2026-01-01", "100"), candle("2026-01-31", "110")];
+function project(label: string, executions: TradeExecution[], candles = standardCandles, overrides: Partial<HomepageV25Input> = {}) {
+  ledgerTrace.calls = [];
+  const candlesByInstrument = { [instrument.id]: candles };
+  const summaries = buildInstrumentTradeSummaries(executions);
+  const entries = buildTradeLibraryEntries(summaries, candlesByInstrument, { [instrument.id]: "ready" });
+  const input: HomepageV25Input = { period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31", executions: [], openingPositions: [], valuations: [], entries, candlesByInstrument, ...overrides };
+  try {
+    const output = build(input);
+    traces[label] = structuredClone({ raw: executions, shanghaiDates: executions.map(e => ({ id: e.id, businessDate: e.source.tradingDate ?? e.source.marketCalendarDate ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date(e.executedAt)) })), summaries, entries, projectionInput: input, ledgerCalls: ledgerTrace.calls, output });
+    return output;
+  } catch (error) {
+    traces[label] = structuredClone({ raw: executions, summaries, entries, projectionInput: input, ledgerCalls: ledgerTrace.calls, error: String(error) });
+    throw error;
+  }
+}
+function pure(label: string, input: HomepageV25Input) {
+  try {
+    const output = build(input);
+    traces[label] = structuredClone({ projectionInput: input, output });
+    return output;
+  } catch (error) {
+    traces[label] = structuredClone({ projectionInput: input, error: String(error) });
+    throw error;
+  }
+}
+afterAll(() => writeFileSync(new URL("./boundary-traces.json", import.meta.url), JSON.stringify(traces, null, 2) + "\n"));
+
+describe("single-variable boundary/evidence diagnostic observations", () => {
+  it("H1 exact timestamp before UTC midnight is double admitted at Shanghai period start", () => {
+    const failing = project("H1-shanghai", [execution("first", "2025-12-31T16:30:00Z")]);
+    const control = project("H1-daytime-control", [execution("first", "2026-01-01T02:00:00Z")]);
+    const inclusive = project("H1-exact-utc-midnight", [execution("first", "2026-01-01T00:00:00Z")]);
+    expect(failing.reasons).toContain("valuation-quantity-mismatch");
+    expect(control.net.value).toBe("10");
+    expect(inclusive.reasons).toContain("valuation-quantity-mismatch");
+  });
+  it("H2 only adding a post-asOf execution changes current inventory", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    expect(project("H2-control", [known]).currentMarketValue.value).toBe("110");
+    expect(project("H2-future-execution", [known, execution("future", "2026-02-02T15:00:00Z")]).currentMarketValue.value).toBe("220");
+  });
+  it("H3 only adding a future candle suppresses currently eligible price", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    expect(project("H3-control", [known]).currentMarketValue.value).toBe("110");
+    expect(project("H3-future-candle", [known], [...standardCandles, candle("2026-02-02", "999")]).currentMarketValue.value).toBeNull();
+  });
+  it("H4 only extending period past asOf publishes future profit", () => {
+    const future = execution("future", "2026-02-02T15:00:00Z");
+    const candles = [candle("2026-01-01", "100"), candle("2026-12-31", "999")];
+    expect(project("H4-control", [future], candles).net.value).toBe("0");
+    expect(project("H4-future-range", [future], candles, { period: { start: "2026-01-01", end: "2026-12-31" } }).net.value).toBe("899");
+  });
+  it("H5 unknown fee/history source flags compared to trusted control", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    project("H5-control", [known]);
+    expect(project("H5-unknown-fees", [{ ...known, source: { ...known.source, feeStatus: "unknown" } }]).net.value).toBe("10");
+    const incomplete = project("H5-history-incomplete", [{ ...known, source: { ...known.source, historyIncomplete: ["unresolved-instrument-position"] } }]);
+    expect(incomplete.currentMarketValue).toMatchObject({ value: "0", available: true });
+  });
+  it("H6 statement opening cost/quantity evidence remains distinct from numeric placeholders", () => {
+    const sell = execution("sell", "2026-01-15T15:00:00Z", { side: "sell", price: "120" });
+    const opening = { accountId: "a", market: "US", symbol: "AAPL", phase: "opening" as const, date: "2025-12-01", quantity: "1", source: [{ page: 1, row: 1 }] };
+    project("H6-known-opening", [{ ...sell, source: { ...sell.source, openingPosition: { ...opening, cost: "100" } } }]);
+    project("H6-unknown-opening-cost", [{ ...sell, source: { ...sell.source, openingPosition: opening } }]);
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    const unknown = project("H6-unknown-transfer-quantity", [{ ...known, source: { ...known.source, positionEvents: [{ id: "transfer", accountId: "a", market: "US", symbol: "AAPL", kind: "transfer-in", date: "2026-01-20", description: "unknown transfer", source: [{ page: 1, row: 2 }] }] } }]);
+    expect(unknown.currentMarketValue).toMatchObject({ value: "0", available: true });
+  });
+  it("H7 original settlement currency and reverse-split lineage", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    expect(project("H7-settlement-currency-mismatch", [{ ...known, source: { ...known.source, settlement: { currency: "CNY", quantity: "1", grossAmount: "700", netAmount: "700", fees: {} } } }]).net.value).toBe("-590");
+    const reverse = execution("reverse", "2026-01-20T15:00:00Z", { side: "sell", quantity: "2", price: "120", fee: "2" });
+    project("H7-reverse-control", [known, reverse]);
+    const settlement = project("H7-reverse-settlement", [known, { ...reverse, source: { ...reverse.source, settlement: { currency: "USD", quantity: "2", grossAmount: "240", netAmount: "238", fees: { commission: "2" } } } }]);
+    expect(settlement.reasons).toContain("position-coverage-missing");
+  });
+  it("H8 period boundary cost/fees/order compared across same execution ledger", () => {
+    const oldBuy = execution("old", "2025-12-15T15:00:00Z", { fee: "2" });
+    const close = execution("close", "2026-01-20T15:00:00Z", { side: "sell", price: "120", fee: "1" });
+    expect(project("H8-carry-in-fees", [oldBuy, close]).periodRealized.value).toBe("19");
+    expect(project("H8-full-period-fees", [oldBuy, close], standardCandles, { period: { start: "2025-12-01", end: "2026-01-31" } }).periodRealized.value).toBe("17");
+    const openShort = execution("short", "2026-02-01T15:00:00Z", { side: "sell", source: { platform: "statement", row: 2, tradeNature: "live", positionEffect: "open-short", positionEffectEvidence: { kind: "broker-column", raw: "SELL SHORT" } } });
+    expect(project("H8-future-episode-direction", [oldBuy, close, openShort]).net.value).toBeNull();
+  });
+  it("H9 FX production-key/status contract compared to existing money projection", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    const snapshot = { id: "production-fx", baseCurrency: "CNY" as const, asOf: "2026-01-31", source: "diagnostic", status: "complete" as const, rates: { "USD/CNY": "7" } };
+    expect(project("H9-production-key", [known], standardCandles, { targetCurrency: "CNY", fxSnapshot: snapshot }).currentMarketValue.value).toBeNull();
+    project("H9-bare-key-control", [known], standardCandles, { targetCurrency: "CNY", fxSnapshot: { ...snapshot, rates: { USD: "7" } } });
+    expect(project("H9-missing-status-bare-key", [known], standardCandles, { targetCurrency: "CNY", fxSnapshot: { ...snapshot, status: "missing", rates: { USD: "7" } } }).currentMarketValue.value).toBe("770");
+    traces["H9-existing-money-projection"] = { complete: buildRoomMoneyView([{ currency: "USD", amount: "110" }], snapshot, "CNY"), missing: buildRoomMoneyView([{ currency: "USD", amount: "110" }], { ...snapshot, status: "missing" }, "CNY") };
+    expect(Object.keys(traces)).toContain("H9-production-key");
+  });
+  it("H10 current market value independence and raw scope identity", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    const now = project("H10-current-period", [known]);
+    const old = project("H10-old-period", [known], standardCandles, { period: { start: "2025-12-01", end: "2025-12-31" } });
+    expect(now.currentMarketValue.value).toBe(old.currentMarketValue.value);
+    expect(project("H10-mixed-nature", [known, execution("simulation", "2026-01-16T15:00:00Z", { source: { platform: "statement", row: 1, tradeNature: "simulation" } })]).currentMarketValue.value).toBe("220");
+  });
+  it("H11 start mark and end inventory do not share inclusive Shanghai boundaries", () => {
+    const old = execution("old", "2025-12-15T15:00:00Z");
+    const firstDayRepriced = [candle("2025-12-31", "100"), candle("2026-01-01", "120"), candle("2026-01-31", "130")];
+    expect(project("H11-first-day-mark", [old], firstDayRepriced).net.value).toBe("10");
+    const inPeriod = execution("known", "2026-01-15T15:00:00Z");
+    const outside = execution("shanghai-feb1", "2026-01-31T16:30:00Z");
+    expect(project("H11-post-end-shanghai", [inPeriod, outside]).reasons).toContain("valuation-quantity-mismatch");
+    const dayOnly = execution("date-only", "2026-01-01", { source: { platform: "statement", row: 1, tradeNature: "live", timePrecision: "date-only", tradingDate: "2026-01-01" } });
+    expect(project("H11-date-only-control", [dayOnly]).net.value).toBe("10");
+  });
+  it("H12 canonical average cost versus second FIFO book changes period components", () => {
+    const buys = [execution("old100", "2025-12-15T15:00:00Z"), execution("old200", "2025-12-16T15:00:00Z", { price: "200" }), execution("new300", "2026-01-15T15:00:00Z", { price: "300" })];
+    const close = execution("close400", "2026-01-20T15:00:00Z", { side: "sell", price: "400" });
+    const output = project("H12-average-vs-fifo", [...buys, close], [candle("2025-12-31", "200"), candle("2026-01-01", "200"), candle("2026-01-31", "350")]);
+    expect(output.periodRealized.value).toBe("250");
+    expect(output.closingUnrealized.value).toBe("250");
+    expect(output.net.value).toBe("400");
+  });
+  it("H13 current asOf must be independent and explicit in both API modes", () => {
+    const known = execution("known", "2026-01-15T15:00:00Z");
+    const current = project("H13-without-asOf-current-period", [known], standardCandles, { asOf: undefined });
+    const old = project("H13-without-asOf-old-period", [known], standardCandles, { asOf: undefined, period: { start: "2025-12-01", end: "2025-12-31" } });
+    expect(current.currentMarketValue.value).toBe("110");
+    expect(old.currentMarketValue.value).toBe("0");
+  });
+  it("H14 pure projection also accepts future boundaries and cannot encode unknown current quantity", () => {
+    const future = execution("future", "2026-02-02T15:00:00Z");
+    const input: HomepageV25Input = { period: { start: "2026-01-01", end: "2026-12-31" }, asOf: "2026-01-31", executions: [future], openingPositions: [], valuations: [{ accountId: "a", instrumentId: instrument.id, kind: "period-end", date: "2026-12-31", quantity: "1", price: "999", currency: "USD", reason: "quote-future" }] };
+    expect(pure("H14-pure-future-range", input).net.value).toBe("899");
+    expect(() => pure("H14-invalid-current-quantity", { ...input, executions: [], valuations: [{ accountId: "a", instrumentId: instrument.id, kind: "current", date: "2026-01-31", quantity: "unknown", price: "110", currency: "USD" }] })).toThrow();
+  });
+});

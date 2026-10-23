@@ -1,0 +1,57 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45307) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/period-selector.test.tsx (42 tests | 6 failed) 1938ms
+     × PS21 'left' keeps the default/responsive width inside 24px gutters below the toolbar 24ms
+     × PS21 'right 1440' keeps the default/responsive width inside 24px gutters below the toolbar 12ms
+     × PS21 'right 1280' keeps the default/responsive width inside 24px gutters below the toolbar 11ms
+     × PS21 'outside left gutter' keeps the default/responsive width inside 24px gutters below the toolbar 11ms
+     × PS21 '390 wrapped row' keeps the default/responsive width inside 24px gutters below the toolbar 10ms
+     × PS23 renders server failure in the error token with the real stylesheet cascade 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'left' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1440' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1280' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'outside left gutter' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 '390 wrapped row' keeps the default/responsive width inside 24px gutters below the toolbar
+AssertionError: expected 'static' to be 'absolute' // Object.is equality
+
+Expected: "absolute"
+Received: "static"
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:410:48
+    408|       expect(bounds.right).toBe(fixture.expectedRight);
+    409|       expect(bounds.top).toBe(layout.top + fixture.rowHeight + 24);
+    410|       expect(getComputedStyle(panel).position).toBe("absolute");
+       |                                                ^
+    411|       mounted.rerender(<PeriodSelector {...props()} />);
+    412|       expect(mounted.container.firstElementChild!.getBoundingClientRec…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS23 renders server failure in the error token with the real stylesheet cascade
+AssertionError: expected 'rgb(0, 0, 0)' to be 'rgb(255, 133, 146)' // Object.is equality
+
+Expected: "rgb(255, 133, 146)"
+Received: "rgb(0, 0, 0)"
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:439:65
+    437|       const current = props({ open: true, error: "网络连接失败" });
+    438|       const mounted = render(<PeriodSelector {...current} />);
+    439|       expect(getComputedStyle(screen.getByRole("alert")).color).toBe("…
+       |                                                                 ^
+    440|       mounted.rerender(<PeriodSelector {...current} open={false} />);
+    441|       expect(getComputedStyle(screen.getByRole("alert")).color).toBe("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 36 passed (42)
+   Start at  05:54:53
+   Duration  4.64s (transform 213ms, setup 291ms, import 472ms, tests 1.94s, environment 1.41s)
+

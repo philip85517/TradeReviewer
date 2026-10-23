@@ -1,0 +1,62 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:41921) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-series.test.ts (18 tests | 2 failed) 913ms
+     × O01 preserves historical day precision and clamps only today's point to the actual instant 49ms
+     × O07 preserves native-first endpoint FX and its exact dated source 75ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O01 preserves historical day precision and clamps only today's point to the actual instant
+AssertionError: expected [ 'early', 'later', 'dated' ] to deeply equal [ 'dated', 'early', 'later' ]
+
+- Expected
++ Received
+
+  [
+-   "dated",
+    "early",
+    "later",
++   "dated",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:53:70
+     51|     const historical = buildHomepageV25Series(source, { ...query, peri…
+     52|     expect(historical).toMatchObject({ key: "2026-01-05", requestedAt:…
+     53|     expect(historical.instruments[0].evidence.endpoint.executionIds).t…
+       |                                                                      ^
+     54|     const current = buildHomepageV25Series(source, { ...query, period,…
+     55|     expect(current.points[0]).toMatchObject({ boundaryPrecision: "inst…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-series.test.ts > P2-B real prepared-source daily series > O07 preserves native-first endpoint FX and its exact dated source
+AssertionError: expected { …(4) } to match object { targetCurrency: 'CNY', …(2) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "conversion": "complete",
+    "fx": {
+-     "asOf": "2026-01-30",
++     "asOf": "2026-01-30T15:59:59.999Z",
+      "source": "broker-history",
+    },
+    "targetCurrency": "CNY",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-series.test.ts:186:29
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 passed (18)
+   Start at  05:20:22
+   Duration  4.39s (transform 388ms, setup 454ms, import 454ms, tests 913ms, environment 1.98s)
+

@@ -1,0 +1,17 @@
+# Fixed paired diagnostic, awaiting root quiet window
+
+Candidate2 belongs to the same seam ticket (1/3 formal FAIL so far). This diagnostic does not replace root nine-sample acceptance and does not authorize a performance patch. Original cold 2000ms, every exact repeat 200ms and cache 64MiB remain unchanged.
+
+## Read-only source finding and one hypothesis
+
+Accepted A inputs are exactly ../input-position-ledger.ts (f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126) and ../input-homepage-v25-performance.ts (1e64b1c23aa0d42b96331d1eb89b6ec4c16e7d26c13454edc7c7449567df0542). `accepted-A-to-candidate2.diff` records all changes to these two modules. Normal A still never calls readPreparedPositionFacts/readHomepageV25FinancialFacts; the explicit observer graph, episode maps, allocation joins and new coverage arrays are allocated only from that explicit call. The reachable normal-path differences are optional observer branches and an enclosing per-movement try/finally in canonical evaluation, plus optional observer scaffolding in F fee sweeps (including a widened optional `data` parameter), and the default-true FX lookup counter branch; fee arithmetic and prepared/cache representation are unchanged. Candidate2 functional fixes are all within the explicit read seam, except an accurate ledger complexity comment.
+
+Single falsifiable hypothesis: the added optional-observer scaffolding on normal canonical/F preparation introduces a reproducible cold-cost difference relative to the accepted A snapshot. Paired fixed-source measurements can first distinguish that seam-associated difference from a slow accepted baseline; they cannot by themselves attribute it to an individual function or prove an environmental explanation. No optimization will be made from source suspicion alone.
+
+## Minimal fixed sampling plan
+
+Use the exact existing calendar-resume benchmark body, three original immutable-sharing largeFixture shapes (rounds, long-prefix, multimarket), 1866 fills and 365 endpoints, existing frozen input-oracle, all-field publicJson, work counters, no legacy calls, admitted three exact repeats, original timing boundary from immediately before prepare to immediately after project. Source replacement happens before module evaluation/timing through one Vitest transform: baseline substitutes only the two accepted input snapshots at their original module paths; candidate reads the two current product files at those paths. No copy of another product module, changed fixture or new oracle.
+
+For each shape run one AB pair (baseline then candidate) and one BA pair (candidate then baseline), four fresh native Node/Vitest processes. Total twelve processes. Both modes share the same measurement/config and timing/oracle/budget assertions. Every process writes its own JSON + stdout/stderr + exit status; never stop after a slow result, retry, discard, pick a sample or summarize by a passing minimum. No benchmark mode is warmed by a prior counterpart inside its process. The after-timing frozen comparison remains in each process exactly as in the root benchmark. Record all source/fixture/request/config/measurer hashes; verify modes have the same fixture/request hashes.
+
+Execution is NOT AUTHORIZED until root explicitly releases a quiet window. Do not run tests/build/UI concurrently. Root must review the measured paired results and decide any next root-cause investigation; formal nine-sample run remains root-owned.

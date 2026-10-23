@@ -61,7 +61,9 @@ export function parseSecCompanyTickers(
       continue;
     }
     const symbol = canonicalInstrumentSymbol(ticker, "US");
+    const exchangeCode = exchange.trim().toUpperCase() === "NASDAQ" ? "NASDAQ" : exchange.trim().toUpperCase() === "NYSE" ? "NYSE" : undefined;
     directory.set(symbol, {
+      ...(exchangeCode ? { exchange: { code: exchangeCode, source: "sec", resolvedAt } } : {}),
       market: "US",
       symbol,
       name: name.trim(),

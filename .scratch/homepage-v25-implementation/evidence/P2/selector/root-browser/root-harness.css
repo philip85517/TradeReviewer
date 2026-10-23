@@ -1,0 +1,4 @@
+html{color-scheme:dark}body{margin:0;background:#0b1019;color:#e6edf7;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}main{padding:24px}h1{font-size:18px}p{font-size:14px}section.placement{display:flex;align-items:flex-start;justify-content:flex-end;margin-top:48px;min-height:370px}aside{padding-top:24px;border-top:1px solid #283448}aside button,aside a{margin:8px;padding:8px;background:#111a26;color:#e6edf7;border:1px solid #283448}
+section.placement-left{justify-content:flex-start}
+section.placement-scroll{height:420px;overflow:auto;padding:20px 0;box-sizing:border-box;border:1px dashed #283448}
+section.placement-scroll::after{content:"";height:1200px;width:1px;flex-shrink:0}

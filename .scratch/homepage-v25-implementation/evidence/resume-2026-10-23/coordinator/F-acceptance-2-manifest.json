@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-22T17:27:30.571721+00:00",
+  "scope": "F additive current metrics pure contract; UI NOT VERIFIED",
+  "resumedRound": "2/3 PASS",
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5",
+    "app/lib/reviews/homepage-v25-performance.test.ts": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921"
+  },
+  "priorEvidenceFiles": 69,
+  "priorEvidence": "byte-identical; supplemental manifest all files match too",
+  "testFiles": 13,
+  "tests": 286,
+  "exitCodes": {
+    "tests": 0,
+    "scopedTypecheck": 0,
+    "eslint": 0
+  },
+  "harnessCalibration": "F2-harness-diagnosis.md; original invalid fixture logs preserved; product frozen throughout"
+}

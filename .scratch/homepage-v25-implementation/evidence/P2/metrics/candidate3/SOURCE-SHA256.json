@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-10-23T02:31:53.694541+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "state": "candidate3 implementation-ready; root formal2/3FAIL; product writes frozen",
+  "products": {
+    "app/components/homepage-v25/metric-cards.tsx": "ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035",
+    "app/components/homepage-v25/metric-cards.css": "d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c",
+    "app/components/homepage-v25/metric-cards.test.tsx": "d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d"
+  },
+  "readonlyInputs": {
+    "AGENTS.md": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+    "docs/agents/development-workflow.md": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+    "docs/agents/task-decomposition.md": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+    "docs/agents/frontend-control-audit.md": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+    "docs/agents/ui-task-templates.md": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+    "docs/agents/issue-tracker.md": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+    ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md": "704a6ad82679705707f7dad9b72d95e90dd19f6337cb7915b1dbaa71a1032528",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-DISPATCH.md": "33148a511e742bb1c9d72baf22078a09076487baa6d0bc979ce7e9bebb1fe559",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-CANDIDATE3-DISPATCH.md": "9140df9e788b194a32e04f23be5a94c1b4ec0b84100dac4f28635e150e9a9d66",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-ACCEPTANCE-2.md": "677bf6ebd46134aef21b4dd9a9f7df504f1d706f9771ee5099c74dfc0200a231",
+    ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/ROOT-METRICS-CANDIDATE2-CHECKPOINT.md": "f529ea3d9c6aa55de274c7cff3f44ff0c5659ee621647859cf453824331686e2",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx": "e8a618ab4ff4fe85b6e2400ed30963dd6a764c75b211a4e5debb3d2292c55e32",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/vitest.config.mjs": "b41542c820397ba76c684aa0a21bf4be66fcd7174e16e9b141043d5b838b0ac2",
+    "app/components/homepage-v25/home-surface.css": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg": "9e44de3e8c22de4d22ee3029f7ea1be21b966e1aa37968866a45eb237ecd2397",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg": "cbb24603defed540ebc49b5234639a264246f105029f911d8d2b6fa8328e2315",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1280.svg": "20349cc2f74c60db6a7bc5aa93212fdddd26f61194927fde43acb735461f8369",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading.svg": "672a83549388f28ec5a53c77f78e676347636a652bccdc1cff85f658c2fcd6b2",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg": "b6e2677a96a661bb174fb3af0cbcda63350b8f8345a4c5cb8cb9fa45cbab3efe",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg": "51b6bc493b2a67b198ad88a982de578ac3bdb4230e43c02176b486256151fa82",
+    ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-pending-color-actual-390.jpg": "d9998e3279c17c80d8ce53d7c008a441d144114cde73ff2f8ec64172e6eb89d0",
+    ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-pending-color-390.txt": "3edc8777dbeabe04fe96d10ab2c769ed8ea3fec2f915e569e4eaff6f52c4b129"
+  }
+}

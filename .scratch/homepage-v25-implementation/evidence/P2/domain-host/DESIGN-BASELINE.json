@@ -1,0 +1,24 @@
+{
+  "stage": "design-only-awaiting-root-approval",
+  "recordedAt": "2026-10-23T03:08:32.542828+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "implementationWritten": false,
+  "testsRun": false,
+  "files": {
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "308b5ff8f0f4caa41e121c845e8cda9ed0af8a9ca8629a3e9c80cfa96c62f515",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/lib/reviews/homepage-v25-state.test.ts": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/components/homepage-v25/metric-cards.tsx": "ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035",
+    "app/components/homepage-v25/metric-cards.css": "d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c",
+    "app/components/homepage-v25/metric-cards.test.tsx": "d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d",
+    "app/components/homepage-v25/history-stats-cards.tsx": "24f6cd248f57e918c51bf81da45d99618f47a6e9d9e908cd9f5258cdf4d1498c",
+    "app/components/homepage-v25/history-stats-cards.css": "2aa7ab4edad05a0aa0c76903577c8fa7ef30152d7280c4264b193f94c3d18842",
+    "app/components/homepage-v25/history-stats-cards.test.tsx": "f2bf240a36bd0b050515c9b1abd1420361308e8f9655f5092f5154681d711348",
+    ".scratch/homepage-v25-implementation/evidence/P2/domain-host/ROOT-DISPATCH.md": "3b9f848c3ce0d593ad39eeeb8da6eebf1b47a6e40c3ed7582e9a01be839668c2",
+    ".scratch/homepage-v25-implementation/evidence/P2/domain-host/INTERFACE-AND-ATOMIC-COMMIT-DESIGN.md": "f84cbf3e5483ae03af73dbe1cee6688cb311dc16ea102b3f2423ef180f383e43"
+  }
+}

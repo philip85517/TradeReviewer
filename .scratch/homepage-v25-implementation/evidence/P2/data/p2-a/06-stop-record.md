@@ -1,0 +1,1 @@
+The invalid first probe was stopped through its own exec session with Ctrl-C; exit 130. The 180s Vitest test timeout cannot interrupt synchronous canonical work, so it was not a wall-time bound. The second probe uses an independent parent-process watchdog and strictly increasing execution timestamps. No performance or correctness claim is drawn from the first run.

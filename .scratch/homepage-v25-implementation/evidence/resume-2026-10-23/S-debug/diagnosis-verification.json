@@ -1,0 +1,17 @@
+{
+  "hashesUnchanged": true,
+  "reportExists": true,
+  "includesPhase1": true,
+  "includesPhase2": true,
+  "includesPhase3": true,
+  "originalExit": 1,
+  "diagnosticArtifacts": [
+    "ROOT-CAUSE.md",
+    "observations.json",
+    "original-six.stderr.txt",
+    "original-six.stdout.txt",
+    "probe.mjs",
+    "reference-contact-sheet.png",
+    "render-references.mjs"
+  ]
+}

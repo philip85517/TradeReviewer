@@ -1,0 +1,2 @@
+{"seq":1,"pid":50558,"elapsedMs":1,"phase":"observer-ready","limits":{"durationMs":60000,"requests":4,"events":128,"bytes":65536,"descriptors":64},"routes":["/api/storage/reviews","/api/storage/review-summaries"],"discovery":"natural-exact-fingerprint","bodies":"never-probed"}
+{"seq":2,"phase":"observer-stop","pid":50558,"elapsedMs":60005,"reason":"duration","tailTruncated":true,"requests":0,"streams":0,"regularBytes":278,"restoration":{"restored":6,"skipped":0,"failed":0,"ownedRemaining":0}}

@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:43908) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/period-selector.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx [ app/components/homepage-v25/period-selector.test.tsx ]
+Error: Failed to resolve import "./period-selector" from "app/components/homepage-v25/period-selector.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/period-selector.test.tsx:7:57
+  3  |  import userEvent from "@testing-library/user-event";
+  4  |  import { afterEach, describe, expect, it, vi } from "vitest";
+  5  |  import { PeriodSelector } from "./period-selector";
+     |                                  ^
+  6  |  var _jsxFileName = "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/period-selector.test...
+  7  |  import { jsxDEV as _jsxDEV, Fragment as _Fragment } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:30486:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:30483:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:27725:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:27788:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:27756:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:30271:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:24532:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  05:42:40
+   Duration  5.34s (transform 62ms, setup 749ms, import 0ms, tests 0ms, environment 2.99s)
+

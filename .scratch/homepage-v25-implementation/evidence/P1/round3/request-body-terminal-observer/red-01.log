@@ -1,0 +1,266 @@
+✖ inert import and one install never change Request or extend hard bounds (4.126896ms)
+✖ natural discovery captures clean bridge identity with no extra stream consumption (1.025968ms)
+✖ only exact two PUT routes allocate identities; static GET cannot exhaust the window (1.115264ms)
+✖ normal-drain: before/after same N and S retain terminal cause and stop at natural target throw (0.716764ms)
+✖ unread-destroy: before/after same N and S retain terminal cause and stop at natural target throw (0.21082ms)
+✖ request entry leaves lazy getters untouched and natural Request results retain identity (0.246345ms)
+✖ each hard budget restores immediately with one explicit bounded stop marker (0.552996ms)
+✖ real wall timer expires even with only static GET requests (0.39543ms)
+✖ later descriptors survive; stale wrapper delegates; failed sink cannot change natural dispatch (0.43739ms)
+✖ source drift fails closed and custom stack formatter is never invoked (1.024456ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 348.612941
+
+✖ failing tests:
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:52:1
+✖ inert import and one install never change Request or extend hard bounds (4.126896ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:53:3)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:68:1
+✖ natural discovery captures clean bridge identity with no extra stream consumption (1.025968ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:69:3)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:99:1
+✖ only exact two PUT routes allocate identities; static GET cannot exhaust the window (1.115264ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:100:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:115:3
+✖ normal-drain: before/after same N and S retain terminal cause and stop at natural target throw (0.716764ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:116:22)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:115:3
+✖ unread-destroy: before/after same N and S retain terminal cause and stop at natural target throw (0.21082ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:116:22)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:147:1
+✖ request entry leaves lazy getters untouched and natural Request results retain identity (0.246345ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:148:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:163:1
+✖ each hard budget restores immediately with one explicit bounded stop marker (0.552996ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:169:22)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:192:1
+✖ real wall timer expires even with only static GET requests (0.39543ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:194:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:201:1
+✖ later descriptors survive; stale wrapper delegates; failed sink cannot change natural dispatch (0.43739ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:204:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:218:1
+✖ source drift fails closed and custom stack formatter is never invoked (1.024456ms)
+  AssertionError [ERR_ASSERTION]: RED: terminal observer has not been implemented
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at implementation (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:16:10)
+      at install (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:219:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,34 @@
+{
+  "app/lib/replay/position-ledger.ts": {
+    "sha256": "37a121bf069e6b726540a6fce99d8d7f499b8c5b9b0139a4ab74562d4f05b270",
+    "bytes": 39229
+  },
+  "app/lib/replay/position-ledger.test.ts": {
+    "sha256": "5906258436d922a4bd0d507ef4cd450e04a460fa43caaeda379b58ef7d3166c6",
+    "bytes": 54827
+  },
+  "app/lib/reviews/homepage-v25-performance.ts": {
+    "sha256": "f4091fb3e442cda6e04d8cd3254855bb07adc3a7dbc21c0543ddd3dc70b96889",
+    "bytes": 109950
+  },
+  "app/lib/reviews/homepage-v25-performance.test.ts": {
+    "sha256": "58e2760efce1c774c50465c87a1624bf65a9cce5665a988152dd2b16e47d4749",
+    "bytes": 119296
+  },
+  "app/lib/reviews/homepage-v25-series.ts": {
+    "sha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "bytes": 3194
+  },
+  "app/lib/reviews/homepage-v25-series.test.ts": {
+    "sha256": "49b799ab415c20898d71c1d29a426ba2d10ff0052ec3defa6f329c224f5474ff",
+    "bytes": 19488
+  },
+  "app/lib/market/calendar.ts": {
+    "sha256": "69546efe2af049a58c2f9c9f3877f38b3feb040172610576dc0d0945f46056bc",
+    "bytes": 1219
+  },
+  "app/lib/market/sync-range.ts": {
+    "sha256": "5ffd1557d399a32c5dab69ad6404df570e62b81ea55ad6a9b6d26cda9d77b34b",
+    "bytes": 7185
+  }
+}

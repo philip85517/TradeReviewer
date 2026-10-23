@@ -1,0 +1,145 @@
+{
+  "frozenAt": "2026-10-22T21:58:18.541Z",
+  "status": "implementation-ready; root independent acceptance pending; P1 formally 2/3 FAIL",
+  "sources": [
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "bytes": 279287,
+      "sha256": "410eed339bb9b6915d2b13763731ae3ca3065c7b000cf9eab4e506439973916a"
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "bytes": 255674,
+      "sha256": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "bytes": 21329,
+      "sha256": "21c8c64874873b37c6a6f28e8f13152dd4219d7dc3135b8ddc881ff09bd4f42d"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "bytes": 27929,
+      "sha256": "308b5ff8f0f4caa41e121c845e8cda9ed0af8a9ca8629a3e9c80cfa96c62f515"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/ROOT-WORKSPACE-FIX-DISPATCH.md",
+      "bytes": 3046,
+      "sha256": "8868b3a38c1bafd9563d7775698c0b43dc68c63e78d63a5dcb0cdf3acbdc1dcf"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-diagnostic/REPORT.md",
+      "bytes": 22477,
+      "sha256": "9e0842ffbf4e9a8147024fea7c0daafa14b586cf774725b637dac96a71c41ced"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-diagnostic/static-inputs.json",
+      "bytes": 10145,
+      "sha256": "700fbb23a6155311c21925de5ef825ab94318b59d8a0bea7c365a4c0d51b8809"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/REPORT.md",
+      "bytes": 14068,
+      "sha256": "4560c1661b6034036ed49c6cfb177aad2f2179d4d9831e4b0764cd1677854f7b"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/check-causal-finish.log",
+      "bytes": 16093,
+      "sha256": "83c32ddaf3bf60ca709f4ef6f606684c949bd3dfdfd99d09d594226d2e34b1d4"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/check-causal.log",
+      "bytes": 16015,
+      "sha256": "0ed1c6cc4a6771c9c739814a34848c5b4c8f10b29f16e5844bd016e976d07d11"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/check-metadata-refresh-import.log",
+      "bytes": 25845,
+      "sha256": "149728bf02a3f1c097b6340204dd2a78dcb9af9f692d65e2af0dde5f7e47a16e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/check-metadata-terminal.log",
+      "bytes": 8961,
+      "sha256": "5578c622189b0f0b2e671a2e5080b65e24fd641656cb140c51a95ce36f8c369e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/commands.json",
+      "bytes": 4439,
+      "sha256": "05d0b0cf588ba6261b79dcb53c7fa7b9a1f57032689f790e3606150e5c1a2c17"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/core-pending-check.log",
+      "bytes": 444,
+      "sha256": "77c9f98e79f3760d71a8b6949dbdc9c262e9da63009eaf19b923829fec2b727a"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-eslint.log",
+      "bytes": 3362,
+      "sha256": "19a8f97b7c52c88977a61ba7bacc3e62aaee0cd71339a97d82ce1e86da5d5058"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-host.log",
+      "bytes": 430,
+      "sha256": "c8273301dc405553914908b2c97313cdddc00ccbd9fd7a700a10928bbeffda37"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-late-refresh.log",
+      "bytes": 444,
+      "sha256": "8517b04d79a875c5b5ba7efd4f45423f9dcc83e3e1bfe8d68347fb0a6d6e5578"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-workspace-remaining.log",
+      "bytes": 446,
+      "sha256": "185cf2d930d044a70244e0bfe1dab4206e48a331caae30da51f75ee525dd3c16"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/final-workspace-timeout.log",
+      "bytes": 1336,
+      "sha256": "01b1b279c9bc7af421425086661bd8315ad40eba9e01a390eead662a6c94f9a5"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-core.log",
+      "bytes": 1370,
+      "sha256": "c6e8ec8e1cefb9010a084910f3b3979c01597100de042a5cca17e76a77139275"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-host.log",
+      "bytes": 430,
+      "sha256": "fd49fe59351956ebadacba2f90b7ded9d2edc108195da04eab0052b5948a50c6"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-targeted.log",
+      "bytes": 11142,
+      "sha256": "5e0b5a9822f8142aea5254a281e0b5b106a9da1b8b320193ec386bce8f919352"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-workspace-affected.log",
+      "bytes": 14825,
+      "sha256": "6282bf1c3b56394df67a055eca2b49d1993e9cfd13f18d1184e113a2f8112fa5"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/green-workspace-final.log",
+      "bytes": 446,
+      "sha256": "11d9002ef5ea25dc580d54bb2119b5b6b3ae3a9f77f2d68e3fd610ec48f3d90a"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/red-existing.log",
+      "bytes": 31450,
+      "sha256": "b691bcdb80a52b09bb3d90cd3e0231cd7a273f7dbf1c1fe7697397e254daa8c5"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/red-late-workspace.log",
+      "bytes": 15948,
+      "sha256": "af4831b404b7d202da80e6e64f93be804c2ee8ee152aefad7fffde7cc08025d3"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-fix/red-late.log",
+      "bytes": 18029,
+      "sha256": "7c837a4a1a4b1d48331902d899419a1f087dd23f46fb90f71d132adc0c509c6a"
+    }
+  ]
+}

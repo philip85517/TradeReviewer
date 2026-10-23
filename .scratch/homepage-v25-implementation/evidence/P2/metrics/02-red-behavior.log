@@ -1,0 +1,491 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:52068) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/metric-cards.test.tsx (19 tests | 19 failed) 278ms
+     × M01–04 reads the three period fields and the separate current market value in visual order 165ms
+     × M01–04 期间净盈亏 opens its own exact readout and returns focus on close 11ms
+     × M01–04 期间已实现 opens its own exact readout and returns focus on close 7ms
+     × M01–04 期间浮盈变动 opens its own exact readout and returns focus on close 7ms
+     × M01–04 当前持仓市值 opens its own exact readout and returns focus on close 7ms
+     × M05 tabs in order and opens with Enter/Space, then Escape restores the exact trigger 19ms
+     × M06 outside click closes and restores the opener; clicking inside preserves the readout 20ms
+     × M07 pending preserves the entire committed bundle and opening details cannot request or replace data 4ms
+     × M08 first load shows four loading placeholders without invented zeroes and still explains each card 2ms
+     × M09 empty has four dashes and read-only reasons without next-step actions 2ms
+     × M09 missing net never falls back to an earlier point or suppresses independently available realized/current values 5ms
+     × M09 future period values remain unknown while the independent current snapshot stays available 5ms
+     × M10 update failure keeps old values and context in the reason action 3ms
+     × M10 initial failure offers reasons and never substitutes zero 1ms
+     × M11 distinguishes positive, negative, true zero and missing values 2ms
+     × M12 market detail reads exact current unrealized, coverage, original amounts and supplied FX source 4ms
+     × M13/M18 atomically replaces period values from frozen input while current remains independent and old detail closes 4ms
+     × M12 refuses to relabel a mismatched currency while retaining the true source amount and currency in details 5ms
+     × M14 long exact amounts and reasons stay available in details without losing precision 3ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 reads the three period fields and the separate current market value in visual order
+TestingLibraryElementError: Unable to find an accessible element with the role "heading"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:43:19
+     41|   it("M01–04 reads the three period fields and the separate current ma…
+     42|     render(<MetricCards series={bundle()} reportCurrency="CNY" status=…
+     43|     expect(screen.getAllByRole("heading", { level: 3 }).map(node => no…
+       |                   ^
+     44|       "期间净盈亏(CNY)", "期间已实现(CNY)", "期间浮盈变动(CNY)", "当前持仓市值(CNY)",
+     45|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 期间净盈亏 opens its own exact readout and returns focus on close
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间净盈亏，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:57:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 期间已实现 opens its own exact readout and returns focus on close
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间已实现，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:57:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 期间浮盈变动 opens its own exact readout and returns focus on close
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间浮盈变动，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:57:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 当前持仓市值 opens its own exact readout and returns focus on close
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "当前持仓市值，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:57:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M05 tabs in order and opens with Enter/Space, then Escape restores the exact trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间净盈亏，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:71:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M06 outside click closes and restores the opener; clicking inside preserves the readout
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间浮盈变动，口径详情"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "外部操作":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m外部操作[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:82:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M07 pending preserves the entire committed bundle and opening details cannot request or replace data
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:92:19
+     90|     const user = userEvent.setup(); const data = frozen(bundle());
+     91|     render(<MetricCards series={data} reportCurrency="CNY" status={{ k…
+     92|     expect(screen.getByRole("status")).toHaveTextContent("正在更新，继续显示原期间…
+       |                   ^
+     93|     expect(value("期间净盈亏")).toHaveTextContent("+1.84 万");
+     94|     expect(value("当前持仓市值")).toHaveTextContent("26.01 万");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M08 first load shows four loading placeholders without invented zeroes and still explains each card
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-metric-skeleton"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:103:19
+    101|     const user = userEvent.setup();
+    102|     render(<MetricCards series={null} reportCurrency="CNY" status={{ k…
+    103|     expect(screen.getAllByTestId("hp-metric-skeleton")).toHaveLength(4…
+       |                   ^
+    104|     expect(screen.queryByText(/^0(?:\.00)?$/)).not.toBeInTheDocument();
+    105|     await user.click(trigger("期间已实现"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M09 empty has four dashes and read-only reasons without next-step actions
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-metric-value"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:113:19
+    111|     const user = userEvent.setup();
+    112|     render(<MetricCards series={null} reportCurrency="CNY" status={{ k…
+    113|     expect(screen.getAllByTestId("hp-metric-value").every(node => node…
+       |                   ^
+    114|     await user.click(trigger("期间净盈亏"));
+    115|     expect(screen.getByRole("dialog")).toHaveTextContent("当前范围没有可计算指标"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M09 missing net never falls back to an earlier point or suppresses independently available realized/current values
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "期间净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/metric-cards.test.tsx:35:39
+     33| }
+     34| const ready = { kind: "ready" } as const;
+     35| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+ ❯ value app/components/homepage-v25/metric-cards.test.tsx:36:40
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:124:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M09 future period values remain unknown while the independent current snapshot stays available
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "期间净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/metric-cards.test.tsx:35:39
+     33| }
+     34| const ready = { kind: "ready" } as const;
+     35| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+ ❯ value app/components/homepage-v25/metric-cards.test.tsx:36:40
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:133:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M10 update failure keeps old values and context in the reason action
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "期间净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/metric-cards.test.tsx:35:39
+     33| }
+     34| const ready = { kind: "ready" } as const;
+     35| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+ ❯ value app/components/homepage-v25/metric-cards.test.tsx:36:40
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:140:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M10 initial failure offers reasons and never substitutes zero
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-metric-value"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:150:19
+    148|     const user = userEvent.setup();
+    149|     render(<MetricCards series={null} reportCurrency="CNY" status={{ k…
+    150|     expect(screen.getAllByTestId("hp-metric-value").every(node => node…
+       |                   ^
+    151|     await user.click(trigger("当前持仓市值", "查看原因")); expect(screen.getByRo…
+    152|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M11 distinguishes positive, negative, true zero and missing values
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "期间净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/metric-cards.test.tsx:35:39
+     33| }
+     34| const ready = { kind: "ready" } as const;
+     35| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+ ❯ value app/components/homepage-v25/metric-cards.test.tsx:36:40
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:157:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M12 market detail reads exact current unrealized, coverage, original amounts and supplied FX source
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "当前持仓市值，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:168:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M13/M18 atomically replaces period values from frozen input while current remains independent and old detail closes
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间净盈亏，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:177:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M12 refuses to relabel a mismatched currency while retaining the true source amount and currency in details
+TestingLibraryElementError: Unable to find an accessible element with the role "article" and name "期间净盈亏"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ card app/components/homepage-v25/metric-cards.test.tsx:35:39
+     33| }
+     34| const ready = { kind: "ready" } as const;
+     35| const card = (name: string) => screen.getByRole("article", { name });
+       |                                       ^
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+ ❯ value app/components/homepage-v25/metric-cards.test.tsx:36:40
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:193:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/19]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M14 long exact amounts and reasons stay available in details without losing precision
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "期间净盈亏，口径详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ trigger app/components/homepage-v25/metric-cards.test.tsx:37:59
+     35| const card = (name: string) => screen.getByRole("article", { name });
+     36| const value = (name: string) => within(card(name)).getByTestId("hp-met…
+     37| const trigger = (name: string, action = "口径详情") => screen.getByRole("b…
+       |                                                           ^
+     38| afterEach(cleanup);
+     39|
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:208:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/19]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  19 failed (19)
+   Start at  07:07:21
+   Duration  2.25s (transform 75ms, setup 198ms, import 234ms, tests 278ms, environment 1.07s)
+

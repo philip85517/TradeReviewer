@@ -1,0 +1,197 @@
+{
+  "capturedAtUTC": "2026-10-22T16:22:22.536870+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "method": "static source read; no service/API/database operations",
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+      "lines": 31
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+      "lines": 171
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+      "lines": 100
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+      "lines": 228
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+      "lines": 199
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "sha256": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+      "lines": 44
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "lines": 668
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+      "lines": 1138
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "sha256": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "lines": 134
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/PLAN.md",
+      "sha256": "fd11e695e63bd53a627b6a885e2d791b801c4de569d4526cfa412cc56b401198",
+      "lines": 46
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "sha256": "ab6b2251a1bfc4d8b74931e69a288691945d8d5a65e1d8dd2de01426e71bf0cf",
+      "lines": 87
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/CONTROL-STATE-COVERAGE.md",
+      "sha256": "e448e6ef3e09c8d4ff223a12c6ed5682ccf6accd809390f73de6fc5cb22ef51c",
+      "lines": 110
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/INTERFACES.md",
+      "sha256": "2756d6d4d45b1af504c696bd02fa1999e6b879ed968ab702c70d1b3a42f2b3e0",
+      "lines": 9
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/P1-HOLDINGS-JOURNEY.md",
+      "sha256": "9f9174dbd2f976d255596092acc017f0a59518e0130d09d42a29a90f9e51379a",
+      "lines": 38
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "a0285648e5874a2678763083fbb07163782fdd4e88345e74ab98c280d1f35029",
+      "lines": 258
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "81038783d8d2f8b7c5c680f6fd6179ebfceba6f960147cdda66076d474d99345",
+      "lines": 304
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "608f67cf29284bad6c252ba4843b2bc20fe67e9ef43583247d88e8fdc729e74b",
+      "lines": 6437
+    },
+    {
+      "path": "app/components/dashboard/review-dashboard.tsx",
+      "sha256": "c87940a65ca303a399e785c6df4242a8391fa1934d5628b7f0dcfecfbb276fa2",
+      "lines": 1376
+    },
+    {
+      "path": "app/components/dashboard/room-holdings.tsx",
+      "sha256": "12bcccfda28953c12f410aec3976a63e0c6bd3a126afbeeb7415142330a0487f",
+      "lines": 456
+    },
+    {
+      "path": "app/components/library/library-browse-state.ts",
+      "sha256": "bff0f833131d7ac7200be64ca47c9ef58f1698da661912d563bc6e1a873f2047",
+      "lines": 603
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "sha256": "e8a1b14415cf2fe1f459ec61e1286b1fdf5fff0e38e28c6f51bf240f380eacc4",
+      "lines": 1591
+    },
+    {
+      "path": "app/lib/reviews/trading-room-holdings.ts",
+      "sha256": "390f8332e106d1659be551adeea1b8aa3dd9e8cf48dafdc76fac7f506d747f96",
+      "lines": 777
+    },
+    {
+      "path": "app/lib/reviews/trading-room-portfolio.ts",
+      "sha256": "1c3654e1a9678495b91aacfbce9697bb02573d7106e427f7ffa76e6191d160a9",
+      "lines": 73
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.ts",
+      "sha256": "b5da3c35cb48513b052310eb2913ec4e4ede4e066ddf549ce50064aac49ea542",
+      "lines": 164
+    },
+    {
+      "path": "app/lib/trades/types.ts",
+      "sha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "lines": 216
+    },
+    {
+      "path": "app/page.tsx",
+      "sha256": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+      "lines": 38
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha256": "7b5c2b2c898f35cb725e13a6ce0b173217ecc4424d030a5570efb52b71216c3e",
+      "lines": 67
+    },
+    {
+      "path": "next.config.ts",
+      "sha256": "614bce25b089c3f19b1e17a6346c74b858034040154c6621e7d35303004767cc",
+      "lines": 7
+    }
+  ],
+  "metadataFollowup": {
+    "capturedAtUTC": "2026-10-22T16:29:06.847957+00:00",
+    "sources": [
+      {
+        "path": "app/lib/instruments/providers/sec-company-tickers.ts",
+        "sha256": "a7b02023938859735e393505b00c28f3a68e4b5c8fc28d68887a941829de173e",
+        "lines": 181
+      },
+      {
+        "path": "app/lib/instruments/providers/nasdaq-directory.ts",
+        "sha256": "60c3391e4e3283a948e26be06637883cbbcd2cedd8c6fc71efaca10bc938fd63",
+        "lines": 312
+      },
+      {
+        "path": "app/lib/instruments/providers/metadata-router.ts",
+        "sha256": "77cc7a9264007abc8d502fd1ee46410a4d449dbb3c88a672c21f4571a48be8c0",
+        "lines": 290
+      },
+      {
+        "path": "app/lib/reviews/localized-metadata-hydration.ts",
+        "sha256": "983e483aa1aa2c9984ceb62c0eabf53678f3901d738e5cbae8828394b8bb934a",
+        "lines": 214
+      },
+      {
+        "path": "app/api/storage/instruments/metadata/route.ts",
+        "sha256": "1e71e08598bfd30708565372204bf5189e48af518694633b341ec64da923e5b7",
+        "lines": 90
+      },
+      {
+        "path": "app/lib/storage/sqlite-contracts.ts",
+        "sha256": "bba026e9394f958e30f31d3e28aa2211ea435a84446db547d1eaf0a32edd4635",
+        "lines": 86
+      },
+      {
+        "path": "app/lib/storage/sqlite-repositories.ts",
+        "sha256": "f2d96a1794477ce9484514ab2759b30f97a0fe32a15f5934ce91b96f8b4a570f",
+        "lines": 226
+      },
+      {
+        "path": "app/lib/storage/sqlite-store.ts",
+        "sha256": "87efb3da76e6a795bafb4b442f5d6fcf12d55304cd45fe8ca551f2ad5e128008",
+        "lines": 2159
+      },
+      {
+        "path": "db/sqlite.ts",
+        "sha256": "20b1b5fcf117e400914bf4fa3b56e5df3f45919b17489cc94228530f04d9d7dc",
+        "lines": 127
+      }
+    ]
+  }
+}

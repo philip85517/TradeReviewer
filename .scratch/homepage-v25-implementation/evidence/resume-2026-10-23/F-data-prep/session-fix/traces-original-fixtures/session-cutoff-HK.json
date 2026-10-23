@@ -1,0 +1,117 @@
+{
+  "scenario": {
+    "market": "HK",
+    "currency": "HKD",
+    "asOf": "2026-10-22T08:30:00.000Z",
+    "expectedDate": "2026-10-22",
+    "expectedPrice": "999",
+    "scopeMarket": "hk"
+  },
+  "input": {
+    "fill": {
+      "id": "known-buy",
+      "accountId": "synthetic",
+      "accountLabel": "synthetic",
+      "instrument": {
+        "id": "HK:CUTOFF",
+        "symbol": "CUTOFF",
+        "name": "Synthetic cutoff probe",
+        "market": "HK",
+        "currency": "HKD"
+      },
+      "side": "buy",
+      "executedAt": "2026-10-20T02:00:00.000Z",
+      "quantity": "1",
+      "price": "100",
+      "fee": "2",
+      "source": {
+        "platform": "futu",
+        "row": 1,
+        "tradeNature": "live"
+      }
+    },
+    "candles": [
+      {
+        "instrumentId": "HK:CUTOFF",
+        "tradingDate": "2026-10-20",
+        "open": "100",
+        "high": "100",
+        "low": "100",
+        "close": "100",
+        "volume": "1",
+        "currency": "HKD",
+        "provider": "tencent",
+        "providerSymbol": "CUTOFF",
+        "adjustmentMode": "raw",
+        "fetchedAt": "2026-10-20T08:10:00.000Z"
+      },
+      {
+        "instrumentId": "HK:CUTOFF",
+        "tradingDate": "2026-10-21",
+        "open": "110",
+        "high": "110",
+        "low": "110",
+        "close": "110",
+        "volume": "1",
+        "currency": "HKD",
+        "provider": "tencent",
+        "providerSymbol": "CUTOFF",
+        "adjustmentMode": "raw",
+        "fetchedAt": "2026-10-21T08:10:00.000Z"
+      },
+      {
+        "instrumentId": "HK:CUTOFF",
+        "tradingDate": "2026-10-22",
+        "open": "999",
+        "high": "999",
+        "low": "999",
+        "close": "999",
+        "volume": "1",
+        "currency": "HKD",
+        "provider": "tencent",
+        "providerSymbol": "CUTOFF",
+        "adjustmentMode": "raw",
+        "fetchedAt": "2026-10-22T08:10:00.000Z"
+      }
+    ],
+    "asOf": "2026-10-22T08:30:00.000Z"
+  },
+  "completedSession": "2026-10-22",
+  "chartKnowledgeAt": [
+    {
+      "date": "2026-10-20",
+      "knowledgeAt": "2026-10-20T08:10:00.000Z"
+    },
+    {
+      "date": "2026-10-21",
+      "knowledgeAt": "2026-10-21T08:10:00.000Z"
+    },
+    {
+      "date": "2026-10-22",
+      "knowledgeAt": "2026-10-22T08:10:00.000Z"
+    }
+  ],
+  "current": {
+    "marketValue": "999",
+    "unrealized": "897",
+    "quote": {
+      "date": "2026-10-22",
+      "price": "999",
+      "currency": "HKD",
+      "source": "tencent"
+    }
+  },
+  "p1": {
+    "marketValue": "999",
+    "unrealized": "897",
+    "quote": {
+      "price": "999",
+      "quoteDate": "2026-10-22",
+      "currency": "HKD",
+      "provider": "tencent",
+      "fetchedAt": "2026-10-22T08:10:00.000Z",
+      "freshness": "current"
+    },
+    "financialEvidence": "行情 2026-10-22 · tencent · 原始日线；报告币种 HKD；汇率 未提供，同币种无需换算"
+  }
+}

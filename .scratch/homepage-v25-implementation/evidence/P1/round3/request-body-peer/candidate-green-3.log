@@ -1,0 +1,18 @@
+✔ capture is passive until the application naturally reads the real srvx body (11.092957ms)
+✔ real srvx text consumption keeps its result and records the same request ID (11.297788ms)
+✔ node method wrappers preserve receiver arguments return value and exact thrown object (7.79609ms)
+✔ srvx wrappers return the original promise and rethrow the original getter error (2.186018ms)
+✔ natural Web stream reader calls are observed without an extra reader (17.798667ms)
+✔ sink failure cannot replace an original request handler exception (0.862604ms)
+✔ unknown paths are redacted and request IDs remain distinct (1.740995ms)
+✔ real IncomingMessage and inherited Server.emit remain passive without listening (1.952668ms)
+✔ trace and request budgets stop recording without reading or blocking dispatch (0.8548ms)
+✔ stack formatter failure and a later third party patch preserve original semantics (0.916872ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 782.442441

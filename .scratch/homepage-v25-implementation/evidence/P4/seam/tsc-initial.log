@@ -1,0 +1,47 @@
+app/components/trade-review-workspace.test.tsx(5536,65): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5538,74): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5539,55): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5542,71): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5557,79): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5558,78): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5562,76): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5604,79): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.test.tsx(5605,73): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/lib/replay/position-ledger.ts(569,33): error TS2367: This comparison appears to be unintentional because the types 'TradeTimePrecision | undefined' and '"day"' have no overlap.
+app/lib/replay/position-ledger.ts(569,84): error TS2367: This comparison appears to be unintentional because the types 'TradeTimePrecision | undefined' and '"month"' have no overlap.

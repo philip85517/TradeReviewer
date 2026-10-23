@@ -1,0 +1,147 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:258) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (47 tests | 8 failed) 174ms
+     × does not reveal a full same-day daily bar at an intraday cutoff 13ms
+     × marks an entirely future period unavailable even when the scoped book is empty 2ms
+     × classifies malformed statement quantity instead of throwing or publishing zero 6ms
+     × does not turn absent original lineage into a complete empty book 3ms
+     × keeps zero remaining unrealized and current exposure known after an unknown-fee close 20ms
+     × does not silently replace a reported fee with a conflicting settlement fee 3ms
+     × retains partial conversion status when only one source currency has a usable rate 7ms
+     × requires real FX even for a zero PnL amount in a different source currency 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not reveal a full same-day daily bar at an intraday cutoff
+AssertionError: expected '999' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "999"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:187:45
+    185|   it("does not reveal a full same-day daily bar at an intraday cutoff"…
+    186|     const result = real([fill("known", "2026-01-15T15:00:00Z")], { asO…
+    187|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    188|   });
+    189|   it("marks an entirely future period unavailable even when the scoped…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > marks an entirely future period unavailable even when the scoped book is empty
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:191:30
+    189|   it("marks an entirely future period unavailable even when the scoped…
+    190|     const result = real([], { period: { start: "2026-02-01", end: "202…
+    191|     expect(result.net.value).toBeNull();
+       |                              ^
+    192|     expect(result.net.reasons).toContain("period-not-started");
+    193|     expect(result.currentMarketValue.value).toBe("0");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > classifies malformed statement quantity instead of throwing or publishing zero
+Error: [DecimalError] Invalid argument: unavailable
+ ❯ parseOther node_modules/decimal.js/decimal.mjs:3622:11
+ ❯ new Decimal node_modules/decimal.js/decimal.mjs:4384:55
+ ❯ buildTradeEpisodes app/lib/trades/episodes.ts:367:16
+
+ ❯ app/lib/trades/library.ts:151:27
+ ❯ buildTradeLibraryEntries app/lib/trades/library.ts:140:6
+ ❯ real app/lib/reviews/homepage-v25-performance.test.ts:33:14
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:196:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not turn absent original lineage into a complete empty book
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:204:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps zero remaining unrealized and current exposure known after an unknown-fee close
+AssertionError: expected [ null, null, '0' ] to deeply equal [ null, '0', '0' ]
+
+- Expected
++ Received
+
+  [
+    null,
+-   "0",
++   null,
+    "0",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:209:108
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not silently replace a reported fee with a conflicting settlement fee
+AssertionError: expected '10' to be null
+
+- Expected:
+null
+
++ Received:
+"10"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:213:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > retains partial conversion status when only one source currency has a usable rate
+AssertionError: expected 'complete' to be 'partial' // Object.is equality
+
+Expected: "partial"
+Received: "complete"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:221:56
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > requires real FX even for a zero PnL amount in a different source currency
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:226:30
+    224|   it("requires real FX even for a zero PnL amount in a different sourc…
+    225|     const result = real([fill("buy", "2026-01-15T15:00:00Z")], { targe…
+    226|     expect(result.net.value).toBeNull();
+       |                              ^
+    227|     expect(result.net.money.originalByCurrency).toEqual({ USD: "0" });
+    228|     expect(result.net.reasons).toContain("fx-missing");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  8 failed | 57 passed (65)
+   Start at  00:35:48
+   Duration  3.98s (transform 421ms, setup 0ms, import 1.49s, tests 752ms, environment 1ms)
+

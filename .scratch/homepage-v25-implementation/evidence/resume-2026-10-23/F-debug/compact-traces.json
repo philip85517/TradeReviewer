@@ -1,0 +1,2534 @@
+{
+  "H1-shanghai": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "110"
+    },
+    "reasons": [
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "first",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H1-daytime-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "first",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H1-exact-utc-midnight": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "110"
+    },
+    "reasons": [
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "first",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H2-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H2-future-execution": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "220"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "220",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "2",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": null,
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "future",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H3-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H3-future-candle": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": null
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": null,
+      "available": false,
+      "coverage": {
+        "total": 1,
+        "available": 0
+      },
+      "reasons": [
+        "quote-missing"
+      ]
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "899"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "899",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H4-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "0",
+      "net": "0",
+      "currentMarketValue": "0"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 0,
+        "available": 0
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "899"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "899",
+        "executions": [
+          {
+            "id": "future",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H4-future-range": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "899",
+      "net": "899",
+      "currentMarketValue": null
+    },
+    "reasons": [
+      "quote-future"
+    ],
+    "currentMetric": {
+      "value": null,
+      "available": false,
+      "coverage": {
+        "total": 1,
+        "available": 0
+      },
+      "reasons": [
+        "quote-missing"
+      ]
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-12-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "899"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "899"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "899",
+        "executions": [
+          {
+            "id": "future",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H5-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H5-unknown-fees": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "unknown-fees"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "unknown-fees"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "unknown-fees"
+          ]
+        },
+        "net": null,
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H5-history-incomplete": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "0"
+    },
+    "reasons": [
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": false,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "history-incomplete"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": false,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "history-incomplete"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "history-incomplete"
+          ]
+        },
+        "net": null,
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H6-known-opening": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "0"
+    },
+    "reasons": [
+      "execution-direction-unavailable",
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "net": null,
+        "executions": [
+          {
+            "id": "sell",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H6-unknown-opening-cost": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "0"
+    },
+    "reasons": [
+      "execution-direction-unavailable",
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "initial-position",
+            "unknown-cost"
+          ]
+        },
+        "net": null,
+        "executions": [
+          {
+            "id": "sell",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H6-unknown-transfer-quantity": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "0"
+    },
+    "reasons": [
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": false,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "ambiguous-event-order",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": false,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "ambiguous-event-order",
+            "unknown-cost"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "position-event"
+          ]
+        },
+        "net": null,
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H7-settlement-currency-mismatch": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "-590",
+      "net": "-590",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "settlement-currency-mismatch"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": false,
+        "accuracy": {
+          "pnl": "unavailable",
+          "reasons": [
+            "settlement-currency-mismatch"
+          ]
+        },
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": null,
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0",
+            "settlement": {
+              "currency": "CNY",
+              "quantity": "1",
+              "grossAmount": "700",
+              "netAmount": "700",
+              "fees": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "H7-reverse-control": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "-110"
+    },
+    "reasons": [
+      "execution-direction-unavailable",
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "-110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "-1",
+        "c": "120",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "20",
+        "net": "28"
+      },
+      {
+        "cursor": null,
+        "q": "-1",
+        "c": "120",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "20",
+        "net": "28"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "short",
+        "net": "9",
+        "executions": [
+          {
+            "id": "reverse:reverse",
+            "qty": "1",
+            "fee": "1"
+          }
+        ]
+      },
+      {
+        "direction": "long",
+        "net": "19",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "reverse:close",
+            "qty": "1",
+            "fee": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "H7-reverse-settlement": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "-110"
+    },
+    "reasons": [
+      "position-coverage-missing",
+      "execution-direction-unavailable",
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "-110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "-1",
+        "c": "120",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "20",
+        "net": "28"
+      },
+      {
+        "cursor": null,
+        "q": "-1",
+        "c": "120",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "20",
+        "net": "28"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "short",
+        "net": "9",
+        "executions": [
+          {
+            "id": "reverse:reverse",
+            "qty": "1",
+            "fee": "1",
+            "settlement": {
+              "currency": "USD",
+              "quantity": "2",
+              "grossAmount": "240",
+              "netAmount": "238",
+              "fees": {
+                "commission": "2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "direction": "long",
+        "net": "19",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "reverse:close",
+            "qty": "1",
+            "fee": "1",
+            "settlement": {
+              "currency": "USD",
+              "quantity": "2",
+              "grossAmount": "240",
+              "netAmount": "238",
+              "fees": {
+                "commission": "2"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "H8-carry-in-fees": {
+    "values": {
+      "periodRealized": "19",
+      "openingUnrealized": "0",
+      "closingUnrealized": "0",
+      "net": "19",
+      "currentMarketValue": "0"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "0",
+        "net": "-2"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "17"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "17"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "17",
+        "executions": [
+          {
+            "id": "old",
+            "qty": "1",
+            "fee": "2"
+          },
+          {
+            "id": "close",
+            "qty": "1",
+            "fee": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "H8-full-period-fees": {
+    "values": {
+      "periodRealized": "17",
+      "openingUnrealized": "0",
+      "closingUnrealized": "0",
+      "net": "17",
+      "currentMarketValue": "0"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2025-12-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "17"
+      },
+      {
+        "cursor": null,
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "17"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "17",
+        "executions": [
+          {
+            "id": "old",
+            "qty": "1",
+            "fee": "2"
+          },
+          {
+            "id": "close",
+            "qty": "1",
+            "fee": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "H8-future-episode-direction": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "-110"
+    },
+    "reasons": [
+      "execution-direction-unavailable",
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "-110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "2",
+        "realized": "0",
+        "net": "-2"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "17"
+      },
+      {
+        "cursor": null,
+        "q": "-1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "3",
+        "realized": "20",
+        "net": "7"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "short",
+        "net": null,
+        "executions": [
+          {
+            "id": "short",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      },
+      {
+        "direction": "long",
+        "net": "17",
+        "executions": [
+          {
+            "id": "old",
+            "qty": "1",
+            "fee": "2"
+          },
+          {
+            "id": "close",
+            "qty": "1",
+            "fee": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "H9-production-key": {
+    "values": {
+      "periodRealized": null,
+      "openingUnrealized": "0",
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": null
+    },
+    "reasons": [
+      "fx-missing"
+    ],
+    "currentMetric": {
+      "value": null,
+      "available": false,
+      "coverage": {
+        "total": 1,
+        "available": 0
+      },
+      "reasons": [
+        "fx-missing"
+      ]
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H9-bare-key-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "70",
+      "net": "70",
+      "currentMarketValue": "770"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "770",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H9-missing-status-bare-key": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "70",
+      "net": "70",
+      "currentMarketValue": "770"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "770",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H9-existing-money-projection": {
+    "existing": {
+      "complete": {
+        "baseCurrency": "CNY",
+        "originalByCurrency": {
+          "USD": "110"
+        },
+        "convertedCny": "770",
+        "converted": "770",
+        "convertedHkd": null,
+        "targetCurrency": "CNY",
+        "conversion": "complete",
+        "fxSnapshotId": "production-fx",
+        "note": "按最新汇率估算为CNY（diagnostic，2026-01-31）"
+      },
+      "missing": {
+        "baseCurrency": "CNY",
+        "originalByCurrency": {
+          "USD": "110"
+        },
+        "convertedCny": null,
+        "converted": null,
+        "convertedHkd": null,
+        "targetCurrency": "CNY",
+        "conversion": "partial",
+        "fxSnapshotId": "production-fx",
+        "note": "汇率快照不完整，无法换算为CNY，按币种显示原币小计"
+      }
+    }
+  },
+  "H10-current-period": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H10-old-period": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "0",
+      "net": "0",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2025-12-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2025-12-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H10-mixed-nature": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "20",
+      "net": "20",
+      "currentMarketValue": "220"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "220",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "2",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      },
+      {
+        "cursor": null,
+        "q": "2",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "simulation",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      },
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H11-first-day-mark": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "20",
+      "closingUnrealized": "30",
+      "net": "10",
+      "currentMarketValue": "130"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "130",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "30"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "30"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "30",
+        "executions": [
+          {
+            "id": "old",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H11-post-end-shanghai": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": null,
+      "closingUnrealized": null,
+      "net": null,
+      "currentMarketValue": "220"
+    },
+    "reasons": [
+      "valuation-quantity-mismatch"
+    ],
+    "currentMetric": {
+      "value": "220",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "2",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      },
+      {
+        "cursor": null,
+        "q": "2",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "20"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "20",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "shanghai-feb1",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H11-date-only-control": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "date-only",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H12-average-vs-fifo": {
+    "values": {
+      "periodRealized": "250",
+      "openingUnrealized": "100",
+      "closingUnrealized": "250",
+      "net": "400",
+      "currentMarketValue": "700"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "700",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "2",
+        "c": "150",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "100"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "2",
+        "c": "200",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "200",
+        "net": "500"
+      },
+      {
+        "cursor": null,
+        "q": "2",
+        "c": "200",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "200",
+        "net": "500"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "500",
+        "executions": [
+          {
+            "id": "old100",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "old200",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "new300",
+            "qty": "1",
+            "fee": "0"
+          },
+          {
+            "id": "close400",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H13-without-asOf-current-period": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "10",
+      "net": "10",
+      "currentMarketValue": "110"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "110",
+      "available": true,
+      "coverage": {
+        "total": 1,
+        "available": 1
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2026-01-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2026-01-31T23:59:59.999Z",
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H13-without-asOf-old-period": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "0",
+      "net": "0",
+      "currentMarketValue": "0"
+    },
+    "reasons": [],
+    "currentMetric": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 0,
+        "available": 0
+      },
+      "reasons": []
+    },
+    "ledger": [
+      {
+        "cursor": "2025-12-01T00:00:00.000Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": "2025-12-31T23:59:59.999Z",
+        "q": "0",
+        "c": "0",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "0"
+      },
+      {
+        "cursor": null,
+        "q": "1",
+        "c": "100",
+        "quantityKnown": true,
+        "costKnown": true,
+        "accuracy": null,
+        "fees": "0",
+        "realized": "0",
+        "net": "10"
+      }
+    ],
+    "episodes": [
+      {
+        "direction": "long",
+        "net": "10",
+        "executions": [
+          {
+            "id": "known",
+            "qty": "1",
+            "fee": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "H14-pure-future-range": {
+    "values": {
+      "periodRealized": "0",
+      "openingUnrealized": "0",
+      "closingUnrealized": "899",
+      "net": "899",
+      "currentMarketValue": null
+    },
+    "reasons": [
+      "quote-future"
+    ],
+    "currentMetric": {
+      "value": null,
+      "available": false,
+      "coverage": {
+        "total": 1,
+        "available": 0
+      },
+      "reasons": [
+        "quote-missing"
+      ]
+    }
+  },
+  "H14-invalid-current-quantity": {
+    "error": "Error: [DecimalError] Invalid argument: null"
+  }
+}

@@ -1,0 +1,91 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > applies a whole desired group only when generation and scope match 8ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > keeps old applied scope and draft on failure, then retries with a new generation 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > distinguishes cancel, identity change, clear attachments and reset dates 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > keeps request numbers monotonic across success, cancel and identity changes 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > round trips only the versioned UI snapshot and recovers malformed input 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > parses explicit navigation without silently broadening invalid accounts or symbols 4ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 state contract > turns a request into manual recovery after fifteen seconds 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores the applied filters after the complete apply/capture/codec chain 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from holdings before persistence 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from period before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from contribution before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from history before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from attachments before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from search before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from returnState before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > removes nested business objects from scope before persistence 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > projects contribution descendants instead of spreading mode objects 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores history period-pnl without changing current period 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores history cumulative-pnl without changing current period 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores history win-rate without changing current period 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores history round-count without changing current period 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > preserves history range selector semantics: 'all' 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > preserves history range selector semantics: 'year' 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > preserves history range selector semantics: 'this-year' 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > preserves history range selector semantics: 'years' 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > keeps current and history contribution paths and local open-only independent 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > restores the exact source trigger, or just its container title if the object disappeared 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects obsolete or incomplete snapshots explicitly instead of silently defaulting their conditions 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects malformed UI values rather than producing a default view: {"history":{"range":{"mode":"years","fromYear":2026,"toYear":2024},"chartMode":"period-pnl"}} 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects malformed UI values rather than producing a default view: {"history":{"range":{"mode":"year","year":2026},"chartMode":"invented"}} 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects malformed UI values rather than producing a default view: {"period":{"preset":"custom","from":"2026-02-31","to":"2026-03-01"}} 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects malformed UI values rather than producing a default view: {"period":{"preset":"all","from":"2026-01-01","to":"2026-02-01"}} 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage v2.5 canonical state and restoration > rejects malformed UI values rather than producing a default view: {"scrollTop":-1} 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > matches semantic scope and set values irrespective of property insertion order 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > makes failure terminal until an explicit retry, even if a same-generation success arrives 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > ignores a cancelled or timed-out token even after the next request begins 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > commits period and history independently in either response order without resetting browse state 3ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > invalidates dependent period/history tokens after global identity commits 2ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > does not accept a global response whose period dependency changed during its load 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage independent request domains > keeps edited filters on close, discards old identity drafts, and preserves dates on clear/reset 2ms
+ × app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > accepts an applied structural subtype without putting attachments into the target URL 10ms
+   → invalid-homepage-ui-state
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > round trips all accounts against a real account catalog without requiring a fake account 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts:  0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: , 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: real-account, 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: ,real-account 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: *,real-account 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: unknown 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects explicit malformed or unknown accounts: real-account,,other 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects invalid symbol identity: NASDAQ:AAPL:stock:extra 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects invalid symbol identity: NASDAQ: 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects invalid symbol identity: :AAPL 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects invalid symbol identity: NASDAQ: AAPL:stock 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > rejects invalid symbol identity: NASDAQ:AAPL:stock%00 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > keeps target URL independent from a conflicting source snapshot 1ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&rangeMode=all&date=2026-02-01 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&rangeMode=date&date=2026-02-31 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&rangeMode=custom&from=2026-03-01&to=2026-02-01 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&date= 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&symbol= 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&queue= 0ms
+ ✓ app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > does not broaden invalid or ambiguous URL input: scope=live&accounts=*&accounts=real-account 0ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 61 passed (62)
+   Start at  00:38:43
+   Duration  3.42s (transform 115ms, setup 536ms, import 95ms, tests 61ms, environment 2.31s)
+
+(node:1718) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > homepage URL target boundary > accepts an applied structural subtype without putting attachments into the target URL
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:81:29
+     79| }
+     80| function required<T>(value: T | null): T {
+     81|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     82|   return value;
+     83| }
+ ❯ serializeHomepageNavigation app/lib/reviews/homepage-v25-state.ts:372:16
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:370:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

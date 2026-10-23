@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:16079) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts (3 tests | 1 failed) 30ms
+     × retains signed short exposure and prorates the remaining open fee 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts > coordinator current metrics supplement > retains signed short exposure and prorates the remaining open fee
+AssertionError: expected null to be '-220' // Object.is equality
+
+- Expected:
+"-220"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts:30:45
+     28|   it("retains signed short exposure and prorates the remaining open fe…
+     29|     const result = project([fill("short", "sell", "3", "120", "3", "20…
+     30|     expect(result.currentMarketValue.value).toBe("-220");
+       |                                             ^
+     31|     expect(result.currentUnrealized.value).toBe("18");
+     32|     expect(result.currentOpenFees.value).toBe("2");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  1 failed | 285 passed (286)
+   Start at  01:25:07
+   Duration  7.17s (transform 999ms, setup 0ms, import 2.01s, tests 808ms, environment 3ms)
+

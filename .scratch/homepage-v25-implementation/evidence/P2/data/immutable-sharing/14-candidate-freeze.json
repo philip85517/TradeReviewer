@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-22T21:05:52.739551+00:00",
+  "model": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 91696,
+      "sha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 87824,
+      "sha256": "23f73d5a0e7c6758de5ac20f264083562ae41a502e4098b7ee6668e52fab70a8"
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 28876,
+      "sha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 43237,
+      "sha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9"
+    }
+  },
+  "originalPrefixesUnchanged": {
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "bytes": 32966,
+      "sha256": "67d6d0c33d741398bfa070f69dca5ec829833452edf14e21d1a792ec804d6aef"
+    }
+  },
+  "ledgerByteUnchanged": true,
+  "formalP2": "0/3; root independent acceptance pending"
+}

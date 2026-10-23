@@ -1,0 +1,102 @@
+{
+  "status": "FROZEN",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "matrix_executions": 3,
+  "final_matrix_exit_code": 0,
+  "p1_formal": "2/3 FAIL remains; no formal acceptance run",
+  "actual_incident_first_consumer": "NOT VERIFIED",
+  "artifacts": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/HYPOTHESIS.md",
+      "bytes": 1485,
+      "sha256": "24d40c4fb6c64e52b4615449a170ce6ce24e4d187552af3e5073a380ed575edb"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/PINNED-NODE-SOURCE-EXCERPTS.txt",
+      "bytes": 9190,
+      "sha256": "f324119efde351842e63528773aa4bd7ef169b9df5b8357016ada31193970065"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/REPORT.md",
+      "bytes": 13876,
+      "sha256": "83bcc9ed84c00303def3a0596bd76373127584ac27797e69df626fd91f9b9c20"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-repro.mjs",
+      "bytes": 4162,
+      "sha256": "cc26fdc016069e8e85b7812346ac4bca30017ebf147c747994bdfbc3d400de46"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-results-02.ndjson",
+      "bytes": 3998,
+      "sha256": "d99c571a795c2dfbe91018dde5c7fba580e0a4b896cf1497d14f33a5c9e7742b"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-results-03.ndjson",
+      "bytes": 4183,
+      "sha256": "3a2f712fd85c9bebac7205309b2fb48b74bb68ebd316061fb7470586355fac2d"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-results.ndjson",
+      "bytes": 874,
+      "sha256": "a978375a12ab3a2ab8a429c8441a355ab13ee422cb5f846224a95dae3c0db9c9"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-stderr-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-code-audit/memory-node-terminal-stderr-03.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "read_only_source_snapshot": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/adapters/node.mjs",
+      "bytes": 27722,
+      "sha256": "4fb7ded812c93f17c0dc09605145f1f7846c97a1c754cec20cd1696235baa52a"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/_chunks/_url.mjs",
+      "bytes": 4558,
+      "sha256": "4ae668931bafa9ce172c8b10408703cc5ac1d4e22c9df617a816da9d5eb811f6"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/vinext/dist/server/request-pipeline.js",
+      "bytes": 17530,
+      "sha256": "d69e2c414f3c8c2beae176e69cdc3717f928841572bdadef77d700b58d1afb36"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/vinext/dist/server/app-rsc-handler.js",
+      "bytes": 12100,
+      "sha256": "80a831b5a014f7cb9f59bd1055590f63fc78048308795a9920e96df746fc9a5d"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js",
+      "bytes": 76115,
+      "sha256": "34218a54f85631ac5e48f34ba4254bb70b74f41f4d012543ff46e5e3209210a8"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/storage/sqlite-http-client.ts",
+      "bytes": 8246,
+      "sha256": "95609e23cf46ec49cd76ef5103e389150e9f32721a7feb11d234204d4f3844d5"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/storage/review-summary-client.ts",
+      "bytes": 2677,
+      "sha256": "7957ba62cf64568008f8912241af798081bd5abc13fdff25f3415e2814d6d92e"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/storage/sqlite-repositories.ts",
+      "bytes": 7326,
+      "sha256": "f2d96a1794477ce9484514ab2759b30f97a0fe32a15f5934ce91b96f8b4a570f"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/trade-review-workspace.tsx",
+      "bytes": 280842,
+      "sha256": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0"
+    }
+  ]
+}

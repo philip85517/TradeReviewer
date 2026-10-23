@@ -1,0 +1,14 @@
+{
+  "atUtc": "2026-10-23T03:38:40.503781+00:00",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    ".scratch/homepage-v25-implementation/evidence/P4/history-stats/candidate2/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "exitCode": 0,
+  "log": "02-green.log"
+}

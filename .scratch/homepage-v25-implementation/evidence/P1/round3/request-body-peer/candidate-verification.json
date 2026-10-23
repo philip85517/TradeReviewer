@@ -1,0 +1,86 @@
+{
+  "capturedAt": "2026-10-22T19:45:36.605Z",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "node": "v26.0.0",
+  "status": "candidate-ready-unactivated",
+  "trueConsumer": "OPEN",
+  "commands": [
+    {
+      "command": "fixed Node --test <peer>/candidate-observer.test.mjs",
+      "exitCode": 0,
+      "log": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-green-3.log",
+      "tests": 10,
+      "pass": 10,
+      "fail": 0
+    },
+    {
+      "command": "fixed Node --check <peer>/candidate-preload.mjs",
+      "exitCode": 0,
+      "execution": "parse only; preload not executed"
+    }
+  ],
+  "exclusions": [
+    "no product/dependency/config modifications",
+    "no service start/stop",
+    "no browser",
+    "no database",
+    "no HTTP/listening port",
+    "preload not executed",
+    "not feature acceptance"
+  ],
+  "files": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-observer.mjs",
+      "sha256": "864628680b8aaaaa0a8628390a31a8526271bce3add330e9f0bd0d8a3f646613"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-observer.test.mjs",
+      "sha256": "28ef74c105afd971e80f26c4092063a2af99a7ae40ddb39ff83f38ee8073bd61"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-preload.mjs",
+      "sha256": "2cc07345628ba3b43439dedcea55d0eccee9625ad58f48f7e2fc0324b1fa3733"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/CANDIDATE.md",
+      "sha256": "50af040526e28ec774d72bea0e661caa508b9d388c43c66c8f50d5a9e377b85e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-red.log",
+      "sha256": "5adaf2d1bde3963655907517401b2eaa33991e1bb500ce79094a28d6ce3b1e49"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-green-1.log",
+      "sha256": "6ad440975ca8a7b9d4a4014a83a8ed8b58fe090a101d6bf66506b11ca402796e"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-green-2.log",
+      "sha256": "d47267c0b2def52038830fe901622d7b4c6623e88cbb501ea1ce246fc0142cbf"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-green-3.log",
+      "sha256": "48da980215f16f7f4f192ad30cb70eea7aaeee413cb59d9db2fde447727da737"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/REPORT.md",
+      "sha256": "23a7a1664b98ffa47b1c6900ac146501fc85683d91979373f6e8af77b5fafd66"
+    },
+    {
+      "path": "node_modules/srvx/dist/adapters/node.mjs",
+      "sha256": "4fb7ded812c93f17c0dc09605145f1f7846c97a1c754cec20cd1696235baa52a"
+    },
+    {
+      "path": "node_modules/vinext/dist/server/app-rsc-handler.js",
+      "sha256": "80a831b5a014f7cb9f59bd1055590f63fc78048308795a9920e96df746fc9a5d"
+    },
+    {
+      "path": "node_modules/vinext/dist/server/request-pipeline.js",
+      "sha256": "d69e2c414f3c8c2beae176e69cdc3717f928841572bdadef77d700b58d1afb36"
+    },
+    {
+      "path": "scripts/start-local.mjs",
+      "sha256": "340fde65b1a6bce854c4b660d9a6dce966833b97ecd3431f81e24ad4d596de5b"
+    }
+  ]
+}

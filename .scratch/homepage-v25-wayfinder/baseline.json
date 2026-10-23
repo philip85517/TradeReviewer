@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-22",
+  "assessment": "static-code-feasibility-and-planning",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "local_master": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "origin_master": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "remote_master": {
+    "sha": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+    "method": "GitHub connector fetch_commit(commit_sha=master)",
+    "url": "https://github.com/philip85517/TradeReviewer/commit/5a94ee3ff76e32993fe2c4791a83b40e877a7344"
+  },
+  "scope_confirmations": [
+    "V2.5 公共规范与首页，含必要交易库接线",
+    "首页先落地共享规范，其他页面后续迁移"
+  ],
+  "design_sources": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/inherited-contract.current.json",
+      "sha256": "957ee997c03a80299d2024616abd77af47d98733b88e50bdfd89f27baed0c585"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+      "sha256": "a53e3b69a307ed5dbe35cb9757ce7194319772edeb38a4bbaa60c22b4890ad38"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "sha256": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa"
+    },
+    {
+      "path": "docs/design-system/reviews/SITE-HOME-V25.json",
+      "sha256": "4d682910f20681c0840af5db0b4d533d370d67941d9098f0c740030f92c8148a"
+    }
+  ],
+  "target_viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "zoom": 1
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "zoom": 1
+    }
+  ],
+  "product_verification": {
+    "build": "NOT VERIFIED",
+    "tests": "NOT VERIFIED",
+    "browser": "NOT VERIFIED",
+    "visual_fidelity": "NOT VERIFIED",
+    "persistence": "NOT VERIFIED",
+    "reason": "Documentation-only static feasibility assessment; node_modules absent; no product or database writes."
+  },
+  "runtime": {
+    "observed_node": "v26.0.0",
+    "dependencies_installed": false
+  },
+  "issue_status": "charted; all child issues open and unassigned"
+}

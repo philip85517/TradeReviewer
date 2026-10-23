@@ -1,0 +1,50 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:14917) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx (4 tests | 2 failed) 67ms
+     × must explain a saved account removed by the fresh return bootstrap 14ms
+     × must pass an untagged same-document back/forward entry through the leave guard 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must explain a saved account removed by the fresh return bootstrap
+AssertionError: expected '' to contain '账户'
+
+- Expected
++ Received
+
+- 账户
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:55:71
+     53|     await act(async () => reply({ requestId: 1, data: "fresh-account-d…
+     54|     rerender({ accounts: [] });
+     55|     expect(result.current.notice ?? result.current.route.error ?? "").…
+       |                                                                       ^
+     56|   });
+     57|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must pass an untagged same-document back/forward entry through the leave guard
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'trades' ]
+
+Number of calls: 0
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:65:19
+     63|     history.replaceState(null, "", "/trades?scope=live&market=all&acco…
+     64|     act(() => window.dispatchEvent(new PopStateEvent("popstate", { sta…
+     65|     expect(guard).toHaveBeenCalledWith("trades");
+       |                   ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  01:16:37
+   Duration  2.91s (transform 350ms, setup 415ms, import 440ms, tests 67ms, environment 1.64s)
+

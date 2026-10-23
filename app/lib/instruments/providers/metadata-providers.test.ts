@@ -431,6 +431,19 @@ describe("portal metadata providers", () => {
 });
 
 describe("official catalog providers", () => {
+  it("keeps the actual SEC exchange and Nasdaq directory Exchange field without inferring from the provider", () => {
+    const resolvedAt = "2026-10-22T00:00:00.000Z";
+    const sec = parseSecCompanyTickers({ fields: ["name", "ticker", "exchange"], data: [["Apple Inc.", "AAPL", "Nasdaq"], ["Berkshire", "BRK-B", "NYSE"], ["Unknown listing", "UNK", "OTC"]] }, resolvedAt);
+    expect(sec.get("AAPL")?.exchange).toEqual({ code: "NASDAQ", source: "sec", resolvedAt });
+    expect(sec.get("BRK-B")?.exchange?.code).toBe("NYSE");
+    expect(sec.get("UNK")?.exchange).toBeUndefined();
+    const other = "ACT Symbol|Security Name|Exchange|Test Issue|ETF\nNYSETEST|Known NYSE|N|N|N\nARCAT|Known ARCA|P|N|Y\nUNKT|Unknown Exchange|X|N|N\nFile Creation Time:20261022";
+    const directory = parseNasdaqDirectories(NASDAQ_LISTED, other, resolvedAt);
+    expect(directory.get("AAPL")?.exchange?.code).toBe("NASDAQ");
+    expect(directory.get("NYSETEST")?.exchange?.code).toBe("NYSE");
+    expect(directory.get("ARCAT")?.exchange?.code).toBe("ARCA");
+    expect(directory.get("UNKT")?.exchange).toBeUndefined();
+  });
   const SEC_COMPANY_TICKERS = {
     fields: ["cik", "name", "ticker", "exchange"],
     data: [

@@ -1,0 +1,316 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:19032) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/holdings-model.test.ts (10 tests | 2 failed) 115ms
+     × keeps partial or future FX unknown and accepts production colon rates from complete timely evidence 25ms
+     × reports US in USD without needing FX for USD, converting other settlement currencies only with evidence 6ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts (10 tests | 1 failed) 93ms
+   × projects attributable canonical fees when it 'covers a cross-period short' 16ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts (10 tests | 2 failed) 74ms
+     × R04 production FX snapshot keys convert current value 13ms
+     × R08 inclusive first-day PnL uses the pre-period mark 4ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts (5 tests | 3 failed) 85ms
+     × assigns the IPO fee across short close and new long inventory 15ms
+     × deduplicates identical raw executions without reducing known market value 8ms
+     × keeps ordinary cross-period fee bridge correct 9ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts (1 test | 1 failed) 54ms
+   × records real library, boundary, canonical and projection interfaces 53ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts (4 tests | 2 failed) 48ms
+     × converts using the production complete FX pair keys 30ms
+     × keeps unknown opening fees unknown without losing a known current quantity 8ms
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts (4 tests | 3 failed) 49ms
+     × does not seed a Shanghai first-day execution into pre-period inventory 33ms
+     × excludes executions after asOf from current inventory as well as from prices 5ms
+     × selects the latest eligible current candle when a later candle also exists 5ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps partial or future FX unknown and accepts production colon rates from complete timely evidence
+AssertionError: expected null to be '1636.25' // Object.is equality
+
+- Expected:
+"1636.25"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:47:97
+     45|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+     46|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+     47|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+       |                                                                                                 ^
+     48|   });
+     49|   it("builds current episodes before same-day and next-day future fill…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reports US in USD without needing FX for USD, converting other settlement currencies only with evidence
+AssertionError: expected null to be '233.75' // Object.is equality
+
+- Expected:
+"233.75"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:99:37
+     97|     const usd = buildHomepageHoldings(entries([us]), { scope: { ...sco…
+     98|     expect(usd.reportCurrency).toBe("USD");
+     99|     expect(usd.rows[0].marketValue).toBe("233.75");
+       |                                     ^
+    100|     const foreign = { ...us, id: "foreign", accountId: "two", instrume…
+    101|     const bothQuotes = { ...usQuote, "US:FOREIGN": { ...quotes["CN-SH:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts > records real library, boundary, canonical and projection interfaces
+AssertionError: expected [ [ null, '400' ], …(4) ] to deeply equal [ [ '400', '700' ], …(4) ]
+
+- Expected
++ Received
+
+  [
+    [
++     null,
+      "400",
+-     "700",
+    ],
+    [
++     null,
+      null,
+-     "110",
+    ],
+    [
+-     "10",
+-     "110",
++     null,
++     null,
+    ],
+    [
+-     "28",
+-     "-110",
++     null,
++     null,
+    ],
+    [
+-     "70",
+-     "770",
++     null,
++     null,
+    ],
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts:33:84
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts > projects attributable canonical fees when it 'covers a cross-period short'
+AssertionError: expected [ '16', '36', '8', '-12', '-110', '2' ] to deeply equal [ '16', '16', '8', '8', '-110', '2' ]
+
+- Expected
++ Received
+
+  [
+    "16",
+-   "16",
+-   "8",
++   "36",
+    "8",
++   "-12",
+    "-110",
+    "2",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts:44:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts > coordinator restored F production contract > converts using the production complete FX pair keys
+AssertionError: expected '0' to be '70' // Object.is equality
+
+Expected: "70"
+Received: "0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts:33:30
+     31|       targetCurrency: "CNY", fxSnapshot: { id: "fx-real", baseCurrency…
+     32|     });
+     33|     expect(result.net.value).toBe("70");
+       |                              ^
+     34|     expect(result.currentMarketValue.value).toBe("770");
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts > coordinator restored F production contract > keeps unknown opening fees unknown without losing a known current quantity
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts:49:45
+     47|     expect(result.net.value).toBeNull();
+     48|     expect(result.net.available).toBe(false);
+     49|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     50|   });
+     51|   it("does not turn an uncertain inventory into a complete zero market…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > does not seed a Shanghai first-day execution into pre-period inventory
+AssertionError: expected { opening: '0', net: '0' } to deeply equal { opening: '0', net: '10' }
+
+- Expected
++ Received
+
+  {
+-   "net": "10",
++   "net": "0",
+    "opening": "0",
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts:30:80
+     28|   it("does not seed a Shanghai first-day execution into pre-period inv…
+     29|     const result = project([buy("shanghai-first-day", "2025-12-31T16:3…
+     30|     expect({ opening: result.openingUnrealized.value, net: result.net.…
+       |                                                                                ^
+     31|   });
+     32|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > excludes executions after asOf from current inventory as well as from prices
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts:35:45
+     33|   it("excludes executions after asOf from current inventory as well as…
+     34|     const result = project([buy("known", "2026-01-15T15:00:00Z"), buy(…
+     35|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > selects the latest eligible current candle when a later candle also exists
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts:40:45
+     38|   it("selects the latest eligible current candle when a later candle a…
+     39|     const result = project([buy("known", "2026-01-15T15:00:00Z")], [ca…
+     40|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     41|   });
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R04 production FX snapshot keys convert current value
+AssertionError: expected '700' to be '770' // Object.is equality
+
+Expected: "770"
+Received: "700"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts:30:96
+     28|   });
+     29|   it("R04 production FX snapshot keys convert current value", () => {
+     30|     expect(project([buy], { targetCurrency: "CNY", fxSnapshot: fx }).c…
+       |                                                                                                ^
+     31|   });
+     32|   it("R05 missing FX snapshot status cannot produce complete conversio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts > confirmed financial boundary/evidence regression candidates (expected RED) > R08 inclusive first-day PnL uses the pre-period mark
+AssertionError: expected null to be '30' // Object.is equality
+
+- Expected:
+"30"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts:49:131
+     47|   it("R08 inclusive first-day PnL uses the pre-period mark", () => {
+     48|     const old = { ...buy, executedAt: "2025-12-15T15:00:00Z" };
+     49|     expect(project([old], {}, [candle("2025-12-31", "100"), candle("20…
+       |                                                                                                                                   ^
+     50|   });
+     51|   it("R09 period realized uses the established average-cost ledger", (…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts > independent F contract peer probes > assigns the IPO fee across short close and new long inventory
+AssertionError: expected '48.5' to be '8.5' // Object.is equality
+
+Expected: "8.5"
+Received: "48.5"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts:47:44
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts > independent F contract peer probes > deduplicates identical raw executions without reducing known market value
+AssertionError: expected '150' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "150"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts:61:45
+     59|     const original = fill("same", "2026-01-02T02:00:00Z");
+     60|     const result = run("duplicate-identical", [original, original]);
+     61|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     62|     expect(result.instruments[0].evidence.current.executionIds).toEqua…
+     63|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts > independent F contract peer probes > keeps ordinary cross-period fee bridge correct
+AssertionError: expected [ '17', null, '0', null ] to deeply equal [ '17', '48', '0', '-31' ]
+
+- Expected
++ Received
+
+  [
+    "17",
+-   "48",
++   null,
+    "0",
+-   "-31",
++   null,
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts:66:125
+     64|   it("keeps ordinary cross-period fee bridge correct", () => {
+     65|     const result = run("ordinary-fee-control", [fill("old", "2025-12-0…
+     66|     expect([result.periodRealized.value, result.openingUnrealized.valu…
+       |                                                                                                                             ^
+     67|     expect(result.currentMarketValue.value).toBe("0");
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯
+
+
+ Test Files  7 failed | 11 passed (18)
+      Tests  14 failed | 335 passed (349)
+   Start at  01:50:20
+   Duration  9.47s (transform 895ms, setup 0ms, import 2.27s, tests 1.39s, environment 3ms)
+

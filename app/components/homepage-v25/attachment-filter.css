@@ -1,0 +1,52 @@
+.hp-attachment-filter {
+  position: absolute;
+  z-index: 40;
+  inset-block-start: calc(100% + 8px);
+  inset-inline-end: 0;
+  box-sizing: border-box;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 24px 24px 16px;
+  border: 1px solid #283448;
+  border-radius: 8px;
+  background: #162233;
+  color: #e6edf7;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 0s linear 160ms;
+}
+
+.hp-attachment-filter[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.hp-attachment-filter__section { min-width: 0; margin: 0 0 16px; padding: 0; border: 0; }
+.hp-attachment-filter__section legend { padding: 0; margin-block-end: 16px; font-size: 16px; font-weight: 600; line-height: 24px; }
+.hp-attachment-filter__field { display: flex; align-items: center; gap: 12px; min-height: 36px; margin-block-end: 8px; font-size: 14px; line-height: 20px; cursor: pointer; }
+.hp-attachment-filter__field:last-child { margin-block-end: 0; }
+.hp-attachment-filter__field--unavailable { color: #a8b6cb; cursor: default; }
+.hp-attachment-filter input[type="checkbox"] { appearance: none; flex: 0 0 16px; width: 16px; height: 16px; margin: 0; border: 1px solid #283448; border-radius: 3px; background-color: #111a26; cursor: inherit; transition: border-color 120ms ease, background-color 120ms ease; }
+.hp-attachment-filter input[type="checkbox"]:checked { border-color: #6ca8ff; background-color: #6ca8ff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12l5 5L20 6' fill='none' stroke='%230B1019' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.hp-attachment-filter input[type="checkbox"]:disabled { cursor: default; }
+.hp-attachment-filter input[type="checkbox"]:not(:disabled):hover { border-color: #6ca8ff; }
+.hp-attachment-filter :is(input, button, [tabindex="0"]):focus-visible { outline: 2px solid #a9c8ff; outline-offset: 3px; }
+.hp-attachment-filter:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 3px; }
+.hp-attachment-filter__note, .hp-attachment-filter__error { margin: 0 0 8px; font-size: 12px; font-weight: 400; line-height: 16px; overflow-wrap: anywhere; }
+.hp-attachment-filter__note { color: #a8b6cb; }
+.hp-attachment-filter__error { color: #ff8592; }
+.hp-attachment-filter__actions { display: grid; grid-template-columns: 88px 128px; gap: 12px; margin-block-start: 28px; }
+.hp-attachment-filter__actions button { box-sizing: border-box; min-height: 36px; padding: 7px 8px; border: 1px solid #283448; border-radius: 6px; background: #111a26; color: #e6edf7; font: inherit; font-size: 14px; line-height: 20px; white-space: nowrap; cursor: pointer; transition: border-color 120ms ease, background-color 120ms ease; }
+.hp-attachment-filter__actions .hp-attachment-filter__apply { border-color: #6ca8ff; background: #162233; }
+.hp-attachment-filter__actions button:last-child { grid-column: 1 / -1; width: 128px; }
+.hp-attachment-filter__actions button:not(:disabled):hover { border-color: #6ca8ff; background: #1b2d45; }
+.hp-attachment-filter__actions button:disabled { color: #a8b6cb; cursor: wait; }
+@media (prefers-reduced-motion: reduce) { .hp-attachment-filter, .hp-attachment-filter input[type="checkbox"], .hp-attachment-filter__actions button { transition: none; } }

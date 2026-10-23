@@ -1,0 +1,158 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45081) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/period-selector.test.tsx (42 tests | 10 failed | 30 skipped) 778ms
+     × PS19 outside 本年 click cancels only; its next click requests normally 407ms
+     × PS19 outside 本月 click cancels only; its next click requests normally 86ms
+     × PS19 outside 本周 click cancels only; its next click requests normally 100ms
+     × PS21 'left' keeps the default/responsive width inside 24px gutters below the toolbar 4ms
+     × PS21 'right 1440' keeps the default/responsive width inside 24px gutters below the toolbar 1ms
+     × PS21 'right 1280' keeps the default/responsive width inside 24px gutters below the toolbar 2ms
+     × PS21 'outside left gutter' keeps the default/responsive width inside 24px gutters below the toolbar 1ms
+     × PS21 '390 wrapped row' keeps the default/responsive width inside 24px gutters below the toolbar 1ms
+     × PS22 follows resize and scrollable ancestors, using the toolbar rather than extra feedback height 23ms
+     × PS23 renders server failure in the error token with the real stylesheet cascade 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本年 click cancels only; its next click requests normally
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "from": "2026-01-01",
+        "preset": "ytd",
+        "to": "2026-10-23",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:369:25
+    367|     await user.click(shortcut);
+    368|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    369|     expect(onApply).not.toHaveBeenCalled();
+       |                         ^
+    370|     expect(rangeTrigger()).toHaveFocus();
+    371|     expect(rangeTrigger()).toHaveAccessibleName("自定义日期，当前期间 2026-01-01…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本月 click cancels only; its next click requests normally
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "from": "2026-10-01",
+        "preset": "month",
+        "to": "2026-10-23",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:369:25
+    367|     await user.click(shortcut);
+    368|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    369|     expect(onApply).not.toHaveBeenCalled();
+       |                         ^
+    370|     expect(rangeTrigger()).toHaveFocus();
+    371|     expect(rangeTrigger()).toHaveAccessibleName("自定义日期，当前期间 2026-01-01…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS19 outside 本周 click cancels only; its next click requests normally
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "from": "2026-10-19",
+        "preset": "week",
+        "to": "2026-10-23",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:369:25
+    367|     await user.click(shortcut);
+    368|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    369|     expect(onApply).not.toHaveBeenCalled();
+       |                         ^
+    370|     expect(rangeTrigger()).toHaveFocus();
+    371|     expect(rangeTrigger()).toHaveAccessibleName("自定义日期，当前期间 2026-01-01…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'left' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1440' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'right 1280' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 'outside left gutter' keeps the default/responsive width inside 24px gutters below the toolbar
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS21 '390 wrapped row' keeps the default/responsive width inside 24px gutters below the toolbar
+TypeError: The URL must be of scheme file
+ ❯ mountSelectorStyles app/components/homepage-v25/period-selector.test.tsx:43:23
+     41| function mountSelectorStyles() {
+     42|   const style = document.createElement("style");
+     43|   style.textContent = readFileSync(new URL("./period-selector.css", im…
+       |                       ^
+     44|   document.head.append(style);
+     45|   return style;
+ ❯ app/components/homepage-v25/period-selector.test.tsx:399:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS22 follows resize and scrollable ancestors, using the toolbar rather than extra feedback height
+AssertionError: expected 240 to be 180 // Object.is equality
+
+- Expected
++ Received
+
+- 180
++ 240
+
+ ❯ app/components/homepage-v25/period-selector.test.tsx:418:47
+    416|     render(<div data-testid="scroll-container"><PeriodSelector {...pro…
+    417|     const panel = screen.getByRole("dialog");
+    418|     expect(panel.getBoundingClientRect().top).toBe(180);
+       |                                               ^
+    419|     expect(panel.getBoundingClientRect().right).toBe(1416);
+    420|     layout.viewport = 1280;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  app/components/homepage-v25/period-selector.test.tsx > controlled homepage period selector > PS23 renders server failure in the error token with the real stylesheet cascade
+TypeError: The URL must be of scheme file
+ ❯ mountSelectorStyles app/components/homepage-v25/period-selector.test.tsx:43:23
+     41| function mountSelectorStyles() {
+     42|   const style = document.createElement("style");
+     43|   style.textContent = readFileSync(new URL("./period-selector.css", im…
+       |                       ^
+     44|   document.head.append(style);
+     45|   return style;
+ ❯ app/components/homepage-v25/period-selector.test.tsx:433:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 2 passed | 30 skipped (42)
+   Start at  05:53:02
+   Duration  3.61s (transform 280ms, setup 335ms, import 886ms, tests 778ms, environment 1.18s)
+

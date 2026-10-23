@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17964) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (7 tests | 1 failed) 170ms
+     × waits for the actual compensating pop before invoking a guarded back, and cancellation retains the current entry 66ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > waits for the actual compensating pop before invoking a guarded back, and cancellation retains the current entry
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:19:19
+     17|     await act(() => new Promise(resolve => setTimeout(resolve, 10)));
+     18|     expect(go).toHaveBeenCalledWith(1);
+     19|     expect(guard).toHaveBeenCalledTimes(1);
+       |                   ^
+     20|     act(() => { history.replaceState(tradesEntry, "", tradesUrl); wind…
+     21|     await waitFor(() => expect(guard).toHaveBeenCalledTimes(2));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  01:40:49
+   Duration  3.32s (transform 368ms, setup 425ms, import 459ms, tests 170ms, environment 1.84s)
+

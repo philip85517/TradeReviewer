@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:16189) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/holdings-model.test.ts (7 tests | 1 failed) 113ms
+     × builds current episodes before same-day and next-day future fills can change quantity or close status 65ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > builds current episodes before same-day and next-day future fills can change quantity or close status
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:22:24
+     20|     const futureClose = { ...buy, id: "tomorrow-close", side: "sell" a…
+     21|     const model = buildHomepageHoldings(entries([buy, laterBuy, future…
+     22|     expect(model.rows).toHaveLength(1);
+       |                        ^
+     23|     expect(model.rows[0].quantity).toBe("2");
+     24|     expect(model.rows[0].row.item.episode.executions.map(fill => fill.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  01:25:42
+   Duration  3.41s (transform 452ms, setup 529ms, import 492ms, tests 113ms, environment 1.82s)
+

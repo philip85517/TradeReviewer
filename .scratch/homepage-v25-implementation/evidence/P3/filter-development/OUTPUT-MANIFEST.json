@@ -1,0 +1,135 @@
+{
+  "frozenAtUtc": "2026-10-22T21:10:08.794554+00:00",
+  "owner": "/root/filter_preparation",
+  "actualModel": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "status": "implementation-ready-only",
+  "p3Formal": "0/3",
+  "fourZoneIntegration": "NOT VERIFIED",
+  "validation": {
+    "focusedVitest": {
+      "exitCode": 0,
+      "files": 2,
+      "testsPassed": 15,
+      "log": "09-final-focused-tests.log"
+    },
+    "scopedTypeScript": {
+      "exitCode": 0,
+      "log": "10-final-scoped-typecheck.log"
+    },
+    "scopedEslint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "11-final-focused-eslint.log"
+    }
+  },
+  "authoredProductAndTestFiles": [
+    "app/components/homepage-v25/attachment-filter.tsx",
+    "app/components/homepage-v25/attachment-filter.css",
+    "app/components/homepage-v25/attachment-filter.test.tsx",
+    "app/components/homepage-v25/attachment-groups.ts",
+    "app/components/homepage-v25/attachment-groups.test.ts"
+  ],
+  "files": [
+    {
+      "path": "app/components/homepage-v25/attachment-filter.tsx",
+      "bytes": 6267,
+      "sha256": "e865b6aa071247e33158fd81833d7b86163af20b874a58a1b8d35c7dc859444f"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-filter.css",
+      "bytes": 3619,
+      "sha256": "047665fecce14515ba4136dc7a36986f841cd1230b77872d2793e2dffa69192f"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-filter.test.tsx",
+      "bytes": 8728,
+      "sha256": "7b88c51103b374e8f4ce1c0f6c93b483a48be44034af54e122622e7e4f7b8fc8"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-groups.ts",
+      "bytes": 8917,
+      "sha256": "28fd2e1ae6b22b08e842d8da71d94335cf4cd289c1faf7536f79f2382d5a7073"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-groups.test.ts",
+      "bytes": 9789,
+      "sha256": "f3ddd331a143a5f3378621b66c37c41eab4dedcfb7f9d11f1f6e150152636b18"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/01-missing-feature-red.log",
+      "bytes": 3652,
+      "sha256": "5dd173976a4e6c97bae1ba8e91dcb5a2c96c21b0809843072b6baeaf503f2b1c"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/02-behavior-red.log",
+      "bytes": 32247,
+      "sha256": "08718dfe91442f4a772104202ce44bb1fcc7608b91c2ba5794e61c645d60c217"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/03-first-implementation.log",
+      "bytes": 3593,
+      "sha256": "4b03d96897bfe64c854f9ad6c07315f4264c20e0e027f637ce30827cf11be346"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/04-focused-green.log",
+      "bytes": 430,
+      "sha256": "c6ecfe39b7e2fcca2acaaf06c3e44697b8b6bb4ad96272bbc1a53d7efc79fd9c"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/05-pending-focus-red.log",
+      "bytes": 3892,
+      "sha256": "25b8ae802c13b30afe3cad92ae8b42b0a876822b7e4e96f13654ab0b599d1711"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/06-final-focused-green.log",
+      "bytes": 430,
+      "sha256": "147e733007a615e844ed9184113fbf4dd354c6672da2a29d9fbea31d8eb5d8ce"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/07-focused-eslint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/08-scoped-typecheck.log",
+      "bytes": 6164,
+      "sha256": "d5b7f22bc0656b4dfa05b66f91a6f0399606968b9733a86b43adc8a3feb5cec1"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/09-final-focused-tests.log",
+      "bytes": 430,
+      "sha256": "3e60e95baea84274e8c0560530af741ff9a81dd929f2ff159899464509a7c53d"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/10-final-scoped-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/11-final-focused-eslint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/DESIGN-COVERAGE.md",
+      "bytes": 6670,
+      "sha256": "8d9abe8baac276a8e9163264f0ea7c8b20f4b8e7ac4c48850b58d45e9201dc6d"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/IMPLEMENTATION-READY.md",
+      "bytes": 11281,
+      "sha256": "cde768c5574f3aedf793e8dd92eba5fc14ca7eed0eca7c9d5dba59e2b07bc35d"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/INPUT-MANIFEST.json",
+      "bytes": 7693,
+      "sha256": "8996622f3cd1b9c357b623f548bb22405597510c520ee345b61f1277062278fc"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/filter-development/typecheck.config.json",
+      "bytes": 731,
+      "sha256": "016060744e5d7450a45596e4b5411f587533553a74d4d92e9d9bba0b7c388268"
+    }
+  ]
+}

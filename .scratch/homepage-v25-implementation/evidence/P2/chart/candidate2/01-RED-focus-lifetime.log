@@ -1,0 +1,1467 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:50567) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/performance-chart.test.tsx (34 tests | 5 failed) 2481ms
+     × keeps the current keyboard detail when the pointer leaves a point while the graph owns focus 210ms
+     × keeps the focused amount and its source when the pointer leaves its date point 151ms
+     × keeps a source focused after point leave queued a hide, then closes on focus exit 106ms
+     × keeps a source focused after detail leave queued a hide, then closes on focus exit 128ms
+     × keeps a keyboard-focused gap reason when its pointer leaves and still allows Escape to close 132ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > PerformanceChart mixed pointer and keyboard focus lifetime > keeps the current keyboard detail when the pointer leaves a point while the graph owns focus
+TestingLibraryElementError: Unable to find an accessible element with the role "tooltip"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现日曲线":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现日曲线"[39m
+    [33mclass[39m=[32m"hp-performance-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+    [33mid[39m=[32m"_r_13_-help"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "当前表现｜期间净盈亏（按日）":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"_r_13_-help"[39m
+    [33maria-disabled[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+    [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-performance-chart__stage"[39m
+        [33mdata-testid[39m=[32m"hp-chart-stage"[39m
+        [33mstyle[39m=[32m"height: 320px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+        [36m>[39m
+          [36m<h3>[39m
+            [0m期间净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+          [33mid[39m=[32m"_r_13_-help"[39m
+        [36m>[39m
+          [0m当前表现｜期间净盈亏（按日）[0m
+          [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-describedby[39m=[32m"_r_13_-help"[39m
+          [33maria-disabled[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+          [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"100%"[39m
+            [33mviewBox[39m=[32m"0 0 1020 320"[39m
+            [33mwidth[39m=[32m"100%"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"270"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"274"[39m
+              [36m>[39m
+                [0m-2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"215"[39m
+                [33my2[39m=[32m"215"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"219"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"160"[39m
+                [33my2[39m=[32m"160"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"164"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"105"[39m
+                [33my2[39m=[32m"105"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"109"[39m
+              [36m>[39m
+                [0m1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"54"[39m
+              [36m>[39m
+                [0m2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"75"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"start"[39m
+                [33mx[39m=[32m"75"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-01[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"529.5"[39m
+                [33mx2[39m=[32m"529.5"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"middle"[39m
+                [33mx[39m=[32m"529.5"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-02[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"984"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"984"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-03[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<path[39m
+              [33mclass[39m=[32m"hp-performance-chart__line"[39m
+              [33md[39m=[32m"M75,160 L529.5,58.686877100000004 L984,226"[39m
+              [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-02"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"302.25"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-03"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"756.75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ detail app/components/homepage-v25/performance-chart.test.tsx:41:29
+     39| const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）"…
+     40| const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}…
+     41| const detail = () => screen.getByRole("tooltip");
+       |                             ^
+     42| function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+     43|
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:395:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > PerformanceChart mixed pointer and keyboard focus lifetime > keeps the focused amount and its source when the pointer leaves its date point
+TestingLibraryElementError: Unable to find an accessible element with the role "tooltip"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现日曲线":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现日曲线"[39m
+    [33mclass[39m=[32m"hp-performance-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+    [33mid[39m=[32m"_r_14_-help"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "当前表现｜期间净盈亏（按日）":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"_r_14_-help"[39m
+    [33maria-disabled[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+    [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-performance-chart__stage"[39m
+        [33mdata-testid[39m=[32m"hp-chart-stage"[39m
+        [33mstyle[39m=[32m"height: 320px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+        [36m>[39m
+          [36m<h3>[39m
+            [0m期间净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+          [33mid[39m=[32m"_r_14_-help"[39m
+        [36m>[39m
+          [0m当前表现｜期间净盈亏（按日）[0m
+          [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-describedby[39m=[32m"_r_14_-help"[39m
+          [33maria-disabled[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+          [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"100%"[39m
+            [33mviewBox[39m=[32m"0 0 1020 320"[39m
+            [33mwidth[39m=[32m"100%"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"270"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"274"[39m
+              [36m>[39m
+                [0m-2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"215"[39m
+                [33my2[39m=[32m"215"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"219"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"160"[39m
+                [33my2[39m=[32m"160"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"164"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"105"[39m
+                [33my2[39m=[32m"105"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"109"[39m
+              [36m>[39m
+                [0m1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"54"[39m
+              [36m>[39m
+                [0m2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"75"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"start"[39m
+                [33mx[39m=[32m"75"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-01[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"529.5"[39m
+                [33mx2[39m=[32m"529.5"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"middle"[39m
+                [33mx[39m=[32m"529.5"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-02[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"984"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"984"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-03[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<path[39m
+              [33mclass[39m=[32m"hp-performance-chart__line"[39m
+              [33md[39m=[32m"M75,160 L529.5,58.686877100000004 L984,226"[39m
+              [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-02"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"302.25"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-03"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"756.75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ detail app/components/homepage-v25/performance-chart.test.tsx:41:29
+     39| const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）"…
+     40| const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}…
+     41| const detail = () => screen.getByRole("tooltip");
+       |                             ^
+     42| function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+     43|
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:407:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > PerformanceChart mixed pointer and keyboard focus lifetime > keeps a source focused after point leave queued a hide, then closes on focus exit
+TestingLibraryElementError: Unable to find an accessible element with the role "tooltip"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现日曲线":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现日曲线"[39m
+    [33mclass[39m=[32m"hp-performance-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+    [33mid[39m=[32m"_r_15_-help"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "当前表现｜期间净盈亏（按日）":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"_r_15_-help"[39m
+    [33maria-disabled[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+    [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "图表之后":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-performance-chart__stage"[39m
+        [33mdata-testid[39m=[32m"hp-chart-stage"[39m
+        [33mstyle[39m=[32m"height: 320px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+        [36m>[39m
+          [36m<h3>[39m
+            [0m期间净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+          [33mid[39m=[32m"_r_15_-help"[39m
+        [36m>[39m
+          [0m当前表现｜期间净盈亏（按日）[0m
+          [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-describedby[39m=[32m"_r_15_-help"[39m
+          [33maria-disabled[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+          [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"100%"[39m
+            [33mviewBox[39m=[32m"0 0 1020 320"[39m
+            [33mwidth[39m=[32m"100%"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"270"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"274"[39m
+              [36m>[39m
+                [0m-2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"215"[39m
+                [33my2[39m=[32m"215"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"219"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"160"[39m
+                [33my2[39m=[32m"160"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"164"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"105"[39m
+                [33my2[39m=[32m"105"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"109"[39m
+              [36m>[39m
+                [0m1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"54"[39m
+              [36m>[39m
+                [0m2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"75"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"start"[39m
+                [33mx[39m=[32m"75"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-01[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"529.5"[39m
+                [33mx2[39m=[32m"529.5"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"middle"[39m
+                [33mx[39m=[32m"529.5"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-02[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"984"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"984"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-03[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<path[39m
+              [33mclass[39m=[32m"hp-performance-chart__line"[39m
+              [33md[39m=[32m"M75,160 L529.5,58.686877100000004 L984,226"[39m
+              [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-02"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"302.25"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-03"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"756.75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m图表之后[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ detail app/components/homepage-v25/performance-chart.test.tsx:41:29
+     39| const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）"…
+     40| const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}…
+     41| const detail = () => screen.getByRole("tooltip");
+       |                             ^
+     42| function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+     43|
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:418:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > PerformanceChart mixed pointer and keyboard focus lifetime > keeps a source focused after detail leave queued a hide, then closes on focus exit
+TestingLibraryElementError: Unable to find an accessible element with the role "tooltip"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现日曲线":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现日曲线"[39m
+    [33mclass[39m=[32m"hp-performance-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+    [33mid[39m=[32m"_r_16_-help"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "当前表现｜期间净盈亏（按日）":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"_r_16_-help"[39m
+    [33maria-disabled[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+    [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "图表之后":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-performance-chart__stage"[39m
+        [33mdata-testid[39m=[32m"hp-chart-stage"[39m
+        [33mstyle[39m=[32m"height: 320px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+        [36m>[39m
+          [36m<h3>[39m
+            [0m期间净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+          [33mid[39m=[32m"_r_16_-help"[39m
+        [36m>[39m
+          [0m当前表现｜期间净盈亏（按日）[0m
+          [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-describedby[39m=[32m"_r_16_-help"[39m
+          [33maria-disabled[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+          [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"100%"[39m
+            [33mviewBox[39m=[32m"0 0 1020 320"[39m
+            [33mwidth[39m=[32m"100%"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"270"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"274"[39m
+              [36m>[39m
+                [0m-2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"215"[39m
+                [33my2[39m=[32m"215"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"219"[39m
+              [36m>[39m
+                [0m-1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"160"[39m
+                [33my2[39m=[32m"160"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"164"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"105"[39m
+                [33my2[39m=[32m"105"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"109"[39m
+              [36m>[39m
+                [0m1.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"54"[39m
+              [36m>[39m
+                [0m2.00万[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"75"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"start"[39m
+                [33mx[39m=[32m"75"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-01[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"529.5"[39m
+                [33mx2[39m=[32m"529.5"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"middle"[39m
+                [33mx[39m=[32m"529.5"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-02[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"984"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"984"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-03[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<path[39m
+              [33mclass[39m=[32m"hp-performance-chart__line"[39m
+              [33md[39m=[32m"M75,160 L529.5,58.686877100000004 L984,226"[39m
+              [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-02"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"302.25"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-03"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"227.25"[39m
+              [33mx[39m=[32m"756.75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m图表之后[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ detail app/components/homepage-v25/performance-chart.test.tsx:41:29
+     39| const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）"…
+     40| const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}…
+     41| const detail = () => screen.getByRole("tooltip");
+       |                             ^
+     42| function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+     43|
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:418:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > PerformanceChart mixed pointer and keyboard focus lifetime > keeps a keyboard-focused gap reason when its pointer leaves and still allows Escape to close
+TestingLibraryElementError: Unable to find an accessible element with the role "tooltip"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现日曲线":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现日曲线"[39m
+    [33mclass[39m=[32m"hp-performance-chart"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+    [33mid[39m=[32m"_r_17_-help"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "当前表现｜期间净盈亏（按日）":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"_r_17_-help"[39m
+    [33maria-disabled[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+    [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "2026-10-02 数据缺失，金额未知，查看原因":
+  [36m<g[39m
+    [33maria-label[39m=[32m"2026-10-02 数据缺失，金额未知，查看原因"[39m
+    [33mclass[39m=[32m"hp-performance-chart__gap"[39m
+    [33mdata-testid[39m=[32m"hp-chart-gap-2026-10-02"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-performance-chart__stage"[39m
+        [33mdata-testid[39m=[32m"hp-chart-stage"[39m
+        [33mstyle[39m=[32m"height: 320px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+        [36m>[39m
+          [36m<h3>[39m
+            [0m期间净盈亏[0m
+          [36m</h3>[39m
+          [36m<span>[39m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+          [33mid[39m=[32m"_r_17_-help"[39m
+        [36m>[39m
+          [0m当前表现｜期间净盈亏（按日）[0m
+          [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-describedby[39m=[32m"_r_17_-help"[39m
+          [33maria-disabled[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+          [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+          [33mrole[39m=[32m"group"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"100%"[39m
+            [33mviewBox[39m=[32m"0 0 1020 320"[39m
+            [33mwidth[39m=[32m"100%"[39m
+          [36m>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"270"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"274"[39m
+              [36m>[39m
+                [0m-1.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"215"[39m
+                [33my2[39m=[32m"215"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"219"[39m
+              [36m>[39m
+                [0m-0.50[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"160"[39m
+                [33my2[39m=[32m"160"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"164"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"105"[39m
+                [33my2[39m=[32m"105"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"109"[39m
+              [36m>[39m
+                [0m0.50[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"63"[39m
+                [33my[39m=[32m"54"[39m
+              [36m>[39m
+                [0m1.00[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"75"[39m
+                [33mx2[39m=[32m"75"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"start"[39m
+                [33mx[39m=[32m"75"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-01[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<g>[39m
+              [36m<line[39m
+                [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+                [33mx1[39m=[32m"984"[39m
+                [33mx2[39m=[32m"984"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"270"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"end"[39m
+                [33mx[39m=[32m"984"[39m
+                [33my[39m=[32m"294"[39m
+              [36m>[39m
+                [0m10-02[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<path[39m
+              [33mclass[39m=[32m"hp-performance-chart__line"[39m
+              [33md[39m=[32m"M75,160"[39m
+              [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+              [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</div>[39m
+        [36m<svg[39m
+          [33mclass[39m=[32m"hp-performance-chart__gap-layer"[39m
+          [33mheight[39m=[32m"100%"[39m
+          [33mviewBox[39m=[32m"0 0 1020 320"[39m
+          [33mwidth[39m=[32m"100%"[39m
+        [36m>[39m
+          [36m<g[39m
+            [33maria-label[39m=[32m"2026-10-02 数据缺失，金额未知，查看原因"[39m
+            [33mclass[39m=[32m"hp-performance-chart__gap"[39m
+            [33mdata-testid[39m=[32m"hp-chart-gap-2026-10-02"[39m
+            [33mrole[39m=[32m"button"[39m
+            [33mtabindex[39m=[32m"0"[39m
+          [36m>[39m
+            [36m<title>[39m
+              [0m2026-10-02[0m
+              [0m · [0m
+              [0m数据缺失[0m
+              [0m · [0m
+              [0m行情缺失：未收到收盘价；金额未知[0m
+            [36m</title>[39m
+            [36m<rect[39m
+              [33mheight[39m=[32m"220"[39m
+              [33mwidth[39m=[32m"454.5"[39m
+              [33mx[39m=[32m"529.5"[39m
+              [33my[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<g[39m
+              [33mclass[39m=[32m"hp-performance-chart__gap-symbol"[39m
+              [33mtransform[39m=[32m"translate(756.75, 242)"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mr[39m=[32m"7"[39m
+              [36m/>[39m
+              [36m<text[39m
+                [33mtext-anchor[39m=[32m"middle"[39m
+                [33my[39m=[32m"4"[39m
+              [36m>[39m
+                [0mi[0m
+              [36m</text>[39m
+            [36m</g>[39m
+            [36m<text[39m
+              [33mclass[39m=[32m"hp-performance-chart__gap-label"[39m
+              [33mtext-anchor[39m=[32m"middle"[39m
+              [33mx[39m=[32m"756.75"[39m
+              [33my[39m=[32m"222"[39m
+            [36m>[39m
+              [0m数据缺失[0m
+              [0m · 金额 —[0m
+            [36m</text>[39m
+          [36m</g>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ detail app/components/homepage-v25/performance-chart.test.tsx:41:29
+     39| const graph = () => screen.getByRole("group", { name: "当前表现｜期间净盈亏（按日）"…
+     40| const hit = (key: string) => screen.getByTestId(`hp-chart-point-${key}…
+     41| const detail = () => screen.getByRole("tooltip");
+       |                             ^
+     42| function tick(ms: number) { act(() => vi.advanceTimersByTime(ms)); }
+     43|
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:432:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 29 passed (34)
+   Start at  06:53:52
+   Duration  7.55s (transform 244ms, setup 851ms, import 545ms, tests 2.48s, environment 3.02s)
+

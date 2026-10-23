@@ -1,0 +1,15 @@
+{
+  "before": {
+    "height": 82,
+    "scrollTop": 1440,
+    "width": 860,
+    "x": 246,
+    "y": 190
+  },
+  "after": {
+    "focus": "hp-symbol-HKEX%3A6969%3Astock",
+    "query": "6",
+    "selected": "hp-symbol-HKEX%3A6969%3Astock",
+    "top": 1440
+  }
+}

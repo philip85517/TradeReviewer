@@ -1,0 +1,20 @@
+{
+  "reviewedAt": "2026-10-22T17:03:07.622Z",
+  "sources": {
+    "app/lib/reviews/homepage-v25-performance.ts": "9d7b44e00229e63dca5485589871ab442df636d953cfecd8224a374fc399e7b5",
+    "app/lib/reviews/trading-room-history.ts": "b04556c73e6764524d8919a70f1cb256294939cfbdf25b82440f1089be7e3c7a",
+    "app/lib/reviews/trading-room-scope.ts": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16",
+    "app/lib/reviews/trading-room-metrics.ts": "f4e9ac53201f4d94a9191c4d3d59be89ac5227a541189f2ea0bf430c4ec8e3e7",
+    "app/lib/reviews/trading-room-contribution.ts": "08cb1e77b89543a5ee381f6005485c311426d99e8ccb17e6e43ff1691cb433fc",
+    "app/lib/trades/episodes.ts": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+    "app/lib/trades/episode-metrics.ts": "8596a1c86324c02302a2c00e77e1335c74aa24c59258d3a5902669aba39e2509",
+    "app/lib/trades/library.ts": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+    "app/lib/replay/position-ledger.ts": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113",
+    "app/lib/trades/ipo-cost.ts": "f7d087bbd5233d209af6df8f1be95ab4d2954926fec1d788d10aa090814f413b",
+    "app/lib/import/statement-evidence.ts": "45360f1373f4b185250182aad0acdac12d1c78cce9e3e7a1c40ec258c04ad6c2"
+  },
+  "documents": {
+    "P2-P4-DATA-SEAMS.md": "520b67296b22a874c876dd77cc4c1fe5f917ddd3642d98c5bcfe85636265a743",
+    "FREEZE-RETEST.md": "904e09f4efdaf0d61a18c17182e123330d8c5f801d8757c1103cdd802b86031e"
+  }
+}

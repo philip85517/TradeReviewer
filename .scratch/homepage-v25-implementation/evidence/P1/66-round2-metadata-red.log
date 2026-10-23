@@ -1,0 +1,27 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:20226) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/api/storage/trades/route.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/api/storage/trades/route.test.ts [ app/api/storage/trades/route.test.ts ]
+ReferenceError: window is not defined
+ ❯ tests/setup.ts:23:23
+     21| const testLocalStorage = memoryStorage();
+     22| const testSessionStorage = memoryStorage();
+     23| Object.defineProperty(window, "localStorage", {
+       |                       ^
+     24|   configurable: true,
+     25|   value: testLocalStorage,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  02:00:42
+   Duration  526ms (transform 31ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

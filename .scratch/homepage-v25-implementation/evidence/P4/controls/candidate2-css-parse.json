@@ -1,0 +1,7 @@
+{
+  "result": "PASS",
+  "parser": "postcss",
+  "path": "app/components/homepage-v25/history-controls.css",
+  "rules": 20,
+  "declarations": 98
+}

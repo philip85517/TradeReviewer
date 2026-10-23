@@ -1,0 +1,170 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:16766) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/holdings-model.test.ts (9 tests | 7 failed) 73ms
+     × uses the accepted current net UF after open fees, with partial closes keeping only remaining fees 26ms
+     × keeps partial or future FX unknown and accepts production colon rates from complete timely evidence 6ms
+     × builds current episodes before same-day and next-day future fills can change quantity or close status 6ms
+     × keeps account plus episode identity and excludes a legacy broker row without explicit live nature 11ms
+     × reconciles signed short and reversal exposure with canonical quantity times raw quote 5ms
+     × reports US in USD without needing FX for USD, converting other settlement currencies only with evidence 2ms
+     × exports the whole filtered result at original precision and neutralizes spreadsheet formulas 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > uses the accepted current net UF after open fees, with partial closes keeping only remaining fees
+AssertionError: expected null to be '18' // Object.is equality
+
+- Expected:
+"18"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:24:38
+     22|     const buy = { ...execution("buy", "one", "live"), quantity: "2", f…
+     23|     const opened = buildHomepageHoldings(entries([buy]), { scope, asOf…
+     24|     expect(opened.rows[0].reportPnl).toBe("18");
+       |                                      ^
+     25|     const sell = { ...buy, id: "sell", side: "sell" as const, quantity…
+     26|     const partial = buildHomepageHoldings(entries([buy, sell]), { scop…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps partial or future FX unknown and accepts production colon rates from complete timely evidence
+AssertionError: expected null to be '1636.25' // Object.is equality
+
+- Expected:
+"1636.25"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:37:97
+     35|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+     36|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+     37|     expect(buildHomepageHoldings(entries([us]), { ...input, fxSnapshot…
+       |                                                                                                 ^
+     38|   });
+     39|   it("builds current episodes before same-day and next-day future fill…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > builds current episodes before same-day and next-day future fills can change quantity or close status
+AssertionError: expected null to be '2' // Object.is equality
+
+- Expected:
+"2"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:45:36
+     43|     const model = buildHomepageHoldings(entries([buy, laterBuy, future…
+     44|     expect(model.rows).toHaveLength(1);
+     45|     expect(model.rows[0].quantity).toBe("2");
+       |                                    ^
+     46|     expect(model.rows[0].row.item.episode.executions.map(fill => fill.…
+     47|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps account plus episode identity and excludes a legacy broker row without explicit live nature
+AssertionError: expected { …(39) } to match object { identity: 'SSE:600519', …(4) }
+(48 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "days": 1,
+    "identity": "SSE:600519",
+-   "marketValue": "233.75",
+-   "quantity": "2.125",
+-   "unrealizedPnl": "21.25",
++   "marketValue": null,
++   "quantity": null,
++   "unrealizedPnl": null,
+  }
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:53:27
+     51|     expect(new Set(model.rows.map(row => row.id)).size).toBe(2);
+     52|     expect(model.uniqueInstrumentCount).toBe(1);
+     53|     expect(model.rows[0]).toMatchObject({ identity: "SSE:600519", days…
+       |                           ^
+     54|     expect(model.totalMarketValue).toBe("467.5");
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reconciles signed short and reversal exposure with canonical quantity times raw quote
+AssertionError: expected [ null, null ] to deeply equal [ '-1', '-1' ]
+
+- Expected
++ Received
+
+  [
+-   "-1",
+-   "-1",
++   null,
++   null,
+  ]
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:79:49
+     77|     const reverse = { ...execution("reverse", "reversal", "live"), sid…
+     78|     const model = buildHomepageHoldings(entries([sell, buy, reverse]),…
+     79|     expect(model.rows.map(row => row.quantity)).toEqual(["-1", "-1"]);
+       |                                                 ^
+     80|     expect(model.rows.map(row => row.marketValue)).toEqual(["-110", "-…
+     81|     expect(model.totalMarketValue).toBe("-220");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reports US in USD without needing FX for USD, converting other settlement currencies only with evidence
+AssertionError: expected null to be '233.75' // Object.is equality
+
+- Expected:
+"233.75"
+
++ Received:
+null
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:89:37
+     87|     const usd = buildHomepageHoldings(entries([us]), { scope: { ...sco…
+     88|     expect(usd.reportCurrency).toBe("USD");
+     89|     expect(usd.rows[0].marketValue).toBe("233.75");
+       |                                     ^
+     90|     const foreign = { ...us, id: "foreign", accountId: "two", instrume…
+     91|     const bothQuotes = { ...usQuote, "US:FOREIGN": { ...quotes["CN-SH:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > exports the whole filtered result at original precision and neutralizes spreadsheet formulas
+AssertionError: expected '证券,证券身份,账户,持仓天数,数量,成本价,现价,市值,浮盈亏,报告币种…' to contain '2.125'
+
+- Expected
++ Received
+
+- 2.125
++ 证券,证券身份,账户,持仓天数,数量,成本价,现价,市值,浮盈亏,报告币种
++ 贵州茅台,SSE:600519,'=account,1,,,,,,CNY
++ 贵州茅台,SSE:600519,two,1,,,,,,CNY
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:108:17
+    106|     const csv = holdingsCsv(model.rows);
+    107|     expect(csv).toContain("'=account");
+    108|     expect(csv).toContain("2.125");
+       |                 ^
+    109|     expect(csv.split("\r\n")).toHaveLength(3);
+    110|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 2 passed (9)
+   Start at  01:29:33
+   Duration  2.18s (transform 461ms, setup 168ms, import 526ms, tests 73ms, environment 1.01s)
+

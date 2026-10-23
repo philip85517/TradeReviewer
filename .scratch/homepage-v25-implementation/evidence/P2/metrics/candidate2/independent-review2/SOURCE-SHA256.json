@@ -1,0 +1,84 @@
+{
+  "reviewer": "/root/series_bundle_review",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "beginning": {
+    "time": "2026-10-22T23:39:50.005370+00:00",
+    "sha256": {
+      "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+      "app/components/homepage-v25/metric-cards.css": "1e391540fd971dc201cd74b7274eb563a80fe6c7f830cbd9a3fb82899ad55330",
+      "app/components/homepage-v25/metric-cards.test.tsx": "fd36f70cff05d0420f027c8856c2055b95e87749656a697cf3d956748b266057",
+      "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    }
+  },
+  "ending": {
+    "time": "2026-10-22T23:42:31.028916+00:00",
+    "sha256": {
+      "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+      "app/components/homepage-v25/metric-cards.css": "1e391540fd971dc201cd74b7274eb563a80fe6c7f830cbd9a3fb82899ad55330",
+      "app/components/homepage-v25/metric-cards.test.tsx": "fd36f70cff05d0420f027c8856c2055b95e87749656a697cf3d956748b266057",
+      "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    }
+  },
+  "allFiveSourceHashesUnchanged": true,
+  "originalTestBodyPrefixPreserved": true,
+  "readonlyInputs": {
+    "AGENTS.md": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+    "docs/agents/development-workflow.md": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+    "docs/agents/task-decomposition.md": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+    "docs/agents/frontend-control-audit.md": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+    "docs/agents/ui-task-templates.md": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+    "docs/agents/issue-tracker.md": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg": "cbb24603defed540ebc49b5234639a264246f105029f911d8d2b6fa8328e2315",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1280.svg": "20349cc2f74c60db6a7bc5aa93212fdddd26f61194927fde43acb735461f8369",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg": "b6e2677a96a661bb174fb3af0cbcda63350b8f8345a4c5cb8cb9fa45cbab3efe",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg": "51b6bc493b2a67b198ad88a982de578ac3bdb4230e43c02176b486256151fa82",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-DISPATCH.md": "33148a511e742bb1c9d72baf22078a09076487baa6d0bc979ce7e9bebb1fe559",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-ACCEPTANCE-1.md": "43017ceb1318e36bd444ae84d128af8416b03f5528eae0d7a83372bafadbbf06",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-CANDIDATE2-DISPATCH.md": "07ae60cf7f072c143ab10fc84e5799733f23538f32c7b173ce0c300963306f95",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/REVIEW.md": "c3f5000145bf83f6e40ecb4fe4c787e728000599f6a18857491f713f385605ed",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx": "e8a618ab4ff4fe85b6e2400ed30963dd6a764c75b211a4e5debb3d2292c55e32",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/COUNTEREXAMPLE.log": "65ee100dcef99bf3fb9c6cc99ec1b689b5e99c53b0af5acbaae0ae0a8cbffeca",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/IMPLEMENTATION-READY.md": "4cae9e65b7b0741ea29aaba69e4ed6d80937d6eabec6dc903c28fa34c2fd19ac",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/CANDIDATE2.diff": "0a04570fda42b2c3f51ed7be347e01d70e0a05679e939ccbfa7407c0fe37c16c",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/SOURCE-SHA256.json": "e132e19caf8748581673e1ff2616e581d7e6ca0d50d241f21e2345669310d16c",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/REFERENCE-READS.md": "3f17d0203658f0d54d5150f23266d67ff631ef979c9accfa0f1264f58a8d46d4",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/CONTROL-STATE-MAP.md": "f7945b146f149c469f8f5f2a75d04bb1d12c7a8358a2893c6b5fd89bb8a51d41",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/COMMANDS.md": "3895119a0c681103d3620d45f288bf063ddc3ac5c8899a18f8fcf4d9e005eb0f",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/02-green-product.log": "aa7f147d7cb914b7025732524d559c3f79bf0e05e32e890d27f6d344670a9a52",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/03-green-independent-counterexample.log": "cccfcffda8c548d58a6ec2eb0508895a08f90c72fa9fa01e7cdc246205f65d8b",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/06-final-product.log": "00364b046832e1b4a8174436088a5d397cfc8069c10f041857319ad9c85102ef",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/ROOT-product.log": "e929b8b28157403f41e8f6d9e74f5e5297193512731e0b34f0f9a1ad41f982d4",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/ROOT-independent-counterexample.log": "6ff0e679afc445699d4cc2516a9f74e7e14dac7cff7ee0916491f7451e535ae7",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/baseline/metric-cards.tsx": "344ee710457cc95f2cf384a882b9c800e84cc5c1ea068216c44cc4e915284bea",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/baseline/metric-cards.css": "5a99e9f9a77cb2e7d20340d9a40e0757cbc7917222e74fbc358646c4c9267194",
+    ".scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/baseline/metric-cards.test.tsx": "4c4aeb1393c09bdc7a81d127002d3a032c2fb5850011cf502117426abf2e3d3a"
+  },
+  "directlyViewedDesignCopies": {
+    "/private/tmp/tradereview-atom-metric.png": "22009c9303d1cda94b8d8959bf8c5e7f970d0419b304a6a4e2f3897969b3ce40",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/environment/reference-home-1440.png": "53782cf138192d3edfd130a81df10a53ee88c9e39a758ed0ec15a7645e9e2cc8",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P2/metrics/home-1280.png": "b043e76294a170235d85df9df55b31c44d7677e4cca21c1ba7bcc97db92f9848",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P2/metrics/loading--stale-data.png": "802969cc5ba7b9e0f5f1543bce5a4af1c9507fcd788f92ab5c111003ed5966cd",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P2/metrics/error--update-failure.png": "25f31e6690f1321ca26c02d84d71109fa71db99a96b8e9202c4c707870fe31bd"
+  },
+  "reviewEvidence": {
+    "REVIEW.md": "1b5b4929e11570bed9ae90225baa0347b3d614d190180102365e5e9259274eea"
+  },
+  "executionBoundary": {
+    "newCounterexampleFiles": 0,
+    "testsRunByThisReviewer": 0,
+    "rootLogResultsRead": {
+      "ROOT-product.log": "1 file / 23 passed / EXIT=0",
+      "ROOT-independent-counterexample.log": "1 file / 1 passed / EXIT=0"
+    },
+    "browserRunByThisReviewer": false,
+    "noProductOrExistingEvidenceWrites": true,
+    "writesScopedTo": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P2/metrics/candidate2/independent-review2"
+  }
+}

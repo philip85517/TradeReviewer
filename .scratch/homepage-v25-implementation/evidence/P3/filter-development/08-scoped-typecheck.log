@@ -1,0 +1,55 @@
+app/components/homepage-v25/attachment-filter.test.tsx(29,83): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(30,64): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(33,81): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(35,81): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(47,127): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(48,67): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(49,123): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(54,56): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(73,126): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(77,139): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/homepage-v25/attachment-filter.test.tsx(89,62): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.

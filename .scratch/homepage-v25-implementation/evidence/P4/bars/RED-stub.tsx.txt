@@ -1,0 +1,24 @@
+import type { HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
+
+export type ContributionMetric = Readonly<Omit<HomepageV25Metric, "coverage" | "reasons" | "money"> & {
+  coverage: Readonly<HomepageV25Metric["coverage"]>;
+  reasons: readonly string[];
+  money: Readonly<Omit<HomepageV25Metric["money"], "fx"> & { fx: Readonly<NonNullable<HomepageV25Metric["money"]["fx"]>> | null }>;
+}>;
+export type ContributionIdentity = Readonly<{ kind: "market"; market: string }> | Readonly<{
+  kind: "instrument"; accountId: string; instrumentId: string; market: string;
+  nature: "live" | "simulation" | "unknown" | "caller-scoped"; simulationRunId: string | null;
+}>;
+type RowBase = Readonly<{ key: string; label: string; accessibleLabel: string; identity: ContributionIdentity }>;
+export type CurrentContributionRow = RowBase & Readonly<{
+  periodRealized: ContributionMetric; unrealizedChange: ContributionMetric; net: ContributionMetric;
+}>;
+export type HistoricalContributionRow = RowBase & Readonly<{ closedResult: ContributionMetric }>;
+export type ContributionReadState = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
+export type ContributionBarsProps = Readonly<{
+  reportCurrency: string; readState: ContributionReadState; fullTotal: ContributionMetric | null;
+  onActivate: (identity: ContributionIdentity) => void;
+}> & (Readonly<{ mode: "current"; rows: readonly CurrentContributionRow[] | null }> |
+  Readonly<{ mode: "history"; rows: readonly HistoricalContributionRow[] | null }>);
+
+export function ContributionBars(_props: ContributionBarsProps) { return null; }

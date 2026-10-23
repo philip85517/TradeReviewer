@@ -1,0 +1,70 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:3606) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (60 tests | 3 failed | 52 skipped) 50ms
+     × does not invent a long inventory from an uncovered explicit short close 27ms
+     × does not make an uncovered close trustworthy after a later generic buy 4ms
+     × does not certify intraday conversion using a day-end FX snapshot 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not invent a long inventory from an uncovered explicit short close
+AssertionError: expected '110' to be null
+
+- Expected:
+null
+
++ Received:
+"110"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:269:45
+    267|     const result = real([fill("uncovered-close", "2026-01-15T15:00:00Z…
+    268|     expect(result.periodRealized.value).toBeNull();
+    269|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+    270|     expect(result.currentMarketValue.reasons).toContain("position-cove…
+    271|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not make an uncovered close trustworthy after a later generic buy
+AssertionError: expected '220' to be null
+
+- Expected:
+null
+
++ Received:
+"220"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:274:45
+    272|   it("does not make an uncovered close trustworthy after a later gener…
+    273|     const result = real([fill("uncovered-close", "2026-01-15T15:00:00Z…
+    274|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+    275|     expect(result.currentMarketValue.reasons).toContain("position-cove…
+    276|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not certify intraday conversion using a day-end FX snapshot
+AssertionError: expected '770' to be null
+
+- Expected:
+null
+
++ Received:
+"770"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:279:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 3 skipped (4)
+      Tests  3 failed | 5 passed | 70 skipped (78)
+   Start at  00:42:42
+   Duration  2.43s (transform 341ms, setup 0ms, import 684ms, tests 50ms, environment 1ms)
+

@@ -1,0 +1,82 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/vitest.config.mts", "--maxWorkers=1", "--reporter=verbose", "--testNamePattern=sub-unit monetary"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ↓ app/components/homepage-v25/history-chart.test.tsx > controlled HistoryChart minimal real journey > draws supplied values, reads an actual point and gap, exits with Esc, and selects all four modes in one fixed plot
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > validates each full-reading scalar independently and retains its own unavailable reason
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > uses semantic annual labels and selects literal rates rather than dividing supplied counts
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > plots an independently known count and rate when only monetary source data is missing
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > only draws explicitly available no-round cumulative values and never carries or fills a gap
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a future point
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a loading point
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > never leaks any supplied numeric fact from a error point
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > separates adjacent gap semantics and never connects across unavailable endpoints
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > retains real zero at the zero axis while missing values remain unavailable
+ × app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > keeps sub-unit monetary ticks distinct instead of rounding an entire nonzero range to zero 129ms
+   → expected 2 to be 6 // Object.is equality
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fixes rate endpoints at0/100 and count ticks are integers covering actual known counts
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=101 with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid win-rate=-0.1 with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=1.5 with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid round-count=-1 with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=NaN with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on invalid period-pnl=Infinity with an explanation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > fails closed on currency mismatch and preserves source currency without relabeling it
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > preserves exact huge signed monetary strings, original currencies, FX and coverage for a single thin point
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial pending space with no fake curve
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps initial error space with no fake curve
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on pending without caching facts
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > keeps complete old props and range on error without caching facts
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart controlled global states > honors successful empty range without plotting contradictory supplied values or adding repair entry
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > keeps every semantic label, staggering only when adjacent labels cannot fit at card width342
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > keeps every semantic label, staggering only when adjacent labels cannot fit at card width430
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > keeps every semantic label, staggering only when adjacent labels cannot fit at card width520
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > keeps every semantic label, staggering only when adjacent labels cannot fit at card width1168
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > keeps every semantic label, staggering only when adjacent labels cannot fit at card width1328
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > uses measured annual label widths to stagger at the actual spacing boundary and keeps short narrow ranges in one row
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > uses real Tab focus, arrows, Home and End to reach all periods including gaps then allows downstream focus
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > gives mouse and keyboard identical reading facts and clears on blur or leave
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through data A→B→A
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through source A→B→A
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through generation A→B→A
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through mode A→B→A
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > permanently clears reading through currency A→B→A
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > contains endpoint focus rectangles and all-mode plot bounds after a390px resize with3 periods
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart reading interaction and invalidation > contains endpoint focus rectangles and all-mode plot bounds after a390px resize with12 periods
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > fades one atomic surface150ms for a replacement, never morphs units, and cancels obsolete animation
+ ↓ app/components/homepage-v25/history-chart.test.tsx > HistoryChart replacement motion lifecycle > shows reduced-motion replacement directly and cancels a running fade when preference changes
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 41 skipped (42)
+   Start at  11:01:57
+   Duration  3.80s (transform 250ms, setup 573ms, import 500ms, tests 132ms, environment 2.13s)
+
+
+STDERR
+(node:59192) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-chart.test.tsx > HistoryChart supplied facts and state boundaries > keeps sub-unit monetary ticks distinct instead of rounding an entire nonzero range to zero
+AssertionError: expected 2 to be 6 // Object.is equality
+
+- Expected
++ Received
+
+- 6
++ 2
+
+ ❯ app/components/homepage-v25/history-chart.test.tsx:156:33
+    154|     render(<HistoryChart data={data([point("01", "1月", "-0.0125"), poi…
+    155|     const ticks = screen.getAllByTestId("hp-history-y-tick").map(tick …
+    156|     expect(new Set(ticks).size).toBe(ticks.length);
+       |                                 ^
+    157|     expect(ticks).toContain("0"); expect(ticks.some(tick => tick?.star…
+    158|     fireEvent.focus(hit("02")); expect(screen.getByTestId("hp-history-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+EXIT 1

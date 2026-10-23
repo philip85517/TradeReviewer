@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:2095) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (47 tests | 1 failed | 46 skipped) 26ms
+     × classifies malformed statement quantity instead of throwing or publishing zero 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > classifies malformed statement quantity instead of throwing or publishing zero
+Error: [DecimalError] Invalid argument: unavailable
+ ❯ parseOther node_modules/decimal.js/decimal.mjs:3622:11
+ ❯ new Decimal node_modules/decimal.js/decimal.mjs:4384:55
+ ❯ replayPositionAtPrice app/lib/replay/position-ledger.ts:185:11
+    183|       ];
+    184|       const coverageGaps = statementCoverageGaps(lastActivity, entry.p…
+    185|       if (new Decimal(entry.position.quantity).eq(quantity)) {
+       |           ^
+    186|         for (const gap of coverageGaps) if (!warnings.some(item => ite…
+    187|       } else if (coverageGaps.length) {
+ ❯ snapshot app/lib/reviews/homepage-v25-performance.ts:168:55
+ ❯ replay app/lib/reviews/homepage-v25-performance.ts:174:20
+ ❯ buildHomepageV25Performance app/lib/reviews/homepage-v25-performance.ts:295:75
+ ❯ buildHomepageV25PerformanceFromEntries app/lib/reviews/homepage-v25-performance.ts:275:10
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:199:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 skipped (4)
+      Tests  1 failed | 64 skipped (65)
+   Start at  00:39:39
+   Duration  2.59s (transform 701ms, setup 0ms, import 1.13s, tests 26ms, environment 1ms)
+

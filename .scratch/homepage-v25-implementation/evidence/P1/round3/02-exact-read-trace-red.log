@@ -1,0 +1,79 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:24930) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates the dashboard with daily data only until a replay consumer is opened
+DAILY_BOOTSTRAP_TRACE [[{"instrumentId":"US:ZZZ","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true},{}],[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2025-09-29T23:59:59.999Z","dailyOnly":true},{}],[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2025-09-29T23:59:59.999Z","dailyOnly":true}],[{"instrumentId":"US:ZZZ","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true}]]
+
+stdout | app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retries a homepage holding with daily data only
+HOMEPAGE_REPAIR_TRACE [[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true},{}],[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true}],[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true},{}],[{"instrumentId":"US:XPEV","interval":"1h","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z"},{}],[{"instrumentId":"US:XPEV","interval":"15m","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z"},{}],[{"instrumentId":"US:XPEV","interval":"1D"}],[{"instrumentId":"US:XPEV","interval":"1h"}],[{"instrumentId":"US:XPEV","interval":"1D","start":"2023-12-04T00:00:00.000Z","end":"2026-10-21T23:59:59.999Z","dailyOnly":true}]]
+
+ ❯ app/components/trade-review-workspace.test.tsx (95 tests | 2 failed | 93 skipped) 961ms
+     × hydrates the dashboard with daily data only until a replay consumer is opened 487ms
+     × retries a homepage holding with daily data only 472ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates the dashboard with daily data only until a replay consumer is opened
+AssertionError: expected "vi.fn()" to be called 2 times, but got 4 times
+ ❯ app/components/trade-review-workspace.test.tsx:1851:27
+    1849|     await waitFor(() => expect(getMarketData.mock.calls.length).toBeGr…
+    1850|     console.info("DAILY_BOOTSTRAP_TRACE", JSON.stringify(getMarketData…
+    1851|     expect(getMarketData).toHaveBeenCalledTimes(2);
+       |                           ^
+    1852|
+    1853|     expect(getMarketData.mock.calls.map(([input]) => input.instrumentI…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retries a homepage holding with daily data only
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/trade-review-workspace.test.tsx:2024:82
+    2022|     await waitFor(() => expect(getMarketData.mock.calls.length).toBeGr…
+    2023|     console.info("HOMEPAGE_REPAIR_TRACE", JSON.stringify(getMarketData…
+    2024|     expect(getMarketData.mock.calls.every(([input]) => input.interval …
+       |                                                                                  ^
+    2025|     expect(getMarketData.mock.calls.some(([input]) => input.interval =…
+    2026|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:90:29
+     88| }
+     89| function required<T>(value: T | null): T {
+     90|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     91|   return value;
+     92| }
+ ❯ createHomepageState app/lib/reviews/homepage-v25-state.ts:259:22
+ ❯ changeHomepageIdentity app/lib/reviews/homepage-v25-state.ts:379:16
+ ❯ startHomepageRead app/components/homepage-v25/session-model.ts:10:20
+ ❯ app/components/homepage-v25/use-homepage-host.ts:73:18
+ ❯ Object.reload app/components/homepage-v25/use-homepage-host.ts:192:36
+ ❯ app/components/trade-review-workspace.tsx:5982:149
+
+This error originated in "app/components/trade-review-workspace.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 93 skipped (95)
+     Errors  1 error
+   Start at  02:47:26
+   Duration  6.69s (transform 3.21s, setup 262ms, import 4.08s, tests 961ms, environment 1.03s)
+

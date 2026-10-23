@@ -1,0 +1,712 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:18791) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (100 tests | 39 failed) 681ms
+     × publishes current net unrealized and open fees independently of the selected historical period 46ms
+     × exposes only the remaining fee pool after a partial close 12ms
+     × keeps trusted current market value when current fees are unavailable 10ms
+     × keeps per-account original money and the same production FX provenance for current metrics 23ms
+     × uses Shanghai dates for precise fills even if a market-date label differs 10ms
+     × clamps the period and exposes its effective knowledge boundary 12ms
+     × keeps current inventory at its own cutoff with a historical period 7ms
+     × selects an eligible raw quote before considering later bars 6ms
+     × uses the pre-period mark so the first day's gain remains in the period 6ms
+     × preserves date-only knowledge instead of inventing an intraday fill 6ms
+     × keeps a known current value usable when opening fees are unknown 8ms
+     × preserves known canonical cost when only 'invalid' fees are unavailable 10ms
+     × preserves known canonical cost when only 'conflicting' fees are unavailable 10ms
+     × preserves known inventory for identical or money-only duplicate differences {"fee":"2"} 6ms
+     × preserves known inventory for identical or money-only duplicate differences {"price":"120"} 7ms
+     × preserves known inventory for identical or money-only duplicate differences {} 11ms
+     × does not treat a statement mark as acquisition cost 9ms
+     × allocates carried opening fees to the same close under either period 12ms
+     × uses average cost in realized and unrealized components independently 5ms
+     × allocates opening and closing fees proportionally on a partial close 6ms
+     × uses the raw reverse fill once, retaining its whole settlement lineage 11ms
+     × does not let an unseen future short episode change the historical long direction 5ms
+     × defaults the real source to live and reports excluded simulation and unknown scope 6ms
+     × isolates one simulation run and its account and market filters 6ms
+     × converts through production pair keys and publishes source amounts and provenance 6ms
+     × keeps original money with a missing FX snapshot 4ms
+     × keeps original money with a partial FX snapshot 6ms
+     × needs no FX when the known source already equals the target 5ms
+     × preserves original subtotals instead of summing different currencies 8ms
+     × rejects quote/settlement currency mismatches without losing trusted quantity 5ms
+     × requires the explicit production entry cutoff while preserving the same result 6ms
+     × does not silently replace a reported fee with a conflicting settlement fee 4ms
+     × retains partial conversion status when only one source currency has a usable rate 15ms
+     × requires real FX even for a zero PnL amount in a different source currency 12ms
+     × does not include Shanghai-next-day statement closing knowledge in current inventory 15ms
+     × does not reveal a date-only stock event before its real knowledge cursor 10ms
+     × does not borrow next-Shanghai-day cash to certify an IPO acquisition cost 33ms
+     × retains a real live multiple-episode aggregate before valuation 11ms
+     × derives a real entry and candle ledger, while current value survives an earlier coverage gap 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 39 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > publishes current net unrealized and open fees independently of the selected historical period
+AssertionError: expected { value: '-2', available: true, …(3) } to match object { value: '18', available: true, …(1) }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -2,7 +2,7 @@
+    "available": true,
+    "coverage": {
+      "available": 1,
+      "total": 1,
+    },
+-   "value": "18",
++   "value": "-2",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:41:38
+     39|   it("publishes current net unrealized and open fees independently of …
+     40|     const result = real([fill("buy", "2026-01-05T05:00:00Z", { quantit…
+     41|     expect(result.currentUnrealized).toMatchObject({ value: "18", avai…
+       |                                      ^
+     42|     expect(result.currentOpenFees).toMatchObject({ value: "2", availab…
+     43|     expect(result.closingUnrealized.value).toBe("0");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > exposes only the remaining fee pool after a partial close
+AssertionError: expected { value: '-1', available: true, …(3) } to match object { value: '9' }
+(10 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "value": "9",
++   "value": "-1",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:50:38
+     48|   it("exposes only the remaining fee pool after a partial close", () =…
+     49|     const result = real([fill("buy", "2026-01-05T05:00:00Z", { quantit…
+     50|     expect(result.currentUnrealized).toMatchObject({ value: "9" });
+       |                                      ^
+     51|     expect(result.currentOpenFees).toMatchObject({ value: "1" });
+     52|     expect(result.instruments[0]).toMatchObject({ currentMarketValue: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > keeps trusted current market value when current fees are unavailable
+AssertionError: expected { key: 'a|US:AAPL|live|', …(9) } to match object { …(3) }
+(45 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,8 +1,8 @@
+  {
+    "currentMarketValue": {
+-     "value": "110",
++     "value": "100",
+    },
+    "currentOpenFees": {
+      "value": null,
+    },
+    "currentUnrealized": {
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:59:35
+     57|     expect(result.currentUnrealized).toMatchObject({ value: null, avai…
+     58|     expect(result.currentOpenFees).toMatchObject({ value: null, availa…
+     59|     expect(result.instruments[0]).toMatchObject({ currentMarketValue: …
+       |                                   ^
+     60|   });
+     61|   it("keeps per-account original money and the same production FX prov…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage current projection contract > keeps per-account original money and the same production FX provenance for current metrics
+AssertionError: expected { value: '-21', available: true, …(3) } to match object { value: '119', money: { …(4) } }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -6,11 +6,11 @@
+        "id": "current-fx",
+        "source": "broker",
+        "status": "complete",
+      },
+      "originalByCurrency": {
+-       "USD": "17",
++       "USD": "-3",
+      },
+      "targetCurrency": "CNY",
+    },
+-   "value": "119",
++   "value": "-21",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:64:38
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses Shanghai dates for precise fills even if a market-date label differs
+AssertionError: expected [ '0', '0' ] to deeply equal [ '0', '10' ]
+
+- Expected
++ Received
+
+  [
+    "0",
+-   "10",
++   "0",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:86:64
+     84|   it("uses Shanghai dates for precise fills even if a market-date labe…
+     85|     const result = real([fill("first", "2025-12-31T16:30:00Z", { sourc…
+     86|     expect([result.openingUnrealized.value, result.net.value]).toEqual…
+       |                                                                ^
+     87|   });
+     88|   it("clamps the period and exposes its effective knowledge boundary",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > clamps the period and exposes its effective knowledge boundary
+AssertionError: expected '0' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:90:30
+     88|   it("clamps the period and exposes its effective knowledge boundary",…
+     89|     const result = real([fill("known", "2026-01-15T15:00:00Z"), fill("…
+     90|     expect(result.net.value).toBe("10");
+       |                              ^
+     91|     expect(result.boundary).toMatchObject({ asOf: "2026-01-31", effect…
+     92|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps current inventory at its own cutoff with a historical period
+AssertionError: expected [ '0', '100' ] to deeply equal [ '0', '110' ]
+
+- Expected
++ Received
+
+  [
+    "0",
+-   "110",
++   "100",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:95:65
+     93|   it("keeps current inventory at its own cutoff with a historical peri…
+     94|     const result = real([fill("known", "2026-01-15T15:00:00Z"), fill("…
+     95|     expect([result.net.value, result.currentMarketValue.value]).toEqua…
+       |                                                                 ^
+     96|   });
+     97|   it("selects an eligible raw quote before considering later bars", ()…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > selects an eligible raw quote before considering later bars
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:99:45
+     97|   it("selects an eligible raw quote before considering later bars", ()…
+     98|     const result = real([fill("known", "2026-01-15T15:00:00Z")], {}, […
+     99|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    100|   });
+    101|   it("uses the pre-period mark so the first day's gain remains in the …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses the pre-period mark so the first day's gain remains in the period
+AssertionError: expected [ null, '0', null ] to deeply equal [ '0', '30', '30' ]
+
+- Expected
++ Received
+
+  [
++   null,
+    "0",
+-   "30",
+-   "30",
++   null,
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:103:96
+    101|   it("uses the pre-period mark so the first day's gain remains in the …
+    102|     const result = real([fill("old", "2025-12-15T15:00:00Z")], {}, [ra…
+    103|     expect([result.openingUnrealized.value, result.closingUnrealized.v…
+       |                                                                                                ^
+    104|   });
+    105|   it("preserves date-only knowledge instead of inventing an intraday f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves date-only knowledge instead of inventing an intraday fill
+AssertionError: expected '0' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:107:37
+    105|   it("preserves date-only knowledge instead of inventing an intraday f…
+    106|     const dated = fill("dated", "2026-01-31", { source: { platform: "s…
+    107|     expect(real([dated]).net.value).toBe("10");
+       |                                     ^
+    108|     expect(real([dated], { asOf: "2026-01-31T12:00:00Z" }).currentMark…
+    109|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps a known current value usable when opening fees are unknown
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:119:45
+    117|     expect(result.net.value).toBeNull();
+    118|     expect(result.net.reasons).toContain("unknown-fees");
+    119|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    120|   });
+    121|   it("exposes unavailable fee evidence rather than a numeric zero fee …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known canonical cost when only 'invalid' fees are unavailable
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known canonical cost when only 'conflicting' fees are unavailable
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:135:45
+    133|     } })]);
+    134|     expect(result.instruments[0].evidence.current).toMatchObject({ qua…
+    135|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    136|     expect(result.net.value).toBeNull();
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known inventory for identical or money-only duplicate differences {"fee":"2"}
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known inventory for identical or money-only duplicate differences {"price":"120"}
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known inventory for identical or money-only duplicate differences {}
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:152:83
+    150|   it.each([{ fee: "2" }, { price: "120" }, {}])("preserves known inven…
+    151|     const original = fill("same", "2026-01-15T05:00:00Z");
+    152|     expect(real([original, { ...original, ...change }]).currentMarketV…
+       |                                                                                   ^
+    153|   });
+    154|   it("preserves uncertain quantity and its original reason", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not treat a statement mark as acquisition cost
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:166:45
+    164|     expect(result.net.value).toBeNull();
+    165|     expect(result.net.reasons).toContain("unknown-cost");
+    166|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    167|     expect(result.instruments[0].evidence.current.costKnown).toBe(fals…
+    168|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > allocates carried opening fees to the same close under either period
+AssertionError: expected [ '17', null, '0', null ] to deeply equal [ '17', '-2', '0', '19' ]
+
+- Expected
++ Received
+
+  [
+    "17",
+-   "-2",
++   null,
+    "0",
+-   "19",
++   null,
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:176:113
+    174|     const executions = [fill("open", "2025-12-15T15:00:00Z", { fee: "2…
+    175|     const jan = real(executions), full = real(executions, { period: { …
+    176|     expect([jan.periodRealized.value, jan.openingUnrealized.value, jan…
+       |                                                                                                                 ^
+    177|     expect([full.periodRealized.value, full.net.value]).toEqual(["17",…
+    178|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses average cost in realized and unrealized components independently
+AssertionError: expected [ '200', null, '0', null ] to deeply equal [ '200', '100', '300', '400' ]
+
+- Expected
++ Received
+
+  [
+    "200",
+-   "100",
+-   "300",
+-   "400",
++   null,
++   "0",
++   null,
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:181:125
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > allocates opening and closing fees proportionally on a partial close
+AssertionError: expected [ '17', '-2', '15' ] to deeply equal [ '17', '8', '25' ]
+
+- Expected
++ Received
+
+  [
+    "17",
+-   "8",
+-   "25",
++   "-2",
++   "15",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:185:93
+    183|   it("allocates opening and closing fees proportionally on a partial c…
+    184|     const result = real([fill("buy2", "2026-01-05T15:00:00Z", { quanti…
+    185|     expect([result.periodRealized.value, result.closingUnrealized.valu…
+       |                                                                                             ^
+    186|   });
+    187|   it("uses the raw reverse fill once, retaining its whole settlement l…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses the raw reverse fill once, retaining its whole settlement lineage
+AssertionError: expected [ '19', '19', '38', '-100' ] to deeply equal [ '19', '9', '28', '-110' ]
+
+- Expected
++ Received
+
+  [
+    "19",
+-   "9",
+-   "28",
+-   "-110",
++   "19",
++   "38",
++   "-100",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:189:126
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not let an unseen future short episode change the historical long direction
+AssertionError: expected null to be '20' // Object.is equality
+
+- Expected:
+"20"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:199:40
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > defaults the real source to live and reports excluded simulation and unknown scope
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:203:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > isolates one simulation run and its account and market filters
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:209:45
+    207|     const executions = ["r1", "r2"].map(run => fill(run, "2026-01-15T1…
+    208|     const result = real(executions, { scope: { nature: "simulation", s…
+    209|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    210|     expect(result.instruments[0].identity).toMatchObject({ nature: "si…
+    211|     expect(real(executions, { scope: { nature: "simulation", simulatio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > converts through production pair keys and publishes source amounts and provenance
+AssertionError: expected '700' to be '770' // Object.is equality
+
+Expected: "770"
+Received: "700"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:215:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps original money with a missing FX snapshot
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps original money with a partial FX snapshot
+AssertionError: expected { USD: '100' } to deeply equal { USD: '110' }
+
+- Expected
++ Received
+
+  {
+-   "USD": "110",
++   "USD": "100",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:221:64
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > needs no FX when the known source already equals the target
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:230:109
+    228|   });
+    229|   it("needs no FX when the known source already equals the target", ()…
+    230|     expect(real([fill("buy", "2026-01-15T15:00:00Z")], { targetCurrenc…
+       |                                                                                                             ^
+    231|   });
+    232|   it("preserves original subtotals instead of summing different curren…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves original subtotals instead of summing different currencies
+AssertionError: expected {} to deeply equal { USD: '110', CNY: '120' }
+
+- Expected
++ Received
+
+- {
+-   "CNY": "120",
+-   "USD": "110",
+- }
++ {}
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:236:64
+    234|     const result = real([fill("usd", "2026-01-15T15:00:00Z"), fill("cn…
+    235|     expect(result.currentMarketValue.value).toBeNull();
+    236|     expect(result.currentMarketValue.money.originalByCurrency).toEqual…
+       |                                                                ^
+    237|     expect(result.currentMarketValue.reasons).toContain("target-curren…
+    238|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > rejects quote/settlement currency mismatches without losing trusted quantity
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:243:45
+    241|     expect(result.net.value).toBeNull();
+    242|     expect(result.net.reasons).toContain("settlement-currency-mismatch…
+    243|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    244|   });
+    245|   it("classifies malformed compatibility quantities without throwing",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > requires the explicit production entry cutoff while preserving the same result
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:254:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not silently replace a reported fee with a conflicting settlement fee
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:295:45
+    293|     expect(result.net.value).toBeNull();
+    294|     expect(result.net.reasons).toContain("fees-conflict");
+    295|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+    296|   });
+    297|   it("retains partial conversion status when only one source currency …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > retains partial conversion status when only one source currency has a usable rate
+AssertionError: expected { total: 2, available: +0 } to deeply equal { total: 2, available: 1 }
+
+- Expected
++ Received
+
+  {
+-   "available": 1,
++   "available": 0,
+    "total": 2,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:302:48
+    300|     expect(result.currentMarketValue.value).toBeNull();
+    301|     expect(result.currentMarketValue.money.conversion).toBe("partial");
+    302|     expect(result.currentMarketValue.coverage).toEqual({ total: 2, ava…
+       |                                                ^
+    303|   });
+    304|   it("requires real FX even for a zero PnL amount in a different sourc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > requires real FX even for a zero PnL amount in a different source currency
+AssertionError: expected {} to deeply equal { USD: '0' }
+
+- Expected
++ Received
+
+- {
+-   "USD": "0",
+- }
++ {}
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:307:49
+    305|     const result = real([fill("buy", "2026-01-15T15:00:00Z")], { targe…
+    306|     expect(result.net.value).toBeNull();
+    307|     expect(result.net.money.originalByCurrency).toEqual({ USD: "0" });
+       |                                                 ^
+    308|     expect(result.net.reasons).toContain("fx-missing");
+    309|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not include Shanghai-next-day statement closing knowledge in current inventory
+AssertionError: expected [ '100', '1' ] to deeply equal [ '110', '1' ]
+
+- Expected
++ Received
+
+  [
+-   "110",
++   "100",
+    "1",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:313:94
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not reveal a date-only stock event before its real knowledge cursor
+AssertionError: expected '100' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "100"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:327:55
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not borrow next-Shanghai-day cash to certify an IPO acquisition cost
+AssertionError: expected '300' to be '330' // Object.is equality
+
+Expected: "330"
+Received: "300"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:340:44
+    338|     expect(today.net.value).toBeNull();
+    339|     expect(today.instruments[0].evidence.current.costKnown).toBe(false…
+    340|     expect(today.currentMarketValue.value).toBe("330");
+       |                                            ^
+    341|     expect(nextDay.net.value).toBe("30");
+    342|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > retains a real live multiple-episode aggregate before valuation
+AssertionError: expected [ '-30', '70' ] to deeply equal [ '10', '110' ]
+
+- Expected
++ Received
+
+  [
+-   "10",
+-   "110",
++   "-30",
++   "70",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:361:65
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/39]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage v2.5 financial projection > derives a real entry and candle ledger, while current value survives an earlier coverage gap
+AssertionError: expected null to be '130' // Object.is equality
+
+- Expected:
+"130"
+
++ Received:
+null
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:597:45
+    595|       ] },
+    596|     }));
+    597|     expect(result.currentMarketValue.value).toBe("130");
+       |                                             ^
+    598|     expect(result.currentMarketValue.available).toBe(true);
+    599|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/39]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  39 failed | 61 passed (100)
+   Start at  01:48:15
+   Duration  1.70s (transform 382ms, setup 0ms, import 497ms, tests 681ms, environment 0ms)
+

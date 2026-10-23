@@ -1,0 +1,30 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ES2017", "--lib", "dom,dom.iterable,esnext", "--skipLibCheck", "--esModuleInterop", "--module", "esnext", "--moduleResolution", "bundler", "--resolveJsonModule", "--isolatedModules", "--jsx", "react-jsx", "--incremental", "false", "app/components/homepage-v25/history-chart.tsx", "app/components/homepage-v25/history-chart.test.tsx"]
+STDOUT
+app/lib/reviews/homepage-v25-performance.ts(1074,31): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable?: Iterable<readonly [unknown, unknown]> | null | undefined): Map<unknown, unknown>', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'Iterable<readonly [unknown, unknown]>'.
+      The types returned by '[Symbol.iterator]().next(...)' are incompatible between these types.
+        Type 'IteratorResult<unknown, undefined>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+          Type 'IteratorYieldResult<unknown>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+            Type 'IteratorYieldResult<unknown>' is not assignable to type 'IteratorYieldResult<readonly [unknown, unknown]>'.
+              Type 'unknown' is not assignable to type 'readonly [unknown, unknown]'.
+  Overload 2 of 4, '(entries?: readonly (readonly [unknown, unknown])[] | null | undefined): Map<unknown, unknown>', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'readonly (readonly [unknown, unknown])[]'.
+      Type 'unknown' is not assignable to type 'readonly [unknown, unknown]'.
+app/lib/reviews/homepage-v25-performance.ts(1074,63): error TS2322: Type '[] | [readonly [`execution:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; ... 9 more ...; realizedDelta: Readonly<...>; }>]] | [...]' is not assignable to type 'readonly [`execution:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; ... 9 more ...; realizedDelta: Readonly<...>; }>] | readonly (readonly [...])[]'.
+  Type '[readonly [`allocation:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; ... 9 more ...; realizedDelta: Readonly<...>; }>]]' is not assignable to type 'readonly [`execution:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; ... 9 more ...; realizedDelta: Readonly<...>; }>] | readonly (readonly [...])[]'.
+    Type '[readonly [`allocation:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; ... 9 more ...; realizedDelta: Readonly<...>; }>]]' is not assignable to type 'readonly (readonly [`execution:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; effect: "applied" | ... 2 more ... | "contextual"; ... 8 more ...; realizedDelta: Readonly<...>; }>])[]'.
+      Type 'readonly [`allocation:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; effect: "applied" | ... 2 more ... | "contextual"; ... 8 more ...; realizedDelta: Readonly<...>; }>]' is not assignable to type 'readonly [`execution:${string}`, Readonly<{ factId: string; contextId: string; ordinal: number; kind: "execution" | "transfer" | "ipo-allocation" | "bonus" | "position-reconciliation" | "evidence-status"; effect: "applied" | ... 2 more ... | "contextual"; ... 8 more ...; realizedDelta: Readonly<...>; }>]'.
+        Type at position 0 in source is not compatible with type at position 0 in target.
+          Type '`allocation:${string}`' is not assignable to type '`execution:${string}`'.
+app/lib/reviews/homepage-v25-performance.ts(1085,114): error TS2339: Property 'evidenceIds' does not exist on type '{}'.
+app/lib/reviews/homepage-v25-performance.ts(1085,134): error TS7006: Parameter 'id' implicitly has an 'any' type.
+app/lib/reviews/homepage-v25-performance.ts(1085,175): error TS7006: Parameter 'fact' implicitly has an 'any' type.
+app/lib/reviews/homepage-v25-performance.ts(1086,83): error TS2339: Property 'factId' does not exist on type '{}'.
+app/lib/reviews/homepage-v25-performance.ts(1087,46): error TS18046: 'fact' is of type 'unknown'.
+app/lib/reviews/homepage-v25-performance.ts(1087,93): error TS2339: Property 'evidenceIds' does not exist on type '{}'.
+app/lib/reviews/homepage-v25-performance.ts(1087,138): error TS18046: 'fact' is of type 'unknown'.
+
+STDERR
+
+EXIT 2

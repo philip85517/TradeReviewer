@@ -1,0 +1,35 @@
+{
+  "dialog": [
+    {
+      "clientHeight": 818,
+      "last": {
+        "bottom": 819,
+        "height": 440,
+        "left": 115,
+        "right": 353,
+        "top": 379,
+        "width": 238,
+        "x": 115,
+        "y": 379
+      },
+      "rect": {
+        "bottom": 832,
+        "height": 820,
+        "left": 102,
+        "right": 366,
+        "top": 12,
+        "width": 264,
+        "x": 102,
+        "y": 12
+      },
+      "scrollHeight": 1020,
+      "scrollTop": 202
+    }
+  ],
+  "pageWidth": 390,
+  "viewport": [
+    390,
+    844,
+    1
+  ]
+}

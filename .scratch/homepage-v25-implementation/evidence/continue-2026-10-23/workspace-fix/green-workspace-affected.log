@@ -1,0 +1,451 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:44819) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (101 tests | 2 failed | 90 skipped) 16215ms
+     × does not re-read every instrument market cache when metadata hydration updates presentation 2043ms
+     × keeps the library chart available after a cancelled import with failed market refresh 739ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation
+TestingLibraryElementError: Unable to find an element with the text: 小鹏汽车（刷新）. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-controls[39m=[32m"stock-rounds-US-XPEV"[39m
+  [33maria-expanded[39m=[32m"true"[39m
+  [33maria-label[39m=[32m"收起小鹏汽车交易回合"[39m
+  [33mclass[39m=[32m"library-stock-row"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"library-stock-identity"[39m
+  [36m>[39m
+    [36m<b>[39m
+      [0mUS[0m
+    [36m</b>[39m
+    [36m<span>[39m
+      [36m<strong>[39m
+        [0m小鹏汽车[0m
+      [36m</strong>[39m
+      [36m<small>[39m
+        [0mXPEV[0m
+      [36m</small>[39m
+    [36m</span>[39m
+    [36m<em[39m
+      [33mclass[39m=[32m"trade-nature-badge live"[39m
+    [36m>[39m
+      [0m实盘[0m
+    [36m</em>[39m
+  [36m</span>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"library-stock-meta"[39m
+  [36m>[39m
+    [36m<span>[39m
+      [0m1[0m
+      [0m 个账户 · [0m
+      [0m1[0m
+      [0m 笔成交 · [0m
+      [0m1[0m
+      [0m 个回合[0m
+    [36m</span>[39m
+    [36m<small>[39m
+      [0m累计 R —[0m
+      [0m · [0m
+      [0m标签待确认[0m
+    [36m</small>[39m
+    [36m<small>[39m
+      [0m复盘进度 [0m
+      [0m0[0m
+      [0m/[0m
+      [0m1[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [0m2025/1/7[0m
+    [0m—[0m
+    [0m2025/1/7[0m
+  [36m</span>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"library-stock-status"[39m
+  [36m>[39m
+    [36m<b[39m
+      [33mclass[39m=[32m"open"[39m
+    [36m>[39m
+      [0m持仓中[0m
+    [36m</b>[39m
+    [36m<small>[39m
+      [0m日线：行情源待连接；1H：行情源待连接[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"library-stock-pnl"[39m
+  [36m>[39m
+    [36m<strong>[39m
+      [0m已平仓净盈亏暂不可用[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m暂无可信已平仓样本[0m
+    [36m</small>[39m
+    [36m<small>[39m
+      [0m净盈亏样本 0 · 收益率样本 0[0m
+    [36m</small>[39m
+    [36m<small>[39m
+      [0m加权收益率（按开仓金额）暂不可用[0m
+    [36m</small>[39m
+    [36m<small>[39m
+      [0m持仓中 1 个回合 · USD浮盈亏 不可用（1 个不可用）[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-chevron-right"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"16"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"16"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"m9 18 6-6-6-6"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+[36m</button>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:1944:26
+    1942|     await userEvent.setup().click(within(returnedLibrary).getByRole("t…
+    1943|     const stock = await screen.findByRole("button", { name: /^(展开|收起)小…
+    1944|     expect(within(stock).getByText("小鹏汽车（刷新）")).toBeInTheDocument();
+       |                          ^
+    1945|     await waitFor(() => expect(putReviewState).toHaveBeenCalledTimes(w…
+    1946|     expect(getMarketData.mock.calls).toEqual(marketReadsBeforeMetadata…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the library chart available after a cancelled import with failed market refresh
+TestingLibraryElementError: Found multiple elements with the role "button" and name `/^打开小鹏汽车第\d+次交易/`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"打开小鹏汽车第2次交易 富途"[39m
+  [33mclass[39m=[32m"_roundRow_0578ee"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m第 [0m
+      [0m2[0m
+      [0m 次交易[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m2025/1/6[0m
+      [0m—[0m
+      [0m2025/1/6[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m2[0m
+      [0m 笔成交[0m
+      [0m · 富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<b[39m
+      [33mclass[39m=[32m"closed"[39m
+    [36m>[39m
+      [0m已平仓[0m
+    [36m</b>[39m
+    [36m<small>[39m
+      [0m待复盘[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"positive"[39m
+    [36m>[39m
+      [0m+US$10.00[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m加权收益率（按开仓金额）：10.00% · USD[0m
+    [36m</small>[39m
+  [36m</span>[39m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"打开小鹏汽车第1次交易 富途"[39m
+  [33mclass[39m=[32m"_roundRow_0578ee"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m第 [0m
+      [0m1[0m
+      [0m 次交易[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong>[39m
+      [0m2025/1/2[0m
+      [0m—[0m
+      [0m2025/1/2[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m2[0m
+      [0m 笔成交[0m
+      [0m · 富途[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<b[39m
+      [33mclass[39m=[32m"closed"[39m
+    [36m>[39m
+      [0m已平仓[0m
+    [36m</b>[39m
+    [36m<small>[39m
+      [0m待复盘[0m
+    [36m</small>[39m
+  [36m</span>[39m
+  [36m<span>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"positive"[39m
+    [36m>[39m
+      [0m+US$10.00[0m
+    [36m</strong>[39m
+    [36m<small>[39m
+      [0m加权收益率（按开仓金额）：10.00% · USD[0m
+    [36m</small>[39m
+  [36m</span>[39m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"小鹏汽车交易回合"[39m
+  [33mclass[39m=[32m"_roundPanel_0578ee"[39m
+  [33mid[39m=[32m"stock-rounds-US-XPEV"[39m
+[36m>[39m
+  [36m<header[39m
+    [33mclass[39m=[32m"_roundHeader_0578ee"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<strong>[39m
+        [0m小鹏汽车[0m
+        [0m · 交易回合[0m
+      [36m</strong>[39m
+      [36m<span>[39m
+        [0m2[0m
+        [0m 待复盘 · [0m
+        [0m0[0m
+        [0m 已复盘 · [0m
+        [0m2[0m
+        [0m 个匹配回合[0m
+      [36m</span>[39m
+    [36m</div>[39m
+  [36m</header>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"_runGroup_0578ee"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_runGroupHeader_0578ee"[39m
+    [36m>[39m
+      [36m<h3>[39m
+        [0m实盘回合[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_runGroupMetrics_0578ee"[39m
+      [36m>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"positive"[39m
+        [36m>[39m
+          [0m+US$20.00[0m
+        [36m</strong>[39m
+        [36m<small>[39m
+          [0mUSD原币已平仓净盈亏[0m
+        [36m</small>[39m
+        [36m<small>[39m
+          [0m净盈亏样本 2 · 收益率样本 2[0m
+          [0m · [0m
+          [0m加权收益率（按开仓金额）：10.00% · USD[0m
+        [36m</small>[39m
+        [36m<small>[39m
+          [0m原币金额：USD +US$20.00[0m
+        [36m</small>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_roundRowShell_0578ee"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"打开小鹏汽车第2次交易 富途"[39m
+        [33mclass[39m=[32m"_roundRow_0578ee"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m第 [0m
+            [0m2[0m
+            [0m 次交易[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m2025/1/6[0m
+            [0m—[0m
+            [0m2025/1/6[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m2[0m
+            [0m 笔成交[0m
+            [0m · 富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<b[39m
+            [33mclass[39m=[32m"closed"[39m
+          [36m>[39m
+            [0m已平仓[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0m待复盘[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"positive"[39m
+          [36m>[39m
+            [0m+US$10.00[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m加权收益率（按开仓金额）：10.00% · USD[0m
+          [36m</small>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_fullName_0578ee"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m查看完整原名[0m
+        [36m</summary>[39m
+        [36m<p>[39m
+          [0m原名：[0m
+          [0m小鹏汽车[0m
+        [36m</p>[39m
+        [36m<small>[39m
+          [0m账户：[0m
+          [0m富途[0m
+        [36m</small>[39m
+      [36m</details>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_roundRowShell_0578ee"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"打开小鹏汽车第1次交易 富途"[39m
+        [33mclass[39m=[32m"_roundRow_0578ee"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m第 [0m
+            [0m1[0m
+            [0m 次交易[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong>[39m
+            [0m2025/1/2[0m
+            [0m—[0m
+            [0m2025/1/2[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m2[0m
+            [0m 笔成交[0m
+            [0m · 富途[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<b[39m
+            [33mclass[39m=[32m"closed"[39m
+          [36m>[39m
+            [0m已平仓[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0m待复盘[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<span>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"positive"[39m
+          [36m>[39m
+            [0m+US$10.00[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m加权收益率（按开仓金额）：10.00% · USD[0m
+          [36m</small>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_fullName_0578ee"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m查看完整原名[0m
+        [36m</summary>[39m
+        [36m<p>[39m
+          [0m原名：[0m
+          [0m小鹏汽车[0m
+        [36m</p>[39m
+        [36m<small>[39m
+          [0m账户：[0m
+          [0m富途[0m
+        [36m</small>[39m
+      [36m</details>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:3924:79
+    3922|     const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车…
+    3923|     if (xpevStock.getAttribute("aria-expanded") !== "true") await user…
+    3924|     await user.click(within(screen.getByRole("region", { name: "小鹏汽车交易…
+       |                                                                               ^
+    3925|     await screen.findByLabelText("图表工具栏");
+    3926|     const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 9 passed | 90 skipped (101)
+   Start at  05:50:00
+   Duration  22.46s (transform 3.64s, setup 199ms, import 4.72s, tests 16.21s, environment 963ms)
+

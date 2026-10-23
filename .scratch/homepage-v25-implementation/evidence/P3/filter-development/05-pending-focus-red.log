@@ -1,0 +1,159 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:40511) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx (7 tests | 1 failed) 773ms
+     × applies once through pending and keeps old applied fields plus draft and explicit error on failure 80ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > applies once through pending and keeps old applied fields plus draft and explicit error on failure
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <form
+  aria-busy="true"
+  aria-hidden="false"
+  aria-label="附加筛选"
+  class="hp-attachment-filter"
+  data-open="true"
+  role="dialog"
+  tabindex="-1"
+>
+  <fieldset
+    class="hp-attachment-filter__section"
+  >
+    <legend>
+      类别
+    </legend>
+    <label
+      class="hp-attachment-filter__field"
+    >
+      <input
+        disabled=""
+        type="checkbox"
+      />
+      股票
+    </label>
+    <label
+      class="hp-attachment-filter__field"
+    >
+      <input
+        disabled=""
+        type="checkbox"
+      />
+      ETF
+    </label>
+    <label
+      class="hp-attachment-filter__field hp-attachment-filter__field--unavailable"
+    >
+      <input
+        aria-describedby="_r_2_-fund"
+        disabled=""
+        readonly=""
+        type="checkbox"
+      />
+      基金
+    </label>
+    <p
+      class="hp-attachment-filter__note"
+      id="_r_2_-fund"
+    >
+      尚不支持基金类别：缺少可信分类数据
+    </p>
+  </fieldset>
+  <fieldset
+    class="hp-attachment-filter__section"
+  >
+    <legend>
+      持仓状态
+    </legend>
+    <label
+      class="hp-attachment-filter__field"
+    >
+      <input
+        disabled=""
+        type="checkbox"
+      />
+      仅看未平仓持仓
+    </label>
+  </fieldset>
+  <fieldset
+    class="hp-attachment-filter__section"
+  >
+    <legend>
+      是否待复盘
+    </legend>
+    <label
+      class="hp-attachment-filter__field"
+    >
+      <input
+        aria-label="待复盘：是"
+        disabled=""
+        type="checkbox"
+      />
+      是
+    </label>
+    <label
+      class="hp-attachment-filter__field"
+    >
+      <input
+        aria-label="待复盘：否"
+        disabled=""
+        type="checkbox"
+      />
+      否
+    </label>
+  </fieldset>
+  <p
+    class="hp-attachment-filter__note"
+    role="status"
+  >
+    正在应用，页面保留原已生效范围
+  </p>
+  <div
+    class="hp-attachment-filter__actions"
+  >
+    <button
+      class="hp-attachment-filter__apply"
+      disabled=""
+      type="submit"
+    >
+      应用
+    </button>
+    <button
+      disabled=""
+      type="button"
+    >
+      清除附加条件
+    </button>
+    <button
+      disabled=""
+      type="button"
+    >
+      恢复全部默认
+    </button>
+  </div>
+</form>
+Received element with focus:
+  <input
+  disabled=""
+  type="checkbox"
+/>
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:50:40
+     48|     fireEvent.keyDown(screen.getByRole("checkbox", { name: "ETF", exac…
+     49|     expect(screen.getByRole("button", { name: "应用" })).toBeDisabled();…
+     50|     expect(screen.getByRole("dialog")).toHaveFocus();
+       |                                        ^
+     51|     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Enter" });
+     52|     expect(snapshot().attachments.categories).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  05:06:16
+   Duration  4.03s (transform 212ms, setup 632ms, import 240ms, tests 773ms, environment 1.73s)
+

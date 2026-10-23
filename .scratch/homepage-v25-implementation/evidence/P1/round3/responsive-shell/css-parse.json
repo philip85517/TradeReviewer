@@ -1,0 +1,15 @@
+{
+  "check": "PostCSS complete-file syntax parse",
+  "status": "PASS",
+  "node": "v26.0.0",
+  "rules": 151,
+  "declarations": 592,
+  "mediaQueries": [
+    "(max-width:900px)",
+    "(max-width:759px)",
+    "(max-width:900px), (max-height:548px)",
+    "(max-width:600px)",
+    "(prefers-reduced-motion:reduce)",
+    "(max-width:900px)"
+  ]
+}

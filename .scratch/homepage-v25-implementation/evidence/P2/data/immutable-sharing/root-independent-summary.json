@@ -1,0 +1,195 @@
+{
+  "results": [
+    {
+      "shape": "rounds",
+      "sample": "1",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-rounds-1.json",
+      "coldMs": 1128.985607,
+      "repeats": [
+        {
+          "ms": 1.6460329999999885,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 5.623949999999695,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.0473769999998694,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53026188,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "rounds",
+      "sample": "2",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-rounds-2.json",
+      "coldMs": 1168.6100300000003,
+      "repeats": [
+        {
+          "ms": 1.3685209999998733,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.2543239999999969,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.2379560000003949,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53026188,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "rounds",
+      "sample": "3",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-rounds-3.json",
+      "coldMs": 1139.703609,
+      "repeats": [
+        {
+          "ms": 1.2258409999999458,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 0.8638080000000627,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.1658800000000156,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53026188,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "long-prefix",
+      "sample": "1",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-long-prefix-1.json",
+      "coldMs": 1080.099637,
+      "repeats": [
+        {
+          "ms": 1.9286110000000463,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.54352700000004,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.5522450000000845,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53658846,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "long-prefix",
+      "sample": "2",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-long-prefix-2.json",
+      "coldMs": 1080.806027,
+      "repeats": [
+        {
+          "ms": 1.8695780000000468,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.3312190000001465,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.207584999999881,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53658846,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "long-prefix",
+      "sample": "3",
+      "exitCode": 0,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-long-prefix-3.json",
+      "coldMs": 1098.117899,
+      "repeats": [
+        {
+          "ms": 1.9910840000000007,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.3120010000000093,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 1.3148539999999684,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 53658846,
+      "publicBytesEqual": true,
+      "admitted": true
+    },
+    {
+      "shape": "multimarket",
+      "sample": "1",
+      "exitCode": 1,
+      "report": ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/root-independent-multimarket-1.json",
+      "coldMs": 2617.548995,
+      "repeats": [
+        {
+          "ms": 1.3010559999997895,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 0.9886679999999615,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        },
+        {
+          "ms": 4.642301000000316,
+          "identical": true,
+          "additionalCanonicalQueries": 0
+        }
+      ],
+      "cacheEstimatedBytes": 67101836,
+      "publicBytesEqual": true,
+      "admitted": true
+    }
+  ],
+  "formalP2": "0/3; root acceptance required",
+  "stopOnAnyMiss": true
+}

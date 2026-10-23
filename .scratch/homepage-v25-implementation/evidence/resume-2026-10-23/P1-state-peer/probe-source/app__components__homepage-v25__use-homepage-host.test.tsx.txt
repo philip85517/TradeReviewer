@@ -1,0 +1,59 @@
+import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { useHomepageHost } from "./use-homepage-host";
+
+afterEach(() => { cleanup(); sessionStorage.clear(); history.replaceState(null, "", "/home"); });
+const catalog = [{ id: "one", label: "实盘一" }];
+describe("homepage workspace host", () => {
+  it("waits for catalogs before rejecting a target account and never silently widens it", async () => {
+    history.replaceState(null, "", "/trades?scope=live&market=all&accounts=gone&rangeMode=all");
+    const { result, rerender } = renderHook(({ ready }) => useHomepageHost({ enabled: true, ready, revision: ready ? 1 : 0, data: "fresh", accounts: catalog, identities: {}, reload: vi.fn(), guard: async () => true }), { initialProps: { ready: false } });
+    expect(result.current.route.error).toBeNull();
+    rerender({ ready: true });
+    await waitFor(() => expect(result.current.route.error).toContain("账户"));
+    expect(location.search).toContain("accounts=gone");
+  });
+  it("does not commit route or source UI if the existing review guard cancels", async () => {
+    const guard = vi.fn(async () => false);
+    const { result } = renderHook(() => useHomepageHost({ enabled: true, ready: true, revision: 1, data: "fresh", accounts: catalog, identities: {}, reload: vi.fn(), guard }));
+    await waitFor(() => expect(result.current.initialized).toBe(true));
+    await act(() => result.current.openTrades(null));
+    expect(guard).toHaveBeenCalledWith("trades");
+    expect(location.pathname).toBe("/home");
+    expect(result.current.route.page).toBe("home");
+  });
+  it("keeps labels and data together until a new bootstrap revision, then restores source UI with fresh data", async () => {
+    let finish: ((value: { requestId: number; data: string }) => void) | undefined;
+    const reload = vi.fn((requestId: number) => new Promise<{ requestId: number; data: string }>(resolve => { finish = value => resolve({ ...value, requestId }); }));
+    const { result, rerender } = renderHook(({ revision, data }) => useHomepageHost({ enabled: true, ready: true, revision, data, accounts: catalog, identities: {}, reload, guard: async () => true }), { initialProps: { revision: 1, data: "old" } });
+    await waitFor(() => expect(result.current.initialized).toBe(true));
+    act(() => result.current.onUi({ holdings: { query: "茅台", sort: "name-desc", page: 2 }, scrollTop: 321 }));
+    await act(() => result.current.openTrades(null));
+    expect(location.pathname).toBe("/trades");
+    await act(() => result.current.openHome());
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(result.current.data).toBe("old");
+    await act(async () => { finish?.({ requestId: 1, data: "new" }); });
+    rerender({ revision: 2, data: "new" });
+    await waitFor(() => expect(result.current.ui.requests.global).toBeNull());
+    expect(result.current.data).toBe("new");
+    expect(result.current.ui.snapshot.holdings.query).toBe("茅台");
+    expect(result.current.ui.snapshot.scrollTop).toBe(321);
+    expect(location.pathname).toBe("/home");
+  });
+  it("does not publish an earlier reader's bundle under a later scope token", async () => {
+    const replies: Array<(value: { requestId: number; data: string }) => void> = [];
+    const reload = vi.fn((requestId: number) => new Promise<{ requestId: number; data: string }>(resolve => replies.push(value => resolve({ ...value, requestId }))));
+    const { result, rerender } = renderHook(({ revision, data }) => useHomepageHost({ enabled: true, ready: true, revision, data, accounts: catalog, identities: {}, reload, guard: async () => true }), { initialProps: { revision: 1, data: "initial" } });
+    await waitFor(() => expect(result.current.initialized).toBe(true));
+    act(() => result.current.onScope({ live: true, market: "a", accounts: ["*"], rangeMode: "all" }));
+    act(() => result.current.onScope({ live: true, market: "hk", accounts: ["*"], rangeMode: "all" }));
+    await act(async () => { replies[0]({ requestId: 1, data: "A" }); });
+    rerender({ revision: 2, data: "A-global" });
+    expect(result.current.ui.snapshot.scope.market).toBe("all");
+    expect(result.current.data).toBe("initial");
+    await act(async () => { replies[1]({ requestId: 2, data: "B-owned" }); });
+    expect(result.current.ui.snapshot.scope.market).toBe("hk");
+    expect(result.current.data).toBe("B-owned");
+  });
+});

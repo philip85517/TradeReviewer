@@ -1,0 +1,89 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:93042) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts (4 tests | 4 failed) 55ms
+     × does not seed a Shanghai first-day execution into pre-period inventory 46ms
+     × excludes executions after asOf from current inventory as well as from prices 4ms
+     × selects the latest eligible current candle when a later candle also exists 2ms
+     × does not publish post-asOf period gains as known results 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > does not seed a Shanghai first-day execution into pre-period inventory
+AssertionError: expected { opening: null, net: null } to deeply equal { opening: '0', net: '10' }
+
+- Expected
++ Received
+
+  {
+-   "net": "10",
+-   "opening": "0",
++   "net": null,
++   "opening": null,
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:30:80
+     28|   it("does not seed a Shanghai first-day execution into pre-period inv…
+     29|     const result = project([buy("shanghai-first-day", "2025-12-31T16:3…
+     30|     expect({ opening: result.openingUnrealized.value, net: result.net.…
+       |                                                                                ^
+     31|   });
+     32|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > excludes executions after asOf from current inventory as well as from prices
+AssertionError: expected '220' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "220"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:35:45
+     33|   it("excludes executions after asOf from current inventory as well as…
+     34|     const result = project([buy("known", "2026-01-15T15:00:00Z"), buy(…
+     35|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > selects the latest eligible current candle when a later candle also exists
+AssertionError: expected null to be '110' // Object.is equality
+
+- Expected:
+"110"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:40:45
+     38|   it("selects the latest eligible current candle when a later candle a…
+     39|     const result = project([buy("known", "2026-01-15T15:00:00Z")], [ca…
+     40|     expect(result.currentMarketValue.value).toBe("110");
+       |                                             ^
+     41|   });
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts > coordinator round 3 real-library cutoff consistency > does not publish post-asOf period gains as known results
+AssertionError: expected [ null, '0' ] to include '899'
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts:47:25
+     45|     // A complete 899 would require a future execution and future quot…
+     46|     // boundary may reject the range, or return zero/unknown through t…
+     47|     expect([null, "0"]).toContain(result.net.value);
+       |                         ^
+     48|   });
+     49| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  4 failed | 10 passed (14)
+   Start at  00:09:59
+   Duration  1.53s (transform 245ms, setup 0ms, import 382ms, tests 139ms, environment 0ms)
+

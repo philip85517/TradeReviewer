@@ -1,0 +1,107 @@
+{
+  "database": {
+    "path": ".data/tradereview-test.sqlite",
+    "openedWith": "new DatabaseSync(path, { readOnly: true })",
+    "bytes": 47079424,
+    "sha256": "adcef4c1e44410cfb20299582f8cf2b2333439cba9388fa4c825c6bd07c0a623"
+  },
+  "source": {
+    "executions": 1949,
+    "natureCounts": {
+      "unknown": 1784,
+      "simulation": 82,
+      "live": 83
+    },
+    "instruments": 287,
+    "dailyCandles": 154462,
+    "summaries": 286,
+    "entries": 289,
+    "resultGroups": 78
+  },
+  "request": {
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-10-23"
+    },
+    "asOf": "2026-10-23T05:00:00.000Z",
+    "scope": "default live",
+    "fx": "not supplied: original-currency coverage only"
+  },
+  "timing": {
+    "readMs": 1512.2392970000003,
+    "preparationMs": 472.37093400000003,
+    "preparationCanonicalCalls": 0,
+    "singleProjectionMs": 71.98862000000008,
+    "canonicalCalls": 239,
+    "selectedPrefixMembers": 88
+  },
+  "coverage": {
+    "scope": {
+      "nature": "live",
+      "simulationRunId": null,
+      "includedExecutions": 83,
+      "excludedExecutions": 1866,
+      "excludedByReason": {
+        "nature:unknown": 1784,
+        "nature:simulation": 82
+      }
+    },
+    "net": {
+      "available": false,
+      "coverage": {
+        "total": 78,
+        "available": 71
+      },
+      "reasons": [
+        "history-incomplete",
+        "quantity-unavailable",
+        "cost-unavailable",
+        "quote-missing",
+        "target-currency-required"
+      ],
+      "currencies": [
+        "CNY",
+        "HKD",
+        "USD"
+      ]
+    },
+    "currentMarketValue": {
+      "available": false,
+      "coverage": {
+        "total": 77,
+        "available": 70
+      },
+      "reasons": [
+        "quantity-unavailable",
+        "history-incomplete",
+        "quote-missing",
+        "target-currency-required"
+      ],
+      "currencies": [
+        "CNY",
+        "HKD",
+        "USD"
+      ]
+    },
+    "currentUnrealized": {
+      "available": false,
+      "coverage": {
+        "total": 77,
+        "available": 70
+      },
+      "reasons": [
+        "history-incomplete",
+        "quantity-unavailable",
+        "cost-unavailable",
+        "quote-missing",
+        "target-currency-required"
+      ],
+      "currencies": [
+        "CNY",
+        "HKD",
+        "USD"
+      ]
+    }
+  },
+  "note": "One full F call only. Actual isolated backup, not the separate 83-fill browser seed. No provider/network/service or business database access; no fills, symbols, account identities or financial amounts exported. This is not a 365-day benchmark."
+}

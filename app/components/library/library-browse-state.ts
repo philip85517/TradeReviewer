@@ -26,6 +26,7 @@ import type { LibraryFxSnapshot } from "../../lib/reviews/library-performance";
 import type {
   TradeLibraryEntry,
 } from "../../lib/trades/library";
+import { tradeExecutionTradingDate } from "../../lib/trades/library";
 import type { TradeNature } from "../../lib/trades/types";
 
 export type TradeLibraryBrowseMode = "queue" | "stocks";
@@ -52,6 +53,10 @@ export type TradeLibraryBrowseState = {
   /** Inclusive final-close trading-date range used by both stock and queue views. */
   closeDateFrom?: string | null;
   closeDateTo?: string | null;
+  /** Ordinary homepage collection: execution membership, never a close-date statistic. */
+  executionDateFrom?: string | null;
+  executionDateTo?: string | null;
+  collectionInstrumentId?: string | null;
   /** Homepage-only room filters; shared nature/account/run stay in sharedScope. */
   roomFilters?: TradeLibraryRoomFilters | null;
   tradeNature: TradeNature | "all";
@@ -98,6 +103,9 @@ function defaultStateForMode(mode: TradeLibraryBrowseMode): TradeLibraryBrowseSt
     year: "all",
     closeDateFrom: null,
     closeDateTo: null,
+    executionDateFrom: null,
+    executionDateTo: null,
+    collectionInstrumentId: null,
     roomFilters: null,
     tradeNature: "live",
     simulationRunId: "all",
@@ -185,6 +193,9 @@ export function normalizeTradeLibraryBrowseState(
     year: persisted.year ?? queueFilter?.year ?? defaults.year,
     closeDateFrom: normalizeDate(persisted.closeDateFrom ?? defaults.closeDateFrom),
     closeDateTo: normalizeDate(persisted.closeDateTo ?? defaults.closeDateTo),
+    executionDateFrom: normalizeDate(persisted.executionDateFrom),
+    executionDateTo: normalizeDate(persisted.executionDateTo),
+    collectionInstrumentId: persisted.collectionInstrumentId ?? null,
     roomFilters: normalizeRoomFilters(persisted.roomFilters ?? defaults.roomFilters),
     tradeNature: (persisted.tradeNature ?? queueFilter?.nature ?? defaults.tradeNature) as TradeLibraryBrowseState["tradeNature"],
     simulationRunId: persisted.simulationRunId ?? queueFilter?.simulationRunId ?? defaults.simulationRunId,
@@ -251,6 +262,9 @@ export function tradeLibraryBrowseRangeKey(
     state.year,
     state.closeDateFrom,
     state.closeDateTo,
+    state.executionDateFrom,
+    state.executionDateTo,
+    state.collectionInstrumentId,
     state.tradeNature,
     state.simulationRunId,
     state.reviewStatus,
@@ -332,6 +346,11 @@ function matchesCloseDateRange(
   return (!from || date >= from) && (!to || date <= to);
 }
 
+function matchesExecutionDate(execution: TradeLibraryEntry["executions"][number], range: Pick<TradeLibraryBrowseState, "executionDateFrom" | "executionDateTo">) {
+  const date = tradeExecutionTradingDate(execution);
+  return (!range.executionDateFrom || date >= range.executionDateFrom) && (!range.executionDateTo || date <= range.executionDateTo);
+}
+
 function isPerformanceSort(sort: ReviewQueueSort) {
   return sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low";
 }
@@ -401,6 +420,8 @@ export function buildTradeLibraryBrowseRows(
   const brokerIds = normalizeBrokerIds(state.brokers);
   const roomRowKeys = roomFilterRowKeys(entries, state, instrumentMetadata);
   const rows = buildReviewQueue(entries, { ...filter, brokers: [], sort: "newest" }).filter(({ entry, item }) =>
+    (!state.collectionInstrumentId || entry.instrument.id === state.collectionInstrumentId) &&
+    (!(state.executionDateFrom || state.executionDateTo) || item.episode.executions.some(execution => matchesExecutionDate(execution, state))) &&
     (roomRowKeys === null || roomRowKeys.has(libraryRowKey({ entry, item }))) &&
     (brokerIds.length === 0 || reviewQueueBrokerTags({ entry, item }).some(tag => brokerIds.includes(tag.id))) &&
     (state.positionStatus === "all" || item.episode.status === state.positionStatus) &&
@@ -440,6 +461,7 @@ type TradeLibraryStockAggregateOptions = {
   includeFinancial?: boolean;
   /** Keep the small cumulative-R display value used by stock rows. */
   includeCumulativeR?: boolean;
+  executionRange?: Pick<TradeLibraryBrowseState, "executionDateFrom" | "executionDateTo">;
 };
 
 /** Aggregate only the already matched episodes, keeping each episode identity. */
@@ -459,7 +481,7 @@ export function aggregateTradeLibraryStocks(
 
   return [...grouped.values()].map(({ template, rows: groupRows }) => {
     const items = groupRows.map(row => row.item);
-    const executions = items.flatMap(item => item.episode.executions);
+    const executions = items.flatMap(item => item.episode.executions).filter(execution => !options.executionRange || matchesExecutionDate(execution, options.executionRange));
     const natures = new Set(groupRows.map(tradeNatureForReviewRow));
     const simulationRuns = new Set(items.map(item => item.episode.simulationRunId ?? template.simulationRunId).filter((value): value is string => Boolean(value)));
     const comparablePerformance = natures.size === 1 && simulationRuns.size <= 1;
@@ -514,10 +536,12 @@ export function aggregateTradeLibraryStocks(
  */
 export function aggregateTradeLibraryStockDisplayEntries(
   rows: ReviewQueueItem[],
+  executionRange?: Pick<TradeLibraryBrowseState, "executionDateFrom" | "executionDateTo">,
 ): TradeLibraryEntry[] {
   return aggregateTradeLibraryStocks(rows, {
     includeFinancial: false,
     includeCumulativeR: true,
+    executionRange,
   });
 }
 
@@ -534,6 +558,9 @@ export function resetTradeLibraryBrowseState(
     year: "all",
     closeDateFrom: null,
     closeDateTo: null,
+    executionDateFrom: null,
+    executionDateTo: null,
+    collectionInstrumentId: null,
     roomFilters: null,
     simulationRunId: "all",
     reviewStatus: "all",
@@ -600,4 +627,12 @@ export function applyTradeNature(
     },
     cleared,
   };
+}
+
+/** Homepage date membership lists fills; statistics retain final-close date semantics. */
+export function tradeLibraryPerformanceFilterState(state: TradeLibraryBrowseState): TradeLibraryBrowseState {
+  if (!state.executionDateFrom && !state.executionDateTo) return state;
+  return { ...state, executionDateFrom: null, executionDateTo: null,
+    closeDateFrom: state.closeDateFrom ?? state.executionDateFrom,
+    closeDateTo: state.closeDateTo ?? state.executionDateTo };
 }

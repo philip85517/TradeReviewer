@@ -1,0 +1,447 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47608) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/performance-chart.test.tsx (29 tests | 2 failed) 1110ms
+     × reserves normal flow for 390px long detail after the plot and restores the default card when closed 35ms
+     × uses a flow detail for a narrow alternating curve when every fitting in-card rectangle intersects it 27ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > controlled daily PerformanceChart > reserves normal flow for 390px long detail after the plot and restores the default card when closed
+TestingLibraryElementError: Unable to find an element by: [data-testid="hp-chart-stage"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前表现日曲线"[39m
+      [33mclass[39m=[32m"hp-performance-chart"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"hp-performance-chart__heading"[39m
+      [36m>[39m
+        [36m<h3>[39m
+          [0m期间净盈亏[0m
+        [36m</h3>[39m
+        [36m<span>[39m
+          [0mCNY[0m
+        [36m</span>[39m
+      [36m</header>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"hp-performance-chart__sr-only"[39m
+        [33mid[39m=[32m"_r_o_-help"[39m
+      [36m>[39m
+        [0m当前表现｜期间净盈亏（按日）[0m
+        [0m。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33maria-describedby[39m=[32m"_r_o_-help _r_o_"[39m
+        [33maria-disabled[39m=[32m"false"[39m
+        [33maria-label[39m=[32m"当前表现｜期间净盈亏（按日）"[39m
+        [33mclass[39m=[32m"hp-performance-chart__graph"[39m
+        [33mrole[39m=[32m"group"[39m
+        [33mtabindex[39m=[32m"0"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mfocusable[39m=[32m"false"[39m
+          [33mheight[39m=[32m"100%"[39m
+          [33mviewBox[39m=[32m"0 0 390 280"[39m
+          [33mwidth[39m=[32m"100%"[39m
+        [36m>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"230"[39m
+              [33my2[39m=[32m"230"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"63"[39m
+              [33my[39m=[32m"234"[39m
+            [36m>[39m
+              [0m-2.00万[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"185"[39m
+              [33my2[39m=[32m"185"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"63"[39m
+              [33my[39m=[32m"189"[39m
+            [36m>[39m
+              [0m-1.00万[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__zero"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"140"[39m
+              [33my2[39m=[32m"140"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"63"[39m
+              [33my[39m=[32m"144"[39m
+            [36m>[39m
+              [0m0.00[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"95"[39m
+              [33my2[39m=[32m"95"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"63"[39m
+              [33my[39m=[32m"99"[39m
+            [36m>[39m
+              [0m1.00万[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"50"[39m
+              [33my2[39m=[32m"50"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mdata-testid[39m=[32m"hp-chart-money-tick"[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"63"[39m
+              [33my[39m=[32m"54"[39m
+            [36m>[39m
+              [0m2.00万[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"75"[39m
+              [33my1[39m=[32m"50"[39m
+              [33my2[39m=[32m"230"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mtext-anchor[39m=[32m"start"[39m
+              [33mx[39m=[32m"75"[39m
+              [33my[39m=[32m"254"[39m
+            [36m>[39m
+              [0m10-01[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"222.5"[39m
+              [33mx2[39m=[32m"222.5"[39m
+              [33my1[39m=[32m"50"[39m
+              [33my2[39m=[32m"230"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mtext-anchor[39m=[32m"middle"[39m
+              [33mx[39m=[32m"222.5"[39m
+              [33my[39m=[32m"254"[39m
+            [36m>[39m
+              [0m10-02[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<g>[39m
+            [36m<line[39m
+              [33mclass[39m=[32m"hp-performance-chart__grid"[39m
+              [33mx1[39m=[32m"370"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"50"[39m
+              [33my2[39m=[32m"230"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"370"[39m
+              [33my[39m=[32m"254"[39m
+            [36m>[39m
+              [0m10-03[0m
+            [36m</text>[39m
+          [36m</g>[39m
+          [36m<path[39m
+            [33mclass[39m=[32m"hp-performance-chart__line"[39m
+            [33md[39m=[32m"M75,140 L222.5,57.1074449 L370,194"[39m
+            [33mdata-testid[39m=[32m"hp-chart-segment"[39m
+          [36m/>[39m
+          [36m<g[39m
+            [33mclass[39m=[32m"hp-performance-chart__locator"[39m
+          [36m>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"222.5"[39m
+              [33mx2[39m=[32m"222.5"[39m
+              [33my1[39m=[32m"50"[39m
+              [33my2[39m=[32m"230"[39m
+            [36m/>[39m
+            [36m<line[39m
+              [33mx1[39m=[32m"75"[39m
+              [33mx2[39m=[32m"370"[39m
+              [33my1[39m=[32m"57.1074449"[39m
+              [33my2[39m=[32m"57.1074449"[39m
+            [36m/>[39m
+            [36m<rect[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mwidth[39m=[32m"68"[39m
+              [33mx[39m=[32m"4"[39m
+              [33my[39m=[32m"47.1074449"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mtext-anchor[39m=[32m"end"[39m
+              [33mx[39m=[32m"67"[39m
+              [33my[39m=[32m"61.1074449"[39m
+            [36m>[39m
+              [0m+1.84万[0m
+            [36m</text>[39m
+            [36m<rect[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mwidth[39m=[32m"80"[39m
+              [33mx[39m=[32m"182.5"[39m
+              [33my[39m=[32m"238"[39m
+            [36m/>[39m
+            [36m<text[39m
+              [33mtext-anchor[39m=[32m"middle"[39m
+              [33mx[39m=[32m"222.5"[39m
+              [33my[39m=[32m"252"[39m
+            [36m>[39m
+              [0m2026-10-02[0m
+            [36m</text>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"222.5"[39m
+              [33mcy[39m=[32m"57.1074449"[39m
+              [33mdata-testid[39m=[32m"hp-chart-marker"[39m
+              [33mr[39m=[32m"3"[39m
+            [36m/>[39m
+          [36m</g>[39m
+          [36m<rect[39m
+            [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+            [33mdata-testid[39m=[32m"hp-chart-point-2026-10-01"[39m
+            [33mheight[39m=[32m"180"[39m
+            [33mwidth[39m=[32m"73.75"[39m
+            [33mx[39m=[32m"75"[39m
+            [33my[39m=[32m"50"[39m
+          [36m/>[39m
+          [36m<rect[39m
+            [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+            [33mdata-testid[39m=[32m"hp-chart-point-2026-10-02"[39m
+            [33mheight[39m=[32m"180"[39m
+            [33mwidth[39m=[32m"147.5"[39m
+            [33mx[39m=[32m"148.75"[39m
+            [33my[39m=[32m"50"[39m
+          [36m/>[39m
+          [36m<rect[39m
+            [33mclass[39m=[32m"hp-performance-chart__hit"[39m
+            [33mdata-testid[39m=[32m"hp-chart-point-2026-10-03"[39m
+            [33mheight[39m=[32m"180"[39m
+            [33mwidth[39m=[32m"73.75"[39m
+            [33mx[39m=[32m"296.25"[39m
+            [33my[39m=[32m"50"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mclass[39m=[32m"hp-performance-chart__detail"[39m
+        [33mdata-pinned[39m=[32m"false"[39m
+        [33mdata-state[39m=[32m"value"[39m
+        [33mid[39m=[32m"_r_o_"[39m
+        [33mrole[39m=[32m"tooltip"[39m
+        [33mstyle[39m=[32m"left: 88.5px; top: 12px;"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-performance-chart__detail-heading"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m2026-10-02[0m
+            [0m [0m
+            [0mCNY[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<dl[39m
+          [33mclass[39m=[32m"hp-performance-chart__fields"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"marketValue"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m当日市值[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"当日市值 CNY 260,102.123400；原币：CNY 260,102.123400；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__neutral "[39m
+              [33mdata-raw-value[39m=[32m"260102.123400"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-marketValue"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"260,102.123400；原币：CNY 260,102.123400；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m260,102.123400[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"unrealizedNet"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m当日浮盈[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"当日浮盈 CNY -23,153.25；原币：CNY -23,153.25；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__negative "[39m
+              [33mdata-raw-value[39m=[32m"-23153.25"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-unrealizedNet"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"-23,153.25；原币：CNY -23,153.25；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m-23,153.25[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"lifetimeRealizedNet"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m累计已实现[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"累计已实现 CNY 0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__neutral "[39m
+              [33mdata-raw-value[39m=[32m"0"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-lifetimeRealizedNet"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m0.00[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"lifetimeNet"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m累计净盈亏[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"累计净盈亏 CNY +35,393.34；原币：CNY 35,393.34；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__positive "[39m
+              [33mdata-raw-value[39m=[32m"35393.34"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-lifetimeNet"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"+35,393.34；原币：CNY 35,393.34；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m+35,393.34[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"net"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m期间净盈亏[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"期间净盈亏 CNY +18,420.5678；原币：CNY 18,420.5678；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__positive hp-performance-chart__period-net"[39m
+              [33mdata-raw-value[39m=[32m"18420.5678"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-net"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"+18,420.5678；原币：CNY 18,420.5678；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m+18,420.5678[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-performance-chart__field"[39m
+            [33mdata-field[39m=[32m"periodFees"[39m
+            [33mdata-testid[39m=[32m"hp-chart-field"[39m
+          [36m>[39m
+            [36m<dt>[39m
+              [0m期间费用[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33maria-label[39m=[32m"期间费用 CNY 640.0010；原币：CNY 640.0010；同币种，无需换汇；覆盖 1/1"[39m
+              [33mclass[39m=[32m"hp-performance-chart__neutral "[39m
+              [33mdata-raw-value[39m=[32m"640.0010"[39m
+              [33mdata-testid[39m=[32m"hp-chart-value-periodFees"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtitle[39m=[32m"640.0010；原币：CNY 640.0010；同币种，无需换汇；覆盖 1/1"[39m
+            [36m>[39m
+              [0m640.0010[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+        [36m</dl>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<section[39m
+      [33mdata-testid[39m=[32m"next-module"[39m
+    [36m>[39m
+      [0m下一模块[0m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:293:26
+    291|     fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
+    292|     const card = screen.getByRole("region", { name: "当前表现日曲线" });
+    293|     const stage = screen.getByTestId("hp-chart-stage");
+       |                          ^
+    294|     expect(stage).toHaveStyle({ height: "280px" });
+    295|     expect(detail()).toHaveAttribute("data-placement", "below");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > controlled daily PerformanceChart > uses a flow detail for a narrow alternating curve when every fitting in-card rectangle intersects it
+Error: expect(element).toHaveAttribute("data-placement", "below") // element.getAttribute("data-placement") === "below"
+
+Expected the element to have attribute:
+  data-placement="below"
+Received:
+  null
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:321:22
+    319|     render(<PerformanceChart series={bundle(dates)} reportCurrency="CN…
+    320|     fireEvent.focus(graph());
+    321|     expect(detail()).toHaveAttribute("data-placement", "below");
+       |                      ^
+    322|     expect(detail()).toHaveStyle({ position: "relative" });
+    323|     expect(Number.parseFloat(detail().style.left) + 264).toBeLessThanO…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 27 passed (29)
+   Start at  06:27:53
+   Duration  3.09s (transform 173ms, setup 199ms, import 334ms, tests 1.11s, environment 1.00s)
+

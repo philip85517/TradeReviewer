@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-22T21:24:36.492252+00:00",
+  "comparedFiles": 825,
+  "changedFiles": [
+    "app/components/homepage-v25/home-surface.css"
+  ],
+  "ownedCssBeforeSha256": "b7160f103035966877256ecb04aaf4d10a185af272a6c3476b5cbee5771f7cb8",
+  "ownedCssAfterSha256": "765c420c5d5f6eac81e56626786b4421fdd39925dcb071facac7561446493fbf",
+  "protectedFilesChanged": []
+}

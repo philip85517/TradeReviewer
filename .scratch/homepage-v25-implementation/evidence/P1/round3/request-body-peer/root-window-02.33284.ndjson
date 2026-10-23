@@ -1,0 +1,2 @@
+{"phase":"candidate-preload","at":"2026-10-22T19:57:20.640Z","pid":33284,"node":"v26.0.0","adapter":"srvx/node","protocol":"request-body-peer-v1"}
+{"at":"2026-10-22T19:57:20.642Z","monotonicMs":178.078531,"pid":33284,"seq":1,"phase":"observer-ready","maxEvents":2000,"maxRequests":200}

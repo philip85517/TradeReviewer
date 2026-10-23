@@ -1,0 +1,95 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:53669) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx (1 test | 1 failed) 274ms
+   × a currency-context invalidation stays closed when the original context returns without another activation 272ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx > a currency-context invalidation stays closed when the original context returns without another activation
+Error: a dismissed detail must not resurrect solely because a display context returns: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-labelledby="_r_0_-detail-title"
+  aria-modal="false"
+  class="hp-metric-cards__detail"
+  id="_r_0_-detail"
+  role="dialog"
+  style="left: 24px; top: 8px;"
+  tabindex="-1"
+>
+  <div
+    class="hp-metric-cards__detail-header"
+  >
+    <h4
+      id="_r_0_-detail-title"
+    >
+      期间净盈亏
+       · 口径详情
+    </h4>
+    <button
+      aria-label="关闭详情"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+  <p>
+    期间已实现，加上期末与期初浮盈的差额。期间净盈亏 = 期间已实现 + 期末浮盈 − 期初浮盈。
+  </p>
+  <p
+    class="hp-metric-cards__context"
+  >
+    期间 2026-10-01 至 2026-10-02 · 上海时区
+  </p>
+  <dl
+    class="hp-metric-cards__facts"
+  >
+    <dt>
+      完整金额
+    </dt>
+    <dd>
+      100.0000 CNY
+    </dd>
+    <dt>
+      覆盖数量
+    </dt>
+    <dd>
+      1 / 1
+    </dd>
+    <dt>
+      原币金额
+    </dt>
+    <dd>
+      <span>
+        100.0000
+         
+        CNY
+      </span>
+    </dd>
+    <dt>
+      汇率来源
+    </dt>
+    <dd>
+      同币种，无需换汇
+    </dd>
+  </dl>
+</div> instead
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx:49:126
+     47|
+     48|   mounted.rerender(<><button>外部阅读位置</button><MetricCards series={serie…
+     49|   expect(screen.queryByRole("dialog"), "a dismissed detail must not re…
+       |                                                                                                                              ^
+     50|   expect(screen.getByRole("button", { name: "外部阅读位置" })).toHaveFocus();
+     51| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  07:24:15
+   Duration  1.97s (transform 105ms, setup 197ms, import 168ms, tests 274ms, environment 957ms)
+

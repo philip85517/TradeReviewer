@@ -1,0 +1,29 @@
+{
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/SHA256SUMS": {
+    "entries": 36,
+    "all_match": true
+  },
+  ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/SHA256SUMS": {
+    "entries": 30,
+    "all_match": true
+  },
+  "original28_test_bodies": {
+    "unchanged": true,
+    "allowed_import_additions": [
+      "act",
+      "fireEvent"
+    ]
+  },
+  "original_independent": {
+    "sha256": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434",
+    "unchanged": true
+  },
+  "ROOT-ACCEPTANCE-2.md": {
+    "sha256": "ed27d00ab6abcde0fb94db9ad9359456f5420411b658db475e72c62a409f75da",
+    "unchanged": true
+  },
+  "ROOT-CANDIDATE3-DISPATCH.md": {
+    "sha256": "61f4359ad6af5bc2bc45cb784ca704f857f095c9652c795fee02de40ee2bbd94",
+    "unchanged": true
+  }
+}

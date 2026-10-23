@@ -1,0 +1,57 @@
+{
+  "checks": [
+    "PASS baseline snapshot contribution-bars.tsx",
+    "PASS baseline snapshot contribution-bars.css",
+    "PASS baseline snapshot contribution-bars.test.tsx",
+    "PASS all original22 test bodies unchanged; new6 appended before final suite closure",
+    "PASS 36 pinned candidate1 evidence artifacts unchanged",
+    "PASS original independent source/root acceptance/root dispatch unchanged",
+    "PASS exit0 GREEN.log",
+    "PASS exit0 INDEPENDENT.log",
+    "PASS exit0 typecheck.log",
+    "PASS exit0 lint.log",
+    "PASS exit0 GREEN-styles.log",
+    "PASS exit0 style-baseline-contract.log"
+  ],
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "5a94ee3ff76e32993fe2c4791a83b40e877a7344\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all",
+        "--",
+        "app/components/homepage-v25/contribution-bars.tsx",
+        "app/components/homepage-v25/contribution-bars.css",
+        "app/components/homepage-v25/contribution-bars.test.tsx",
+        ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2"
+      ],
+      "exit": 0,
+      "stdout": "?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/CONTROL-STATE-MATRIX.md\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/CORRECTIONS.patch\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/DESIGN-COVERAGE.md\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/GREEN-independent.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/GREEN-lifecycle.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/GREEN-styles.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/GREEN.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/INDEPENDENT.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/INPUT-SHA256.json\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/NEW-FILES.patch\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/PRODUCT-SHA256SUMS\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/READ-SOURCES-SHA256SUMS\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/RED-independent.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/RED-lifecycle.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/RED-styles.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/REPORT.md\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/SELF-REVIEW.md\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.css.before.txt\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.test.tsx.before.txt\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/contribution-bars.tsx.before.txt\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/diff-commands.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/lint.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/runtime.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/style-baseline-contract.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/styles-after-M02.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/typecheck.log\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/verify-corrections.mjs\n?? .scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/vitest-independent.config.mjs\n?? app/components/homepage-v25/contribution-bars.css\n?? app/components/homepage-v25/contribution-bars.test.tsx\n?? app/components/homepage-v25/contribution-bars.tsx\n",
+      "stderr": ""
+    }
+  ],
+  "productHashes": {
+    "app/components/homepage-v25/contribution-bars.tsx": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+    "app/components/homepage-v25/contribution-bars.css": "38fec37c82993b162c9aeebd5763829e9c0cc7b5558e9a24e0a2c79cae346213",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "35ec77854673a9a986eba6926e25c7df39fa9dfcbcb439e1be8b604312ddc198"
+  },
+  "logHashes": {
+    "GREEN.log": "ecc55fe3e71f98e446a701dc2dcaaa715777e12302198bda183597dc9cac1794",
+    "INDEPENDENT.log": "6366a68daede1e9ec1729e8db3caf964eb29b781039cc32a1cdf54b9e99449bc",
+    "typecheck.log": "6048db6abf04a49f1c3f804a30e253934979a94bd462e874ffb5f478b29e04b8",
+    "lint.log": "9b5eabfe07054fd2de9200c0cd30889ff30b8b47701a3ffa05f9f3a28e717c59",
+    "GREEN-styles.log": "9658f1f75366ec761f57674966d426b300a8fec1bd7851cd2299fc6a92d886aa",
+    "style-baseline-contract.log": "f80553b8ee5cede37b39aa515cd49b19015cbda721b77966b0d13585536d55d5"
+  }
+}

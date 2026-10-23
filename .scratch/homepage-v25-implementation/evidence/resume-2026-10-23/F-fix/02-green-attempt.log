@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:99522) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (37 tests | 1 failed) 108ms
+     × reports missing market data and FX instead of manufacturing zero 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage v2.5 financial projection > reports missing market data and FX instead of manufacturing zero
+AssertionError: expected '0' to be null
+
+- Expected:
+null
+
++ Received:
+"0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:267:45
+    265|     expect(result.closingUnrealized.value).toBeNull();
+    266|     expect(result.closingUnrealized.available).toBe(false);
+    267|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+    268|     expect(result.reasons).toEqual(expect.arrayContaining(["quote-miss…
+    269|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 54 passed (55)
+   Start at  00:33:08
+   Duration  3.32s (transform 354ms, setup 0ms, import 747ms, tests 514ms, environment 1ms)
+

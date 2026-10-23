@@ -1,0 +1,16 @@
+Initial synthetic observer-effect probe, fixed Node v26.0.0: exit 1.
+The synthetic Readable omitted IncomingMessage.rawHeaders. This is a diagnostic fixture defect,
+not the original disturbed/locked error. Correction adds only rawHeaders to the synthetic object.
+The original consumed/locked root matrix was not rerun.
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at get _headers (node_modules/srvx/dist/adapters/node.mjs:154:28)
+    at Headers.entries (node_modules/srvx/dist/adapters/node.mjs:180:16)
+    at [Symbol.iterator] (node_modules/srvx/dist/adapters/node.mjs:183:16)
+    at Object.sequence<sequence<ByteString>> (node:internal/deps/undici/undici:4898:57)
+    at webidl.converters.HeadersInit (node:internal/deps/undici/undici:11305:69)
+    at Object.RequestInit (node:internal/deps/undici/undici:4985:21)
+    at new Request (node:internal/deps/undici/undici:11850:34)
+    at get _request (node_modules/srvx/dist/adapters/node.mjs:274:21)
+    at Request.get (observer-effect-probe.mjs:14:56)
+    at desc.get [as bodyUsed] (node_modules/srvx/dist/_chunks/_url.mjs:11:16)

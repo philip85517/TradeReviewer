@@ -1,0 +1,770 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:32604) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/home-surface.test.tsx (11 tests | 1 failed | 10 skipped) 458ms
+     × returns to the exact non-default holding page through the visible source action without navigating 457ms
+ ❯ app/components/homepage-v25/search-surface.test.tsx (4 tests | 1 failed | 3 skipped) 545ms
+     × returns metadata-only detail to its selected search result and scroll through the visible source action 543ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > returns to the exact non-default holding page through the visible source action without navigating
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "返回原持仓行第 2 页 · 恢复原滚动位置"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "贵州茅台 0":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "关闭持仓详情":
+  [36m<button[39m
+    [33maria-label[39m=[32m"关闭持仓详情"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "数量完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数量完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "成本价完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"成本价完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "持仓市值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"持仓市值完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "持仓浮动盈亏完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"持仓浮动盈亏完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "最新价完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"最新价完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-detail-evidence"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "更新数据":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------contentinfo:
+
+  Name "":
+  [36m<footer />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "查看交易":
+  [36m<button[39m
+    [33mclass[39m=[32m"hp-primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-label[39m=[32m"贵州茅台 0 持仓详情"[39m
+  [33maria-modal[39m=[32m"true"[39m
+  [33mclass[39m=[32m"hp-detail-dialog"[39m
+  [33mrole[39m=[32m"dialog"[39m
+[36m>[39m
+  [36m<header>[39m
+    [36m<div>[39m
+      [36m<h2>[39m
+        [0m贵州茅台 0[0m
+      [36m</h2>[39m
+      [36m<p>[39m
+        [0mSSE:600519[0m
+        [0m · [0m
+        [0mA股·沪市[0m
+        [0m · [0m
+        [0mCNY[0m
+        [0m · [0m
+        [0m类别未知[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"关闭持仓详情"[39m
+      [33mclass[39m=[32m"hp-icon-button"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"lucide lucide-x"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mheight[39m=[32m"18"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+        [33mwidth[39m=[32m"18"[39m
+        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M18 6 6 18"[39m
+        [36m/>[39m
+        [36m<path[39m
+          [33md[39m=[32m"m6 6 12 12"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</button>[39m
+  [36m</header>[39m
+  [36m<dl[39m
+    [33maria-label[39m=[32m"核心持仓指标"[39m
+    [33mclass[39m=[32m"hp-detail-values"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m数量[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"数量完整值"[39m
+          [33mclass[39m=[32m"hp-value "[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m2[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m成本价([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"成本价完整值"[39m
+          [33mclass[39m=[32m"hp-value "[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m100.00[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓市值([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"持仓市值完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓浮动盈亏([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"持仓浮动盈亏完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+  [36m</dl>[39m
+  [36m<dl[39m
+    [33maria-label[39m=[32m"持仓补充信息"[39m
+    [33mclass[39m=[32m"hp-detail-secondary"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m最新价([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"最新价完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m待更新[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m账户[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [0m实盘一[0m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓天数[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [0m1天[0m
+      [36m</dd>[39m
+    [36m</div>[39m
+  [36m</dl>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-detail-evidence"[39m
+  [36m>[39m
+    [0m行情 缺失；报告币种 CNY；汇率 未提供，同币种无需换算[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-detail-reasons"[39m
+  [36m>[39m
+    [36m<p>[39m
+      [0m缺少当前截点前已完成的原始日线行情[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m更新数据[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<footer>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"hp-primary"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m查看交易[0m
+    [36m</button>[39m
+  [36m</footer>[39m
+[36m</div>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/home-surface.test.tsx:114:36
+    112|     const dialog = screen.getByRole("dialog");
+    113|     expect(within(dialog).getAllByRole("button", { name: "查看交易" })).to…
+    114|     fireEvent.click(within(dialog).getByRole("button", { name: "返回原持仓行…
+       |                                    ^
+    115|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    116|     expect(trigger).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > returns metadata-only detail to its selected search result and scroll through the visible source action
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "返回原搜索结果 · 恢复原滚动位置"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Meta Platforms":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "关闭标的详情":
+  [36m<button[39m
+    [33maria-label[39m=[32m"关闭标的详情"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "数量完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数量完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "成本价完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"成本价完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "持仓市值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"持仓市值完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "持仓浮动盈亏完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"持仓浮动盈亏完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "当前范围暂无该标的持仓":
+  [36m<dd[39m
+    [33mtitle[39m=[32m"当前范围暂无该标的持仓"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "最新价完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"最新价完整值"[39m
+    [33mclass[39m=[32m"hp-value hp-weak"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-detail-evidence"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "更新数据":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------contentinfo:
+
+  Name "":
+  [36m<footer />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "查看交易":
+  [36m<button[39m
+    [33mclass[39m=[32m"hp-primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-label[39m=[32m"Meta Platforms 标的详情"[39m
+  [33maria-modal[39m=[32m"true"[39m
+  [33mclass[39m=[32m"hp-detail-dialog"[39m
+  [33mrole[39m=[32m"dialog"[39m
+[36m>[39m
+  [36m<header>[39m
+    [36m<div>[39m
+      [36m<h2>[39m
+        [0mMeta Platforms[0m
+      [36m</h2>[39m
+      [36m<p>[39m
+        [0mNASDAQ:META:stock[0m
+        [0m · [0m
+        [0mUS[0m
+        [0m · [0m
+        [0mUSD[0m
+        [0m · [0m
+        [0m股票[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<button[39m
+      [33maria-label[39m=[32m"关闭标的详情"[39m
+      [33mclass[39m=[32m"hp-icon-button"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [36m<svg[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"lucide lucide-x"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mheight[39m=[32m"18"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+        [33mwidth[39m=[32m"18"[39m
+        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+      [36m>[39m
+        [36m<path[39m
+          [33md[39m=[32m"M18 6 6 18"[39m
+        [36m/>[39m
+        [36m<path[39m
+          [33md[39m=[32m"m6 6 12 12"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+    [36m</button>[39m
+  [36m</header>[39m
+  [36m<dl[39m
+    [33maria-label[39m=[32m"核心持仓指标"[39m
+    [33mclass[39m=[32m"hp-detail-values"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m数量[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"数量完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m成本价([0m
+        [0mUSD[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"成本价完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m暂无[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓市值([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"持仓市值完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓浮动盈亏([0m
+        [0mCNY[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"持仓浮动盈亏完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+  [36m</dl>[39m
+  [36m<dl[39m
+    [33maria-label[39m=[32m"持仓补充信息"[39m
+    [33mclass[39m=[32m"hp-detail-secondary"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m最新价([0m
+        [0mUSD[0m
+        [0m)[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [36m<span[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"最新价完整值"[39m
+          [33mclass[39m=[32m"hp-value hp-weak"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [0m待更新[0m
+        [36m</span>[39m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m账户[0m
+      [36m</dt>[39m
+      [36m<dd>[39m
+        [0m当前范围无持仓账户[0m
+      [36m</dd>[39m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<dt>[39m
+        [0m持仓天数[0m
+      [36m</dt>[39m
+      [36m<dd[39m
+        [33mtitle[39m=[32m"当前范围暂无该标的持仓"[39m
+      [36m>[39m
+        [0m—[0m
+      [36m</dd>[39m
+    [36m</div>[39m
+  [36m</dl>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-detail-evidence"[39m
+  [36m>[39m
+    [0m来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-detail-reasons"[39m
+  [36m>[39m
+    [36m<p>[39m
+      [0m当前范围暂无该标的持仓[0m
+    [36m</p>[39m
+    [36m<button[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m更新数据[0m
+    [36m</button>[39m
+  [36m</div>[39m
+  [36m<footer>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"hp-primary"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0m查看交易[0m
+    [36m</button>[39m
+  [36m</footer>[39m
+[36m</div>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/search-surface.test.tsx:93:36
+     91|     const detail = screen.getByRole("dialog", { name: "Meta Platforms …
+     92|     expect(within(detail).getByText(/当前范围暂无该标的持仓/)).toBeInTheDocument(…
+     93|     fireEvent.click(within(detail).getByRole("button", { name: "返回原搜索结…
+       |                                    ^
+     94|     expect(screen.queryByRole("dialog", { name: /标的详情/ })).not.toBeInT…
+     95|     expect(screen.getByRole("dialog", { name: "标的搜索" })).not.toHaveAtt…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 13 skipped (15)
+   Start at  03:52:01
+   Duration  2.79s (transform 964ms, setup 361ms, import 1.57s, tests 1.00s, environment 1.93s)
+

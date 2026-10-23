@@ -1,0 +1,771 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:22025) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (95 tests | 1 failed | 89 skipped) 5997ms
+     × keeps bare global browsing compatible with absent tiger/futu nature while all three explicit natures remain selectable 1113ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps bare global browsing compatible with absent tiger/futu nature while all three explicit natures remain selectable
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "展开未知证券交易回合"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "交易库页面头部":
+  [36m<header[39m
+    [33maria-label[39m=[32m"交易库页面头部"[39m
+    [33mclass[39m=[32m"_header_b70fc6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "交易库":
+  [36m<h1 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "打开待处理事项":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开待处理事项"[39m
+    [33mclass[39m=[32m"_iconButton_846bfb"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开本地用户菜单":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开本地用户菜单"[39m
+    [33mclass[39m=[32m"_userButton_846bfb "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "开始复盘（1）":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary-action"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "重置筛选":
+  [36m<button[39m
+    [33mclass[39m=[32m"secondary-action"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "高级筛选（1）":
+  [36m<button[39m
+    [33mclass[39m=[32m"secondary-action"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "移除模拟运行：边界证券（600519） · BST3":
+  [36m<button[39m
+    [33maria-label[39m=[32m"移除模拟运行：边界证券（600519） · BST3"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "共享范围":
+  [36m<div[39m
+    [33maria-label[39m=[32m"共享范围"[39m
+    [33mclass[39m=[32m"_scopeControls_b70fc6"[39m
+    [33mdata-header-scope-controls[39m=[32m"true"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "交易性质":
+  [36m<select[39m
+    [33maria-label[39m=[32m"交易性质"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "共享账户":
+  [36m<select[39m
+    [33maria-label[39m=[32m"共享账户"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "共享模拟运行":
+  [36m<select[39m
+    [33maria-label[39m=[32m"共享模拟运行"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "报告计价":
+  [36m<select[39m
+    [33maria-label[39m=[32m"报告计价"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "按市场筛选":
+  [36m<select[39m
+    [33maria-label[39m=[32m"按市场筛选"[39m
+  [36m/>[39m
+
+  Name "按复盘状态筛选":
+  [36m<select[39m
+    [33maria-label[39m=[32m"按复盘状态筛选"[39m
+  [36m/>[39m
+
+  Name "交易库排序":
+  [36m<select[39m
+    [33maria-label[39m=[32m"交易库排序"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "实盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"live"[39m
+  [36m/>[39m
+
+  Name "模拟盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"simulation"[39m
+  [36m/>[39m
+
+  Name "来源未知":
+  [36m<option[39m
+    [33mvalue[39m=[32m"unknown"[39m
+  [36m/>[39m
+
+  Name "全部账户":
+  [36m<option[39m
+    [33mvalue[39m=[32m"all"[39m
+  [36m/>[39m
+
+  Name "explicit-simulation":
+  [36m<option[39m
+    [33mvalue[39m=[32m"explicit-simulation"[39m
+  [36m/>[39m
+
+  Name "可选":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "边界证券（600519） · BST3":
+  [36m<option[39m
+    [33mvalue[39m=[32m"boundary-run"[39m
+  [36m/>[39m
+
+  Name "原币":
+  [36m<option[39m
+    [33mvalue[39m=[32m"original"[39m
+  [36m/>[39m
+
+  Name "CNY参考":
+  [36m<option[39m
+    [33mvalue[39m=[32m"CNY"[39m
+  [36m/>[39m
+
+  Name "HKD参考":
+  [36m<option[39m
+    [33mvalue[39m=[32m"HKD"[39m
+  [36m/>[39m
+
+  Name "全部":
+  [36m<option[39m
+    [33mvalue[39m=[32m"all"[39m
+  [36m/>[39m
+
+  Name "A股":
+  [36m<option[39m
+    [33mvalue[39m=[32m"a-share"[39m
+  [36m/>[39m
+
+  Name "沪市":
+  [36m<option[39m
+    [33mvalue[39m=[32m"CN-SH"[39m
+  [36m/>[39m
+
+  Name "全部回合":
+  [36m<option[39m
+    [33mvalue[39m=[32m"all"[39m
+  [36m/>[39m
+
+  Name "待复盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"pending"[39m
+  [36m/>[39m
+
+  Name "已复盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"completed"[39m
+  [36m/>[39m
+
+  Name "最近成交在前":
+  [36m<option[39m
+    [33mvalue[39m=[32m"newest"[39m
+  [36m/>[39m
+
+  Name "最早成交在前":
+  [36m<option[39m
+    [33mvalue[39m=[32m"oldest"[39m
+  [36m/>[39m
+
+  Name "未复盘优先":
+  [36m<option[39m
+    [33mvalue[39m=[32m"pending-first"[39m
+  [36m/>[39m
+
+  Name "已复盘优先":
+  [36m<option[39m
+    [33mvalue[39m=[32m"completed-first"[39m
+  [36m/>[39m
+
+  Name "净盈利优先":
+  [36m<option[39m
+    [33mvalue[39m=[32m"net-profit"[39m
+  [36m/>[39m
+
+  Name "净亏损优先":
+  [36m<option[39m
+    [33mvalue[39m=[32m"net-loss"[39m
+  [36m/>[39m
+
+  Name "收益率高到低":
+  [36m<option[39m
+    [33mvalue[39m=[32m"return-high"[39m
+  [36m/>[39m
+
+  Name "收益率低到高":
+  [36m<option[39m
+    [33mvalue[39m=[32m"return-low"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "搜索已导入标的":
+  [36m<input[39m
+    [33maria-label[39m=[32m"搜索已导入标的"[39m
+    [33mplaceholder[39m=[32m"搜索已导入标的"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "搜索股票":
+  [36m<input[39m
+    [33maria-label[39m=[32m"搜索股票"[39m
+    [33mplaceholder[39m=[32m"名称或代码"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tablist:
+
+  Name "交易库浏览视图":
+  [36m<div[39m
+    [33maria-label[39m=[32m"交易库浏览视图"[39m
+    [33mclass[39m=[32m"module-tabs"[39m
+    [33mrole[39m=[32m"tablist"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tab:
+
+  Name "按标的浏览":
+  [36m<button[39m
+    [33maria-selected[39m=[32m"true"[39m
+    [33mdata-mode[39m=[32m"stocks"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按回合浏览":
+  [36m<button[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mdata-mode[39m=[32m"queue"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "人民币汇率":
+  [36m<section[39m
+    [33maria-label[39m=[32m"人民币汇率"[39m
+    [33mclass[39m=[32m"fx-rates-control"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "人民币汇率":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Frankfurter（ECB 参考汇率）":
+  [36m<a[39m
+    [33mhref[39m=[32m"https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"[39m
+    [33mrel[39m=[32m"noreferrer"[39m
+    [33mtarget[39m=[32m"_blank"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "刷新人民币汇率":
+  [36m<button[39m
+    [33maria-label[39m=[32m"刷新人民币汇率"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "当前筛选绩效汇总":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前筛选绩效汇总"[39m
+    [33mclass[39m=[32m"_summary_1d6eaa library-performance-summary"[39m
+  [36m/>[39m
+
+  Name "原币金额":
+  [36m<section[39m
+    [33maria-label[39m=[32m"原币金额"[39m
+    [33mclass[39m=[32m"_rawSection_1d6eaa"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_mobileSummary_1d6eaa"[39m
+  [36m/>[39m
+
+  Name "原币绩效汇总":
+  [36m<details[39m
+    [33maria-label[39m=[32m"原币绩效汇总"[39m
+    [33mclass[39m=[32m"_disclosure_1d6eaa"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_header_1d6eaa"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "绩效汇总":
+  [36m<h2 />[39m
+
+  Name "原币金额":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"_rawList_1d6eaa"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"_rawRow_1d6eaa"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------group:
+
+  Name "股票列表排序":
+  [36m<div[39m
+    [33maria-label[39m=[32m"股票列表排序"[39m
+    [33mclass[39m=[32m"library-stock-head"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_fullName_0578ee"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "最近成交，当前降序，点击切换升序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"最近成交，当前降序，点击切换升序"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "净盈亏，点击按降序排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"净盈亏，点击按降序排序"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "收益率，点击按降序排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"收益率，点击按降序排序"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "上一页":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一页":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "收起边界证券交易回合":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"stock-rounds-CN-SH-600519"[39m
+    [33maria-expanded[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"收起边界证券交易回合"[39m
+    [33mclass[39m=[32m"library-stock-row"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开边界证券第1次交易 explicit-simulation":
+  [36m<button[39m
+    [33maria-label[39m=[32m"打开边界证券第1次交易 explicit-simulation"[39m
+    [33mclass[39m=[32m"_roundRow_0578ee"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "股票列表分页":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"股票列表分页"[39m
+    [33mclass[39m=[32m"_pagination_0578ee"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  [36m<em[39m
+    [33mclass[39m=[32m"trade-nature-badge simulation"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "边界证券交易回合":
+  [36m<section[39m
+    [33maria-label[39m=[32m"边界证券交易回合"[39m
+    [33mclass[39m=[32m"_roundPanel_0578ee"[39m
+    [33mid[39m=[32m"stock-rounds-CN-SH-600519"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_roundHeader_0578ee"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "模拟运行 · 边界证券（600519） · BST3":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"交易库"[39m
+  [33mclass[39m=[32m"trade-library"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"_shell_b70fc6 libraryUnifiedHeader"[39m
+  [36m>[39m
+    [36m<header[39m
+      [33maria-label[39m=[32m"交易库页面头部"[39m
+      [33mclass[39m=[32m"_header_b70fc6"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_contentRail_b70fc6"[39m
+        [33mdata-content-layout[39m=[32m"wide"[39m
+        [33mdata-content-rail[39m=[32m"true"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_identityRow_b70fc6"[39m
+          [33mdata-header-row[39m=[32m"identity"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_identity_b70fc6"[39m
+          [36m>[39m
+            [36m<h1>[39m
+              [0m交易库[0m
+            [36m</h1>[39m
+            [36m<p>[39m
+              [0m浏览已导入交易并开始复盘[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_identityTools_b70fc6"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_status_b70fc6"[39m
+            [36m>[39m
+              [36m<strong>[39m
+                [0m1[0m
+                [0m 个标的 · [0m
+                [0m1[0m
+                [0m 个回合[0m
+              [36m</strong>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"交易室全局工具"[39m
+              [33mclass[39m=[32m"_tools_846bfb _utilities_846bfb"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"_popoverAnchor_846bfb"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-label[39m=[32m"打开待处理事项"[39m
+                  [33mclass[39m=[32m"_iconButton_846bfb"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-bell"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"18"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"18"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M10.268 21a2 2 0 0 0 3.464 0"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"1 条待处理事项"[39m
+                    [33mclass[39m=[32m"_badge_846bfb"[39m
+                  [36m>[39m
+                    [0m1[0m
+                  [36m</span>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"_popoverAnchor_846bfb"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-label[39m=[32m"打开本地用户菜单"[39m
+                  [33mclass[39m=[32m"_userButton_846bfb "[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_avatar_846bfb"[39m
+                  [36m>[39m
+                    [0mT[0m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_userLabel_846bfb"[39m
+                  [36m>[39m
+                    [0m本地用户[0m
+                  [36m</span>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_scopeRow_b70fc6"[39m
+          [33mdata-has-scope-actions[39m=[32m"false"[39m
+          [33mdata-header-row[39m=[32m"scope"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"共享范围"[39m
+            [33mclass[39m=[32m"_scopeControls_b70fc6"[39m
+            [33mdata-header-scope-controls[39m=[32m"true"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"共享交易范围"[39m
+              [33mclass[39m=[32m"library-scope-controls"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"_selectField_eb9172 library-scope-choice"[39m
+                [33mdata-scope-field[39m=[32m"nature"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m性质[0m
+                [36m</span>[39m
+                [36m<select[39m
+                  [33maria-label[39m=[32m"交易性质"[39m
+                  [33mdata-control-size[39m=[32m"standard"[39m
+                [36m>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"live"[39m
+                  [36m>[39m
+                    [0m实盘[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"simulation"[39m
+                  [36m>[39m
+                    [0m模拟盘[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"unknown"[39m
+                  [36m>[39m
+  ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:753:38
+    751|     expect(within(library).getByRole("button", { name: /^打开边界证券第.* exp…
+    752|     await user.selectOptions(nature, "unknown");
+    753|     await user.click(within(library).getByRole("button", { name: "展开未知…
+       |                                      ^
+    754|     expect(within(library).getByRole("button", { name: /^打开未知证券第.* exp…
+    755|     expect(within(library).queryByRole("button", { name: /^打开边界证券第.* e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 10 passed | 98 skipped (109)
+   Start at  02:18:08
+   Duration  11.20s (transform 3.30s, setup 334ms, import 4.44s, tests 6.11s, environment 1.96s)
+

@@ -1,0 +1,90 @@
+{
+  "frozenAt": "2026-10-22T19:53:48.177861+00:00",
+  "scope": "P3 limited detail visual correction only; not formal P1 round3 or P3 candidate; root independent visual acceptance pending",
+  "files": [
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "sha256": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5",
+      "mtime": "2026-10-22T19:52:42.359810+00:00"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+      "mtime": "2026-10-22T19:52:42.414950+00:00"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "sha256": "799c185a031d35f5f8141a1166eab1c930bb495b457d4544f6c88abeb4ad465f",
+      "mtime": "2026-10-22T19:51:54.888778+00:00"
+    },
+    {
+      "path": "app/components/homepage-v25/search-surface.test.tsx",
+      "sha256": "c2369ebcb6daf32097f54653a9732e45e6bc0318bf2ea3e4e3831143c6c8c788",
+      "mtime": "2026-10-22T19:52:42.466301+00:00"
+    }
+  ],
+  "frozenDependencies": [
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "beforeSha256": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+      "afterSha256": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+      "unchanged": true
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "beforeSha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+      "afterSha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+      "unchanged": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "beforeSha256": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+      "afterSha256": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+      "unchanged": true
+    },
+    {
+      "path": "app/components/homepage-v25/catalog-model.ts",
+      "beforeSha256": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3",
+      "afterSha256": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3",
+      "unchanged": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "beforeSha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "afterSha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "unchanged": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "beforeSha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b",
+      "afterSha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b",
+      "unchanged": true
+    }
+  ],
+  "checks": {
+    "surfaceInteractions": {
+      "exitCode": 0,
+      "passed": 15,
+      "log": "03-surface-interactions-green.log"
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "log": "04-strict-types.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 1,
+      "baselineWarnings": 1,
+      "log": "05-detail-lint.log",
+      "baselineLog": "06-before-lint.log"
+    },
+    "sourceActionRed": {
+      "exitCode": 1,
+      "failed": 2,
+      "log": "02-source-return-red.log"
+    }
+  },
+  "visual": "NOT VERIFIED by implementer; root owns browser and independent comparison",
+  "database": "Not accessed"
+}

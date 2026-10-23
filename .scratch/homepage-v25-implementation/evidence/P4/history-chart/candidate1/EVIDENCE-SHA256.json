@@ -1,0 +1,317 @@
+{
+  "kind": "HistoryChart candidate1 worker freeze evidence",
+  "generated_utc": "2026-10-23T03:19:42.610234+00:00",
+  "products": [
+    {
+      "path": "app/components/homepage-v25/history-chart.tsx",
+      "sha256": "03b9825a52e797b795e6f163697d98acd658d9f2e3a2427747f0d66f0fc4fc5d",
+      "bytes": 19570,
+      "lines": 250
+    },
+    {
+      "path": "app/components/homepage-v25/history-chart.css",
+      "sha256": "0db1c089e2d2522ce3a9e0755df6c47353e719f77cb760d4f2d7d2b652df9dfe",
+      "bytes": 3271,
+      "lines": 39
+    },
+    {
+      "path": "app/components/homepage-v25/history-chart.test.tsx",
+      "sha256": "b1526865de7b34cea7a9465685baa5b6dbbcf7586638fec917fba112ffed0851",
+      "bytes": 34397,
+      "lines": 417
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/ROOT-DISPATCH.md",
+      "sha256": "11b9c387ca5646d1fb652c2d5bef56d06480fc4a3281f4c06f33746bb84f12ee",
+      "bytes": 8007
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/AUTHORIZED-DEVIATIONS.md",
+      "sha256": "4bd8d52a967d2d611d92a6e798fc77eb120b6007ab0f024fd0bee8d1bd1337d7",
+      "bytes": 4969
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/CONTROL-STATE-MATRIX.md",
+      "sha256": "8a74f87227226ef6b73d82d2c7e6f6954f5d15bb77784cb8e731d3daac2b7c20",
+      "bytes": 7388
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/DESIGN-COVERAGE.md",
+      "sha256": "01f449341e5a853df60fe29508388858499f0febb1558fda594dcd43e36f8bdc",
+      "bytes": 6781
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/HARNESS.md",
+      "sha256": "931b924f6d3d6b172838e5b279c3b56016d340784ea4a34e02ee7d3af61d0310",
+      "bytes": 7352
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/MINIMAL-JOURNEY.md",
+      "sha256": "ad733ac260843e763a7434b1a45fab5416a2d87659615b03108b2cc5bf86ac25",
+      "bytes": 3267
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/MOTION-STATIC.md",
+      "sha256": "eacb963637418157d623354935395c4bdfba789c9984d0f3669d20a0d36d9451",
+      "bytes": 2003
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/PLAN.md",
+      "sha256": "1322595467dbeca858da11d3a64ebb2c411dd5044e20d0f2f1df57e51483e557",
+      "bytes": 7027
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/PRODUCT-SHA256.json",
+      "sha256": "66964ee4586c15b51b9b325912d639d1047e06a9786a325cea5937b2ca7cb598",
+      "bytes": 573
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/REPORT.md",
+      "sha256": "1eeae344f94f3a7847309a7933983b88bd8ee3f6284cee6e3f86518cda604968",
+      "bytes": 7239
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/ROOT-MINIMAL-JOURNEY-GATE.md",
+      "sha256": "a7d3b38cbf76bac953ccc90044c5ea703d7497211ff61687e536376e21d55b93",
+      "bytes": 1718
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/complete-new-files.diff",
+      "sha256": "2e3c01dab6b98050c34007e787e7a66df4fd5a50db6a7440b9bfa01b87038237",
+      "bytes": 58594
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-candidate1-final.log",
+      "sha256": "9bea9529387023403fa3ed7f231d5a92de51fbd16f81ed1ead3261455e863b78",
+      "bytes": 10249
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-dense-years.log",
+      "sha256": "8af0936a73bde9f4209f8db3b9bc26296ceac1ec67a646bdf01eb3aade94f7ef",
+      "bytes": 9433
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-final.log",
+      "sha256": "09c1d6c0433bb68194df66d6dd87e98553680eb00b1dd0ccd1d1aa4de1c101ba",
+      "bytes": 8959
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-freeze.log",
+      "sha256": "dff9a2f6da6d5cdff3e385142e72f14613e02a7d9482f94a7fb2f7bb37c8494b",
+      "bytes": 9601
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-label-boundary.log",
+      "sha256": "f5f0b0e31bab25a3f0165acfcc55bbfc9a9a0272ec1236dc26842042d6b0d1f2",
+      "bytes": 10055
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-matrix.log",
+      "sha256": "e1289ad5a96851a045020b759ce5a2303e2298ff3db8790f38b0ed5aae324e72",
+      "bytes": 7060
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-minimal.log",
+      "sha256": "fad1e6c46d41373f1f1c90313549eb5f79a2212753b4e4e5ec07a087314a7c70",
+      "bytes": 972
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-reading-labels.log",
+      "sha256": "74a14b795775b9b61fe245628a1dda133e714067767b1c2ae89b2b2ef5b08306",
+      "bytes": 8458
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-small-extreme-axes.log",
+      "sha256": "993fbc59d6bfc956c9c82eea9907fa7223f30f814c5de406b0fc8d4c94cc2977",
+      "bytes": 8826
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/green-status-slot.log",
+      "sha256": "9062620e3edb6743703ee1477841f7d156d87975f454cd226540bd96d8429218",
+      "bytes": 9043
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-candidate1-final.log",
+      "sha256": "be241250033e6b30f09d225d4f98f44b4874697f225de7ceb2c0e71461dc8443",
+      "bytes": 293
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-final.log",
+      "sha256": "be241250033e6b30f09d225d4f98f44b4874697f225de7ceb2c0e71461dc8443",
+      "bytes": 293
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-freeze.log",
+      "sha256": "be241250033e6b30f09d225d4f98f44b4874697f225de7ceb2c0e71461dc8443",
+      "bytes": 293
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-matrix.log",
+      "sha256": "fdc799b5dc23c8fec480e94ba219a5ca23dd9efc94cf689631e2b667754f3010",
+      "bytes": 270
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-minimal.log",
+      "sha256": "fdc799b5dc23c8fec480e94ba219a5ca23dd9efc94cf689631e2b667754f3010",
+      "bytes": 270
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/lint-reading-labels.log",
+      "sha256": "c198227691adf2cef5eebda97d47345582109152189009c08f4568bdeea41867",
+      "bytes": 563
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-dense-years.log",
+      "sha256": "b8f181d6fc8fbe826428d58696ee779b39dc2a32d740d4db0764c500ec3fd9be",
+      "bytes": 11287
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-extreme-count-axis.log",
+      "sha256": "c03a70ec18b06a9e2d2663650354d38b3d2cb3a20debcf1ad561813f7ff0f1cd",
+      "bytes": 9737
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-focus-endpoint.log",
+      "sha256": "d461cc842e00c98c99a6fd939de6037c480668b8033a2822c2ec6b3aeed1c139",
+      "bytes": 7928
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-label-boundary.log",
+      "sha256": "2b475818f962d17d440ee4a0b353de1e70ce59b05261b96f2f3d5b3dc0cb9a1b",
+      "bytes": 11377
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-matrix.log",
+      "sha256": "c483fa22f46561887b890ed07fb516491b7dc2959275c33a1717cb935ef4216c",
+      "bytes": 197598
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-minimal-feature.log",
+      "sha256": "73eb0b44ea12c47c3b085c41a3b6dedc111dc3d016ca133735fdffb4b055fbd5",
+      "bytes": 2279
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-minimal.log",
+      "sha256": "e90ea9c64cb0481a254152556e4d65de33555c87e7d88954c74e1845adabcd6a",
+      "bytes": 1100
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-reading-labels.log",
+      "sha256": "4788827d70cc24f9c506923dd4d79fd85fb069a39af0d963037b6efac71fc983",
+      "bytes": 11340
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-status-slot.log",
+      "sha256": "8f7874e93fb2cc2316cc1c6d587af92e669aee2ad46bdb366e041c6b41d50956",
+      "bytes": 22132
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/red-subunit-axis.log",
+      "sha256": "8c489f81cbc79b2b2030ec99aad6f8d1956d12bedbf1c112b9388e00adc8e1b1",
+      "bytes": 9577
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-cumulative.png",
+      "sha256": "d7d37d611f91c73839d1792d4f8ef01b3c4a16dbf77bda888a71a918c395ca0b",
+      "bytes": 65413
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-empty.png",
+      "sha256": "407c013ecd601f952925c78448eab954ffd58aceccd609eb78fa2c5079938663",
+      "bytes": 57095
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-error.png",
+      "sha256": "dd40c6446eb47d6e1334dd3928a657edf01711f65b69c8f4587a2b6f6b1d9682",
+      "bytes": 64240
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-extreme.png",
+      "sha256": "f1ea816debdbba1dfc797dc5e31b987bd18985a03b259e4400c9db507bff3ec2",
+      "bytes": 66462
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-rounds.png",
+      "sha256": "ee9bbbfe3f0bb01653b9208c5b1b7f657bbc191ffd3387b3206af8b3953f7801",
+      "bytes": 64987
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-source-missing.png",
+      "sha256": "aabbbb1dbc6be36ed377e9433a5dacfbc59c64cdb620de383437373f4f5be821",
+      "bytes": 64888
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history-stats-win.png",
+      "sha256": "6e5427fd9db9bc2c942b8c86c7c402734ffc742cebd8f50408ab17787a41ae81",
+      "bytes": 67694
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/history.png",
+      "sha256": "7e8916cf041f6dc6f97e65c859b4e5fc5536bd69f2794da6a6866c2a2a19872c",
+      "bytes": 68051
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/references/journeys-year.png",
+      "sha256": "7383d9fa9bfa2eae4a87aa33a218e52ab6a7dd86652a0c504a448fef2da2ce4a",
+      "bytes": 60813
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/run-check.py",
+      "sha256": "b20f373addbc4f8eaaa9beb9732f0898692a6e125a29ba062065f054f0826ea5",
+      "bytes": 585
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/scope-snapshot.txt",
+      "sha256": "e8275a8fb12615fb8f61c8d556547f58f82a8a4e8f28145b7f286d06aef8995c",
+      "bytes": 4783
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-candidate1-final.log",
+      "sha256": "de52921880bfc701a5f699888e249ac0a092fdeb7a7b0ce470c75dabf38404e5",
+      "bytes": 536
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-final-corrected.log",
+      "sha256": "3978d6281c9c9607f8fb55d6d0ff4fb334e79ebf1f7bbdbc13fdb6cffd975606",
+      "bytes": 5264
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-final.log",
+      "sha256": "29bf8789f09b49de717a70827ed85a03ecf597a6d6d1422812df265a8461f17f",
+      "bytes": 900
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-freeze.log",
+      "sha256": "77d3fdd7a0d789d80fdb31f5e60fdea01729a40b66014edffb8f9ef5f551f73a",
+      "bytes": 5264
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-matrix.log",
+      "sha256": "de52921880bfc701a5f699888e249ac0a092fdeb7a7b0ce470c75dabf38404e5",
+      "bytes": 536
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-minimal-corrected.log",
+      "sha256": "de52921880bfc701a5f699888e249ac0a092fdeb7a7b0ce470c75dabf38404e5",
+      "bytes": 536
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/tsc-minimal.log",
+      "sha256": "65964299365e50948bb369f63612f217fc6411d3167a758a6973c6793f3a5631",
+      "bytes": 3241
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P4/history-chart/candidate1/vitest.config.mts",
+      "sha256": "8363ec4716a1f09eab3584cbe919b98135a120d7f0b935b0dc45e58043d3e8d8",
+      "bytes": 539
+    }
+  ],
+  "exclusions": [
+    "This manifest itself",
+    "IMPLEMENTATION-READY.md (contains this manifest hash)",
+    "Files root may add later for independent acceptance"
+  ],
+  "acceptance": "Worker scoped preparation only; final real-browser/visual/data-chain gates remain root-owned NOT VERIFIED."
+}

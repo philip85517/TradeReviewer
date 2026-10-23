@@ -1,0 +1,5 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 6
++					214 text 首页
+The focused UI element is 0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all

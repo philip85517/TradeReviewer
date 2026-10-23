@@ -1,0 +1,64 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:59029) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/replay/position-ledger.test.ts (41 tests | 2 failed | 39 skipped) 16ms
+     × records partial closes and the final flat movement with full precision 13ms
+     × records one reversing raw fill as an actual close and open 1ms
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (152 tests | 2 failed | 150 skipped) 38ms
+     × distinguishes incurred fees from partial and final allocated fees 33ms
+     × splits a legal reversal fee once and retains illegal close direction uncertainty 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam O01/O02 > records partial closes and the final flat movement with full precision
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/replay/position-ledger.test.ts:992:57
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam O01/O02 > records one reversing raw fill as an actual close and open
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/replay/position-ledger.test.ts:1004:57
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O01/O02 > distinguishes incurred fees from partial and final allocated fees
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1105:63
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O01/O02 > splits a legal reversal fee once and retains illegal close direction uncertainty
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1116:63
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 189 skipped (193)
+   Start at  10:59:03
+   Duration  1.98s (transform 694ms, setup 370ms, import 823ms, tests 54ms, environment 1.81s)
+

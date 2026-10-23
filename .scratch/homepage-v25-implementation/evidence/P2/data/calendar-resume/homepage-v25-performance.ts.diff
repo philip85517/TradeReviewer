@@ -1,0 +1,192 @@
+--- input/homepage-v25-performance.ts
++++ app/lib/reviews/homepage-v25-performance.ts
+@@ -1,7 +1,7 @@
+ import Decimal from "decimal.js";
+ import { tradeNatureOf, type Instrument, type TradeExecution, type TradeNature } from "../trades/types";
+ import type { TradeLibraryEntry } from "../trades/library";
+-import type { DailyCandleRecord } from "../market/contracts";
++import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
+ import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
+ import { replayPositionAtPrice, preparePositionLedger, replayPreparedPositionBoundaries, type PreparedPositionLedger, type PositionLedgerSnapshot } from "../replay/position-ledger";
+ import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
+@@ -291,7 +291,7 @@
+   return { boundary, ledger, quantity, grossRealized, openFees: pool, netRealized: grossRealized && pool ? grossRealized.minus(D(ledger.fees)!).plus(pool) : null,
+     pnlReasons: [...pnl], quantityReasons: [...quantityReasons], executions: selected.filter(e => e.source.platform !== "homepage-boundary") };
+ }
+-function quoteFor(input: HomepageV25Input, group: Group, kind: HomepageV25Valuation["kind"], boundary: Boundary): QuoteSelection {
++function quoteFor(input: HomepageV25Input, group: Group, kind: HomepageV25Valuation["kind"], boundary: Boundary, calendar?: BatchMarketCalendar): QuoteSelection {
+   if (input.entries !== undefined) {
+     const market = group.instrument.market;
+     if (market !== "US" && market !== "HK" && market !== "CN-SH" && market !== "CN-SZ") return { quote: null, reason: "quote-market-unsupported" };
+@@ -299,7 +299,7 @@
+     try {
+       // Shanghai dates bound executions and reporting. Daily raw closes have
+       // the exchange's independent knowledge cutoff, including DST/half days.
+-      completed = requiredMarketDataRange(boundary.cursor, boundary.cursor, { market, open: true, now: new Date(boundary.cursor) }).endDate;
++      completed = calendar ? calendar.completed(market, boundary.cursor) : requiredMarketDataRange(boundary.cursor, boundary.cursor, { market, open: true, now: new Date(boundary.cursor) }).endDate;
+     } catch (error) {
+       if (!(error instanceof CalendarOutOfRangeError)) throw error;
+       return { quote: null, reason: "quote-session-unavailable" };
+@@ -311,7 +311,7 @@
+       try {
+         // A stale weekend/holiday raw row can be below the cutoff, so the
+         // candidate itself must also belong to the supported calendar.
+-        if (!expectedTradingDates(market, candidate.tradingDate, candidate.tradingDate).length) continue;
++        if (!(calendar ? calendar.dates(market, candidate.tradingDate, candidate.tradingDate) : expectedTradingDates(market, candidate.tradingDate, candidate.tradingDate)).length) continue;
+       } catch (error) {
+         if (!(error instanceof CalendarOutOfRangeError)) throw error;
+         unconfirmed = true;
+@@ -724,13 +724,43 @@
+   const checkpoint=prepared.checkpoints[selected.length];
+   return finishState(boundary,ledger,selected,new Set(checkpoint.pnl),new Set(checkpoint.quantity),checkpoint.pool===null?null:new Decimal(checkpoint.pool),new Decimal(checkpoint.projectedFees));
+ }
+-function indexedQuote(data: PreparedData, group: Group, boundary: Boundary): QuoteSelection & { coverage: QuoteCoverage } {
++// Construction-only sharing: neither this object nor its maps enter a prepared
++// source/index or retained memo. Instrument selection and coverage stay local.
++class BatchMarketCalendar {
++  private completedSessions = new Map<string, string | CalendarOutOfRangeError>();
++  private tradingDates = new Map<string, string[] | CalendarOutOfRangeError>();
++  private localDays = new Map<string, string>();
++  private formatters = new Map<string, Intl.DateTimeFormat>();
++  private read<T>(cache: Map<string, T | CalendarOutOfRangeError>, key: string, compute: () => T): T {
++    const cached = cache.get(key);
++    if (cached instanceof CalendarOutOfRangeError) throw cached;
++    if (cached !== undefined) return cached;
++    try { const value = compute(); cache.set(key, value); return value; }
++    catch (error) { if (error instanceof CalendarOutOfRangeError) cache.set(key, error); throw error; }
++  }
++  completed(market: SupportedMarket, cursor: string): string {
++    return this.read(this.completedSessions, `${market}|${cursor}`, () => requiredMarketDataRange(cursor, cursor, { market, open: true, now: new Date(cursor) }).endDate);
++  }
++  dates(market: SupportedMarket, start: string, end: string): string[] {
++    return this.read(this.tradingDates, `${market}|${start}|${end}`, () => expectedTradingDates(market, start, end));
++  }
++  localDay(market: SupportedMarket, cursor: string): string {
++    const key = `${market}|${cursor}`, cached = this.localDays.get(key);
++    if (cached !== undefined) return cached;
++    const timeZone = market === "US" ? "America/New_York" : "Asia/Shanghai";
++    let formatter = this.formatters.get(timeZone);
++    if (!formatter) { formatter = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }); this.formatters.set(timeZone, formatter); }
++    const day = formatter.format(new Date(cursor)); this.localDays.set(key, day); return day;
++  }
++  clear() { this.completedSessions.clear(); this.tradingDates.clear(); this.localDays.clear(); this.formatters.clear(); }
++}
++function indexedQuote(data: PreparedData, group: Group, boundary: Boundary, calendar: BatchMarketCalendar): QuoteSelection & { coverage: QuoteCoverage } {
+   data.counts.quoteLookups++;
+   const market = group.instrument.market;
+   const failed = (state: QuoteCoverage["state"], reason: string, requiredCompletedSession: string | null = null) => ({ quote: null, reason, coverage: { state, requiredCompletedSession, selectedDate: null, missingSessions: [], reasons: [reason] } });
+   if (market !== "US" && market !== "HK" && market !== "CN-SH" && market !== "CN-SZ") return failed("unsupported-market", "quote-market-unsupported");
+   try {
+-    const required = requiredMarketDataRange(boundary.cursor, boundary.cursor, { market, open: true, now: new Date(boundary.cursor) }).endDate;
++    const required = calendar.completed(market, boundary.cursor);
+     const quotes = data.quotes.get(group.key) ?? [];
+     let low = 0, high = quotes.length;
+     while (low < high) { const mid = (low + high) >>> 1; if (quotes[mid].tradingDate <= required) low = mid + 1; else high = mid; }
+@@ -740,9 +770,9 @@
+     if (!selected) return failed("quote-missing", "quote-missing", required);
+     const quote: Quote = { date: selected.tradingDate, price: selected.close, currency: selected.currency, source: selected.provider };
+     const invalid = !D(quote.price) || D(quote.price)!.lt(0) || currency(quote.currency) !== currency(group.instrument.currency);
+-    const localDay = new Intl.DateTimeFormat("en-CA", { timeZone: market === "US" ? "America/New_York" : "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(boundary.cursor));
+-    const missingSessions = selected.tradingDate < required ? expectedTradingDates(market, new Date(Date.parse(`${selected.tradingDate}T00:00:00Z`) + 86400000).toISOString().slice(0, 10), required) : [];
+-    const state: QuoteCoverage["state"] = invalid ? "quote-invalid" : missingSessions.length ? "missing-completed-session" : required === localDay ? "complete" : expectedTradingDates(market, localDay, localDay).length ? "session-in-progress-carry" : "market-closed-carry";
++    const localDay = calendar.localDay(market, boundary.cursor);
++    const missingSessions = selected.tradingDate < required ? calendar.dates(market, new Date(Date.parse(`${selected.tradingDate}T00:00:00Z`) + 86400000).toISOString().slice(0, 10), required) : [];
++    const state: QuoteCoverage["state"] = invalid ? "quote-invalid" : missingSessions.length ? "missing-completed-session" : required === localDay ? "complete" : calendar.dates(market, localDay, localDay).length ? "session-in-progress-carry" : "market-closed-carry";
+     const reasons = state === "quote-invalid" ? ["quote-invalid"] : state === "missing-completed-session" ? ["quote-completed-session-missing"] : [];
+     return { quote, coverage: { state, requiredCompletedSession: required, selectedDate: selected.tradingDate, missingSessions, reasons } };
+   } catch (error) { if (!(error instanceof CalendarOutOfRangeError)) throw error; return failed("calendar-unavailable", "quote-session-unavailable"); }
+@@ -881,21 +911,29 @@
+ }
+ const endpointMetricNames = ["periodRealized", "openingUnrealized", "closingUnrealized", "unrealizedChange", "net", "lifetimeRealizedNet", "lifetimeNet", "marketValue", "unrealizedNet", "openFees", "periodFees"] as const;
+ type EndpointAmounts = Record<(typeof endpointMetricNames)[number], Amount>;
+-function projectedCurrent(data: PreparedData, boundary: Boundary, sharing: ProjectionSharing, targetCurrency?: string): CurrentProjection {
++function eligibleCurrencies(amounts: Iterable<Amount>): string[] {
++  // Unknown amounts still need their currency's evidence. In particular, a
++  // fee can be eligible before its future carrier establishes any inventory.
++  return unique([...amounts].filter(amount => amount.eligible).map(amount => amount.currency));
++}
++function projectedCurrent(data: PreparedData, boundary: Boundary, sharing: ProjectionSharing, calendar: BatchMarketCalendar, targetCurrency?: string): CurrentProjection {
+   const key = `current:${boundary.cursor}:${targetCurrency ?? ""}`;
+   const cached = data.memo.get<CurrentProjection>(key);
+   if (cached) return cached;
+-  const fx = fxFor(data, boundary, data.groups.map(g => currency(g.instrument.currency)), targetCurrency, true), input = asProjectionInput(data, targetCurrency, fx.snapshot);
+-  const sharedMetric = sharing.forBoundary(input, boundary);
+-  const markets: Amount[] = [], unrealized: Amount[] = [], fees: Amount[] = [], instruments: CurrentInstrument[] = [], quoteCoverage: Record<string, QuoteCoverage> = {};
++  const input = asProjectionInput(data, targetCurrency);
++  const markets: Amount[] = [], unrealized: Amount[] = [], fees: Amount[] = [], quoteCoverage: Record<string, QuoteCoverage> = {};
++  const native = [];
+   for (const group of data.groups) {
+-    const state = projectedState(data, group, boundary), indexed = indexedQuote(data, group, boundary), quote = quoteFor(input, group, "current", boundary), eligible = state.quantity === null || !state.quantity.isZero();
++    const state = projectedState(data, group, boundary), indexed = indexedQuote(data, group, boundary, calendar), quote = quoteFor(input, group, "current", boundary, calendar), eligible = state.quantity === null || !state.quantity.isZero();
+     const mv = amount(group, state, quote.quote, "market", eligible, quote.reason), uf = amount(group, state, quote.quote, "unrealized", eligible, quote.reason);
+     const fee: Amount = { currency: currency(group.instrument.currency), value: state.quantity === null ? null : state.openFees, eligible, reasons: unique([...state.quantityReasons, ...(state.openFees === null ? [...state.pnlReasons.filter(r => r.includes("fee")), "fee-allocation-unavailable"] : [])]) };
+     markets.push(mv); unrealized.push(uf); fees.push(fee); quoteCoverage[group.key] = indexed.coverage;
+     const currentEvidence=evidence(state, quote.quote, quote.reason);data.memo.accountSourceStrings(currentEvidence.executionIds);
+-    instruments.push({ key: group.key, identity: group.identity, currentMarketValue: sharedMetric([mv]), currentUnrealized: sharedMetric([uf]), currentOpenFees: sharedMetric([fee]), evidence: { current: currentEvidence } });
+-  }
++    native.push({ group, mv, uf, fee, currentEvidence });
++  }
++  const fx = fxFor(data, boundary, eligibleCurrencies([...markets, ...unrealized, ...fees]), targetCurrency, true);
++  const sharedMetric = sharing.forBoundary(asProjectionInput(data, targetCurrency, fx.snapshot), boundary);
++  const instruments: CurrentInstrument[] = native.map(({ group, mv, uf, fee, currentEvidence }) => ({ key: group.key, identity: group.identity, currentMarketValue: sharedMetric([mv]), currentUnrealized: sharedMetric([uf]), currentOpenFees: sharedMetric([fee]), evidence: { current: currentEvidence } }));
+   const result = { asOf: boundary.cursor, currentMarketValue: sharedMetric(markets), currentUnrealized: sharedMetric(unrealized), currentOpenFees: sharedMetric(fees), instruments, quoteCoverage, fxCoverage: fx.coverage };
+   freezeProjection(result);
+   sharing.clear();
+@@ -924,19 +962,18 @@
+     data.batches = data.batches.filter(key=>key!==batchKey); data.batches.push(batchKey);
+     return cached;
+   }
+-  const sharing = new ProjectionSharing();
++  const sharing = new ProjectionSharing(), calendar = new BatchMarketCalendar();
+   const openingBoundary = dayBoundary(previousDay(request.periodStart));
+   const points: HomepageV25BoundaryPoint[] = [];
+   for (const endpoint of endpoints) {
+     const future = endpoint.boundary.day > asOf.day || endpoint.boundary.instant !== undefined && endpoint.boundary.instant > asOf.instant;
+     const boundary = endpoint.boundary.day === asOf.day && Date.parse(endpoint.boundary.cursor) > asOf.instant ? asOf : endpoint.boundary;
+-    const fx = future ? { coverage: { state: "missing" as const, businessDate: boundary.day, observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: ["endpoint-future"] } } : fxFor(data, boundary, data.groups.map(g => currency(g.instrument.currency)), request.targetCurrency);
+-    const input = asProjectionInput(data, request.targetCurrency, fx.snapshot), sharedMetric = sharing.forBoundary(input, boundary);
+     const totals = Object.fromEntries(endpointMetricNames.map(name => [name, [] as Amount[]])) as Record<(typeof endpointMetricNames)[number], Amount[]>;
+-    const instruments: BoundaryInstrument[] = [], quoteCoverage: Record<string, { opening: QuoteCoverage; endpoint: QuoteCoverage }> = {};
++    const quoteCoverage: Record<string, { opening: QuoteCoverage; endpoint: QuoteCoverage }> = {};
++    const native = [];
+     if (!future) for (const group of data.groups) {
+       const opening = projectedState(data, group, openingBoundary), end = projectedState(data, group, boundary);
+-      const oq = indexedQuote(data, group, openingBoundary), eq = indexedQuote(data, group, boundary);
++      const oq = indexedQuote(data, group, openingBoundary, calendar), eq = indexedQuote(data, group, boundary, calendar);
+       const eligible = Boolean(opening.executions.length || end.executions.length || opening.quantity === null || end.quantity === null || opening.quantity?.abs().gt(0) || end.quantity?.abs().gt(0));
+       const code = currency(group.instrument.currency), realized: Amount = { currency: code, value: opening.netRealized !== null && end.netRealized !== null ? end.netRealized.minus(opening.netRealized) : null, reasons: unique([...opening.pnlReasons, ...end.pnlReasons]), eligible };
+       const ouf = strictAmount(group, opening, oq, "unrealized", eligible), cuf = strictAmount(group, end, eq, "unrealized", eligible);
+@@ -947,18 +984,28 @@
+       const fee = feeAmount(data, group, request.periodStart, boundary, eligible);
+       const amounts: EndpointAmounts = { periodRealized: realized, openingUnrealized: ouf, closingUnrealized: cuf, unrealizedChange: change, net, lifetimeRealizedNet: lifetimeRealized, lifetimeNet, marketValue: strictAmount(group, end, eq, "market", eligible), unrealizedNet: cuf,
+         openFees: { currency: code, value: end.quantity === null ? null : end.openFees, reasons: unique([...end.quantityReasons, ...(end.openFees === null ? ["fee-allocation-unavailable"] : [])]), eligible }, periodFees: fee.amount };
+-      const values = Object.fromEntries(endpointMetricNames.map(name => { totals[name].push(amounts[name]); return [name, sharedMetric([amounts[name]])]; })) as EndpointMetrics;
++      for (const name of endpointMetricNames) totals[name].push(amounts[name]);
+       const qc = { opening: oq.coverage, endpoint: eq.coverage }; quoteCoverage[group.key] = qc;
+       const openingEvidence=evidence(opening,oq.quote,oq.reason),endpointEvidence=evidence(end,eq.quote,eq.reason);
+       for(const ids of [openingEvidence.executionIds,endpointEvidence.executionIds,fee.ids])data.memo.accountSourceStrings(ids);
+-      instruments.push({ ...values, key: group.key, identity: group.identity, evidence: { opening: openingEvidence, endpoint: endpointEvidence }, quoteCoverage: qc, fxCoverage: fx.coverage, feeFactIds: fee.ids,
+-        canonicalKnownFees: sharedMetric([{ currency: code, value: [...(end.ledger.accuracy?.reasons ?? []), ...end.pnlReasons.filter(r => r === "fees-invalid" || r === "fees-conflict" || r === "duplicate-execution-conflict")].some(r => r.includes("fee") || r === "duplicate-execution-conflict") ? null : D(end.ledger.fees), reasons: (end.ledger.accuracy?.reasons ?? []).filter(r => r.includes("fee")), eligible }]), lifetimeCoverage: life });
+-    }
++      const canonicalKnownFees: Amount = { currency: code, value: [...(end.ledger.accuracy?.reasons ?? []), ...end.pnlReasons.filter(r => r === "fees-invalid" || r === "fees-conflict" || r === "duplicate-execution-conflict")].some(r => r.includes("fee") || r === "duplicate-execution-conflict") ? null : D(end.ledger.fees), reasons: (end.ledger.accuracy?.reasons ?? []).filter(r => r.includes("fee")), eligible };
++      native.push({ group, amounts, openingEvidence, endpointEvidence, qc, fee, canonicalKnownFees, life });
++    }
++    // Eligibility belongs to the actual native facts at this boundary. Keep
++    // every source group so early attached positions/fees remain discoverable.
++    const codes = eligibleCurrencies(native.flatMap(item => [...Object.values(item.amounts), item.canonicalKnownFees]));
++    const fx = future ? { coverage: { state: "missing" as const, businessDate: boundary.day, observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: ["endpoint-future"] } } : fxFor(data, boundary, codes, request.targetCurrency);
++    const sharedMetric = sharing.forBoundary(asProjectionInput(data, request.targetCurrency, fx.snapshot), boundary);
++    const instruments: BoundaryInstrument[] = native.map(({ group, amounts, openingEvidence, endpointEvidence, qc, fee, canonicalKnownFees, life }) => ({
++      ...Object.fromEntries(endpointMetricNames.map(name => [name, sharedMetric([amounts[name]])])) as EndpointMetrics,
++      key: group.key, identity: group.identity, evidence: { opening: openingEvidence, endpoint: endpointEvidence }, quoteCoverage: qc, fxCoverage: fx.coverage, feeFactIds: fee.ids, canonicalKnownFees: sharedMetric([canonicalKnownFees]), lifetimeCoverage: life,
++    }));
+     if (future) for (const name of endpointMetricNames) totals[name].push({ currency: request.targetCurrency ?? "", value: null, reasons: ["endpoint-future"], eligible: true });
+     const values = Object.fromEntries(endpointMetricNames.map(name => [name, sharedMetric(totals[name])])) as EndpointMetrics;
+     points.push({ ...values, key: endpoint.key, requestedAt: endpoint.at, businessDate: boundary.day, effectiveCursor: future ? null : boundary.cursor, boundaryPrecision: boundary.instant === undefined ? "day" : "instant", state: future ? "future" : values.net.available ? "value" : "source-missing", plottable: values.net.available, instruments, quoteCoverage, fxCoverage: fx.coverage, lifetimeCoverage: instruments.map(i => i.lifetimeCoverage), reasons: unique(endpointMetricNames.flatMap(name => values[name].reasons)) });
+   }
+-  const current = projectedCurrent(data, asOf, sharing, request.targetCurrency);
++  const current = projectedCurrent(data, asOf, sharing, calendar, request.targetCurrency);
++  calendar.clear();
+   const diagnostics: ProjectionDiagnostics = { ...data.counts, distinctCanonicalContexts: data.memo.count("canonical:"), cacheEntries: data.memo.size, cacheEstimatedBytes: data.memo.bytes, evictions: data.memo.evictions };
+   const result = freezeProjection({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, scope: data.scope, asOf: asOf.cursor, periodStart: request.periodStart, points, current, feeFacts: visibleFeeFacts(data, asOf), diagnostics });
+   sharing.clear();

@@ -1,0 +1,11 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts.before-fixture-correction.txt	2026-10-23 01:51:06
++++ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts	2026-10-23 01:51:06
+@@ -16,7 +16,7 @@
+   provider: "eastmoney", providerSymbol: "MSFT", adjustmentMode: "raw", fetchedAt: `${tradingDate}T23:00:00Z`,
+ });
+ function project(executions: TradeExecution[], overrides: Partial<HomepageV25Input> = {}) {
+-  const candlesByInstrument = { [instrument.id]: [candle("2025-12-31", "100"), candle("2026-01-31", "110")] };
++  const candlesByInstrument = { [instrument.id]: [candle("2025-12-31", "100"), candle("2026-01-30", "110")] };
+   return build({
+     period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31",
+     executions: [], openingPositions: [], valuations: [],

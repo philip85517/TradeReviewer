@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63345) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (178 tests | 1 failed | 177 skipped) 114ms
+     × ISR02 rejects allocation roles for an invalid raw size while retaining its independent fee 106ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR02 rejects allocation roles for an invalid raw size while retaining its independent fee
+Error: [DecimalError] Invalid argument: unavailable
+ ❯ parseOther node_modules/decimal.js/decimal.mjs:3622:11
+ ❯ new Decimal node_modules/decimal.js/decimal.mjs:4384:55
+ ❯ app/lib/trades/episodes.ts:199:53
+    197|     afterExecution: false,
+    198|   });
+    199|   const timeline: Entry[] = executions.filter(e => !new Decimal(e.quan…
+       |                                                     ^
+    200|   const positions = [...new Map([
+    201|     ...evidence.flatMap(e => e.positions),
+ ❯ buildTradeEpisodes app/lib/trades/episodes.ts:199:40
+ ❯ app/lib/trades/library.ts:151:27
+ ❯ buildTradeLibraryEntries app/lib/trades/library.ts:140:6
+ ❯ preparedFixture app/lib/reviews/homepage-v25-performance.test.ts:601:46
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1295:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 177 skipped (178)
+   Start at  12:20:02
+   Duration  12.90s (transform 4.88s, setup 1.47s, import 5.00s, tests 114ms, environment 4.71s)
+

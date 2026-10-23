@@ -1,0 +1,112 @@
+--- before/app/components/trade-review-workspace.test.tsx
++++ after/app/components/trade-review-workspace.test.tsx
+@@ -5486,6 +5486,7 @@
+         side: "buy",
+         executedAt: "2026-09-10T14:30:00.000Z",
+       }),
++      source: { platform: "futu", row: 1, tradeNature: "live" },
+       instrument: etfInstrument,
+     };
+     const bootstrap: StorageBootstrap = {
+@@ -5517,15 +5518,95 @@
+       getBootstrap: vi.fn().mockResolvedValue(bootstrap),
+     } as SqliteHttpClient;
+     const user = userEvent.setup();
++    vi.mocked(fetch).mockImplementation(async (input) => {
++      const url = String(input);
++      if (url.includes("/tradingview-account-migration/aliases")) return Response.json({ aliases: [] });
++      if (url.includes("/api/trading-room/fx")) return Response.json({ id: "etf-test-fx", baseCurrency: "CNY", source: "fixture", status: "missing", rates: {}, fetchedAt: "2026-09-10T00:00:00.000Z" });
++      if (url.includes("/api/storage/recall/summaries")) return Response.json({ summaries: [] });
++      return Response.json(nextFrame);
++    });
+ 
+     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
+ 
+-    const dashboard = await screen.findByRole("region", { name: "我的交易室" });
+-    const room = within(dashboard).getByRole("region", { name: "交易室范围" });
+-    await user.click(within(dashboard).getByRole("button", { name: /^筛选/ }));
+-    await user.click(within(room).getByText("更多筛选", { exact: true }));
+-    await user.click(within(within(room).getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "ETF" }));
+-    expect(within(room).getByText("1 个回合进入范围")).toBeVisible();
++    await screen.findByRole("heading", { name: "首页", level: 1 });
++    const holdings = screen.getByRole("region", { name: "当前持仓（最新）" });
++    await within(holdings).findByText("共 1 条持仓 · 1 个标的");
++    expect(await within(holdings).findByRole("row", { name: /交易室ETF/ })).toBeVisible();
++
++    await user.click(screen.getByRole("button", { name: "附加筛选", exact: true }));
++    const editor = screen.getByRole("dialog", { name: "附加筛选" });
++    await user.click(within(editor).getByRole("checkbox", { name: "ETF", exact: true }));
++    expect(screen.getByRole("button", { name: "附加筛选", exact: true })).toBeVisible();
++    expect(screen.queryByRole("button", { name: "移除ETF条件" })).not.toBeInTheDocument();
++    expect(within(holdings).getByRole("row", { name: /交易室ETF/ })).toBeVisible();
++    await user.click(within(editor).getByRole("button", { name: "应用", exact: true }));
++
++    await screen.findByRole("button", { name: "附加筛选，1 个已生效条件" });
++    expect(screen.getByRole("button", { name: "移除ETF条件" })).toBeVisible();
++    expect(screen.queryByRole("dialog", { name: "附加筛选" })).not.toBeInTheDocument();
++    const etfRow = within(holdings).getByRole("row", { name: /交易室ETF/ });
++    expect(within(holdings).getByText("共 1 条持仓 · 1 个标的")).toBeVisible();
++    await user.click(within(etfRow).getByRole("button", { name: "查看持仓详情" }));
++    const detail = screen.getByRole("dialog", { name: "交易室ETF 持仓详情" });
++    expect(within(detail).getByText(/ · ETF$/)).toBeVisible();
++    expect(within(detail).queryByText(/ · 类别未知$/)).not.toBeInTheDocument();
++    await user.click(within(detail).getByRole("button", { name: "关闭持仓详情" }));
++
++    await user.click(screen.getByRole("button", { name: "附加筛选，1 个已生效条件" }));
++    const stockEditor = screen.getByRole("dialog", { name: "附加筛选" });
++    await user.click(within(stockEditor).getByRole("checkbox", { name: "ETF", exact: true }));
++    await user.click(within(stockEditor).getByRole("checkbox", { name: "股票", exact: true }));
++    expect(screen.getByRole("button", { name: "移除ETF条件" })).toBeVisible();
++    expect(screen.queryByRole("button", { name: "移除股票条件" })).not.toBeInTheDocument();
++    expect(within(holdings).getByRole("row", { name: /交易室ETF/ })).toBeVisible();
++    await user.click(within(stockEditor).getByRole("button", { name: "应用", exact: true }));
++    await screen.findByRole("button", { name: "移除股票条件" });
++    expect(screen.queryByRole("button", { name: "移除ETF条件" })).not.toBeInTheDocument();
++    expect(within(holdings).queryByRole("row", { name: /交易室ETF/ })).not.toBeInTheDocument();
++    expect(within(holdings).getByText("共 0 条持仓 · 0 个标的")).toBeVisible();
++  });
++
++  it("keeps unknown instrument metadata out of stock and ETF homepage categories", async () => {
++    const execution: TradeExecution = {
++      ...availabilityExecution({ id: "room-unknown-open", row: 1, side: "buy", executedAt: "2026-09-10T14:30:00.000Z" }),
++      source: { platform: "futu", row: 1, tradeNature: "live" },
++      instrument: { ...availabilityInstrument, id: "US:UNKNOWN-ETF", symbol: "UNKNOWN-ETF", name: "未知类别ETF" },
++    };
++    const bootstrap: StorageBootstrap = {
++      schemaVersion: 1, migration: null, executions: [execution], importHistory: [], instruments: [],
++      reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
++      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
++    };
++    const storageClient = { ...createLegacySqliteClient(), getBootstrap: vi.fn().mockResolvedValue(bootstrap) } as SqliteHttpClient;
++    vi.mocked(fetch).mockImplementation(async (input) => {
++      const url = String(input);
++      if (url.includes("/tradingview-account-migration/aliases")) return Response.json({ aliases: [] });
++      if (url.includes("/api/trading-room/fx")) return Response.json({ id: "unknown-test-fx", baseCurrency: "CNY", source: "fixture", status: "missing", rates: {}, fetchedAt: "2026-09-10T00:00:00.000Z" });
++      if (url.includes("/api/storage/recall/summaries")) return Response.json({ summaries: [] });
++      return Response.json(nextFrame);
++    });
++    const user = userEvent.setup();
++    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
++
++    await screen.findByRole("heading", { name: "首页", level: 1 });
++    const holdings = screen.getByRole("region", { name: "当前持仓（最新）" });
++    await within(holdings).findByText("共 1 条持仓 · 1 个标的");
++    const unknownRow = await within(holdings).findByRole("row", { name: /未知类别ETF/ });
++    await user.click(within(unknownRow).getByRole("button", { name: "查看持仓详情" }));
++    const detail = screen.getByRole("dialog", { name: "未知类别ETF 持仓详情" });
++    expect(within(detail).getByText(/ · 类别未知$/)).toBeVisible();
++    await user.click(within(detail).getByRole("button", { name: "关闭持仓详情" }));
++
++    for (const category of ["股票", "ETF"]) {
++      await user.click(screen.getByRole("button", { name: /^附加筛选/ }));
++      const editor = screen.getByRole("dialog", { name: "附加筛选" });
++      await user.click(within(editor).getByRole("button", { name: "清除附加条件" }));
++      await user.click(within(editor).getByRole("checkbox", { name: category, exact: true }));
++      await user.click(within(editor).getByRole("button", { name: "应用", exact: true }));
++      await screen.findByRole("button", { name: `移除${category}条件` });
++      expect(within(holdings).queryByRole("row", { name: /未知类别ETF/ })).not.toBeInTheDocument();
++      expect(within(holdings).getByText("共 0 条持仓 · 0 个标的")).toBeVisible();
++    }
+   });
+ 
+   it("retains alternate simulation runs when the complete room changes its shared scope", async () => {

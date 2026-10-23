@@ -1,0 +1,611 @@
+COMMAND ["git", "diff", "--no-index", "--", "/dev/null", "app/components/homepage-v25/contribution-bars.tsx"]
+STDOUT
+diff --git a/app/components/homepage-v25/contribution-bars.tsx b/app/components/homepage-v25/contribution-bars.tsx
+new file mode 100644
+index 00000000..9e7eef2d
+--- /dev/null
++++ b/app/components/homepage-v25/contribution-bars.tsx
+@@ -0,0 +1,213 @@
++"use client";
++
++import Decimal from "decimal.js";
++import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
++import { createPortal } from "react-dom";
++import type { HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
++import "./contribution-bars.css";
++
++export type ContributionMetric = Readonly<Omit<HomepageV25Metric, "coverage" | "reasons" | "money"> & {
++  coverage: Readonly<HomepageV25Metric["coverage"]>;
++  reasons: readonly string[];
++  money: Readonly<Omit<HomepageV25Metric["money"], "fx"> & { fx: Readonly<NonNullable<HomepageV25Metric["money"]["fx"]>> | null }>;
++}>;
++export type ContributionIdentity = Readonly<{ kind: "market"; market: string }> | Readonly<{
++  kind: "instrument"; accountId: string; instrumentId: string; market: string;
++  nature: "live" | "simulation" | "unknown" | "caller-scoped"; simulationRunId: string | null;
++}>;
++type RowBase = Readonly<{ key: string; label: string; accessibleLabel: string; identity: ContributionIdentity }>;
++export type CurrentContributionRow = RowBase & Readonly<{
++  periodRealized: ContributionMetric; unrealizedChange: ContributionMetric; net: ContributionMetric;
++}>;
++export type HistoricalContributionRow = RowBase & Readonly<{ closedResult: ContributionMetric }>;
++export type ContributionReadState = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
++export type ContributionBarsProps = Readonly<{
++  reportCurrency: string; readState: ContributionReadState; fullTotal: ContributionMetric | null;
++  onActivate: (identity: ContributionIdentity) => void;
++}> & (Readonly<{ mode: "current"; rows: readonly CurrentContributionRow[] | null }> |
++  Readonly<{ mode: "history"; rows: readonly HistoricalContributionRow[] | null }>);
++
++type Readout = { metric: ContributionMetric | null; amount: Decimal | null; mismatch: boolean; reasons: readonly string[] };
++type Field = { kind: "realized" | "unrealized" | "closed" | "net"; label: string; read: Readout };
++type ViewRow = { source: RowBase; fields: readonly Field[]; net: Readout };
++// References are readout lifetime guards only; rendered financial facts always come from current props.
++type Selection = { key: string; rows: ContributionBarsProps["rows"]; total: ContributionMetric | null; mode: ContributionBarsProps["mode"]; currency: string };
++const Amount = Decimal.clone({ precision: 80, rounding: Decimal.ROUND_HALF_UP });
++const TOTAL_KEY = "total";
++
++// Only validates presentation consistency. Qualification, conversion, net and total belong to the caller.
++function readMetric(metric: ContributionMetric | null, currency: string): Readout {
++  const mismatch = metric !== null && metric.money.targetCurrency !== currency;
++  let amount: Decimal | null = null;
++  if (metric?.available && metric.value !== null && !mismatch) {
++    try { const value = new Amount(metric.value); if (value.isFinite()) amount = value; } catch { /* Unknown is rendered explicitly below. */ }
++  }
++  const reasons = [...(metric?.reasons ?? []), ...(mismatch ? ["币种与报表不一致"] : []),
++    ...(!metric ? ["未提供已提交的贡献金额"] : !mismatch && amount === null && metric.available && metric.value !== null ? ["金额格式无效"]
++      : !mismatch && amount === null && !metric.reasons.length ? ["金额未知"] : [])];
++  return { metric, amount, mismatch, reasons: [...new Set(reasons)] };
++}
++
++function shown(read: Readout): { text: string; tone: "positive" | "negative" | "neutral" } {
++  if (!read.amount) return { text: read.mismatch ? "—" : "不可计算", tone: "neutral" };
++  const cents = read.amount.toDecimalPlaces(2);
++  if (cents.isZero()) return { text: "0.00", tone: "neutral" };
++  const unit = cents.abs().gte(100_000_000) ? "亿" : cents.abs().gte(10_000) ? "万" : "";
++  const value = unit === "亿" ? cents.div(100_000_000) : unit === "万" ? cents.div(10_000) : cents;
++  const number = value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
++  return { text: `${cents.gt(0) ? "+" : ""}${number}${unit ? ` ${unit}` : ""}`, tone: cents.gt(0) ? "positive" : "negative" };
++}
++
++function visibleAmount(field: Field): Decimal | null {
++  const amount = field.read.amount;
++  return amount && !amount.toDecimalPlaces(2).isZero() ? amount : null;
++}
++
++function MetricFacts({ field, currency }: { field: Field; currency: string }) {
++  const { metric, amount, reasons } = field.read;
++  return <section className="hp-contribution-bars__facts-section" aria-label={field.label}>
++    <h5>{field.label}</h5>
++    <dl className="hp-contribution-bars__facts">
++      <dt>完整金额</dt><dd>{amount && metric ? `${metric.value} ${currency}` : field.read.mismatch ? "—" : "不可计算"}</dd>
++      <dt>覆盖数量</dt><dd>{metric ? `${metric.coverage.available} / ${metric.coverage.total}` : "—"}</dd>
++      <dt>原币金额</dt><dd>{metric && Object.keys(metric.money.originalByCurrency).length
++        ? Object.entries(metric.money.originalByCurrency).map(([code, value]) => <span key={code}>{value} {code}</span>) : "未提供原币金额"}</dd>
++      <dt>汇率来源</dt><dd>{metric?.money.fx ? <><span>{metric.money.fx.source}</span><span>{metric.money.fx.asOf} · {metric.money.fx.id} · {metric.money.fx.status}</span></>
++        : metric?.money.conversion === "same-currency" ? "同币种，无需换汇" : "未提供汇率来源"}</dd>
++      {metric?.value !== null && metric?.value !== undefined && !amount && <><dt>来源金额</dt><dd>{metric.value} {metric.money.targetCurrency ?? "币种未知"}</dd></>}
++    </dl>
++    {reasons.length > 0 && <ul className="hp-contribution-bars__reasons">{reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>}
++  </section>;
++}
++
++/** Controlled prepared rows only. No financial projection, IO, page state or source-value cache. */
++export function ContributionBars(props: ContributionBarsProps) {
++  const { rows, reportCurrency, readState, fullTotal, onActivate } = props;
++  const id = useId();
++  const [selection, setSelection] = useState<Selection | null>(null);
++  const triggers = useRef(new Map<string, HTMLButtonElement>());
++  const dialog = useRef<HTMLDivElement>(null);
++  const opener = useRef<HTMLButtonElement | null>(null);
++  const active = selection && selection.rows === rows && selection.total === fullTotal && selection.mode === props.mode && selection.currency === reportCurrency ? selection.key : null;
++  // Invalidation is permanent: returning to an old context must require a fresh activation.
++  if (selection !== null && active === null) setSelection(null);
++  const viewRows: ViewRow[] = props.mode === "current" ? (props.rows ?? []).map(source => ({ source,
++    fields: [{ kind: "realized", label: "期间已实现", read: readMetric(source.periodRealized, reportCurrency) },
++      { kind: "unrealized", label: "期间浮盈变动", read: readMetric(source.unrealizedChange, reportCurrency) }], net: readMetric(source.net, reportCurrency) }))
++    : (props.rows ?? []).map(source => ({ source, fields: [{ kind: "closed", label: "已闭环结果", read: readMetric(source.closedResult, reportCurrency) }], net: readMetric(source.closedResult, reportCurrency) }));
++  // A shared symmetric display scale; sums here place same-sign pieces, never derive financial net/total.
++  let extent: Decimal = new Amount(0);
++  for (const row of viewRows) {
++    let positive: Decimal = new Amount(0); let negative: Decimal = new Amount(0);
++    for (const field of row.fields) {
++      const amount = visibleAmount(field);
++      if (amount?.gt(0)) positive = positive.plus(amount);
++      else if (amount?.lt(0)) negative = negative.plus(amount.abs());
++    }
++    extent = Amount.max(extent, positive, negative);
++  }
++  const total = readMetric(fullTotal, reportCurrency);
++  const selectedRow = viewRows.find(row => `row:${row.source.key}` === active);
++  const title = active === TOTAL_KEY ? "完整贡献合计" : selectedRow?.source.label;
++  const selectedFields: readonly Field[] = active === TOTAL_KEY ? [{ kind: "net", label: props.mode === "history" ? "完整已闭环合计" : "完整贡献净值合计", read: total }]
++    : selectedRow ? [...selectedRow.fields, ...(props.mode === "current" ? [{ kind: "net" as const, label: "贡献净值", read: selectedRow.net }] : [])] : [];
++  const open = active !== null && title !== undefined;
++
++  useLayoutEffect(() => {
++    if (open) dialog.current?.focus();
++    else if (opener.current?.isConnected) { opener.current.focus(); opener.current = null; }
++  }, [open, active]);
++
++  useLayoutEffect(() => {
++    if (!open || active === null) return;
++    function place() {
++      const anchor = triggers.current.get(active!)?.getBoundingClientRect();
++      const panel = dialog.current;
++      if (!anchor || !panel) return;
++      const box = panel.getBoundingClientRect();
++      const width = document.documentElement.clientWidth || window.innerWidth;
++      const height = document.documentElement.clientHeight || window.innerHeight;
++      const left = Math.max(12, Math.min(anchor.right - box.width, width - box.width - 12));
++      const preferredTop = anchor.bottom + 8 + box.height <= height - 12 ? anchor.bottom + 8 : anchor.top - box.height - 8;
++      const top = Math.max(12, Math.min(preferredTop, height - box.height - 12));
++      panel.style.left = `${left}px`; panel.style.top = `${top}px`;
++    }
++    place();
++    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(place);
++    if (dialog.current) observer?.observe(dialog.current);
++    window.addEventListener("resize", place); window.addEventListener("scroll", place, true);
++    return () => { observer?.disconnect(); window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); };
++  }, [open, active]);
++
++  useEffect(() => {
++    if (!open) return;
++    function escape(event: KeyboardEvent) {
++      if (event.key !== "Escape") return;
++      event.preventDefault(); event.stopPropagation(); setSelection(null);
++    }
++    function outside(event: MouseEvent) {
++      const target = event.target;
++      if (!(target instanceof Node) || dialog.current?.contains(target) || [...triggers.current.values()].some(trigger => trigger.contains(target))) return;
++      setSelection(null);
++    }
++    document.addEventListener("click", outside);
++    document.addEventListener("keydown", escape, true);
++    return () => { document.removeEventListener("click", outside); document.removeEventListener("keydown", escape, true); };
++  }, [open]);
++
++  function detailButton(key: string, label: string) {
++    return <button type="button" className="hp-contribution-bars__detail-trigger" aria-label={`${label}，贡献详情`} aria-haspopup="dialog"
++      aria-expanded={open && active === key} aria-controls={open && active === key ? `${id}-detail` : undefined}
++      ref={node => { if (node) triggers.current.set(key, node); else triggers.current.delete(key); }}
++      onClick={event => { opener.current = event.currentTarget; setSelection(active === key ? null : { key, rows, total: fullTotal, mode: props.mode, currency: reportCurrency }); }}>
++      <span aria-hidden="true">ⓘ</span>
++    </button>;
++  }
++
++  return <section className="hp-contribution-bars" aria-label={`贡献${props.mode === "current" ? "当前" : "历史"}列表（${reportCurrency}）`} aria-busy={readState.kind === "pending"}>
++    {readState.kind !== "ready" && <p className={`hp-contribution-bars__status hp-contribution-bars__status--${readState.kind}`} role="status">{readState.reason}</p>}
++    {rows === null && readState.kind === "pending" ? <div className="hp-contribution-bars__loading" aria-label="贡献首次加载中">{Array.from({ length: 8 }, (_, index) => <div className="hp-contribution-bars__skeleton" data-testid="contribution-skeleton" aria-hidden="true" key={index} />)}</div>
++      : <ul className={`hp-contribution-bars__list${viewRows.length > 0 && viewRows.every(row => row.source.identity.kind === "market") ? " hp-contribution-bars__list--market" : ""}`} aria-label="已提交贡献行">
++        {viewRows.map(row => {
++          let positive: Decimal = new Amount(0); let negative: Decimal = new Amount(0);
++          const formatted = shown(row.net);
++          const unknown = row.fields.filter(field => field.read.amount === null).map(field => `${field.label}：${shown(field.read).text} · ${field.read.reasons.join("；")}`);
++          const reasons = [...new Set([...unknown, ...(row.net.amount === null ? row.net.reasons : [])])];
++          return <li className={`hp-contribution-bars__row hp-contribution-bars__row--${row.source.identity.kind}`} aria-label={`${row.source.label} 贡献`} key={row.source.key}>
++            <div className="hp-contribution-bars__row-main">
++              <button type="button" className="hp-contribution-bars__action" aria-label={row.source.accessibleLabel} aria-describedby={`${id}-${encodeURIComponent(row.source.key)}-value${reasons.length ? ` ${id}-${encodeURIComponent(row.source.key)}-reason` : ""}`} onClick={() => onActivate(row.source.identity)}>
++                <span className="hp-contribution-bars__identity" title={row.source.label}>{row.source.label}</span>
++                <span className="hp-contribution-bars__track" aria-hidden="true"><span className="hp-contribution-bars__zero" />
++                  {row.fields.map(field => {
++                    const amount = visibleAmount(field); if (!amount || extent.isZero()) return null;
++                    const width = amount.abs().div(extent).mul(50);
++                    const offset = amount.gt(0) ? positive : negative;
++                    const left = amount.gt(0) ? new Amount(50).plus(offset) : new Amount(50).minus(offset).minus(width);
++                    if (amount.gt(0)) positive = positive.plus(width); else negative = negative.plus(width);
++                    return <span key={field.kind} data-testid="contribution-segment" data-kind={field.kind} data-sign={amount.gt(0) ? "positive" : "negative"}
++                      className={`hp-contribution-bars__segment hp-contribution-bars__segment--${field.kind === "unrealized" ? "hollow" : "solid"} hp-contribution-bars__segment--${amount.gt(0) ? "positive" : "negative"}`}
++                      style={{ left: `${left.toString()}%`, width: `${width.toString()}%` }} />;
++                  })}
++                </span>
++                <span className="hp-contribution-bars__value" id={`${id}-${encodeURIComponent(row.source.key)}-value`} data-testid="contribution-value" data-tone={formatted.tone}>{formatted.text}</span>
++              </button>
++              {detailButton(`row:${row.source.key}`, row.source.label)}
++            </div>
++            {reasons.length > 0 && <p className="hp-contribution-bars__row-reason" id={`${id}-${encodeURIComponent(row.source.key)}-reason`}>{reasons.join("；")}</p>}
++          </li>;
++        })}
++      </ul>}
++    {fullTotal !== null && <div className="hp-contribution-bars__total"><span>合计（{reportCurrency}）</span>
++      <span className="hp-contribution-bars__value" data-testid="contribution-total-value" data-tone={shown(total).tone}>{shown(total).text}</span>
++      {detailButton(TOTAL_KEY, "完整贡献合计")}</div>}
++    {fullTotal !== null && total.amount === null && <p className="hp-contribution-bars__row-reason">{total.reasons.join("；")}</p>}
++    {open && createPortal(<div id={`${id}-detail`} ref={dialog} role="dialog" aria-modal="false" aria-labelledby={`${id}-detail-title`} tabIndex={-1}
++      className="hp-contribution-bars__detail" onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); setSelection(null); } }}>
++      <div className="hp-contribution-bars__detail-heading"><h4 id={`${id}-detail-title`}>{title} · 贡献详情</h4>
++        <button type="button" aria-label="关闭贡献详情" onClick={() => setSelection(null)}>×</button></div>
++      <p className="hp-contribution-bars__context">{props.mode === "current" ? "当前贡献" : "历史贡献"} · 报表币种 {reportCurrency}</p>
++      {readState.kind !== "ready" && <p className="hp-contribution-bars__notice">{readState.reason}</p>}
++      {selectedFields.map(field => <MetricFacts key={field.kind} field={field} currency={reportCurrency} />)}
++    </div>, document.body)}
++  </section>;
++}
+
+STDERR
+
+EXIT 1
+
+COMMAND ["git", "diff", "--no-index", "--", "/dev/null", "app/components/homepage-v25/contribution-bars.css"]
+STDOUT
+diff --git a/app/components/homepage-v25/contribution-bars.css b/app/components/homepage-v25/contribution-bars.css
+new file mode 100644
+index 00000000..13e68d38
+--- /dev/null
++++ b/app/components/homepage-v25/contribution-bars.css
+@@ -0,0 +1,146 @@
++.hp-contribution-bars {
++  --hp-contribution-detail-size: 36px;
++  container-type: inline-size;
++  width: 100%;
++  min-width: 0;
++  color: #dce4ed;
++  font: 400 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
++  font-variant-numeric: tabular-nums;
++}
++
++.hp-contribution-bars *, .hp-contribution-bars__detail * { box-sizing: border-box; }
++.hp-contribution-bars__list { position: relative; list-style: none; margin: 0; padding: 0; min-height: 344px; }
++.hp-contribution-bars__list:not(:empty)::before {
++  content: "";
++  position: absolute;
++  top: 0;
++  bottom: 0;
++  left: calc((100% - var(--hp-contribution-detail-size)) / 2);
++  width: 1px;
++  background: #405065;
++  pointer-events: none;
++}
++.hp-contribution-bars__list--market { min-height: 210px; }
++.hp-contribution-bars__row { margin: 0; padding: 0; min-height: 43px; }
++.hp-contribution-bars__row--market { min-height: 70px; }
++.hp-contribution-bars__row-main { display: grid; grid-template-columns: minmax(0, 1fr) 36px; align-items: center; min-height: inherit; }
++
++.hp-contribution-bars .hp-contribution-bars__action {
++  display: grid;
++  grid-template-columns: minmax(0, 24fr) minmax(0, 52fr) minmax(0, 24fr);
++  align-items: center;
++  gap: 0;
++  width: 100%;
++  min-width: 0;
++  min-height: 36px;
++  height: auto;
++  margin: 0;
++  padding: 0;
++  border: 0;
++  border-radius: 4px;
++  background: transparent;
++  color: inherit;
++  font: inherit;
++  text-align: left;
++  white-space: normal;
++  cursor: pointer;
++}
++.hp-contribution-bars__identity { min-width: 0; padding-right: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++.hp-contribution-bars__track { position: relative; display: block; width: 100%; height: 20px; min-width: 0; }
++.hp-contribution-bars__zero { display: none; position: absolute; top: -6px; bottom: -6px; left: 50%; width: 1px; background: #405065; }
++.hp-contribution-bars__segment { position: absolute; top: 3px; display: block; height: 14px; box-sizing: border-box; }
++.hp-contribution-bars__segment--positive { color: #53D7A0; }
++.hp-contribution-bars__segment--negative { color: #EF7F89; }
++.hp-contribution-bars__segment--solid { background: currentColor; }
++.hp-contribution-bars__segment--hollow { background: transparent; box-shadow: inset 0 0 0 2px currentColor; }
++.hp-contribution-bars__value { min-width: 0; text-align: right; overflow-wrap: anywhere; }
++.hp-contribution-bars__action .hp-contribution-bars__value { padding-left: 16px; }
++.hp-contribution-bars__value[data-tone="positive"] { color: #53D7A0; }
++.hp-contribution-bars__value[data-tone="negative"] { color: #EF7F89; }
++.hp-contribution-bars__value[data-tone="neutral"] { color: #b2bdca; }
++
++.hp-contribution-bars .hp-contribution-bars__detail-trigger,
++.hp-contribution-bars__detail .hp-contribution-bars__detail-heading button {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  width: 36px;
++  min-width: 36px;
++  height: 36px;
++  margin: 0;
++  padding: 0;
++  border: 0;
++  border-radius: 4px;
++  background: transparent;
++  color: #91a0b3;
++  font: inherit;
++  cursor: pointer;
++}
++.hp-contribution-bars .hp-contribution-bars__action:hover,
++.hp-contribution-bars .hp-contribution-bars__detail-trigger:hover,
++.hp-contribution-bars__detail button:hover { background: rgb(160 180 205 / 7%); }
++.hp-contribution-bars button:focus-visible,
++.hp-contribution-bars__detail:focus-visible,
++.hp-contribution-bars__detail button:focus-visible { outline: 2px solid #9ac4ff; outline-offset: 2px; }
++.hp-contribution-bars .hp-contribution-bars__row-reason { margin: 0 36px 8px 0; color: #b5becb; overflow-wrap: anywhere; }
++.hp-contribution-bars .hp-contribution-bars__status { margin: 0 0 12px; color: #a7b3c4; overflow-wrap: anywhere; }
++.hp-contribution-bars .hp-contribution-bars__status.hp-contribution-bars__status--error { color: #FF8592; }
++.hp-contribution-bars__loading { min-height: 344px; }
++.hp-contribution-bars__skeleton { position: relative; height: 43px; }
++.hp-contribution-bars__skeleton::after { content: ""; position: absolute; top: 15px; left: 0; width: 76%; height: 14px; background: #202d40; border-radius: 2px; }
++.hp-contribution-bars__total { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) 36px; align-items: center; gap: 16px; min-height: 43px; color: #a7b3c4; }
++
++.hp-contribution-bars__detail {
++  box-sizing: border-box;
++  position: fixed;
++  z-index: 140;
++  left: 12px;
++  top: 12px;
++  width: 264px;
++  max-width: calc(100vw - 24px);
++  max-height: calc(100dvh - 24px);
++  overflow: auto;
++  overscroll-behavior: contain;
++  padding: 12px;
++  border: 1px solid #34445b;
++  border-radius: 8px;
++  background: #122035;
++  color: #dce4ed;
++  box-shadow: 0 12px 36px rgb(0 0 0 / 36%);
++  font: 400 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
++  font-variant-numeric: tabular-nums;
++  overflow-wrap: anywhere;
++}
++.hp-contribution-bars__detail-heading { display: grid; grid-template-columns: minmax(0, 1fr) 36px; align-items: start; gap: 8px; }
++.hp-contribution-bars__detail h4, .hp-contribution-bars__detail h5 { margin: 0; font: inherit; font-weight: 600; }
++.hp-contribution-bars__context, .hp-contribution-bars__notice { margin: 8px 0 12px; color: #a7b3c4; }
++.hp-contribution-bars__facts-section + .hp-contribution-bars__facts-section { margin-top: 16px; }
++.hp-contribution-bars__facts { margin: 8px 0 0; }
++.hp-contribution-bars__facts dt { color: #91a0b3; margin-top: 8px; }
++.hp-contribution-bars__facts dd { margin: 0; }
++.hp-contribution-bars__facts dd span { display: block; }
++.hp-contribution-bars__reasons { margin: 8px 0 0; padding-left: 16px; color: #e0bac1; }
++
++@container (max-width: 735px) {
++  .hp-contribution-bars__list, .hp-contribution-bars__loading { min-height: 512px; }
++  .hp-contribution-bars__list:not(:empty)::before { display: none; }
++  .hp-contribution-bars__list--market { min-height: 210px; }
++  .hp-contribution-bars__skeleton { height: 64px; }
++  .hp-contribution-bars__row-main { align-items: start; padding: 4px 0; }
++  .hp-contribution-bars .hp-contribution-bars__action { --hp-contribution-narrow-height: 56px; grid-template-columns: minmax(0, 1fr) minmax(0, auto); row-gap: 4px; min-height: 56px; }
++  .hp-contribution-bars__identity { padding-right: 12px; }
++  .hp-contribution-bars__action .hp-contribution-bars__value { grid-column: 2; grid-row: 1; padding-left: 0; }
++  .hp-contribution-bars__track { grid-column: 1 / -1; grid-row: 2; }
++  .hp-contribution-bars__zero { display: block; top: 0; bottom: 0; }
++  .hp-contribution-bars__row--market { min-height: 70px; }
++  .hp-contribution-bars__total { gap: 8px; }
++}
++@media (pointer: coarse) {
++  .hp-contribution-bars { --hp-contribution-detail-size: 44px; }
++  .hp-contribution-bars__row-main { grid-template-columns: minmax(0, 1fr) 44px; }
++  .hp-contribution-bars .hp-contribution-bars__action { min-height: max(44px, var(--hp-contribution-narrow-height, 36px)); }
++  .hp-contribution-bars .hp-contribution-bars__detail-trigger,
++  .hp-contribution-bars__detail .hp-contribution-bars__detail-heading button { min-width: 44px; width: 44px; height: 44px; }
++  .hp-contribution-bars__detail-heading { grid-template-columns: minmax(0, 1fr) 44px; }
++  .hp-contribution-bars__total { grid-template-columns: minmax(0, 1fr) minmax(0, auto) 44px; }
++}
+
+STDERR
+
+EXIT 1
+
+COMMAND ["git", "diff", "--no-index", "--", "/dev/null", "app/components/homepage-v25/contribution-bars.test.tsx"]
+STDOUT
+diff --git a/app/components/homepage-v25/contribution-bars.test.tsx b/app/components/homepage-v25/contribution-bars.test.tsx
+new file mode 100644
+index 00000000..1f7d6e8c
+--- /dev/null
++++ b/app/components/homepage-v25/contribution-bars.test.tsx
+@@ -0,0 +1,212 @@
++import "@testing-library/jest-dom/vitest";
++import { cleanup, render, screen, within } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { ContributionBars, type ContributionBarsProps, type ContributionIdentity, type ContributionMetric, type CurrentContributionRow } from "./contribution-bars";
++
++afterEach(cleanup);
++
++function metric(value: string | null, overrides: Partial<ContributionMetric> = {}): ContributionMetric {
++  return Object.freeze({ value, available: value !== null, coverage: Object.freeze({ total: 3, available: value === null ? 2 : 3 }),
++    reasons: Object.freeze(value === null ? ["缺少期初价格"] : []), money: Object.freeze({ originalByCurrency: Object.freeze({ USD: "123.456789" }),
++      targetCurrency: "CNY", conversion: "complete" as const,
++      fx: Object.freeze({ id: "fx-exact-01", source: "人工汇率来源/完整名称", asOf: "2026-10-20T08:30:00Z", status: "complete" as const }) }), ...overrides });
++}
++function row(key: string, realized: string, unrealized: string, net: string): CurrentContributionRow {
++  return Object.freeze({ key, label: key, accessibleLabel: `查看 ${key} 贡献`,
++    identity: Object.freeze({ kind: "instrument", accountId: `account-${key}`, instrumentId: key, market: "CN", nature: "simulation", simulationRunId: "run-original" }),
++    periodRealized: metric(realized), unrealizedChange: metric(unrealized), net: metric(net) });
++}
++const suppliedRows = Object.freeze([row("same+", "100", "100", "777"), row("same-", "-60", "-40", "-100"),
++  row("mixed+", "100", "-50", "50"), row("mixed-", "-100", "50", "-50"), row("net0", "100", "-100", "0")]);
++type CurrentProps = Extract<ContributionBarsProps, { mode: "current" }>;
++function props(overrides: Partial<CurrentProps> = {}): CurrentProps {
++  return { mode: "current", rows: suppliedRows, reportCurrency: "CNY", readState: { kind: "ready" }, fullTotal: metric("987654.321987"), onActivate: vi.fn(), ...overrides };
++}
++function item(label: string) { return screen.getByRole("listitem", { name: `${label} 贡献` }); }
++function parts(label: string) { return within(item(label)).queryAllByTestId("contribution-segment"); }
++
++describe("controlled contribution bars consumer", () => {
++  it("CB01 activates each of three original market identities without local navigation", async () => {
++    const user = userEvent.setup();
++    const identities: readonly ContributionIdentity[] = Object.freeze([Object.freeze({ kind: "market", market: "CN" }), Object.freeze({ kind: "market", market: "HK" }), Object.freeze({ kind: "market", market: "US" })]);
++    const rows = Object.freeze(identities.map(identity => Object.freeze({ ...row(identity.market, "1", "2", "3"), identity })));
++    const onActivate = vi.fn(); render(<ContributionBars {...props({ rows, onActivate })} />);
++    for (const identity of identities) { await user.click(screen.getByRole("button", { name: `查看 ${identity.market} 贡献` })); expect(onActivate.mock.calls.at(-1)?.[0]).toBe(identity); }
++    for (const identity of identities) {
++      const trigger = screen.getByRole("button", { name: `${identity.market}，贡献详情` }); await user.click(trigger);
++      expect(screen.getByRole("dialog", { name: `${identity.market} · 贡献详情` })).toBeVisible(); await user.keyboard("{Escape}"); expect(trigger).toHaveFocus();
++    }
++    expect(onActivate).toHaveBeenCalledTimes(3); expect(screen.getAllByRole("listitem")).toHaveLength(3);
++  });
++  it("CB02 preserves all eight caller rows and complete instrument identity", async () => {
++    const user = userEvent.setup(); const rows = Object.freeze(Array.from({ length: 8 }, (_, index) => row(`symbol${index + 1}`, "1", "0", "1")));
++    const onActivate = vi.fn(); render(<ContributionBars {...props({ rows, onActivate })} />);
++    expect(screen.getAllByRole("listitem").map(node => node.getAttribute("aria-label"))).toEqual(rows.map(value => `${value.label} 贡献`));
++    for (const value of rows) await user.click(screen.getByRole("button", { name: value.accessibleLabel }));
++    rows.forEach((value, index) => expect(onActivate.mock.calls[index]?.[0]).toBe(value.identity));
++    for (const value of rows) {
++      const trigger = screen.getByRole("button", { name: `${value.label}，贡献详情` }); await user.click(trigger);
++      expect(screen.getByRole("dialog", { name: `${value.label} · 贡献详情` })).toBeVisible(); await user.keyboard("{Escape}"); expect(trigger).toHaveFocus();
++    }
++    expect(onActivate).toHaveBeenCalledTimes(8);
++  });
++  it("CB06/07 maps literal signed parts onto a common zero and scale without recomputing net", () => {
++    render(<ContributionBars {...props()} />);
++    const expected = [["same+", "50%", "25%", "75%", "25%"], ["same-", "35%", "15%", "25%", "10%"],
++      ["mixed+", "50%", "25%", "37.5%", "12.5%"], ["mixed-", "25%", "25%", "50%", "12.5%"], ["net0", "50%", "25%", "25%", "25%"]];
++    for (const [label, leftA, widthA, leftB, widthB] of expected) {
++      const [solid, hollow] = parts(label); expect(solid).toHaveStyle({ left: leftA, width: widthA }); expect(hollow).toHaveStyle({ left: leftB, width: widthB });
++      expect(solid).toHaveAttribute("data-kind", "realized"); expect(hollow).toHaveAttribute("data-kind", "unrealized");
++    }
++    expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+777.00");
++    expect(within(item("net0")).getByTestId("contribution-value")).toHaveAttribute("data-tone", "neutral");
++    expect(parts("same-").every(node => node.getAttribute("data-sign") === "negative")).toBe(true);
++  });
++  it("CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional", () => {
++    render(<ContributionBars {...props({ rows: Object.freeze([row("zero", "-0.0049", "0.0049", "-0.00001"), row("tiny", "0.01", "0", "0.01"), row("large", "1000", "0", "1000")]) })} />);
++    expect(parts("zero")).toHaveLength(0); expect(within(item("zero")).getByTestId("contribution-value")).toHaveTextContent(/^0\.00$/);
++    expect(within(item("zero")).getByTestId("contribution-value")).toHaveAttribute("data-tone", "neutral");
++    expect(parts("tiny")[0]).toHaveStyle({ width: "0.0005%" });
++  });
++  it("CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately", async () => {
++    const user = userEvent.setup(); const onActivate = vi.fn(); render(<ContributionBars {...props({ onActivate })} />);
++    await user.click(screen.getByRole("button", { name: "same+，贡献详情" }));
++    const dialog = screen.getByRole("dialog", { name: "same+ · 贡献详情" });
++    expect(within(dialog).getByText("777 CNY")).toBeVisible(); expect(within(dialog).getAllByText("123.456789 USD")).toHaveLength(3);
++    expect(within(dialog).getAllByText("人工汇率来源/完整名称")).toHaveLength(3);
++    expect(within(dialog).getAllByText("2026-10-20T08:30:00Z · fx-exact-01 · complete")).toHaveLength(3);
++    expect(within(dialog).getAllByText("3 / 3")).toHaveLength(3); expect(onActivate).not.toHaveBeenCalled();
++  });
++  it("CB03 supplied complete total remains independent when parent replaces the visible page", async () => {
++    const user = userEvent.setup(); const base = props(); const view = render(<ContributionBars {...base} />);
++    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
++    view.rerender(<ContributionBars {...base} rows={Object.freeze([row("another-page", "2", "0", "2")])} />);
++    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
++    await user.click(screen.getByRole("button", { name: "完整贡献合计，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("987654.321987 CNY");
++  });
++  it("CB08 keeps known parts when unknown and invalid data cannot become zero", async () => {
++    const user = userEvent.setup(); const unknown = Object.freeze({ ...row("unknown", "10", "0", "0"), unrealizedChange: metric(null), net: metric(null) });
++    const invalid = Object.freeze({ ...row("invalid", "1", "0", "0"), periodRealized: metric("NaN"), net: metric("Infinity") });
++    render(<ContributionBars {...props({ rows: Object.freeze([unknown, invalid]) })} />);
++    expect(parts("unknown")).toHaveLength(1); expect(within(item("unknown")).getByTestId("contribution-value")).toHaveTextContent("不可计算");
++    expect(item("unknown")).toHaveTextContent("缺少期初价格"); expect(parts("invalid")).toHaveLength(0);
++    expect(within(item("invalid")).getByTestId("contribution-value")).toHaveTextContent("不可计算");
++    await user.click(screen.getByRole("button", { name: "invalid，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("金额格式无效");
++  });
++  it("CB08 does not relabel a foreign target amount as the report currency", async () => {
++    const user = userEvent.setup(); const foreign = metric("12.3456", { money: Object.freeze({ originalByCurrency: Object.freeze({ USD: "12.3456" }), targetCurrency: "USD", conversion: "same-currency", fx: null }) });
++    render(<ContributionBars {...props({ rows: Object.freeze([Object.freeze({ ...row("foreign", "1", "0", "1"), net: foreign, periodRealized: foreign })]) })} />);
++    expect(parts("foreign")).toHaveLength(0); expect(within(item("foreign")).getByTestId("contribution-value")).toHaveTextContent("—");
++    expect(item("foreign")).toHaveTextContent("币种与报表不一致"); await user.click(screen.getByRole("button", { name: "foreign，贡献详情" }));
++    const dialog = screen.getByRole("dialog"); expect(dialog).toHaveTextContent("12.3456 USD"); expect(dialog).not.toHaveTextContent("12.3456 CNY");
++  });
++  it("CB09 history renders only the supplied closed result", async () => {
++    const user = userEvent.setup(); const original = row("closed", "900", "90", "990");
++    render(<ContributionBars mode="history" reportCurrency="CNY" rows={Object.freeze([{ key: original.key, label: original.label, accessibleLabel: original.accessibleLabel, identity: original.identity, closedResult: metric("-32.123456789") }])} readState={{ kind: "ready" }} fullTotal={metric("-32.123456789")} onActivate={vi.fn()} />);
++    expect(parts("closed")).toHaveLength(1); expect(parts("closed")[0]).toHaveAttribute("data-kind", "closed"); expect(parts("closed")[0]).toHaveAttribute("data-sign", "negative");
++    expect(within(item("closed")).getByTestId("contribution-value")).toHaveTextContent("-32.12");
++    await user.click(screen.getByRole("button", { name: "closed，贡献详情" })); expect(screen.getByRole("dialog")).toHaveTextContent("-32.123456789 CNY"); expect(screen.getByRole("dialog")).not.toHaveTextContent("期间浮盈变动");
++  });
++  it("CB04 supports native Enter/Space for action and separate readout", async () => {
++    const user = userEvent.setup(); const onActivate = vi.fn(); render(<ContributionBars {...props({ rows: Object.freeze([suppliedRows[0]]), onActivate })} />);
++    await user.tab(); expect(screen.getByRole("button", { name: "查看 same+ 贡献" })).toHaveFocus(); await user.keyboard("{Enter} "); expect(onActivate).toHaveBeenCalledTimes(2);
++    await user.tab(); expect(screen.getByRole("button", { name: "same+，贡献详情" })).toHaveFocus(); await user.keyboard(" "); expect(screen.getByRole("dialog")).toHaveFocus(); expect(onActivate).toHaveBeenCalledTimes(2);
++  });
++  it("CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close", async () => {
++    const user = userEvent.setup(); render(<ContributionBars {...props()} />); const trigger = screen.getByRole("button", { name: "mixed-，贡献详情" });
++    await user.click(trigger); await user.click(screen.getByRole("dialog")); expect(screen.getByRole("dialog")).toBeVisible(); await user.keyboard("{Escape}"); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++    await user.click(trigger); await user.click(document.body); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++    await user.click(trigger); await user.click(screen.getByRole("button", { name: "关闭贡献详情" })); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++  });
++  it("CB05 scopes Escape so a parent Escape handler cannot consume the same event", async () => {
++    const user = userEvent.setup(); const parentEscape = vi.fn(); render(<div onKeyDown={event => { if (event.key === "Escape") parentEscape(); }}><ContributionBars {...props()} /></div>);
++    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); await user.keyboard("{Escape}"); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(parentEscape).not.toHaveBeenCalled();
++  });
++  it("CB10/12 keeps supplied committed rows and total during pending or error without adding retry", () => {
++    const base = props(); const view = render(<ContributionBars {...base} readState={{ kind: "pending", reason: "正在更新期间" }} />);
++    expect(screen.getByRole("status")).toHaveTextContent("正在更新期间"); expect(screen.getAllByRole("listitem")).toHaveLength(5); expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("+98.77 万");
++    view.rerender(<ContributionBars {...base} readState={{ kind: "error", reason: "保留上一版本：行情缺失" }} />);
++    expect(screen.getByRole("status")).toHaveTextContent("保留上一版本：行情缺失"); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+777.00"); expect(screen.queryByRole("button", { name: /重试|修复/ })).not.toBeInTheDocument();
++  });
++  it("CB11 initial pending reserves eight neutral slots without amounts or business rows", () => {
++    render(<ContributionBars {...props({ rows: null, fullTotal: null, readState: { kind: "pending", reason: "首次加载贡献" } })} />);
++    expect(screen.getAllByTestId("contribution-skeleton")).toHaveLength(8); expect(screen.queryAllByRole("listitem")).toHaveLength(0); expect(screen.queryAllByTestId("contribution-segment")).toHaveLength(0);
++    expect(screen.queryAllByTestId("contribution-value")).toHaveLength(0); expect(screen.getByRole("status")).toHaveTextContent("首次加载贡献"); expect(screen.queryByText("0.00")).not.toBeInTheDocument();
++  });
++  it("CB12/13 initial error and empty explain absence without invented zero or retry", () => {
++    const view = render(<ContributionBars {...props({ rows: null, fullTotal: null, readState: { kind: "error", reason: "没有已提交贡献数据" } })} />);
++    expect(screen.getByRole("status")).toHaveTextContent("没有已提交贡献数据"); expect(screen.queryAllByRole("listitem")).toHaveLength(0);
++    view.rerender(<ContributionBars {...props({ rows: Object.freeze([]), fullTotal: null, readState: { kind: "empty", reason: "期间内没有符合条件的贡献" } })} />);
++    expect(screen.getByRole("status")).toHaveTextContent("期间内没有符合条件的贡献"); expect(screen.queryByText("0.00")).not.toBeInTheDocument(); expect(screen.queryByRole("button", { name: /重试|修复/ })).not.toBeInTheDocument();
++  });
++  it("CB14 retains exact long identity, source and extreme precision in the readout", async () => {
++    const user = userEvent.setup(); const label = "中文很长的证券身份-ACCOUNT-US-NASDAQ-INSTRUMENT-123456789"; const raw = "123456789012345678901234567890.1234567890123456789";
++    const source = "原始完整汇率来源/".repeat(25); const exact = metric(raw, { money: Object.freeze({ originalByCurrency: Object.freeze({ USD: raw }), targetCurrency: "CNY", conversion: "complete", fx: Object.freeze({ id: "extreme-fx", source, asOf: "2026-10-22", status: "complete" }) }) });
++    render(<ContributionBars {...props({ rows: Object.freeze([Object.freeze({ ...row(label, "1", "0", "1"), periodRealized: exact, net: exact })]) })} />);
++    expect(screen.getByRole("button", { name: `查看 ${label} 贡献` })).toHaveTextContent(label); await user.click(screen.getByRole("button", { name: `${label}，贡献详情` }));
++    expect(screen.getByRole("dialog")).toHaveTextContent(`${raw} CNY`); expect(screen.getByRole("dialog")).toHaveTextContent(`${raw} USD`); expect(within(screen.getByRole("dialog")).getAllByText(source)).toHaveLength(2);
++    expect(parts(label)[0]).toHaveStyle({ width: "50%" });
++  });
++  it("CB15 immutable parent replacement invalidates an open readout and reads new supplied values", async () => {
++    const user = userEvent.setup(); const base = props(); const before = JSON.stringify(base.rows); const view = render(<ContributionBars {...base} />);
++    const trigger = screen.getByRole("button", { name: "same+，贡献详情" }); await user.click(trigger); expect(screen.getByRole("dialog")).toHaveTextContent("777 CNY");
++    const replacement = Object.freeze([row("same+", "1", "2", "555.123456")]); view.rerender(<ContributionBars {...base} rows={replacement} />);
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus(); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("+555.12");
++    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveTextContent("555.123456 CNY"); expect(screen.getByRole("dialog")).not.toHaveTextContent("777 CNY"); expect(JSON.stringify(base.rows)).toBe(before);
++  });
++  it("CB05 Escape also closes after keyboard focus moves back to the original trigger", async () => {
++    const user = userEvent.setup(); render(<ContributionBars {...props()} />); const trigger = screen.getByRole("button", { name: "mixed+，贡献详情" });
++    await user.click(trigger); trigger.focus(); await user.keyboard("{Escape}");
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++  });
++  it("CB08 unknown complete total presents its supplied reason without fabricating a subtotal", () => {
++    render(<ContributionBars {...props({ fullTotal: metric(null, { reasons: Object.freeze(["完整范围缺少港股期末价"]) }) })} />);
++    expect(screen.getByTestId("contribution-total-value")).toHaveTextContent("不可计算"); expect(screen.getByText("完整范围缺少港股期末价")).toBeVisible();
++  });
++  it("CB07/14 rounds cents symmetrically while retaining exact source precision", async () => {
++    const user = userEvent.setup(); render(<ContributionBars {...props({ rows: Object.freeze([row("round+", "0.005", "0", "0.005"), row("round-", "-0.005", "0", "-0.005"), row("source-zero", "-0.0049", "0", "-0.0049")]) })} />);
++    expect(within(item("round+")).getByTestId("contribution-value")).toHaveTextContent("+0.01"); expect(within(item("round-")).getByTestId("contribution-value")).toHaveTextContent("-0.01");
++    expect(parts("source-zero")).toHaveLength(0); await user.click(screen.getByRole("button", { name: "source-zero，贡献详情" })); expect(within(screen.getByRole("dialog")).getAllByText("-0.0049 CNY")).toHaveLength(2);
++  });
++  it("CB15 currency or mode replacement cannot retain a stale currency readout", async () => {
++    const user = userEvent.setup(); const base = props(); const view = render(<ContributionBars {...base} />);
++    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); view.rerender(<ContributionBars {...base} reportCurrency="USD" />);
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(within(item("same+")).getByTestId("contribution-value")).toHaveTextContent("—");
++    await user.click(screen.getByRole("button", { name: "same+，贡献详情" })); view.rerender(<ContributionBars mode="history" rows={Object.freeze([{ ...suppliedRows[0], closedResult: metric("11") }])} reportCurrency="USD" fullTotal={null} readState={{ kind: "ready" }} onActivate={vi.fn()} />);
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(parts("same+")).toHaveLength(0);
++  });
++  it("CB05/15 clamps floating readout position when its trigger scrolls outside the viewport", async () => {
++    const user = userEvent.setup(); let anchor = new DOMRect(10, -400, 36, 36);
++    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
++      return this.getAttribute("role") === "dialog" ? new DOMRect(0, 0, 264, 500) : anchor;
++    });
++    try {
++      expect(window.innerWidth).toBe(1024); expect(window.innerHeight).toBe(768);
++      render(<ContributionBars {...props()} />); await user.click(screen.getByRole("button", { name: "same+，贡献详情" }));
++      expect(screen.getByRole("dialog")).toHaveStyle({ left: "12px", top: "12px" });
++      anchor = new DOMRect(900, 1000, 36, 36); window.dispatchEvent(new Event("scroll"));
++      expect(screen.getByRole("dialog")).toHaveStyle({ left: "672px", top: "256px" });
++    } finally { rect.mockRestore(); }
++  });
++  it.each<{ name: string; change: (base: CurrentProps) => ContributionBarsProps; target: string }>([
++    { name: "currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "same+，贡献详情" },
++    { name: "immutable row generation", change: base => ({ ...base, rows: Object.freeze([...suppliedRows]) }), target: "same+，贡献详情" },
++    { name: "source identity context", change: base => ({ ...base, rows: Object.freeze([Object.freeze({ ...suppliedRows[0],
++      identity: Object.freeze({ kind: "instrument", accountId: "other-account", instrumentId: "other-instrument", market: "US", nature: "live", simulationRunId: null }) })]) }), target: "same+，贡献详情" },
++    { name: "complete total generation", change: base => ({ ...base, fullTotal: metric("888.111") }), target: "same+，贡献详情" },
++    { name: "current/history mode", change: base => ({ ...base, mode: "history", rows: Object.freeze([Object.freeze({ ...suppliedRows[0], closedResult: metric("-11.234567") })]) }), target: "same+，贡献详情" },
++    { name: "total readout currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "完整贡献合计，贡献详情" },
++  ])("CB-M01 invalidated $name stays closed and leaves outside focus when the original context returns", async ({ change, target }) => {
++    const user = userEvent.setup(); const base = props();
++    const content = (value: ContributionBarsProps) => <><button>外部阅读位置</button><ContributionBars {...value} /></>;
++    const view = render(content(base)); const trigger = screen.getByRole("button", { name: target });
++    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
++    view.rerender(content(change(base))); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++    const outside = screen.getByRole("button", { name: "外部阅读位置" }); outside.focus(); expect(outside).toHaveFocus();
++    view.rerender(content(base));
++    expect.soft(screen.queryByRole("dialog"), "restoring an invalidated context must not reopen its old detail").not.toBeInTheDocument();
++    expect.soft(outside, "restoring a context must preserve the reader's outside focus").toHaveFocus();
++    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
++  });
++});
+
+STDERR
+
+EXIT 1
+
+CORRECTIONS.patch is a full unified diff generated with Python difflib.unified_diff from the three candidate1 before snapshots and current product bytes.

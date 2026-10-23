@@ -1,0 +1,63 @@
+diff --git a/.scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/search-recovery.red-v1.tsx b/app/components/homepage-v25/search-recovery.test.tsx
+index b3f14400..bc2da22c 100644
+--- a/.scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/search-recovery.red-v1.tsx
++++ b/app/components/homepage-v25/search-recovery.test.tsx
+@@ -1,5 +1,5 @@
+ import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+-import { useEffect, useState } from "react";
++import { useState } from "react";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { beginHomepageRead, completeHomepageRequest, createHomepageState, updateHomepageUi } from "../../lib/reviews/homepage-v25-state";
+ import type { StoredInstrument } from "../../lib/storage/sqlite-contracts";
+@@ -23,21 +23,24 @@ const noop = () => {};
+ 
+ function Harness({ phase = "ready" }: { phase?: Phase }) {
+   const [ui, setUi] = useState(() => createHomepageState(scope));
++  const [observedPhase, setObservedPhase] = useState(phase);
+   // Exercise the real S request lifecycle without a host, transport, or business cache.
+   // Changing phase preserves this mount, its search UI, and the accepted catalog.
+-  useEffect(() => {
+-    if (phase === "not-ready" || phase === "account-error") return;
+-    setUi(current => {
+-      const reading = beginHomepageRead(current, { purpose: "refresh" }, 1_000);
+-      if (phase === "global-pending") return reading;
+-      const request = reading.requests.global!;
+-      return completeHomepageRequest(reading, {
+-        generation: request.generation, scopeKey: request.scopeKey,
+-        ok: phase === "ready", applied: request.target,
+-        ...(phase === "global-error" ? { error: "fixture-owned-read-failed" } : {}),
+-      }).state;
+-    });
+-  }, [phase]);
++  if (observedPhase !== phase) {
++    setObservedPhase(phase);
++    if (phase !== "not-ready" && phase !== "account-error") {
++      setUi(current => {
++        const reading = beginHomepageRead(current, { purpose: "refresh" }, 1_000);
++        if (phase === "global-pending") return reading;
++        const request = reading.requests.global!;
++        return completeHomepageRequest(reading, {
++          generation: request.generation, scopeKey: request.scopeKey,
++          ok: phase === "ready", applied: request.target,
++          ...(phase === "global-error" ? { error: "fixture-owned-read-failed" } : {}),
++        }).state;
++      });
++    }
++  }
+   return <>
+     <HomeSurface ui={ui} holdings={holdings} catalog={catalog} restoreKey={17}
+       ready={phase !== "not-ready"} accountStatus={phase === "account-error" ? "error" : "ready"}
+@@ -113,6 +116,13 @@ describe("homepage search recovery — CR01 / CR02", () => {
+     rerender(<Harness phase={phase} />);
+     expectBlockedRegion(phase);
+     expect(input).toHaveValue("META");
++    fireEvent.keyDown(input, { key: "ArrowDown" });
++    expect.soft(input).toHaveFocus();
++    // Isolate each input action if the preceding wrong branch stole focus.
++    input.focus();
++    fireEvent.keyDown(input, { key: "ArrowUp" });
++    expect.soft(input).toHaveFocus();
++    input.focus();
+     fireEvent.keyDown(input, { key: "Enter" });
+     // Keep the complete causal evidence if one wrong Enter mutates all three.
+     expect.soft(screen.queryByRole("dialog", { name: /标的详情/ })).not.toBeInTheDocument();

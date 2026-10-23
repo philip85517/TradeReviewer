@@ -1,0 +1,835 @@
+--- accepted-input/app/lib/replay/position-ledger.ts
++++ candidate/app/lib/replay/position-ledger.ts
+@@ -1,4 +1,5 @@
+ import Decimal from "decimal.js";
++import { sha256 } from "../recall/retained-digest";
+ 
+ import {
+   hasSettlementCurrencyMismatch,
+@@ -94,7 +95,10 @@
+   quantity: Decimal; averageCost: Decimal; realizedPnl: Decimal; fees: Decimal; grossCapitalDeployed: Decimal;
+   reasons: string[]; warnings: NonNullable<PositionLedgerSnapshot["warnings"]>; quantityUncertain: boolean;
+ };
+-function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void): PositionLedgerSnapshot {
++type LedgerEntry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
++type MovementObservation = { entry: LedgerEntry; ordinal: number; before: Checkpoint; after: Checkpoint; closed: Decimal | null; opened: Decimal | null; effect: CanonicalMovementFact["effect"]; evidenceIds: string[]; beforeFeeUnavailable: boolean; afterFeeUnavailable: boolean };
++type FactObserver = { context(cursor: string | null, selected: TradeExecution[]): void; movement(value: MovementObservation): void; terminal(value: Checkpoint, feeUnavailable: boolean): void };
++function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void, facts?: FactObserver): PositionLedgerSnapshot {
+   let quantity = new Decimal(0);
+   let averageCost = new Decimal(0);
+   let realizedPnl = new Decimal(0);
+@@ -118,7 +122,7 @@
+     Boolean(input.executions.length === 0 && input.inventoryIdentity && item.symbol && item.market &&
+       input.inventoryIdentity.accountId === item.accountId &&
+       canonicalInstrumentId(input.inventoryIdentity.symbol, input.inventoryIdentity.market) === canonicalInstrumentId(item.symbol, item.market));
+-  type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
++  type Entry = LedgerEntry;
+   const timeline: Entry[] = input.executions.map(execution => ({ at: replayExecutionAt(execution), execution }));
+   const seen = new Set<string>();
+   for (const position of [...(input.evidence ?? []).flatMap(e => e.positions), ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])]) {
+@@ -172,12 +176,21 @@
+   const checkpoint = (): Checkpoint => ({ quantity, averageCost, realizedPnl, fees, grossCapitalDeployed,
+     reasons: [...reasons], warnings: warnings.map(item => ({ ...item })), quantityUncertain: quantityUncertain || pendingTransfers.size > 0 });
+   observe?.(checkpoint());
+-
++  facts?.context(cursor ?? null, timeline.flatMap(entry => entry.execution && selectedExecution(entry.execution) ? [entry.execution] : []));
++  let ordinal = -1, factFeeUnavailable = false;
+   for (const entry of timeline) {
++    ordinal++;
+     if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
+     if (cursor && Date.parse(entry.at) > Date.parse(cursor)
+       && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
++    const before = facts ? checkpoint() : undefined;
++    const beforeFeeUnavailable = factFeeUnavailable;
++    let closed: Decimal | null = null, opened: Decimal | null = null;
++    let effect: CanonicalMovementFact["effect"] = "applied";
++    let movementEvidence: string[] | undefined;
++    try {
+     if (entry.pendingTransfer) {
++      effect = "unresolved";
+       pendingTransfers.add(`${entry.pendingTransfer.accountId}:${entry.pendingTransfer.id}`);
+       reasons.add("ambiguous-event-order");
+       continue;
+@@ -208,10 +221,10 @@
+     }
+     if (entry.event) {
+       const event = entry.event;
+-      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) continue;
++      if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) { effect = "suppressed-duplicate"; continue; }
+       const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+       const isBonusShare = isBonusShareEvidence(event);
+-      if (isIpoAllocation && isZero(event.quantity)) continue;
++      if (isIpoAllocation && isZero(event.quantity)) { effect = "suppressed-duplicate"; continue; }
+       const sameDayExecution = event.date.length === 10 && actualVisibleExecutions.some(e =>
+         e.accountId === event.accountId &&
+         canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol ?? "", event.market ?? "") &&
+@@ -292,6 +305,7 @@
+           continue;
+         }
+         const size = quantityValue;
++        if (facts) { closed = new Decimal(0); opened = size; }
+         const instrumentCurrencies = new Set(actualVisibleExecutions.filter(e =>
+           e.accountId === event.accountId &&
+           event.symbol &&
+@@ -302,11 +316,12 @@
+         const cashCost = cost ? new Decimal(cost.cashCost) : undefined;
+         const allocationCost = cashCost?.div(size);
+         if (!cost || !allocationCost) {
++          if (facts) factFeeUnavailable = true;
+           reasons.add("position-event");
+           if (!hasHistory) reasons.add("initial-position");
+           reasons.add("unknown-cost");
+         }
+-        if (cost) fees = fees.plus(cost.feeCost);
++        if (cost) { fees = fees.plus(cost.feeCost); if (facts) movementEvidence = cost.evidenceIds; }
+         if (quantity.gte(0)) {
+           const newQuantity = quantity.plus(size);
+           if (allocationCost) {
+@@ -318,6 +333,7 @@
+           quantity = newQuantity;
+         } else {
+           const covered = Decimal.min(quantity.abs(), size);
++          if (facts) { closed = covered; opened = size.minus(covered); }
+           if (allocationCost) realizedPnl = realizedPnl.plus(averageCost.minus(allocationCost).mul(covered));
+           quantity = quantity.plus(size);
+           if (quantity.isPositive() && allocationCost) {
+@@ -327,6 +343,7 @@
+           if (quantity.isZero()) averageCost = new Decimal(0);
+         }
+       } else {
++        effect = "contextual";
+         // Cash, fee, dividend, and other statement rows are contextual
+         // evidence only; they do not establish inventory history.
+         continue;
+@@ -366,6 +383,7 @@
+     lastActivity = execution.source.tradingDate ?? execution.executedAt;
+     hasHistory = true;
+     const size = new Decimal(execution.quantity).abs();
++    if (facts) { closed = new Decimal(0); opened = size; }
+     const settlement = execution.source.settlement;
+     const price = settlement && settlement.currency === execution.instrument.currency
+       ? new Decimal(settlement.grossAmount).div(settlement.quantity)
+@@ -382,6 +400,7 @@
+         grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
+       } else {
+         const covered = Decimal.min(quantity.abs(), size);
++        if (facts) { closed = covered; opened = size.minus(covered); }
+         realizedPnl = realizedPnl.plus(averageCost.minus(price).mul(covered));
+         quantity = quantity.plus(size);
+         if (quantity.isPositive()) {
+@@ -401,8 +420,9 @@
+       quantity = quantity.minus(size);
+       grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
+     } else {
+-      const closed = Decimal.min(quantity, size);
+-      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(closed));
++      const matched = Decimal.min(quantity, size);
++      if (facts) { closed = matched; opened = size.minus(matched); }
++      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(matched));
+       quantity = quantity.minus(size);
+       if (quantity.isNegative()) {
+         averageCost = price;
+@@ -411,8 +431,13 @@
+       if (quantity.isZero()) averageCost = new Decimal(0);
+     }
+     observe?.(checkpoint());
+-  }
+-  return finalizePosition(checkpoint(), input.markPrice);
++    } finally {
++      if (facts && before) facts.movement({ entry, ordinal, before, after: checkpoint(), closed, opened, effect, evidenceIds: movementEvidence ?? [], beforeFeeUnavailable, afterFeeUnavailable: factFeeUnavailable });
++    }
++  }
++  const terminal = checkpoint();
++  facts?.terminal(terminal, factFeeUnavailable);
++  return finalizePosition(terminal, input.markPrice);
+ }
+ 
+ function finalizePosition(state: Checkpoint, price: string): PositionLedgerSnapshot {
+@@ -509,3 +534,97 @@
+   });
+   return freezeLedgerValue({results,diagnostics:{evaluations,transitions}});
+ }
++
++export type PositionFactValue = Readonly<{ value: string | null; available: boolean; reasons: readonly string[] }>;
++export type PositionFactCoverage = Readonly<{ available: boolean; reasons: readonly string[] }>;
++export type CanonicalStateFact = Readonly<{
++  quantity: PositionFactValue; averageCost: PositionFactValue; realizedPnl: PositionFactValue;
++  fees: PositionFactValue; grossCapitalDeployed: PositionFactValue;
++  reasons: readonly string[]; warnings: readonly NonNullable<PositionLedgerSnapshot["warnings"]>[number][];
++}>;
++export type CanonicalMovementFact = Readonly<{
++  factId: string; contextId: string; ordinal: number;
++  kind: "execution" | "ipo-allocation" | "bonus" | "transfer" | "position-reconciliation" | "evidence-status";
++  effect: "applied" | "suppressed-duplicate" | "unresolved" | "contextual";
++  executionId: string | null; eventId: string | null; evidenceIds: readonly string[];
++  time: Readonly<{ at: string; sourceDate: string; precision: "instant" | "day" | "month" }>;
++  before: CanonicalStateFact; after: CanonicalStateFact;
++  matchedClosedQuantity: PositionFactValue; openedQuantity: PositionFactValue; realizedDelta: PositionFactValue;
++}>;
++export type PositionFactQuery = Readonly<{ cursor?: string; visibleExecutionIds?: readonly string[] }>;
++export type CanonicalFactResult = Readonly<{
++  contextId: string; sourceId: string; effectiveKnowledgeCursor: string | null; selectedExecutionIds: readonly string[];
++  mode: "ordinary-sweep" | "exact-context-fallback"; terminal: CanonicalStateFact; facts: readonly CanonicalMovementFact[];
++  coverage: Readonly<{ quantity: PositionFactCoverage; chronology: PositionFactCoverage; costAndRealized: PositionFactCoverage }>;
++}>;
++function factValue(value: Decimal | null, reasons: readonly string[] = []): PositionFactValue {
++  return { value: reasons.length || value === null ? null : value.isZero() ? "0" : value.toFixed(), available: !reasons.length && value !== null, reasons: [...reasons] };
++}
++function stateFact(state: Checkpoint, feeUnavailable = false): CanonicalStateFact {
++  return { quantity: factValue(state.quantity, state.quantityUncertain ? ["quantity-unavailable", ...state.reasons] : []),
++    averageCost: factValue(state.averageCost, state.reasons), realizedPnl: factValue(state.realizedPnl, state.reasons),
++    fees: factValue(state.fees, [...state.reasons.filter(reason => reason.includes("fee")), ...(feeUnavailable ? ["ipo-fee-allocation-unavailable"] : [])]),
++    grossCapitalDeployed: factValue(state.grossCapitalDeployed, state.reasons), reasons: [...state.reasons], warnings: state.warnings.map(warning => ({ ...warning })) };
++}
++function observedFact(value: MovementObservation): Omit<CanonicalMovementFact, "factId" | "contextId"> {
++  const { entry, before, after, ordinal, closed, opened, effect } = value;
++  const event = entry.event ?? entry.pendingTransfer, execution = entry.execution, position = entry.position;
++  const sourceDate = execution ? execution.source.tradingDate ?? execution.executedAt : event?.date ?? position!.date;
++  const precision = execution ? execution.source.timePrecision === "date-only" || execution.executedAt.length === 10 ? "day" : "instant" : sourceDate.length === 7 ? "month" : "day";
++  const quantityReasons = before.quantityUncertain || after.quantityUncertain ? ["quantity-unavailable"] : [];
++  const realizedReasons = [...new Set([...before.reasons, ...after.reasons])];
++  return { ordinal, kind: execution ? "execution" : position ? "position-reconciliation" : entry.pendingTransfer ? "evidence-status" : event?.kind === "ipo" && event.quantity !== undefined ? "ipo-allocation" : event && isBonusShareEvidence(event) ? "bonus" : event?.kind === "transfer-in" || event?.kind === "transfer-out" ? "transfer" : "evidence-status",
++    effect, executionId: execution?.id ?? null, eventId: event?.id ?? null,
++    evidenceIds: execution ? [execution.id] : event ? [...new Set([event.id, ...value.evidenceIds])] : [JSON.stringify([position!.accountId, position!.market, position!.symbol, position!.phase, position!.date, position!.quantity])],
++    time: { at: entry.at, sourceDate, precision }, before: stateFact(before, value.beforeFeeUnavailable), after: stateFact(after, value.afterFeeUnavailable),
++    matchedClosedQuantity: factValue(closed, quantityReasons), openedQuantity: factValue(opened, quantityReasons),
++    realizedDelta: factValue(after.realizedPnl.minus(before.realizedPnl), realizedReasons) };
++}
++/** Explicit, transient observation of the canonical evaluator. No fact graph is retained in a prepared handle. */
++export function readPreparedPositionFacts(source: PreparedPositionLedger, queries: readonly PositionFactQuery[]) {
++  const prepared = preparedLedgers.get(source);
++  if (!prepared) throw new TypeError("Unknown prepared position ledger");
++  const sourceId = `sha256:${sha256(JSON.stringify({ input: prepared.input, policy: "canonical-movement-1" }))}`;
++  let evaluations = 0, transitions = 0, indexProbes = 0;
++  const evaluate = (query: PositionFactQuery) => {
++    const observations: Omit<CanonicalMovementFact, "factId" | "contextId">[] = [];
++    let terminal: CanonicalStateFact | undefined, cursor: string | null = null, selected: string[] = [];
++    evaluations++;
++    evaluatePositionAtPrice({ ...prepared.input, ...query, markPrice: "0" }, undefined, {
++      context(at, executions) { cursor = at; selected = executions.map(execution => execution.id); },
++      movement(value) { observations.push(observedFact(value)); transitions++; },
++      terminal(value, feeUnavailable) { terminal = stateFact(value, feeUnavailable); },
++    });
++    return { observations, terminal: terminal!, cursor, selected };
++  };
++  // Resolve prefix queries through the existing index/binary search. Result materialization
++  // costs only its emitted facts/IDs; empty and short queries never rescan the full source.
++  let swept: ReturnType<typeof evaluate> | undefined;
++  const results: CanonicalFactResult[] = queries.map(query => {
++    let length = 0, prefix = source.kind === "ordinary-sweep";
++    const cursor = query.cursor ? replayCursorAt(query.cursor) : null;
++    if (prefix && query.visibleExecutionIds) {
++      let maximum = -1;
++      for (const id of new Set(query.visibleExecutionIds)) {
++        indexProbes++;
++        const index = prepared.index.get(id);
++        if (index !== undefined) { length++; maximum = Math.max(maximum, index); }
++      }
++      prefix = maximum === length - 1;
++    } else if (prefix) {
++      let low = 0, high = prepared.ordered.length;
++      while (low < high) { indexProbes++; const middle = (low + high) >>> 1; if (!cursor || replayExecutionAt(prepared.ordered[middle]) <= cursor) low = middle + 1; else high = middle; }
++      length = low;
++    }
++    if (prefix && !swept) swept = evaluate({});
++    const evaluated = prefix && swept ? { observations: swept.observations.slice(0, length), terminal: stateFact(prepared.checkpoints[length]), cursor: cursor ?? swept.cursor, selected: prepared.ordered.slice(0, length).map(execution => execution.id) } : evaluate(query);
++    const contextId = `sha256:${sha256(JSON.stringify([sourceId, evaluated.cursor, evaluated.selected]))}`;
++    const facts = evaluated.observations.map(fact => ({ ...fact, contextId, factId: `${contextId}:${fact.ordinal}` }));
++    const terminal = evaluated.terminal;
++    const chronologyReasons = [...new Set([...(!terminal.quantity.available ? terminal.quantity.reasons : []), ...terminal.reasons.filter(reason => ["position-gap", "ambiguous-event-order", "ambiguous-opening", "history-incomplete"].includes(reason)), ...(facts.some(fact => fact.kind !== "ipo-allocation" && !fact.before.reasons.includes("initial-position") && fact.after.reasons.includes("initial-position")) ? ["initial-position"] : [])])];
++    return { contextId, sourceId, effectiveKnowledgeCursor: evaluated.cursor, selectedExecutionIds: evaluated.selected,
++      mode: prefix ? "ordinary-sweep" : "exact-context-fallback", terminal, facts,
++      coverage: { quantity: { available: terminal.quantity.available, reasons: terminal.quantity.reasons }, chronology: { available: !chronologyReasons.length, reasons: chronologyReasons }, costAndRealized: { available: terminal.realizedPnl.available, reasons: terminal.realizedPnl.reasons } } };
++  });
++  return freezeLedgerValue({ results, diagnostics: { evaluations, transitions, indexProbes, retainedFactBytes: 0 } });
++}
+--- accepted-input/app/lib/replay/position-ledger.test.ts
++++ candidate/app/lib/replay/position-ledger.test.ts
+@@ -984,3 +984,115 @@
+     expect(preparedCanonical.replayPreparedPositionBoundaries(source,[...queries].reverse()).results.map(r=>r.snapshot)).toEqual([...first.results].reverse().map(r=>r.snapshot));
+   });
+ });
++
++
++describe("P4 canonical fact seam O01/O02", () => {
++  it("records partial closes and the final flat movement with full precision", () => {
++    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100", "2"), fill("buy", "2026-01-06T15:00:00Z", "1", "200", "4"), fill("sell", "2026-01-07T15:00:00Z", "1", "180", "2"), fill("sell", "2026-01-08T15:00:00Z", "1", "190", "2")];
++    expect(preparedCanonical.readPreparedPositionFacts).toBeTypeOf("function");
++    const source = preparedCanonical.preparePositionLedger({ executions });
++    const [partial, final] = preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-07T16:00:00Z" }, { cursor: "2026-01-08T16:00:00Z" }]).results;
++    expect([partial.terminal.quantity.value, partial.terminal.averageCost.value, partial.terminal.realizedPnl.value, partial.terminal.fees.value]).toEqual(["1", "150", "30", "8"]);
++    expect([final.terminal.quantity.value, final.terminal.averageCost.value, final.terminal.realizedPnl.value, final.terminal.fees.value]).toEqual(["0", "0", "70", "10"]);
++    expect(final.facts.map(f => [f.matchedClosedQuantity.value, f.openedQuantity.value, f.realizedDelta.value])).toEqual([["0", "1", "0"], ["0", "1", "0"], ["1", "0", "30"], ["1", "0", "40"]]);
++    expect(final.facts.map(f => f.after.quantity.value)).toEqual(["1", "2", "1", "0"]);
++    expect(final.facts.every(f => f.contextId === final.contextId)).toBe(true);
++    expect(Object.isFrozen(final.facts[0].before)).toBe(true);
++  });
++  it("records one reversing raw fill as an actual close and open", () => {
++    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100", "2"), fill("sell", "2026-01-06T15:00:00Z", "2", "120", "4"), fill("buy", "2026-01-07T15:00:00Z", "1", "110", "1")];
++    expect(preparedCanonical.readPreparedPositionFacts).toBeTypeOf("function");
++    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions }), [{}]).results[0];
++    expect(result.facts.map(f => [f.before.quantity.value, f.after.quantity.value, f.matchedClosedQuantity.value, f.openedQuantity.value, f.realizedDelta.value])).toEqual([["0", "1", "0", "1", "0"], ["1", "-1", "1", "1", "20"], ["-1", "0", "1", "0", "10"]]);
++    expect(result.selectedExecutionIds).toEqual(executions.map(e => e.id));
++    expect(result.terminal.realizedPnl.value).toBe("30");
++  });
++});
++
++import Decimal from "decimal.js";
++
++describe("P4 canonical fact seam O05/O08", () => {
++  it("observes bonus, pending transfer and reconciliation continue paths without inventing closes", () => {
++    const execution = fill("buy", "2026-01-05T15:00:00Z", "2", "100", "0");
++    execution.source.positionEvents = [fixtureEvent({ id: "bonus", kind: "corporate-action", date: "2026-01-07", quantity: "1", amount: "0", description: "bonus shares", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "transfer", kind: "transfer-out", date: "2026-01-08", quantity: "3", description: "stock out", symbol: "TEST", market: "US", currency: "USD" })];
++    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [execution] }), [{}]).results[0];
++    expect(result.facts.map(f => [f.kind, f.before.quantity.value, f.after.quantity.value])).toEqual([["execution", "0", "2"], ["bonus", "2", "3"], ["evidence-status", "3", null], ["transfer", null, "0"]]);
++    expect(result.facts.filter(f => f.kind !== "execution").every(f => f.matchedClosedQuantity.value === null)).toBe(true);
++    expect(result.terminal.quantity.value).toBe("0");
++    expect(result.terminal.realizedPnl).toMatchObject({ available: false, value: null });
++    expect(result.coverage.chronology.available).toBe(false);
++  });
++  it("keeps a statement-only gap and month precision explicit", () => {
++    const positions = [{ accountId: "fixture-account", market: "HK", symbol: fixtureInstrument.symbol, date: "2026-01-01", phase: "opening" as const, quantity: "2", source: [] }, { accountId: "fixture-account", market: "HK", symbol: fixtureInstrument.symbol, date: "2026-03-31", phase: "closing" as const, quantity: "0", source: [] }];
++    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [], inventoryIdentity: { accountId: "fixture-account", symbol: fixtureInstrument.symbol, market: "HK" }, evidence: [{ accountId: "fixture-account", month: "2026-03", events: [fixtureEvent({ id: "unsupported", kind: "corporate-action", date: "2026-03", quantity: "1", description: "unsupported" })], positions }] }), [{}]).results[0];
++    expect(result.terminal.quantity.value).toBe("0");
++    expect(result.terminal.realizedPnl.value).toBeNull();
++    expect(result.coverage.chronology).toMatchObject({ available: false, reasons: expect.arrayContaining(["initial-position", "position-gap"]) });
++    expect(result.facts.find(f => f.eventId === "unsupported")?.time).toMatchObject({ precision: "month", sourceDate: "2026-03" });
++    expect(result.facts.some(f => f.executionId !== null)).toBe(false);
++  });
++  it("matches old snapshots and preserves selection, ties and captured-source isolation", () => {
++    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100.12345678901", "0.000000001"), fill("sell", "2026-01-06T15:00:00Z", "1", "101.12345678901", "0.000000002")];
++    const original = structuredClone(executions), source = preparedCanonical.preparePositionLedger({ executions });
++    executions[0].quantity = "99";
++    const queries = [{}, { cursor: "2026-01-05T16:00:00Z" }, { cursor: "2026-01-01", visibleExecutionIds: [original[1].id, "unknown", original[0].id] }, { visibleExecutionIds: [original[1].id] }];
++    const results = preparedCanonical.readPreparedPositionFacts(source, queries);
++    results.results.forEach((result, index) => {
++      const old = replayPositionAtPrice({ executions: original, ...queries[index], markPrice: "0" });
++      expect([result.terminal.quantity.value, result.terminal.averageCost.value, result.terminal.realizedPnl.value, result.terminal.fees.value].map(value => value === null ? "0" : new Decimal(value).toDecimalPlaces(8).toString())).toEqual([old.quantity, old.averageCost, old.realizedPnl, old.fees]);
++      expect(result.terminal.reasons).toEqual(old.accuracy?.reasons ?? []);
++      expect(result.terminal.warnings).toEqual(old.warnings ?? []);
++    });
++    expect(results.results.map(r => r.mode)).toEqual(["ordinary-sweep", "ordinary-sweep", "ordinary-sweep", "exact-context-fallback"]);
++    expect(results.results[2].selectedExecutionIds).toEqual(original.map(e => e.id));
++    expect(preparedCanonical.readPreparedPositionFacts(source, [{ ...queries[2], visibleExecutionIds: original.map(e => e.id) }]).results[0].contextId).toBe(results.results[2].contextId);
++    expect(() => Reflect.set(results.results[0].terminal.quantity, "value", "99")).not.toThrow();
++    expect(results.results[0].terminal.quantity.value).toBe("0");
++    const tied = original.map(e => ({ ...e, executedAt: original[0].executedAt }));
++    const forward = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: tied }), [{}]).results[0];
++    const reverse = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [...tied].reverse() }), [{}]).results[0];
++    expect(forward.mode).toBe("exact-context-fallback");
++    expect(forward.contextId).not.toBe(reverse.contextId);
++    expect(forward.terminal.realizedPnl.value).toBe("1");
++    expect(reverse.terminal.realizedPnl.value).toBe("1");
++  });
++});
++
++describe("P4 canonical fact seam exactness counterexamples", () => {
++  it("does not let missing IPO cash turn known inventory chronology into unknown or certify partial fees", () => {
++    const sale = fill("sell", "2026-01-16T15:00:00Z", "2", "130", "2");
++    sale.source.positionEvents = [fixtureEvent({ id: "application", date: "2026-01-08", kind: "ipo", amount: "-220", description: "IPO application", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "fee", date: "2026-01-08", kind: "fee", amount: "-2", description: "IPO fee", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "allocation", date: "2026-01-10", kind: "ipo", quantity: "2", displayTimePolicy: "session-open", description: "IPO allocation", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "refund", date: "2026-01-20", kind: "ipo", amount: "20", description: "IPO refund", symbol: "TEST", market: "US", currency: "USD" })];
++    const source = preparedCanonical.preparePositionLedger({ executions: [sale] });
++    const [early, late] = preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-18" }, { cursor: "2026-01-22" }]).results;
++    expect([early.coverage.quantity.available, early.coverage.chronology.available, early.coverage.costAndRealized.available]).toEqual([true, true, false]);
++    expect(early.terminal.fees).toMatchObject({ value: null, available: false, reasons: ["ipo-fee-allocation-unavailable"] });
++    expect(late.terminal.fees.value).toBe("4");
++  });
++  it("reports bounded prefix index work and one observed sweep for many empty queries", () => {
++    const executions = Array.from({ length: 256 }, (_, index) => fill("buy", new Date(Date.UTC(2026, 0, 5, 0, index)).toISOString(), "1", "100", "0"));
++    const source = preparedCanonical.preparePositionLedger({ executions });
++    const result = preparedCanonical.readPreparedPositionFacts(source, Array.from({ length: 128 }, () => ({ cursor: "2026-01-01" })));
++    expect(result.diagnostics).toMatchObject({ evaluations: 1, transitions: 256, retainedFactBytes: 0 });
++    expect(result.diagnostics.indexProbes).toBe(128 * 9);
++    expect(result.results.every(value => value.facts.length === 0 && value.selectedExecutionIds.length === 0)).toBe(true);
++  });
++  it("records execution-backed suppression rather than a second IPO movement", () => {
++    const buy = fill("buy", "2026-01-10T15:00:00Z", "2", "100", "2");
++    buy.source.positionEvents = [fixtureEvent({ id: "allocation", date: "2026-01-10", kind: "ipo", quantity: "2", amount: "-200", description: "IPO allocation", displayTimePolicy: "session-open", symbol: "TEST", market: "US", currency: "USD" })];
++    buy.source.sourceTradeId = "ipo-allocation";
++    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [buy] }), [{}]).results[0];
++    expect(result.facts.map(f => [f.kind, f.effect, f.after.quantity.value])).toEqual([["ipo-allocation", "suppressed-duplicate", "0"], ["execution", "applied", "2"]]);
++    expect(result.terminal.fees.value).toBe("2");
++  });
++});
++
++describe("P4 canonical fact seam exception compatibility", () => {
++  it("preserves original Decimal errors and future-evidence filtering on the observed path", () => {
++    const buy = fill("buy", "2026-01-05T15:00:00Z", "1", "100", "0");
++    buy.source.positionEvents = [fixtureEvent({ id: "bad-allocation", date: "2026-02-10", kind: "ipo", quantity: "invalid", description: "malformed allocation", symbol: "TEST", market: "US", currency: "USD" })];
++    const source = preparedCanonical.preparePositionLedger({ executions: [buy] });
++    expect(preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-10" }]).results[0].terminal.quantity.value).toBe("1");
++    expect(() => replayPositionAtPrice({ executions: [buy], cursor: "2026-02-12", markPrice: "0" })).toThrow("DecimalError");
++    expect(() => preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-02-12" }])).toThrow("DecimalError");
++  });
++});
+--- accepted-input/app/lib/reviews/homepage-v25-performance.ts
++++ candidate/app/lib/reviews/homepage-v25-performance.ts
+@@ -3,7 +3,7 @@
+ import type { TradeLibraryEntry } from "../trades/library";
+ import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
+ import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
+-import { replayPositionAtPrice, preparePositionLedger, replayPreparedPositionBoundaries, type PreparedPositionLedger, type PositionLedgerSnapshot } from "../replay/position-ledger";
++import { replayPositionAtPrice, preparePositionLedger, replayPreparedPositionBoundaries, readPreparedPositionFacts, type CanonicalFactResult, type PositionFactValue, type PreparedPositionLedger, type PositionLedgerSnapshot } from "../replay/position-ledger";
+ import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
+ import type { StatementEvent } from "../import/monthly-statement";
+ import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
+@@ -177,7 +177,7 @@
+ function seedExecutions(group: Group, start: string): TradeExecution[] {
+   return group.seeds.map((position, index) => ({ id: `homepage-boundary:${index}`, accountId: position.accountId, accountLabel: position.accountId, instrument: { ...group.instrument, currency: position.currency }, side: position.direction === "long" ? "buy" : "sell", quantity: position.quantity, price: position.unitCost, fee: "0", executedAt: `${previousDay(start)}T00:00:00Z`, source: { platform: "homepage-boundary", row: index, positionEffect: position.direction === "long" ? "open-long" : "open-short" } }));
+ }
+-function replay(group: Group, boundary: Boundary, start: string, prepared?: PreparedKernel): State {
++function replay(group: Group, boundary: Boundary, start: string, prepared?: PreparedKernel, observe?: FeeStepObserver): State {
+   const originals = [...seedExecutions(group, start), ...group.executions];
+   const selected = originals.filter(e => visible(e, boundary)).sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)) || (a.source.sourceOrder ?? a.source.row) - (b.source.sourceOrder ?? b.source.row) || a.id.localeCompare(b.id));
+   const pnl = new Set<string>(group.conflicts), quantityReasons = new Set<string>([...group.conflicts].filter(reason => reason === "execution-lineage-unavailable"));
+@@ -224,14 +224,19 @@
+   // An IPO may acquire stock before its refund is known. Project only fees,
+   // using this boundary's cash knowledge and canonical inventory at each
+   // movement prefix. Never reconstruct cost or realized profit here.
++  let stepContext: { sourceId: string; selectedExecutionIds: string[] } | undefined;
+   const beforeStep = (ids: string[], step: Step) => {
+-    if (!allocations.length) return snapshot(ids, step.at > boundary.cursor ? boundary.cursor : step.at, feeExecutions);
++    if (!allocations.length) {
++      if (observe) stepContext = { sourceId: `sha256:${sha256(JSON.stringify({ input: { executions: feeExecutions }, policy: "canonical-movement-1" }))}`, selectedExecutionIds: [...ids] };
++      return snapshot(ids, step.at > boundary.cursor ? boundary.cursor : step.at, feeExecutions);
++    }
+     const precedes = (at: string, rank: number) => at < step.at || at === step.at && rank < step.rank;
+     const prefix = feeExecutions.map(e => ({ ...e, source: { ...e.source,
+       positionEvents: e.source.positionEvents?.filter(event => event.kind === "fee" || event.kind === "ipo" && event.quantity === undefined || precedes(eventAt(event), 2)),
+       statementPositions: e.source.statementPositions?.filter(position => precedes(statementPositionAt(position), position.phase === "opening" ? 0 : 4)),
+       openingPosition: e.source.openingPosition && precedes(statementPositionAt(e.source.openingPosition), e.source.openingPosition.phase === "opening" ? 0 : 4) ? e.source.openingPosition : undefined,
+     } }));
++    if (observe) stepContext = { sourceId: `sha256:${sha256(JSON.stringify({ input: { executions: prefix }, policy: "canonical-movement-1" }))}`, selectedExecutionIds: [...ids] };
+     return snapshot(ids, boundary.cursor, prefix);
+   };
+   let ids: string[] = [], pool: Decimal | null = new Decimal(0), projectedFees = new Decimal(0);
+@@ -250,6 +255,7 @@
+       continue;
+     }
+     if (prepared) prepared.counts.feeSteps++;
++    const poolBefore = pool;
+     const before = beforeStep(ids, step);
+     if (before.quantityKnown === false) pool = null;
+     const beforeQuantity = D(before.quantity)!;
+@@ -267,10 +273,17 @@
+     if (e && ((e.source.positionEffect === "close-long" && (beforeQuantity.lte(0) || size.gt(beforeQuantity))) || (e.source.positionEffect === "close-short" && (beforeQuantity.gte(0) || size.gt(beforeQuantity.abs()))))) {
+       pnl.add("position-coverage-missing"); quantityReasons.add("position-coverage-missing");
+     }
++    let released: Decimal | null = null;
+     if (pool && fee && size.gt(0)) {
+       const allocated: Decimal = closed.gt(0) ? pool.mul(closed).div(beforeQuantity.abs()) : new Decimal(0);
+       pool = pool.minus(allocated).plus(fee.mul(size.minus(closed)).div(size));
+-    }
++      if (observe) released = allocated;
++    }
++    observe?.({ executionId: e?.id ?? null, allocationEventId: step.allocation?.id ?? null, at: step.at,
++      poolBefore, poolAfter: pool, released, fee, closed, size, reasons: [...pnl, ...quantityReasons],
++      beforeContext: { ...stepContext!, cursor: allocations.length ? boundary.cursor : step.at > boundary.cursor ? boundary.cursor : step.at,
++        selectedExecutionPrefixLength: ids.length, movementPrefix: prefix.slice(0, -1).map(item => [...item]),
++        evidencePolicy: allocations.length ? "cash-knowledge-with-preceding-movements" : "original" } });
+     if (e) ids = [...ids, e.id];
+     prepared?.memo.set(checkpointKey, { pool: pool === null ? null : pool.toString(), projectedFees: projectedFees.toString(), pnl: [...pnl], quantity: [...quantityReasons] } satisfies FeeCheckpoint);
+   }
+@@ -689,9 +702,10 @@
+   return state;
+ }
+ type OrdinaryProjection = { canonical: PreparedPositionLedger; ordered: TradeExecution[]; checkpoints: FeeCheckpoint[] };
+-function prepareOrdinaryProjection(data: PreparedData, group: Group, canonical: PreparedPositionLedger, normalized: ReturnType<typeof normalizedExecution>[]): OrdinaryProjection {
++function prepareOrdinaryProjection(data: PreparedData | undefined, group: Group, canonical: PreparedPositionLedger, normalized: ReturnType<typeof normalizedExecution>[], observe?: FeeStepObserver, prefixLength?: number): OrdinaryProjection {
+   const byId=new Map(normalized.map(row=>[row.execution.id,row]));
+-  const ordered=canonical.transitions.map(fact=>byId.get(fact.executionId)!.execution);
++  const transitions = prefixLength === undefined ? canonical.transitions : canonical.transitions.slice(0, prefixLength);
++  const ordered=transitions.map(fact=>byId.get(fact.executionId)!.execution);
+   const pnl=new Set(group.conflicts), quantity=new Set<string>([...group.conflicts].filter(reason=>reason==="execution-lineage-unavailable"));
+   if(group.inventoryConflict) quantity.add("duplicate-execution-conflict");
+   if(group.executions.some(e=>executionDay(e)===null)){pnl.add("execution-time-invalid");quantity.add("execution-time-invalid");}
+@@ -699,7 +713,8 @@
+   const capture=():FeeCheckpoint=>({pool:pool===null?null:pool.toString(),projectedFees:projectedFees.toString(),pnl:[...pnl],quantity:[...quantity]});
+   const checkpoints=[capture()];
+   for(let index=0;index<ordered.length;index++){
+-    data.counts.feeSteps++;
++    if (data) data.counts.feeSteps++;
++    const poolBefore = pool;
+     const e=ordered[index], row=byId.get(e.id)!, before=canonical.transitions[index].before;
+     row.pnl.forEach(reason=>pnl.add(reason));row.quantity.forEach(reason=>quantity.add(reason));
+     if(!before.quantityKnown)pool=null;
+@@ -708,10 +723,15 @@
+     const closes=e.side==="sell"&&beforeQuantity.gt(0)||e.side==="buy"&&beforeQuantity.lt(0),closed=closes?Decimal.min(beforeQuantity.abs(),size):new Decimal(0);
+     if(e.side==="sell"&&size.gt(Decimal.max(beforeQuantity,0))&&e.source.positionEffect!=="open-short"){pnl.add("execution-direction-unavailable");quantity.add("execution-direction-unavailable");}
+     if(e.source.positionEffect==="close-long"&&(beforeQuantity.lte(0)||size.gt(beforeQuantity))||e.source.positionEffect==="close-short"&&(beforeQuantity.gte(0)||size.gt(beforeQuantity.abs()))){pnl.add("position-coverage-missing");quantity.add("position-coverage-missing");}
++    let released: Decimal | null = null;
+     if(pool&&size.gt(0)){
+       const allocated: Decimal=closed.gt(0)?pool.mul(closed).div(beforeQuantity.abs()):new Decimal(0);
+       pool=pool.minus(allocated).plus(fee.mul(size.minus(closed)).div(size));
+-    }
++      if (observe) released = allocated;
++    }
++    observe?.({ executionId: e.id, allocationEventId: null, at: replayExecutionAt(e), poolBefore, poolAfter: pool,
++      released, fee, closed, size, reasons: [...pnl, ...quantity],
++      beforeContext: { selectedExecutionIds: null, cursor: replayExecutionAt(e), selectedExecutionPrefixLength: index, movementPrefix: null, evidencePolicy: "original" } });
+     checkpoints.push(capture());
+   }
+   return {canonical,ordered,checkpoints};
+@@ -785,8 +805,8 @@
+ function validKnowledge(value: string | null | undefined, boundary: Boundary): value is string {
+   return Boolean(value && /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) && Number.isFinite(Date.parse(value)) && Date.parse(value) <= Date.parse(boundary.cursor));
+ }
+-function fxFor(data: PreparedData, boundary: Boundary, codes: string[], target: string | undefined, current = false): { snapshot?: RoomFxSnapshot; coverage: FxCoverage } {
+-  data.counts.fxLookups++;
++function fxFor(data: PreparedData, boundary: Boundary, codes: string[], target: string | undefined, current = false, count = true): { snapshot?: RoomFxSnapshot; coverage: FxCoverage } {
++  if (count) data.counts.fxLookups++;
+   const targetCode = target ? currency(target) : null;
+   const requiredPairs = unique(codes.flatMap(code => !targetCode || code === targetCode ? [] : [code, targetCode].filter(c => c !== "CNY").map(c => `${c}/CNY`)));
+   const coverage: { state: FxCoverage["state"]; businessDate: string; observationIds: string[]; requiredPairs: string[]; pairKnowledge: Record<string, { publishedAt: string; knownAt: string; fetchedAt: string; source: string }>; reasons: string[] } = { state: requiredPairs.length ? "missing" : "not-required", businessDate: boundary.day, observationIds: [], requiredPairs, pairKnowledge: {}, reasons: [] };
+@@ -821,7 +841,7 @@
+   const snapshot: RoomFxSnapshot | undefined = coverage.state === "complete" && current ? data.input.currentFxSnapshot!.snapshot : coverage.state === "complete" ? { id: coverage.observationIds.join("|"), source: unique(Object.values(coverage.pairKnowledge).map(k => k.source)).join("|"), asOf: boundary.cursor, baseCurrency: "CNY", status: "complete", rates } : undefined;
+   return { snapshot, coverage };
+ }
+-function collectFeeFacts(data: PreparedData): HomepageV25FeeFact[] {
++function collectFeeFacts(data: PreparedData, supplemental: readonly { event: StatementEvent; group: Group }[] = []): HomepageV25FeeFact[] {
+   const facts: HomepageV25FeeFact[] = [];
+   const events = new Map<string, { event: StatementEvent; group: Group; conflict: boolean }>();
+   for (const group of data.groups) {
+@@ -840,6 +860,14 @@
+         else events.set(key, { event, group, conflict: false });
+       }
+     }
++  }
++  // Explicit seam reads can supply statement-only groups through the same fee
++  // evidence collector. Normal source preparation supplies no supplemental rows.
++  for (const { event, group } of supplemental) {
++    const key = `${event.accountId}|${group.identity.nature}|${group.identity.simulationRunId ?? ""}|${event.id}`;
++    const previous = events.get(key);
++    if (previous) { if (JSON.stringify(previous.event) !== JSON.stringify(event)) previous.conflict = true; }
++    else events.set(key, { event, group, conflict: false });
+   }
+   for (const [key, { event, group, conflict }] of events) {
+     if (event.kind !== "fee") continue;
+@@ -1022,3 +1050,133 @@
+   if(!data) throw new HomepageV25ProjectionInputError("prepared-source-invalid");
+   return freezeProjection({...data.counts, distinctCanonicalContexts:data.memo.count("canonical:"),cacheEntries:data.memo.size,cacheEstimatedBytes:data.memo.bytes,evictions:data.memo.evictions,batchEntries:data.memo.count("batch:"),sourceEstimatedBytes:data.sourceEstimatedBytes,indexEstimatedBytes:data.indexEstimatedBytes});
+ }
++
++type FeeStepObservation = {
++  executionId: string | null; allocationEventId: string | null; at: string;
++  poolBefore: Decimal | null; poolAfter: Decimal | null; released: Decimal | null; fee: Decimal | null;
++  closed: Decimal; size: Decimal; reasons: string[];
++  beforeContext: { sourceId?: string; selectedExecutionIds: readonly string[] | null; cursor: string; selectedExecutionPrefixLength: number; movementPrefix: string[][] | null; evidencePolicy: "original" | "cash-knowledge-with-preceding-movements" };
++};
++type FeeStepObserver = (step: FeeStepObservation) => void;
++export type HomepageV25FeeAllocationFact = Readonly<{
++  contextId: string; movementFactId: string | null; executionId: string | null; allocationEventId: string | null;
++  feeFactIds: readonly string[]; evidenceIds: readonly string[];
++  beforeContext: Readonly<FeeStepObservation["beforeContext"] & { sourceId: string; selectedExecutionOrder: readonly string[] }>;
++  openingPoolBefore: PositionFactValue; openingPoolAfter: PositionFactValue; releasedOpeningFee: PositionFactValue;
++  movementFeeTotal: PositionFactValue; movementFeeToClosing: PositionFactValue; movementFeeToOpening: PositionFactValue; realizedFeeDelta: PositionFactValue;
++}>;
++function financialFactValue(value: Decimal | null, reasons: readonly string[] = []): PositionFactValue {
++  const unavailable = unique(reasons);
++  return { value: value === null || unavailable.length ? null : value.isZero() ? "0" : value.toFixed(), available: value !== null && !unavailable.length, reasons: unavailable };
++}
++/** Financial-owner read seam. Collects transient canonical movements and observes F's existing allocation steps. */
++export function readHomepageV25FinancialFacts(source: HomepageV25PreparedSource, request: { asOf: string; targetCurrency?: string }) {
++  const data = preparedData.get(source);
++  if (!data) throw new TypeError("Unknown prepared homepage source");
++  const boundary = parseAsOf(request.asOf);
++  if (!boundary) throw new HomepageV25ProjectionInputError("as-of-invalid");
++  const episodesByGroup = new Map<string, TradeLibraryEntry["episodes"][number]["episode"][]>();
++  for (const entry of data.input.entries) for (const item of entry.episodes) {
++    const episode = item.episode, nature = episode.tradeNature ?? (episode.executions[0] ? tradeNatureOf(episode.executions[0]) : "unknown");
++    const key = `${episode.accountId}|${episode.instrument.id}|${nature}|${episode.simulationRunId ?? ""}`;
++    const bucket = episodesByGroup.get(key) ?? []; bucket.push(episode); episodesByGroup.set(key, bucket);
++  }
++  const groups = data.groups.map(group => {
++    const normalized = data.normalized.get(group.key)!;
++    const episodes = episodesByGroup.get(group.key) ?? [];
++    const uncoveredEvidence = !group.executions.length ? episodes.map(episode => ({
++      positions: [...(episode.initialPosition ? [episode.initialPosition] : []), ...episode.executions.flatMap(execution => [...(execution.source.statementPositions ?? []), ...(execution.source.openingPosition ? [execution.source.openingPosition] : [])])],
++      events: [...(episode.positionEvents ?? []), ...episode.executions.flatMap(execution => execution.source.positionEvents ?? [])],
++    })) : [];
++    const prepared = uncoveredEvidence.length ? undefined : data.ordinary.get(group.key);
++    const selected = selectedPrepared(data, group, boundary);
++    const canonicalSource = prepared?.canonical ?? preparePositionLedger({ executions: normalized.map(row => row.execution), ...(uncoveredEvidence.length ? { inventoryIdentity: { accountId: group.identity.accountId, symbol: group.instrument.symbol, market: group.instrument.market }, evidence: uncoveredEvidence } : {}) });
++    const observed = readPreparedPositionFacts(canonicalSource, [{ cursor: boundary.cursor, visibleExecutionIds: selected.map(execution => execution.id) }]);
++    const canonical: CanonicalFactResult = observed.results[0];
++    const feeFacts = visibleFeeFacts(data, boundary, uncoveredEvidence.length
++      ? collectFeeFacts({ ...data, groups: [group] }, uncoveredEvidence.flatMap(evidence => evidence.events.map(event => ({ event, group }))))
++      : data.feeFactsByGroup.get(group.key) ?? []);
++    const allocations: HomepageV25FeeAllocationFact[] = [];
++    const executionOrder = canonical.selectedExecutionIds;
++    const movements = new Map<string, CanonicalFactResult["facts"][number]>();
++    for (const fact of canonical.facts) {
++      if (fact.executionId) movements.set(`execution:${fact.executionId}`, fact);
++      else if (fact.kind === "ipo-allocation" && fact.effect === "applied") movements.set(`allocation:${fact.eventId}`, fact);
++    }
++    const feesByEvidence = new Map<string, HomepageV25FeeFact[]>();
++    for (const fact of feeFacts) for (const id of [...fact.lineage.executionIds, ...fact.lineage.eventIds]) {
++      const bucket = feesByEvidence.get(id) ?? []; bucket.push(fact); feesByEvidence.set(id, bucket);
++    }
++    const observe: FeeStepObserver = step => {
++      const movement = movements.get(step.executionId ? `execution:${step.executionId}` : `allocation:${step.allocationEventId}`);
++      if (!movement) return;
++      const reasons = unique([...movement.after.fees.reasons, ...step.reasons.filter(reason => reason.includes("fee") || ["quantity-unavailable", "execution-direction-unavailable", "position-coverage-missing", "duplicate-execution-conflict", "execution-lineage-unavailable", "execution-time-invalid", "currency-conflict", "settlement-currency-mismatch"].includes(reason))]);
++      const closeFee = step.fee && step.size.gt(0) ? step.fee.mul(step.closed).div(step.size) : null;
++      const openFee = step.fee && step.size.gt(0) ? step.fee.mul(step.size.minus(step.closed)).div(step.size) : null;
++      const matchingFees = [...new Map((step.executionId ? feesByEvidence.get(step.executionId) ?? [] : movement.evidenceIds.flatMap(id => feesByEvidence.get(id) ?? [])).map(fact => [fact.factId, fact])).values()];
++      allocations.push({ contextId: canonical.contextId, movementFactId: movement.factId, executionId: step.executionId, allocationEventId: step.allocationEventId,
++        feeFactIds: matchingFees.map(fact => fact.factId), evidenceIds: unique([...movement.evidenceIds, ...matchingFees.flatMap(fact => fact.knowledge.evidenceIds)]),
++        beforeContext: { ...step.beforeContext, sourceId: step.beforeContext.sourceId ?? canonical.sourceId, selectedExecutionOrder: executionOrder },
++        openingPoolBefore: financialFactValue(step.poolBefore, reasons), openingPoolAfter: financialFactValue(step.poolAfter, reasons),
++        releasedOpeningFee: financialFactValue(step.released, reasons), movementFeeTotal: financialFactValue(step.fee, reasons),
++        movementFeeToClosing: financialFactValue(closeFee, reasons), movementFeeToOpening: financialFactValue(openFee, reasons),
++        realizedFeeDelta: financialFactValue(step.released && closeFee ? step.released.plus(closeFee) : null, reasons) });
++    };
++    let state: State;
++    if (prepared) {
++      // Run the existing fee sweep only for the selected prefix; do not retain its checkpoints or facts.
++      const fees = prepareOrdinaryProjection(undefined, group, canonicalSource, normalized, observe, selected.length).checkpoints.at(-1)!;
++      const ledger = replayPreparedPositionBoundaries(canonicalSource, [{ markPrice: "0", cursor: boundary.cursor, visibleExecutionIds: selected.map(execution => execution.id) }]).results[0].snapshot;
++      state = finishState(boundary, ledger, selected, new Set(fees.pnl), new Set(fees.quantity), fees.pool === null ? null : new Decimal(fees.pool), new Decimal(fees.projectedFees));
++    } else state = replay(group, boundary, "2000-01-01", undefined, observe);
++    const feeReasons = unique([...canonical.terminal.fees.reasons, ...state.pnlReasons.filter(reason => reason.includes("fee") || state.quantityReasons.includes(reason) || ["duplicate-execution-conflict", "currency-conflict", "settlement-currency-mismatch"].includes(reason))]);
++    const fullFees = D(canonical.terminal.fees.value);
++    const realizedFees = fullFees && state.openFees ? fullFees.minus(state.openFees) : null;
++    const gross = D(canonical.terminal.realizedPnl.value);
++    return { key: group.key, identity: { ...group.identity, market: group.instrument.market, currency: group.instrument.currency },
++      canonical, allocations, incurredFeeFacts: structuredClone(feeFacts), rawExecutions: structuredClone(group.executions),
++      openFees: financialFactValue(state.openFees, feeReasons), realizedFees: financialFactValue(realizedFees, feeReasons),
++      nativeRealizedNet: financialFactValue(gross && realizedFees ? gross.minus(realizedFees) : null, state.pnlReasons),
++      sourceCoverage: structuredClone(lifetimeFor(data, group, boundary)),
++      episodeCoverage: episodeFactCoverage(episodes, canonical),
++      classificationCoverage: classificationFactCoverage(canonical, group.executions),
++      fxCoverage: fxFor(data, boundary, [group.instrument.currency], request.targetCurrency, false, false).coverage,
++      quantityCoverage: { available: state.quantity !== null, reasons: state.quantityReasons },
++      diagnostics: { ...observed.diagnostics, feeSteps: allocations.length, mode: prepared ? "ordinary-sweep" as const : "exact-context-fallback" as const } };
++  });
++  return freezeProjection({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, asOf: request.asOf, effectiveKnowledgeCursor: boundary.cursor, scope: structuredClone(data.scope), groups });
++}
++
++function episodeFactCoverage(episodes: TradeLibraryEntry["episodes"][number]["episode"][], canonical: CanonicalFactResult) {
++  const byId = new Map(canonical.facts.filter(fact => fact.executionId).map(fact => [fact.executionId!, fact]));
++  const conflicts: string[] = [];
++  for (const episode of episodes) {
++    const last = episode.executions.map(execution => byId.get(execution.id)).filter((fact): fact is NonNullable<typeof fact> => Boolean(fact)).at(-1);
++    if (!last) continue;
++    const lastRaw = episode.executions.at(-1);
++    // Only complete, visible episode lineage may be checked. Canonical remains the movement authority.
++    if (lastRaw && !byId.has(lastRaw.id)) continue;
++    const after = D(last.after.quantity.value), zero = after !== null && (episode.direction === "long" ? after.lte(0) : after.gte(0)), ended = episode.endedAt ? Date.parse(replayExecutionAt({ ...lastRaw!, executedAt: episode.endedAt })) : null;
++    if ((episode.status === "closed") !== zero || zero && ended !== null && ended !== Date.parse(last.time.at)) conflicts.push(episode.id);
++  }
++  const reasons = conflicts.length ? ["episode-canonical-conflict"] : !episodes.length ? ["episode-lineage-unavailable"] : [];
++  return { available: !reasons.length, reasons, episodeIds: episodes.map(episode => episode.id), conflictingEpisodeIds: unique(conflicts) };
++}
++function classificationFactCoverage(canonical: CanonicalFactResult, executions: readonly TradeExecution[]) {
++  const suppressed = new Set(canonical.facts.filter(fact => fact.kind === "ipo-allocation" && fact.effect === "suppressed-duplicate").map(fact => fact.eventId));
++  const allocations = [...new Map(executions.flatMap(execution => execution.source.positionEvents ?? []).filter(event => suppressed.has(event.id)).map(event => [event.id, event])).values()];
++  const ipoBuys = new Set<string>();
++  // This existing authority identifies the duplicate acquisition only. It does
++  // not establish any disposal-to-lot relationship for mixed-source inventory.
++  for (const event of allocations) for (const execution of executions) if (isExecutionBackedIpoAllocation(event, [execution])) ipoBuys.add(execution.id);
++  const classes = new Set<"ipo" | "long" | "short">();
++  let disposal = false, unknown = false;
++  for (const fact of canonical.facts) {
++    if (fact.kind === "ipo-allocation" && (fact.effect === "applied" || allocations.some(event => event.id === fact.eventId))) classes.add("ipo");
++    if (fact.kind === "execution" && D(fact.openedQuantity.value)?.gt(0)) classes.add(ipoBuys.has(fact.executionId!) ? "ipo" : D(fact.after.quantity.value)?.lt(0) ? "short" : "long");
++    if (D(fact.matchedClosedQuantity.value)?.gt(0)) disposal = true;
++    if (fact.kind === "execution" && !fact.openedQuantity.available || ["transfer", "position-reconciliation"].includes(fact.kind)) unknown = true;
++  }
++  const reasons = classes.size > 1 && disposal ? ["provenance-ambiguous"] : unknown ? ["provenance-coverage-missing"] : [];
++  return { available: !reasons.length, reasons, sourceClasses: [...classes] };
++}
+--- accepted-input/app/lib/reviews/homepage-v25-performance.test.ts
++++ candidate/app/lib/reviews/homepage-v25-performance.test.ts
+@@ -1096,3 +1096,192 @@
+     } finally { dates.mockRestore(); }
+   });
+ });
++
++
++describe("P4 F fact seam O01/O02", () => {
++  it("distinguishes incurred fees from partial and final allocated fees", () => {
++    const executions = [fill("b1", "2026-01-05T15:00:00Z", { fee: "2" }), fill("b2", "2026-01-06T15:00:00Z", { price: "200", fee: "4" }), fill("s1", "2026-01-07T15:00:00Z", { side: "sell", price: "180", fee: "2" }), fill("s2", "2026-01-08T15:00:00Z", { side: "sell", price: "190", fee: "2" })];
++    const source = preparedFixture(executions, []);
++    expect(preparedPerformance.readHomepageV25FinancialFacts).toBeTypeOf("function");
++    const partial = preparedPerformance.readHomepageV25FinancialFacts(source, { asOf: "2026-01-07T16:00:00Z" }).groups[0];
++    const final = preparedPerformance.readHomepageV25FinancialFacts(source, { asOf: "2026-01-08T16:00:00Z" }).groups[0];
++    expect(partial.allocations.map(f => [f.openingPoolBefore.value, f.openingPoolAfter.value, f.releasedOpeningFee.value, f.movementFeeToClosing.value, f.movementFeeToOpening.value, f.realizedFeeDelta.value])).toEqual([["0", "2", "0", "0", "2", "0"], ["2", "6", "0", "0", "4", "0"], ["6", "3", "3", "2", "0", "5"]]);
++    expect([partial.openFees.value, partial.realizedFees.value, partial.nativeRealizedNet.value]).toEqual(["3", "5", "25"]);
++    expect([final.openFees.value, final.realizedFees.value, final.nativeRealizedNet.value]).toEqual(["0", "10", "60"]);
++    expect(final.incurredFeeFacts.map(f => [f.expense, f.incurred.businessDate])).toEqual([["2", "2026-01-05"], ["4", "2026-01-06"], ["2", "2026-01-07"], ["2", "2026-01-08"]]);
++    expect(final.allocations.every(f => final.canonical.facts.some(m => m.factId === f.movementFactId))).toBe(true);
++  });
++  it("splits a legal reversal fee once and retains illegal close direction uncertainty", () => {
++    const executions = [fill("b", "2026-01-05T15:00:00Z", { fee: "2" }), fill("reverse", "2026-01-06T15:00:00Z", { side: "sell", quantity: "2", price: "120", fee: "4", source: { platform: "statement", row: 2, positionEffect: "open-short" } }), fill("cover", "2026-01-07T15:00:00Z", { price: "110", fee: "1", source: { platform: "statement", row: 3, positionEffect: "close-short" } })];
++    expect(preparedPerformance.readHomepageV25FinancialFacts).toBeTypeOf("function");
++    const group = preparedPerformance.readHomepageV25FinancialFacts(preparedFixture(executions, []), { asOf: "2026-01-08" }).groups[0];
++    expect(group.allocations.map(f => [f.releasedOpeningFee.value, f.movementFeeToClosing.value, f.movementFeeToOpening.value, f.realizedFeeDelta.value, f.openingPoolAfter.value])).toEqual([["0", "0", "2", "0", "2"], ["2", "2", "2", "4", "2"], ["2", "1", "0", "3", "0"]]);
++    expect([group.nativeRealizedNet.value, group.realizedFees.value, group.canonical.selectedExecutionIds]).toEqual(["23", "7", ["b", "reverse", "cover"]]);
++    const illegal = executions.map(e => e.id === "reverse" ? { ...e, source: { ...e.source, positionEffect: "close-long" as const } } : e);
++    const unknown = preparedPerformance.readHomepageV25FinancialFacts(preparedFixture(illegal, []), { asOf: "2026-01-08" }).groups[0];
++    expect(unknown.nativeRealizedNet).toMatchObject({ value: null, available: false, reasons: expect.arrayContaining(["position-coverage-missing"]) });
++  });
++});
++
++const seamIpoEvents = (quantity = "2", date = "2026-01-10"): NonNullable<TradeExecution["source"]["positionEvents"]> => {
++  const common = { accountId: "a", market: "US", symbol: "AAPL", currency: "USD", source: [{ page: 1, row: 2 }] };
++  return [
++    { ...common, id: "application", kind: "ipo", date: "2026-01-08", amount: "-220", description: "IPO application" },
++    { ...common, id: "fee", kind: "fee", date: "2026-01-08", amount: "-2", description: "IPO fee" },
++    { ...common, id: "allocation", kind: "ipo", date, quantity, displayTimePolicy: "session-open", description: "IPO allocation" },
++    { ...common, id: "refund", kind: "ipo", date: "2026-01-20", amount: "20", description: "IPO refund" },
++  ];
++};
++const seamRead = (source: ReturnType<typeof prepareHomepageV25Source>, asOf = "2026-01-22T10:00:00Z") => preparedPerformance.readHomepageV25FinancialFacts(source, { asOf }).groups[0];
++describe("P4 F fact seam O03–O08", () => {
++  it("O03 keeps late IPO knowledge distinct without changing closing or incurred dates", () => {
++    const source = preparedFixture([fill("s1", "2026-01-15T15:00:00Z", { side: "sell", price: "120", fee: "1", source: { platform: "statement", row: 1, positionEvents: seamIpoEvents() } }), fill("s2", "2026-01-16T15:00:00Z", { side: "sell", price: "130", fee: "1" })], []);
++    const early = seamRead(source, "2026-01-18"), late = seamRead(source);
++    expect([early.canonical.terminal.quantity.value, early.nativeRealizedNet.value, early.realizedFees.value]).toEqual(["0", null, null]);
++    expect([late.canonical.terminal.quantity.value, late.canonical.terminal.realizedPnl.value, late.realizedFees.value, late.nativeRealizedNet.value]).toEqual(["0", "50", "4", "46"]);
++    expect(late.canonical.facts.filter(f => f.executionId).map(f => [f.time.sourceDate, f.after.quantity.value])).toEqual([["2026-01-15T15:00:00Z", "1"], ["2026-01-16T15:00:00Z", "0"]]);
++    expect([early, late].map(g => g.incurredFeeFacts.reduce((sum, fact) => sum + Number(fact.expense), 0))).toEqual([4, 4]);
++    expect(late.incurredFeeFacts.find(f => f.lineage.eventIds.includes("fee"))?.incurred.businessDate).toBe("2026-01-08");
++    expect(late.allocations.find(f => f.allocationEventId === "allocation")?.feeFactIds).toEqual([expect.stringContaining("fee")]);
++    expect(early.canonical.contextId).not.toBe(late.canonical.contextId);
++    expect(seamRead(source, "2026-01-18")).toEqual(early);
++    expect(seamRead(source)).toEqual(late);
++    expect(Object.isFrozen(early.allocations)).toBe(true);
++  });
++  it.each([["1", "-1", "-80", "3", "-83"], ["2", "0", "40", "4", "36"], ["3", "1", "106.66666666666666667", "3.3333333333333333333", "103.33333333333333334"]])("O04 records non-execution IPO cover of %s without fabricating fills", (allocation, quantity, gross, fees, net) => {
++    const source = preparedFixture([fill("short", "2026-01-06T15:00:00Z", { side: "sell", quantity: "2", price: "120", fee: "2", source: { platform: "statement", row: 1, positionEffect: "open-short", positionEvents: seamIpoEvents(allocation, "2026-01-12") } })], []);
++    const group = seamRead(source), movement = group.canonical.facts.find(f => f.kind === "ipo-allocation")!;
++    expect([group.canonical.terminal.quantity.value, group.canonical.terminal.realizedPnl.value, group.realizedFees.value, group.nativeRealizedNet.value]).toEqual([quantity, gross, fees, net]);
++    expect([movement.executionId, movement.matchedClosedQuantity.value, movement.openedQuantity.value, movement.time.sourceDate]).toEqual([null, allocation === "1" ? "1" : "2", allocation === "3" ? "1" : "0", "2026-01-12"]);
++    expect(group.canonical.selectedExecutionIds).toEqual(["short"]);
++    expect(group.allocations.map(f => [f.executionId, f.allocationEventId])).toEqual([["short", null], [null, "allocation"]]);
++  });
++  it("O06 does not trust episode dates over canonical facts and records conflicts", () => {
++    const executions = [fill("b", "2026-01-05T15:00:00Z"), fill("s", "2026-01-06T15:00:00Z", { side: "sell", price: "110" })];
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
++    entries[0].episodes[0].episode.status = "open";
++    entries[0].episodes[0].episode.endedAt = "2027-01-06T15:00:00Z";
++    const group = seamRead(preparedFixture(executions, [], { entries }));
++    expect([group.canonical.terminal.quantity.value, group.canonical.facts.at(-1)?.time.sourceDate]).toEqual(["0", "2026-01-06T15:00:00Z"]);
++    expect(group.episodeCoverage).toMatchObject({ available: false, reasons: expect.arrayContaining(["episode-canonical-conflict"]) });
++  });
++  it("O06 preserves duplicate inventory and monetary uncertainty separately", () => {
++    const executions = [fill("b", "2026-01-05T15:00:00Z"), fill("s", "2026-01-06T15:00:00Z", { side: "sell", price: "110" })];
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
++    entries[0].executions.push({ ...executions[0] });
++    const same = seamRead(preparedFixture(executions, [], { entries }));
++    expect([same.canonical.selectedExecutionIds, same.nativeRealizedNet.value]).toEqual([["b", "s"], "10"]);
++    entries[0].executions.at(-1)!.price = "101";
++    const monetary = seamRead(preparedFixture(executions, [], { entries }));
++    expect([monetary.quantityCoverage.available, monetary.nativeRealizedNet.value]).toEqual([true, null]);
++    entries[0].executions.at(-1)!.quantity = "2";
++    const inventory = seamRead(preparedFixture(executions, [], { entries }));
++    expect(inventory.quantityCoverage).toMatchObject({ available: false, reasons: expect.arrayContaining(["duplicate-execution-conflict"]) });
++  });
++  it("O07 exposes sub-cent native results and keeps historical FX and mixed provenance unknown", () => {
++    const values = ["100.004", "100", "99.996"].map(price => seamRead(preparedFixture([fill("b", "2026-01-05T15:00:00Z"), fill("s", "2026-01-06T15:00:00Z", { side: "sell", price })], [])).nativeRealizedNet.value);
++    expect(values).toEqual(["0.004", "0", "-0.004"]);
++    expect(values.filter(value => Number(value) > 0)).toHaveLength(1);
++    const source = preparedFixture([fill("manual", "2026-01-13T15:00:00Z", { price: "200", source: { platform: "statement", row: 1, positionEvents: seamIpoEvents("1") } }), fill("sell", "2026-01-15T15:00:00Z", { side: "sell", price: "180" })], []);
++    const group = preparedPerformance.readHomepageV25FinancialFacts(source, { asOf: "2026-01-22T10:00:00Z", targetCurrency: "CNY" }).groups[0];
++    expect(group.nativeRealizedNet.available).toBe(true);
++    expect(group.fxCoverage).toMatchObject({ state: "missing", reasons: ["fx-knowledge-unavailable"] });
++    expect(group.classificationCoverage).toMatchObject({ available: false, reasons: ["provenance-ambiguous"] });
++    expect(group.classificationCoverage.sourceClasses).toEqual(["ipo", "long"]);
++  });
++  it("O08 collects facts only on request and retains no memo, source or index growth", () => {
++    const executions = Array.from({ length: 200 }, (_, index) => fill(`e${index}`, new Date(Date.UTC(2026, 0, 5, 0, index)).toISOString(), { side: index % 2 ? "sell" : "buy", price: index % 2 ? "101" : "100", fee: "0.00000000001" }));
++    const source = preparedFixture(executions, []), before = preparedPerformance.inspectHomepageV25PreparedSource(source);
++    const first = seamRead(source), second = seamRead(source), after = preparedPerformance.inspectHomepageV25PreparedSource(source);
++    expect(second).toEqual(first);
++    expect(first.diagnostics).toEqual({ evaluations: 1, transitions: 200, indexProbes: 200, retainedFactBytes: 0, feeSteps: 200, mode: "ordinary-sweep" });
++    expect([first.canonical.terminal.realizedPnl.value, first.realizedFees.value, first.nativeRealizedNet.value]).toEqual(["100", "0.000000002", "99.999999998"]);
++    expect(after).toEqual(before);
++  });
++});
++
++describe("P4 F fact seam coverage counterexamples", () => {
++  it("retains event-only inventory and uncovered source as different facts", () => {
++    const executions = [fill("seed", "2026-01-05T15:00:00Z", { quantity: "2" })];
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
++    const episode = entries[0].episodes[0].episode;
++    entries[0].executions = [];
++    episode.executions = [];
++    episode.initialPosition = { accountId: "a", symbol: "AAPL", market: "US", phase: "opening", date: "2026-01-01", quantity: "2", source: [] };
++    episode.positionEvents = [{ accountId: "a", symbol: "AAPL", market: "US", currency: "USD", id: "out", kind: "transfer-out", date: "2026-01-08", quantity: "2", description: "stock out", source: [] }];
++    const group = seamRead(preparedFixture(executions, [], { entries }));
++    expect(group.canonical.selectedExecutionIds).toEqual([]);
++    expect(group.canonical.facts.map(f => [f.kind, f.after.quantity.value])).toEqual([["position-reconciliation", "2"], ["evidence-status", null], ["transfer", "0"]]);
++    expect(group.canonical.terminal.realizedPnl.value).toBeNull();
++    expect(group.nativeRealizedNet).toMatchObject({ value: null, available: false, reasons: expect.arrayContaining(["execution-lineage-unavailable"]) });
++    expect(group.sourceCoverage.state).toBe("unknown");
++    expect(group.rawExecutions).toEqual([]);
++  });
++  it("retains future-carrier early evidence but blocks future knowledge and keeps account/run identity", () => {
++    const future = fill("future", "2026-02-10T15:00:00Z", { side: "sell", source: { platform: "statement", row: 1, positionEvents: seamIpoEvents() } });
++    const early = seamRead(preparedFixture([future], []), "2026-01-18");
++    expect([early.canonical.selectedExecutionIds, early.canonical.terminal.quantity.value, early.nativeRealizedNet.value]).toEqual([[], "2", null]);
++    expect(early.canonical.facts.map(f => f.eventId)).toEqual(["application", "fee", "allocation"]);
++    const a = fill("a", "2026-01-05T15:00:00Z"), b = fill("b", "2026-01-05T15:00:00Z", { accountId: "b" });
++    const sim = fill("sim", "2026-01-05T15:00:00Z", { source: { platform: "test", row: 1, tradeNature: "simulation", simulationRunId: "run1" } });
++    const sim2 = { ...sim, id: "sim2", source: { ...sim.source, simulationRunId: "run2" } };
++    const live = preparedPerformance.readHomepageV25FinancialFacts(preparedFixture([a, b, sim, sim2], []), { asOf: "2026-01-22" });
++    expect(live.groups.map(g => [g.identity.accountId, g.identity.market, g.identity.currency, g.identity.nature, g.identity.simulationRunId])).toEqual([["a", "US", "USD", "live", null], ["b", "US", "USD", "live", null]]);
++    const selected = preparedPerformance.readHomepageV25FinancialFacts(preparedFixture([a, b, sim, sim2], [], { scope: { nature: "simulation", simulationRunId: "run1" } }), { asOf: "2026-01-22" });
++    expect(selected.groups.map(g => [g.identity.nature, g.identity.simulationRunId, g.canonical.selectedExecutionIds])).toEqual([["simulation", "run1", ["sim"]]]);
++  });
++  it("joins a fee allocation to the exact preceding evidence source and selected fill context", () => {
++    const source = preparedFixture([fill("s1", "2026-01-15T15:00:00Z", { side: "sell", price: "120", fee: "1", source: { platform: "statement", row: 1, positionEvents: seamIpoEvents() } }), fill("s2", "2026-01-16T15:00:00Z", { side: "sell", price: "130", fee: "1" })], []);
++    const group = seamRead(source), contexts = group.allocations.map(f => f.beforeContext);
++    expect(contexts.map(c => [c.cursor, c.selectedExecutionIds, c.movementPrefix])).toEqual([["2026-01-22T10:00:00.000Z", [], []], ["2026-01-22T10:00:00.000Z", [], [["allocation", "allocation"]]], ["2026-01-22T10:00:00.000Z", ["s1"], [["allocation", "allocation"], ["execution", "s1"]]]]);
++    expect(new Set(contexts.map(c => c.sourceId)).size).toBe(2);
++    expect(contexts.every(c => c.evidencePolicy === "cash-knowledge-with-preceding-movements")).toBe(true);
++    expect(group.allocations.map(f => f.evidenceIds)).toEqual(expect.arrayContaining([expect.arrayContaining(["allocation", "application", "refund", "fee"])]));
++  });
++});
++
++describe("P4 F fact seam fee/source evidence", () => {
++  it("preserves incurred event-only fees without creating fills or known allocated results", () => {
++    const executions = [fill("seed", "2026-01-05T15:00:00Z")];
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
++    entries[0].executions = [];
++    const episode = entries[0].episodes[0].episode;
++    episode.executions = [];
++    episode.initialPosition = { accountId: "a", symbol: "AAPL", market: "US", phase: "opening", date: "2026-01-01", quantity: "1", source: [] };
++    episode.positionEvents = [{ accountId: "a", symbol: "AAPL", market: "US", currency: "USD", id: "statement-fee", kind: "fee", date: "2026-01-08", amount: "-2", description: "custody fee", source: [{ page: 1, row: 4 }] }];
++    const group = seamRead(preparedFixture(executions, [], { entries }));
++    expect(group.incurredFeeFacts).toEqual([expect.objectContaining({ kind: "statement-fee", expense: "2", incurred: { businessDate: "2026-01-08", at: null, precision: "day" }, lineage: { executionIds: [], eventIds: ["statement-fee"], sourceRows: ["statement:1:4"] } })]);
++    expect([group.rawExecutions, group.allocations, group.nativeRealizedNet.value]).toEqual([[], [], null]);
++  });
++  it("uses the existing suppression authority for IPO acquisition class without inventing disposal links", () => {
++    const common = { accountId: "a", symbol: "AAPL", market: "US", currency: "USD", source: [] };
++    const buy = fill("ipo-buy", "2026-01-10T15:00:00Z", { quantity: "2", price: "100", fee: "2", source: { platform: "statement", row: 1, positionEvents: [{ ...common, id: "allocation", kind: "ipo", date: "2026-01-10", quantity: "2", amount: "-200", description: "IPO allocation", displayTimePolicy: "session-open" }] } });
++    const sale = fill("sale", "2026-01-16T15:00:00Z", { side: "sell", quantity: "2", price: "130", fee: "2" });
++    const group = seamRead(preparedFixture([buy, sale], []));
++    expect(group.classificationCoverage).toEqual({ available: true, reasons: [], sourceClasses: ["ipo"] });
++    expect([group.canonical.terminal.realizedPnl.value, group.realizedFees.value, group.nativeRealizedNet.value]).toEqual(["60", "4", "56"]);
++    expect(group.canonical.facts.filter(f => f.executionId)).toHaveLength(2);
++  });
++});
++
++describe("P4 F fact seam precision boundary", () => {
++  it("preserves native profit sign below the old eight-decimal display precision", () => {
++    const results = ["100.000000000001", "100", "99.999999999999"].map(price => seamRead(preparedFixture([fill("b", "2026-01-05T15:00:00Z"), fill("s", "2026-01-06T15:00:00Z", { side: "sell", price })], [])).nativeRealizedNet.value);
++    expect(results).toEqual(["0.000000000001", "0", "-0.000000000001"]);
++  });
++});
++
++describe("P4 F fact seam fee unknown gates", () => {
++  it("keeps conflicting raw fees and unknown-fee movements unavailable independently of quantity", () => {
++    const buys = [fill("b", "2026-01-05T15:00:00Z", { fee: "2" }), fill("s", "2026-01-06T15:00:00Z", { side: "sell", price: "110", fee: "2" })];
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(buys), {}, {});
++    entries[0].executions.push({ ...buys[0], fee: "5" });
++    const conflict = seamRead(preparedFixture(buys, [], { entries }));
++    expect([conflict.quantityCoverage.available, conflict.realizedFees.value, conflict.openFees.value]).toEqual([true, null, null]);
++    expect(conflict.realizedFees.reasons).toContain("duplicate-execution-conflict");
++    const unknown = seamRead(preparedFixture([{ ...buys[0], source: { ...buys[0].source, feeStatus: "unknown" } }, buys[1]], []));
++    expect(unknown.allocations.map(f => [f.movementFeeTotal.value, f.realizedFeeDelta.value])).toEqual([[null, null], [null, null]]);
++    expect(unknown.allocations[0].movementFeeTotal.reasons).toContain("unknown-fees");
++    expect(unknown.incurredFeeFacts[0].expense).toBeNull();
++  });
++});

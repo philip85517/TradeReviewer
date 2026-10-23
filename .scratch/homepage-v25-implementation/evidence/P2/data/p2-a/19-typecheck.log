@@ -1,0 +1,6 @@
+app/lib/reviews/homepage-v25-performance.ts(584,44): error TS2345: Argument of type '"duplicate-execution-conflict"' is not assignable to parameter of type '"execution-lineage-unavailable"'.
+app/lib/reviews/homepage-v25-performance.ts(585,103): error TS2345: Argument of type '"execution-time-invalid"' is not assignable to parameter of type '"execution-lineage-unavailable"'.
+app/lib/reviews/homepage-v25-performance.ts(592,88): error TS2345: Argument of type 'string' is not assignable to parameter of type '"execution-lineage-unavailable"'.
+app/lib/reviews/homepage-v25-performance.ts(597,161): error TS2345: Argument of type '"execution-direction-unavailable"' is not assignable to parameter of type '"execution-lineage-unavailable"'.
+app/lib/reviews/homepage-v25-performance.ts(598,245): error TS2345: Argument of type '"position-coverage-missing"' is not assignable to parameter of type '"execution-lineage-unavailable"'.
+app/lib/reviews/homepage-v25-performance.ts(600,13): error TS7022: 'allocated' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.

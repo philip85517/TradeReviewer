@@ -1,0 +1,11 @@
+{
+  "final_record_links_valid": true,
+  "missing_links": [],
+  "frozen_sources_unchanged": true,
+  "changed_sources": [],
+  "production_ui_accepted": false,
+  "F": "PAUSED 3/3 FAIL",
+  "S": "PAUSED 3/3 FAIL",
+  "A": "ACCEPTED 3/3 preparation only",
+  "P1-P5": "BLOCKED 0/3"
+}

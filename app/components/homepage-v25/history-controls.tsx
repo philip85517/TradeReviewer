@@ -1,0 +1,182 @@
+"use client";
+
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import type { HomepageHistoryChartMode, HomepageHistoryRange } from "../../lib/reviews/homepage-v25-state";
+import "./history-controls.css";
+
+export type HistoryRangeOption = { id: string; label: string; range: HomepageHistoryRange };
+export type HistoryControlsProps = {
+  appliedRange: HomepageHistoryRange;
+  chartMode: HomepageHistoryChartMode;
+  rangeOptions: readonly HistoryRangeOption[];
+  pending?: boolean;
+  error?: string | null;
+  onRangeApply: (range: HomepageHistoryRange) => void;
+  onChartModeChange: (mode: HomepageHistoryChartMode) => void;
+};
+type Menu = "range" | "metric";
+const CHART_MODES: readonly HomepageHistoryChartMode[] = ["period-pnl", "cumulative-pnl", "win-rate", "round-count"];
+
+function rangeKey(range: HomepageHistoryRange): string {
+  switch (range.mode) {
+    case "all": return "all";
+    case "year": case "this-year": return `${range.mode}:${range.year}`;
+    case "years": return `years:${range.fromYear}:${range.toYear}`;
+  }
+}
+function validRange(range: HomepageHistoryRange): boolean {
+  const year = (value: number) => Number.isInteger(value) && value > 0 && value <= 9999;
+  switch (range.mode) {
+    case "all": return true;
+    case "year": case "this-year": return year(range.year);
+    case "years": return year(range.fromYear) && year(range.toYear) && range.fromYear <= range.toYear;
+  }
+}
+function rangeLabel(range: HomepageHistoryRange): string {
+  switch (range.mode) {
+    case "all": return "全部";
+    case "this-year": return "今年";
+    case "year": return String(range.year);
+    case "years": return `${range.fromYear}–${range.toYear}`;
+  }
+}
+function chartLabel(mode: HomepageHistoryChartMode, range: HomepageHistoryRange): string {
+  switch (mode) {
+    case "period-pnl": return range.mode === "year" || range.mode === "this-year" ? "每月净盈亏" : "每年净盈亏";
+    case "cumulative-pnl": return "累计净盈亏";
+    case "win-rate": return "各期胜率";
+    case "round-count": return "各期回合数";
+  }
+}
+function Arrow() {
+  return <svg className="hp-history-controls__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>;
+}
+
+/** Requests intent only; applied range and chart mode remain owned by the caller. */
+export function HistoryControls({ appliedRange, chartMode, rangeOptions, pending = false, error,
+  onRangeApply, onChartModeChange }: HistoryControlsProps) {
+  const id = useId();
+  const root = useRef<HTMLDivElement>(null);
+  const triggers = useRef<Record<Menu, HTMLButtonElement | null>>({ range: null, metric: null });
+  const menu = useRef<HTMLDivElement>(null);
+  const items = useRef<(HTMLButtonElement | null)[]>([]);
+  const [open, setOpen] = useState<Menu | null>(null);
+  const tabLeaving = useRef(false);
+  const appliedKey = rangeKey(appliedRange);
+  const selectedRange = rangeOptions.findIndex(option => rangeKey(option.range) === appliedKey);
+  const selectedMetric = CHART_MODES.indexOf(chartMode);
+  const label = rangeLabel(appliedRange);
+  const fullLabel = rangeOptions[selectedRange]?.label ?? label;
+  // Primitive signature lets an actual caller option change refresh focus, without refocusing on every render.
+  const optionsKey = JSON.stringify(rangeOptions.map(option => [option.id, option.label, rangeKey(option.range)]));
+  const hasInvalidRange = rangeOptions.some(option => !validRange(option.range));
+
+  useEffect(() => {
+    if (!open) return;
+    const selected = open === "range" ? selectedRange : selectedMetric;
+    (items.current[selected] ?? items.current[0] ?? menu.current)?.focus();
+  }, [open, selectedRange, selectedMetric, optionsKey]);
+
+  useEffect(() => {
+    if (!open) return;
+    const outside = (event: MouseEvent) => {
+      if (event.target instanceof Node && !root.current?.contains(event.target)) {
+        setOpen(null);
+        triggers.current[open]?.focus();
+      }
+    };
+    document.addEventListener("click", outside);
+    return () => document.removeEventListener("click", outside);
+  }, [open]);
+
+  function close(restoreFocus: boolean) {
+    setOpen(null);
+    if (restoreFocus && open) triggers.current[open]?.focus();
+  }
+  function submit(index: number) {
+    if (open === "range") {
+      const option = rangeOptions[index];
+      if (pending || !option || !validRange(option.range)) return;
+      onRangeApply(option.range);
+    } else if (open === "metric") {
+      const mode = CHART_MODES[index];
+      if (!mode) return;
+      onChartModeChange(mode);
+    } else return;
+    close(true);
+  }
+  function menuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const count = open === "range" ? rangeOptions.length : CHART_MODES.length;
+    const current = items.current.findIndex(item => item === document.activeElement);
+    let next: number;
+    switch (event.key) {
+      case "ArrowDown": next = Math.min(current + 1, count - 1); break;
+      case "ArrowUp": next = Math.max(current - 1, 0); break;
+      case "Home": next = 0; break;
+      case "End": next = count - 1; break;
+      case "Enter": case " ":
+        event.preventDefault();
+        submit(current);
+        return;
+      default: return;
+    }
+    event.preventDefault();
+    if (count) items.current[next]?.focus();
+  }
+  function triggerKeyDown(event: KeyboardEvent<HTMLButtonElement>, kind: Menu) {
+    if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      setOpen(kind);
+    }
+  }
+  function exitKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (!open) return;
+    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(true); }
+    // Keep the focused option mounted through native Tab navigation. Blur closes afterward.
+    if (event.key === "Tab") tabLeaving.current = true;
+  }
+  function renderMenu(kind: Menu) {
+    return open === kind && <div ref={menu} id={`${id}-${open}`} role="listbox" aria-label={open === "range" ? "历史范围" : "历史指标"}
+      aria-busy={open === "range" && pending || undefined} tabIndex={-1} className="hp-history-controls__menu" onKeyDown={menuKeyDown}>
+      {open === "range" ? rangeOptions.map((option, index) => <button type="button" key={option.id}
+        ref={element => { items.current[index] = element; }} role="option" tabIndex={-1}
+        data-option-id={option.id} className="hp-history-controls__option" aria-selected={rangeKey(option.range) === appliedKey}
+        aria-disabled={pending || !validRange(option.range) || undefined} onClick={() => submit(index)}>{option.label}</button>)
+        : CHART_MODES.map((mode, index) => <button type="button" key={mode}
+          ref={element => { items.current[index] = element; }} role="option" tabIndex={-1}
+          data-option-id={mode} className="hp-history-controls__option" aria-selected={mode === chartMode}
+          onClick={() => submit(index)}>{chartLabel(mode, appliedRange)}</button>)}
+      {open === "range" && rangeOptions.length === 0 && <p className="hp-history-controls__menu-reason">暂无可选历史范围，请待范围选项可用后重试。</p>}
+      {open === "range" && hasInvalidRange && <p className="hp-history-controls__menu-reason">年份须为1–9999的整数，且起止年份有序；无效范围不可应用。</p>}
+    </div>;
+  }
+  const messages = pending || error ? `${id}-feedback` : undefined;
+
+  return <div ref={root} className="hp-history-controls" onKeyDown={exitKeyDown} onBlur={() => {
+    if (tabLeaving.current) { tabLeaving.current = false; close(false); }
+  }}>
+    <div className="hp-history-controls__combo">
+      <button ref={element => { triggers.current.range = element; }} type="button"
+        className="hp-history-controls__trigger hp-history-controls__trigger--range"
+        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${fullLabel}`} title={fullLabel} aria-haspopup="listbox" aria-expanded={open === "range"}
+        aria-controls={open === "range" ? `${id}-range` : undefined} aria-describedby={messages}
+        aria-busy={pending || undefined} onClick={() => setOpen(open === "range" ? null : "range")}
+        onKeyDown={event => triggerKeyDown(event, "range")}>
+        <span className="hp-history-controls__label">{label}</span><Arrow />
+      </button>
+      {renderMenu("range")}
+      <button ref={element => { triggers.current.metric = element; }} type="button"
+        className="hp-history-controls__trigger hp-history-controls__trigger--metric"
+        tabIndex={open === "metric" ? -1 : 0} aria-label={`历史指标：${chartLabel(chartMode, appliedRange)}`} aria-haspopup="listbox" aria-expanded={open === "metric"}
+        aria-controls={open === "metric" ? `${id}-metric` : undefined}
+        onClick={() => setOpen(open === "metric" ? null : "metric")} onKeyDown={event => triggerKeyDown(event, "metric")}>
+        <span className="hp-history-controls__label">{chartLabel(chartMode, appliedRange)}</span><Arrow />
+      </button>
+      {renderMenu("metric")}
+    </div>
+    {pending ? <p id={messages} role="status" className="hp-history-controls__feedback">正在读取历史范围，保留当前已应用范围。</p>
+      : error ? <p id={messages} role="alert" className="hp-history-controls__feedback hp-history-controls__feedback--error">{error}</p> : null}
+  </div>;
+}

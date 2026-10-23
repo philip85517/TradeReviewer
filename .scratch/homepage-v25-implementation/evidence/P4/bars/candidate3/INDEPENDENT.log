@@ -1,0 +1,18 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate3/vitest-independent.config.mjs", "--maxWorkers=1", "--reporter=verbose"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ .scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx > an invalidated contribution detail stays closed and preserves outside focus when a currency context returns 386ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  10:31:29
+   Duration  2.73s (transform 187ms, setup 260ms, import 359ms, tests 388ms, environment 1.27s)
+
+
+STDERR
+(node:57544) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+EXIT 0

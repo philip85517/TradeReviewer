@@ -1,0 +1,18 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/verify-corrections.mjs"]
+STDOUT
+PASS CB-M02 error wins the generic status cascade
+STATIC/SYNTHETIC ONLY: jsdom computes the flat declaration cascade; postcss checks desktop/narrow axis structure. No browser rendering, axis rect measurement, actual overflow or visual PASS.
+
+STDERR
+FAIL CB-M03 desktop has one full-height list axis, narrow keeps row axes
+AssertionError [ERR_ASSERTION]: desktop needs one list-level axis instead of separated row zero spans
+
+undefined !== '""'
+
+    at checks (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/verify-corrections.mjs:21:12)
+    at file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/verify-corrections.mjs:39:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:642:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+EXIT 1

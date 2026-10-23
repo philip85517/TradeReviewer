@@ -1,0 +1,235 @@
+{
+  "method": "Static text inspection only; no app imports, test runner, browser, service, DB, performance or profile execution.",
+  "root": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "log_summary": [
+    "Test Files  1 failed (1)",
+    "Tests  11 failed | 88 passed (99)",
+    "Start at  05:19:30",
+    "Duration  114.78s (transform 4.37s, setup 468ms, import 5.66s, tests 106.24s, environment 2.00s)"
+  ],
+  "failure_count": 11,
+  "failures": [
+    {
+      "number": 1,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > searches the owned metadata-only directory and returns from its exact empty ordinary collection to the search source",
+      "error": "AssertionError: expected \"vi.fn()\" to be called 3 times, but got 4 times",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:805:33"
+      ]
+    },
+    {
+      "number": 2,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation",
+      "error": "AssertionError: expected \"vi.fn()\" to be called 4 times, but got 6 times",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:1901:47"
+      ]
+    },
+    {
+      "number": 3,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps saved intraday replay state pending until lazy data settles",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"交易库\"",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:2025:34"
+      ]
+    },
+    {
+      "number": 4,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not block the selected replay on another stock's market data",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"交易库\"",
+      "workspace_stack": [
+        "❯ enterImportedReviewFromLibrary app/components/trade-review-workspace.test.tsx:1172:34",
+        "❯ app/components/trade-review-workspace.test.tsx:2298:11"
+      ]
+    },
+    {
+      "number": 5,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps a persisted hourly provider failure visible when no cache exists",
+      "error": "AssertionError: expected \"getMarketData\" to be called 3 times, but got 4 times",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:2373:47"
+      ]
+    },
+    {
+      "number": 6,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes every trade episode regardless of the selected episode",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"交易库\"",
+      "workspace_stack": [
+        "❯ enterImportedReviewFromLibrary app/components/trade-review-workspace.test.tsx:1172:34",
+        "❯ app/components/trade-review-workspace.test.tsx:3668:11"
+      ]
+    },
+    {
+      "number": 7,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the library chart available after a cancelled import with failed market refresh",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"交易库\"",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:3820:18"
+      ]
+    },
+    {
+      "number": 8,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"交易库\"",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:3852:34"
+      ]
+    },
+    {
+      "number": 9,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens a library queue entry directly in the shared history workbench",
+      "error": "TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"按标的浏览\"",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:3903:29"
+      ]
+    },
+    {
+      "number": 10,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > passes stored instrument metadata into the trading room scope",
+      "error": "TestingLibraryElementError: Unable to find role=\"region\" and name \"我的交易室\"",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:5405:36"
+      ]
+    },
+    {
+      "number": 11,
+      "name": "app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the trading room with its filters, period, and calendar view after opening a holding review",
+      "error": "TestingLibraryElementError: Unable to find an element with the text: 1 个未平仓回合. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.",
+      "workspace_stack": [
+        "❯ app/components/trade-review-workspace.test.tsx:5554:18"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/root-workspace-current-0522.log",
+      "bytes": 137120,
+      "sha256": "bfb94357ec31931595bb7f2bb7f8e069db2c35867ef4e6099d66ec9988da62f5"
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "bytes": 244265,
+      "sha256": "4e9a6823ec30acb94672aac5180824209d9d960ac1a704baf944c6bc3ab030c5"
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "bytes": 277184,
+      "sha256": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22"
+    },
+    {
+      "path": "app/components/test-support/legacy-sqlite-client.ts",
+      "bytes": 5716,
+      "sha256": "68c209c2301f15a8d9ac730a8e71fcb7d1db102cfd7cf9b9a38430ed0234abec"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "bytes": 19598,
+      "sha256": "3218407b84c45656989bc0a2ac700c9741e6c55135f55ed2873e7ed2b968b167"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "bytes": 36016,
+      "sha256": "84897ee2c53bf1c8a81428dcf2e4997cef326b065d58dacae036a2e2b9d2b6c2"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "bytes": 2880,
+      "sha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e"
+    },
+    {
+      "path": "app/components/homepage-v25/catalog-model.ts",
+      "bytes": 5483,
+      "sha256": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3"
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "bytes": 12563,
+      "sha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27"
+    },
+    {
+      "path": "app/components/homepage-v25/fx-adapter.ts",
+      "bytes": 1155,
+      "sha256": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5"
+    },
+    {
+      "path": "app/components/dashboard/review-dashboard.tsx",
+      "bytes": 75852,
+      "sha256": "c87940a65ca303a399e785c6df4242a8391fa1934d5628b7f0dcfecfbb276fa2"
+    },
+    {
+      "path": "app/lib/storage/sqlite-repositories.ts",
+      "bytes": 7326,
+      "sha256": "f2d96a1794477ce9484514ab2759b30f97a0fe32a15f5934ce91b96f8b4a570f"
+    },
+    {
+      "path": "app/lib/storage/browser-state-export.ts",
+      "bytes": 24553,
+      "sha256": "c8a2253178b677ffda40b8da0df752f657bef3256d4cfd67a703b093ca1a74f9"
+    },
+    {
+      "path": "app/lib/reviews/localized-metadata-hydration.ts",
+      "bytes": 7606,
+      "sha256": "983e483aa1aa2c9984ceb62c0eabf53678f3901d738e5cbae8828394b8bb934a"
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.ts",
+      "bytes": 10368,
+      "sha256": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53"
+    },
+    {
+      "path": "app/trades/page.tsx",
+      "bytes": 295,
+      "sha256": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d"
+    },
+    {
+      "path": "app/page.tsx",
+      "bytes": 1349,
+      "sha256": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "bytes": 27120,
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "bytes": 10287,
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "bytes": 21905,
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/04-holdings-journey.md",
+      "bytes": 14805,
+      "sha256": "83a81f27f01ea7c7e92e95e7c43593ef310963caf2604aa9a6af282aa421bd4d"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/06-search-filter.md",
+      "bytes": 9600,
+      "sha256": "ed7ef75508f5d23688d84d8295000e72fb8ac6c9c245290a620249106b3794ec"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "bytes": 57882,
+      "sha256": "3b57b93c8adeae8a1c820b3f33f9a02fe584a2469724fb7146ac94cc12b904b5"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "bytes": 62054,
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return.svg",
+      "bytes": 21616,
+      "sha256": "ee6936f60ca660141d538a8ea82d85778d6dd63a0a7125494ebbd8811f0704dd"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-detail.svg",
+      "bytes": 3814,
+      "sha256": "a5f321bf3481fb59e36e2294f91294826e90e8d8110704de49904f07998e252a"
+    }
+  ]
+}

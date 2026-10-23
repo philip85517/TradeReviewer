@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:12546) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (69 tests | 2 failed | 67 skipped) 74ms
+     × preserves known canonical cost when only 'invalid' fees are unavailable 68ms
+     × preserves known canonical cost when only 'conflicting' fees are unavailable 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known canonical cost when only 'invalid' fees are unavailable
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > preserves known canonical cost when only 'conflicting' fees are unavailable
+AssertionError: expected { …(8) } to match object { Object (quantity, costKnown, ...) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "costKnown": true,
++   "costKnown": false,
+    "feesKnown": false,
+    "openFees": null,
+    "quantity": "1",
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:91:52
+     89|       settlement: { currency: "USD", quantity: "1", grossAmount: "100"…
+     90|     } })]);
+     91|     expect(result.instruments[0].evidence.current).toMatchObject({ qua…
+       |                                                    ^
+     92|     expect(result.currentMarketValue.value).toBe("110");
+     93|     expect(result.net.value).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 5 skipped (6)
+      Tests  2 failed | 96 skipped (98)
+   Start at  01:03:05
+   Duration  3.21s (transform 463ms, setup 0ms, import 1.03s, tests 74ms, environment 1ms)
+

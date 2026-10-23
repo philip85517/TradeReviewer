@@ -1,0 +1,611 @@
+--- /dev/null
++++ b/app/components/homepage-v25/history-controls.tsx
+@@ -0,0 +1,181 @@
++"use client";
++
++import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
++import type { HomepageHistoryChartMode, HomepageHistoryRange } from "../../lib/reviews/homepage-v25-state";
++import "./history-controls.css";
++
++export type HistoryRangeOption = { id: string; label: string; range: HomepageHistoryRange };
++export type HistoryControlsProps = {
++  appliedRange: HomepageHistoryRange;
++  chartMode: HomepageHistoryChartMode;
++  rangeOptions: readonly HistoryRangeOption[];
++  pending?: boolean;
++  error?: string | null;
++  onRangeApply: (range: HomepageHistoryRange) => void;
++  onChartModeChange: (mode: HomepageHistoryChartMode) => void;
++};
++type Menu = "range" | "metric";
++const CHART_MODES: readonly HomepageHistoryChartMode[] = ["period-pnl", "cumulative-pnl", "win-rate", "round-count"];
++
++function rangeKey(range: HomepageHistoryRange): string {
++  switch (range.mode) {
++    case "all": return "all";
++    case "year": case "this-year": return `${range.mode}:${range.year}`;
++    case "years": return `years:${range.fromYear}:${range.toYear}`;
++  }
++}
++function validRange(range: HomepageHistoryRange): boolean {
++  const year = (value: number) => Number.isInteger(value) && value > 0 && value <= 9999;
++  switch (range.mode) {
++    case "all": return true;
++    case "year": case "this-year": return year(range.year);
++    case "years": return year(range.fromYear) && year(range.toYear) && range.fromYear <= range.toYear;
++  }
++}
++function rangeLabel(range: HomepageHistoryRange): string {
++  switch (range.mode) {
++    case "all": return "全部";
++    case "this-year": return "今年";
++    case "year": return String(range.year);
++    case "years": return `${range.fromYear}–${range.toYear}`;
++  }
++}
++function chartLabel(mode: HomepageHistoryChartMode, range: HomepageHistoryRange): string {
++  switch (mode) {
++    case "period-pnl": return range.mode === "year" || range.mode === "this-year" ? "每月净盈亏" : "每年净盈亏";
++    case "cumulative-pnl": return "累计净盈亏";
++    case "win-rate": return "各期胜率";
++    case "round-count": return "各期回合数";
++  }
++}
++function Arrow() {
++  return <svg className="hp-history-controls__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
++    <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
++  </svg>;
++}
++
++/** Requests intent only; applied range and chart mode remain owned by the caller. */
++export function HistoryControls({ appliedRange, chartMode, rangeOptions, pending = false, error,
++  onRangeApply, onChartModeChange }: HistoryControlsProps) {
++  const id = useId();
++  const root = useRef<HTMLDivElement>(null);
++  const triggers = useRef<Record<Menu, HTMLButtonElement | null>>({ range: null, metric: null });
++  const menu = useRef<HTMLDivElement>(null);
++  const items = useRef<(HTMLButtonElement | null)[]>([]);
++  const [open, setOpen] = useState<Menu | null>(null);
++  const tabLeaving = useRef(false);
++  const appliedKey = rangeKey(appliedRange);
++  const selectedRange = rangeOptions.findIndex(option => rangeKey(option.range) === appliedKey);
++  const selectedMetric = CHART_MODES.indexOf(chartMode);
++  const label = rangeOptions[selectedRange]?.label ?? rangeLabel(appliedRange);
++  // Primitive signature lets an actual caller option change refresh focus, without refocusing on every render.
++  const optionsKey = JSON.stringify(rangeOptions.map(option => [option.id, option.label, rangeKey(option.range)]));
++  const hasInvalidRange = rangeOptions.some(option => !validRange(option.range));
++
++  useEffect(() => {
++    if (!open) return;
++    const selected = open === "range" ? selectedRange : selectedMetric;
++    (items.current[selected] ?? items.current[0] ?? menu.current)?.focus();
++  }, [open, selectedRange, selectedMetric, optionsKey]);
++
++  useEffect(() => {
++    if (!open) return;
++    const outside = (event: MouseEvent) => {
++      if (event.target instanceof Node && !root.current?.contains(event.target)) {
++        setOpen(null);
++        triggers.current[open]?.focus();
++      }
++    };
++    document.addEventListener("click", outside);
++    return () => document.removeEventListener("click", outside);
++  }, [open]);
++
++  function close(restoreFocus: boolean) {
++    setOpen(null);
++    if (restoreFocus && open) triggers.current[open]?.focus();
++  }
++  function submit(index: number) {
++    if (open === "range") {
++      const option = rangeOptions[index];
++      if (pending || !option || !validRange(option.range)) return;
++      onRangeApply(option.range);
++    } else if (open === "metric") {
++      const mode = CHART_MODES[index];
++      if (!mode) return;
++      onChartModeChange(mode);
++    } else return;
++    close(true);
++  }
++  function menuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
++    const count = open === "range" ? rangeOptions.length : CHART_MODES.length;
++    const current = items.current.findIndex(item => item === document.activeElement);
++    let next: number;
++    switch (event.key) {
++      case "ArrowDown": next = Math.min(current + 1, count - 1); break;
++      case "ArrowUp": next = Math.max(current - 1, 0); break;
++      case "Home": next = 0; break;
++      case "End": next = count - 1; break;
++      case "Enter": case " ":
++        event.preventDefault();
++        submit(current);
++        return;
++      default: return;
++    }
++    event.preventDefault();
++    if (count) items.current[next]?.focus();
++  }
++  function triggerKeyDown(event: KeyboardEvent<HTMLButtonElement>, kind: Menu) {
++    if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
++      event.preventDefault();
++      setOpen(kind);
++    }
++  }
++  function exitKeyDown(event: KeyboardEvent<HTMLDivElement>) {
++    if (!open) return;
++    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(true); }
++    // Keep the focused option mounted through native Tab navigation. Blur closes afterward.
++    if (event.key === "Tab") tabLeaving.current = true;
++  }
++  function renderMenu(kind: Menu) {
++    return open === kind && <div ref={menu} id={`${id}-${open}`} role="listbox" aria-label={open === "range" ? "历史范围" : "历史指标"}
++      aria-busy={open === "range" && pending || undefined} tabIndex={-1} className="hp-history-controls__menu" onKeyDown={menuKeyDown}>
++      {open === "range" ? rangeOptions.map((option, index) => <button type="button" key={option.id}
++        ref={element => { items.current[index] = element; }} role="option" tabIndex={-1}
++        data-option-id={option.id} className="hp-history-controls__option" aria-selected={rangeKey(option.range) === appliedKey}
++        aria-disabled={pending || !validRange(option.range) || undefined} onClick={() => submit(index)}>{option.label}</button>)
++        : CHART_MODES.map((mode, index) => <button type="button" key={mode}
++          ref={element => { items.current[index] = element; }} role="option" tabIndex={-1}
++          data-option-id={mode} className="hp-history-controls__option" aria-selected={mode === chartMode}
++          onClick={() => submit(index)}>{chartLabel(mode, appliedRange)}</button>)}
++      {open === "range" && rangeOptions.length === 0 && <p className="hp-history-controls__menu-reason">暂无可选历史范围，请待范围选项可用后重试。</p>}
++      {open === "range" && hasInvalidRange && <p className="hp-history-controls__menu-reason">年份须为1–9999的整数，且起止年份有序；无效范围不可应用。</p>}
++    </div>;
++  }
++  const messages = pending || error ? `${id}-feedback` : undefined;
++
++  return <div ref={root} className="hp-history-controls" onKeyDown={exitKeyDown} onBlur={() => {
++    if (tabLeaving.current) { tabLeaving.current = false; close(false); }
++  }}>
++    <div className="hp-history-controls__combo">
++      <button ref={element => { triggers.current.range = element; }} type="button"
++        className="hp-history-controls__trigger hp-history-controls__trigger--range"
++        tabIndex={open === "range" ? -1 : 0} aria-label={`历史范围：${label}`} aria-haspopup="listbox" aria-expanded={open === "range"}
++        aria-controls={open === "range" ? `${id}-range` : undefined} aria-describedby={messages}
++        aria-busy={pending || undefined} onClick={() => setOpen(open === "range" ? null : "range")}
++        onKeyDown={event => triggerKeyDown(event, "range")}>
++        <span className="hp-history-controls__label">{label}</span><Arrow />
++      </button>
++      {renderMenu("range")}
++      <button ref={element => { triggers.current.metric = element; }} type="button"
++        className="hp-history-controls__trigger hp-history-controls__trigger--metric"
++        tabIndex={open === "metric" ? -1 : 0} aria-label={`历史指标：${chartLabel(chartMode, appliedRange)}`} aria-haspopup="listbox" aria-expanded={open === "metric"}
++        aria-controls={open === "metric" ? `${id}-metric` : undefined}
++        onClick={() => setOpen(open === "metric" ? null : "metric")} onKeyDown={event => triggerKeyDown(event, "metric")}>
++        <span className="hp-history-controls__label">{chartLabel(chartMode, appliedRange)}</span><Arrow />
++      </button>
++      {renderMenu("metric")}
++    </div>
++    {pending ? <p id={messages} role="status" className="hp-history-controls__feedback">正在读取历史范围，保留当前已应用范围。</p>
++      : error ? <p id={messages} role="alert" className="hp-history-controls__feedback hp-history-controls__feedback--error">{error}</p> : null}
++  </div>;
++}
+--- /dev/null
++++ b/app/components/homepage-v25/history-controls.css
+@@ -0,0 +1,165 @@
++.hp-history-controls {
++  position: relative;
++  width: 282px;
++  max-width: min(100%, calc(100vw - 48px));
++  color: #e6edf7;
++  font-family: inherit;
++  font-size: 14px;
++  line-height: 20px;
++}
++
++.hp-history-controls .hp-history-controls__combo {
++  position: relative;
++  display: flex;
++  height: 36px;
++  background: #111a26;
++  border-radius: 7px;
++}
++
++.hp-history-controls .hp-history-controls__combo::before {
++  position: absolute;
++  z-index: 1;
++  inset: 0;
++  border: 1px solid #283448;
++  border-radius: inherit;
++  pointer-events: none;
++  content: "";
++}
++
++.hp-history-controls button.hp-history-controls__trigger {
++  position: relative;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 6px;
++  box-sizing: border-box;
++  height: 36px;
++  min-width: 0;
++  padding: 0 12px;
++  border: 0;
++  background: transparent;
++  color: inherit;
++  font: inherit;
++  white-space: normal;
++  cursor: pointer;
++  transition: background-color 120ms ease;
++}
++
++.hp-history-controls button.hp-history-controls__trigger--range {
++  flex: 0 1 auto;
++  min-width: 80px;
++  border-radius: 7px 0 0 7px;
++}
++
++.hp-history-controls button.hp-history-controls__trigger--range::after {
++  position: absolute;
++  top: 8px;
++  right: 0;
++  height: 20px;
++  border-right: 1px solid #283448;
++  content: "";
++}
++
++.hp-history-controls button.hp-history-controls__trigger--metric {
++  flex: 1 0 auto;
++  border-radius: 0 7px 7px 0;
++}
++
++.hp-history-controls .hp-history-controls__label {
++  min-width: 0;
++  overflow-wrap: anywhere;
++}
++
++.hp-history-controls .hp-history-controls__arrow {
++  flex: 0 0 16px;
++  width: 16px;
++  height: 16px;
++  color: #a8b6cb;
++}
++
++.hp-history-controls button.hp-history-controls__trigger:hover:not(:disabled),
++.hp-history-controls button.hp-history-controls__trigger[aria-expanded="true"] {
++  background: #162233;
++}
++
++.hp-history-controls button.hp-history-controls__trigger:active:not(:disabled) {
++  background: #243b5c;
++}
++
++.hp-history-controls button.hp-history-controls__trigger:focus-visible,
++.hp-history-controls button.hp-history-controls__option:focus-visible,
++.hp-history-controls .hp-history-controls__menu:focus-visible {
++  z-index: 2;
++  outline: 2px solid #4da3ff;
++  outline-offset: 2px;
++}
++
++.hp-history-controls .hp-history-controls__menu {
++  position: absolute;
++  z-index: 30;
++  top: 40px;
++  right: 0;
++  left: 0;
++  box-sizing: border-box;
++  max-height: min(320px, calc(100dvh - 96px));
++  padding: 4px;
++  overflow-y: auto;
++  overscroll-behavior: contain;
++  border: 1px solid #283448;
++  border-radius: 6px;
++  background: #162233;
++  box-shadow: 0 8px 22px #0008;
++}
++
++.hp-history-controls button.hp-history-controls__option {
++  display: flex;
++  align-items: center;
++  box-sizing: border-box;
++  width: 100%;
++  height: auto;
++  min-height: 36px;
++  justify-content: flex-start;
++  padding: 7px 10px;
++  border: 0;
++  border-radius: 4px;
++  background: transparent;
++  color: inherit;
++  font: inherit;
++  text-align: left;
++  white-space: normal;
++  overflow-wrap: anywhere;
++  cursor: pointer;
++}
++
++.hp-history-controls button.hp-history-controls__option:hover:not(:disabled),
++.hp-history-controls button.hp-history-controls__option[aria-selected="true"] {
++  background: #243b5c;
++}
++
++.hp-history-controls button.hp-history-controls__option[aria-disabled="true"] {
++  color: #a8b6cb;
++  cursor: not-allowed;
++}
++
++.hp-history-controls .hp-history-controls__menu-reason,
++.hp-history-controls .hp-history-controls__feedback {
++  margin: 8px 0 0;
++  color: #a8b6cb;
++  font: inherit;
++  overflow-wrap: anywhere;
++}
++
++.hp-history-controls .hp-history-controls__menu-reason {
++  margin: 0;
++  padding: 7px 10px;
++}
++
++.hp-history-controls .hp-history-controls__feedback--error {
++  color: #ff8592;
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .hp-history-controls button.hp-history-controls__trigger {
++    transition: none;
++  }
++}
+--- /dev/null
++++ b/app/components/homepage-v25/history-controls.test.tsx
+@@ -0,0 +1,256 @@
++import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { useState } from "react";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import type { HomepageHistoryRange } from "../../lib/reviews/homepage-v25-state";
++import { HistoryControls, type HistoryControlsProps, type HistoryRangeOption } from "./history-controls";
++
++afterEach(cleanup);
++
++const options: readonly HistoryRangeOption[] = [
++  { id: "year-2026", label: "2026", range: { mode: "year", year: 2026 } },
++  { id: "this-year-2026", label: "今年", range: { mode: "this-year", year: 2026 } },
++  { id: "years-2024-2026", label: "2024–2026", range: { mode: "years", fromYear: 2024, toYear: 2026 } },
++  { id: "all", label: "全部", range: { mode: "all" } },
++];
++function props(overrides: Partial<HistoryControlsProps> = {}): HistoryControlsProps {
++  return { appliedRange: { mode: "year", year: 2026 }, chartMode: "period-pnl", rangeOptions: options,
++    onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
++}
++function rangeTrigger() { return screen.getByRole("button", { name: /^历史范围：/ }); }
++function metricTrigger() { return screen.getByRole("button", { name: /^历史指标：/ }); }
++
++// Removing controlled labels or introducing a third selector breaks this contract.
++describe("HistoryControls controlled labels", () => {
++  it.each([
++    [{ mode: "year", year: 2026 }, "2026", "每月净盈亏"],
++    [{ mode: "this-year", year: 2026 }, "今年", "每月净盈亏"],
++    [{ mode: "years", fromYear: 2024, toYear: 2026 }, "2024–2026", "每年净盈亏"],
++    [{ mode: "all" }, "全部", "每年净盈亏"],
++  ] as const)("renders applied %j without a separate granularity control", (appliedRange, label, metric) => {
++    render(<HistoryControls {...props({ appliedRange })} />);
++    expect(screen.getAllByRole("button")).toHaveLength(2);
++    expect(rangeTrigger()).toHaveTextContent(label);
++    expect(metricTrigger()).toHaveTextContent(metric);
++    expect(screen.queryByText("按平仓时间 · 年份")).not.toBeInTheDocument();
++  });
++
++  it("uses caller years instead of constructing prototype years or reading current year", async () => {
++    const custom = [{ id: "future", label: "2038", range: { mode: "year", year: 2038 } }] as const;
++    render(<HistoryControls {...props({ appliedRange: { mode: "year", year: 2038 }, rangeOptions: custom })} />);
++    await userEvent.click(rangeTrigger());
++    expect(screen.getAllByRole("option")).toHaveLength(1);
++    expect(screen.getByRole("option", { name: "2038" })).toHaveFocus();
++    expect(screen.queryByText("2026")).not.toBeInTheDocument();
++  });
++
++  it("keeps an applied range absent from options rather than selecting the first available range", async () => {
++    render(<HistoryControls {...props({ appliedRange: { mode: "year", year: 2031 } })} />);
++    expect(rangeTrigger()).toHaveTextContent("2031");
++    await userEvent.click(rangeTrigger());
++    expect(screen.queryByRole("option", { selected: true })).not.toBeInTheDocument();
++  });
++});
++
++// Immediate arrow submission, optimistic labels, wrong focus restoration or multiple menus fail these tests.
++describe("HistoryControls explicit range submission and keyboard", () => {
++  it("opens on the current selected option and navigates without applying until Space", async () => {
++    const p = props(); const user = userEvent.setup();
++    render(<HistoryControls {...p} />);
++    rangeTrigger().focus(); await user.keyboard("{ArrowDown}");
++    expect(screen.getByRole("option", { name: "2026" })).toHaveFocus();
++    await user.keyboard("{End}"); expect(screen.getByRole("option", { name: "全部" })).toHaveFocus();
++    await user.keyboard("{Home}{ArrowDown}"); expect(screen.getByRole("option", { name: "今年" })).toHaveFocus();
++    await user.keyboard("{ArrowUp}{ArrowDown}");
++    expect(p.onRangeApply).not.toHaveBeenCalled();
++    await user.keyboard(" ");
++    expect(p.onRangeApply).toHaveBeenCalledExactlyOnceWith({ mode: "this-year", year: 2026 });
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    expect(rangeTrigger()).toHaveFocus();
++    expect(rangeTrigger()).toHaveTextContent("2026");
++  });
++
++  it("Enter requests the exact range once, closes, and retains applied selection until caller commits", async () => {
++    const p = props(); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    await user.click(rangeTrigger()); await user.keyboard("{ArrowDown}{ArrowDown}{Enter}");
++    expect(p.onRangeApply).toHaveBeenCalledExactlyOnceWith({ mode: "years", fromYear: 2024, toYear: 2026 });
++    expect(rangeTrigger()).toHaveTextContent("2026");
++    expect(metricTrigger()).toHaveTextContent("每月净盈亏");
++    await user.click(rangeTrigger());
++    expect(screen.getByRole("option", { name: "2026" })).toHaveAttribute("aria-selected", "true");
++    expect(screen.getByRole("option", { name: "2026" })).toHaveFocus();
++  });
++
++  it("Escape discards navigation and restores trigger focus without a request", async () => {
++    const p = props(); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    await user.click(rangeTrigger()); await user.keyboard("{End}{Escape}");
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    expect(rangeTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++  });
++
++  it("outside click closes and restores the original trigger without submitting", async () => {
++    const p = props(); render(<><button>外部</button><HistoryControls {...p} /></>);
++    await userEvent.click(rangeTrigger()); await userEvent.click(screen.getByRole("button", { name: "外部" }));
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    expect(rangeTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++  });
++
++  it("Tab closes without trapping focus and advances from range to the metric trigger", async () => {
++    const p = props(); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    await user.click(rangeTrigger()); await user.tab();
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    expect(metricTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++  });
++
++  it("Shift+Tab leaves backward and Tab from metric reaches the next outside control", async () => {
++    const p = props(); const user = userEvent.setup();
++    render(<><button>之前</button><HistoryControls {...p} /><button>之后</button></>);
++    await user.click(rangeTrigger()); await user.tab({ shift: true });
++    expect(screen.getByRole("button", { name: "之前" })).toHaveFocus();
++    await user.click(metricTrigger()); await user.tab();
++    expect(screen.getByRole("button", { name: "之后" })).toHaveFocus();
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++  });
++
++  it("handles Escape locally without closing another page state", async () => {
++    function Page() {
++      const [open, setOpen] = useState(true);
++      return <div onKeyDown={event => { if (event.key === "Escape") setOpen(false); }}>
++        <p>页面状态：{open ? "保持" : "已关闭"}</p><HistoryControls {...props()} />
++      </div>;
++    }
++    render(<Page />); await userEvent.click(rangeTrigger()); await userEvent.keyboard("{Escape}");
++    expect(screen.getByText("页面状态：保持")).toBeInTheDocument();
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++  });
++
++  it("switches or toggles menus without applying and never opens both", async () => {
++    const p = props(); render(<HistoryControls {...p} />);
++    await userEvent.click(rangeTrigger()); await userEvent.click(metricTrigger());
++    expect(screen.getAllByRole("listbox")).toHaveLength(1);
++    expect(screen.getByRole("listbox", { name: "历史指标" })).toBeInTheDocument();
++    expect(rangeTrigger()).toHaveAttribute("aria-expanded", "false");
++    await userEvent.click(metricTrigger());
++    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
++    expect(p.onRangeApply).not.toHaveBeenCalled(); expect(p.onChartModeChange).not.toHaveBeenCalled();
++  });
++});
++
++// Dropping busy guards, replacing committed values early, or coupling chart mode to range fails these tests.
++describe("HistoryControls pending, error and external commit", () => {
++  it("blocks range resubmission during pending but permits navigation and Escape", async () => {
++    const p = props({ pending: true }); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    expect(screen.getByRole("status")).toHaveTextContent(/加载|读取/);
++    await user.click(rangeTrigger());
++    expect(screen.getByRole("option", { name: "2026" })).toHaveAttribute("aria-selected", "true");
++    expect(screen.getByRole("option", { name: "2024–2026" })).toHaveAttribute("aria-disabled", "true");
++    await user.keyboard("{End}{Enter}");
++    expect(screen.getByRole("listbox")).toBeInTheDocument();
++    await user.click(screen.getByRole("option", { name: "2024–2026" }));
++    expect(p.onRangeApply).not.toHaveBeenCalled();
++    expect(rangeTrigger()).toHaveTextContent("2026");
++    await user.keyboard("{Escape}"); expect(rangeTrigger()).toHaveFocus();
++  });
++
++  it("keeps metric interaction independent of pending and reports only chart mode", async () => {
++    const p = props({ pending: true }); render(<HistoryControls {...p} />);
++    await userEvent.click(metricTrigger()); await userEvent.click(screen.getByRole("option", { name: "各期胜率" }));
++    expect(p.onChartModeChange).toHaveBeenCalledExactlyOnceWith("win-rate");
++    expect(p.onRangeApply).not.toHaveBeenCalled();
++    expect(metricTrigger()).toHaveTextContent("每月净盈亏"); expect(rangeTrigger()).toHaveTextContent("2026");
++  });
++
++  it("retains old applied range through request/pending/error, permits retry, and changes only on caller commit", async () => {
++    const p = props(); const { rerender } = render(<HistoryControls {...p} />);
++    await userEvent.click(rangeTrigger()); await userEvent.click(screen.getByRole("option", { name: "2024–2026" }));
++    rerender(<HistoryControls {...p} pending />);
++    expect(rangeTrigger()).toHaveTextContent("2026"); expect(metricTrigger()).toHaveTextContent("每月净盈亏");
++    rerender(<HistoryControls {...p} error="读取失败：连接中断，请重新选择范围重试" />);
++    expect(screen.getByRole("alert")).toHaveTextContent("连接中断");
++    expect(rangeTrigger()).toHaveTextContent("2026"); expect(metricTrigger()).toHaveTextContent("每月净盈亏");
++    await userEvent.click(rangeTrigger()); await userEvent.click(screen.getByRole("option", { name: "2024–2026" }));
++    expect(p.onRangeApply).toHaveBeenCalledTimes(2);
++    rerender(<HistoryControls {...p} appliedRange={{ mode: "years", fromYear: 2024, toYear: 2026 }} />);
++    expect(rangeTrigger()).toHaveTextContent("2024–2026"); expect(metricTrigger()).toHaveTextContent("每年净盈亏");
++    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
++  });
++
++  it("syncs external applied selection while open without callback backflow or unrelated state changes", async () => {
++    const p = props(); const { rerender } = render(<><input aria-label="页面其他状态" defaultValue="保持" /><HistoryControls {...p} /></>);
++    await userEvent.click(rangeTrigger());
++    rerender(<><input aria-label="页面其他状态" defaultValue="保持" /><HistoryControls {...p} appliedRange={{ mode: "all" }} /></>);
++    expect(screen.getByRole("option", { name: "全部" })).toHaveAttribute("aria-selected", "true");
++    expect(screen.getByRole("option", { name: "全部" })).toHaveFocus();
++    expect(screen.getByRole("textbox", { name: "页面其他状态" })).toHaveValue("保持");
++    expect(p.onRangeApply).not.toHaveBeenCalled(); expect(p.onChartModeChange).not.toHaveBeenCalled();
++  });
++});
++
++// Incorrect metric order, ignored controlled selection or a range callback in metric handlers fails these tests.
++describe("HistoryControls chart modes", () => {
++  it.each([
++    ["period-pnl", "每月净盈亏"], ["cumulative-pnl", "累计净盈亏"], ["win-rate", "各期胜率"], ["round-count", "各期回合数"],
++  ] as const)("reports %s from click while preserving caller-controlled selection", async (mode, label) => {
++    const p = props(); const { rerender } = render(<HistoryControls {...p} />);
++    await userEvent.click(metricTrigger());
++    expect(screen.getAllByRole("option").map(o => o.textContent)).toEqual(["每月净盈亏", "累计净盈亏", "各期胜率", "各期回合数"]);
++    await userEvent.click(screen.getByRole("option", { name: label }));
++    expect(p.onChartModeChange).toHaveBeenCalledExactlyOnceWith(mode); expect(p.onRangeApply).not.toHaveBeenCalled();
++    rerender(<HistoryControls {...p} chartMode={mode} />);
++    expect(metricTrigger()).toHaveTextContent(label);
++    await userEvent.click(metricTrigger()); expect(screen.getByRole("option", { name: label })).toHaveFocus();
++    expect(screen.getByRole("option", { name: label })).toHaveAttribute("aria-selected", "true");
++  });
++
++  it("uses the same explicit navigation/submit/close contract for the metric menu", async () => {
++    const p = props({ chartMode: "win-rate" }); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    metricTrigger().focus(); await user.keyboard(" ");
++    expect(screen.getByRole("option", { name: "各期胜率" })).toHaveFocus();
++    await user.keyboard("{Home}{End}{ArrowUp}"); expect(p.onChartModeChange).not.toHaveBeenCalled();
++    await user.keyboard("{Escape}"); expect(metricTrigger()).toHaveFocus();
++    await user.keyboard("{Enter}{End}{Enter}");
++    expect(p.onChartModeChange).toHaveBeenCalledExactlyOnceWith("round-count");
++    expect(metricTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++  });
++});
++
++// Fake default options, missing numeric validation or stale option lists fail these tests.
++describe("HistoryControls caller option boundaries", () => {
++  it("shows a readable empty reason without inventing year options", async () => {
++    const p = props({ rangeOptions: [] }); const user = userEvent.setup(); render(<HistoryControls {...p} />);
++    await user.click(rangeTrigger());
++    expect(within(screen.getByRole("listbox")).queryAllByRole("option")).toHaveLength(0);
++    expect(screen.getByText(/暂无可选历史范围/)).toBeInTheDocument();
++    await user.keyboard("{Home}{End}{ArrowDown}{Enter}{Escape}");
++    expect(rangeTrigger()).toHaveFocus(); expect(p.onRangeApply).not.toHaveBeenCalled();
++  });
++
++  it.each([
++    { mode: "year", year: 2026.5 }, { mode: "year", year: NaN }, { mode: "year", year: 0 },
++    { mode: "this-year", year: 10000 }, { mode: "years", fromYear: 2026, toYear: 2024 },
++    { mode: "years", fromYear: 2024.5, toYear: 2026 },
++  ] satisfies HomepageHistoryRange[])("does not submit malformed range %j", async range => {
++    const p = props({ rangeOptions: [{ id: "invalid", label: "无效范围", range }] });
++    render(<HistoryControls {...p} />); await userEvent.click(rangeTrigger());
++    const option = screen.getByRole("option", { name: /无效范围/ });
++    expect(option).toHaveAttribute("aria-disabled", "true"); await userEvent.click(option); fireEvent.keyDown(option, { key: "Enter" });
++    expect(p.onRangeApply).not.toHaveBeenCalled(); expect(screen.getByText(/年份.*整数.*起止/)).toBeInTheDocument();
++  });
++
++  it("preserves the full long numerical range and caller error text", async () => {
++    const custom = [{ id: "full", label: "0001–9999", range: { mode: "years", fromYear: 1, toYear: 9999 } }] as const;
++    render(<HistoryControls {...props({ rangeOptions: custom, appliedRange: custom[0].range, error: "读取失败：完整错误原因应保持可读，重新选择范围后重试。" })} />);
++    expect(rangeTrigger()).toHaveTextContent("0001–9999"); expect(screen.getByRole("alert")).toHaveTextContent("完整错误原因应保持可读");
++    await userEvent.click(rangeTrigger()); await userEvent.click(screen.getByRole("option", { name: "0001–9999" }));
++  });
++
++  it("updates a caller-supplied option list while open without stale submit targets", async () => {
++    const p = props(); const { rerender } = render(<HistoryControls {...p} />);
++    await userEvent.click(rangeTrigger());
++    rerender(<HistoryControls {...p} rangeOptions={[{ id: "new-year", label: "2039", range: { mode: "year", year: 2039 } }]} />);
++    expect(screen.queryByRole("option", { name: "2024–2026" })).not.toBeInTheDocument();
++    await userEvent.click(screen.getByRole("option", { name: "2039" }));
++    expect(p.onRangeApply).toHaveBeenCalledExactlyOnceWith({ mode: "year", year: 2039 });
++    expect(rangeTrigger()).toHaveTextContent("2026");
++  });
++});

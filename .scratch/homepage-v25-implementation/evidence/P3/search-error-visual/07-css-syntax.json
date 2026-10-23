@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-22T20:41:49.521Z",
+  "parser": "postcss 8.5.23",
+  "source": "app/components/homepage-v25/home-surface.css",
+  "sha256": "b7160f103035966877256ecb04aaf4d10a185af272a6c3476b5cbee5771f7cb8",
+  "syntax": "PASS",
+  "localSelectors": [
+    ".hp-catalog-error",
+    ".hp-catalog-error > p",
+    ".hp-home-surface .hp-catalog-retry"
+  ],
+  "geometry": "NOT VERIFIED: parser is not a rendering engine"
+}

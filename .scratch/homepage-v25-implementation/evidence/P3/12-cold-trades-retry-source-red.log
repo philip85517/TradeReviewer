@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:30443) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (22 tests | 1 failed | 21 skipped) 174ms
+     × keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source 171ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source
+AssertionError: expected { live: true, market: 'a', …(4) } to deeply equal { live: true, market: 'hk', …(3) }
+
+- Expected
++ Received
+
+  {
+    "accounts": [
+      "one",
+    ],
+-   "date": "2026-10-21",
++   "date": "2026-10-22",
+    "live": true,
+-   "market": "hk",
++   "market": "a",
+    "rangeMode": "date",
++   "symbolIdentity": "SSE:600519",
+  }
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:65:46
+     63|     expect(result.current.route.scope).toMatchObject({ market: "a", ac…
+     64|     expect(result.current.data).toBe("owned-2");
+     65|     expect(result.current.ui.snapshot.scope).toEqual(source.scope);
+       |                                              ^
+     66|     expect(result.current.ui.snapshot.search).toEqual(source.search);
+     67|     expect(sessionStorage.getItem("tradereview:homepage-v25:source-ui:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 skipped (22)
+   Start at  03:28:31
+   Duration  4.29s (transform 622ms, setup 541ms, import 741ms, tests 174ms, environment 2.32s)
+

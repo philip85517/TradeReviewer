@@ -1,0 +1,22 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock
+	2 container
+		3 container 主导航
+			4 text TradeReview
+			5 text 历史交易复盘
+			6 container Description: 主导航, ID: primary-navigation
+				7 button 我的交易室
+				8 button 交易库
+				9 button 分析
+				10 button 数据
+				11 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+					12 text 策略
+					13 text 未开放
+			14 container 辅助导航
+				15 button 设置
+		16 button 返回首页
+		17 text 普通交易库 · 成交日期  全部  · 包含未平仓成交  · NASDAQ:ROKU:stock 汇率状态读取失败，新范围未应用。
+		18 button 重新读取目标交易集合
+		19 button 返回首页选择范围
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock

@@ -1,0 +1,115 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock
+	2 container
+		3 container 主导航
+			4 text TradeReview
+			5 text 历史交易复盘
+			6 container Description: 主导航, ID: primary-navigation
+				7 button 我的交易室
+				8 button 交易库
+				9 button 分析
+				10 button 数据
+				11 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+					12 text 策略
+					13 text 未开放
+			14 container 辅助导航
+				15 button 设置
+		16 button 返回首页
+		17 container
+			18 text 普通交易库 · 成交日期  全部  · 包含未平仓成交  · NASDAQ:ROKU:stock
+		19 container 交易库
+			20 container 交易库页面头部
+				21 heading 交易库, Value: 1
+					22 text 交易库
+				23 text 浏览已导入交易并开始复盘
+				24 container
+					25 text 0  个标的 ·  0  个回合
+				26 container 交易室全局工具
+					27 button (collapsed) Description: 打开待处理事项, Secondary Actions: Expand
+						28 container 943 条待处理事项
+							29 text 99+
+					30 button (collapsed) Description: 打开本地用户菜单, Secondary Actions: Expand
+						31 text T
+						32 text 本地用户
+				33 container 共享范围
+					34 container 共享交易范围
+						35 container
+							36 text 性质
+							37 pop up button (collapsed, settable) Description: 交易性质, Value: 实盘, Secondary Actions: Expand
+								38 menu
+									39 (selected) 实盘
+									40 模拟盘
+									41 来源未知
+						42 container
+							43 text 账户范围
+							44 pop up button (collapsed, settable) Description: 共享账户, Value: 全部账户, Secondary Actions: Expand
+								45 menu
+									46 (selected) 全部账户
+									47 P1 50 行
+									48 P1 09 行
+									49 P1 08 行
+									50 P1 05 行
+									51 P1 p1-edge-short 行
+									52 P1 01 行
+									53 P1 00 行
+									54 P1 p1-edge-markets 行
+						55 container
+							56 text 报告计价
+							57 pop up button (collapsed, settable) Description: 报告计价, Value: 原币, Secondary Actions: Expand
+								58 menu
+									59 (selected) 原币
+									60 CNY参考
+									61 HKD参考
+				62 container
+					63 text 搜索标的
+					64 search text field (settable) 搜索已导入标的
+			65 tab group 交易库浏览视图
+				66 tab (selected, settable, boolean) 按标的浏览, Value: 1
+				67 tab (selectable, settable, boolean) 按回合浏览, Value: 0
+			68 container 交易库常用筛选
+				69 container
+					70 text 市场
+					71 pop up button (collapsed, settable) Description: 按市场筛选, Value: A股, Secondary Actions: Expand
+						72 menu
+							73 全部
+							74 (selected) A股
+							75 沪市
+							76 港股
+							77 美股
+				78 container
+					79 text 搜索
+					80 search text field (settable) 搜索股票
+				81 container
+					82 text 复盘状态
+					83 pop up button (collapsed, settable) Description: 按复盘状态筛选, Value: 全部回合, Secondary Actions: Expand
+						84 menu
+							85 (selected) 全部回合
+							86 待复盘
+							87 已复盘
+				88 button (disabled) 开始复盘
+				89 button 重置筛选
+				90 button 高级筛选（1）
+					91 text 高级筛选
+					92 text （1）
+			93 container 已应用筛选
+				94 text 首页范围：CN-SH、CN-SZ 市场
+				95 button 移除首页范围：CN-SH、CN-SZ 市场
+			96 container 交易库原币金额
+				97 text 原币金额
+				98 text 当前范围按原币显示，不合并不同币种 · 共享 BOC 快照 · 2026-10-22T16:01:00.000Z
+				99 button (collapsed) 折算用途与快照, Secondary Actions: Expand
+					100 text 折算用途与快照
+			101 container 当前筛选绩效汇总
+				102 container
+					103 heading 绩效汇总, Value: 2
+						104 text 绩效汇总
+					105 text 0  个标的 ·  0  个回合 ·  当前统计组  · 已复盘  0 / 0 统计组： 当前统计组
+				106 container 原币绩效汇总
+					107 button (collapsed) 原币绩效汇总 按币种分别显示，不合并混合币种, Secondary Actions: Expand
+						108 text 原币绩效汇总
+						109 text 按币种分别显示，不合并混合币种
+			110 text 没有符合条件的股票
+			111 text 调整搜索词或筛选条件后再试。
+			112 button 清除筛选
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock

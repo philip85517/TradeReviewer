@@ -29,7 +29,14 @@ export type InstrumentMetadataConfidence =
   | "official"
   | "portal";
 
+export type InstrumentExchange = {
+  code: "NASDAQ" | "NYSE" | "ARCA";
+  source: "nasdaq" | "sec";
+  resolvedAt: string;
+};
+
 export type ResolvedInstrument = InstrumentLookup & {
+  exchange?: InstrumentExchange;
   name: string;
   localizedName?: LocalizedInstrumentName;
   assetType: InstrumentAssetType;
@@ -151,7 +158,11 @@ export function validateResolvedInstrument(
     invalidResolvedInstrument();
   }
 
+  const exchange = value.exchange === undefined ? undefined : validateInstrumentExchange(value.exchange);
+  if (exchange && normalizedMarket !== "US") invalidResolvedInstrument();
+
   return {
+    ...(exchange ? { exchange } : {}),
     market: normalizedMarket,
     symbol: normalizedSymbol,
     name,
@@ -161,4 +172,21 @@ export function validateResolvedInstrument(
     confidence: value.confidence as InstrumentMetadataConfidence,
     resolvedAt: new Date(value.resolvedAt.trim()).toISOString(),
   };
+}
+
+/** Exchange evidence has its own clock; a newer name without it cannot erase it. */
+export function mergeInstrumentExchange(previous: ResolvedInstrument | undefined, incoming: ResolvedInstrument): ResolvedInstrument {
+  if (incoming.market !== "US") return incoming;
+  const candidates = [previous?.exchange, incoming.exchange].filter((value): value is InstrumentExchange => !!value);
+  candidates.sort((left, right) => Date.parse(right.resolvedAt) - Date.parse(left.resolvedAt)
+    || Number(right.source === "nasdaq") - Number(left.source === "nasdaq")
+    || left.code.localeCompare(right.code));
+  return candidates[0] ? { ...incoming, exchange: candidates[0] } : incoming;
+}
+
+export function validateInstrumentExchange(value: unknown): InstrumentExchange {
+  if (!isRecord(value) || !["NASDAQ", "NYSE", "ARCA"].includes(String(value.code))
+    || !["nasdaq", "sec"].includes(String(value.source)) || typeof value.resolvedAt !== "string"
+    || !Number.isFinite(Date.parse(value.resolvedAt))) invalidResolvedInstrument();
+  return { code: value.code as InstrumentExchange["code"], source: value.source as InstrumentExchange["source"], resolvedAt: new Date(value.resolvedAt).toISOString() };
 }

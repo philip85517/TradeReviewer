@@ -1,0 +1,122 @@
+{
+  "checkedAt": "2026-10-22T18:43:09.645Z",
+  "actualModel": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "sourceFrozen": true,
+  "hashes": [
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "expected": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "actual": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.test.ts",
+      "expected": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+      "actual": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a"
+    }
+  ],
+  "links": [
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "../../../P3/PRE-DISPATCH-STATE-CONTRACT.md",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "source-freeze.json",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "00-baseline.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "02-v3-RED.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "03-v3-GREEN.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "04-period-RED.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "05-period-GREEN.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "06-intent-RED.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "07-intent-GREEN.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "08-boundary-GREEN.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "09-scoped-typecheck.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "10-scoped-lint.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "11-adjacent-consumers.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "14-adjacent-pure-state.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "12-original-v2-input.log",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "coordinator-original-six-v3-input.mjs",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "13-original-six-v3-input.json",
+      "exists": true
+    },
+    {
+      "document": "IMPLEMENTATION-READY.md",
+      "target": "INTERFACES.md",
+      "exists": true
+    },
+    {
+      "document": "INTERFACES.md",
+      "target": "source-freeze.json",
+      "exists": true
+    },
+    {
+      "document": "INTERFACES.md",
+      "target": "11-adjacent-consumers.log",
+      "exists": true
+    }
+  ],
+  "allLinkedEvidenceExists": true,
+  "status": "implementation-ready; independent acceptance pending; adjacent consumers retain 3 FAIL"
+}

@@ -1,0 +1,101 @@
+{
+  "episode_id": "episode:%5B%22p1-count-09%3ACN-SH%3A600100%3Alive%22%2C%222026-10-20T16%3A05%3A00.000Z%22%2C%22buy%22%2C%2220.125%22%2C%22100%22%5D:1",
+  "revision": 6,
+  "updated_at": "2026-10-22T22:53:45.351Z",
+  "draft": {
+    "version": 1,
+    "episodeId": "episode:%5B%22p1-count-09%3ACN-SH%3A600100%3Alive%22%2C%222026-10-20T16%3A05%3A00.000Z%22%2C%22buy%22%2C%2220.125%22%2C%22100%22%5D:1",
+    "revision": 6,
+    "decisions": [
+      {
+        "id": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy",
+        "executionIds": [
+          "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy"
+        ]
+      }
+    ],
+    "snapshots": [],
+    "working": {
+      "drawings": [],
+      "timeframe": "1D",
+      "cursor": "2026-10-20T16:04:59.999Z",
+      "executionCursor": "__recall_before_first_execution__",
+      "selectedDecisionId": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy",
+      "phase": "pre-entry",
+      "hasSeenFuture": false,
+      "phaseContexts": {
+        "pre-entry": {
+          "mode": "decision",
+          "decisionId": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy",
+          "drawings": [],
+          "timeframe": "1D",
+          "cursor": "2026-10-20T16:04:59.999Z",
+          "executionCursor": "__recall_before_first_execution__",
+          "revealedCandleCursor": "2026-10-20T16:04:59.999Z"
+        }
+      }
+    },
+    "status": "in-progress",
+    "updatedAt": "2026-10-22T22:53:45.351Z",
+    "plans": {
+      "drafts": [
+        {
+          "id": "plan-draft-3c85e8e8-98d5-4d21-a564-1d797692a614",
+          "planId": "plan-51788f42-09d5-49ed-9287-1181c12d7cb2",
+          "decisionId": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy",
+          "kind": "initial",
+          "input": {
+            "direction": "long",
+            "currency": "CNY",
+            "priceBasis": "raw",
+            "entry": "100",
+            "initialStop": "94",
+            "targets": [
+              {
+                "id": "target-1",
+                "price": "125",
+                "quantity": null,
+                "ratio": null
+              }
+            ],
+            "sizeInputMode": "quantity",
+            "sizeInputValue": "20",
+            "resolvedQuantity": "20",
+            "quantityUnit": "share",
+            "capital": null,
+            "sizing": {
+              "quantityStep": "1",
+              "stepSource": "manual-reference",
+              "rounding": "floor",
+              "derivedUnroundedQuantity": "20",
+              "roundingDelta": "0"
+            }
+          },
+          "recordedPhase": "pre-entry",
+          "source": "retrospective",
+          "recordedAt": "2026-10-22T22:53:16.401Z",
+          "knowledgeCutoff": {
+            "cursor": "2026-10-20T16:04:59.999Z",
+            "executionCursor": "__recall_before_first_execution__"
+          },
+          "hasSeenFuture": false
+        }
+      ],
+      "versions": [],
+      "riskBaselines": []
+    },
+    "planAssociations": [
+      {
+        "planId": "plan-51788f42-09d5-49ed-9287-1181c12d7cb2",
+        "decisionId": "homepage-p1-acceptance-v1:p1-count-09:CN-SH:600100:buy",
+        "status": "linked"
+      }
+    ],
+    "reconciliation": {
+      "addedExecutionIds": [],
+      "removedExecutionIds": [],
+      "stale": false
+    }
+  },
+  "finalized": null
+}

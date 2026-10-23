@@ -1,0 +1,7 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "--input-type=module", "-e", "import sharp from \"sharp\"; await sharp(\"docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg\").png().toFile(\".scratch/homepage-v25-implementation/evidence/P4/bars/candidate3/reference-shared-samples.png\");"]
+STDOUT
+
+STDERR
+
+EXIT 0
+Faithful original SVG render directly viewed with view_image. This is a reference, not current product browser evidence.

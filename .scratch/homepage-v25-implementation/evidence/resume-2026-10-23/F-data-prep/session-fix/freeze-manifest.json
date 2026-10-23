@@ -1,0 +1,383 @@
+{
+  "capturedAt": "2026-10-22T17:57:00.833Z",
+  "status": "implementation-ready; frozen for coordinator recovery acceptance 3/3; not accepted",
+  "environment": {
+    "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+    "node": "v26.0.0",
+    "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "timezone": "Asia/Shanghai"
+  },
+  "product": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "bytes": 37176,
+      "sha256": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "bytes": 50705,
+      "sha256": "cbe5cb601126413a11183ff5af265f94f620e9b3acec19cc01144e0f92195cf7"
+    }
+  },
+  "acceptedF2": {
+    "source": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5",
+    "test": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921"
+  },
+  "checks": {
+    "green": {
+      "files": 18,
+      "tests": 349,
+      "pass": 349,
+      "exit": 0,
+      "config": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/green.vitest.config.ts",
+      "log": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/green.log",
+      "p1": "corrected evidence copy; not P1 acceptance"
+    },
+    "types": {
+      "exit": 0,
+      "log": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/types.log"
+    },
+    "lint": {
+      "exit": 0,
+      "log": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/lint.log"
+    },
+    "originalThreeSessionProbes": "3 FAIL preserved; new separately labeled copy 3 PASS",
+    "original18FileRun": {
+      "pass": 335,
+      "fail": 14,
+      "log": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/original-evidence-fixtures.log"
+    }
+  },
+  "readOnlyOriginals": {
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/HISTORICAL-SOURCES.md": {
+      "bytes": 30705,
+      "sha256": "302a8dc3cfe54162c2f5eb0ee319808e012605d3e7c0fa6e6455f6726d9cbf66",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.test.ts": {
+      "bytes": 4292,
+      "sha256": "1476351df7fddc074d5792a0b3d365e6c7eede69ddc1e3ebbc8b8b44ebba197d",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.vitest.config.ts": {
+      "bytes": 365,
+      "sha256": "8c1d81a8c7e5caf8f4de464a19246c1dd4836805fd7b1990ea9f735960d0608e",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff.log": {
+      "bytes": 2859,
+      "sha256": "95eba2673c1112fbe65af9a00dccf4d5de38e3104bfc16f505170b496d9b19db",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-US.json": {
+      "bytes": 2906,
+      "sha256": "0a5ae874b7c3d1151caec0dff5741510aacb919207e178ec7ece698d5f4b567b",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-CN-SH.json": {
+      "bytes": 2919,
+      "sha256": "6ce4cde3a7eec345cf33b61ef0d92afb3292fb79acf186463254e7b1fbb3baf4",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-cutoff-HK.json": {
+      "bytes": 2902,
+      "sha256": "12cc8775fbef8b4edb043672391b9de9d6a07f0a2e6f85511b76b553b7c17400",
+      "matchesPreRepairAudit": true
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "bytes": 22780,
+      "sha256": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113",
+      "matchesPreRepairAudit": true
+    },
+    "app/lib/market/sync-range.ts": {
+      "bytes": 7185,
+      "sha256": "5ffd1557d399a32c5dab69ad6404df570e62b81ea55ad6a9b6d26cda9d77b34b",
+      "matchesPreRepairAudit": true
+    },
+    "app/lib/market/types.ts": {
+      "bytes": 2066,
+      "sha256": "3ce6f78be1fecc87822d7b01b8c87306c00ee4008add823ec9ad8390fa50e27d",
+      "matchesPreRepairAudit": true
+    },
+    "app/lib/market/calendar.ts": {
+      "bytes": 1219,
+      "sha256": "69546efe2af049a58c2f9c9f3877f38b3feb040172610576dc0d0945f46056bc",
+      "matchesPreRepairAudit": true
+    },
+    "app/data/exchange-holidays-2010-2030.json": {
+      "bytes": 22736,
+      "sha256": "4c9e151d12e778aeb75666fdf5ae9db349bfd14704cb41a38efb906c16720aac",
+      "matchesPreRepairAudit": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-acceptance-2-interface-trace.test.ts": {
+      "bytes": 4453,
+      "sha256": "8c816332a3b6b40969491fb87ab283d2cc440ac3249aa5b32cd4443483ff6725"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-acceptance-2-ipo-fee-contract.test.ts": {
+      "bytes": 6835,
+      "sha256": "2e396bc0d04afe7362fd2aec5708ae08bf0a6a4e881842c9266644d994f32c74"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/invariant-red.test.ts": {
+      "bytes": 5594,
+      "sha256": "766c2c5bed1105c7dcf863d5b81731c40dbcf573475734b4bc540747c4765076"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-contract.test.ts": {
+      "bytes": 3477,
+      "sha256": "550a93d34a38a33b41bc2efabbf3a6aec9d5d0335ae588963056239ba133518c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts": {
+      "bytes": 3229,
+      "sha256": "a2ebd36091b77e3ae2fc1255079e92a6aca843f12152ef5980cb1d5096eb9593"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts": {
+      "bytes": 5387,
+      "sha256": "47b74bf1a41b4fac6bcb01b8c77b6e4b62cbcf26791fc33767937790ddacc004"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/coordinator/F-current-contract.test.ts": {
+      "bytes": 3802,
+      "sha256": "570349dd1d069b80aa1769c57fcf6ad6c79722e685b730016677e6dfa696c6bc"
+    }
+  },
+  "dependencySnapshot": {
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/historical-sources-manifest.json": {
+      "bytes": 6394,
+      "sha256": "f104d6656cdabe0ca2d3e52a298bc0bdb9ec6497460cb27dacfd15ad9f920c9c"
+    },
+    "app/components/homepage-v25/holdings-model.ts": {
+      "bytes": 12286,
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c"
+    },
+    "app/components/homepage-v25/holdings-model.test.ts": {
+      "bytes": 10881,
+      "sha256": "677b45f25529c9c8d1f620cf495321dd1c6b69aa4741acc324e35fea5841f690"
+    }
+  },
+  "artifacts": {
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts": {
+      "bytes": 4480,
+      "sha256": "2ac3465d7b998699728d784981d1c1289814c1c55ebf5c05f0dab85b2ca6623d"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts.before-fixture-correction.txt": {
+      "bytes": 4480,
+      "sha256": "37f399bd57c6494fd12fe0f235726c6c9b272981da447c5605b69593a1ddf915"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-interface-trace.test.ts.fixture.patch": {
+      "bytes": 4868,
+      "sha256": "1cd187b6d6db2ef1eaba8fea058107d492773f4dbaa3cbcf7f671a56a5e2073b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts": {
+      "bytes": 6865,
+      "sha256": "432553037e060cf2d7fa4eafb38746bf6ebc0d3ebb90464895c4f9e67ea2b12a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts.before-fixture-correction.txt": {
+      "bytes": 6865,
+      "sha256": "e2053d64fd93cab176be50531ad33a863187e7f4b6425cf4fb4960bdb82d5066"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-acceptance-2-ipo-fee-contract.test.ts.fixture.patch": {
+      "bytes": 1432,
+      "sha256": "7823e734e52c95e81823c012e7d09f22a239ccfc7b5da2a91439037285e7782a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts": {
+      "bytes": 3492,
+      "sha256": "8d30445a9ffc63e01f75d593415bc8dd866daa685947fe567190828ff05c8ad6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts.before-fixture-correction.txt": {
+      "bytes": 3492,
+      "sha256": "7a0fdf3fb95ed6c036ac596bb7e618ed66c4736caca191c49711b7ed2199973c"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-contract.test.ts.fixture.patch": {
+      "bytes": 898,
+      "sha256": "f21e1d604c688bf2e063af90b31327424f013485479dcbf055620b2635720d38"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-current-contract.test.ts": {
+      "bytes": 3817,
+      "sha256": "29627f192d575b3a99a7ef963ae57398dfb968f6ad9f81332dbb7eb9f2803834"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-current-contract.test.ts.before-fixture-correction.txt": {
+      "bytes": 3817,
+      "sha256": "29627f192d575b3a99a7ef963ae57398dfb968f6ad9f81332dbb7eb9f2803834"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/F-current-contract.test.ts.fixture.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/FIXTURE-CORRECTIONS.md": {
+      "bytes": 5780,
+      "sha256": "a40c63d19afd23e9aa0dc6fbab651d738a4f8e9d523144f79ba088cade411121"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/INTERFACES.md": {
+      "bytes": 5491,
+      "sha256": "97f6c0d079440c1d56d31aa008374090d5ed53b027f010a50a862affbafaeacc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/before-source.ts.txt": {
+      "bytes": 35372,
+      "sha256": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/before-test.ts.txt": {
+      "bytes": 44531,
+      "sha256": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts": {
+      "bytes": 3259,
+      "sha256": "bf9f2eeac408ea0b803b02c27fa9e4af35e6c4090a3004efc7583329a91d3386"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts.before-fixture-correction.txt": {
+      "bytes": 3259,
+      "sha256": "1741b477d897e04bcc2e5bd84f9dc3c5b3120bd1c5ad40ab08cab314868b3e67"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/coordinator-round3-boundaries.test.ts.fixture.patch": {
+      "bytes": 1896,
+      "sha256": "18a21ddf7bfa9dad5653ca946932bb595788749bfe3d0a68ca5e26efcd58d871"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/copied-evidence-sources.json": {
+      "bytes": 842,
+      "sha256": "c4856e67023c06a569470d5b94bba43a60e99a0219d954f2756dec7e05f8b9b8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/failure-classification.json": {
+      "bytes": 4328,
+      "sha256": "c6d53e4f893914cfdbf01638a42c74d91dc88b9d11f8810760a1cfbdba30ae53"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/first-implementation.log": {
+      "bytes": 30213,
+      "sha256": "e779c5799a02d1a111ca0a3177efde175227c8bd689ef7006ff574f2a24210e1"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/fixtures-corrected.log": {
+      "bytes": 428,
+      "sha256": "5e1d03475ea26d66ede208a82ca717ab178cc7d37cdd9498853ccc43518e38da"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/focused.vitest.config.ts": {
+      "bytes": 202,
+      "sha256": "de8428ad0454633e43ab03789b15ee5254166f6adcce5719531412423f129d19"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/green.log": {
+      "bytes": 430,
+      "sha256": "3848fa859016e48beeefed9b653a098b18a1c76d304388bcfa5eb4a730cb41b9"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/green.vitest.config.ts": {
+      "bytes": 1604,
+      "sha256": "92c1ceab67a848fb27a5142859c958425622ec7f280125ceeaba6e941665e3a8"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/holdings-model.test.ts": {
+      "bytes": 11073,
+      "sha256": "ec6748d345defe5727ede8280dae920be22e9258e0c580d436682434c60a9899"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/holdings-model.test.ts.before-fixture-correction.txt": {
+      "bytes": 10989,
+      "sha256": "ed24b2124830026c74b25f50f72f93aec039c91e1d064ca377d032ca185c3a2b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/holdings-model.test.ts.fixture.patch": {
+      "bytes": 1606,
+      "sha256": "11897aea439f8322c0a777646cbf43c45047b0715a572c26d2bcd778df8851fc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts": {
+      "bytes": 5609,
+      "sha256": "3f604f805905e70f8c94716ce13f0e8bd069ff3713278b29292697b788ceec04"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts.before-fixture-correction.txt": {
+      "bytes": 5609,
+      "sha256": "eee121d15ec13ab115b4e4d7c2a8d68c8e6102f85a5d489ee27cbce5efb05f76"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/invariant-red.test.ts.fixture.patch": {
+      "bytes": 3542,
+      "sha256": "eed5b1924d3e65c18db040de6b12ec8a2062eee5b1aef3c9574b041f56940ba2"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/original-evidence-fixtures.log": {
+      "bytes": 14708,
+      "sha256": "0241eb27c3364580af4cf9878840d545d8b48a7a6ff1b20fdcaca300547a7ecc"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts": {
+      "bytes": 5430,
+      "sha256": "4cb65f1adf84e2a25f0393db776663fef5004fa41480eb797a8ba01e21a0adb2"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts.before-fixture-correction.txt": {
+      "bytes": 5430,
+      "sha256": "7df2de051bcf17a969c26acab1b492d4b010559445dd21189a7a226e12116ccd"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/peer.test.ts.fixture.patch": {
+      "bytes": 1455,
+      "sha256": "dc9b70a015a6d95bbf93d248bfb1abb4e4107f5dc68af1fc2bf99d7ac2eab522"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/product-source.patch": {
+      "bytes": 13411,
+      "sha256": "79fd504ee554f89f341e8eb4d6b604b1c2827aa44aefa2cc0a112f4f43b5654a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/product-test.patch": {
+      "bytes": 21150,
+      "sha256": "22520b95f2273c8dd3b13fb8c704c9b6348434705549b1fa8816590e92699278"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/red.log": {
+      "bytes": 12678,
+      "sha256": "b9989f3324b4353579c1bb454fe9e7b076fa873d90e22906672b5b6056a90b55"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/regressions-corrected-evidence.log": {
+      "bytes": 2584,
+      "sha256": "befb271df46e3892e9ddf7be36a62904ff06f3dd8050973c0f99fea5b30ae657"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/regressions.vitest.config.ts": {
+      "bytes": 1544,
+      "sha256": "25cc123fee62e39eee8b63d290ee5fd8b650b531f037aa6a894d551ede50e130"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/report.md": {
+      "bytes": 8768,
+      "sha256": "ed18fcfdbb398832e555439320b9f692fb231e1179fd40c3e034a0b262ebef83"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/session-cutoff.test.ts": {
+      "bytes": 4335,
+      "sha256": "a7e22cf526788ef767cbcc0485463428a394a017a8e96526cc9d6d751d30c7f6"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/interface-traces.json": {
+      "bytes": 92040,
+      "sha256": "fc90503e44e9032e7ef54bf13f0a6869b60bc2a5c288ac860aaf178e518bdaf0"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/ipo-traces-green.json": {
+      "bytes": 293057,
+      "sha256": "885c03ee9c54759a7305d3426c362db3ef86e6004c8d4b5b2fd99ae902bfdc9d"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/peer-actual.json": {
+      "bytes": 79916,
+      "sha256": "8ed31ace51c2f46e5f2f461b441870a608cc7a399a168265da2b9cc202712ab4"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/session-cutoff-CN-SH.json": {
+      "bytes": 2889,
+      "sha256": "f23f9213c7cd8d9dc16fb905b0a5cc22b9c33fdcfa553d8c790356f1fba19a60"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/session-cutoff-HK.json": {
+      "bytes": 2872,
+      "sha256": "e841fd9e6098bf189ba1c654fa08e1cce33c1544059436b882d8bc5fa232ab7b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces/session-cutoff-US.json": {
+      "bytes": 2868,
+      "sha256": "b68b18d245d80d2c3f6cebaad0f346f6f8717cb2693e9f803fe13ec254c7f00a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces-original-fixtures/ipo-traces-green.json": {
+      "bytes": 293065,
+      "sha256": "c297c23537c30f8111bd67edf9406bfbf0c209daf667a53cb053ec3e8fe5599b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces-original-fixtures/peer-actual.json": {
+      "bytes": 79693,
+      "sha256": "8dff429f59d3538736b1317e51adfb641de22c086ff91f4252e42fe875181c7f"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces-original-fixtures/session-cutoff-CN-SH.json": {
+      "bytes": 2889,
+      "sha256": "f23f9213c7cd8d9dc16fb905b0a5cc22b9c33fdcfa553d8c790356f1fba19a60"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces-original-fixtures/session-cutoff-HK.json": {
+      "bytes": 2872,
+      "sha256": "e841fd9e6098bf189ba1c654fa08e1cce33c1544059436b882d8bc5fa232ab7b"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/traces-original-fixtures/session-cutoff-US.json": {
+      "bytes": 2868,
+      "sha256": "b68b18d245d80d2c3f6cebaad0f346f6f8717cb2693e9f803fe13ec254c7f00a"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/verification.json": {
+      "bytes": 2790,
+      "sha256": "a1c54d44a815d0a2a11a443a1307766e71361fe380a9f9582b5d273a2e72f795"
+    }
+  }
+}

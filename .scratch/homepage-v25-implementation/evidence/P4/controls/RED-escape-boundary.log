@@ -1,0 +1,219 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45230) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 413ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 21ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 73ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 37ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 93ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 83ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 44ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 47ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 95ms
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > handles Escape locally without closing another page state 53ms
+   → Unable to find an element with the text: 页面状态：保持. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<p>[39m
+        [0m页面状态：[0m
+        [0m已关闭[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-controls"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-history-controls__combo"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"listbox"[39m
+            [33maria-label[39m=[32m"历史范围：2026"[39m
+            [33mclass[39m=[32m"hp-history-controls__trigger hp-history-controls__trigger--range"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-history-controls__label"[39m
+            [36m>[39m
+              [0m2026[0m
+            [36m</span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"hp-history-controls__arrow"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"listbox"[39m
+            [33maria-label[39m=[32m"历史指标：每月净盈亏"[39m
+            [33mclass[39m=[32m"hp-history-controls__trigger hp-history-controls__trigger--metric"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-history-controls__label"[39m
+            [36m>[39m
+              [0m每月净盈亏[0m
+            [36m</span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"hp-history-controls__arrow"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 66ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 72ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 35ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 68ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 31ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 56ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 57ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 63ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 51ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 38ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 29ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 27ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 28ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 24ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 35ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > handles Escape locally without closing another page state
+TestingLibraryElementError: Unable to find an element with the text: 页面状态：保持. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<p>[39m
+        [0m页面状态：[0m
+        [0m已关闭[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-history-controls"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-history-controls__combo"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"listbox"[39m
+            [33maria-label[39m=[32m"历史范围：2026"[39m
+            [33mclass[39m=[32m"hp-history-controls__trigger hp-history-controls__trigger--range"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-history-controls__label"[39m
+            [36m>[39m
+              [0m2026[0m
+            [36m</span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"hp-history-controls__arrow"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"listbox"[39m
+            [33maria-label[39m=[32m"历史指标：每月净盈亏"[39m
+            [33mclass[39m=[32m"hp-history-controls__trigger hp-history-controls__trigger--metric"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-history-controls__label"[39m
+            [36m>[39m
+              [0m每月净盈亏[0m
+            [36m</span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"hp-history-controls__arrow"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-controls.test.tsx:123:19
+    121|     }
+    122|     render(<Page />); await userEvent.click(rangeTrigger()); await use…
+    123|     expect(screen.getByText("页面状态：保持")).toBeInTheDocument();
+       |                   ^
+    124|     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    125|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 31 passed (32)
+   Start at  05:54:13
+   Duration  3.59s (transform 131ms, setup 176ms, import 223ms, tests 1.89s, environment 951ms)
+

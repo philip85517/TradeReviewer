@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:57447) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/metric-cards.test.tsx (26 tests | 2 failed) 1347ms
+     × M05/M17 closes access and restores focus immediately while the noninteractive exit finishes at160ms 33ms
+     × M17 reopening during exit cancels the old cleanup and keeps the new readout open 26ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > metric detail motion lifecycle > M05/M17 closes access and restores focus immediately while the noninteractive exit finishes at160ms
+Error: expect(element).toBeInTheDocument()
+
+element could not be found in the document
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:268:20
+    266|     expect(opener).toHaveFocus();
+    267|     expect(opener).toHaveAttribute("aria-expanded", "false");
+    268|     expect(detail).toBeInTheDocument();
+       |                    ^
+    269|     expect(detail).toHaveAttribute("aria-hidden", "true");
+    270|     expect(detail).toHaveAttribute("inert");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > metric detail motion lifecycle > M17 reopening during exit cancels the old cleanup and keeps the new readout open
+Error: expect(element).toBeInTheDocument()
+
+element could not be found in the document
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:284:21
+    282|     vi.useFakeTimers();
+    283|     fireEvent.keyDown(document, { key: "Escape" });
+    284|     expect(exiting).toBeInTheDocument();
+       |                     ^
+    285|     expect(exiting).toHaveAttribute("inert");
+    286|     fireEvent.click(trigger("当前持仓市值"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 24 passed (26)
+   Start at  10:29:19
+   Duration  3.58s (transform 149ms, setup 408ms, import 285ms, tests 1.35s, environment 1.21s)
+

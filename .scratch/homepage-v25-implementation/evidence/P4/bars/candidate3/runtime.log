@@ -1,0 +1,13 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "-e", "console.log(JSON.stringify({execPath:process.execPath,node:process.version,sqlite:process.versions.sqlite,platform:process.platform,arch:process.arch},null,2))"]
+STDOUT
+{
+  "execPath": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "node": "v26.0.0",
+  "sqlite": "3.53.0",
+  "platform": "darwin",
+  "arch": "x64"
+}
+
+STDERR
+
+EXIT 0

@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-22T20:18:30.664Z",
+  "model": "gpt-6.1-sol / ultra",
+  "phase": "RED only; no production authorization",
+  "files": {
+    "app/components/homepage-v25/home-surface.tsx": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5",
+    "app/components/homepage-v25/home-surface.css": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+    "app/components/homepage-v25/home-surface.test.tsx": "799c185a031d35f5f8141a1166eab1c930bb495b457d4544f6c88abeb4ad465f",
+    "app/components/homepage-v25/search-surface.test.tsx": "c2369ebcb6daf32097f54653a9732e45e6bc0318bf2ea3e4e3831143c6c8c788",
+    "app/components/homepage-v25/catalog-model.ts": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3",
+    "app/components/homepage-v25/holdings-model.ts": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+    "app/components/homepage-v25/use-homepage-host.ts": "85731c885096209b54cf5918cc9a9ee82aeab5f76e30905f8a2af9430484f5e0",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/lib/reviews/homepage-v25-state.test.ts": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+    ".scratch/homepage-v25-implementation/evidence/P3/PRE-DISPATCH-STATE-CONTRACT.md": "016580e865e3e0be2bcab814dbdf62292836c7a16071ddbba98a7b40de618057",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md": "b0ca5413d4e0b5d6524b85e30961e84d61a1d85503cc9381493997889856464f",
+    ".scratch/homepage-v25-implementation/evidence/P3/control-review/REPORT.md": "e18ac4fc60af3b39d8010eda1146acd500ac471cb74b718e50fd94886a1e5672",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/ROOT-NAVIGATION-RECOVERY-DIAGNOSIS.md": "504a3c4b78a55edec17d7fb69b8c3397fb69cc9208c5141942b71ace383adcf5"
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "at": "2026-10-22T22:58:04.988363+00:00",
+  "servingPid": 50560,
+  "trace": "root-terminal-window-02.50560.ndjson",
+  "requests": [
+    {
+      "id": 1,
+      "route": "/api/storage/reviews",
+      "phases": [
+        "request-entry",
+        "bridge-before",
+        "bridge-after",
+        "body-return",
+        "materialize-enter",
+        "body-return",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "body-return",
+        "destroy-enter",
+        "destroy-return",
+        "node-close",
+        "response-finish",
+        "response-close"
+      ],
+      "bridgeBefore": [
+        {
+          "disturbed": false,
+          "isReadable": true,
+          "readable": true,
+          "readableEnded": false,
+          "destroyed": false,
+          "readableAborted": false,
+          "complete": true,
+          "aborted": false
+        }
+      ],
+      "materializeThrows": 0,
+      "bodyWasSameStream": true,
+      "terminal": [
+        {
+          "seq": 26,
+          "pid": 50560,
+          "elapsedMs": 32283,
+          "phase": "response-finish",
+          "id": 1,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        },
+        {
+          "seq": 27,
+          "pid": 50560,
+          "elapsedMs": 32283,
+          "phase": "response-close",
+          "id": 1,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "route": "/api/storage/reviews",
+      "phases": [
+        "request-entry",
+        "bridge-before",
+        "bridge-after",
+        "body-return",
+        "materialize-enter",
+        "body-return",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "body-return",
+        "destroy-enter",
+        "destroy-return",
+        "node-close",
+        "response-finish",
+        "response-close"
+      ],
+      "bridgeBefore": [
+        {
+          "disturbed": false,
+          "isReadable": true,
+          "readable": true,
+          "readableEnded": false,
+          "destroyed": false,
+          "readableAborted": false,
+          "complete": true,
+          "aborted": false
+        }
+      ],
+      "materializeThrows": 0,
+      "bodyWasSameStream": true,
+      "terminal": [
+        {
+          "seq": 51,
+          "pid": 50560,
+          "elapsedMs": 32797,
+          "phase": "response-finish",
+          "id": 2,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        },
+        {
+          "seq": 52,
+          "pid": 50560,
+          "elapsedMs": 32797,
+          "phase": "response-close",
+          "id": 2,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "route": "/api/storage/reviews",
+      "phases": [
+        "request-entry",
+        "bridge-before",
+        "bridge-after",
+        "body-return",
+        "materialize-enter",
+        "body-return",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "materialize-enter",
+        "materialize-return",
+        "body-return",
+        "destroy-enter",
+        "destroy-return",
+        "node-close",
+        "response-finish",
+        "response-close"
+      ],
+      "bridgeBefore": [
+        {
+          "disturbed": false,
+          "isReadable": true,
+          "readable": true,
+          "readableEnded": false,
+          "destroyed": false,
+          "readableAborted": false,
+          "complete": true,
+          "aborted": false
+        }
+      ],
+      "materializeThrows": 0,
+      "bodyWasSameStream": true,
+      "terminal": [
+        {
+          "seq": 76,
+          "pid": 50560,
+          "elapsedMs": 45988,
+          "phase": "response-finish",
+          "id": 3,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        },
+        {
+          "seq": 77,
+          "pid": 50560,
+          "elapsedMs": 45988,
+          "phase": "response-close",
+          "id": 3,
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "node": {
+            "disturbed": true,
+            "isReadable": false,
+            "readable": false,
+            "readableEnded": true,
+            "destroyed": true,
+            "readableAborted": false,
+            "complete": true,
+            "aborted": false
+          }
+        }
+      ]
+    }
+  ],
+  "stop": {
+    "seq": 78,
+    "phase": "observer-stop",
+    "pid": 50560,
+    "elapsedMs": 60019,
+    "reason": "duration",
+    "tailTruncated": true,
+    "requests": 3,
+    "streams": 3,
+    "regularBytes": 24685,
+    "restoration": {
+      "restored": 8,
+      "skipped": 0,
+      "failed": 0,
+      "ownedRemaining": 0
+    }
+  },
+  "invalidPriorWindow": "01 failed loopback bind EPERM; no serving process and zero target requests; not acceptance",
+  "parentTrace": "50558 is launcher, not serving process",
+  "ordinaryServiceRestoredSession": 2043,
+  "ordinaryServicePid": 50833,
+  "ordinaryServicePort": 3333,
+  "isolatedDatabasePreserved": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite"
+}

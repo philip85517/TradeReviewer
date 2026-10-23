@@ -1,0 +1,23 @@
+{
+  "status": "static field/allocation count model; not a new benchmark or exact heap measurement",
+  "days": 365,
+  "fills": 1866,
+  "visibleExecutionIdCountAcrossEndpoints": 341660,
+  "endpointExecutionIdsPlusFeeFactIdsSlots": 683320,
+  "currentExecutionIdSlots": 1866,
+  "arraySlotsAt24Bytes": 16444464,
+  "metrics": {
+    "singleGroup": 8395,
+    "threeGroups": 17155,
+    "additionalThreeGroupMetrics": 8760,
+    "perMetricNewObjectsWithoutFx": 5,
+    "perMetricNewObjectsWithFx": 6
+  },
+  "fxProvenanceObjectsThreeGroupEstimate": 17155,
+  "notes": [
+    "Metric count includes 11 point metrics and 12 per group including canonicalKnownFees; excludes current metrics.",
+    "Each call creates metric, coverage, reasons array, money, originalByCurrency, and when FX exists another provenance object.",
+    "The retained estimator counts newly allocated identical objects separately; public fields can share immutable equal objects only when all semantic fields including coverage/reasons/FX evidence are identical.",
+    "ID string backings already source/index; 24 bytes per slot conservatively counts vector capacity/references."
+  ]
+}

@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:59460) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (160 tests | 1 failed | 150 skipped) 272ms
+     × O08 collects facts only on request and retains no memo, source or index growth 152ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O08 collects facts only on request and retains no memo, source or index growth
+AssertionError: expected { canonicalSweeps: 1, …(15) } to deeply equal { canonicalSweeps: 1, …(15) }
+
+- Expected
++ Received
+
+@@ -9,10 +9,10 @@
+    "canonicalTransitions": 200,
+    "distinctCanonicalContexts": 0,
+    "evictions": 0,
+    "feeCheckpointHits": 0,
+    "feeSteps": 200,
+-   "fxLookups": 0,
++   "fxLookups": 2,
+    "indexEstimatedBytes": 3955118,
+    "quoteLookups": 0,
+    "sourceEstimatedBytes": 1707638,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1199:19
+    1197|     expect(first.diagnostics).toEqual({ evaluations: 1, transitions: 2…
+    1198|     expect([first.canonical.terminal.realizedPnl.value, first.realized…
+    1199|     expect(after).toEqual(before);
+       |                   ^
+    1200|   });
+    1201| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 14 passed | 189 skipped (204)
+   Start at  11:04:17
+   Duration  4.03s (transform 1.11s, setup 973ms, import 1.30s, tests 329ms, environment 3.41s)
+

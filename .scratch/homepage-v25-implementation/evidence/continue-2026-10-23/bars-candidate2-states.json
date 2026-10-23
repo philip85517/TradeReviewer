@@ -1,0 +1,314 @@
+[
+  {
+    "state": "mixed",
+    "file": "bars-candidate2-mixed-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 86\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 异号八标的, Secondary Actions: Expand\n~\t\t\t\t8 (selected) 异号八标的\n~\t\t\t\t15 更新保留旧值\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "markets",
+    "file": "bars-candidate2-markets-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 3,
+      "text": "A股+8,000.00ⓘ港股-6,000.00ⓘ美股+8,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 三个市场, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 (selected) 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t28 content list 已提交贡献行\n\t\t\t\t86 container A股 贡献\n\t\t\t\t\t87 button 打开A股的准确贡献来源\n\t\t\t\t\t\t88 text A股\n\t\t\t\t\t\t89 text +8,000.00\n\t\t\t\t\t90 pop up button (collapsed) Description: A股，贡献详情, Secondary Actions: Expand\n\t\t\t\t91 container 港股 贡献\n\t\t\t\t\t92 button 打开港股的准确贡献来源\n\t\t\t\t\t\t93 text 港股\n\t\t\t\t\t\t94 text -6,000.00\n\t\t\t\t\t95 pop up button (collapsed) Description: 港股，贡献详情, Secondary Actions: Expand\n\t\t\t\t96 container 美股 贡献\n\t\t\t\t\t97 button 打开美股的准确贡献来源\n\t\t\t\t\t\t98 text 美股\n\t\t\t\t\t\t99 text +8,000.00\n\t\t\t\t\t100 pop up button (collapsed) Description: 美股，贡献详情, Secondary Actions: Expand\n\t\t\t77 text 合计（ CNY ） +9.88 万\n\t\t\t78 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "positive",
+    "file": "bars-candidate2-positive-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+1.50 万ⓘ贵州茅台+1.50 万ⓘ中国平安+1.50 万ⓘ宁德时代+1.50 万ⓘ中信证券+1.50 万ⓘ比亚迪+1.50 万ⓘ长江电力+1.50 万ⓘ中国中免+1.50 万ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同正连续堆叠, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 (selected) 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t28 content list 已提交贡献行\n\t\t\t\t86 container 招商银行 贡献\n\t\t\t\t\t87 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t88 text 招商银行\n\t\t\t\t\t\t89 text +1.50 万\n\t\t\t\t\t90 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t91 container 贵州茅台 贡献\n\t\t\t\t\t92 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t93 text 贵州茅台\n\t\t\t\t\t\t94 text +1.50 万\n\t\t\t\t\t95 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t96 container 中国平安 贡献\n\t\t\t\t\t97 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t98 text 中国平安\n\t\t\t\t\t\t99 text +1.50 万\n\t\t\t\t\t100 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t101 container 宁德时代 贡献\n\t\t\t\t\t102 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t103 text 宁德时代\n\t\t\t\t\t\t104 text +1.50 万\n\t\t\t\t\t105 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t106 container 中信证券 贡献\n\t\t\t\t\t107 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t108 text 中信证券\n\t\t\t\t\t\t109 text +1.50 万\n\t\t\t\t\t110 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t111 container 比亚迪 贡献\n\t\t\t\t\t112 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t113 text 比亚迪\n\t\t\t\t\t\t114 text +1.50 万\n\t\t\t\t\t115 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t116 container 长江电力 贡献\n\t\t\t\t\t117 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t118 text 长江电力\n\t\t\t\t\t\t119 text +1.50 万\n\t\t\t\t\t120 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t121 container 中国中免 贡献\n\t\t\t\t\t122 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t123 text 中国中免\n\t\t\t\t\t\t124 text +1.50 万\n\t\t\t\t\t125 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t77 text 合计（ CNY ） +9.88 万\n\t\t\t78 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "negative",
+    "file": "bars-candidate2-negative-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行-1.50 万ⓘ贵州茅台-1.50 万ⓘ中国平安-1.50 万ⓘ宁德时代-1.50 万ⓘ中信证券-1.50 万ⓘ比亚迪-1.50 万ⓘ长江电力-1.50 万ⓘ中国中免-1.50 万ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同负连续堆叠, Secondary Actions: Expand\n~\t\t\t\t10 同正连续堆叠\n~\t\t\t\t11 (selected) 同负连续堆叠\n~\t\t\t\t\t\t89 text -1.50 万\n~\t\t\t\t\t\t94 text -1.50 万\n~\t\t\t\t\t\t99 text -1.50 万\n~\t\t\t\t\t\t104 text -1.50 万\n~\t\t\t\t\t\t109 text -1.50 万\n~\t\t\t\t\t\t114 text -1.50 万\n~\t\t\t\t\t\t119 text -1.50 万\n~\t\t\t\t\t\t124 text -1.50 万\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "zero",
+    "file": "bars-candidate2-zero-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行0.00ⓘ贵州茅台0.00ⓘ中国平安0.00ⓘ宁德时代0.00ⓘ中信证券0.00ⓘ比亚迪0.00ⓘ长江电力0.00ⓘ中国中免0.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 零与小于一分, Secondary Actions: Expand\n~\t\t\t\t11 同负连续堆叠\n~\t\t\t\t12 (selected) 零与小于一分\n~\t\t\t\t\t\t89 text 0.00\n~\t\t\t\t\t\t94 text 0.00\n~\t\t\t\t\t\t99 text 0.00\n~\t\t\t\t\t\t104 text 0.00\n~\t\t\t\t\t\t109 text 0.00\n~\t\t\t\t\t\t114 text 0.00\n~\t\t\t\t\t\t119 text 0.00\n~\t\t\t\t\t\t124 text 0.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "unknown",
+    "file": "bars-candidate2-unknown-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行不可计算ⓘ期间已实现：不可计算 · 缺少期末估值，未知不能当零；缺少期末估值，未知不能当零贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 估值缺失, Secondary Actions: Expand\n~\t\t\t\t12 零与小于一分\n~\t\t\t\t13 (selected) 估值缺失\n~\t\t\t\t\t\t89 text 不可计算\n+\t\t\t\t\t126 text 期间已实现：不可计算 · 缺少期末估值，未知不能当零；缺少期末估值，未知不能当零\n~\t\t\t\t\t\t94 text -6,000.00\n~\t\t\t\t\t\t99 text +8,000.00\n~\t\t\t\t\t\t104 text -6,000.00\n~\t\t\t\t\t\t109 text +8,000.00\n~\t\t\t\t\t\t114 text -6,000.00\n~\t\t\t\t\t\t119 text +8,000.00\n~\t\t\t\t\t\t124 text -6,000.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "history",
+    "file": "bars-candidate2-history-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+8,000.57ⓘ贵州茅台-6,000.12ⓘ中国平安+8,000.57ⓘ宁德时代-6,000.12ⓘ中信证券+8,000.57ⓘ比亚迪-6,000.12ⓘ长江电力+8,000.57ⓘ中国中免-6,000.12ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 126\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 历史已平仓, Secondary Actions: Expand\n~\t\t\t\t13 估值缺失\n~\t\t\t\t14 (selected) 历史已平仓\n~\t\t27 container 贡献历史列表（CNY）\n~\t\t\t\t\t\t89 text +8,000.57\n~\t\t\t\t\t\t94 text -6,000.12\n~\t\t\t\t\t\t99 text +8,000.57\n~\t\t\t\t\t\t104 text -6,000.12\n~\t\t\t\t\t\t109 text +8,000.57\n~\t\t\t\t\t\t114 text -6,000.12\n~\t\t\t\t\t\t119 text +8,000.57\n~\t\t\t\t\t\t124 text -6,000.12\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "pending",
+    "file": "bars-candidate2-pending-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "更新中，继续显示已提交贡献招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand\n~\t\t\t\t14 历史已平仓\n~\t\t\t\t15 (selected) 更新保留旧值\n~\t\t27 container 贡献当前列表（CNY）\n+\t\t\t126 text 更新中，继续显示已提交贡献\n~\t\t\t\t\t\t89 text +8,000.00\n~\t\t\t\t\t\t94 text -6,000.00\n~\t\t\t\t\t\t99 text +8,000.00\n~\t\t\t\t\t\t104 text -6,000.00\n~\t\t\t\t\t\t109 text +8,000.00\n~\t\t\t\t\t\t114 text -6,000.00\n~\t\t\t\t\t\t119 text +8,000.00\n~\t\t\t\t\t\t124 text -6,000.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "initial",
+    "file": "bars-candidate2-initial-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 0,
+      "text": "首次读取贡献中",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次加载, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 (selected) 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t126 text 首次读取贡献中\n\t\t\t127 container 贡献首次加载中\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "error",
+    "file": "bars-candidate2-error-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "读取失败，原范围与贡献保留招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 读取失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 (selected) 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t126 text 读取失败，原范围与贡献保留\n\t\t\t127 content list 已提交贡献行\n\t\t\t\t128 container 招商银行 贡献\n\t\t\t\t\t129 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t130 text 招商银行\n\t\t\t\t\t\t131 text +8,000.00\n\t\t\t\t\t132 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t133 container 贵州茅台 贡献\n\t\t\t\t\t134 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t135 text 贵州茅台\n\t\t\t\t\t\t136 text -6,000.00\n\t\t\t\t\t137 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t138 container 中国平安 贡献\n\t\t\t\t\t139 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t140 text 中国平安\n\t\t\t\t\t\t141 text +8,000.00\n\t\t\t\t\t142 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t143 container 宁德时代 贡献\n\t\t\t\t\t144 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t145 text 宁德时代\n\t\t\t\t\t\t146 text -6,000.00\n\t\t\t\t\t147 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t148 container 中信证券 贡献\n\t\t\t\t\t149 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t150 text 中信证券\n\t\t\t\t\t\t151 text +8,000.00\n\t\t\t\t\t152 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t153 container 比亚迪 贡献\n\t\t\t\t\t154 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t155 text 比亚迪\n\t\t\t\t\t\t156 text -6,000.00\n\t\t\t\t\t157 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t158 container 长江电力 贡献\n\t\t\t\t\t159 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t160 text 长江电力\n\t\t\t\t\t\t161 text +8,000.00\n\t\t\t\t\t162 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t163 container 中国中免 贡献\n\t\t\t\t\t164 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t165 text 中国中免\n\t\t\t\t\t\t166 text -6,000.00\n\t\t\t\t\t167 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t168 text 合计（ CNY ） +9.88 万\n\t\t\t169 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "empty",
+    "file": "bars-candidate2-empty-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 0,
+      "text": "当前范围没有贡献，不能当作零金额",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 无结果, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 (selected) 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t126 text 当前范围没有贡献，不能当作零金额\n\t\t\t127 content list 已提交贡献行\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "long",
+    "file": "bars-candidate2-long-actual-1440.jpg",
+    "dom": {
+      "height": 1000,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "极长中文证券名称与账户来源保持完整可追溯的唯一目标-1,234,567,890,123,456,789,012.35 亿ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 极长身份金额来源, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 (selected) 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t127 content list 已提交贡献行\n\t\t\t\t128 container 极长中文证券名称与账户来源保持完整可追溯的唯一目标 贡献\n\t\t\t\t\t129 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t130 text 极长中文证券名称与账户来源保持完整可追溯的唯一目标\n\t\t\t\t\t\t131 text -1,234,567,890,123,456,789,012.35 亿\n\t\t\t\t\t132 pop up button (collapsed) Description: 极长中文证券名称与账户来源保持完整可追溯的唯一目标，贡献详情, Secondary Actions: Expand\n\t\t\t\t133 container 贵州茅台 贡献\n\t\t\t\t\t134 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t135 text 贵州茅台\n\t\t\t\t\t\t136 text -6,000.00\n\t\t\t\t\t137 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t138 container 中国平安 贡献\n\t\t\t\t\t139 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t140 text 中国平安\n\t\t\t\t\t\t141 text +8,000.00\n\t\t\t\t\t142 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t143 container 宁德时代 贡献\n\t\t\t\t\t144 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t145 text 宁德时代\n\t\t\t\t\t\t146 text -6,000.00\n\t\t\t\t\t147 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t148 container 中信证券 贡献\n\t\t\t\t\t149 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t150 text 中信证券\n\t\t\t\t\t\t151 text +8,000.00\n\t\t\t\t\t152 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t153 container 比亚迪 贡献\n\t\t\t\t\t154 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t155 text 比亚迪\n\t\t\t\t\t\t156 text -6,000.00\n\t\t\t\t\t157 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t158 container 长江电力 贡献\n\t\t\t\t\t159 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t160 text 长江电力\n\t\t\t\t\t\t161 text +8,000.00\n\t\t\t\t\t162 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t163 container 中国中免 贡献\n\t\t\t\t\t164 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t165 text 中国中免\n\t\t\t\t\t\t166 text -6,000.00\n\t\t\t\t\t167 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t168 text 合计（ CNY ） +9.88 万\n\t\t\t169 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "mixed",
+    "file": "bars-candidate2-mixed-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 异号八标的, Secondary Actions: Expand\n~\t\t\t\t8 (selected) 异号八标的\n~\t\t\t\t19 极长身份金额来源\n~\t\t\t\t128 container 招商银行 贡献\n~\t\t\t\t\t\t130 text 招商银行\n~\t\t\t\t\t\t131 text +8,000.00\n~\t\t\t\t\t132 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "markets",
+    "file": "bars-candidate2-markets-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 3,
+      "text": "A股+8,000.00ⓘ港股-6,000.00ⓘ美股+8,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 三个市场, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 (selected) 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t127 content list 已提交贡献行\n\t\t\t\t170 container A股 贡献\n\t\t\t\t\t171 button 打开A股的准确贡献来源\n\t\t\t\t\t\t172 text A股\n\t\t\t\t\t\t173 text +8,000.00\n\t\t\t\t\t174 pop up button (collapsed) Description: A股，贡献详情, Secondary Actions: Expand\n\t\t\t\t175 container 港股 贡献\n\t\t\t\t\t176 button 打开港股的准确贡献来源\n\t\t\t\t\t\t177 text 港股\n\t\t\t\t\t\t178 text -6,000.00\n\t\t\t\t\t179 pop up button (collapsed) Description: 港股，贡献详情, Secondary Actions: Expand\n\t\t\t\t180 container 美股 贡献\n\t\t\t\t\t181 button 打开美股的准确贡献来源\n\t\t\t\t\t\t182 text 美股\n\t\t\t\t\t\t183 text +8,000.00\n\t\t\t\t\t184 pop up button (collapsed) Description: 美股，贡献详情, Secondary Actions: Expand\n\t\t\t168 text 合计（ CNY ） +9.88 万\n\t\t\t169 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "positive",
+    "file": "bars-candidate2-positive-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+1.50 万ⓘ贵州茅台+1.50 万ⓘ中国平安+1.50 万ⓘ宁德时代+1.50 万ⓘ中信证券+1.50 万ⓘ比亚迪+1.50 万ⓘ长江电力+1.50 万ⓘ中国中免+1.50 万ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同正连续堆叠, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 (selected) 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t127 content list 已提交贡献行\n\t\t\t\t170 container 招商银行 贡献\n\t\t\t\t\t171 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t172 text 招商银行\n\t\t\t\t\t\t173 text +1.50 万\n\t\t\t\t\t174 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t175 container 贵州茅台 贡献\n\t\t\t\t\t176 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t177 text 贵州茅台\n\t\t\t\t\t\t178 text +1.50 万\n\t\t\t\t\t179 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t180 container 中国平安 贡献\n\t\t\t\t\t181 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t182 text 中国平安\n\t\t\t\t\t\t183 text +1.50 万\n\t\t\t\t\t184 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t185 container 宁德时代 贡献\n\t\t\t\t\t186 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t187 text 宁德时代\n\t\t\t\t\t\t188 text +1.50 万\n\t\t\t\t\t189 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t190 container 中信证券 贡献\n\t\t\t\t\t191 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t192 text 中信证券\n\t\t\t\t\t\t193 text +1.50 万\n\t\t\t\t\t194 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t195 container 比亚迪 贡献\n\t\t\t\t\t196 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t197 text 比亚迪\n\t\t\t\t\t\t198 text +1.50 万\n\t\t\t\t\t199 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t200 container 长江电力 贡献\n\t\t\t\t\t201 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t202 text 长江电力\n\t\t\t\t\t\t203 text +1.50 万\n\t\t\t\t\t204 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t205 container 中国中免 贡献\n\t\t\t\t\t206 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t207 text 中国中免\n\t\t\t\t\t\t208 text +1.50 万\n\t\t\t\t\t209 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t168 text 合计（ CNY ） +9.88 万\n\t\t\t169 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "negative",
+    "file": "bars-candidate2-negative-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行-1.50 万ⓘ贵州茅台-1.50 万ⓘ中国平安-1.50 万ⓘ宁德时代-1.50 万ⓘ中信证券-1.50 万ⓘ比亚迪-1.50 万ⓘ长江电力-1.50 万ⓘ中国中免-1.50 万ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 同负连续堆叠, Secondary Actions: Expand\n~\t\t\t\t10 同正连续堆叠\n~\t\t\t\t11 (selected) 同负连续堆叠\n~\t\t\t\t\t\t173 text -1.50 万\n~\t\t\t\t\t\t178 text -1.50 万\n~\t\t\t\t\t\t183 text -1.50 万\n~\t\t\t\t\t\t188 text -1.50 万\n~\t\t\t\t\t\t193 text -1.50 万\n~\t\t\t\t\t\t198 text -1.50 万\n~\t\t\t\t\t\t203 text -1.50 万\n~\t\t\t\t\t\t208 text -1.50 万\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "zero",
+    "file": "bars-candidate2-zero-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行0.00ⓘ贵州茅台0.00ⓘ中国平安0.00ⓘ宁德时代0.00ⓘ中信证券0.00ⓘ比亚迪0.00ⓘ长江电力0.00ⓘ中国中免0.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 零与小于一分, Secondary Actions: Expand\n~\t\t\t\t11 同负连续堆叠\n~\t\t\t\t12 (selected) 零与小于一分\n~\t\t\t\t\t\t173 text 0.00\n~\t\t\t\t\t\t178 text 0.00\n~\t\t\t\t\t\t183 text 0.00\n~\t\t\t\t\t\t188 text 0.00\n~\t\t\t\t\t\t193 text 0.00\n~\t\t\t\t\t\t198 text 0.00\n~\t\t\t\t\t\t203 text 0.00\n~\t\t\t\t\t\t208 text 0.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "unknown",
+    "file": "bars-candidate2-unknown-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行不可计算ⓘ期间已实现：不可计算 · 缺少期末估值，未知不能当零；缺少期末估值，未知不能当零贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 估值缺失, Secondary Actions: Expand\n~\t\t\t\t12 零与小于一分\n~\t\t\t\t13 (selected) 估值缺失\n~\t\t\t\t\t\t173 text 不可计算\n+\t\t\t\t\t210 text 期间已实现：不可计算 · 缺少期末估值，未知不能当零；缺少期末估值，未知不能当零\n~\t\t\t\t\t\t178 text -6,000.00\n~\t\t\t\t\t\t183 text +8,000.00\n~\t\t\t\t\t\t188 text -6,000.00\n~\t\t\t\t\t\t193 text +8,000.00\n~\t\t\t\t\t\t198 text -6,000.00\n~\t\t\t\t\t\t203 text +8,000.00\n~\t\t\t\t\t\t208 text -6,000.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "history",
+    "file": "bars-candidate2-history-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "招商银行+8,000.57ⓘ贵州茅台-6,000.12ⓘ中国平安+8,000.57ⓘ宁德时代-6,000.12ⓘ中信证券+8,000.57ⓘ比亚迪-6,000.12ⓘ长江电力+8,000.57ⓘ中国中免-6,000.12ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 210\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 历史已平仓, Secondary Actions: Expand\n~\t\t\t\t13 估值缺失\n~\t\t\t\t14 (selected) 历史已平仓\n~\t\t27 container 贡献历史列表（CNY）\n~\t\t\t\t\t\t173 text +8,000.57\n~\t\t\t\t\t\t178 text -6,000.12\n~\t\t\t\t\t\t183 text +8,000.57\n~\t\t\t\t\t\t188 text -6,000.12\n~\t\t\t\t\t\t193 text +8,000.57\n~\t\t\t\t\t\t198 text -6,000.12\n~\t\t\t\t\t\t203 text +8,000.57\n~\t\t\t\t\t\t208 text -6,000.12\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "pending",
+    "file": "bars-candidate2-pending-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "更新中，继续显示已提交贡献招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新保留旧值, Secondary Actions: Expand\n~\t\t\t\t14 历史已平仓\n~\t\t\t\t15 (selected) 更新保留旧值\n~\t\t27 container 贡献当前列表（CNY）\n+\t\t\t210 text 更新中，继续显示已提交贡献\n~\t\t\t\t\t\t173 text +8,000.00\n~\t\t\t\t\t\t178 text -6,000.00\n~\t\t\t\t\t\t183 text +8,000.00\n~\t\t\t\t\t\t188 text -6,000.00\n~\t\t\t\t\t\t193 text +8,000.00\n~\t\t\t\t\t\t198 text -6,000.00\n~\t\t\t\t\t\t203 text +8,000.00\n~\t\t\t\t\t\t208 text -6,000.00\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "initial",
+    "file": "bars-candidate2-initial-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 0,
+      "text": "首次读取贡献中",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 首次加载, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 (selected) 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t210 text 首次读取贡献中\n\t\t\t211 container 贡献首次加载中\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "error",
+    "file": "bars-candidate2-error-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "读取失败，原范围与贡献保留招商银行+8,000.00ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 读取失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 (selected) 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t210 text 读取失败，原范围与贡献保留\n\t\t\t211 content list 已提交贡献行\n\t\t\t\t212 container 招商银行 贡献\n\t\t\t\t\t213 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t214 text 招商银行\n\t\t\t\t\t\t215 text +8,000.00\n\t\t\t\t\t216 pop up button (collapsed) Description: 招商银行，贡献详情, Secondary Actions: Expand\n\t\t\t\t217 container 贵州茅台 贡献\n\t\t\t\t\t218 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t219 text 贵州茅台\n\t\t\t\t\t\t220 text -6,000.00\n\t\t\t\t\t221 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t222 container 中国平安 贡献\n\t\t\t\t\t223 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t224 text 中国平安\n\t\t\t\t\t\t225 text +8,000.00\n\t\t\t\t\t226 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t227 container 宁德时代 贡献\n\t\t\t\t\t228 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t229 text 宁德时代\n\t\t\t\t\t\t230 text -6,000.00\n\t\t\t\t\t231 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t232 container 中信证券 贡献\n\t\t\t\t\t233 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t234 text 中信证券\n\t\t\t\t\t\t235 text +8,000.00\n\t\t\t\t\t236 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t237 container 比亚迪 贡献\n\t\t\t\t\t238 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t239 text 比亚迪\n\t\t\t\t\t\t240 text -6,000.00\n\t\t\t\t\t241 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t242 container 长江电力 贡献\n\t\t\t\t\t243 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t244 text 长江电力\n\t\t\t\t\t\t245 text +8,000.00\n\t\t\t\t\t246 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t247 container 中国中免 贡献\n\t\t\t\t\t248 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t249 text 中国中免\n\t\t\t\t\t\t250 text -6,000.00\n\t\t\t\t\t251 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t252 text 合计（ CNY ） +9.88 万\n\t\t\t253 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "empty",
+    "file": "bars-candidate2-empty-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 0,
+      "text": "当前范围没有贡献，不能当作零金额",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 无结果, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 (selected) 无结果\n\t\t\t\t19 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t210 text 当前范围没有贡献，不能当作零金额\n\t\t\t211 content list 已提交贡献行\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  },
+  {
+    "state": "long",
+    "file": "bars-candidate2-long-actual-390.jpg",
+    "dom": {
+      "height": 844,
+      "overflow": false,
+      "panels": 0,
+      "rows": 8,
+      "text": "极长中文证券名称与账户来源保持完整可追溯的唯一目标-1,234,567,890,123,456,789,012.35 亿ⓘ贵州茅台-6,000.00ⓘ中国平安+8,000.00ⓘ宁德时代-6,000.00ⓘ中信证券+8,000.00ⓘ比亚迪-6,000.00ⓘ长江电力+8,000.00ⓘ中国中免-6,000.00ⓘ合计（CNY）+9.88 万ⓘ",
+      "width": 390
+    },
+    "ax": "Browser tab: 13, Title: \"贡献条形独立验收\", URL: \"http://127.0.0.1:3334/bars.html\".\n1 AXWebArea 贡献条形独立验收, URL: 127.0.0.1:3334/bars.html\n\t2 container\n\t\t3 heading 贡献条形独立验收, Value: 1\n\t\t\t4 text 贡献条形独立验收\n\t\t5 text 字面受控调用方；无财务投影、无数据库，不代表首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 极长身份金额来源, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 异号八标的\n\t\t\t\t9 三个市场\n\t\t\t\t10 同正连续堆叠\n\t\t\t\t11 同负连续堆叠\n\t\t\t\t12 零与小于一分\n\t\t\t\t13 估值缺失\n\t\t\t\t14 历史已平仓\n\t\t\t\t15 更新保留旧值\n\t\t\t\t16 首次加载\n\t\t\t\t17 读取失败保留旧值\n\t\t\t\t18 无结果\n\t\t\t\t19 (selected) 极长身份金额来源\n\t\t20 text 报表币种 \n\t\t21 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t22 menu\n\t\t\t\t23 (selected) CNY\n\t\t\t\t24 USD\n\t\t25 button 提交另一版本\n\t\t26 text 版本 1\n\t\t27 container 贡献当前列表（CNY）\n\t\t\t211 content list 已提交贡献行\n\t\t\t\t212 container 极长中文证券名称与账户来源保持完整可追溯的唯一目标 贡献\n\t\t\t\t\t213 button 打开招商银行的准确贡献来源\n\t\t\t\t\t\t214 text 极长中文证券名称与账户来源保持完整可追溯的唯一目标\n\t\t\t\t\t\t215 text -1,234,567,890,123,456,789,012.35 亿\n\t\t\t\t\t216 pop up button (collapsed) Description: 极长中文证券名称与账户来源保持完整可追溯的唯一目标，贡献详情, Secondary Actions: Expand\n\t\t\t\t217 container 贵州茅台 贡献\n\t\t\t\t\t218 button 打开贵州茅台的准确贡献来源\n\t\t\t\t\t\t219 text 贵州茅台\n\t\t\t\t\t\t220 text -6,000.00\n\t\t\t\t\t221 pop up button (collapsed) Description: 贵州茅台，贡献详情, Secondary Actions: Expand\n\t\t\t\t222 container 中国平安 贡献\n\t\t\t\t\t223 button 打开中国平安的准确贡献来源\n\t\t\t\t\t\t224 text 中国平安\n\t\t\t\t\t\t225 text +8,000.00\n\t\t\t\t\t226 pop up button (collapsed) Description: 中国平安，贡献详情, Secondary Actions: Expand\n\t\t\t\t227 container 宁德时代 贡献\n\t\t\t\t\t228 button 打开宁德时代的准确贡献来源\n\t\t\t\t\t\t229 text 宁德时代\n\t\t\t\t\t\t230 text -6,000.00\n\t\t\t\t\t231 pop up button (collapsed) Description: 宁德时代，贡献详情, Secondary Actions: Expand\n\t\t\t\t232 container 中信证券 贡献\n\t\t\t\t\t233 button 打开中信证券的准确贡献来源\n\t\t\t\t\t\t234 text 中信证券\n\t\t\t\t\t\t235 text +8,000.00\n\t\t\t\t\t236 pop up button (collapsed) Description: 中信证券，贡献详情, Secondary Actions: Expand\n\t\t\t\t237 container 比亚迪 贡献\n\t\t\t\t\t238 button 打开比亚迪的准确贡献来源\n\t\t\t\t\t\t239 text 比亚迪\n\t\t\t\t\t\t240 text -6,000.00\n\t\t\t\t\t241 pop up button (collapsed) Description: 比亚迪，贡献详情, Secondary Actions: Expand\n\t\t\t\t242 container 长江电力 贡献\n\t\t\t\t\t243 button 打开长江电力的准确贡献来源\n\t\t\t\t\t\t244 text 长江电力\n\t\t\t\t\t\t245 text +8,000.00\n\t\t\t\t\t246 pop up button (collapsed) Description: 长江电力，贡献详情, Secondary Actions: Expand\n\t\t\t\t247 container 中国中免 贡献\n\t\t\t\t\t248 button 打开中国中免的准确贡献来源\n\t\t\t\t\t\t249 text 中国中免\n\t\t\t\t\t\t250 text -6,000.00\n\t\t\t\t\t251 pop up button (collapsed) Description: 中国中免，贡献详情, Secondary Actions: Expand\n\t\t\t252 text 合计（ CNY ） +9.88 万\n\t\t\t253 pop up button (collapsed) Description: 完整贡献合计，贡献详情, Secondary Actions: Expand\n\t\t80 heading 来源激活与下一模块, Value: 2\n\t\t\t81 text 来源激活与下一模块\n\t\t82 container 准确来源对象\n\t\t\t83 text 尚未激活\n\t\t84 text 合计由调用方明确提供，不等于本页八行相加。\n\t\t85 button 外部阅读位置\n\nThe focused UI element is 85 button 外部阅读位置"
+  }
+]

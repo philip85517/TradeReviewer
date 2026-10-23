@@ -1,0 +1,221 @@
+{
+  "at": "2026-10-23T03:06:53.531Z",
+  "url": "http://127.0.0.1:3334/history-stats.html",
+  "standard": {
+    "cards": [
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 57,
+          "right": 375,
+          "top": 152,
+          "width": 318,
+          "x": 57,
+          "y": 152
+        },
+        "text": "已平仓净盈亏(CNY)+32.15 万口径详情"
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 393,
+          "right": 711,
+          "top": 152,
+          "width": 318,
+          "x": 393,
+          "y": 152
+        },
+        "text": "已平仓回合14口径详情"
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 729,
+          "right": 1047,
+          "top": 152,
+          "width": 318,
+          "x": 729,
+          "y": 152
+        },
+        "text": "范围胜率64.285714285714285714%盈利回合9 / 14 盈利回合口径详情"
+      },
+      {
+        "rect": {
+          "bottom": 240,
+          "height": 88,
+          "left": 1065,
+          "right": 1383,
+          "top": 152,
+          "width": 318,
+          "x": 1065,
+          "y": 152
+        },
+        "text": "费用（已扣除）(CNY)4,680.12口径详情"
+      }
+    ],
+    "numbers": [
+      {
+        "clientWidth": 97,
+        "rect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 77,
+          "right": 174.390625,
+          "top": 189.5,
+          "width": 97.390625,
+          "x": 77,
+          "y": 189.5
+        },
+        "scrollWidth": 97,
+        "text": "+32.15"
+      },
+      {
+        "clientWidth": 36,
+        "rect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 413,
+          "right": 449.203125,
+          "top": 189,
+          "width": 36.203125,
+          "x": 413,
+          "y": 189
+        },
+        "scrollWidth": 36,
+        "text": "14"
+      },
+      {
+        "clientWidth": 161,
+        "rect": {
+          "bottom": 223,
+          "height": 34,
+          "left": 749,
+          "right": 910.234375,
+          "top": 189,
+          "width": 161.234375,
+          "x": 749,
+          "y": 189
+        },
+        "scrollWidth": 393,
+        "text": "64.285714285714285714%"
+      },
+      {
+        "clientWidth": 122,
+        "rect": {
+          "bottom": 223.5,
+          "height": 34,
+          "left": 1085,
+          "right": 1207.3671875,
+          "top": 189.5,
+          "width": 122.3671875,
+          "x": 1085,
+          "y": 189.5
+        },
+        "scrollWidth": 122,
+        "text": "4,680.12"
+      }
+    ],
+    "viewport": [
+      1440,
+      1000,
+      1
+    ]
+  },
+  "details": [
+    {
+      "name": "已平仓净盈亏",
+      "ax": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 历史四卡独立验收, Value: 1\n\t\t\t\t5 text 历史四卡独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准历史指标\n\t\t\t\t\t10 真实零\n\t\t\t\t\t11 100%胜率\n\t\t\t\t\t12 更新保留旧值\n\t\t\t\t\t13 首次加载\n\t\t\t\t\t14 无已平仓回合\n\t\t\t\t\t15 更新失败保留旧值\n\t\t\t\t\t16 首次失败\n\t\t\t\t\t17 金额胜率未知\n\t\t\t\t\t18 回合数未知\n\t\t\t\t\t19 币种不一致\n\t\t\t\t\t20 极长值与来源\n\t\t\t21 button 提交另一历史范围\n\t\t\t22 text 版本 1\n\t\t\t23 container 历史已平仓指标\n\t\t\t\t24 container 已平仓净盈亏\n\t\t\t\t\t25 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t\t26 text 已平仓净盈亏 ( CNY )\n\t\t\t\t\t27 text +32.15 万\n\t\t\t\t\t28 pop up button (expanded) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Collapse\n\t\t\t\t29 container 已平仓回合数\n\t\t\t\t\t30 heading 已平仓回合, Value: 3\n\t\t\t\t\t\t31 text 已平仓回合\n\t\t\t\t\t32 text 14\n\t\t\t\t\t33 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t\t34 container 胜率\n\t\t\t\t\t35 heading 范围胜率, Value: 3\n\t\t\t\t\t\t36 text 范围胜率\n\t\t\t\t\t37 text 64.285714285714285714%\n\t\t\t\t\t38 container 盈利回合 9 / 总回合 14\n\t\t\t\t\t39 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t\t40 container 已扣费用\n\t\t\t\t\t41 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t\t42 text 费用（已扣除） ( CNY )\n\t\t\t\t\t43 text 4,680.12\n\t\t\t\t\t44 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t\t45 heading 下一模块边界, Value: 2\n\t\t\t\t46 text 下一模块边界\n\t\t\t47 text 详情须完整可读并可返回原触发卡。\n\t\t\t48 button 外部动作\n\t\t49 container 已平仓净盈亏 · 口径详情\n\t\t\t50 heading 已平仓净盈亏 · 口径详情, Value: 4\n\t\t\t\t51 text 已平仓净盈亏  · 口径详情\n\t\t\t52 button 关闭详情\n\t\t\t53 text 所选范围内已结束回合扣除分摊费用后的净盈亏，按实际平仓时间归属。未完成回合不计入。\n\t\t\t54 definition list\n\t\t\t\t55 container 完整金额\n\t\t\t\t\t56 text 完整金额\n\t\t\t\t57 text 321480.567800 CNY\n\t\t\t\t58 container 覆盖数量\n\t\t\t\t\t59 text 覆盖数量\n\t\t\t\t60 text 14 / 14\n\t\t\t\t61 container 原币金额\n\t\t\t\t\t62 text 原币金额\n\t\t\t\t63 container\n\t\t\t\t\t64 text 321480.567800 CNY\n\t\t\t\t65 container 汇率来源\n\t\t\t\t\t66 text 汇率来源\n\t\t\t\t67 text 同币种，无需换汇\n\nThe focused UI element is 49 container 已平仓净盈亏 · 口径详情",
+      "detail": {
+        "focus": "dialog",
+        "rect": {
+          "bottom": 473,
+          "height": 226,
+          "left": 58,
+          "right": 498,
+          "top": 247,
+          "width": 440,
+          "x": 58,
+          "y": 247
+        },
+        "text": "已平仓净盈亏 · 口径详情×所选范围内已结束回合扣除分摊费用后的净盈亏，按实际平仓时间归属。未完成回合不计入。完整金额321480.567800 CNY覆盖数量14 / 14原币金额321480.567800 CNY汇率来源同币种，无需换汇"
+      },
+      "closedAX": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 heading 历史四卡独立验收, Value: 1\n\t\t\t4 text 历史四卡独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准历史指标\n\t\t\t\t9 真实零\n\t\t\t\t10 100%胜率\n\t\t\t\t11 更新保留旧值\n\t\t\t\t12 首次加载\n\t\t\t\t13 无已平仓回合\n\t\t\t\t14 更新失败保留旧值\n\t\t\t\t15 首次失败\n\t\t\t\t16 金额胜率未知\n\t\t\t\t17 回合数未知\n\t\t\t\t18 币种不一致\n\t\t\t\t19 极长值与来源\n\t\t20 button 提交另一历史范围\n\t\t21 text 版本 1\n\t\t22 container 历史已平仓指标\n\t\t\t23 container 已平仓净盈亏\n\t\t\t\t24 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t25 text 已平仓净盈亏 ( CNY )\n\t\t\t\t26 text +32.15 万\n\t\t\t\t27 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t28 container 已平仓回合数\n\t\t\t\t29 heading 已平仓回合, Value: 3\n\t\t\t\t\t30 text 已平仓回合\n\t\t\t\t31 text 14\n\t\t\t\t32 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t33 container 胜率\n\t\t\t\t34 heading 范围胜率, Value: 3\n\t\t\t\t\t35 text 范围胜率\n\t\t\t\t36 text 64.285714285714285714%\n\t\t\t\t37 container 盈利回合 9 / 总回合 14\n\t\t\t\t38 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t39 container 已扣费用\n\t\t\t\t40 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t41 text 费用（已扣除） ( CNY )\n\t\t\t\t42 text 4,680.12\n\t\t\t\t43 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t44 heading 下一模块边界, Value: 2\n\t\t\t45 text 下一模块边界\n\t\t46 text 详情须完整可读并可返回原触发卡。\n\t\t47 button 外部动作\n\nThe focused UI element is 27 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand",
+      "after": {
+        "dialogs": 0,
+        "focus": "已平仓净盈亏，口径详情，完整读数 321480.567800 CNY"
+      }
+    },
+    {
+      "name": "已平仓回合数",
+      "ax": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 历史四卡独立验收, Value: 1\n\t\t\t\t5 text 历史四卡独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准历史指标\n\t\t\t\t\t10 真实零\n\t\t\t\t\t11 100%胜率\n\t\t\t\t\t12 更新保留旧值\n\t\t\t\t\t13 首次加载\n\t\t\t\t\t14 无已平仓回合\n\t\t\t\t\t15 更新失败保留旧值\n\t\t\t\t\t16 首次失败\n\t\t\t\t\t17 金额胜率未知\n\t\t\t\t\t18 回合数未知\n\t\t\t\t\t19 币种不一致\n\t\t\t\t\t20 极长值与来源\n\t\t\t21 button 提交另一历史范围\n\t\t\t22 text 版本 1\n\t\t\t23 container 历史已平仓指标\n\t\t\t\t24 container 已平仓净盈亏\n\t\t\t\t\t25 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t\t26 text 已平仓净盈亏 ( CNY )\n\t\t\t\t\t27 text +32.15 万\n\t\t\t\t\t28 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t\t29 container 已平仓回合数\n\t\t\t\t\t30 heading 已平仓回合, Value: 3\n\t\t\t\t\t\t31 text 已平仓回合\n\t\t\t\t\t32 text 14\n\t\t\t\t\t33 pop up button (expanded) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Collapse\n\t\t\t\t34 container 胜率\n\t\t\t\t\t35 heading 范围胜率, Value: 3\n\t\t\t\t\t\t36 text 范围胜率\n\t\t\t\t\t37 text 64.285714285714285714%\n\t\t\t\t\t38 container 盈利回合 9 / 总回合 14\n\t\t\t\t\t39 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t\t40 container 已扣费用\n\t\t\t\t\t41 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t\t42 text 费用（已扣除） ( CNY )\n\t\t\t\t\t43 text 4,680.12\n\t\t\t\t\t44 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t\t45 heading 下一模块边界, Value: 2\n\t\t\t\t46 text 下一模块边界\n\t\t\t47 text 详情须完整可读并可返回原触发卡。\n\t\t\t48 button 外部动作\n\t\t49 container 已平仓回合数 · 口径详情\n\t\t\t50 heading 已平仓回合数 · 口径详情, Value: 4\n\t\t\t\t51 text 已平仓回合数  · 口径详情\n\t\t\t52 button 关闭详情\n\t\t\t53 text 所选范围内已经结束的完整交易回合数量；部分平仓与未结束回合不单独算作已平仓回合。金额未知不等于回合数未知。\n\t\t\t54 definition list\n\t\t\t\t55 container 完整回合数\n\t\t\t\t\t56 text 完整回合数\n\t\t\t\t57 text 14\n\nThe focused UI element is 49 container 已平仓回合数 · 口径详情",
+      "detail": {
+        "focus": "dialog",
+        "rect": {
+          "bottom": 389,
+          "height": 142,
+          "left": 394,
+          "right": 834,
+          "top": 247,
+          "width": 440,
+          "x": 394,
+          "y": 247
+        },
+        "text": "已平仓回合数 · 口径详情×所选范围内已经结束的完整交易回合数量；部分平仓与未结束回合不单独算作已平仓回合。金额未知不等于回合数未知。完整回合数14"
+      },
+      "closedAX": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 heading 历史四卡独立验收, Value: 1\n\t\t\t4 text 历史四卡独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准历史指标\n\t\t\t\t9 真实零\n\t\t\t\t10 100%胜率\n\t\t\t\t11 更新保留旧值\n\t\t\t\t12 首次加载\n\t\t\t\t13 无已平仓回合\n\t\t\t\t14 更新失败保留旧值\n\t\t\t\t15 首次失败\n\t\t\t\t16 金额胜率未知\n\t\t\t\t17 回合数未知\n\t\t\t\t18 币种不一致\n\t\t\t\t19 极长值与来源\n\t\t20 button 提交另一历史范围\n\t\t21 text 版本 1\n\t\t22 container 历史已平仓指标\n\t\t\t23 container 已平仓净盈亏\n\t\t\t\t24 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t25 text 已平仓净盈亏 ( CNY )\n\t\t\t\t26 text +32.15 万\n\t\t\t\t27 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t28 container 已平仓回合数\n\t\t\t\t29 heading 已平仓回合, Value: 3\n\t\t\t\t\t30 text 已平仓回合\n\t\t\t\t31 text 14\n\t\t\t\t32 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t33 container 胜率\n\t\t\t\t34 heading 范围胜率, Value: 3\n\t\t\t\t\t35 text 范围胜率\n\t\t\t\t36 text 64.285714285714285714%\n\t\t\t\t37 container 盈利回合 9 / 总回合 14\n\t\t\t\t38 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t39 container 已扣费用\n\t\t\t\t40 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t41 text 费用（已扣除） ( CNY )\n\t\t\t\t42 text 4,680.12\n\t\t\t\t43 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t44 heading 下一模块边界, Value: 2\n\t\t\t45 text 下一模块边界\n\t\t46 text 详情须完整可读并可返回原触发卡。\n\t\t47 button 外部动作\n\nThe focused UI element is 32 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand",
+      "after": {
+        "dialogs": 0,
+        "focus": "已平仓回合数，口径详情，完整读数 14 回合"
+      }
+    },
+    {
+      "name": "胜率",
+      "ax": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 历史四卡独立验收, Value: 1\n\t\t\t\t5 text 历史四卡独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准历史指标\n\t\t\t\t\t10 真实零\n\t\t\t\t\t11 100%胜率\n\t\t\t\t\t12 更新保留旧值\n\t\t\t\t\t13 首次加载\n\t\t\t\t\t14 无已平仓回合\n\t\t\t\t\t15 更新失败保留旧值\n\t\t\t\t\t16 首次失败\n\t\t\t\t\t17 金额胜率未知\n\t\t\t\t\t18 回合数未知\n\t\t\t\t\t19 币种不一致\n\t\t\t\t\t20 极长值与来源\n\t\t\t21 button 提交另一历史范围\n\t\t\t22 text 版本 1\n\t\t\t23 container 历史已平仓指标\n\t\t\t\t24 container 已平仓净盈亏\n\t\t\t\t\t25 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t\t26 text 已平仓净盈亏 ( CNY )\n\t\t\t\t\t27 text +32.15 万\n\t\t\t\t\t28 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t\t29 container 已平仓回合数\n\t\t\t\t\t30 heading 已平仓回合, Value: 3\n\t\t\t\t\t\t31 text 已平仓回合\n\t\t\t\t\t32 text 14\n\t\t\t\t\t33 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t\t34 container 胜率\n\t\t\t\t\t35 heading 范围胜率, Value: 3\n\t\t\t\t\t\t36 text 范围胜率\n\t\t\t\t\t37 text 64.285714285714285714%\n\t\t\t\t\t38 container 盈利回合 9 / 总回合 14\n\t\t\t\t\t39 pop up button (expanded) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Collapse\n\t\t\t\t40 container 已扣费用\n\t\t\t\t\t41 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t\t42 text 费用（已扣除） ( CNY )\n\t\t\t\t\t43 text 4,680.12\n\t\t\t\t\t44 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t\t45 heading 下一模块边界, Value: 2\n\t\t\t\t46 text 下一模块边界\n\t\t\t47 text 详情须完整可读并可返回原触发卡。\n\t\t\t48 button 外部动作\n\t\t49 container 胜率 · 口径详情\n\t\t\t50 heading 胜率 · 口径详情, Value: 4\n\t\t\t\t51 text 胜率  · 口径详情\n\t\t\t52 button 关闭详情\n\t\t\t53 text 所选范围已提交的盈利回合占比，同时列出盈利回合数与已平仓总回合数。持平和未知回合的口径由数据来源说明；不使用分期胜率的平均值。\n\t\t\t54 definition list\n\t\t\t\t55 container 完整胜率\n\t\t\t\t\t56 text 完整胜率\n\t\t\t\t57 text 64.285714285714285714%\n\t\t\t\t58 container 盈利回合\n\t\t\t\t\t59 text 盈利回合\n\t\t\t\t60 text 9\n\t\t\t\t61 container 已平仓总回合\n\t\t\t\t\t62 text 已平仓总回合\n\t\t\t\t63 text 14\n\nThe focused UI element is 49 container 胜率 · 口径详情",
+      "detail": {
+        "focus": "dialog",
+        "rect": {
+          "bottom": 465,
+          "height": 218,
+          "left": 730,
+          "right": 1170,
+          "top": 247,
+          "width": 440,
+          "x": 730,
+          "y": 247
+        },
+        "text": "胜率 · 口径详情×所选范围已提交的盈利回合占比，同时列出盈利回合数与已平仓总回合数。持平和未知回合的口径由数据来源说明；不使用分期胜率的平均值。完整胜率64.285714285714285714%盈利回合9已平仓总回合14"
+      },
+      "closedAX": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 heading 历史四卡独立验收, Value: 1\n\t\t\t4 text 历史四卡独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准历史指标\n\t\t\t\t9 真实零\n\t\t\t\t10 100%胜率\n\t\t\t\t11 更新保留旧值\n\t\t\t\t12 首次加载\n\t\t\t\t13 无已平仓回合\n\t\t\t\t14 更新失败保留旧值\n\t\t\t\t15 首次失败\n\t\t\t\t16 金额胜率未知\n\t\t\t\t17 回合数未知\n\t\t\t\t18 币种不一致\n\t\t\t\t19 极长值与来源\n\t\t20 button 提交另一历史范围\n\t\t21 text 版本 1\n\t\t22 container 历史已平仓指标\n\t\t\t23 container 已平仓净盈亏\n\t\t\t\t24 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t25 text 已平仓净盈亏 ( CNY )\n\t\t\t\t26 text +32.15 万\n\t\t\t\t27 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t28 container 已平仓回合数\n\t\t\t\t29 heading 已平仓回合, Value: 3\n\t\t\t\t\t30 text 已平仓回合\n\t\t\t\t31 text 14\n\t\t\t\t32 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t33 container 胜率\n\t\t\t\t34 heading 范围胜率, Value: 3\n\t\t\t\t\t35 text 范围胜率\n\t\t\t\t36 text 64.285714285714285714%\n\t\t\t\t37 container 盈利回合 9 / 总回合 14\n\t\t\t\t38 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t39 container 已扣费用\n\t\t\t\t40 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t41 text 费用（已扣除） ( CNY )\n\t\t\t\t42 text 4,680.12\n\t\t\t\t43 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t44 heading 下一模块边界, Value: 2\n\t\t\t45 text 下一模块边界\n\t\t46 text 详情须完整可读并可返回原触发卡。\n\t\t47 button 外部动作\n\nThe focused UI element is 38 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand",
+      "after": {
+        "dialogs": 0,
+        "focus": "胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14"
+      }
+    },
+    {
+      "name": "已扣费用",
+      "ax": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 container\n\t\t\t4 heading 历史四卡独立验收, Value: 1\n\t\t\t\t5 text 历史四卡独立验收\n\t\t\t6 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t\t7 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t\t8 menu\n\t\t\t\t\t9 (selected) 标准历史指标\n\t\t\t\t\t10 真实零\n\t\t\t\t\t11 100%胜率\n\t\t\t\t\t12 更新保留旧值\n\t\t\t\t\t13 首次加载\n\t\t\t\t\t14 无已平仓回合\n\t\t\t\t\t15 更新失败保留旧值\n\t\t\t\t\t16 首次失败\n\t\t\t\t\t17 金额胜率未知\n\t\t\t\t\t18 回合数未知\n\t\t\t\t\t19 币种不一致\n\t\t\t\t\t20 极长值与来源\n\t\t\t21 button 提交另一历史范围\n\t\t\t22 text 版本 1\n\t\t\t23 container 历史已平仓指标\n\t\t\t\t24 container 已平仓净盈亏\n\t\t\t\t\t25 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t\t26 text 已平仓净盈亏 ( CNY )\n\t\t\t\t\t27 text +32.15 万\n\t\t\t\t\t28 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t\t29 container 已平仓回合数\n\t\t\t\t\t30 heading 已平仓回合, Value: 3\n\t\t\t\t\t\t31 text 已平仓回合\n\t\t\t\t\t32 text 14\n\t\t\t\t\t33 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t\t34 container 胜率\n\t\t\t\t\t35 heading 范围胜率, Value: 3\n\t\t\t\t\t\t36 text 范围胜率\n\t\t\t\t\t37 text 64.285714285714285714%\n\t\t\t\t\t38 container 盈利回合 9 / 总回合 14\n\t\t\t\t\t39 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t\t40 container 已扣费用\n\t\t\t\t\t41 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t\t42 text 费用（已扣除） ( CNY )\n\t\t\t\t\t43 text 4,680.12\n\t\t\t\t\t44 pop up button (expanded) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Collapse\n\t\t\t45 heading 下一模块边界, Value: 2\n\t\t\t\t46 text 下一模块边界\n\t\t\t47 text 详情须完整可读并可返回原触发卡。\n\t\t\t48 button 外部动作\n\t\t49 container 已扣费用 · 口径详情\n\t\t\t50 heading 已扣费用 · 口径详情, Value: 4\n\t\t\t\t51 text 已扣费用  · 口径详情\n\t\t\t52 button 关闭详情\n\t\t\t53 text 已经分摊至所选范围已平仓回合、并在净盈亏中扣除的费用，包含相应开仓与平仓成本。未结束回合的费用不混入。\n\t\t\t54 definition list\n\t\t\t\t55 container 完整金额\n\t\t\t\t\t56 text 完整金额\n\t\t\t\t57 text 4680.123400 CNY\n\t\t\t\t58 container 覆盖数量\n\t\t\t\t\t59 text 覆盖数量\n\t\t\t\t60 text 14 / 14\n\t\t\t\t61 container 原币金额\n\t\t\t\t\t62 text 原币金额\n\t\t\t\t63 container\n\t\t\t\t\t64 text 4680.123400 CNY\n\t\t\t\t65 container 汇率来源\n\t\t\t\t\t66 text 汇率来源\n\t\t\t\t67 text 同币种，无需换汇\n\nThe focused UI element is 49 container 已扣费用 · 口径详情",
+      "detail": {
+        "focus": "dialog",
+        "rect": {
+          "bottom": 473,
+          "height": 226,
+          "left": 976,
+          "right": 1416,
+          "top": 247,
+          "width": 440,
+          "x": 976,
+          "y": 247
+        },
+        "text": "已扣费用 · 口径详情×已经分摊至所选范围已平仓回合、并在净盈亏中扣除的费用，包含相应开仓与平仓成本。未结束回合的费用不混入。完整金额4680.123400 CNY覆盖数量14 / 14原币金额4680.123400 CNY汇率来源同币种，无需换汇"
+      },
+      "closedAX": "Browser tab: 13, Title: \"历史四卡独立验收\", URL: \"http://127.0.0.1:3334/history-stats.html\".\n1 AXWebArea 历史四卡独立验收, URL: 127.0.0.1:3334/history-stats.html\n\t2 container\n\t\t3 heading 历史四卡独立验收, Value: 1\n\t\t\t4 text 历史四卡独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表完整首页接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 标准历史指标, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 标准历史指标\n\t\t\t\t9 真实零\n\t\t\t\t10 100%胜率\n\t\t\t\t11 更新保留旧值\n\t\t\t\t12 首次加载\n\t\t\t\t13 无已平仓回合\n\t\t\t\t14 更新失败保留旧值\n\t\t\t\t15 首次失败\n\t\t\t\t16 金额胜率未知\n\t\t\t\t17 回合数未知\n\t\t\t\t18 币种不一致\n\t\t\t\t19 极长值与来源\n\t\t20 button 提交另一历史范围\n\t\t21 text 版本 1\n\t\t22 container 历史已平仓指标\n\t\t\t23 container 已平仓净盈亏\n\t\t\t\t24 heading 已平仓净盈亏(CNY), Value: 3\n\t\t\t\t\t25 text 已平仓净盈亏 ( CNY )\n\t\t\t\t26 text +32.15 万\n\t\t\t\t27 pop up button (collapsed) Description: 已平仓净盈亏，口径详情，完整读数 321480.567800 CNY, Secondary Actions: Expand\n\t\t\t28 container 已平仓回合数\n\t\t\t\t29 heading 已平仓回合, Value: 3\n\t\t\t\t\t30 text 已平仓回合\n\t\t\t\t31 text 14\n\t\t\t\t32 pop up button (collapsed) Description: 已平仓回合数，口径详情，完整读数 14 回合, Secondary Actions: Expand\n\t\t\t33 container 胜率\n\t\t\t\t34 heading 范围胜率, Value: 3\n\t\t\t\t\t35 text 范围胜率\n\t\t\t\t36 text 64.285714285714285714%\n\t\t\t\t37 container 盈利回合 9 / 总回合 14\n\t\t\t\t38 pop up button (collapsed) Description: 胜率，口径详情，完整读数 64.285714285714285714%，盈利回合 9 / 总回合 14, Secondary Actions: Expand\n\t\t\t39 container 已扣费用\n\t\t\t\t40 heading 费用（已扣除）(CNY), Value: 3\n\t\t\t\t\t41 text 费用（已扣除） ( CNY )\n\t\t\t\t42 text 4,680.12\n\t\t\t\t43 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand\n\t\t44 heading 下一模块边界, Value: 2\n\t\t\t45 text 下一模块边界\n\t\t46 text 详情须完整可读并可返回原触发卡。\n\t\t47 button 外部动作\n\nThe focused UI element is 43 pop up button (collapsed) Description: 已扣费用，口径详情，完整读数 4680.123400 CNY, Secondary Actions: Expand",
+      "after": {
+        "dialogs": 0,
+        "focus": "已扣费用，口径详情，完整读数 4680.123400 CNY"
+      }
+    }
+  ]
+}

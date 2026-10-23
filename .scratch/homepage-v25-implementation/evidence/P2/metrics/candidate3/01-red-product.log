@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:57422) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/metric-cards.test.tsx (26 tests | 2 failed) 11307ms
+     × M05/M17 closes access and restores focus immediately while the noninteractive exit finishes at160ms 5017ms
+     × M17 reopening during exit cancels the old cleanup and keeps the new readout open 5002ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > metric detail motion lifecycle > M05/M17 closes access and restores focus immediately while the noninteractive exit finishes at160ms
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:257:3
+    255|   afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+    256|
+    257|   it("M05/M17 closes access and restores focus immediately while the n…
+       |   ^
+    258|     vi.useFakeTimers();
+    259|     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > metric detail motion lifecycle > M17 reopening during exit cancels the old cleanup and keeps the new readout open
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:277:3
+    275|   });
+    276|
+    277|   it("M17 reopening during exit cancels the old cleanup and keeps the …
+       |   ^
+    278|     vi.useFakeTimers();
+    279|     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 24 passed (26)
+   Start at  10:28:43
+   Duration  13.61s (transform 151ms, setup 428ms, import 295ms, tests 11.31s, environment 1.23s)
+

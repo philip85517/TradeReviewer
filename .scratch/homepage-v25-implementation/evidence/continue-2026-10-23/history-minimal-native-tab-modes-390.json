@@ -1,0 +1,42 @@
+[
+  {
+    "mode": "period-pnl",
+    "expected": "0 CNY",
+    "dom": {
+      "active": "hp-history-hit-01",
+      "cardHeight": 320,
+      "plot": "84,66,326,276",
+      "reading": "0 CNY"
+    }
+  },
+  {
+    "mode": "cumulative-pnl",
+    "expected": "98765.432100 CNY",
+    "dom": {
+      "active": "hp-history-hit-01",
+      "cardHeight": 320,
+      "plot": "84,66,326,276",
+      "reading": "98765.432100 CNY"
+    }
+  },
+  {
+    "mode": "win-rate",
+    "expected": "12.345%",
+    "dom": {
+      "active": "hp-history-hit-01",
+      "cardHeight": 320,
+      "plot": "84,66,326,276",
+      "reading": "12.345%"
+    }
+  },
+  {
+    "mode": "round-count",
+    "expected": "3 回合",
+    "dom": {
+      "active": "hp-history-hit-01",
+      "cardHeight": 320,
+      "plot": "84,66,326,276",
+      "reading": "3 回合"
+    }
+  }
+]

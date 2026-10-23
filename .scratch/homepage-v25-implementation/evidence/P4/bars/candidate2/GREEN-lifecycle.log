@@ -1,0 +1,45 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "app/components/homepage-v25/contribution-bars.test.tsx", "--maxWorkers=1", "--reporter=verbose"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB01 activates each of three original market identities without local navigation 536ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB02 preserves all eight caller rows and complete instrument identity 707ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB06/07 maps literal signed parts onto a common zero and scale without recomputing net 179ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional 32ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately 98ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03 supplied complete total remains independent when parent replaces the visible page 50ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 keeps known parts when unknown and invalid data cannot become zero 63ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 does not relabel a foreign target amount as the report currency 39ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB09 history renders only the supplied closed result 46ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB04 supports native Enter/Space for action and separate readout 57ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close 215ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 scopes Escape so a parent Escape handler cannot consume the same event 84ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB10/12 keeps supplied committed rows and total during pending or error without adding retry 56ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB11 initial pending reserves eight neutral slots without amounts or business rows 11ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB12/13 initial error and empty explain absence without invented zero or retry 10ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB14 retains exact long identity, source and extreme precision in the readout 57ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB15 immutable parent replacement invalidates an open readout and reads new supplied values 88ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 Escape also closes after keyboard focus moves back to the original trigger 78ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 unknown complete total presents its supplied reason without fabricating a subtotal 38ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB07/14 rounds cents symmetrically while retaining exact source precision 97ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB15 currency or mode replacement cannot retain a stale currency readout 88ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05/15 clamps floating readout position when its trigger scrolls outside the viewport 44ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'currency' stays closed and leaves outside focus when the original context returns 76ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'immutable row generation' stays closed and leaves outside focus when the original context returns 74ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'source identity context' stays closed and leaves outside focus when the original context returns 71ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'complete total generation' stays closed and leaves outside focus when the original context returns 74ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'current/history mode' stays closed and leaves outside focus when the original context returns 66ms
+ ✓ app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB-M01 invalidated 'total readout currency' stays closed and leaves outside focus when the original context returns 78ms
+
+ Test Files  1 passed (1)
+      Tests  28 passed (28)
+   Start at  07:38:38
+   Duration  4.96s (transform 166ms, setup 227ms, import 285ms, tests 3.11s, environment 985ms)
+
+
+STDERR
+(node:55423) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+EXIT 0

@@ -1,0 +1,400 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "app/components/homepage-v25/contribution-bars.test.tsx", "--maxWorkers=1"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx (17 tests | 17 failed) 313ms
+     × CB01 activates each of three original market identities without local navigation 202ms
+     × CB02 preserves all eight caller rows and complete instrument identity 10ms
+     × CB06/07 maps literal signed parts onto a common zero and scale without recomputing net 8ms
+     × CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional 10ms
+     × CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately 7ms
+     × CB03 supplied complete total remains independent when parent replaces the visible page 3ms
+     × CB08 keeps known parts when unknown and invalid data cannot become zero 9ms
+     × CB08 does not relabel a foreign target amount as the report currency 6ms
+     × CB09 history renders only the supplied closed result 4ms
+     × CB04 supports native Enter/Space for action and separate readout 21ms
+     × CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close 7ms
+     × CB05 scopes Escape so a parent Escape handler cannot consume the same event 7ms
+     × CB10/12 keeps supplied committed rows and total during pending or error without adding retry 4ms
+     × CB11 initial pending reserves eight neutral slots without amounts or business rows 2ms
+     × CB12/13 initial error and empty explain absence without invented zero or retry 2ms
+     × CB14 retains exact long identity, source and extreme precision in the readout 4ms
+     × CB15 immutable parent replacement invalidates an open readout and reads new supplied values 4ms
+
+ Test Files  1 failed (1)
+      Tests  17 failed (17)
+   Start at  07:14:44
+   Duration  3.38s (transform 111ms, setup 450ms, import 268ms, tests 313ms, environment 1.90s)
+
+
+STDERR
+(node:52570) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB01 activates each of three original market identities without local navigation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "查看 CN 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:33:66
+     31|     const rows = Object.freeze(identities.map(identity => Object.freez…
+     32|     const onActivate = vi.fn(); render(<ContributionBars {...props({ r…
+     33|     for (const identity of identities) { await user.click(screen.getBy…
+       |                                                                  ^
+     34|     expect(onActivate).toHaveBeenCalledTimes(3); expect(screen.getAllB…
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB02 preserves all eight caller rows and complete instrument identity
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:39:19
+     37|     const user = userEvent.setup(); const rows = Object.freeze(Array.f…
+     38|     const onActivate = vi.fn(); render(<ContributionBars {...props({ r…
+     39|     expect(screen.getAllByRole("listitem").map(node => node.getAttribu…
+       |                   ^
+     40|     for (const value of rows) await user.click(screen.getByRole("butto…
+     41|     rows.forEach((value, index) => expect(onActivate.mock.calls[index]…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB06/07 maps literal signed parts onto a common zero and scale without recomputing net
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "same+ 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ item app/components/homepage-v25/contribution-bars.test.tsx:24:46
+     22|   return { mode: "current", rows: suppliedRows, reportCurrency: "CNY",…
+     23| }
+     24| function item(label: string) { return screen.getByRole("listitem", { n…
+       |                                              ^
+     25| function parts(label: string) { return within(item(label)).queryAllByT…
+     26|
+ ❯ parts app/components/homepage-v25/contribution-bars.test.tsx:25:47
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:48:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB07 cent-rounded zero has no fabricated part and is neutral while nonzero tiny width stays proportional
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "zero 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ item app/components/homepage-v25/contribution-bars.test.tsx:24:46
+     22|   return { mode: "current", rows: suppliedRows, reportCurrency: "CNY",…
+     23| }
+     24| function item(label: string) { return screen.getByRole("listitem", { n…
+       |                                              ^
+     25| function parts(label: string) { return within(item(label)).queryAllByT…
+     26|
+ ❯ parts app/components/homepage-v25/contribution-bars.test.tsx:25:47
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:57:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03/14 exposes exact prepared net, original currency, FX evidence and coverage separately
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "same+，贡献详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:63:29
+     61|   it("CB03/14 exposes exact prepared net, original currency, FX eviden…
+     62|     const user = userEvent.setup(); const onActivate = vi.fn(); render…
+     63|     await user.click(screen.getByRole("button", { name: "same+，贡献详情" }…
+       |                             ^
+     64|     const dialog = screen.getByRole("dialog", { name: "same+ · 贡献详情" }…
+     65|     expect(within(dialog).getByText("777 CNY")).toBeVisible(); expect(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB03 supplied complete total remains independent when parent replaces the visible page
+TestingLibraryElementError: Unable to find an element by: [data-testid="contribution-total-value"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:72:19
+     70|   it("CB03 supplied complete total remains independent when parent rep…
+     71|     const user = userEvent.setup(); const base = props(); const view =…
+     72|     expect(screen.getByTestId("contribution-total-value")).toHaveTextC…
+       |                   ^
+     73|     view.rerender(<ContributionBars {...base} rows={Object.freeze([row…
+     74|     expect(screen.getByTestId("contribution-total-value")).toHaveTextC…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 keeps known parts when unknown and invalid data cannot become zero
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "unknown 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ item app/components/homepage-v25/contribution-bars.test.tsx:24:46
+     22|   return { mode: "current", rows: suppliedRows, reportCurrency: "CNY",…
+     23| }
+     24| function item(label: string) { return screen.getByRole("listitem", { n…
+       |                                              ^
+     25| function parts(label: string) { return within(item(label)).queryAllByT…
+     26|
+ ❯ parts app/components/homepage-v25/contribution-bars.test.tsx:25:47
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:81:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 does not relabel a foreign target amount as the report currency
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "foreign 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ item app/components/homepage-v25/contribution-bars.test.tsx:24:46
+     22|   return { mode: "current", rows: suppliedRows, reportCurrency: "CNY",…
+     23| }
+     24| function item(label: string) { return screen.getByRole("listitem", { n…
+       |                                              ^
+     25| function parts(label: string) { return within(item(label)).queryAllByT…
+     26|
+ ❯ parts app/components/homepage-v25/contribution-bars.test.tsx:25:47
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:89:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB09 history renders only the supplied closed result
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem" and name "closed 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ item app/components/homepage-v25/contribution-bars.test.tsx:24:46
+     22|   return { mode: "current", rows: suppliedRows, reportCurrency: "CNY",…
+     23| }
+     24| function item(label: string) { return screen.getByRole("listitem", { n…
+       |                                              ^
+     25| function parts(label: string) { return within(item(label)).queryAllByT…
+     26|
+ ❯ parts app/components/homepage-v25/contribution-bars.test.tsx:25:47
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:96:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB04 supports native Enter/Space for action and separate readout
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "查看 same+ 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:102:37
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 keeps inside clicks open and returns focus to the exact opener on Esc, outside and close
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "mixed-，贡献详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:106:103
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 scopes Escape so a parent Escape handler cannot consume the same event
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "same+，贡献详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div />[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:113:29
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB10/12 keeps supplied committed rows and total during pending or error without adding retry
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:117:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB11 initial pending reserves eight neutral slots without amounts or business rows
+TestingLibraryElementError: Unable to find an element by: [data-testid="contribution-skeleton"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:123:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB12/13 initial error and empty explain absence without invented zero or retry
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:128:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB14 retains exact long identity, source and extreme precision in the readout
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "查看 中文很长的证券身份-ACCOUNT-US-NASDAQ-INSTRUMENT-123456789 贡献"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:136:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB15 immutable parent replacement invalidates an open readout and reads new supplied values
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "same+，贡献详情"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:142:28
+    140|   it("CB15 immutable parent replacement invalidates an open readout an…
+    141|     const user = userEvent.setup(); const base = props(); const before…
+    142|     const trigger = screen.getByRole("button", { name: "same+，贡献详情" })…
+       |                            ^
+    143|     const replacement = Object.freeze([row("same+", "1", "2", "555.123…
+    144|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯
+
+
+EXIT 1

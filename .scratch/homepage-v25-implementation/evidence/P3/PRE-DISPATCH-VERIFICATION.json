@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-22T18:23:43.958Z",
+  "checks": {
+    "artifactExists": true,
+    "actualModel": true,
+    "blocked": true,
+    "v3": true,
+    "explicitAll": true,
+    "refreshDraft": true,
+    "groupScope": true,
+    "ordinaryURL": true,
+    "allCounterexamples": true,
+    "allAssetsPresent": true,
+    "allSourceReferencesPresent": true
+  },
+  "referenceCount": 40,
+  "sourceDrift": [],
+  "documentSha256": "016580e865e3e0be2bcab814dbdf62292836c7a16071ddbba98a7b40de618057",
+  "documentLines": 227,
+  "note": "Documentation validation only; no product tests or P3 acceptance."
+}

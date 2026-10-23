@@ -1,0 +1,71 @@
+Browser tab: 3, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100
+	2 container
+		3 container 主导航
+			4 text TradeReview
+			5 text 历史交易复盘
+			6 container Description: 主导航, ID: primary-navigation
+				7 button 我的交易室
+				8 button 交易库
+				9 button 分析
+				10 button 数据
+				11 button (disabled) Description: 策略，未开放, Help: 策略功能尚未开放
+					12 text 策略
+					13 text 未开放
+			14 container 辅助导航
+				15 button 设置
+		16 button 返回首页
+		17 text 普通交易库 · 成交日期  全部  · 包含未平仓成交  · SSE:600100
+		18 container 交易库
+			19 container 交易库页面头部
+				20 heading 交易库, Value: 1
+					21 text 交易库
+				22 text 浏览已导入交易并开始复盘
+				23 container
+					24 text 0  个标的 ·  0  个回合
+				25 container 交易室全局工具
+					26 button (collapsed) Description: 打开待处理事项, Secondary Actions: Expand
+						27 container 943 条待处理事项
+							28 text 99+
+					29 button (collapsed) Description: 打开本地用户菜单, Secondary Actions: Expand
+						30 text T
+						31 text 本地用户
+				32 container 共享范围
+					33 container 共享交易范围
+						34 container
+							35 text 性质
+							36 pop up button (collapsed, settable) Description: 交易性质, Value: 实盘, Secondary Actions: Expand
+								37 menu
+									38 (selected) 实盘
+									39 模拟盘
+									40 来源未知
+						41 container
+							42 text 账户范围
+							43 pop up button (collapsed, settable) Description: 共享账户, Value: P1 09 行, Secondary Actions: Expand
+								44 menu
+									45 全部账户
+									46 P1 50 行
+									47 (selected) P1 09 行
+									48 P1 08 行
+									49 P1 05 行
+									50 P1 p1-edge-short 行
+									51 P1 01 行
+									52 P1 00 行
+									53 P1 p1-edge-markets 行
+						54 container
+							55 text 报告计价
+							56 pop up button (collapsed, settable) Description: 报告计价, Value: 原币, Secondary Actions: Expand
+								57 menu
+									58 (selected) 原币
+									59 CNY参考
+									60 HKD参考
+				61 container
+					62 text 搜索标的
+					63 search text field (settable) 搜索已导入标的
+			64 tab group 交易库浏览视图
+				65 tab (selected, settable, boolean) 按标的浏览, Value: 1
+				66 tab (selectable, settable, boolean) 按回合浏览, Value: 0
+			67 text 还没有导入交易
+			68 button 去导入
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=p1-count-09&rangeMode=all&symbol=SSE%3A600100

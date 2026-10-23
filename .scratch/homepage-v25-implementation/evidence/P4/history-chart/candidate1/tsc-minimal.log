@@ -1,0 +1,24 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ES2017", "--lib", "dom,dom.iterable,esnext", "--skipLibCheck", "--esModuleInterop", "--module", "esnext", "--moduleResolution", "bundler", "--resolveJsonModule", "--isolatedModules", "--jsx", "react-jsx", "--incremental", "false", "app/components/homepage-v25/history-chart.tsx", "app/components/homepage-v25/history-chart.test.tsx"]
+STDOUT
+app/components/homepage-v25/history-chart.test.tsx(30,60): error TS2339: Property 'toBeVisible' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(31,58): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(32,55): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(33,47): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(36,23): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(37,23): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(38,56): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(40,47): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(42,23): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(43,61): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(45,47): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(50,60): error TS2339: Property 'toBeVisible' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(51,53): error TS2339: Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(53,75): error TS2339: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+app/components/homepage-v25/history-chart.test.tsx(55,49): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(57,44): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.test.tsx(58,68): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement | null>'.
+app/components/homepage-v25/history-chart.tsx(51,29): error TS18046: 'field.money' is of type 'unknown'.
+
+STDERR
+
+EXIT 2

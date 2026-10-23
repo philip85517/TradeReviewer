@@ -1,0 +1,9 @@
+Evidence verification PASS
+Source SHA256 f1b493d77e6963f35a99ca15b4b5ac8756577c327205a82f87617c76b12ce2d1
+Test SHA256 fa853b632b6d7c01b8e9befa7abef60ec56c48c96e703a8666e364cbf656f6f8
+Config SHA256 9c55a7358ddf5da6a32e9a250be3b5ac11ecea6df0157358768d7f0f267872f9
+Focused 98/98 exit0; lint exit0; F typecheck exit0
+Whole-project tsc exit2: one parallel home-surface.test.tsx callback type error
+Manifest files checked 86
+Protected dependency/history changes 0
+Worker status implementation-ready; resumed acceptance 0/3; UI NOT VERIFIED

@@ -1,0 +1,39 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:17004) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/holdings-model.test.ts (9 tests | 1 failed) 113ms
+     × reconciles signed short and reversal exposure with canonical quantity times raw quote 16ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reconciles signed short and reversal exposure with canonical quantity times raw quote
+AssertionError: expected [ null, null ] to deeply equal [ '-1', '-1' ]
+
+- Expected
++ Received
+
+  [
+-   "-1",
+-   "-1",
++   null,
++   null,
+  ]
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:79:49
+     77|     const reverse = { ...execution("reverse", "reversal", "live"), sid…
+     78|     const model = buildHomepageHoldings(entries([sell, buy, reverse]),…
+     79|     expect(model.rows.map(row => row.quantity)).toEqual(["-1", "-1"]);
+       |                                                 ^
+     80|     expect(model.rows.map(row => row.marketValue)).toEqual(["-110", "-…
+     81|     expect(model.totalMarketValue).toBe("-220");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  01:31:59
+   Duration  2.58s (transform 664ms, setup 214ms, import 796ms, tests 113ms, environment 1.05s)
+

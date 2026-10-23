@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  mergeInstrumentExchange,
   validateResolvedInstrument,
   type InstrumentLookup,
 } from "./metadata-contracts";
@@ -10,6 +11,19 @@ import {
 import { classifyExchangeTradedAsset } from "./asset-classification";
 
 describe("instrument metadata contracts", () => {
+  it("retains only source-backed US exchange evidence and merges it independently of name recency", () => {
+    const metadata = { market: "US" as const, symbol: "AAPL", name: "Apple Inc.", assetType: "stock" as const, source: "sec" as const, confidence: "official" as const, resolvedAt: "2026-10-22T00:00:00Z" };
+    const exchange = { code: "NASDAQ" as const, source: "sec" as const, resolvedAt: "2026-10-21T00:00:00Z" };
+    expect(validateResolvedInstrument({ ...metadata, exchange }, metadata).exchange).toEqual({ ...exchange, resolvedAt: "2026-10-21T00:00:00.000Z" });
+    for (const invalid of [{ ...exchange, code: "US" }, { ...exchange, source: "tencent" }, { ...exchange, resolvedAt: "bad" }]) {
+      expect(() => validateResolvedInstrument({ ...metadata, exchange: invalid }, metadata)).toThrow();
+    }
+    expect(mergeInstrumentExchange({ ...metadata, exchange }, metadata).exchange).toEqual(exchange);
+    const newer = { code: "NYSE" as const, source: "nasdaq" as const, resolvedAt: "2026-10-23T00:00:00Z" };
+    expect(mergeInstrumentExchange({ ...metadata, exchange }, { ...metadata, exchange: newer }).exchange).toEqual(newer);
+    expect(mergeInstrumentExchange({ ...metadata, exchange: newer }, { ...metadata, exchange }).exchange).toEqual(newer);
+    expect(mergeInstrumentExchange({ ...metadata, exchange: { ...exchange, resolvedAt: newer.resolvedAt } }, { ...metadata, exchange: newer }).exchange?.source).toBe("nasdaq");
+  });
   const lookup: InstrumentLookup = { market: "HK", symbol: "700" };
 
   it("accepts a matching stock or ETF result", () => {

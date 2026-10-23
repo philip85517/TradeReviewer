@@ -1,0 +1,59 @@
+{
+  "status": "IMPLEMENTATION_READY_FOR_ROOT_REVIEW",
+  "model": "gpt-6.1-sol",
+  "effort": "ultra",
+  "formalP4SeamAcceptanceAttempts": 0,
+  "p4WholeTicketAcceptanceAttempts": 0,
+  "acceptedAResumeAttempt": "1/3 (unchanged)",
+  "files": {
+    "app/lib/replay/position-ledger.ts": {
+      "sha256": "37a121bf069e6b726540a6fce99d8d7f499b8c5b9b0139a4ab74562d4f05b270",
+      "bytes": 39229,
+      "lines": 630,
+      "inputSha256": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126"
+    },
+    "app/lib/replay/position-ledger.test.ts": {
+      "sha256": "5906258436d922a4bd0d507ef4cd450e04a460fa43caaeda379b58ef7d3166c6",
+      "bytes": 54827,
+      "lines": 1098,
+      "inputSha256": "21ed853ab8f64526c8faea4b369eda2f70328fb805bdea98fa87e8f801732ea9",
+      "originalTestBytesUnchanged": true
+    },
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "sha256": "f4091fb3e442cda6e04d8cd3254855bb07adc3a7dbc21c0543ddd3dc70b96889",
+      "bytes": 109950,
+      "lines": 1182,
+      "inputSha256": "1e64b1c23aa0d42b96331d1eb89b6ec4c16e7d26c13454edc7c7449567df0542"
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "sha256": "58e2760efce1c774c50465c87a1624bf65a9cce5665a988152dd2b16e47d4749",
+      "bytes": 119296,
+      "lines": 1287,
+      "inputSha256": "4e65eef8d568d9a56d258e328229a7f06c9f513583b90d85f328d4902395c33a",
+      "originalTestBytesUnchanged": true
+    }
+  },
+  "readOnlyGuards": {
+    "app/lib/reviews/homepage-v25-series.ts": {
+      "sha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "inputSha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "unchanged": true
+    },
+    "app/lib/reviews/homepage-v25-series.test.ts": {
+      "sha256": "49b799ab415c20898d71c1d29a426ba2d10ff0052ec3defa6f329c224f5474ff",
+      "inputSha256": "49b799ab415c20898d71c1d29a426ba2d10ff0052ec3defa6f329c224f5474ff",
+      "unchanged": true
+    },
+    "app/lib/market/calendar.ts": {
+      "sha256": "69546efe2af049a58c2f9c9f3877f38b3feb040172610576dc0d0945f46056bc",
+      "inputSha256": "69546efe2af049a58c2f9c9f3877f38b3feb040172610576dc0d0945f46056bc",
+      "unchanged": true
+    },
+    "app/lib/market/sync-range.ts": {
+      "sha256": "5ffd1557d399a32c5dab69ad6404df570e62b81ea55ad6a9b6d26cda9d77b34b",
+      "inputSha256": "5ffd1557d399a32c5dab69ad6404df570e62b81ea55ad6a9b6d26cda9d77b34b",
+      "unchanged": true
+    }
+  },
+  "candidateDiffSha256": "61fca695e6980eba057488d50794425015fd1ac80aba0d2083ca0d968595400f"
+}

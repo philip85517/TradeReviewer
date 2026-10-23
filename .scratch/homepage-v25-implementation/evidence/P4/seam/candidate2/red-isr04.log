@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63125) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (177 tests | 2 failed | 170 skipped) 104ms
+     × ISR04 checks a day closing claim 2027-01-06T23:59:59.999Z independently from fill tradingDate 64ms
+     × ISR04 checks a day closing claim 2026-02 independently from fill tradingDate 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR04 checks a day closing claim 2027-01-06T23:59:59.999Z independently from fill tradingDate
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR04 checks a day closing claim 2026-02 independently from fill tradingDate
+AssertionError: expected { available: true, reasons: [], …(2) } to deeply equal { available: false, …(3) }
+
+- Expected
++ Received
+
+  {
+-   "available": false,
+-   "conflictingEpisodeIds": [
+-     "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-05%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+-   ],
++   "available": true,
++   "conflictingEpisodeIds": [],
+    "episodeIds": [
+      "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-05%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+    ],
+-   "reasons": [
+-     "episode-canonical-conflict",
+-   ],
++   "reasons": [],
+  }
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1299:35
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed | 170 skipped (177)
+   Start at  11:45:32
+   Duration  4.65s (transform 1.22s, setup 571ms, import 1.35s, tests 104ms, environment 2.14s)
+

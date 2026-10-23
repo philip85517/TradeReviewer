@@ -1,0 +1,122 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:23133) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-state.test.ts (83 tests | 13 failed | 67 skipped) 38ms
+     × preserves pending review choices through apply and UI-only restore: [] 13ms
+     × preserves pending review choices through apply and UI-only restore: [ true ] 1ms
+     × preserves pending review choices through apply and UI-only restore: [ false ] 2ms
+     × preserves pending review choices through apply and UI-only restore: [ true, false, true ] 1ms
+     × migrates genuine v2 pending=true without turning unrestricted into No 9ms
+     × migrates genuine v2 pending=false without turning unrestricted into No 1ms
+     × rejects non-array or invalid v3 choices rather than broadening: true 4ms
+     × rejects non-array or invalid v3 choices rather than broadening: false 1ms
+     × rejects non-array or invalid v3 choices rather than broadening: "false" 1ms
+     × rejects non-array or invalid v3 choices rather than broadening: null 1ms
+     × rejects non-array or invalid v3 choices rather than broadening: 0 1ms
+     × uses choice set semantics in request keys without merging No, both and unrestricted 0ms
+     × strips injected business descendants but preserves the exact legitimate v3 choice 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > preserves pending review choices through apply and UI-only restore: []
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > preserves pending review choices through apply and UI-only restore: [ true ]
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > preserves pending review choices through apply and UI-only restore: [ false ]
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > preserves pending review choices through apply and UI-only restore: [ true, false, true ]
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:81:29
+     79| }
+     80| function required<T>(value: T | null): T {
+     81|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     82|   return value;
+     83| }
+ ❯ begin app/lib/reviews/homepage-v25-state.ts:248:40
+ ❯ beginHomepageApply app/lib/reviews/homepage-v25-state.ts:258:122
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:480:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > migrates genuine v2 pending=true without turning unrestricted into No
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > migrates genuine v2 pending=false without turning unrestricted into No
+AssertionError: expected 2 to be 3 // Object.is equality
+
+- Expected
++ Received
+
+- 3
++ 2
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:500:45
+    498|     expect(restored.ok).toBe(true);
+    499|     if (!restored.ok) throw new Error("complete v2 rejected");
+    500|     expect(restored.state.snapshot.version).toBe(3);
+       |                                             ^
+    501|     expect(restored.state.applied.attachments.pendingReview).toEqual(w…
+    502|     expect(restored.state.snapshot.holdings).toEqual({ query: "贵州", so…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > rejects non-array or invalid v3 choices rather than broadening: true
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > rejects non-array or invalid v3 choices rather than broadening: false
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > rejects non-array or invalid v3 choices rather than broadening: "false"
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > rejects non-array or invalid v3 choices rather than broadening: null
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > rejects non-array or invalid v3 choices rather than broadening: 0
+AssertionError: expected { ok: false, …(1) } to deeply equal { Object (ok, error) }
+
+- Expected
++ Received
+
+  {
+-   "error": "invalid-snapshot",
++   "error": "unsupported-version",
+    "ok": false,
+  }
+
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:510:69
+    508|     const snapshot = { ...createHomepageState(allScope).snapshot, vers…
+    509|       attachments: { categories: [], openOnly: false, pendingReview } …
+    510|     expect(homepage.readHomepageSnapshot(JSON.stringify(snapshot))).to…
+       |                                                                     ^
+    511|   });
+    512|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > uses choice set semantics in request keys without merging No, both and unrestricted
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:81:29
+     79| }
+     80| function required<T>(value: T | null): T {
+     81|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     82|   return value;
+     83| }
+ ❯ begin app/lib/reviews/homepage-v25-state.ts:248:40
+ ❯ beginHomepageApply app/lib/reviews/homepage-v25-state.ts:258:122
+ ❯ key app/lib/reviews/homepage-v25-state.test.ts:525:47
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:527:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 v3 attachments > strips injected business descendants but preserves the exact legitimate v3 choice
+Error: invalid-homepage-ui-state
+ ❯ required app/lib/reviews/homepage-v25-state.ts:81:29
+     79| }
+     80| function required<T>(value: T | null): T {
+     81|   if (value === null) throw new Error("invalid-homepage-ui-state");
+       |                             ^
+     82|   return value;
+     83| }
+ ❯ encodeHomepageSnapshot app/lib/reviews/homepage-v25-state.ts:327:100
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:536:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 3 passed | 67 skipped (83)
+   Start at  02:30:00
+   Duration  1.57s (transform 99ms, setup 189ms, import 89ms, tests 38ms, environment 906ms)
+

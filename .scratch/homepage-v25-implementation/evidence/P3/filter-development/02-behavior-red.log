@@ -1,0 +1,702 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:40067) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx (7 tests | 7 failed) 256ms
+     × edits only S draft, preserves Esc/outside drafts on reopen and returns focus to the exact trigger 183ms
+     × keeps yes/no double selection visibly distinct from no selection while using stable S normalization 18ms
+     × applies once through pending and keeps old applied fields plus draft and explicit error on failure 12ms
+     × clears attachments or restores market/account defaults through distinct actions without changing the date period 15ms
+     × cancels an in-flight draft without committing it and identity discard is controlled by the S owner 11ms
+     × keeps fund unavailable with an explanation and does not silently drop unknown restored categories 4ms
+     × focuses the first field and keeps Tab/ShiftTab inside the editor until explicit dismissal 10ms
+ ❯ app/components/homepage-v25/attachment-groups.test.ts (8 tests | 8 failed) 56ms
+     × retains strict composite pending groups without an account × instrument cartesian product 37ms
+     × ORs category choices and ANDs category, open and pending dimensions 1ms
+     × uses canonical quantity for openOnly, including zero UF and missing quotes, and keeps unknown explicit 7ms
+     × does not infer stock or pending=no from missing metadata or incomplete/missing episode evidence 1ms
+     × keeps empty and double pending choices unrestricted and does not mutate either draft 2ms
+     × retains full selected group history and evidence carriers rather than pending episodes or period-only fills 4ms
+     × filters explicit live/market/accounts without a date cut and never joins different nature or run groups 2ms
+     × rejects stale canonical exposure and contradictory quantity evidence as unknown rather than selecting a first fact 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > edits only S draft, preserves Esc/outside drafts on reopen and returns focus to the exact trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "股票"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:30:28
+     28|   it("edits only S draft, preserves Esc/outside drafts on reopen and r…
+     29|     render(<Harness />); const trigger = screen.getByRole("button", { …
+     30|     fireEvent.click(screen.getByRole("checkbox", { name: "股票", exact: …
+       |                            ^
+     31|     expect(draft().attachments.categories).toEqual(["stock"]); expect(…
+     32|     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" }); …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > keeps yes/no double selection visibly distinct from no selection while using stable S normalization
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "待复盘：是"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:40:28
+     38|   it("keeps yes/no double selection visibly distinct from no selection…
+     39|     render(<Harness />); fireEvent.click(screen.getByText("筛选"));
+     40|     fireEvent.click(screen.getByRole("checkbox", { name: "待复盘：是" })); …
+       |                            ^
+     41|     expect(draft().attachments.pendingReview).toEqual([false, true]);
+     42|     expect(screen.getByRole("checkbox", { name: "待复盘：是" })).toBeChecke…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > applies once through pending and keeps old applied fields plus draft and explicit error on failure
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "ETF"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:47:90
+     45|
+     46|   it("applies once through pending and keeps old applied fields plus d…
+     47|     render(<Harness />); fireEvent.click(screen.getByText("筛选")); fire…
+       |                                                                                          ^
+     48|     fireEvent.keyDown(screen.getByRole("checkbox", { name: "ETF", exac…
+     49|     expect(screen.getByRole("button", { name: "应用" })).toBeDisabled();…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > clears attachments or restores market/account defaults through distinct actions without changing the date period
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "仅看未平仓持仓"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:60:90
+     58|
+     59|   it("clears attachments or restores market/account defaults through d…
+     60|     render(<Harness />); fireEvent.click(screen.getByText("筛选")); fire…
+       |                                                                                          ^
+     61|     fireEvent.click(screen.getByRole("button", { name: "应用" })); fireE…
+     62|     fireEvent.click(screen.getByText("筛选")); fireEvent.click(screen.ge…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > cancels an in-flight draft without committing it and identity discard is controlled by the S owner
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "股票"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:72:90
+     70|
+     71|   it("cancels an in-flight draft without committing it and identity di…
+     72|     render(<Harness />); fireEvent.click(screen.getByText("筛选")); fire…
+       |                                                                                          ^
+     73|     fireEvent.click(screen.getByRole("button", { name: "应用" })); fireE…
+     74|     expect(snapshot().attachments.categories).toEqual([]); expect(draf…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > keeps fund unavailable with an explanation and does not silently drop unknown restored categories
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "基金"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "入口":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m入口[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:82:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-filter.test.tsx > controlled attachment filter with the accepted S v3 authority > focuses the first field and keeps Tab/ShiftTab inside the editor until explicit dismissal
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "股票"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "筛选":
+  [36m<button />[39m
+
+  Name "切换市场":
+  [36m<button />[39m
+
+  Name "读取成功":
+  [36m<button />[39m
+
+  Name "读取失败":
+  [36m<button />[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "已应用":
+  [36m<output[39m
+    [33maria-label[39m=[32m"已应用"[39m
+  [36m/>[39m
+
+  Name "草稿":
+  [36m<output[39m
+    [33maria-label[39m=[32m"草稿"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m筛选[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m切换市场[0m
+    [36m</button>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"已应用"[39m
+    [36m>[39m
+      [0m{"version":3,"scope":{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23"},"attachments":{"categories":[],"openOnly":false,"pendingReview":[]},"holdings":{"query":"","sort":"name","page":1},"period":{"preset":"custom","from":"2026-10-01","to":"2026-10-23"},"history":{"range":{"mode":"all"},"chartMode":"period-pnl"},"contribution":{"mode":"current","current":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets","openOnly":false},"history":{"category":"long","sort":"profit-desc","page":1,"market":null,"symbol":null,"drilldown":"markets"}},"search":{"query":"","open":false,"resultsScrollTop":0,"selectedSymbol":null,"triggerFocusId":null},"returnState":{"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null},"scrollTop":0,"focus":"title","futureDisclosureSources":[]}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"草稿"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"hk","accounts":["one"],"rangeMode":"custom","from":"2026-10-01","to":"2026-10-23","attachments":{"categories":[],"openOnly":false,"pendingReview":[]}}[0m
+    [36m</output>[39m
+    [36m<button>[39m
+      [0m读取成功[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m读取失败[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/attachment-filter.test.tsx:88:26
+     86|   it("focuses the first field and keeps Tab/ShiftTab inside the editor…
+     87|     render(<Harness />); fireEvent.click(screen.getByText("筛选"));
+     88|     const first = screen.getByRole("checkbox", { name: "股票", exact: tr…
+       |                          ^
+     89|     expect(first).toHaveFocus(); fireEvent.keyDown(first, { key: "Tab"…
+     90|     fireEvent.keyDown(last, { key: "Tab" }); expect(first).toHaveFocus…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > retains strict composite pending groups without an account × instrument cartesian product
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:39:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > ORs category choices and ANDs category, open and pending dimensions
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:48:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > uses canonical quantity for openOnly, including zero UF and missing quotes, and keeps unknown explicit
+AssertionError: expected [] to deeply equal [ 'A', 'B' ]
+
+- Expected
++ Received
+
+- [
+-   "A",
+-   "B",
+- ]
++ []
+
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:59:59
+     57|     const result = qualifyHomepageAttachmentGroups({ ...raw, attachmen…
+     58|     // No unrealized amount or quote is supplied. Positive and short e…
+     59|     expect(result.executions.map(item => item.accountId)).toEqual(["A"…
+       |                                                           ^
+     60|     expect(result.groups.find(group => group.identity.accountId === "D…
+     61|     expect(result.groups.find(group => group.identity.accountId === "D…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > does not infer stock or pending=no from missing metadata or incomplete/missing episode evidence
+TypeError: Cannot read properties of undefined (reading 'episodes')
+ ❯ review app/components/homepage-v25/attachment-groups.test.ts:30:71
+     28| }
+     29| function review(source: TradeLibraryEntry[], account: string, instrume…
+     30|   const item = source.find(entry => entry.instrument.id === instrument…
+       |                                                                       ^
+     31|   const record = createEmptyEpisodeReviewRecord(item.episode.id, instr…
+     32|   item.review = { ...record, review: { ...record.review, completed: st…
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:66:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > keeps empty and double pending choices unrestricted and does not mutate either draft
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:81:65
+     79|     const raw = input(source, [["A", "X", null]]);
+     80|     const selected = { ...empty, pendingReview: [true, false, true] };
+     81|     expect(qualifyHomepageAttachmentGroups(raw).eligibleGroups).toHave…
+       |                                                                 ^
+     82|     expect(qualifyHomepageAttachmentGroups({ ...raw, attachments: sele…
+     83|     expect(selected.pendingReview).toEqual([true, false, true]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > retains full selected group history and evidence carriers rather than pending episodes or period-only fills
+AssertionError: expected [] to deeply equal [ { id: 'A-X-buy', …(9) }, …(2) ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "accountId": "A",
+-     "accountLabel": "A",
+-     "executedAt": "2026-10-01T01:00:00Z",
+-     "fee": "0",
+-     "id": "A-X-buy",
+-     "instrument": {
+-       "currency": "HKD",
+-       "id": "X",
+-       "market": "HK",
+-       "name": "X",
+-       "symbol": "X",
+-     },
+-     "price": "100",
+-     "quantity": "1",
+-     "side": "buy",
+-     "source": {
+-       "platform": "futu",
+-       "row": 1,
+-       "tradeNature": "live",
+-     },
+-   },
+-   {
+-     "accountId": "A",
+-     "accountLabel": "A",
+-     "executedAt": "2026-10-02T01:00:00Z",
+-     "fee": "0",
+-     "id": "A-X-sell",
+-     "instrument": {
+-       "currency": "HKD",
+-       "id": "X",
+-       "market": "HK",
+-       "name": "X",
+-       "symbol": "X",
+-     },
+-     "price": "100",
+-     "quantity": "1",
+-     "side": "sell",
+-     "source": {
+-       "platform": "futu",
+-       "row": 1,
+-       "tradeNature": "live",
+-     },
+-   },
+-   {
+-     "accountId": "A",
+-     "accountLabel": "A",
+-     "executedAt": "2026-10-10T01:00:00Z",
+-     "fee": "0",
+-     "id": "A-X-later",
+-     "instrument": {
+-       "currency": "HKD",
+-       "id": "X",
+-       "market": "HK",
+-       "name": "X",
+-       "symbol": "X",
+-     },
+-     "price": "100",
+-     "quantity": "1",
+-     "side": "buy",
+-     "source": {
+-       "historyIncomplete": [
+-         "late statement evidence",
+-       ],
+-       "platform": "futu",
+-       "row": 1,
+-       "tradeNature": "live",
+-     },
+-   },
+- ]
++ []
+
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:93:31
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > filters explicit live/market/accounts without a date cut and never joins different nature or run groups
+AssertionError: expected [] to deeply equal [ 'A-X-buy' ]
+
+- Expected
++ Received
+
+- [
+-   "A-X-buy",
+- ]
++ []
+
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:104:52
+    102|     sim.source.tradeNature = "simulation"; sim.source.simulationRunId …
+    103|     const result = qualifyHomepageAttachmentGroups({ ...input(entries(…
+    104|     expect(result.executions.map(item => item.id)).toEqual(["A-X-buy"]…
+       |                                                    ^
+    105|     expect(result.groups).toHaveLength(1);
+    106|     expect(homepageAttachmentGroupKey(identity("A|B", "C"))).not.toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯
+
+ FAIL  app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > rejects stale canonical exposure and contradictory quantity evidence as unknown rather than selecting a first fact
+TypeError: Cannot read properties of undefined (reading 'open')
+ ❯ app/components/homepage-v25/attachment-groups.test.ts:112:70
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  15 failed (15)
+   Start at  05:02:37
+   Duration  3.14s (transform 235ms, setup 308ms, import 310ms, tests 312ms, environment 1.61s)
+

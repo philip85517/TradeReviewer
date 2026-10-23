@@ -1,0 +1,228 @@
+--- candidate2/metric-cards.tsx
++++ candidate3/metric-cards.tsx
+@@ -1,7 +1,7 @@
+ "use client";
+ 
+ import Decimal from "decimal.js";
+-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
++import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+ import { createPortal } from "react-dom";
+ import type { HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
+ import type { HomepageV25SeriesBundle } from "../../lib/reviews/homepage-v25-series";
+@@ -21,7 +21,7 @@
+   { key: "currentMarketValue", label: "当前持仓市值", definition: "最新可用行情下的当前持仓市值，独立于所选期间；不随期间切换。", signed: false },
+ ] as const;
+ type MetricKey = typeof CARDS[number]["key"];
+-type Selection = { key: MetricKey; generation: string | null; sourceId: string | null; currency: string };
++type Selection = { key: MetricKey; generation: string | null; sourceId: string | null; currency: string; closing?: boolean };
+ type Readout = { metric: HomepageV25Metric | undefined; raw: string | null; reasons: string[] };
+ const unique = (items: readonly string[]) => [...new Set(items.filter(Boolean))];
+ 
+@@ -71,11 +71,17 @@
+   const dialog = useRef<HTMLDivElement>(null);
+   const previousOpen = useRef<MetricKey | null>(null);
+   const [position, setPosition] = useState({ left: 24, top: 24 });
+-  const active = selection && selection.generation === (series?.requestGeneration ?? null)
+-    && selection.sourceId === (series?.sourceId ?? null) && selection.currency === reportCurrency ? selection.key : null;
++  const sameContext = selection && selection.generation === (series?.requestGeneration ?? null)
++    && selection.sourceId === (series?.sourceId ?? null) && selection.currency === reportCurrency;
++  const presented = sameContext ? selection.key : null;
++  const active = selection?.closing ? null : presented;
+   // Invalidate before commit; returning to an earlier context is not a new activation.
+-  if (selection && !active) setSelection(null);
+-  const definition = CARDS.find(card => card.key === active);
++  if (selection && !sameContext) setSelection(null);
++  const definition = CARDS.find(card => card.key === presented);
++  const closeDetail = useCallback(() => {
++    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
++    setSelection(current => !current || current.closing ? current : reduced ? null : { ...current, closing: true });
++  }, []);
+   const unavailablePeriod = status.kind === "empty" ? status.reason
+     : series?.summaryState === "future" || series?.periodSummary?.state === "future" ? "未来未覆盖，金额未知" : undefined;
+   const read = (key: MetricKey) => readout(key === "currentMarketValue" ? series?.current.currentMarketValue : series?.periodSummary?.[key],
+@@ -107,20 +113,31 @@
+   }, [active, series, status, reportCurrency]);
+ 
+   useEffect(() => {
++    if (!selection?.closing) return;
++    const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
++    const finish = () => setSelection(current => current?.closing ? null : current);
++    if (motion?.matches) { finish(); return; }
++    const timeout = window.setTimeout(finish, 160);
++    const onMotionChange = (event: MediaQueryListEvent) => { if (event.matches) finish(); };
++    motion?.addEventListener("change", onMotionChange);
++    return () => { window.clearTimeout(timeout); motion?.removeEventListener("change", onMotionChange); };
++  }, [selection]);
++
++  useEffect(() => {
+     if (!active) return;
+-    function onKey(event: KeyboardEvent) { if (event.key === "Escape") { event.preventDefault(); setSelection(null); } }
++    function onKey(event: KeyboardEvent) { if (event.key === "Escape") { event.preventDefault(); closeDetail(); } }
+     function onOutside(event: MouseEvent) {
+       const target = event.target;
+       if (!(target instanceof Node) || dialog.current?.contains(target) || Object.values(triggers.current).some(trigger => trigger?.contains(target))) return;
+-      setSelection(null);
++      closeDetail();
+     }
+     document.addEventListener("keydown", onKey);
+     document.addEventListener("click", onOutside);
+     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("click", onOutside); };
+-  }, [active]);
++  }, [active, closeDetail]);
+ 
+   const currentUnrealized = readout(series?.current.currentUnrealized, reportCurrency, status.kind === "empty" ? status.reason : undefined);
+-  const contextReasons = active === "currentMarketValue" ? unique([
++  const contextReasons = presented === "currentMarketValue" ? unique([
+     ...(series?.current.fxCoverage.reasons ?? []), ...Object.values(series?.current.quoteCoverage ?? {}).flatMap(item => item.reasons),
+   ]) : series?.periodSummary?.reasons ?? [];
+   return <section className="hp-metric-cards" aria-label="当前表现指标" aria-busy={status.kind === "pending"}>
+@@ -131,14 +148,14 @@
+         return <article key={card.key} className="hp-metric-cards__card" aria-label={card.label}>
+           <h3 id={`${id}-${card.key}-label`}>{card.label}({reportCurrency})</h3>
+           {status.kind === "pending" && !series ? <div className="hp-metric-cards__skeleton" data-testid="hp-metric-skeleton" aria-label="金额加载中" />
+-            : <p className={`hp-metric-cards__value hp-metric-cards__value--${formatted.tone}`} data-testid="hp-metric-value" data-tone={formatted.tone}>
++            : <p key={`${reportCurrency}:${amount.raw ?? "unavailable"}`} className={`hp-metric-cards__value hp-metric-cards__value--${formatted.tone}`} data-testid="hp-metric-value" data-tone={formatted.tone}>
+               <span className="hp-metric-cards__number">{formatted.number}</span>{formatted.unit && <span className="hp-metric-cards__unit"> {formatted.unit}</span>}
+             </p>}
+           {status.kind === "pending" && series && <span className="hp-metric-cards__loading" aria-hidden="true">更新中</span>}
+           <button className="hp-metric-cards__trigger" type="button" ref={node => { triggers.current[card.key] = node; }}
+             aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}`} aria-haspopup="dialog"
+             aria-expanded={active === card.key} aria-controls={active === card.key ? `${id}-detail` : undefined}
+-            onClick={() => setSelection(active === card.key ? null : { key: card.key, generation: series?.requestGeneration ?? null, sourceId: series?.sourceId ?? null, currency: reportCurrency })}>
++            onClick={() => active === card.key ? closeDetail() : setSelection({ key: card.key, generation: series?.requestGeneration ?? null, sourceId: series?.sourceId ?? null, currency: reportCurrency })}>
+             <span className={`hp-metric-cards__affordance${status.kind === "error" ? " hp-metric-cards__affordance--error" : ""}`}>
+               {status.kind === "error" ? "查看原因" : "口径详情"}
+             </span>
+@@ -147,17 +164,18 @@
+       })}
+     </div>
+     {status.kind !== "ready" && <p className={`hp-metric-cards__status hp-metric-cards__status--${status.kind}`} role="status">{status.reason}</p>}
+-    {active && definition && createPortal(<div id={`${id}-detail`} ref={dialog} role="dialog" aria-modal="false"
+-      aria-labelledby={`${id}-detail-title`} tabIndex={-1} className="hp-metric-cards__detail" style={position}>
++    {presented && definition && createPortal(<div id={`${id}-detail`} ref={dialog} role="dialog" aria-modal="false"
++      aria-hidden={selection?.closing || undefined} inert={selection?.closing || undefined}
++      aria-labelledby={`${id}-detail-title`} tabIndex={-1} className={`hp-metric-cards__detail${selection?.closing ? " hp-metric-cards__detail--closing" : ""}`} style={position}>
+       <div className="hp-metric-cards__detail-header"><h4 id={`${id}-detail-title`}>{definition.label} · 口径详情</h4>
+-        <button type="button" aria-label="关闭详情" onClick={() => setSelection(null)}>×</button></div>
++        <button type="button" aria-label="关闭详情" onClick={closeDetail}>×</button></div>
+       <p>{definition.definition}</p>
+-      <p className="hp-metric-cards__context">{active === "currentMarketValue" ? `当前时点 ${series?.current.asOf ?? "未知"}`
++      <p className="hp-metric-cards__context">{presented === "currentMarketValue" ? `当前时点 ${series?.current.asOf ?? "未知"}`
+         : series ? `期间 ${series.boundary.periodStart} 至 ${series.boundary.requestedEnd} · 上海时区` : "期间数据尚不可用"}</p>
+       {status.kind !== "ready" && <p className="hp-metric-cards__notice">{status.reason}</p>}
+-      <MetricEvidence read={read(active)} currency={reportCurrency} />
++      <MetricEvidence read={read(presented)} currency={reportCurrency} />
+       {contextReasons.length > 0 && <ul className="hp-metric-cards__reasons">{unique(contextReasons).map(reason => <li key={reason}>{reason}</li>)}</ul>}
+-      {active === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={currentUnrealized} currency={reportCurrency} /></section>}
++      {presented === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={currentUnrealized} currency={reportCurrency} /></section>}
+     </div>, document.body)}
+   </section>;
+ }
+--- candidate2/metric-cards.css
++++ candidate3/metric-cards.css
+@@ -17,7 +17,7 @@
+   background: var(--hp-surface, #111a26);
+ }
+ .hp-metric-cards .hp-metric-cards__card h3 { margin: 0 56px 0 0; color: var(--hp-secondary, #a8b6cb); font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; }
+-.hp-metric-cards .hp-metric-cards__value { display: flex; margin: 4px 0 0; font-size: 28px; font-weight: 600; line-height: 34px; white-space: nowrap; }
++.hp-metric-cards .hp-metric-cards__value { display: flex; margin: 4px 0 0; font-size: 28px; font-weight: 600; line-height: 34px; white-space: nowrap; animation: hp-metric-value-in 150ms ease-out; }
+ .hp-metric-cards__number { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+ .hp-metric-cards__unit { flex: 0 0 auto; white-space: pre; }
+ .hp-metric-cards__value--positive { color: #53d7a0; }
+@@ -36,7 +36,7 @@
+ .hp-metric-cards__affordance--error { opacity: 1; }
+ .hp-metric-cards__affordance--error { color: #ff8592; }
+ .hp-metric-cards__skeleton { width: 60%; height: 28px; margin-top: 6px; border-radius: 4px; background: #283448; }
+-.hp-metric-cards__loading { position: absolute; bottom: 0; right: 10px; color: #a8b6cb; font-size: 12px; line-height: 16px; }
++.hp-metric-cards__loading { position: absolute; bottom: 0; right: 10px; color: var(--hp-blue, #6ca8ff); font-size: 12px; line-height: 16px; }
+ .hp-metric-cards .hp-metric-cards__status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+ .hp-metric-cards__detail,
+ .hp-metric-cards__detail * { box-sizing: border-box; }
+@@ -46,6 +46,7 @@
+   font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+   animation: hp-metric-detail-in 160ms ease-out;
+ }
++.hp-metric-cards__detail--closing { pointer-events: none; animation: hp-metric-detail-out 160ms ease-out forwards; }
+ .hp-metric-cards__detail:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+ .hp-metric-cards__detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+ .hp-metric-cards__detail h4 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
+@@ -66,4 +67,6 @@
+ @container hp-metrics (width < 492px) { .hp-metric-cards__grid { grid-template-columns: minmax(0, 1fr); } }
+ @media (pointer: coarse) { .hp-metric-cards__detail-header button { flex-basis: 44px; width: 44px; height: 44px; } }
+ @keyframes hp-metric-detail-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+-@media (prefers-reduced-motion: reduce) { .hp-metric-cards__affordance { transition: none; } .hp-metric-cards__detail { animation: none; } }
++@keyframes hp-metric-detail-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(4px); } }
++@keyframes hp-metric-value-in { from { opacity: 0; } to { opacity: 1; } }
++@media (prefers-reduced-motion: reduce) { .hp-metric-cards__affordance { transition: none; } .hp-metric-cards__detail, .hp-metric-cards .hp-metric-cards__value { animation: none; } }
+--- candidate2/metric-cards.test.tsx
++++ candidate3/metric-cards.test.tsx
+@@ -1,6 +1,6 @@
+-import { cleanup, render, screen, within } from "@testing-library/react";
++import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+ import userEvent from "@testing-library/user-event";
+-import { afterEach, describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
+ import type { HomepageV25BoundaryPoint, HomepageV25Metric } from "../../lib/reviews/homepage-v25-performance";
+ import type { HomepageV25SeriesBundle } from "../../lib/reviews/homepage-v25-series";
+ import { MetricCards } from "./metric-cards";
+@@ -250,3 +250,60 @@
+     expect(opener).toHaveFocus();
+   });
+ });
++
++describe("metric detail motion lifecycle", () => {
++  afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
++
++  it("M05/M17 closes access and restores focus immediately while the noninteractive exit finishes at160ms", async () => {
++    const user = userEvent.setup();
++    render(<MetricCards series={bundle()} reportCurrency="CNY" status={ready} />);
++    const opener = trigger("期间净盈亏");
++    await user.click(opener);
++    const detail = screen.getByRole("dialog");
++    vi.useFakeTimers();
++    fireEvent.keyDown(document, { key: "Escape" });
++    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
++    expect(opener).toHaveFocus();
++    expect(opener).toHaveAttribute("aria-expanded", "false");
++    expect(detail).toBeInTheDocument();
++    expect(detail).toHaveAttribute("aria-hidden", "true");
++    expect(detail).toHaveAttribute("inert");
++    act(() => vi.advanceTimersByTime(159));
++    expect(detail).toBeInTheDocument();
++    act(() => vi.advanceTimersByTime(1));
++    expect(detail).not.toBeInTheDocument();
++  });
++
++  it("M17 reopening during exit cancels the old cleanup and keeps the new readout open", async () => {
++    const user = userEvent.setup();
++    render(<MetricCards series={bundle()} reportCurrency="CNY" status={ready} />);
++    await user.click(trigger("期间净盈亏"));
++    const exiting = screen.getByRole("dialog");
++    vi.useFakeTimers();
++    fireEvent.keyDown(document, { key: "Escape" });
++    expect(exiting).toBeInTheDocument();
++    expect(exiting).toHaveAttribute("inert");
++    fireEvent.click(trigger("当前持仓市值"));
++    act(() => vi.advanceTimersByTime(160));
++    const detail = screen.getByRole("dialog", { name: "当前持仓市值 · 口径详情" });
++    expect(detail).toHaveFocus();
++    expect(detail).not.toHaveAttribute("inert");
++    expect(detail).toHaveTextContent("260102.123400 CNY");
++    expect(trigger("当前持仓市值")).toHaveAttribute("aria-expanded", "true");
++  });
++
++  it("M17 reduced motion closes directly to the terminal state without a lingering exit", async () => {
++    const query: MediaQueryList = { matches: true, media: "(prefers-reduced-motion: reduce)", onchange: null,
++      addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return true; } };
++    vi.stubGlobal("matchMedia", () => query);
++    const user = userEvent.setup();
++    render(<MetricCards series={bundle()} reportCurrency="CNY" status={ready} />);
++    const opener = trigger("期间已实现");
++    await user.click(opener);
++    const detail = screen.getByRole("dialog");
++    await user.keyboard("{Escape}");
++    expect(detail).not.toBeInTheDocument();
++    expect(opener).toHaveFocus();
++    expect(opener).toHaveAttribute("aria-expanded", "false");
++  });
++});

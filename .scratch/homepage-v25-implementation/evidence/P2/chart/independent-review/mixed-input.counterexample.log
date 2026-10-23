@@ -1,0 +1,32 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:49643) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/chart/independent-review/mixed-input.counterexample.test.tsx (2 tests | 1 failed) 307ms
+     × keeps keyboard-focused detail when the pointer leaves the point 253ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/chart/independent-review/mixed-input.counterexample.test.tsx > independent chart mixed pointer and keyboard counterexample > keeps keyboard-focused detail when the pointer leaves the point
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+Received has type:  Null
+Received has value: null
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/chart/independent-review/mixed-input.counterexample.test.tsx:54:43
+     52|     hoverThenFocusValue();
+     53|     fireEvent.mouseLeave(hit()); tick(100);
+     54|     expect(screen.queryByRole("tooltip")).toBeInTheDocument();
+       |                                           ^
+     55|     expect(within(detail()).getByTestId("hp-chart-value-marketValue"))…
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  06:46:46
+   Duration  3.30s (transform 185ms, setup 466ms, import 358ms, tests 307ms, environment 1.79s)
+

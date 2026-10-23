@@ -1,0 +1,5 @@
+metric-cards.tsx: git diff --no-index --check exit1; no whitespace diagnostics; SHA256 ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035
+metric-cards.css: git diff --no-index --check exit1; no whitespace diagnostics; SHA256 d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c
+metric-cards.test.tsx: git diff --no-index --check exit1; no whitespace diagnostics; SHA256 d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d
+Original23 test bodies byte-preserved; three appended lifecycle tests. No product writes after this freeze.
+Pinned runtime v26.0.0

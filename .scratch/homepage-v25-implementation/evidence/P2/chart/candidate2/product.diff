@@ -1,0 +1,111 @@
+--- candidate1/app/components/homepage-v25/performance-chart.tsx
++++ candidate2/app/components/homepage-v25/performance-chart.tsx
+@@ -254,10 +254,15 @@
+     ...(chosen.gap ? { gap: gaps.find(gap => gap.first.point.key === chosen.gap!.first.point.key) } : {}) } : null;
+   const space = geometry(entries, size);
+   const { plot, x, y } = space;
++  const clearHideTimer = () => {
++    if (hideTimer.current !== null) clearTimeout(hideTimer.current);
++    hideTimer.current = null;
++  };
++  const hasReadingFocus = () => rootRef.current?.contains(document.activeElement) ?? false;
+   const clearTimers = () => {
+     if (showTimer.current !== null) clearTimeout(showTimer.current);
+-    if (hideTimer.current !== null) clearTimeout(hideTimer.current);
+-    showTimer.current = null; hideTimer.current = null;
++    showTimer.current = null;
++    clearHideTimer();
+   };
+ 
+   useEffect(() => () => {
+@@ -352,7 +357,12 @@
+     if (suppressed.current === entry.point.key) suppressed.current = null;
+     if (pinned) return;
+     clearTimers();
+-    hideTimer.current = setTimeout(() => { hideTimer.current = null; setVisible(false); setSelection(null); }, 100);
++    if (hasReadingFocus()) return;
++    hideTimer.current = setTimeout(() => {
++      hideTimer.current = null;
++      if (hasReadingFocus()) return;
++      setVisible(false); setSelection(null);
++    }, 100);
+   };
+   const pin = (next: Selection, trigger: HTMLElement | SVGElement | null) => {
+     if (suppressed.current === next.entry.point.key) return;
+@@ -388,7 +398,7 @@
+   };
+   const marker = selection && selection.entry.amount !== null ? selection.entry : null;
+   const future = gaps.find(gap => gap.first.state === "future");
+-  return <section className="hp-performance-chart" ref={rootRef} aria-label="当前表现日曲线" onKeyDown={keyboard}
++  return <section className="hp-performance-chart" ref={rootRef} aria-label="当前表现日曲线" onKeyDown={keyboard} onFocusCapture={clearHideTimer}
+     onBlur={event => {
+       if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) return;
+       suppressed.current = null;
+@@ -472,8 +482,7 @@
+     </div>
+     {visible && selection && !unavailable && <DateDetail key={`${selection.entry.point.key}:${selection.entry.state}`} selection={selection}
+       reportCurrency={reportCurrency} pinned={pinned} id={detailId} detailRef={detailRef}
+-      onMouseEnter={() => { if (hideTimer.current !== null) clearTimeout(hideTimer.current); hideTimer.current = null; }}
+-      onMouseLeave={() => { if (!detailRef.current?.contains(document.activeElement)) leave(selection.entry); }} />}
++      onMouseEnter={clearHideTimer} onMouseLeave={() => leave(selection.entry)} />}
+   </section>;
+ }
+ 
+--- candidate1/app/components/homepage-v25/performance-chart.test.tsx
++++ candidate2/app/components/homepage-v25/performance-chart.test.tsx
+@@ -384,3 +384,55 @@
+     expect(detail()).not.toHaveStyle({ maxHeight: "112px" });
+   });
+ });
++
++describe("PerformanceChart mixed pointer and keyboard focus lifetime", () => {
++  it("keeps the current keyboard detail when the pointer leaves a point while the graph owns focus", () => {
++    vi.useFakeTimers();
++    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
++    fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
++    act(() => graph().focus());
++    fireEvent.mouseLeave(hit("2026-10-02")); tick(100);
++    expect(detail()).toHaveTextContent("2026-10-02");
++    expect(graph()).toHaveFocus();
++  });
++
++  it("keeps the focused amount and its source when the pointer leaves its date point", () => {
++    vi.useFakeTimers();
++    render(<PerformanceChart series={ready()} reportCurrency="CNY" />);
++    fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
++    act(() => graph().focus());
++    const amount = within(detail()).getByTestId("hp-chart-value-marketValue");
++    act(() => amount.focus());
++    fireEvent.mouseLeave(hit("2026-10-02")); tick(100);
++    expect(detail()).toHaveTextContent("原币：CNY 260,102.123400");
++    expect(amount).toHaveFocus();
++  });
++
++  it.each(["point", "detail"] as const)("keeps a source focused after %s leave queued a hide, then closes on focus exit", target => {
++    vi.useFakeTimers();
++    render(<><PerformanceChart series={ready()} reportCurrency="CNY" /><button type="button">图表之后</button></>);
++    fireEvent.mouseEnter(hit("2026-10-02")); tick(300);
++    const amount = within(detail()).getByTestId("hp-chart-value-marketValue");
++    fireEvent.mouseLeave(target === "point" ? hit("2026-10-02") : detail()); tick(50);
++    act(() => amount.focus()); tick(100);
++    expect(detail()).toHaveTextContent("2026-10-02");
++    expect(detail()).toHaveTextContent("原币：CNY 260,102.123400");
++    expect(amount).toHaveFocus();
++    act(() => screen.getByRole("button", { name: "图表之后" }).focus());
++    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
++  });
++
++  it("keeps a keyboard-focused gap reason when its pointer leaves and still allows Escape to close", () => {
++    vi.useFakeTimers();
++    render(<PerformanceChart series={bundle([point("2026-10-01", "0"), point("2026-10-02", null)])} reportCurrency="CNY" />);
++    const missing = screen.getByTestId("hp-chart-gap-2026-10-02");
++    act(() => missing.focus());
++    expect(missing).toHaveFocus();
++    fireEvent.mouseLeave(missing); tick(100);
++    expect(detail()).toHaveTextContent("行情缺失：未收到收盘价");
++    expect(missing).toHaveFocus();
++    fireEvent.keyDown(missing, { key: "Escape" });
++    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
++    expect(missing).toHaveFocus();
++  });
++});

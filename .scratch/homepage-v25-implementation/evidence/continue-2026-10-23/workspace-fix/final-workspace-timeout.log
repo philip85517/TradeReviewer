@@ -1,0 +1,29 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:45317) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (101 tests | 1 failed | 90 skipped) 19748ms
+     × refreshes every trade episode regardless of the selected episode 5091ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes every trade episode regardless of the selected episode
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:3722:3
+    3720|   });
+    3721|
+    3722|   it("refreshes every trade episode regardless of the selected episode…
+       |   ^
+    3723|     const user = userEvent.setup();
+    3724|     const executions = [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed | 90 skipped (101)
+   Start at  05:54:59
+   Duration  25.74s (transform 3.57s, setup 175ms, import 4.59s, tests 19.75s, environment 891ms)
+

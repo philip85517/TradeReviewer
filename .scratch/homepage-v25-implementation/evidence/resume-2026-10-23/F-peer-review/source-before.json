@@ -1,0 +1,12 @@
+{
+  "reviewStarted": "2026-10-22T16:53:16.436Z",
+  "node": "v26.0.0",
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": "174c506e14195a050773b68629090417fe1a4e4e4ffd85f093ca4e3b79ef97de",
+    "app/lib/reviews/homepage-v25-performance.test.ts": "f5350f8ac4b92057836df85052d0d9f9524041de585403e68fb60ce6da3fb245",
+    "app/lib/replay/position-ledger.ts": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113",
+    "app/lib/trades/ipo-cost.ts": "f7d087bbd5233d209af6df8f1be95ab4d2954926fec1d788d10aa090814f413b",
+    "app/lib/import/statement-evidence.ts": "45360f1373f4b185250182aad0acdac12d1c78cce9e3e7a1c40ec258c04ad6c2",
+    "app/lib/trades/library.ts": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83"
+  }
+}

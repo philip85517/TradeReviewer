@@ -1,0 +1,36 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47013) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > fails closed on historical bootstrap exchange metadata {"code":"US","source":"sec","resolvedAt":"2026-10-22T00:00:00Z"} without changing the stored trade 123ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > feeds holdings and CSV from the exact eligible account/instrument groups 200ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > fails closed on historical bootstrap exchange metadata {"code":"NASDAQ","source":"tencent","resolvedAt":"2026-10-22T00:00:00Z"} without changing the stored trade 22ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > fails closed on historical bootstrap exchange metadata {"code":"NASDAQ","source":"sec","resolvedAt":"invalid-date"} without changing the stored trade 9ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > requires explicit US exchange evidence and labels historical quote age instead of claiming current 23ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > uses the accepted current net UF after open fees, with partial closes keeping only remaining fees 69ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > qualifies open exposure without quotes or unrealized money and retains complete selected histories 23ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > does not label completed-looking incomplete histories as pending=no or guess missing stock metadata 74ms
+ ✓ app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > uses Recall completion from its owned entries and resolves source identity to concrete instruments 8ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps partial or future FX unknown and accepts production colon rates from complete timely evidence 28ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > builds current episodes before same-day and next-day future fills can change quantity or close status 7ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps account plus episode identity and excludes a legacy broker row without explicit live nature 17ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > does not derive continuous holding age from the latest fill or incomplete statement history 15ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > keeps unknown quote values unknown and refuses financial sorting with incomplete coverage 7ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reconciles signed short and reversal exposure with canonical quantity times raw quote 10ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reports US in USD without needing FX for USD, converting other settlement currencies only with evidence 30ms
+ ✓ app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > exports the whole filtered result at original precision and neutralizes spreadsheet formulas 15ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > retains strict composite pending groups without an account × instrument cartesian product 47ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > ORs category choices and ANDs category, open and pending dimensions 6ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > uses canonical quantity for openOnly, including zero UF and missing quotes, and keeps unknown explicit 7ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > does not infer stock or pending=no from missing metadata or incomplete/missing episode evidence 3ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > keeps empty and double pending choices unrestricted and does not mutate either draft 1ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > retains full selected group history and evidence carriers rather than pending episodes or period-only fills 2ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > filters explicit live/market/accounts without a date cut and never joins different nature or run groups 3ms
+ ✓ app/components/homepage-v25/attachment-groups.test.ts > homepage attachment group qualification > rejects stale canonical exposure and contradictory quantity evidence as unknown rather than selecting a first fact 2ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  06:20:29
+   Duration  9.02s (transform 2.30s, setup 2.31s, import 2.75s, tests 793ms, environment 7.57s)
+

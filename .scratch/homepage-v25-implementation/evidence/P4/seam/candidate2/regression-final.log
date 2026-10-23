@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63590) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Failed to start forks worker for test files /Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/lib/replay/position-ledger.test.ts.
+ ❯ node_modules/vitest/dist/chunks/cli-api.BK8pd4xc.js:3465:94
+ ❯ runNextTicks node:internal/process/task_queues:65:5
+ ❯ processTimers node:internal/timers:538:9
+ ❯ Pool.schedule node_modules/vitest/dist/chunks/cli-api.BK8pd4xc.js:3465:5
+
+Caused by: Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+ ❯ Timeout.<anonymous> node_modules/vitest/dist/chunks/cli-api.BK8pd4xc.js:3041:58
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  4 passed (4)
+      Tests  207 passed (207)
+     Errors  1 error
+   Start at  13:09:57
+   Duration  570.98s (transform 1.19s, setup 1.17s, import 1.46s, tests 2.25s, environment 567.12s)
+

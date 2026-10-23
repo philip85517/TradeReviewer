@@ -1,0 +1,6 @@
+app/components/trade-review-workspace.test.tsx(719,64): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+app/components/trade-review-workspace.tsx(5933,28): error TS2367: This comparison appears to be unintentional because the types '"ready"' and '"error"' have no overlap.

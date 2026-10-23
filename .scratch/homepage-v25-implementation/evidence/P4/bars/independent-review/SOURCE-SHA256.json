@@ -1,0 +1,79 @@
+{
+  "freeze_at_utc": "2026-10-22T23:29:36.761036+00:00",
+  "reviewer": "/root/series_bundle_review; gpt-6.1-sol / ultra",
+  "candidate": "ContributionBars candidate1",
+  "candidate_worker_frozen_head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "beginning_sha256": {
+    "app/components/homepage-v25/contribution-bars.tsx": "8e01b337f4d3774e6778683247e0ab3f56c0676485db33065216733d377b3fcc",
+    "app/components/homepage-v25/contribution-bars.css": "67993922cb8f7def8b6693c2bda986ac2fa5edf4d537b850a67d0b44769935c2",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "2cc9f4b7efcc5423cbfc45cab051000aff065b4be83571c1f158c4d32fc8152b",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6"
+  },
+  "ending_sha256": {
+    "app/components/homepage-v25/contribution-bars.tsx": "8e01b337f4d3774e6778683247e0ab3f56c0676485db33065216733d377b3fcc",
+    "app/components/homepage-v25/contribution-bars.css": "67993922cb8f7def8b6693c2bda986ac2fa5edf4d537b850a67d0b44769935c2",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "2cc9f4b7efcc5423cbfc45cab051000aff065b4be83571c1f158c4d32fc8152b",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6"
+  },
+  "unchanged": true,
+  "readonly_reference_sha256": {
+    "AGENTS.md": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+    "docs/agents/development-workflow.md": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+    "docs/agents/task-decomposition.md": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+    "docs/agents/frontend-control-audit.md": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+    "docs/agents/ui-task-templates.md": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+    "docs/agents/issue-tracker.md": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    "app/lib/trades/types.ts": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/ROOT-DISPATCH.md": "977329dff5e09f20b1f2648daad1813f72603c1b054c4c0e1c3532ff99daf183",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/IMPLEMENTATION-READY.md": "1dc38ea67f0a39011920bf316a764f967fff02a8c7c478fe7780473bed5207b3",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/PRODUCT-SHA256SUMS": "e573e7003eadbd76f4a14dd1a06d5442e20f691da4e2e52c44440dcc078410a0",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/SHA256SUMS": "38295706a2e82137a59720a514aeb6a3789c3ff0693c72625523ae09d82ce215",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/REPORT.md": "a2371cc1225582b322fa02b311d6045973b8724cf2ebf6cc6d6bfa856866d271",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/SELF-REVIEW.md": "254877805409c9ced6278223f96e18359ce39f81b402342768ee3d70c34645f1",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/CONTROL-STATE-MATRIX.md": "1728d5d38758ee505c77ceceef837da5341c3bcee65193f8a327c7be7ff43203",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/DESIGN-COVERAGE.md": "7ee8ab803778011e72ee0fc0d80e9d8a0bc86e7e92faac22f6ae9d78e37a8033",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/freeze-checkpoint.json": "320d1530033ee24277a47afd31ae27e2e41891cb4d4a3ce2dcd25c2af335b204",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/verify-styles.mjs": "7f4fc60e0a5882887d2b8ad8acddf173456b5e6927b77849f1b58b6fe7494633",
+    "vitest.config.ts": "e13d698288ac14428059e4da2e1c650c87b5b341afae688cc4a037234118ae2d",
+    "tests/setup.ts": "fa0fbe0255ef099b2d65d5157aa2559fe54b44bbc0ae9c25e91a1474d021da62",
+    "package.json": "a9d1d953a0d13b0c27c76fbfe7566156790c909478cbd8b50a801fc95ed301ed",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-states.svg": "f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-current-a-share.svg": "cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-historical-a-share.svg": "528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution.svg": "944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-loading.svg": "9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-empty.svg": "26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-error.svg": "e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-extreme.svg": "b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-mixed-sign-demo.svg": "50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226"
+  },
+  "independent_artifact_sha256_excluding_this_manifest": {
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/COUNTEREXAMPLE.log": "0613dfa476ea8608d72c53bf67e00c7749f496eb7f397e72439c8907c14749e5",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/REVIEW.md": "2c8fbcf32a3d54bf6011c4757ad10f58327d24952bcb8a2239c8872dfe00b1c8",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/context-restoration.test.tsx": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434",
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/independent-review/vitest.config.mjs": "ded305eb5b593161149d49d68981b22918343addee7e8727a896340b844230db"
+  },
+  "execution": {
+    "new_counterexample_files": 1,
+    "test_runs": 1,
+    "test_files": 1,
+    "tests": 1,
+    "test_result": "FAIL: unexpected revived dialog and stolen outside focus",
+    "child_exit": 1,
+    "maxWorkers": 1,
+    "config": "own defineConfig, exact test.include; no mergeConfig",
+    "browser": false,
+    "financial_or_full_suite": false
+  },
+  "findings": {
+    "Critical": 0,
+    "Important": 0,
+    "Minor": 2
+  },
+  "acceptance_boundary": "Root only. No P4 financial/performance/visual/page acceptance or formal-round change.",
+  "final_write": true
+}

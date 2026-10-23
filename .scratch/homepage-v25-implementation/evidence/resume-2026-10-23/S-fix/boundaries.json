@@ -1,0 +1,54 @@
+{
+  "node": "v26.0.0",
+  "sourceHashes": {
+    "app/lib/reviews/homepage-v25-state.ts": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+    "app/lib/reviews/homepage-v25-state.test.ts": "25c0af4452056c1763017a96f76fe45fd5a375159dde10013b98c32a80b19a68"
+  },
+  "results": [
+    {
+      "name": "root-six",
+      "executable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "args": [
+        ".scratch/homepage-v25-implementation/evidence/S/coordinator-round3.mjs"
+      ],
+      "exitStatus": 0,
+      "stdout": "{\n  \"checks\": {\n    \"appliedAttachmentsSurviveSnapshot\": true,\n    \"snapshotScopeHasNoAttachments\": true,\n    \"nestedBusinessDoesNotEnterSerialization\": true,\n    \"explicitAllAccountsWorksWithKnownAccountList\": true,\n    \"historicalChartModeRepresented\": true,\n    \"illegalDateRejected\": true\n  },\n  \"observed\": {\n    \"appliedAttachments\": {\n      \"categories\": [\n        \"long\"\n      ],\n      \"openOnly\": true,\n      \"pendingReview\": false\n    },\n    \"snapshotAttachments\": {\n      \"categories\": [\n        \"long\"\n      ],\n      \"openOnly\": true,\n      \"pendingReview\": false\n    },\n    \"scopeKeys\": [\n      \"live\",\n      \"market\",\n      \"accounts\",\n      \"rangeMode\"\n    ],\n    \"historyKeys\": [\n      \"range\",\n      \"chartMode\"\n    ]\n  },\n  \"sha256\": \"ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "typecheck",
+      "executable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "args": [
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--strict",
+        "--target",
+        "es2023",
+        "--module",
+        "esnext",
+        "--moduleResolution",
+        "bundler",
+        "--skipLibCheck",
+        "--types",
+        "node,vitest/globals",
+        "app/lib/reviews/homepage-v25-state.ts",
+        "app/lib/reviews/homepage-v25-state.test.ts"
+      ],
+      "exitStatus": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "eslint",
+      "executable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "args": [
+        "node_modules/eslint/bin/eslint.js",
+        "app/lib/reviews/homepage-v25-state.ts",
+        "app/lib/reviews/homepage-v25-state.test.ts"
+      ],
+      "exitStatus": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

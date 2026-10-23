@@ -1,0 +1,171 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47490) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/performance-chart.test.tsx (27 tests | 1 failed) 1874ms
+     × pins with Enter, ignores other hover, and Escape suppresses reopening until point reentry 145ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/performance-chart.test.tsx > controlled daily PerformanceChart > pins with Enter, ignores other hover, and Escape suppresses reopening until point reentry
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-live="polite"
+  class="hp-performance-chart__detail"
+  data-pinned="true"
+  data-state="value"
+  id="_r_5_"
+  role="tooltip"
+  style="left: 87px; top: 172px;"
+>
+  <header
+    class="hp-performance-chart__detail-heading"
+  >
+    <span>
+      2026-10-01
+       
+      CNY
+    </span>
+  </header>
+  <span
+    class="hp-performance-chart__pin"
+  >
+    已固定
+  </span>
+  <dl
+    class="hp-performance-chart__fields"
+  >
+    <div
+      class="hp-performance-chart__field"
+      data-field="marketValue"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        当日市值
+      </dt>
+      <dd
+        aria-label="当日市值 CNY 260,102.123400；原币：CNY 260,102.123400；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__neutral "
+        data-raw-value="260102.123400"
+        data-testid="hp-chart-value-marketValue"
+        tabindex="0"
+        title="260,102.123400；原币：CNY 260,102.123400；同币种，无需换汇；覆盖 1/1"
+      >
+        260,102.123400
+      </dd>
+    </div>
+    <div
+      class="hp-performance-chart__field"
+      data-field="unrealizedNet"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        当日浮盈
+      </dt>
+      <dd
+        aria-label="当日浮盈 CNY -23,153.25；原币：CNY -23,153.25；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__negative "
+        data-raw-value="-23153.25"
+        data-testid="hp-chart-value-unrealizedNet"
+        tabindex="0"
+        title="-23,153.25；原币：CNY -23,153.25；同币种，无需换汇；覆盖 1/1"
+      >
+        -23,153.25
+      </dd>
+    </div>
+    <div
+      class="hp-performance-chart__field"
+      data-field="lifetimeRealizedNet"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        累计已实现
+      </dt>
+      <dd
+        aria-label="累计已实现 CNY 0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__neutral "
+        data-raw-value="0"
+        data-testid="hp-chart-value-lifetimeRealizedNet"
+        tabindex="0"
+        title="0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"
+      >
+        0.00
+      </dd>
+    </div>
+    <div
+      class="hp-performance-chart__field"
+      data-field="lifetimeNet"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        累计净盈亏
+      </dt>
+      <dd
+        aria-label="累计净盈亏 CNY +35,393.34；原币：CNY 35,393.34；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__positive "
+        data-raw-value="35393.34"
+        data-testid="hp-chart-value-lifetimeNet"
+        tabindex="0"
+        title="+35,393.34；原币：CNY 35,393.34；同币种，无需换汇；覆盖 1/1"
+      >
+        +35,393.34
+      </dd>
+    </div>
+    <div
+      class="hp-performance-chart__field"
+      data-field="net"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        期间净盈亏
+      </dt>
+      <dd
+        aria-label="期间净盈亏 CNY 0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__neutral hp-performance-chart__period-net"
+        data-raw-value="0"
+        data-testid="hp-chart-value-net"
+        tabindex="0"
+        title="0.00；原币：CNY 0.00；同币种，无需换汇；覆盖 1/1"
+      >
+        0.00
+      </dd>
+    </div>
+    <div
+      class="hp-performance-chart__field"
+      data-field="periodFees"
+      data-testid="hp-chart-field"
+    >
+      <dt>
+        期间费用
+      </dt>
+      <dd
+        aria-label="期间费用 CNY 640.0010；原币：CNY 640.0010；同币种，无需换汇；覆盖 1/1"
+        class="hp-performance-chart__neutral "
+        data-raw-value="640.0010"
+        data-testid="hp-chart-value-periodFees"
+        tabindex="0"
+        title="640.0010；原币：CNY 640.0010；同币种，无需换汇；覆盖 1/1"
+      >
+        640.0010
+      </dd>
+    </div>
+  </dl>
+</div> instead
+ ❯ app/components/homepage-v25/performance-chart.test.tsx:122:47
+    120|     fireEvent.keyDown(graph(), { key: "Enter" });
+    121|     fireEvent.click(hit("2026-10-01"));
+    122|     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+       |                                               ^
+    123|     fireEvent.mouseEnter(hit("2026-10-01")); tick(400);
+    124|     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 passed (27)
+   Start at  06:26:12
+   Duration  4.59s (transform 328ms, setup 348ms, import 616ms, tests 1.87s, environment 1.30s)
+

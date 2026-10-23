@@ -1,0 +1,8 @@
+Browser tab: 13, Title: "贡献条形独立验收", URL: "http://127.0.0.1:3334/bars.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		6 pop up button (collapsed, settable) 验收情景, Value: 读取失败保留旧值, Secondary Actions: Expand
+~				8 异号八标的
+~				17 (selected) 读取失败保留旧值
++			86 text 读取失败，原范围与贡献保留
+The focused UI element is 85 button 外部阅读位置
+{"color":"rgb(255, 133, 146)","text":"读取失败，原范围与贡献保留","viewport":{"h":844,"w":390}}

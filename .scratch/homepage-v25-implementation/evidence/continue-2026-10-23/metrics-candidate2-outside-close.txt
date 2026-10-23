@@ -1,0 +1,49 @@
+Browser tab: 13, Title: "四项指标独立验收", URL: "http://127.0.0.1:3334/metrics.html".
+1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html
+	2 container
+		3 heading 四项指标独立验收, Value: 1
+			4 text 四项指标独立验收
+		5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 
+		6 pop up button (collapsed, settable) 验收情景, Value: 首次读取失败, Secondary Actions: Expand
+			7 menu
+				8 标准指标
+				9 正负与零
+				10 更新保留旧值
+				11 首次加载
+				12 空范围
+				13 更新失败保留旧值
+				14 (selected) 首次读取失败
+				15 缺失净值
+				16 未来期间
+				17 币种不一致
+				18 极长金额与来源
+		19 button 提交另一期间
+		20 text 版本 1
+		21 container 当前表现指标
+			22 container 期间净盈亏
+				23 heading 期间净盈亏(CNY), Value: 3
+					24 text 期间净盈亏 ( CNY )
+				25 text —
+				26 pop up button (collapsed) Description: 期间净盈亏，查看原因，金额未知, Secondary Actions: Expand
+			27 container 期间已实现
+				28 heading 期间已实现(CNY), Value: 3
+					29 text 期间已实现 ( CNY )
+				30 text —
+				31 pop up button (collapsed) Description: 期间已实现，查看原因，金额未知, Secondary Actions: Expand
+			32 container 期间浮盈变动
+				33 heading 期间浮盈变动(CNY), Value: 3
+					34 text 期间浮盈变动 ( CNY )
+				35 text —
+				36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，金额未知, Secondary Actions: Expand
+			37 container 当前持仓市值
+				38 heading 当前持仓市值(CNY), Value: 3
+					39 text 当前持仓市值 ( CNY )
+				40 text —
+				41 pop up button (collapsed) Description: 当前持仓市值，查看原因，金额未知, Secondary Actions: Expand
+			42 text 首次读取指标超时，尚无已提交数据
+		43 heading 下一模块边界, Value: 2
+			44 text 下一模块边界
+		45 text 详情须完整可读并可返回原触发卡。
+		46 button 外部动作
+
+The focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，金额未知, Secondary Actions: Expand

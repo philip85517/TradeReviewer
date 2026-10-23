@@ -1,0 +1,42 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR01 restores nonzero result scroll, query, selection and input focus after close/reopen on the same mount and restoreKey 2159ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source 388ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source 241ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source 443ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source 593ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: becoming ready on the same mount permits Enter again 401ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: becoming ready on the same mount permits Enter again 369ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: becoming ready on the same mount permits Enter again 434ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: becoming ready on the same mount permits Enter again 344ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > keeps settled old candidates inert to Enter during IME and commits the completed word only after 300ms 404ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > makes the surrounding navigation inert while detail owns focus and restores it on close 661ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > distinguishes unknown cost from missing quote in the actual table and detail 259ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > retains detail keyboard focus through a fresh row object and explains a removed row without clearing local UI 529ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps eight slots and a detail with one forward action; outside click stays open and Escape restores its exact trigger 391ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (Escape) 149ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > restores focus only after the background and navigation leave inert (close) 219ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > keeps the four core KPIs together and puts price, account and days in secondary information 120ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > returns to the exact non-default holding page through the visible source action without navigating 187ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > explains complete raw values with focus, Enter/Escape and synthetic pointer/click without false missing reasons 222ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > offers import for an empty account menu and a truly empty holding set, without a duplicate no-match action 402ms
+ ✓ app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > does not query during IME composition and applies the inline search after 300 ms 427ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps cross-market search independent of the applied scope and waits for IME completion plus 300ms 831ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > opens a metadata-only detail without borrowing holdings, and Escape restores its exact result before closing search 324ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps detail and source intact when navigation is refused, then uses the full unique identity 372ms
+ ✓ app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > returns metadata-only detail to its selected search result and scroll through the visible source action 256ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > includes metadata-only instruments without inventing holdings, across exchanges and classes 11ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > deduplicates one trustworthy identity into its exact collection rather than taking a first instrument 2ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > retains real imported instruments with unknown category and does not infer live or stock 23ms
+ ✓ app/components/homepage-v25/catalog-model.test.ts > homepage known instrument catalog > fails closed on historical invalid exchange and conflicting metadata evidence 1ms
+
+ Test Files  4 passed (4)
+      Tests  29 passed (29)
+   Start at  04:24:58
+   Duration  26.68s (transform 1.73s, setup 1.46s, import 3.44s, tests 11.18s, environment 7.75s)
+
+
+--- STDERR ---
+(node:36645) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

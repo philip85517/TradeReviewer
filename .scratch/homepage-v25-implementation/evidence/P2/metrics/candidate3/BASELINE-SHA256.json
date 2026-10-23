@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-10-23T02:27:31.739801+00:00",
+  "baseline": "candidate2 frozen; same task root2/3FAIL",
+  "files": {
+    "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+    "app/components/homepage-v25/metric-cards.css": "1e391540fd971dc201cd74b7274eb563a80fe6c7f830cbd9a3fb82899ad55330",
+    "app/components/homepage-v25/metric-cards.test.tsx": "fd36f70cff05d0420f027c8856c2055b95e87749656a697cf3d956748b266057"
+  }
+}

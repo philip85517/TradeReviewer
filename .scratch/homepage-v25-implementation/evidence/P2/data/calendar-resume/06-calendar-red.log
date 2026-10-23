@@ -1,0 +1,55 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:57856) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (150 tests | 2 failed | 147 skipped) 267ms
+     × resolves each exact market/cursor once per batch while quotes stay instrument-specific 241ms
+     × shares completed-session failures only within the exact market/cursor 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 batch-local market calendar sharing > resolves each exact market/cursor once per batch while quotes stay instrument-specific
+AssertionError: expected [ …(176) ] to have a length of 48 but got 176
+
+- Expected
++ Received
+
+- 48
++ 176
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1067:20
+    1065|       expect(byMarket(first.points[5], "US").map(i => i.marketValue.va…
+    1066|       const keys = range.mock.calls.map(([start, end, options]) => `${…
+    1067|       expect(keys).toHaveLength(new Set(keys).size);
+       |                    ^
+    1068|       expect(keys).toHaveLength(markets.length * (instants.length + 2)…
+    1069|       range.mockClear();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 batch-local market calendar sharing > shares completed-session failures only within the exact market/cursor
+AssertionError: expected [ [ …(3) ], [ …(3) ], [ …(3) ], …(5) ] to have a length of 3 but got 8
+
+- Expected
++ Received
+
+- 3
++ 8
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1084:32
+    1082|       expect(batch.points[0].instruments.map(i => i.quoteCoverage.endp…
+    1083|       expect(batch.current.instruments.map(i => i.currentMarketValue.r…
+    1084|       expect(range.mock.calls).toHaveLength(3);
+       |                                ^
+    1085|     } finally { range.mockRestore(); }
+    1086|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 147 skipped (150)
+   Start at  10:37:12
+   Duration  1.24s (transform 467ms, setup 0ms, import 598ms, tests 267ms, environment 0ms)
+

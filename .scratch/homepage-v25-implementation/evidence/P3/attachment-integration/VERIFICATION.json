@@ -1,0 +1,88 @@
+{
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "node": "/usr/local/Cellar/node/26.0.0/bin/node",
+  "scope": "bounded worker verification; no full suite/browser/service/real DB",
+  "runs": [
+    {
+      "log": "REGRESSION-bounded.log",
+      "argv": [
+        "/usr/local/Cellar/node/26.0.0/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "app/components/homepage-v25/attachment-integration.test.ts",
+        "app/components/homepage-v25/attachment-host.test.tsx",
+        "app/components/homepage-v25/attachment-surface.test.tsx",
+        "app/components/homepage-v25/attachment-groups.test.ts",
+        "app/components/homepage-v25/holdings-model.test.ts",
+        "app/components/homepage-v25/session-model.test.ts",
+        "app/components/homepage-v25/use-homepage-host.test.tsx",
+        "app/components/homepage-v25/navigation-recovery.test.tsx",
+        "app/components/homepage-v25/navigation-deadline.test.tsx",
+        "app/components/homepage-v25/home-surface.test.tsx",
+        "app/components/homepage-v25/attachment-filter.test.tsx",
+        "app/components/homepage-v25/search-surface.test.tsx",
+        "app/components/homepage-v25/search-recovery.test.tsx",
+        "app/components/homepage-v25/catalog-model.test.ts"
+      ],
+      "exitCode": 0,
+      "testFilesPassed": 14,
+      "testsPassed": 122
+    },
+    {
+      "log": "REGRESSION-workspace.log",
+      "argv": [
+        "/usr/local/Cellar/node/26.0.0/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "app/components/trade-review-workspace.test.tsx",
+        "-t",
+        "production homepage holding detail|failed cold scoped collection|committed homepage scope on an independent FX|owned metadata-only directory|bare global browsing compatible|nondefault homepage navigation scope|genuine aliases HTTP failure|older homepage read finishes|typed draft after a caller CAS conflict|parent review mounted until a failed navigation save"
+      ],
+      "exitCode": 0,
+      "testsPassed": 10,
+      "testsNotSelected": 91,
+      "addedTestSkips": 0
+    },
+    {
+      "log": "GREEN-workspace-final.log",
+      "argv": [
+        "/usr/local/Cellar/node/26.0.0/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "app/components/homepage-v25/attachment-workspace.test.tsx"
+      ],
+      "exitCode": 0,
+      "testsPassed": 4
+    },
+    {
+      "log": "TYPECHECK-final.log",
+      "argv": [
+        "/usr/local/Cellar/node/26.0.0/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "diagnostics": 0
+    },
+    {
+      "log": "LINT-final.log",
+      "argv": [
+        "/usr/local/Cellar/node/26.0.0/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "app/components/homepage-v25/attachment-groups.ts",
+        "app/components/homepage-v25/holdings-model.ts",
+        "app/components/homepage-v25/session-model.ts",
+        "app/components/homepage-v25/use-homepage-host.ts",
+        "app/components/homepage-v25/home-surface.tsx",
+        "app/components/trade-review-workspace.tsx",
+        "app/components/homepage-v25/attachment-integration.test.ts",
+        "app/components/homepage-v25/attachment-host.test.tsx",
+        "app/components/homepage-v25/attachment-surface.test.tsx",
+        "app/components/homepage-v25/attachment-workspace.test.tsx"
+      ],
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 11
+    }
+  ]
+}

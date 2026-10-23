@@ -1,0 +1,95 @@
+--- baseline/app/components/homepage-v25/use-homepage-host.ts
++++ candidate/app/components/homepage-v25/use-homepage-host.ts
+@@ -23,6 +23,7 @@
+   guard: (page: Page) => Promise<boolean>;
+ };
+ type Pending = { token: HomepageRequest; source?: string };
++type SourceRecovery = { generation: number; source?: string };
+ function routeError(code: string) {
+   return code === "invalid-account" ? "目标账户已不存在或不可用，请选择有效账户。" : code === "invalid-symbol" ? "目标证券身份无法解析，请重新选择证券。" : code === "invalid-range" ? "目标成交日期范围无效，请检查 URL。" : "目标交易范围无效，请检查 URL。";
+ }
+@@ -41,6 +42,9 @@
+   const [notice, setNotice] = useState<string | null>(null);
+   const [restoreKey, setRestoreKey] = useState(0);
+   const pending = useRef<Pending | null>(null);
++  // A failed/timed-out read ends its active request, not its readonly source.
++  // Only a matching owned success can give committed UI source-write authority.
++  const sourceRecovery = useRef<SourceRecovery | null>(null);
+   const source = useRef<string | null>(null);
+   const address = useRef("/home");
+   const index = useRef(0);
+@@ -77,19 +81,24 @@
+       : startHomepageRead(sessionRef.current, intent);
+     const token = next.ui.requests.global;
+     if (!token) return;
+-    pending.current = { token, source: bytes };
++    const readSource = intent === "retry" && sourceRecovery.current
++      ? token.purpose === "navigation" ? sourceRecovery.current.source : undefined
++      : bytes;
++    if (token.purpose === "navigation") sourceRecovery.current = { generation: token.generation, source: readSource };
++    else if (sourceRecovery.current) sourceRecovery.current = { ...sourceRecovery.current, generation: token.generation };
++    pending.current = { token, source: readSource };
+     update(next);
+     void latest.current.reload(token.generation).then(result => {
+       if (result.requestId !== token.generation || pending.current?.token.generation !== token.generation) return;
+       const catalog = latest.current.catalogFor?.(result.data);
+-      let acceptedBytes = bytes;
++      let acceptedBytes = readSource;
+       if (catalog) {
+         if (token.target.symbolIdentity && !catalog.identities[token.target.symbolIdentity]) throw new Error("目标证券身份已无法解析，新范围未应用，请重新选择证券。");
+         const available = new Set(catalog.accounts.map(account => account.id));
+         const missing = token.target.accounts.filter(account => account !== "*" && !available.has(account));
+         if (missing.length) {
+-          if (!bytes) throw new Error("目标账户已不存在，新范围未应用，请重新选择账户。");
+-          const restored = restoreHomepageState(bytes);
++          if (!readSource) throw new Error("目标账户已不存在，新范围未应用，请重新选择账户。");
++          const restored = restoreHomepageState(readSource);
+           if (restored.ok) {
+             const remaining = token.target.accounts.filter(account => available.has(account));
+             acceptedBytes = encodeHomepageSnapshot({ ...restored.state.snapshot, scope: { ...restored.state.snapshot.scope, accounts: remaining.length ? remaining : ["*"] } });
+@@ -102,6 +111,7 @@
+       if (next.ui.errors.global === null && next.data === result.data) {
+         latest.current.onReadAccepted?.(result.data);
+         update(next); setRestoreKey(key => key + 1);
++        if (sourceRecovery.current?.generation === token.generation) sourceRecovery.current = null;
+         if (routeRef.current.page === "home") {
+           setAddressRoute({ page: "home", scope: next.ui.snapshot.scope, error: null });
+           address.current = serializeHomepageNavigation(next.ui.snapshot.scope, "/home");
+@@ -193,7 +203,7 @@
+   const onUi = useCallback((patch: HomepageUiPatch) => {
+     const next = { ...sessionRef.current, ui: updateHomepageUi(sessionRef.current.ui, patch) };
+     update(next);
+-    if (initializedRef.current && routeRef.current.page === "home") { persist(encodeHomepageSnapshot(next.ui.snapshot)); replaceEntry(); }
++    if (initializedRef.current && routeRef.current.page === "home" && !sourceRecovery.current) { persist(encodeHomepageSnapshot(next.ui.snapshot)); replaceEntry(); }
+   }, [persist, replaceEntry, update]);
+   const navigate = useCallback(async (url: string, bytes?: string | null, commit?: () => void): Promise<boolean> => {
+     const intent = ++navigationIntent.current;
+@@ -213,11 +223,17 @@
+     acceptAddress(target, source.current, page === "home");
+     return true;
+   }, [acceptAddress, persist]);
+-  const openTrades = useCallback((identity: string | null) => navigate(homepageTradeUrl(sessionRef.current.ui.snapshot, identity ?? undefined), encodeHomepageSnapshot(sessionRef.current.ui.snapshot)), [navigate]);
+-  const openGlobalTrades = useCallback((commit?: () => void) => navigate("/trades", encodeHomepageSnapshot(sessionRef.current.ui.snapshot), commit), [navigate]);
++  const openTrades = useCallback((identity: string | null) => navigate(homepageTradeUrl(sessionRef.current.ui.snapshot, identity ?? undefined), sourceRecovery.current ? undefined : encodeHomepageSnapshot(sessionRef.current.ui.snapshot)), [navigate]);
++  const openGlobalTrades = useCallback((commit?: () => void) => navigate("/trades", sourceRecovery.current ? undefined : encodeHomepageSnapshot(sessionRef.current.ui.snapshot), commit), [navigate]);
+   const openHome = useCallback(() => navigate("/home"), [navigate]);
+   const onScope = useCallback((scope: HomepageScope) => beginRead({ purpose: "identity", scope }), [beginRead]);
+   const reload = useCallback(() => {
++    if (sourceRecovery.current) {
++      // Pending navigation already owns the target. After failure, S's retry
++      // retains that intent (or a newer explicit identity), with its UI source.
++      if (!pending.current) beginRead("retry");
++      return;
++    }
+     const restored = routeRef.current.page === "trades" ? validateSource(source.current) : null;
+     beginRead(sessionRef.current.ui.errors.global ? "retry" : { purpose: "refresh" }, restored ? encodeHomepageSnapshot(restored.snapshot) : undefined);
+   }, [beginRead, validateSource]);
+@@ -225,7 +241,7 @@
+   useEffect(() => {
+     if (!options.enabled || !initialized) return;
+     const refresh = () => {
+-      if (routeRef.current.page === "home" && !routeRef.current.error && !pending.current && document.visibilityState !== "hidden") beginRead({ purpose: "refresh" });
++      if (routeRef.current.page === "home" && !routeRef.current.error && !pending.current && !sourceRecovery.current && document.visibilityState !== "hidden") beginRead({ purpose: "refresh" });
+     };
+     window.addEventListener("focus", refresh);
+     document.addEventListener("visibilitychange", refresh);

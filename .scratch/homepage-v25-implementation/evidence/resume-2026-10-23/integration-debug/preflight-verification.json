@@ -1,0 +1,64 @@
+{
+  "createdAt": "2026-10-23T00:39:59.105907+08:00",
+  "scope": "documentation-only preflight, no product implementation or runtime acceptance",
+  "files": {
+    "P1-PREFLIGHT-REVIEW.md": {
+      "lines": 67,
+      "sha256": "d8e2f76dddd1454c278c94cac23be96afad5f30eb887bf12e5dd5e07a9071016"
+    },
+    "P1-CONTROL-INVENTORY-DRAFT.md": {
+      "lines": 43,
+      "sha256": "28e4cffc23b9f2b4f4aa5b07428e90375ced3c9d7b91a5b3e124f485605def27"
+    }
+  },
+  "sourceHashes": {
+    ".scratch/homepage-v25-implementation/visual-contract.md": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+    ".scratch/homepage-v25-implementation/issues/04-holdings-journey.md": "5428b4fd8204ab1dec83cf36e860f39082f5179b59d105cfc379794adec3663b",
+    ".scratch/homepage-v25-implementation/evidence/A/P1-HOLDINGS-JOURNEY.md": "9f9174dbd2f976d255596092acc017f0a59518e0130d09d42a29a90f9e51379a",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-debug/ROOT-CAUSE.md": "ae6ddfe5fdf85e61ac13f13ca9e04f58ad634fbbc0ed53717c200e73aefb6d52",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/green-initial.json": "8a423879bd35df1fa62cc0258ec8fc17f349ab7242990a9b68c3e72e5ea968d1",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    "app/lib/instruments/metadata-contracts.ts": "b5da3c35cb48513b052310eb2913ec4e4ede4e066ddf549ce50064aac49ea542",
+    "app/lib/instruments/resolve-service.ts": "b1659b18f219963b2597a8e3479dbffaebd684f3f4267b426d64423e2b0b7911",
+    "app/lib/instruments/providers/sec-company-tickers.ts": "a7b02023938859735e393505b00c28f3a68e4b5c8fc28d68887a941829de173e",
+    "app/lib/instruments/providers/nasdaq-directory.ts": "60c3391e4e3283a948e26be06637883cbbcd2cedd8c6fc71efaca10bc938fd63",
+    "app/lib/storage/sqlite-store.ts": "87efb3da76e6a795bafb4b442f5d6fcf12d55304cd45fe8ca551f2ad5e128008",
+    "app/lib/storage/indexeddb-instrument-metadata-repository.ts": "23a532895d7269358d7ba7ce1da816f010988fc85570a23a8cc473db49e7b52c",
+    "app/api/storage/instruments/metadata/route.ts": "1e71e08598bfd30708565372204bf5189e48af518694633b341ec64da923e5b7"
+  },
+  "links": [
+    {
+      "from": "P1-PREFLIGHT-REVIEW.md",
+      "target": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/visual-contract.md",
+      "exists": true
+    },
+    {
+      "from": "P1-PREFLIGHT-REVIEW.md",
+      "target": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/issues/04-holdings-journey.md",
+      "exists": true
+    },
+    {
+      "from": "P1-PREFLIGHT-REVIEW.md",
+      "target": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-debug/ROOT-CAUSE.md",
+      "exists": true
+    },
+    {
+      "from": "P1-PREFLIGHT-REVIEW.md",
+      "target": "P1-CONTROL-INVENTORY-DRAFT.md",
+      "exists": true
+    }
+  ],
+  "allLinksExist": true,
+  "SStatus": "green-initial is process evidence only; no delivered INTERFACES or root acceptance consumed",
+  "runtimeGates": {
+    "functional": "NOT VERIFIED",
+    "persistence": "NOT VERIFIED",
+    "visual": "NOT VERIFIED"
+  },
+  "writes": [
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/integration-debug/P1-PREFLIGHT-REVIEW.md",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/integration-debug/P1-CONTROL-INVENTORY-DRAFT.md",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/integration-debug/preflight-verification.json"
+  ]
+}

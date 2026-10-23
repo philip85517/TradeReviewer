@@ -1,0 +1,731 @@
+[
+  {
+    "name": "execution-backed short cover",
+    "executions": [
+      {
+        "id": "short",
+        "executedAt": "2026-01-05T05:00:00Z",
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "accountId": "a",
+        "accountLabel": "A",
+        "side": "sell",
+        "quantity": "1",
+        "price": "120",
+        "fee": "2",
+        "source": {
+          "platform": "statement",
+          "row": 1,
+          "tradeNature": "live",
+          "positionEffect": "open-short",
+          "positionEvents": [
+            {
+              "accountId": "a",
+              "market": "US",
+              "symbol": "AAPL",
+              "currency": "USD",
+              "source": [
+                {
+                  "page": 1,
+                  "row": 1
+                }
+              ],
+              "id": "application",
+              "kind": "ipo",
+              "date": "2026-01-08",
+              "amount": "-120",
+              "description": "IPO application"
+            },
+            {
+              "accountId": "a",
+              "market": "US",
+              "symbol": "AAPL",
+              "currency": "USD",
+              "source": [
+                {
+                  "page": 1,
+                  "row": 1
+                }
+              ],
+              "id": "refund",
+              "kind": "ipo",
+              "date": "2026-01-10",
+              "amount": "20",
+              "description": "IPO refund"
+            },
+            {
+              "accountId": "a",
+              "market": "US",
+              "symbol": "AAPL",
+              "currency": "USD",
+              "source": [
+                {
+                  "page": 1,
+                  "row": 1
+                }
+              ],
+              "id": "ipo-fee",
+              "kind": "fee",
+              "date": "2026-01-08",
+              "amount": "-2",
+              "description": "IPO fee"
+            },
+            {
+              "accountId": "a",
+              "market": "US",
+              "symbol": "AAPL",
+              "currency": "USD",
+              "source": [
+                {
+                  "page": 1,
+                  "row": 1
+                }
+              ],
+              "id": "allocation",
+              "kind": "ipo",
+              "date": "2026-01-10",
+              "quantity": "1",
+              "displayTimePolicy": "session-open",
+              "description": "IPO allotment",
+              "amount": "100"
+            }
+          ]
+        }
+      },
+      {
+        "id": "broker-ipo-buy",
+        "executedAt": "2026-01-10T05:00:00Z",
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "accountId": "a",
+        "accountLabel": "A",
+        "side": "buy",
+        "quantity": "1",
+        "price": "100",
+        "fee": "3",
+        "source": {
+          "platform": "statement",
+          "row": 1,
+          "tradeNature": "live"
+        }
+      }
+    ],
+    "entries": [
+      {
+        "scopeKey": "live",
+        "tradeNature": "live",
+        "groupId": "US:AAPL|live",
+        "tradingLabel": "实盘",
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "short",
+            "executedAt": "2026-01-05T05:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "sell",
+            "quantity": "1",
+            "price": "120",
+            "fee": "2",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live",
+              "positionEffect": "open-short",
+              "positionEvents": [
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "application",
+                  "kind": "ipo",
+                  "date": "2026-01-08",
+                  "amount": "-120",
+                  "description": "IPO application"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "refund",
+                  "kind": "ipo",
+                  "date": "2026-01-10",
+                  "amount": "20",
+                  "description": "IPO refund"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "ipo-fee",
+                  "kind": "fee",
+                  "date": "2026-01-08",
+                  "amount": "-2",
+                  "description": "IPO fee"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "allocation",
+                  "kind": "ipo",
+                  "date": "2026-01-10",
+                  "quantity": "1",
+                  "displayTimePolicy": "session-open",
+                  "description": "IPO allotment",
+                  "amount": "100"
+                }
+              ]
+            }
+          },
+          {
+            "id": "broker-ipo-buy",
+            "executedAt": "2026-01-10T05:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "3",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          }
+        ],
+        "episodes": [
+          {
+            "episode": {
+              "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-05T05%3A00%3A00Z%22%2C%22sell%22%2C%221%22%2C%22120%22%5D:1",
+              "accountId": "a",
+              "accountLabel": "A",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "tradeNature": "live",
+              "direction": "short",
+              "status": "closed",
+              "startedAt": "2026-01-05T05:00:00Z",
+              "openingQuantity": "1",
+              "remainingQuantity": "0",
+              "executions": [
+                {
+                  "id": "short",
+                  "executedAt": "2026-01-05T05:00:00Z",
+                  "instrument": {
+                    "id": "US:AAPL",
+                    "symbol": "AAPL",
+                    "name": "Apple",
+                    "market": "US",
+                    "currency": "USD"
+                  },
+                  "accountId": "a",
+                  "accountLabel": "A",
+                  "side": "sell",
+                  "quantity": "1",
+                  "price": "120",
+                  "fee": "2",
+                  "source": {
+                    "platform": "statement",
+                    "row": 1,
+                    "tradeNature": "live",
+                    "positionEffect": "open-short",
+                    "positionEvents": [
+                      {
+                        "accountId": "a",
+                        "market": "US",
+                        "symbol": "AAPL",
+                        "currency": "USD",
+                        "source": [
+                          {
+                            "page": 1,
+                            "row": 1
+                          }
+                        ],
+                        "id": "application",
+                        "kind": "ipo",
+                        "date": "2026-01-08",
+                        "amount": "-120",
+                        "description": "IPO application"
+                      },
+                      {
+                        "accountId": "a",
+                        "market": "US",
+                        "symbol": "AAPL",
+                        "currency": "USD",
+                        "source": [
+                          {
+                            "page": 1,
+                            "row": 1
+                          }
+                        ],
+                        "id": "refund",
+                        "kind": "ipo",
+                        "date": "2026-01-10",
+                        "amount": "20",
+                        "description": "IPO refund"
+                      },
+                      {
+                        "accountId": "a",
+                        "market": "US",
+                        "symbol": "AAPL",
+                        "currency": "USD",
+                        "source": [
+                          {
+                            "page": 1,
+                            "row": 1
+                          }
+                        ],
+                        "id": "ipo-fee",
+                        "kind": "fee",
+                        "date": "2026-01-08",
+                        "amount": "-2",
+                        "description": "IPO fee"
+                      },
+                      {
+                        "accountId": "a",
+                        "market": "US",
+                        "symbol": "AAPL",
+                        "currency": "USD",
+                        "source": [
+                          {
+                            "page": 1,
+                            "row": 1
+                          }
+                        ],
+                        "id": "allocation",
+                        "kind": "ipo",
+                        "date": "2026-01-10",
+                        "quantity": "1",
+                        "displayTimePolicy": "session-open",
+                        "description": "IPO allotment",
+                        "amount": "100"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "broker-ipo-buy",
+                  "executedAt": "2026-01-10T05:00:00Z",
+                  "instrument": {
+                    "id": "US:AAPL",
+                    "symbol": "AAPL",
+                    "name": "Apple",
+                    "market": "US",
+                    "currency": "USD"
+                  },
+                  "accountId": "a",
+                  "accountLabel": "A",
+                  "side": "buy",
+                  "quantity": "1",
+                  "price": "100",
+                  "fee": "3",
+                  "source": {
+                    "platform": "statement",
+                    "row": 1,
+                    "tradeNature": "live"
+                  }
+                }
+              ],
+              "endedAt": "2026-01-10T05:00:00Z",
+              "positionEvents": [
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "allocation",
+                  "kind": "ipo",
+                  "date": "2026-01-10",
+                  "quantity": "1",
+                  "displayTimePolicy": "session-open",
+                  "description": "IPO allotment",
+                  "amount": "100"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "application",
+                  "kind": "ipo",
+                  "date": "2026-01-08",
+                  "amount": "-120",
+                  "description": "IPO application"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "refund",
+                  "kind": "ipo",
+                  "date": "2026-01-10",
+                  "amount": "20",
+                  "description": "IPO refund"
+                },
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "currency": "USD",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ],
+                  "id": "ipo-fee",
+                  "kind": "fee",
+                  "date": "2026-01-08",
+                  "amount": "-2",
+                  "description": "IPO fee"
+                }
+              ]
+            },
+            "metrics": {
+              "buyCount": 1,
+              "sellCount": 1,
+              "boughtQuantity": "1",
+              "soldQuantity": "1",
+              "grossExposure": "120",
+              "fees": "5",
+              "realizedPnl": "20",
+              "unrealizedPnl": "0",
+              "netPnl": "15",
+              "returnPercent": "12.5",
+              "holdingMilliseconds": 432000000
+            },
+            "reviewStatus": "pending",
+            "confirmedTagIds": [],
+            "tagDictionaryVersion": 1,
+            "rMultiple": null
+          }
+        ],
+        "accountCount": 1,
+        "tradeCount": 2,
+        "episodeCount": 1,
+        "firstTradeAt": "2026-01-05T05:00:00Z",
+        "lastTradeAt": "2026-01-10T05:00:00Z",
+        "status": "closed",
+        "netPnl": "15",
+        "returnPercent": "12.5",
+        "reviewedEpisodeCount": 0,
+        "confirmedTagIds": [],
+        "cumulativeR": null
+      }
+    ],
+    "canonical": {
+      "quantity": "0",
+      "averageCost": "0",
+      "realizedPnl": "20",
+      "unrealizedPnl": "0",
+      "netPnl": "15",
+      "fees": "5",
+      "grossCapitalDeployed": "120",
+      "returnPercent": "12.5"
+    },
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 2,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": "20",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "20"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": "20",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "20"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "currentMarketValue": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 0,
+          "available": 0
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": "20",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "20"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": "20",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "20"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "short",
+              "broker-ipo-buy"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": null
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "short",
+                "broker-ipo-buy"
+              ],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "5",
+              "reasons": [],
+              "quote": null
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "short",
+                "broker-ipo-buy"
+              ],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "5",
+              "reasons": [],
+              "quote": null
+            }
+          }
+        }
+      ],
+      "reasons": []
+    }
+  }
+]

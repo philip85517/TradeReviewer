@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-10-22T20:41:25.247Z",
+  "endedAt": "2026-10-22T20:41:35.133Z",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "nodeVersion": "v26.0.0",
+  "args": [
+    "node_modules/eslint/bin/eslint.js",
+    "app/components/homepage-v25/home-surface.tsx"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null
+}

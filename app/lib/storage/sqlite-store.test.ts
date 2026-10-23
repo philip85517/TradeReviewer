@@ -1767,3 +1767,17 @@ describe("SqliteStore", () => {
     );
   });
 });
+
+it("preserves exchange evidence through metadata refresh, late conflict and core instrument updates", () => {
+  const store = createStore();
+  const record = { market: "US" as const, symbol: "AAPL", name: "Apple Inc.", assetType: "stock" as const, source: "sec" as const, confidence: "official" as const, resolvedAt: "2026-10-22T00:00:00.000Z" };
+    const exchange = { code: "NASDAQ" as const, source: "sec" as const, resolvedAt: "2026-10-21T00:00:00.000Z" };
+  store.putInstrumentMetadata({ ...record, exchange });
+  store.putInstrumentMetadata({ ...record, resolvedAt: "2026-10-23T00:00:00.000Z" });
+  expect(store.getInstrumentMetadata(["US:AAPL"])[0].metadata?.exchange).toEqual(exchange);
+  const newer = { code: "NYSE" as const, source: "nasdaq" as const, resolvedAt: "2026-10-24T00:00:00.000Z" };
+  store.putInstrumentMetadata({ ...record, exchange: newer });
+  store.putInstrumentMetadata({ ...record, exchange });
+  store.mergeTradeData({ instruments: [{ id: "US:AAPL", market: "US", symbol: "AAPL", name: "Apple", currency: "USD", metadata: record }], executions: [] });
+  expect(store.getBootstrap().instruments.find(item => item.id === "US:AAPL")?.metadata?.exchange).toEqual(newer);
+});

@@ -1,0 +1,366 @@
+{
+  "purpose": "P3 pre-dispatch read-only preparation, not P1/P3 acceptance or freeze",
+  "model": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "observedAt": "2026-10-22T18:17:49.933Z",
+  "timezone": "Asia/Shanghai",
+  "status": "P1 pending; P3 0/3 BLOCKED; no product/test/browser/service/database actions",
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+      "bytes": 6578,
+      "mtime": "2026-10-22T14:33:17.479Z"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+      "bytes": 27120,
+      "mtime": "2026-10-22T14:33:17.767Z"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+      "bytes": 10287,
+      "mtime": "2026-10-22T14:33:17.768Z"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+      "bytes": 21905,
+      "mtime": "2026-10-22T14:33:17.768Z"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/06-search-filter.md",
+      "sha256": "1da5fa25eab153c9c5fe8614cdf3e758657db4ae3043ad7aebc133886c29d56a",
+      "bytes": 4346,
+      "mtime": "2026-10-22T17:39:01.734Z"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "sha256": "3535627581bcec186d1c96f7abb742e43b1840d34fd84c9c3bd5067e508ad3a1",
+      "bytes": 45609,
+      "mtime": "2026-10-22T17:58:44.933Z"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/visual-contract.md",
+      "sha256": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+      "bytes": 6480,
+      "mtime": "2026-10-22T16:32:38.320Z"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/INTERFACES.md",
+      "sha256": "31277ee9fe2272d71d502b8a24458625e879cd79c48ca7ac94995f616a6fb87e",
+      "bytes": 12377,
+      "mtime": "2026-10-22T16:43:23.475Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+      "sha256": "a53e3b69a307ed5dbe35cb9757ce7194319772edeb38a4bbaa60c22b4890ad38",
+      "bytes": 180210,
+      "mtime": "2026-10-22T14:33:19.476Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "bytes": 62054,
+      "mtime": "2026-10-22T14:33:19.597Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+      "bytes": 66828,
+      "mtime": "2026-10-22T14:33:19.551Z"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "bytes": 30799,
+      "mtime": "2026-10-22T16:40:38.438Z"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.test.ts",
+      "sha256": "25c0af4452056c1763017a96f76fe45fd5a375159dde10013b98c32a80b19a68",
+      "bytes": 30078,
+      "mtime": "2026-10-22T16:41:36.127Z"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "sha256": "32fb69710d1bfdb86aef67253f39b162279473b4e70d375235e9ab0fa9f216a6",
+      "bytes": 15685,
+      "mtime": "2026-10-22T18:12:17.522Z"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "c930599635b8360d3fe380c2168f23314bda501a786ad1c905690bed24eaf16b",
+      "bytes": 3249,
+      "mtime": "2026-10-22T18:16:20.735Z"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "sha256": "2c2c12f041666b8357e4756956feb30868479c9c4f8847e202e6dc3cc1158c1a",
+      "bytes": 25282,
+      "mtime": "2026-10-22T18:01:51.151Z"
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "sha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+      "bytes": 12563,
+      "mtime": "2026-10-22T18:12:17.469Z"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "5e0817b26ec329735fbd07e73fe9500f47fa9ea4490e49e8b81ae366a80da3ca",
+      "bytes": 11992,
+      "mtime": "2026-10-22T18:04:16.543Z"
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "983f0b173ba0f29d9058237ab6f34e8b1722d33f70bdcc59f4d48639c5d5d657",
+      "bytes": 276494,
+      "mtime": "2026-10-22T18:12:17.582Z"
+    }
+  ],
+  "referenceAssets": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg",
+      "sha256": "35b47cf593f0d5ac294704bc136dec6309ac78a66550d3d5e3ee1355e6dbbfa3",
+      "bytes": 4270,
+      "mtime": "2026-10-22T14:33:19.595Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-detail.svg",
+      "sha256": "a5f321bf3481fb59e36e2294f91294826e90e8d8110704de49904f07998e252a",
+      "bytes": 3814,
+      "mtime": "2026-10-22T14:33:19.591Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg",
+      "sha256": "5c6b0ed321449b8cb578e51afaf91c0b3b19470f423222ac17579339f1ae55bf",
+      "bytes": 3881,
+      "mtime": "2026-10-22T14:33:19.590Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg",
+      "sha256": "c920da86e0b1434fee1af6751ebb3847f89ff88bff5345451df01ddf2912bdea",
+      "bytes": 3996,
+      "mtime": "2026-10-22T14:33:19.590Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-open.svg",
+      "sha256": "a461fa978344fd65c0755909f6d82f19535d88578e17cf43fe8b2008194734fc",
+      "bytes": 1986,
+      "mtime": "2026-10-22T14:33:19.594Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-error-frame.svg",
+      "sha256": "8358957cbe596840dd3b24b6cdb07577f23b894c8de49bbd79a81a365f5cde5b",
+      "bytes": 2465,
+      "mtime": "2026-10-22T14:33:19.592Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/detail.svg",
+      "sha256": "f0b55f8f66267819fd3e8f2a4f50da01c289a2312e30c43b89a997f12ad2a1f9",
+      "bytes": 4184,
+      "mtime": "2026-10-22T14:33:19.569Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg",
+      "sha256": "d5182ba7030cf8052405785122f79e8eb39a46ffcbe99d8172cdc51297f602ec",
+      "bytes": 5727,
+      "mtime": "2026-10-22T14:33:19.571Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied.svg",
+      "sha256": "d03db33e3660ca3a0054b7cb4e912ae6df59ba60237da0b0e06b57c27a415181",
+      "bytes": 3452,
+      "mtime": "2026-10-22T14:33:19.589Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied--reopen.svg",
+      "sha256": "54fb6956e21cd5e72e6e8d58dc5afe18c9bdda740433c235257daab3e5fb9405",
+      "bytes": 3274,
+      "mtime": "2026-10-22T14:33:19.589Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments.svg",
+      "sha256": "f16dec43c9457a46b161b891604e61d171ff4747f120a3c15aed7e949f1fc456",
+      "bytes": 3802,
+      "mtime": "2026-10-22T14:33:19.563Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments--after-clear.svg",
+      "sha256": "b937d08da29d52a225b9664ed00c14b70b48f6d747512d9837189af74d8272a5",
+      "bytes": 3814,
+      "mtime": "2026-10-22T14:33:19.563Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset.svg",
+      "sha256": "7beba1abdc564bb19f9e7e8aebd51e1204f0445b4db81f2a2dfd96d5b4207e43",
+      "bytes": 3290,
+      "mtime": "2026-10-22T14:33:19.590Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset--reset.svg",
+      "sha256": "0019ea5a874eb9449dfc9da0ff455f98f8a350f6b4de28468befb797726d05e6",
+      "bytes": 3300,
+      "mtime": "2026-10-22T14:33:19.590Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel.svg",
+      "sha256": "4567ad852e2c1ba70f054397f7f55042ebd3e2faebc9bb68a3a9e3f8ed9d1b7c",
+      "bytes": 4388,
+      "mtime": "2026-10-22T14:33:19.560Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel--cancelled.svg",
+      "sha256": "9288b0cabf7d432b2b67b4ca6967ec90c3dcd95aed5f12e71f6e6de4548bf887",
+      "bytes": 4397,
+      "mtime": "2026-10-22T14:33:19.559Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/account.svg",
+      "sha256": "e13e8ad14cf7809341967983b1bd84d311323f460c1967cb410b55261cbc0f65",
+      "bytes": 3352,
+      "mtime": "2026-10-22T14:33:19.555Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return.svg",
+      "sha256": "ee6936f60ca660141d538a8ea82d85778d6dd63a0a7125494ebbd8811f0704dd",
+      "bytes": 21616,
+      "mtime": "2026-10-22T14:33:19.582Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--detail.svg",
+      "sha256": "1e810a84b1861578383c2542c1d0ccb10a0c4d35a21b3f8de14d3b527a8920c3",
+      "bytes": 31704,
+      "mtime": "2026-10-22T14:33:19.582Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--after.svg",
+      "sha256": "e874084d685138296d7b2f50a85d710f6e21dbc6db6d86f9aae3f08659227b2c",
+      "bytes": 19551,
+      "mtime": "2026-10-22T14:33:19.581Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1440.svg",
+      "sha256": "eaead419f33ea8a5cd7bf1e7d67f93af2982d3c5c8c16de426989e8d249ca50e",
+      "bytes": 13343,
+      "mtime": "2026-10-22T14:33:19.581Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1280.svg",
+      "sha256": "96df52f8f65f68d3e28fbfc2654b353f4a16e46254bf244ea783cf759a725f81",
+      "bytes": 13641,
+      "mtime": "2026-10-22T14:33:19.581Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1440.svg",
+      "sha256": "fac7e4e3510febdd7d2a77b15e56fea651d1752accc6997363629d37586ead7b",
+      "bytes": 13374,
+      "mtime": "2026-10-22T14:33:19.580Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1280.svg",
+      "sha256": "1245df9fce0ce5037bc4e2dda71b2fc68e2f3cf30e5f7aa27abf002cd9eb15a2",
+      "bytes": 13672,
+      "mtime": "2026-10-22T14:33:19.579Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/extreme.svg",
+      "sha256": "59c67f88fb4cd46e5959108bb022127040b1ae42964a1e66501a171cccfe97ca",
+      "bytes": 10134,
+      "mtime": "2026-10-22T14:33:19.570Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries.svg",
+      "sha256": "1c2ba4c21bd6abbb6967f3dd929d4984cd333acb1e225d38db356aa6de0b3975",
+      "bytes": 7300,
+      "mtime": "2026-10-22T14:33:19.567Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries--nine-items-last-page.svg",
+      "sha256": "b26b2889c27ad1c540d5349feeb350b5f8bef58c07d56b046850c0be5aefcc20",
+      "bytes": 7317,
+      "mtime": "2026-10-22T14:33:19.567Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items.svg",
+      "sha256": "c91e16f9268fa2e3996ab1f054197e3feb88d15874d944625d643f5eb0045cc8",
+      "bytes": 16049,
+      "mtime": "2026-10-22T14:33:19.555Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items--page-7.svg",
+      "sha256": "af7ddb42ef10d09c20f0cbb5a8749bf635842c1d1b07f33bcedffb37bbcc219a",
+      "bytes": 10596,
+      "mtime": "2026-10-22T14:33:19.555Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty.svg",
+      "sha256": "fe5c15608cb0d0d15dca77fe705846650cb799390e6b4c93c347fb9c68f8dc9f",
+      "bytes": 5052,
+      "mtime": "2026-10-22T14:33:19.569Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty--zero-holdings.svg",
+      "sha256": "95c760764dacdcc1b40a751f67b33a241d09152a307a154bee3f09b8faebdb10",
+      "bytes": 4965,
+      "mtime": "2026-10-22T14:33:19.569Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages.svg",
+      "sha256": "6c78e30b605ff844fc8b6d0519716a89d39cb47b6bbbc21b6d0e5bd29583b32f",
+      "bytes": 20079,
+      "mtime": "2026-10-22T14:33:19.588Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--one-match.svg",
+      "sha256": "3fb4dd1f1b0caa5f2923a95b68cb829c028af60e873eb2a1fd3d325068282834",
+      "bytes": 13677,
+      "mtime": "2026-10-22T14:33:19.588Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--clear.svg",
+      "sha256": "3b9087d794a7ea468f5067267af9c74187c8023d683839389084053b5788714a",
+      "bytes": 20306,
+      "mtime": "2026-10-22T14:33:19.588Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales.svg",
+      "sha256": "aa6ea21ac4bd1dced105e7d128e5326117410b108c95e37fd147212ed1e7d188",
+      "bytes": 17926,
+      "mtime": "2026-10-22T14:33:19.568Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion.svg",
+      "sha256": "94a0e96de0d86c7ba1e9733de369c9152ba65ac512e65cd00d79a59e5acbbc99",
+      "bytes": 2206,
+      "mtime": "2026-10-22T14:33:19.594Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion-before-frame.svg",
+      "sha256": "454b6c7b471eb42390ce7b96be57f87634594f013c2024f28c95e13b2d696db4",
+      "bytes": 1696,
+      "mtime": "2026-10-22T14:33:19.593Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion-during-frame.svg",
+      "sha256": "703c80985b4c8659114b8ab9948a43c3e4dcf6c273f220e68b63a83dd60a6a45",
+      "bytes": 2028,
+      "mtime": "2026-10-22T14:33:19.594Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion-after-frame.svg",
+      "sha256": "357c7ec26216c3df7357b31795956b156326752f956260f2ec9237507d87c226",
+      "bytes": 1781,
+      "mtime": "2026-10-22T14:33:19.592Z"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-reduced-motion.svg",
+      "sha256": "7daff09086667595b8d98ff254095abf384cb55e60729c2b63d894b2eed43c58",
+      "bytes": 2355,
+      "mtime": "2026-10-22T14:33:19.595Z"
+    }
+  ]
+}

@@ -240,6 +240,13 @@ import { TradingRoomPrincipalSlot } from "./data-management/trading-room-princip
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
+import { HomeSurface } from "./homepage-v25/home-surface";
+import { buildHomepageHoldings, explicitLiveEntries } from "./homepage-v25/holdings-model";
+import { buildHomepageCatalog } from "./homepage-v25/catalog-model";
+import { homepageCollectionState } from "./homepage-v25/session-model";
+import { useHomepageHost, type HomepageHostReadContext } from "./homepage-v25/use-homepage-host";
+import { homepageFxSnapshot } from "./homepage-v25/fx-adapter";
+import type { StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { LibraryScopeControls } from "./library/library-scope-controls";
 import {
   DEFAULT_SHARED_SCOPE,
@@ -351,6 +358,7 @@ type InstrumentMarketState = {
 type Props = {
   initialFrame: DemoReplayFrame;
   showDemo?: boolean;
+  initialPage?: "home" | "trades";
   /** Optional future data-management module, such as the FX updater. */
   fxSlot?: ReactNode;
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
@@ -1220,6 +1228,7 @@ async function fetchCashData(client: CashClient, request: CashDataRequest): Prom
 export function TradeReviewWorkspace({
   initialFrame,
   showDemo = true,
+  initialPage = "home",
   fxSlot,
   screenshotImportDependencies,
   storageClient: storageClientOverride,
@@ -1307,29 +1316,27 @@ export function TradeReviewWorkspace({
   }, []);
   const [activeView, setActiveViewState] = useState<
     "dashboard" | "review" | "library" | "insights" | "data"
-  >(showDemo ? "review" : "dashboard");
+  >(showDemo ? "review" : initialPage === "trades" ? "library" : "dashboard");
   const [dashboardOpened, setDashboardOpened] = useState(!showDemo);
   const recallLeaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
   const navigationAttemptRef = useRef(0);
   const registerRecallLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
     recallLeaveGuardRef.current = guard;
   }, []);
-  function setActiveView(next: typeof activeView) {
+  async function setActiveView(next: typeof activeView): Promise<boolean> {
     const attempt = ++navigationAttemptRef.current;
-    if (activeView === "review" && next !== "review") {
-      invalidatePendingImportedReplayRestore();
-    }
-    if (activeView !== "review" || next === "review" || !recallLeaveGuardRef.current) {
-      if (next === "dashboard") setDashboardOpened(true);
-      setActiveViewState(next);
-      return;
-    }
-    void recallLeaveGuardRef.current().then(allowed => {
-      if (allowed && attempt === navigationAttemptRef.current) {
-        if (next === "dashboard") setDashboardOpened(true);
-        setActiveViewState(next);
+    if (activeView === "review" && next !== "review" && recallLeaveGuardRef.current) {
+      try {
+        const allowed = await recallLeaveGuardRef.current();
+        if (!allowed || attempt !== navigationAttemptRef.current) return false;
+      } catch {
+        setNavigationNotice("复盘尚未保存，请重试保存后再离开。"); return false;
       }
-    }).catch(() => setNavigationNotice("复盘尚未保存，请重试保存后再离开。"));
+    }
+    if (activeView === "review" && next !== "review") invalidatePendingImportedReplayRestore();
+    if (next === "dashboard") setDashboardOpened(true);
+    setActiveViewState(next);
+    return true;
   }
   const [reviewReturnView, setReviewReturnView] = useState<ReviewReturnView>(
     showDemo ? "library" : "dashboard",
@@ -1478,6 +1485,7 @@ export function TradeReviewWorkspace({
   }, [activeView, storageState]);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
+  const [homepageDataRevision, setHomepageDataRevision] = useState(0);
   const pendingMigrationReloads = useRef<Array<{ resolve: () => void; reject: (error: unknown) => void }>>([]);
   const reloadAfterMigrationCommit = useCallback(() => new Promise<void>((resolve, reject) => {
     pendingMigrationReloads.current.push({ resolve, reject });
@@ -1975,6 +1983,15 @@ export function TradeReviewWorkspace({
   const [cashError, setCashError] = useState<string | null>(null);
   const [cashSavedFact, setCashSavedFact] = useState<CashSavedFact | null>(null);
   const [cashSummaryRefreshError, setCashSummaryRefreshError] = useState<CashSummaryRefreshError | null>(null);
+  const [cashTransientScopeKey, setCashTransientScopeKey] = useState(cashScopeKey);
+  // Reset only this component's transient feedback on an identity change. The
+  // new key stabilizes the next render, including A -> B -> A transitions.
+  if (cashTransientScopeKey !== cashScopeKey) {
+    setCashTransientScopeKey(cashScopeKey);
+    setCashSaving(false);
+    setCashSavedFact(null);
+    setCashSummaryRefreshError(null);
+  }
   const cashRequestSequence = useRef(0);
   const cashWriteSequence = useRef(0);
   const cashScopeKeyRef = useRef(cashScopeKey);
@@ -1984,11 +2001,8 @@ export function TradeReviewWorkspace({
   useEffect(() => {
     if (cashScopeKeyRef.current !== cashScopeKey) {
       cashWriteSequence.current += 1;
-      setCashSaving(false);
     }
     cashScopeKeyRef.current = cashScopeKey;
-    setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
-    setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
     const requestId = ++cashRequestSequence.current;
     if (!cashDataRequest) {
       return () => {
@@ -2151,6 +2165,127 @@ export function TradeReviewWorkspace({
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
+  const homepageAccounts = useMemo(() => {
+    const accounts = [...new Map(explicitLiveEntries(tradeLibraryEntries).flatMap(entry => entry.episodes.map(({ episode }) =>
+      [episode.accountId, { id: episode.accountId, label: episode.accountLabel || "未命名账户" }] as const))).values()];
+    const labels = stableAccountDisplayLabels(accounts);
+    return accounts.map(account => ({ ...account, label: labels.get(account.id) ?? account.label }));
+  }, [tradeLibraryEntries]);
+  const homepageExchanges = useMemo(() => Object.fromEntries(storedInstruments.flatMap(instrument => instrument.metadata?.exchange ? [[instrument.id, instrument.metadata.exchange]] : [])), [storedInstruments]);
+  const homepageInitialCatalog = useMemo(() => buildHomepageCatalog(tradeLibraryEntries, storedInstruments), [tradeLibraryEntries, storedInstruments]);
+  const homepageData = useMemo(() => ({ entries: tradeLibraryEntries, storedInstruments, instrumentMetadata, exchangeByInstrument: homepageExchanges, quotesByInstrument: holdingsQuotesByInstrument,
+    candlesByInstrument: marketDataCandles, marketDataStatuses, marketDataDailyStatuses, marketDataLabels, marketDataJobs, asOf: new Date().toISOString(),
+    staleAfterDays: 3, fxSnapshot, bootstrap: undefined as StorageBootstrap | undefined, states: marketStates,
+    reviewBaseline: undefined as { reviews: typeof episodeReviews; states: typeof reviewStates; sequences: Record<string, number> } | undefined,
+    reviewSummariesComplete: false,
+  }), [tradeLibraryEntries, storedInstruments, instrumentMetadata, homepageExchanges, holdingsQuotesByInstrument, marketDataCandles, marketDataStatuses, marketDataDailyStatuses, marketDataLabels, marketDataJobs, fxSnapshot, marketStates]);
+  const readHomepageBundle = async (requestId: number, context?: HomepageHostReadContext): Promise<{ requestId: number; data: typeof homepageData; kind?: "collection" }> => {
+    // Every result closes over its own bootstrap, market reads and FX response.
+    // No global revision/latest-data pairing participates in request acceptance.
+    const asOf = new Date().toISOString();
+    const collectionOnly = context?.destination === "trades";
+    const reviewBaseline = { reviews: episodeReviews, states: reviewStates, sequences: { ...drawingSaveSequencesRef.current } };
+    // Only a requested pending predicate needs Recall evidence. Its summary
+    // read is owned by this request; the ambient summary effect is not coverage.
+    const needsReviewSummaries = (context?.readTarget.attachments.pendingReview.length ?? 0) === 1;
+    const [bootstrap, fxResponse, recallSummaries] = await Promise.all([
+      storageClient.getBootstrap(),
+      collectionOnly ? undefined : fetch("/api/trading-room/fx", { cache: "no-store", headers: { accept: "application/json" } }),
+      needsReviewSummaries ? fetchRecallReviewSummaries() : undefined,
+    ]);
+    if (fxResponse && !fxResponse.ok) throw new Error("汇率状态读取失败，新范围未应用。");
+    const freshFx = fxResponse ? homepageFxSnapshot(await fxResponse.json()) : undefined;
+    const executions = applyMonthlyHistoryEvidence(bootstrap.executions.filter(fill => fill.source.platform !== "demo"), selectMonthlyEvidenceHistory(bootstrap.importHistory));
+    await activeAliasLoader();
+    const summaries = overlayStoredInstrumentMetadata(buildInstrumentTradeSummaries(executions), bootstrap.instruments);
+    const jobs = Object.fromEntries(bootstrap.marketDataJobs.map(job => [job.instrumentId, job]));
+    const states: Record<string, InstrumentMarketState> = collectionOnly ? {} : Object.fromEntries(await Promise.all(summaries.map(async summary => [summary.instrument.id, applyPersistedMarketDataJob(await readInstrumentMarketState(summary, marketDataRepository, { includeIntraday: false }), jobs[summary.instrument.id])] as const)));
+    const candles = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.daily ?? []]));
+    const statuses = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.dailyStatus ?? "not-requested" as const]));
+    const labels = Object.fromEntries(summaries.map(summary => [summary.instrument.id, `日线：${marketDataStatusLabel(statuses[summary.instrument.id])}`]));
+    const reviews = Object.fromEntries(bootstrap.reviews.map(review => [review.episodeId, review]));
+    const recall = Object.fromEntries((recallSummaries ?? []).map(summary => [summary.episodeId, summary]));
+    const entries = buildCachedTradeLibraryEntries(undefined, summaries, candles, statuses, reviews, recall).entries;
+    const metadata = new Map<string, TradingRoomInstrumentMetadata>(bootstrap.instruments.flatMap(instrument => instrument.metadata ? [[instrument.id, { market: instrument.metadata.market, symbol: instrument.metadata.symbol, assetType: instrument.metadata.assetType }]] : []));
+    const quotes = Object.fromEntries(entries.map(entry => [entry.instrument.id, entry.latestQuote ? { price: entry.latestQuote.price, currency: entry.latestQuote.currency, quoteDate: entry.latestQuote.quoteDate, fetchedAt: entry.latestQuote.fetchedAt, provider: entry.latestQuote.provider, freshness: "current" as const } : undefined]));
+    const exchanges = Object.fromEntries(bootstrap.instruments.flatMap(instrument => instrument.metadata?.exchange ? [[instrument.id, instrument.metadata.exchange]] : []));
+    return { requestId, ...(collectionOnly ? { kind: "collection" as const } : {}), data: { entries, storedInstruments: bootstrap.instruments, instrumentMetadata: metadata, exchangeByInstrument: exchanges, quotesByInstrument: quotes, candlesByInstrument: candles, marketDataStatuses: statuses, marketDataDailyStatuses: statuses, marketDataLabels: labels, marketDataJobs: jobs, asOf, staleAfterDays: 3, fxSnapshot: freshFx, bootstrap, states, reviewBaseline, reviewSummariesComplete: recallSummaries !== undefined } };
+  };
+  const homepage = useHomepageHost({ enabled: !showDemo, ready: storageState === "ready" && aliasRecoveryState === "ready", readOnInitialize: true, readCollections: true, revision: homepageDataRevision,
+    data: homepageData, accounts: homepageAccounts, identities: homepageInitialCatalog.identities, reload: readHomepageBundle,
+    catalogFor: data => ({ accounts: [...new Map(explicitLiveEntries(data.entries).flatMap(entry => entry.episodes.map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel }] as const))).values()], identities: buildHomepageCatalog(data.entries, data.storedInstruments).identities }),
+    onReadAccepted: data => {
+      const bootstrap = data.bootstrap; if (!bootstrap) return;
+      const executions = applyMonthlyHistoryEvidence(bootstrap.executions.filter(fill => fill.source.platform !== "demo"), selectMonthlyEvidenceHistory(bootstrap.importHistory));
+      importedExecutionsRef.current = executions; setImportedExecutions(executions); setStoredInstruments(bootstrap.instruments);
+      // Bootstrap owns inventory, not edits made after this read began. Keep
+      // local drafts and any newer persisted review revision authoritative.
+      const baseline = data.reviewBaseline;
+      setEpisodeReviews(current => {
+        const next = { ...current };
+        for (const review of bootstrap.reviews) {
+          const previous = current[review.episodeId];
+          if (previous !== baseline?.reviews[review.episodeId] || (previous && Date.parse(previous.updatedAt) > Date.parse(review.updatedAt))) continue;
+          next[review.episodeId] = review;
+        }
+        return next;
+      });
+      setReviewStates(current => {
+        const next = { ...current };
+        for (const state of bootstrap.reviewStates) {
+          const id = state.episodeId;
+          if (current[id] !== baseline?.states[id] || drawingDraftsRef.current[id] || (drawingSaveSequencesRef.current[id] ?? 0) !== (baseline?.sequences[id] ?? 0)) continue;
+          next[id] = state;
+        }
+        return next;
+      });
+      // A homepage read owns daily cache fields only. The selected consumer
+      // owns intraday readiness and its pending restore/phase/cutoff context.
+      setMarketStates(current => {
+        const next = { ...current };
+        for (const [id, state] of Object.entries(data.states)) next[id] = current[id] ? { ...current[id], daily: state.daily, dailyStatus: state.dailyStatus, dailyCoverage: state.dailyCoverage, dailyMessage: state.dailyMessage, dailyError: state.dailyError } : state;
+        return next;
+      });
+      setMarketDataJobs(data.marketDataJobs);
+    },
+    guard: page => setActiveView(page === "home" ? "dashboard" : "library"),
+  });
+  const catalogData = homepage.route.page === "trades" ? homepage.collectionData : homepage.data;
+  const homepageCatalog = useMemo(() => buildHomepageCatalog(catalogData?.entries ?? [], catalogData?.storedInstruments ?? []), [catalogData]);
+  const homepageHoldings = useMemo(() => buildHomepageHoldings(homepage.data.entries, { ...homepage.data, scope: homepage.ui.snapshot.scope, attachments: homepage.ui.snapshot.attachments }), [homepage.data, homepage.ui.snapshot.scope, homepage.ui.snapshot.attachments]);
+  const [ordinaryLibraryScope, setOrdinaryLibraryScope] = useState<SharedScope | null>(null);
+  const [ordinaryLibraryKey, setOrdinaryLibraryKey] = useState(-1);
+  const globalLibraryBrowse = useRef<TradeLibraryBrowseState | undefined>(libraryBrowseState);
+  // Native URL intents enter the pre-existing workspace state owner here;
+  // synchronizing that external route is deliberately limited to a new key.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (showDemo || homepage.route.page !== "trades") return;
+    setActiveViewState("library");
+    if (!homepage.collectionReady || homepage.route.error || ordinaryLibraryKey === homepage.route.key) return;
+    const scope = homepage.collectionTarget ?? homepage.route.scope;
+    setLibraryTarget(undefined); setLibrarySourceSnapshot(null); setPlaying(false);
+    if (homepage.route.collectionOrigin === "global") {
+      setLibraryBrowseState(globalLibraryBrowse.current);
+      setOrdinaryLibraryScope(null);
+    } else {
+      setLibraryBrowseState(homepageCollectionState(scope, scope.symbolIdentity ? homepageCatalog.identities[scope.symbolIdentity] ?? null : null));
+      setOrdinaryLibraryScope({ nature: "live", accountIds: scope.accounts.includes("*") ? [] : scope.accounts, reportCurrency: "original", simulationRunId: null });
+    }
+    setOrdinaryLibraryKey(homepage.route.key);
+  }, [showDemo, homepage.collectionReady, homepage.collectionTarget, homepage.route.key, homepage.route.error, homepage.route.page, homepage.route.scope, homepage.route.collectionOrigin, homepageCatalog, ordinaryLibraryKey]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+  const ordinaryEntries = useMemo(() => {
+    const target = homepage.collectionTarget;
+    const data = homepage.collectionData;
+    if (ordinaryLibraryScope && target && data && homepage.route.collectionOrigin === "homepage") {
+      return buildHomepageHoldings(data.entries, { ...data, scope: target, attachments: target.attachments,
+        symbolInstrumentIds: target.symbolIdentity ? homepageCatalog.identities[target.symbolIdentity] ?? [] : undefined }).selection.entries;
+    }
+    return ordinaryLibraryScope
+      ? filterEntriesBySharedScope(ordinaryLibraryScope.nature === "live" ? explicitLiveEntries(tradeLibraryEntries) : tradeLibraryEntries, ordinaryLibraryScope)
+      : scopedTradeLibraryEntries;
+  }, [ordinaryLibraryScope, homepage.collectionTarget, homepage.collectionData, homepage.route.collectionOrigin, homepageCatalog, tradeLibraryEntries, scopedTradeLibraryEntries]);
   const currentEpisodeIds = useMemo(
     () => new Set(tradeLibraryEntries.flatMap(entry => entry.episodes.map(({ episode }) => episode.id))),
     [tradeLibraryEntries],
@@ -2683,6 +2818,7 @@ export function TradeReviewWorkspace({
           setRestoring(false);
           setHydrated(true);
           setStorageState("ready");
+          setHomepageDataRevision(value => value + 1);
           const pending = pendingMigrationReloads.current.splice(0);
           for (const request of pending) {
             if (aliasFailure) request.reject(aliasFailure);
@@ -5661,7 +5797,7 @@ export function TradeReviewWorkspace({
   }
 
   return (
-    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}>
+    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""} ${!showDemo && activeView === "dashboard" ? "homepage-v25-app" : ""}`}>
       <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" multiple={!supplementScope} disabled={importing} onChange={(event) => {
         const files = Array.from(event.target.files ?? []);
         if (files.length) startStatementBatch(files);
@@ -5709,8 +5845,9 @@ export function TradeReviewWorkspace({
             onClick={() => {
               setPlaying(false);
               setMobileNavOpen(false);
-              if (librarySourceSnapshot) returnToDashboardSource();
-              else setActiveView("dashboard");
+              if (!showDemo) void homepage.openHome();
+              else if (librarySourceSnapshot) returnToDashboardSource();
+              else void setActiveView("dashboard");
             }}
           >
             <LayoutDashboard size={16} aria-hidden="true" />
@@ -5723,8 +5860,8 @@ export function TradeReviewWorkspace({
             aria-label="交易库"
             title="交易库"
             onClick={() => {
-              if (activeView !== "review") setLibrarySourceSnapshot(null);
-              returnToLibrary();
+              if (!showDemo) void (activeView === "dashboard" ? homepage.openTrades(null) : homepage.openGlobalTrades());
+              else { if (activeView !== "review") setLibrarySourceSnapshot(null); returnToLibrary(); }
               setMobileNavOpen(false);
             }}
           >
@@ -5827,6 +5964,7 @@ export function TradeReviewWorkspace({
       >
         <div
           aria-hidden={activeView !== "dashboard"}
+          className={!showDemo ? "hp-home-host" : undefined}
           style={{
             display: activeView === "dashboard" ? "block" : "none",
             gridColumn: "1 / -1",
@@ -5835,7 +5973,7 @@ export function TradeReviewWorkspace({
             overflow: "auto",
           }}
         >
-          {dashboardOpened && <ReviewDashboard
+          {dashboardOpened && (showDemo ? <ReviewDashboard
             visible={activeView === "dashboard"}
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
@@ -5884,7 +6022,19 @@ export function TradeReviewWorkspace({
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
-          />}
+          /> : <HomeSurface
+            active={activeView === "dashboard"} catalog={homepageCatalog}
+            restoreKey={homepage.restoreKey}
+            ui={homepage.ui} holdings={homepageHoldings} ready={homepage.initialized && storageState === "ready"}
+            error={homepage.route.page === "home" ? homepage.route.error ?? homepage.notice ?? storageError : null}
+            accountStatus={aliasRecoveryState === "error" ? "error" : homepage.initialized ? "ready" : "loading"}
+            accounts={homepageAccounts} onUi={homepage.onUi} onScope={homepage.onScope}
+            onTrades={row => void homepage.openTrades(row?.identity ?? null)} onReload={homepage.reload}
+            onSymbolTrades={homepage.openTrades}
+            attachmentActions={{ onDraft: homepage.onAttachmentDraft, onApply: homepage.applyAttachments, onClear: homepage.clearAttachments, onReset: homepage.resetDefaults, onCancel: homepage.cancelAttachmentRead, onRemove: homepage.removeAttachment }}
+            onImport={() => { setDataTab("import"); setActiveView("data"); }}
+            onRepair={() => { void startMarketDataUpdate(undefined, { refreshMetadata: true, batch: true, includeIntraday: false }).then(started => { if (started) homepage.reload(); }); }}
+          />)}
         </div>
         <div
           aria-hidden={activeView !== "data"}
@@ -5953,16 +6103,23 @@ export function TradeReviewWorkspace({
         </div>
         {activeView === "library" ? (
           <div className="library-page-shell">
+            {!showDemo && homepage.initialized && <div className="hp-library-source"><button type="button" className="library-source-return" onClick={() => void homepage.openHome()}>返回首页</button><p role="status">{homepage.route.collectionOrigin === "global" ? "普通交易库 · 当前共享范围" : <>普通交易库 · 成交日期 {homepage.route.scope.rangeMode === "all" ? "全部" : homepage.route.scope.rangeMode === "date" ? homepage.route.scope.date : `${homepage.route.scope.from} 至 ${homepage.route.scope.to}`} · 包含未平仓成交{homepage.route.scope.symbolIdentity ? ` · ${homepage.route.scope.symbolIdentity}` : ""}</>}</p></div>}
+            {!showDemo && homepage.route.error ? <div role="alert">{homepage.route.error}{homepage.ui.errors.global && <button type="button" disabled={Boolean(homepage.ui.requests.global)} onClick={homepage.reload}>{homepage.ui.requests.global ? "正在重试…" : "重新读取目标交易集合"}</button>}<button type="button" onClick={() => void homepage.openHome()}>返回首页选择范围</button></div> : (!showDemo && homepage.route.page === "trades" && (!homepage.collectionReady || ordinaryLibraryKey !== homepage.route.key)) ? <p role="status">正在读取目标交易集合…</p> : <>
             {librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
           <TradeLibrary
-            sharedScope={sharedScope}
-            onSharedScopeChange={updateSharedScope}
-            sharedAccountOptions={sharedAccountOptions}
+            sharedScope={ordinaryLibraryScope ?? sharedScope}
+            onSharedScopeChange={ordinaryLibraryScope ? patch => {
+              const next = normalizeSharedScope({ ...ordinaryLibraryScope, ...patch });
+              if (next.nature !== ordinaryLibraryScope.nature) {
+                void homepage.openGlobalTrades(() => updateSharedScope(next));
+              } else setOrdinaryLibraryScope(next);
+            } : updateSharedScope}
+            sharedAccountOptions={ordinaryLibraryScope ? homepageAccounts : sharedAccountOptions}
             defaultMode="stocks"
-            key={libraryTarget?.requestId ?? 0}
+            key={ordinaryLibraryScope ? `ordinary-${ordinaryLibraryKey}` : libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
-            onBrowseStateChange={setLibraryBrowseState}
-            entries={scopedTradeLibraryEntries}
+            onBrowseStateChange={browse => { setLibraryBrowseState(browse); if (!ordinaryLibraryScope) globalLibraryBrowse.current = browse; }}
+            entries={ordinaryLibraryScope ? ordinaryEntries : scopedTradeLibraryEntries}
             sharedSimulationRunOptions={sharedSimulationRunOptions}
             instrumentMetadata={instrumentMetadata}
             roomFxSnapshot={fxSnapshot}
@@ -6000,6 +6157,7 @@ export function TradeReviewWorkspace({
               setActiveView("data");
             }}
           />
+          </>}
           </div>
         ) : activeView !== "dashboard" && activeView === "insights" ? (
           <div className="scoped-insights-page"><ReviewSummary unifiedHeader scopeControls={workspaceScopeControls} globalTools={workspaceGlobalUtilities("insights")} scopeTools={workspaceGlobalSearch} activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {

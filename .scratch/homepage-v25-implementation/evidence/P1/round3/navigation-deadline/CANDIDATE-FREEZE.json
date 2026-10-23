@@ -1,0 +1,103 @@
+{
+  "status": "implementation-ready; root independent acceptance pending",
+  "createdAt": "2026-10-22T20:27:10.565Z",
+  "model": "gpt-6.1-sol / ultra",
+  "candidateNumber": 1,
+  "formalAcceptanceRound": "P1 2/3; not reset; before round 3",
+  "productFilesWrittenByThisTask": [
+    "app/components/homepage-v25/use-homepage-host.ts"
+  ],
+  "newTests": [
+    "app/components/homepage-v25/navigation-deadline.test.tsx"
+  ],
+  "sourceDelta": {
+    "added": 7,
+    "removed": 2
+  },
+  "red": {
+    "exitCode": 1,
+    "fail": 2,
+    "pass": 3
+  },
+  "green": {
+    "exitCode": 0,
+    "newTests": 5,
+    "affectedTotal": 48,
+    "finiteStrictTypesExit": 0,
+    "finiteLintExit": 0
+  },
+  "runs": [
+    {
+      "label": "02-absolute-deadline-green",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T20:24:48.914Z",
+      "endedAt": "2026-10-22T20:24:52.634Z",
+      "inputsUnchanged": true
+    },
+    {
+      "label": "03-navigation-48-green",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T20:25:05.527Z",
+      "endedAt": "2026-10-22T20:25:23.197Z",
+      "inputsUnchanged": true
+    },
+    {
+      "label": "04-finite-strict-types",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T20:25:44.411Z",
+      "endedAt": "2026-10-22T20:25:47.798Z",
+      "inputsUnchanged": true
+    },
+    {
+      "label": "05-host-deadline-lint",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T20:25:44.417Z",
+      "endedAt": "2026-10-22T20:25:47.283Z",
+      "inputsUnchanged": true
+    }
+  ],
+  "protectedInputsUnchanged": true,
+  "originalRedEvidenceUnchanged": true,
+  "inputs": {
+    "app/components/homepage-v25/use-homepage-host.ts": "3218407b84c45656989bc0a2ac700c9741e6c55135f55ed2873e7ed2b968b167",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/components/trade-review-workspace.tsx": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+    "app/components/homepage-v25/home-surface.tsx": "c6e14890fe36eb99e2dd03ba43608f7ced1ad482bdb57a757e09b8884f4d30b6",
+    "app/components/homepage-v25/home-surface.css": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+    "app/components/homepage-v25/catalog-model.ts": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-recovery-design/DESIGN-AND-RED-PLAN.md": "266e50e3862a23dde17a4dbb9d9d9505f457a451a7f7bd76fcc1256aaa8bef3b",
+    "app/components/homepage-v25/navigation-recovery.test.tsx": "1f8e62d6d8ab1a1e4a59657c9e1e0ffdc644fd31e9351c8257d54be693ebbf09",
+    "app/components/homepage-v25/navigation-deadline.test.tsx": "f10c3e7ececd6322d155778ef9ccb74def1f861eeeef89e95c76131dba6aa457"
+  },
+  "parallelChanges": [
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "redRunSha256": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5",
+      "currentSha256": "c6e14890fe36eb99e2dd03ba43608f7ced1ad482bdb57a757e09b8884f4d30b6",
+      "owner": "root-authorized independent CR01/02 owner; not written or accepted by this task"
+    }
+  ],
+  "actualUi": "NOT VERIFIED",
+  "evidence": {
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/01-absolute-deadline-red.json": "9f5d5ce9ecc2188c9333aa7a0d1337466e910e7a175a49055dd413556838b125",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/01-absolute-deadline-red.log": "8e4ba3a282f729726444e7e93ce5ac1f01fd03ef7965cb6208b3557337a09fb4",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/02-absolute-deadline-green.json": "17f0bb6ef82c21a5a36c5e016c8e85fd29d64115aaab238f0bedb8607f18e8f8",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/02-absolute-deadline-green.log": "a9086ef4942894dd107fd03ad6d1d869fb042da87f4ada23f4fc7651a5485a68",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/03-navigation-48-green.json": "4c4de053ec297a99be0f50f2dd37aaeb7da3c1599ec09bbef73fe58fa3048ec6",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/03-navigation-48-green.log": "4ed9c5da1095436ea655f5b7f7a334e530175addcc6a32060d93d995a4ac298b",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/04-finite-strict-types.json": "7f19f2526710a09bee42f69413076ba55471f19eb00a9e7f0936936a66511a55",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/04-finite-strict-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/05-host-deadline-lint.json": "9f6e61712f2cc45b2ca58001e327e5ab1b601e6825a53dd00fbe674ff71f50d6",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/05-host-deadline-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/CANDIDATE-REPORT.md": "2d5fd7db012287d1da197f4e9a11333cfb92e36e5fe8008a5e2ee3e2ed37373c",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/FREEZE.json": "f6c7958e7057ffc28043e88dced681dfb4094c4b1745cc479e833a62da582754",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/REPORT.md": "c1cc72b7fbecc1226f93e87960a129ae7db11fc54fa20dfc333627422b50fe06",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/candidate-before.ts.txt": "85731c885096209b54cf5918cc9a9ee82aeab5f76e30905f8a2af9430484f5e0",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/candidate.diff": "6b388e575595e1a9f43c35d06902fa56d5cea8e288890596a89147666f6b603b",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/run-candidate.mjs": "a4fe36252543a87d8da9b04d09a8d9913714e43dc6e2200f973eac9e1862833a",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-deadline/run-red.mjs": "d807f1976208557ebfd853fcbe7b0c913c33711dc863d57cecb06107648ae1ab"
+  }
+}

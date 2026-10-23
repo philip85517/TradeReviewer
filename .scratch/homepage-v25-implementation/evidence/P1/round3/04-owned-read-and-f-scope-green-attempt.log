@@ -1,0 +1,33 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25089) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (97 tests | 1 failed | 91 skipped) 4463ms
+     × moves a homepage-origin collection to global unknown scope with matching directories and restores its homepage 1069ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > moves a homepage-origin collection to global unknown scope with matching directories and restores its homepage
+Error: expect(element).toHaveValue(边界)
+
+Expected the element to have value:
+  边界
+Received:
+
+ ❯ app/components/trade-review-workspace.test.tsx:801:61
+    799|     await waitFor(() => expect(location.search).toContain("accounts=ex…
+    800|     expect(location.search).toContain("market=a"); expect(location.sea…
+    801|     expect(screen.getByRole("searchbox", { name: "搜索持仓" })).toHaveValu…
+       |                                                             ^
+    802|     expect(screen.getByRole("columnheader", { name: /标的/ })).toHaveAtt…
+    803|     await user.click(within(screen.getByRole("navigation", { name: "主导…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 25 passed | 91 skipped (117)
+   Start at  02:49:21
+   Duration  9.77s (transform 3.50s, setup 510ms, import 4.73s, tests 4.74s, environment 2.67s)
+

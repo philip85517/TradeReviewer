@@ -1,0 +1,25 @@
+{
+  "frozenAt": "2026-10-22T20:43:13.576Z",
+  "model": "gpt-6.1-sol / ultra",
+  "status": "implementation-ready; awaiting independent root verification",
+  "productFrozen": true,
+  "formalP3": "0/3 unchanged",
+  "files": {
+    "app/components/homepage-v25/home-surface.tsx": "84897ee2c53bf1c8a81428dcf2e4997cef326b065d58dacae036a2e2b9d2b6c2",
+    "app/components/homepage-v25/home-surface.css": "b7160f103035966877256ecb04aaf4d10a185af272a6c3476b5cbee5771f7cb8",
+    "app/components/homepage-v25/search-recovery.test.tsx": "840df3f07bf2debfc5da27bb043ce523292b5fe45dc4a45c9984bac379e72ff5",
+    "app/components/homepage-v25/search-surface.test.tsx": "c2369ebcb6daf32097f54653a9732e45e6bc0318bf2ea3e4e3831143c6c8c788",
+    "app/components/homepage-v25/home-surface.test.tsx": "799c185a031d35f5f8141a1166eab1c930bb495b457d4544f6c88abeb4ad465f",
+    "app/components/homepage-v25/catalog-model.test.ts": "d62403d945af96ce372e42f697424c7694cc3f6a5daf2ff3645572f4e5d1d47d",
+    "app/components/homepage-v25/catalog-model.ts": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3",
+    "app/components/homepage-v25/use-homepage-host.ts": "3218407b84c45656989bc0a2ac700c9741e6c55135f55ed2873e7ed2b968b167",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg": "c920da86e0b1434fee1af6751ebb3847f89ff88bff5345451df01ddf2912bdea",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-error-frame.svg": "8358957cbe596840dd3b24b6cdb07577f23b894c8de49bbd79a81a365f5cde5b",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/root-http503-after-keys.png": "790d2850949c511d618d209c874b2912ef7ea3768ae21f663aa388366f5b4da0",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-error-visual/ROOT-DISPATCH.md": "3a79fa0c84e484c07562c57655a1878fe6b37052ab6092af0fdd44703d49e7aa"
+  }
+}

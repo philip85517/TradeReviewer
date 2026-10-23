@@ -1,0 +1,220 @@
+.hp-period-selector {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  color: #e6edf7;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.hp-period-selector,
+.hp-period-selector * {
+  box-sizing: border-box;
+}
+
+.hp-period-selector__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.hp-period-selector__shortcuts {
+  display: flex;
+  gap: 8px;
+}
+
+.hp-period-selector button,
+.hp-period-selector input {
+  min-height: 36px;
+  margin: 0;
+  border: 1px solid #283448;
+  border-radius: 6px;
+  background: #111a26;
+  color: #e6edf7;
+  font: inherit;
+  transition: background-color 120ms, border-color 120ms, color 120ms;
+}
+
+.hp-period-selector button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.hp-period-selector button:hover:not(:disabled):not([aria-disabled="true"]) {
+  border-color: #6ca8ff;
+  background: #162233;
+}
+
+.hp-period-selector button:active:not(:disabled):not([aria-disabled="true"]) {
+  background: #22344d;
+}
+
+.hp-period-selector :focus-visible {
+  outline: 2px solid #6ca8ff;
+  outline-offset: 2px;
+}
+
+.hp-period-selector button:disabled,
+.hp-period-selector button[aria-disabled="true"],
+.hp-period-selector input:disabled {
+  color: #a8b6cb;
+  cursor: not-allowed;
+}
+
+.hp-period-selector__shortcut {
+  width: 68px;
+  height: 36px;
+}
+
+.hp-period-selector__shortcut[aria-pressed="true"],
+.hp-period-selector .hp-period-selector__apply:not(:disabled) {
+  border-color: #6ca8ff;
+  background: #162233;
+}
+
+.hp-period-selector .hp-period-selector__trigger {
+  justify-content: flex-start;
+  gap: 10px;
+  width: 216px;
+  height: 36px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.hp-period-selector__trigger svg,
+.hp-period-selector__field svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: #a8b6cb;
+  pointer-events: none;
+}
+
+.hp-period-selector__trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-period-selector__popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 24px);
+  left: 0;
+  width: 480px;
+  max-width: calc(100vw - 48px);
+  margin: 0;
+  padding: 20px;
+  border: 1px solid #283448;
+  border-radius: 8px;
+  background: #162233;
+}
+
+.hp-period-selector__popover h3 {
+  margin: 0 0 20px;
+  color: #e6edf7;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.hp-period-selector__fields {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 20px;
+}
+
+.hp-period-selector__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.hp-period-selector__field > svg {
+  position: absolute;
+  left: 12px;
+}
+
+.hp-period-selector .hp-period-selector__field input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px 0 36px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.hp-period-selector__field input:hover:not(:disabled) {
+  border-color: #6ca8ff;
+}
+
+.hp-period-selector__validation,
+.hp-period-selector .hp-period-selector__message {
+  margin: 20px 0 0;
+  color: #a8b6cb;
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.hp-period-selector__validation,
+.hp-period-selector .hp-period-selector__error {
+  color: #ff8592;
+}
+
+.hp-period-selector__validation p {
+  margin: 0;
+}
+
+.hp-period-selector__validation p + p {
+  margin-top: 8px;
+}
+
+.hp-period-selector__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.hp-period-selector__apply {
+  width: 88px;
+  height: 36px;
+}
+
+.hp-period-selector .hp-period-selector__cancel {
+  height: 36px;
+  border-color: transparent;
+  background: transparent;
+  color: #6ca8ff;
+}
+
+.hp-period-selector__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 509px) {
+  .hp-period-selector__fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-period-selector button,
+  .hp-period-selector input {
+    transition: none;
+  }
+}

@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:27648) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (135 tests | 1 failed) 761ms
+     × accounts shared retained memo objects without serializing original execution prefixes 68ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 per-market and evidence isolation > accounts shared retained memo objects without serializing original execution prefixes
+AssertionError: expected [ …(21) ] to have a length of +0 but got 21
+
+- Expected
++ Received
+
+- 0
++ 21
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:848:32
+    846|       const batch=projectHomepageV25Boundaries(source,{...batchQuery,e…
+    847|       const serializedStates=stringify.mock.calls.filter(([value])=>va…
+    848|       expect(serializedStates).toHaveLength(0);
+       |                                ^
+    849|       const live=preparedPerformance.inspectHomepageV25PreparedSource(…
+    850|       expect(live.cacheEstimatedBytes).toBeGreaterThan(2*JSON.stringif…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 134 passed (135)
+   Start at  03:04:28
+   Duration  1.52s (transform 353ms, setup 0ms, import 455ms, tests 761ms, environment 0ms)
+

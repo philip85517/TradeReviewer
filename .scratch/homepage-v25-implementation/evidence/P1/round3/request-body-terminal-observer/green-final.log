@@ -1,0 +1,21 @@
+✔ inert import and one install never change Request or extend hard bounds (7.344863ms)
+✔ natural discovery captures clean bridge identity with no extra stream consumption (24.692768ms)
+✔ only exact two PUT routes allocate identities; static GET cannot exhaust the window (3.754904ms)
+✔ normal-drain: before/after same N and S retain terminal cause and stop at natural target throw (7.149526ms)
+✔ unread-destroy: before/after same N and S retain terminal cause and stop at natural target throw (8.13649ms)
+✔ request entry leaves lazy getters untouched and natural Request results retain identity (1.767691ms)
+✔ each hard budget restores immediately with one explicit bounded stop marker (3.557109ms)
+✔ real wall timer expires even with only static GET requests (26.596456ms)
+✔ later descriptors survive; stale wrapper delegates; failed sink cannot change natural dispatch (1.237423ms)
+✔ source drift fails closed and custom stack formatter is never invoked (0.797822ms)
+✔ toWeb wrapper preserves an existing delegate and never accesses a returned thenable (1.738477ms)
+✔ the owned beforeExit hook stops once without requiring request traffic (0.771257ms)
+✔ preload stays inert when disabled or when its output prefix is invalid (4.158534ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 401.987877

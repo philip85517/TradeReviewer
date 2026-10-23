@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:18022) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/home-surface.test.tsx (5 tests | 1 failed) 870ms
+     × makes the surrounding navigation inert while detail owns focus and restores it on close 304ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > makes the surrounding navigation inert while detail owns focus and restores it on close
+AssertionError: expected undefined to be true // Object.is equality
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/home-surface.test.tsx:24:30
+     22|     const navigation = screen.getByLabelText("主导航");
+     23|     fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
+     24|     expect(navigation.inert).toBe(true);
+       |                              ^
+     25|     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+     26|     expect(navigation.inert).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 11 passed (12)
+   Start at  01:41:26
+   Duration  3.71s (transform 744ms, setup 436ms, import 1.16s, tests 1.06s, environment 2.95s)
+

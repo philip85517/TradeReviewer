@@ -1,0 +1,91 @@
+{
+  "preparedAt": "2026-10-22T23:14:35.112Z",
+  "agent": "/root/metric_cards",
+  "actualModel": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "product": [
+    {
+      "path": "app/components/homepage-v25/metric-cards.tsx",
+      "sha256": "344ee710457cc95f2cf384a882b9c800e84cc5c1ea068216c44cc4e915284bea"
+    },
+    {
+      "path": "app/components/homepage-v25/metric-cards.css",
+      "sha256": "5a99e9f9a77cb2e7d20340d9a40e0757cbc7917222e74fbc358646c4c9267194"
+    },
+    {
+      "path": "app/components/homepage-v25/metric-cards.test.tsx",
+      "sha256": "4c4aeb1393c09bdc7a81d127002d3a032c2fb5850011cf502117426abf2e3d3a"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "app/lib/reviews/homepage-v25-series.ts",
+      "sha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg",
+      "sha256": "cbb24603defed540ebc49b5234639a264246f105029f911d8d2b6fa8328e2315"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg",
+      "sha256": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1280.svg",
+      "sha256": "20349cc2f74c60db6a7bc5aa93212fdddd26f61194927fde43acb735461f8369"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg",
+      "sha256": "b6e2677a96a661bb174fb3af0cbcda63350b8f8345a4c5cb8cb9fa45cbab3efe"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg",
+      "sha256": "51b6bc493b2a67b198ad88a982de578ac3bdb4230e43c02176b486256151fa82"
+    },
+    {
+      "path": "/private/tmp/tradereview-atom-metric.png",
+      "sha256": "22009c9303d1cda94b8d8959bf8c5e7f970d0419b304a6a4e2f3897969b3ce40"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/environment/reference-home-1440.png",
+      "sha256": "53782cf138192d3edfd130a81df10a53ee88c9e39a758ed0ec15a7645e9e2cc8"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/home-1280.png",
+      "sha256": "b043e76294a170235d85df9df55b31c44d7677e4cca21c1ba7bcc97db92f9848"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/loading--stale-data.png",
+      "sha256": "802969cc5ba7b9e0f5f1543bce5a4af1c9507fcd788f92ab5c111003ed5966cd"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/error--update-failure.png",
+      "sha256": "25f31e6690f1321ca26c02d84d71109fa71db99a96b8e9202c4c707870fe31bd"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-DISPATCH.md",
+      "sha256": "33148a511e742bb1c9d72baf22078a09076487baa6d0bc979ce7e9bebb1fe559"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/tsconfig.scoped.json",
+      "sha256": "f366a4226c422c46e521e8ce933806de62dd60bafdc121c17fa7b834e6a44563"
+    }
+  ]
+}

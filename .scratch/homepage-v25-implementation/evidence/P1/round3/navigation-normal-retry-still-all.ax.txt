@@ -1,0 +1,6 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home?scope=live&market=all&accounts=*&rangeMode=all".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=all&accounts=*&rangeMode=all
+~			25 text 截至 2026-10-22T20:04:11.335Z
+~			217 button 进入交易库, ID: hp-open-trades
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=all&accounts=*&rangeMode=all

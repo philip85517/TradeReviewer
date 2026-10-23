@@ -1,0 +1,121 @@
+{
+  "status": "FROZEN FOR ROOT REVIEW; NOT ACTIVATED",
+  "model": "gpt-6.1-sol / ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "runtime": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "final_test": {
+    "command": [
+      "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+      "--test",
+      "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs"
+    ],
+    "log": "green-final-02.log",
+    "exit_code": 0,
+    "tests": 13,
+    "pass": 13,
+    "fail": 0,
+    "duration_ms": 457.099436
+  },
+  "syntax_checks": [
+    {
+      "command": [
+        "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+        "--check",
+        "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+        "--check",
+        "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-preload.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": "offline memory tests only; no service/network/browser/DB/full suite",
+  "p1_formal": "2/3 FAIL unchanged",
+  "actual_incident_attribution": "NOT VERIFIED",
+  "enabled_preload_file_output": "NOT VERIFIED; not run",
+  "artifacts": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/HYPOTHESIS.md",
+      "bytes": 2089,
+      "sha256": "9be357199ac557ca65f1dd2c0c5e4613b2be584081cc6ee9d077524fa388ba4c"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/README.md",
+      "bytes": 14408,
+      "sha256": "cb822dbadb9dd8a70e4d2cf537482540f22dec55aa55d6f52316959d2e15bd16"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/green-01.log",
+      "bytes": 10051,
+      "sha256": "c24a4a192f2c5f20420bd4189a1022396b5a803e28f86546d5473ed86158efd4"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/green-02.log",
+      "bytes": 1108,
+      "sha256": "38fb1f7074a3da5e2930a6833275325125621e252dd48e3abd25faf5aa79a390"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/green-final-02.log",
+      "bytes": 1383,
+      "sha256": "ed1bb671ff9084bd38fe7283c766739beb05080398b37d46e3aaaf8f67b8e6b4"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/green-final.log",
+      "bytes": 1383,
+      "sha256": "8f0ad6f9b0b8a72bca66cfae38b58bf6aabdf0915a631187cad32d298dd92158"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/red-01.log",
+      "bytes": 15931,
+      "sha256": "f12494d5847f5c3597071917c79760732d2d71638aecf339f5c01cd032f750f0"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/red-02-preload.log",
+      "bytes": 2270,
+      "sha256": "ddac580a37e426f5f6c6dd87b37f56b628ab0fb424112544dbb02771dc04eb52"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/syntax-checks.json",
+      "bytes": 752,
+      "sha256": "db32f517d64a45a7bdf80539427dc4d3d06417c42a8e4ebcaf85303e0350601b"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.mjs",
+      "bytes": 15446,
+      "sha256": "65867a38e7d2a123ae5ffd4b5facbb9ef51eea44654f717c1e462768bfbeab0f"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs",
+      "bytes": 18736,
+      "sha256": "b1c3385e3a2dda1064d575ecc54b8e437970fe62c0fb44b1d6376c0cd848d9cd"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-preload.mjs",
+      "bytes": 1267,
+      "sha256": "dd0e292f0150693865a026a4673dba8d4b4bdc52cdf63e61e7e564cc11045ddb"
+    }
+  ],
+  "read_only_dependency_snapshot": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/adapters/node.mjs",
+      "sha256": "4fb7ded812c93f17c0dc09605145f1f7846c97a1c754cec20cd1696235baa52a"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/srvx/dist/_chunks/_url.mjs",
+      "sha256": "4ae668931bafa9ce172c8b10408703cc5ac1d4e22c9df617a816da9d5eb811f6"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules/vinext/dist/server/request-pipeline.js",
+      "sha256": "d69e2c414f3c8c2beae176e69cdc3717f928841572bdadef77d700b58d1afb36"
+    }
+  ]
+}

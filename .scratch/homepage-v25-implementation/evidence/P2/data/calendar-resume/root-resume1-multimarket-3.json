@@ -1,0 +1,115 @@
+{
+  "startedAt": "2026-10-23T02:44:43.050Z",
+  "runtime": "v26.0.0",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "shape": "multimarket",
+  "sample": "3",
+  "run": "root-resume1",
+  "stage": "complete",
+  "goals": {
+    "coldPreparePlusProjectMs": 2000,
+    "eachRepeatMs": 200,
+    "cacheEstimatedBytes": 67108864
+  },
+  "upstreamMs": 65.30856000000006,
+  "fixture": {
+    "fills": 1866,
+    "accounts": 3,
+    "markets": 3,
+    "endpoints": 365,
+    "entries": 3,
+    "rawFillsInEntries": 1866,
+    "quotes": 743,
+    "historicalFxObservations": 365,
+    "inputSha256": "befe3b83a976e5016b0602d475f18980a1d323e9d83316073240943f3e2c490c",
+    "requestSha256": "7e6b24950ade6eb6b41899df76771ad999bb01bf6712908a276fffa9522285e9",
+    "nature": "unchanged controlled explicit live original lineage; no database"
+  },
+  "prepareMs": 377.8055609999999,
+  "batchMs": 1547.2182559999999,
+  "coldMs": 1925.027014,
+  "repeats": [
+    {
+      "ms": 1.6591849999999795,
+      "identical": true,
+      "additionalCanonicalQueries": 0
+    },
+    {
+      "ms": 1.3174690000000737,
+      "identical": true,
+      "additionalCanonicalQueries": 0
+    },
+    {
+      "ms": 1.2435900000000402,
+      "identical": true,
+      "additionalCanonicalQueries": 0
+    }
+  ],
+  "afterCold": {
+    "canonicalSweeps": 3,
+    "canonicalTransitions": 1866,
+    "batchCacheHits": 0,
+    "canonicalCalls": 0,
+    "canonicalCacheHits": 0,
+    "feeSteps": 1866,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 2193,
+    "fxLookups": 366,
+    "distinctCanonicalContexts": 0,
+    "cacheEntries": 496,
+    "cacheEstimatedBytes": 67101836,
+    "evictions": 604,
+    "batchEntries": 1,
+    "sourceEstimatedBytes": 13933098,
+    "indexEstimatedBytes": 37447760
+  },
+  "afterRepeat": {
+    "canonicalSweeps": 3,
+    "canonicalTransitions": 1866,
+    "batchCacheHits": 3,
+    "canonicalCalls": 0,
+    "canonicalCacheHits": 0,
+    "feeSteps": 1866,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 2193,
+    "fxLookups": 366,
+    "distinctCanonicalContexts": 0,
+    "cacheEntries": 496,
+    "cacheEstimatedBytes": 67101836,
+    "evictions": 604,
+    "batchEntries": 1,
+    "sourceEstimatedBytes": 13933098,
+    "indexEstimatedBytes": 37447760
+  },
+  "heapBefore": 21668408,
+  "heapAfterRepeat": 96009592,
+  "work": {
+    "preparations": 3,
+    "ordinaryTransitions": 1866,
+    "preparedQueries": 1098,
+    "legacyCalls": 0
+  },
+  "all365OraclesMatch": true,
+  "lastNet": "55358",
+  "currentMarketValue": null,
+  "coldGoalMet": true,
+  "repeatGoalMet": true,
+  "admitted": true,
+  "endedAt": "2026-10-23T02:44:48.306Z",
+  "frozenComparisonMs": 2689.464714,
+  "serializationMs": 268.9150689999997,
+  "publicBytes": 29037709,
+  "publicSha256": "566666fef5e824d5bd304bbb9b42c00644ee7c866c007f3b53f29c623c721f86",
+  "frozenPublicSha256": "566666fef5e824d5bd304bbb9b42c00644ee7c866c007f3b53f29c623c721f86",
+  "completePublicBytesEqual": true,
+  "comparisonExcludedFields": [
+    "diagnostics"
+  ],
+  "publicGraph": {
+    "uniqueObjects": 56962,
+    "allFrozen": true,
+    "metricOccurrences": 16060,
+    "uniqueMetricObjects": 5110
+  },
+  "heapAfterComparison": 149788608
+}

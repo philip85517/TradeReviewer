@@ -1,0 +1,10 @@
+{
+  "benchmark.test.ts": {
+    "bytes": 6976,
+    "sha256": "2b16ced3cde322edcc27b37d06ec33213a05752c2fa5d50ef6b473bd11922d08"
+  },
+  "fixtures.ts": {
+    "bytes": 5063,
+    "sha256": "3ce03183a921b15988ea6990ae107948a83f8dffe396e2fa7891197b5b5b8050"
+  }
+}

@@ -1,0 +1,19 @@
+Browser tab: 13, Title: "历史图最小真实链路", URL: "http://127.0.0.1:3334/history-minimal.html".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 51-52
+~			31 container 2月 · 月度读数 2026-02-01 — 2026-02-28 · Asia/Shanghai — 该期间无已关闭回合 该期间金额缺失 每期净盈亏 累计净盈亏 回合数 0 盈利回合数 0 各期胜率 —
+~				32 heading 2月 · 月度读数, Value: 4
+~					33 text 2月  ·  月度 读数
+~					35 text 2026-02-01  —  2026-02-28  ·  Asia/Shanghai
+~				36 text —
++				85 text 该期间无已关闭回合
++				86 text 该期间金额缺失
+~							44 text — CNY
+~							48 text 0  /  7
++					87 text 该期间金额缺失
+~							63 text 98765.432100 CNY
+~							71 text 98765.432100 CNY
+~					78 text 0
+~					81 text 0
+~					84 text —
+The focused UI element is 23 button 2月，—，该期间无已关闭回合；该期间金额缺失

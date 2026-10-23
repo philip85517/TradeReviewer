@@ -1,0 +1,72 @@
+{
+  "start": "2026-10-22T18:04:07.796Z",
+  "completed": "2026-10-22T18:04:08.895Z",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/vitest.config.ts"
+  ],
+  "node": "v26.0.0",
+  "captures": {
+    "app/lib/trades/instruments.ts": {
+      "sha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "currentBefore": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "headSha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__trades__instruments.ts.txt",
+      "currentAfter": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23"
+    },
+    "app/lib/trades/library.ts": {
+      "sha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "currentBefore": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "headSha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__trades__library.ts.txt",
+      "currentAfter": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83"
+    },
+    "app/lib/trades/types.ts": {
+      "sha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "currentBefore": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "headSha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__trades__types.ts.txt",
+      "currentAfter": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1"
+    },
+    "app/lib/trades/episodes.ts": {
+      "sha256": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "currentBefore": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "headSha256": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__trades__episodes.ts.txt",
+      "currentAfter": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3"
+    },
+    "app/lib/trades/trading-nature.ts": {
+      "sha256": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566",
+      "currentBefore": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566",
+      "headSha256": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__trades__trading-nature.ts.txt",
+      "currentAfter": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566"
+    },
+    "app/lib/reviews/shared-scope.ts": {
+      "sha256": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "currentBefore": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "headSha256": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "source": "observed source unchanged from HEAD",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__lib__reviews__shared-scope.ts.txt",
+      "currentAfter": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe"
+    },
+    "app/components/homepage-v25/holdings-model.ts": {
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+      "currentBefore": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+      "headSha256": null,
+      "source": "freeze1 captured bytes",
+      "snapshot": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-nature-reachability/app__components__homepage-v25__holdings-model.ts.txt",
+      "currentAfter": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c"
+    }
+  },
+  "exitCode": 1,
+  "scope": "pure functions only; no service, browser, network, storage or database"
+}

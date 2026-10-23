@@ -1,0 +1,61 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:39646) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (141 tests | 2 failed | 138 skipped) 176ms
+     × shares identical complete metric content and common metadata without dropping public fields 52ms
+     × rejects an oversized candidate without evicting the existing admitted batch 103ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 exact immutable public graph sharing > shares identical complete metric content and common metadata without dropping public fields
+AssertionError: expected { value: '70', available: true, …(3) } to deeply equal { value: '70', available: true, …(3) }
+
+- Expected
++ Received
+
+@@ -7,11 +7,11 @@
+    "money": {
+      "conversion": "complete",
+      "fx": {
+        "asOf": "2026-01-30T10:00:00.000Z",
+        "id": "fx-2026-01-30",
+-       "source": "controlled-archive",
++       "source": "broker-history",
+        "status": "complete",
+      },
+      "originalByCurrency": {
+        "USD": "10",
+      },
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:921:23
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 exact immutable public graph sharing > rejects an oversized candidate without evicting the existing admitted batch
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:966:32
+    964|     expect(rejected.points[0].key).toBe(hugeKey); expect(rejected.poin…
+    965|     const after = preparedPerformance.inspectHomepageV25PreparedSource…
+    966|     expect(after.batchEntries).toBe(before.batchEntries);
+       |                                ^
+    967|     expect(after.evictions).toBe(before.evictions);
+    968|     expect(after.cacheEstimatedBytes).toBe(before.cacheEstimatedBytes);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 138 skipped (141)
+   Start at  04:58:57
+   Duration  1.02s (transform 382ms, setup 0ms, import 486ms, tests 176ms, environment 0ms)
+

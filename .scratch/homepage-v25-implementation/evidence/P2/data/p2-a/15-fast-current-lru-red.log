@@ -1,0 +1,108 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25305) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (116 tests | 3 failed) 682ms
+     × uses one canonical traversal and one fee projection for many ordinary prefixes 10ms
+     × preserves every F3 current metric/evidence under raw quote edge cases 23ms
+     × enforces four full batches as actual LRU with live bounded diagnostics 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 sweep and current compatibility > uses one canonical traversal and one fee projection for many ordinary prefixes
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:726:66
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 sweep and current compatibility > preserves every F3 current metric/evidence under raw quote edge cases
+AssertionError: duplicates: expected [ { value: '222', …(4) }, …(3) ] to deeply equal [ { value: '111', …(4) }, …(3) ]
+
+- Expected
++ Received
+
+@@ -7,16 +7,16 @@
+      },
+      "money": {
+        "conversion": "same-currency",
+        "fx": null,
+        "originalByCurrency": {
+-         "USD": "111",
++         "USD": "222",
+        },
+        "targetCurrency": null,
+      },
+      "reasons": [],
+-     "value": "111",
++     "value": "222",
+    },
+    {
+      "available": true,
+      "coverage": {
+        "available": 1,
+@@ -24,16 +24,16 @@
+      },
+      "money": {
+        "conversion": "same-currency",
+        "fx": null,
+        "originalByCurrency": {
+-         "USD": "9",
++         "USD": "120",
+        },
+        "targetCurrency": null,
+      },
+      "reasons": [],
+-     "value": "9",
++     "value": "120",
+    },
+    {
+      "available": true,
+      "coverage": {
+        "available": 1,
+@@ -61,11 +61,11 @@
+        "openFees": "2",
+        "quantity": "1",
+        "quote": {
+          "currency": "USD",
+          "date": "2026-01-30",
+-         "price": "111",
++         "price": "222",
+          "source": "eastmoney",
+        },
+        "reasons": [],
+      },
+    ],
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:757:155
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 sweep and current compatibility > enforces four full batches as actual LRU with live bounded diagnostics
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:761:66
+    759|   });
+    760|   it("enforces four full batches as actual LRU with live bounded diagn…
+    761|     expect(preparedPerformance.inspectHomepageV25PreparedSource).toBeT…
+       |                                                                  ^
+    762|     const source=preparedFixture([fill("buy","2026-01-05T15:00:00Z")],…
+    763|     const q=(key:string)=>({...batchQuery,endpoints:[{key,at:"2026-01-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 113 passed (116)
+   Start at  02:51:19
+   Duration  1.95s (transform 581ms, setup 0ms, import 748ms, tests 682ms, environment 0ms)
+

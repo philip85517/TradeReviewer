@@ -1,0 +1,65 @@
+{
+  "capturedAt": "2026-10-22T18:05:17.234997+00:00",
+  "files": {
+    "app/components/trade-review-workspace.tsx": {
+      "headSha256": "608f67cf29284bad6c252ba4843b2bc20fe67e9ef43583247d88e8fdc729e74b",
+      "observedSha256": "dbe69b2b4e4d94ff82420ca2e471469d47f13214b89b77d39ecb902f26e3509b",
+      "sameAsHead": false
+    },
+    "app/components/trade-review-workspace.test.tsx": {
+      "headSha256": "7228db978441fc2bed5fd8a147bfe742e59bebbe629efc8d6a860349f9862535",
+      "observedSha256": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab",
+      "sameAsHead": false
+    },
+    "app/lib/trades/instruments.ts": {
+      "headSha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "observedSha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "sameAsHead": true
+    },
+    "app/lib/trades/library.ts": {
+      "headSha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "observedSha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "sameAsHead": true
+    },
+    "app/lib/trades/types.ts": {
+      "headSha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "observedSha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "sameAsHead": true
+    },
+    "app/lib/trades/episodes.ts": {
+      "headSha256": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "observedSha256": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "sameAsHead": true
+    },
+    "app/lib/trades/trading-nature.ts": {
+      "headSha256": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566",
+      "observedSha256": "588584829369f8e09948c424237eb9ad590e88771ac97717ee19c1ab5739a566",
+      "sameAsHead": true
+    },
+    "app/lib/reviews/shared-scope.ts": {
+      "headSha256": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "observedSha256": "3d95730949e0f64abab531ba2a938a69e8628cc11f765cff94f9f42b7f18fefe",
+      "sameAsHead": true
+    },
+    "app/lib/storage/migration-browser-alias.ts": {
+      "headSha256": "57859e9e34ab8304fa458beaee105f9f35cc838ddf83aaac6c53715c283a570b",
+      "observedSha256": "57859e9e34ab8304fa458beaee105f9f35cc838ddf83aaac6c53715c283a570b",
+      "sameAsHead": true
+    },
+    "app/lib/storage/tradingview-account-migration-client.ts": {
+      "headSha256": "52773f6d649a2d23f95c837a307837e71f4b9d1e2662598017425b497de2c611",
+      "observedSha256": "52773f6d649a2d23f95c837a307837e71f4b9d1e2662598017425b497de2c611",
+      "sameAsHead": true
+    },
+    "app/components/data-management/cash-baseline-panel.tsx": {
+      "headSha256": "d43b8aff2f443ea3ebbe4c4e84bde4cfa0ec2d8501adb715c67d7cc9eb44e20a",
+      "observedSha256": "d43b8aff2f443ea3ebbe4c4e84bde4cfa0ec2d8501adb715c67d7cc9eb44e20a",
+      "sameAsHead": true
+    },
+    "app/components/dashboard/room-allocation.tsx": {
+      "headSha256": "0a4e3848c7a7c4a8420ad707b8c3450ae819fc8fe8350535c39c6075af7f9130",
+      "observedSha256": "0a4e3848c7a7c4a8420ad707b8c3450ae819fc8fe8350535c39c6075af7f9130",
+      "sameAsHead": true
+    }
+  }
+}

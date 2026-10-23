@@ -1,0 +1,26 @@
+{
+  "bodyWidth": 390,
+  "dpr": 1,
+  "height": 844,
+  "scroll": {
+    "bottom": 1848,
+    "height": 1712,
+    "left": 0,
+    "right": 390,
+    "top": 136,
+    "width": 390,
+    "x": 0,
+    "y": 136
+  },
+  "table": {
+    "bottom": 0,
+    "height": 0,
+    "left": 0,
+    "right": 0,
+    "top": 0,
+    "width": 0,
+    "x": 0,
+    "y": 0
+  },
+  "width": 390
+}

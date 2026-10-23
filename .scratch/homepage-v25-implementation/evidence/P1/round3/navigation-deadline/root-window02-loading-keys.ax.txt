@@ -1,0 +1,15 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home?scope=live&market=a&accounts=*&rangeMode=all".
+0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=a&accounts=*&rangeMode=all
+	1 container 标的搜索
+		2 container
+			3 heading 找到标的, Value: 2, ID: hp-search-results-title
+				4 text 找到标的
+			5 button 关闭标的搜索
+		6 search text field (settable) Description: 搜索标的, Value: 6
+		7 button 清除标的搜索
+		8 container 找到标的
+			9 text 正在读取已知证券目录…
+		10 container
+			11 text 目录来自已导入交易与已存证券资料，未覆盖全市场。 输入框内 × 清空查询 · ↑ ↓ 选择 · Enter 查看 · Esc 关闭
+
+The focused UI element is 6 search text field (settable) Description: 搜索标的, Value: 6

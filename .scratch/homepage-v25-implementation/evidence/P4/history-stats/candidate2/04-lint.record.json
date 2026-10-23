@@ -1,0 +1,11 @@
+{
+  "atUtc": "2026-10-23T03:38:40.875867+00:00",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/eslint/bin/eslint.js",
+    "app/components/homepage-v25/history-stats-cards.tsx",
+    "app/components/homepage-v25/history-stats-cards.test.tsx"
+  ],
+  "exitCode": 0,
+  "log": "04-lint.log"
+}

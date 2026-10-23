@@ -1,0 +1,18 @@
+✔ inert import and one install never change Request or extend hard bounds (6.940859ms)
+✔ natural discovery captures clean bridge identity with no extra stream consumption (31.096868ms)
+✔ only exact two PUT routes allocate identities; static GET cannot exhaust the window (4.070226ms)
+✔ normal-drain: before/after same N and S retain terminal cause and stop at natural target throw (7.876962ms)
+✔ unread-destroy: before/after same N and S retain terminal cause and stop at natural target throw (14.521571ms)
+✔ request entry leaves lazy getters untouched and natural Request results retain identity (2.212404ms)
+✔ each hard budget restores immediately with one explicit bounded stop marker (4.564056ms)
+✔ real wall timer expires even with only static GET requests (27.599774ms)
+✔ later descriptors survive; stale wrapper delegates; failed sink cannot change natural dispatch (1.497761ms)
+✔ source drift fails closed and custom stack formatter is never invoked (1.344783ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 437.012162

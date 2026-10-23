@@ -1,0 +1,41 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:10357) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts (10 tests | 1 failed | 9 skipped) 41ms
+   × does not charge execution-backed IPO evidence again when its real buy covers a short 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts > does not charge execution-backed IPO evidence again when its real buy covers a short
+AssertionError: expected [ '20', '20', '5' ] to deeply equal [ '15', '15', '0' ]
+
+- Expected
++ Received
+
+  [
+-   "15",
+-   "15",
+-   "0",
++   "20",
++   "20",
++   "5",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-fix/ipo-fee-contract.test.ts:54:108
+     52|   traces.push({ name: "execution-backed short cover", executions, entr…
+     53|   expect([canonical.quantity, canonical.realizedPnl, canonical.fees, c…
+     54|   expect([output.periodRealized.value, output.net.value, output.instru…
+       |                                                                                                            ^
+     55| });
+     56|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 skipped (6)
+      Tests  1 failed | 95 skipped (96)
+   Start at  00:57:31
+   Duration  4.14s (transform 610ms, setup 0ms, import 1.17s, tests 41ms, environment 2ms)
+

@@ -1,0 +1,2778 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:28948) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/search-surface.test.tsx (3 tests | 3 failed) 558ms
+     × keeps cross-market search independent of the applied scope and waits for IME completion plus 300ms 361ms
+     × opens a metadata-only detail without borrowing holdings, and Escape restores its exact result before closing search 101ms
+     × keeps detail and source intact when navigation is refused, then uses the full unique identity 93ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps cross-market search independent of the applied scope and waits for IME completion plus 300ms
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "搜索标的"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-page-header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "首页":
+  [36m<h1 />[39m
+
+  Name "当前表现":
+  [36m<h2 />[39m
+
+  Name "当前持仓（最新）":
+  [36m<h2[39m
+    [33mid[39m=[32m"hp-holdings-title"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "历史已平仓":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "市场":
+  [36m<div[39m
+    [33maria-label[39m=[32m"市场"[39m
+    [33mclass[39m=[32m"hp-market-tabs"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "A股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "港股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "美股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "实盘一":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mclass[39m=[32m"hp-account-trigger"[39m
+    [33mtitle[39m=[32m"实盘一"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "标的搜索，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "附加筛选，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "搜索持仓":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出持仓 CSV":
+  [36m<button[39m
+    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按标的名称排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按标的名称排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓市值排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓市值排序"[39m
+    [33mtitle[39m=[32m"按持仓市值排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓浮动盈亏排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "查看全部市场":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "进入交易库":
+  [36m<button[39m
+    [33mid[39m=[32m"hp-open-trades"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "当前表现，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+    [33mclass[39m=[32m"hp-current-reservation"[39m
+  [36m/>[39m
+
+  Name "当前持仓（最新）":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"false"[39m
+    [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+    [33mclass[39m=[32m"hp-holdings"[39m
+  [36m/>[39m
+
+  Name "历史已平仓，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+    [33mclass[39m=[32m"hp-history-reservation"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  table:
+
+  Name "当前持仓":
+  [36m<div[39m
+    [33maria-label[39m=[32m"当前持仓"[39m
+    [33mclass[39m=[32m"hp-holdings-table"[39m
+    [33mrole[39m=[32m"table"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "标的 持仓天数 数量 成本价 最新价 持仓市值(CNY) 持仓浮动盈亏(CNY) 查看":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "标的":
+  [36m<div[39m
+    [33maria-sort[39m=[32m"ascending"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓天数":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "数量":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "成本价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "最新价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓市值(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓浮动盈亏(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "查看":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holdings-empty"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "当前范围":
+  [36m<output[39m
+    [33maria-label[39m=[32m"当前范围"[39m
+  [36m/>[39m
+
+  Name "交易目标":
+  [36m<output[39m
+    [33maria-label[39m=[32m"交易目标"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"hp-home-surface"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-home-background"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-page-header"[39m
+        [36m>[39m
+          [36m<h1>[39m
+            [0m首页[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"市场"[39m
+            [33mclass[39m=[32m"hp-market-tabs"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m全部[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mA股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m港股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m美股[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-account"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"listbox"[39m
+              [33mclass[39m=[32m"hp-account-trigger"[39m
+              [33mtitle[39m=[32m"实盘一"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m实盘一[0m
+              [36m</span>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sliders-horizontal"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 5H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 19H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 3v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 12h-9"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 19h-5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 5h-7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 10v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 12H3"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"hp-updated"[39m
+          [36m>[39m
+            [0m截至 2026-10-23[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-home-scroll"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-home-content"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+              [33mclass[39m=[32m"hp-current-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m当前表现[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m期间表现尚未接入[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-current-reserved-chart"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m当前期间统计与曲线将在后续阶段接入[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-busy[39m=[32m"false"[39m
+              [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+              [33mclass[39m=[32m"hp-holdings"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-toolbar"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mid[39m=[32m"hp-holdings-title"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m当前持仓（最新）[0m
+                [36m</h2>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-summary"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-tools"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-search"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                      [36m/>[39m
+                      [36m<circle[39m
+                        [33mcx[39m=[32m"11"[39m
+                        [33mcy[39m=[32m"11"[39m
+                        [33mr[39m=[32m"8"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m搜索持仓[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-download"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M12 15V3"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m7 10 5 5 5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m导出[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"当前持仓"[39m
+                [33mclass[39m=[32m"hp-holdings-table"[39m
+                [33mrole[39m=[32m"table"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+                  [33mrole[39m=[32m"row"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33maria-sort[39m=[32m"ascending"[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按标的名称排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m标的 [0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m>[39m
+                        [0m↑[0m
+                      [36m</span>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m持仓天数[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m数量[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m成本价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m最新价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓市值排序"[39m
+                      [33mtitle[39m=[32m"按持仓市值排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m查看[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-body"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holdings-empty"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [36m<strong>[39m
+                      [0m当前范围暂无持仓[0m
+                    [36m</strong>[39m
+                    [36m<p>[39m
+                      [0m仅显示来源明确的实盘未平仓回合[0m
+                    [36m</p>[39m
+                    [36m<button[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m查看全部市场[0m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-pagination"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m共 [0m
+                  [0m0[0m
+                  [0m 条持仓 · [0m
+                  [0m0[0m
+                  [0m 个标的[0m
+                [36m</span>[39m
+                [36m<div />[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+              [33mclass[39m=[32m"hp-history-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m历史已平仓[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m历史统计与贡献将在后续阶段接入[0m
+              [36m</p>[39m
+            [36m</section>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hp-library-entry"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m按当前市场、账户与期间查看成交，包含未平仓成交[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mid[39m=[32m"hp-open-trades"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m进入交易库[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"当前范围"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"交易目标"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/search-surface.test.tsx:33:28
+     31|     vi.useFakeTimers(); render(<Harness />);
+     32|     const originalScope = screen.getByLabelText("当前范围").textContent;
+     33|     fireEvent.click(screen.getByRole("button", { name: "搜索标的" }));
+       |                            ^
+     34|     const input = screen.getByRole("searchbox", { name: "搜索标的" });
+     35|     expect(input).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > opens a metadata-only detail without borrowing holdings, and Escape restores its exact result before closing search
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "搜索标的"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-page-header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "首页":
+  [36m<h1 />[39m
+
+  Name "当前表现":
+  [36m<h2 />[39m
+
+  Name "当前持仓（最新）":
+  [36m<h2[39m
+    [33mid[39m=[32m"hp-holdings-title"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "历史已平仓":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "市场":
+  [36m<div[39m
+    [33maria-label[39m=[32m"市场"[39m
+    [33mclass[39m=[32m"hp-market-tabs"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "A股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "港股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "美股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "实盘一":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mclass[39m=[32m"hp-account-trigger"[39m
+    [33mtitle[39m=[32m"实盘一"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "标的搜索，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "附加筛选，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "搜索持仓":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出持仓 CSV":
+  [36m<button[39m
+    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按标的名称排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按标的名称排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓市值排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓市值排序"[39m
+    [33mtitle[39m=[32m"按持仓市值排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓浮动盈亏排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "查看全部市场":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "进入交易库":
+  [36m<button[39m
+    [33mid[39m=[32m"hp-open-trades"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "当前表现，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+    [33mclass[39m=[32m"hp-current-reservation"[39m
+  [36m/>[39m
+
+  Name "当前持仓（最新）":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"false"[39m
+    [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+    [33mclass[39m=[32m"hp-holdings"[39m
+  [36m/>[39m
+
+  Name "历史已平仓，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+    [33mclass[39m=[32m"hp-history-reservation"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  table:
+
+  Name "当前持仓":
+  [36m<div[39m
+    [33maria-label[39m=[32m"当前持仓"[39m
+    [33mclass[39m=[32m"hp-holdings-table"[39m
+    [33mrole[39m=[32m"table"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "标的 持仓天数 数量 成本价 最新价 持仓市值(CNY) 持仓浮动盈亏(CNY) 查看":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "标的":
+  [36m<div[39m
+    [33maria-sort[39m=[32m"ascending"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓天数":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "数量":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "成本价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "最新价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓市值(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓浮动盈亏(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "查看":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holdings-empty"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "当前范围":
+  [36m<output[39m
+    [33maria-label[39m=[32m"当前范围"[39m
+  [36m/>[39m
+
+  Name "交易目标":
+  [36m<output[39m
+    [33maria-label[39m=[32m"交易目标"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"hp-home-surface"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-home-background"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-page-header"[39m
+        [36m>[39m
+          [36m<h1>[39m
+            [0m首页[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"市场"[39m
+            [33mclass[39m=[32m"hp-market-tabs"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m全部[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mA股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m港股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m美股[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-account"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"listbox"[39m
+              [33mclass[39m=[32m"hp-account-trigger"[39m
+              [33mtitle[39m=[32m"实盘一"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m实盘一[0m
+              [36m</span>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sliders-horizontal"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 5H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 19H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 3v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 12h-9"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 19h-5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 5h-7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 10v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 12H3"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"hp-updated"[39m
+          [36m>[39m
+            [0m截至 2026-10-23[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-home-scroll"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-home-content"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+              [33mclass[39m=[32m"hp-current-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m当前表现[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m期间表现尚未接入[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-current-reserved-chart"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m当前期间统计与曲线将在后续阶段接入[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-busy[39m=[32m"false"[39m
+              [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+              [33mclass[39m=[32m"hp-holdings"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-toolbar"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mid[39m=[32m"hp-holdings-title"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m当前持仓（最新）[0m
+                [36m</h2>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-summary"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-tools"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-search"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                      [36m/>[39m
+                      [36m<circle[39m
+                        [33mcx[39m=[32m"11"[39m
+                        [33mcy[39m=[32m"11"[39m
+                        [33mr[39m=[32m"8"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m搜索持仓[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-download"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M12 15V3"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m7 10 5 5 5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m导出[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"当前持仓"[39m
+                [33mclass[39m=[32m"hp-holdings-table"[39m
+                [33mrole[39m=[32m"table"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+                  [33mrole[39m=[32m"row"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33maria-sort[39m=[32m"ascending"[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按标的名称排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m标的 [0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m>[39m
+                        [0m↑[0m
+                      [36m</span>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m持仓天数[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m数量[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m成本价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m最新价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓市值排序"[39m
+                      [33mtitle[39m=[32m"按持仓市值排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m查看[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-body"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holdings-empty"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [36m<strong>[39m
+                      [0m当前范围暂无持仓[0m
+                    [36m</strong>[39m
+                    [36m<p>[39m
+                      [0m仅显示来源明确的实盘未平仓回合[0m
+                    [36m</p>[39m
+                    [36m<button[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m查看全部市场[0m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-pagination"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m共 [0m
+                  [0m0[0m
+                  [0m 条持仓 · [0m
+                  [0m0[0m
+                  [0m 个标的[0m
+                [36m</span>[39m
+                [36m<div />[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+              [33mclass[39m=[32m"hp-history-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m历史已平仓[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m历史统计与贡献将在后续阶段接入[0m
+              [36m</p>[39m
+            [36m</section>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hp-library-entry"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m按当前市场、账户与期间查看成交，包含未平仓成交[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mid[39m=[32m"hp-open-trades"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m进入交易库[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"当前范围"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"交易目标"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/search-surface.test.tsx:48:28
+     46|   it("opens a metadata-only detail without borrowing holdings, and Esc…
+     47|     vi.useFakeTimers(); render(<Harness />);
+     48|     const trigger = screen.getByRole("button", { name: "搜索标的" });
+       |                            ^
+     49|     fireEvent.click(trigger); await query("META");
+     50|     const result = screen.getByRole("button", { name: /Meta Platforms.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/components/homepage-v25/search-surface.test.tsx > homepage real known catalog search > keeps detail and source intact when navigation is refused, then uses the full unique identity
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "搜索标的"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"hp-page-header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "首页":
+  [36m<h1 />[39m
+
+  Name "当前表现":
+  [36m<h2 />[39m
+
+  Name "当前持仓（最新）":
+  [36m<h2[39m
+    [33mid[39m=[32m"hp-holdings-title"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "历史已平仓":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "市场":
+  [36m<div[39m
+    [33maria-label[39m=[32m"市场"[39m
+    [33mclass[39m=[32m"hp-market-tabs"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "A股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "港股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "美股":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "实盘一":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mclass[39m=[32m"hp-account-trigger"[39m
+    [33mtitle[39m=[32m"实盘一"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "标的搜索，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "附加筛选，尚未接入":
+  [36m<button[39m
+    [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+    [33mclass[39m=[32m"hp-icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "数值完整值":
+  [36m<span[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"数值完整值"[39m
+    [33mclass[39m=[32m"hp-value "[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "搜索持仓":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出持仓 CSV":
+  [36m<button[39m
+    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按标的名称排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按标的名称排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓市值排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓市值排序"[39m
+    [33mtitle[39m=[32m"按持仓市值排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按持仓浮动盈亏排序":
+  [36m<button[39m
+    [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "查看全部市场":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "进入交易库":
+  [36m<button[39m
+    [33mid[39m=[32m"hp-open-trades"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "当前表现，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+    [33mclass[39m=[32m"hp-current-reservation"[39m
+  [36m/>[39m
+
+  Name "当前持仓（最新）":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"false"[39m
+    [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+    [33mclass[39m=[32m"hp-holdings"[39m
+  [36m/>[39m
+
+  Name "历史已平仓，尚未接入":
+  [36m<section[39m
+    [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+    [33mclass[39m=[32m"hp-history-reservation"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-deferred"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  table:
+
+  Name "当前持仓":
+  [36m<div[39m
+    [33maria-label[39m=[32m"当前持仓"[39m
+    [33mclass[39m=[32m"hp-holdings-table"[39m
+    [33mrole[39m=[32m"table"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "标的 持仓天数 数量 成本价 最新价 持仓市值(CNY) 持仓浮动盈亏(CNY) 查看":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+    [33mdata-testid[39m=[32m"holding-slot"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "标的":
+  [36m<div[39m
+    [33maria-sort[39m=[32m"ascending"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓天数":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "数量":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "成本价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "最新价":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓市值(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "持仓浮动盈亏(CNY)":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "查看":
+  [36m<div[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"hp-holdings-empty"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "当前范围":
+  [36m<output[39m
+    [33maria-label[39m=[32m"当前范围"[39m
+  [36m/>[39m
+
+  Name "交易目标":
+  [36m<output[39m
+    [33maria-label[39m=[32m"交易目标"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"hp-home-surface"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-home-background"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-page-header"[39m
+        [36m>[39m
+          [36m<h1>[39m
+            [0m首页[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"市场"[39m
+            [33mclass[39m=[32m"hp-market-tabs"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m全部[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mA股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m港股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m美股[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-account"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"listbox"[39m
+              [33mclass[39m=[32m"hp-account-trigger"[39m
+              [33mtitle[39m=[32m"实盘一"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m实盘一[0m
+              [36m</span>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sliders-horizontal"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 5H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 19H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 3v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 12h-9"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 19h-5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 5h-7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 10v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 12H3"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"hp-updated"[39m
+          [36m>[39m
+            [0m截至 2026-10-23[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-home-scroll"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-home-content"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+              [33mclass[39m=[32m"hp-current-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m当前表现[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m期间表现尚未接入[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-current-reserved-chart"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m当前期间统计与曲线将在后续阶段接入[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-busy[39m=[32m"false"[39m
+              [33maria-labelledby[39m=[32m"hp-holdings-title"[39m
+              [33mclass[39m=[32m"hp-holdings"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-toolbar"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mid[39m=[32m"hp-holdings-title"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m>[39m
+                  [0m当前持仓（最新）[0m
+                [36m</h2>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-summary"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<span>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"数值完整值"[39m
+                      [33mclass[39m=[32m"hp-value "[39m
+                      [33mrole[39m=[32m"button"[39m
+                      [33mtabindex[39m=[32m"0"[39m
+                    [36m>[39m
+                      [0m0.00[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-tools"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-search"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                      [36m/>[39m
+                      [36m<circle[39m
+                        [33mcx[39m=[32m"11"[39m
+                        [33mcy[39m=[32m"11"[39m
+                        [33mr[39m=[32m"8"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m搜索持仓[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"导出持仓 CSV"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtitle[39m=[32m"无可导出的持仓（0）"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-download"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M12 15V3"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m7 10 5 5 5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span>[39m
+                      [0m导出[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"当前持仓"[39m
+                [33mclass[39m=[32m"hp-holdings-table"[39m
+                [33mrole[39m=[32m"table"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holding-grid hp-holding-head"[39m
+                  [33mrole[39m=[32m"row"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33maria-sort[39m=[32m"ascending"[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按标的名称排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m标的 [0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m>[39m
+                        [0m↑[0m
+                      [36m</span>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m持仓天数[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m数量[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m成本价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m最新价[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓市值排序"[39m
+                      [33mtitle[39m=[32m"按持仓市值排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓市值([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtitle[39m=[32m"按持仓浮动盈亏排序"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m持仓浮动盈亏([0m
+                      [0mCNY[0m
+                      [0m)[0m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                      [36m/>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mrole[39m=[32m"columnheader"[39m
+                  [36m>[39m
+                    [0m查看[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hp-holdings-body"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holding-grid hp-holding-row"[39m
+                    [33mdata-testid[39m=[32m"holding-slot"[39m
+                    [33mrole[39m=[32m"row"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"hp-empty-slot"[39m
+                      [33mrole[39m=[32m"cell"[39m
+                    [36m>[39m
+                      [0m [0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"hp-holdings-empty"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [36m<strong>[39m
+                      [0m当前范围暂无持仓[0m
+                    [36m</strong>[39m
+                    [36m<p>[39m
+                      [0m仅显示来源明确的实盘未平仓回合[0m
+                    [36m</p>[39m
+                    [36m<button[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0m查看全部市场[0m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hp-holdings-pagination"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m共 [0m
+                  [0m0[0m
+                  [0m 条持仓 · [0m
+                  [0m0[0m
+                  [0m 个标的[0m
+                [36m</span>[39m
+                [36m<div />[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"历史已平仓，尚未接入"[39m
+              [33mclass[39m=[32m"hp-history-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m历史已平仓[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m历史统计与贡献将在后续阶段接入[0m
+              [36m</p>[39m
+            [36m</section>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hp-library-entry"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m按当前市场、账户与期间查看成交，包含未平仓成交[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mid[39m=[32m"hp-open-trades"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m进入交易库[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"当前范围"[39m
+    [36m>[39m
+      [0m{"live":true,"market":"a","accounts":["one"],"rangeMode":"date","date":"2026-10-22"}[0m
+    [36m</output>[39m
+    [36m<output[39m
+      [33maria-label[39m=[32m"交易目标"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/search-surface.test.tsx:72:28
+     70|     let allow = false;
+     71|     render(<Harness navigate={async () => allow} />);
+     72|     fireEvent.click(screen.getByRole("button", { name: "搜索标的" })); awa…
+       |                            ^
+     73|     fireEvent.click(screen.getByRole("button", { name: /Meta Platforms…
+     74|     await act(async () => fireEvent.click(screen.getByRole("button", {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 4 passed (7)
+   Start at  03:14:43
+   Duration  2.85s (transform 687ms, setup 373ms, import 1.15s, tests 579ms, environment 2.11s)
+

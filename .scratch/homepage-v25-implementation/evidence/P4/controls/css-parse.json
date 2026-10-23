@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "parser": "postcss",
+  "rules": 20,
+  "declarations": 95
+}

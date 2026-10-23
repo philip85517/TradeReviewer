@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-23T10:36:24.099388+08:00",
+  "model": "gpt-6.1-sol",
+  "reasoning": "ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "candidate": 3,
+  "formal_history": [
+    "root FAIL1/3",
+    "root FAIL2/3"
+  ],
+  "root_round3": "PENDING",
+  "max_formal_rounds": 3,
+  "financial_integration": "BLOCKED frozen A",
+  "p4_formal": "0/3 unchanged",
+  "scoped_status": "?? app/components/homepage-v25/contribution-bars.css\n?? app/components/homepage-v25/contribution-bars.test.tsx\n?? app/components/homepage-v25/contribution-bars.tsx\n",
+  "product_sha256": {
+    "app/components/homepage-v25/contribution-bars.tsx": "29a2edb030dfaebe3d29ad767eb51fe8de0c0884764032e99d5cfc3703b48768",
+    "app/components/homepage-v25/contribution-bars.css": "393ef28246aa9af1af536fc5655f7c5a7242c5214adaba175a051cc04bb3df91",
+    "app/components/homepage-v25/contribution-bars.test.tsx": "04d1e12752dab615b5c9d94a56cd8b0018a05c8123f21c762daf5b8954b8d530"
+  },
+  "final_logs": {
+    "GREEN.log": "19097884cd8d9491aa9737570b457237c0159860af16c26aa070847e8ec8df59",
+    "INDEPENDENT.log": "3c97c355393bd1883035d1c6de52fcc7a19f302931db6953ebc08780b58d7a16",
+    "typecheck.log": "6048db6abf04a49f1c3f804a30e253934979a94bd462e874ffb5f478b29e04b8",
+    "lint.log": "9b5eabfe07054fd2de9200c0cd30889ff30b8b47701a3ffa05f9f3a28e717c59",
+    "STATUS-MOTION-SOURCE.log": "8f1fd965ab07dc13beba841857bd023fc6cd9c37317a879d0e063095b0f7a5ef",
+    "STATIC-CONTRACT.log": "964803a32358d013cd361d63c075b3c13fd73798904fca717ad7c5e19d681f95",
+    "PRIOR-CORRECTIONS.log": "9658f1f75366ec761f57674966d426b300a8fec1bd7851cd2299fc6a92d886aa"
+  },
+  "preservation": {
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/SHA256SUMS": {
+      "entries": 36,
+      "all_match": true
+    },
+    ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/SHA256SUMS": {
+      "entries": 30,
+      "all_match": true
+    },
+    "original28_test_bodies": {
+      "unchanged": true,
+      "allowed_import_additions": [
+        "act",
+        "fireEvent"
+      ]
+    },
+    "original_independent": {
+      "sha256": "d1d959fa240f5c9702ceebde062e9183d49b9e4d9f124bcf874523b0d380b434",
+      "unchanged": true
+    },
+    "ROOT-ACCEPTANCE-2.md": {
+      "sha256": "ed27d00ab6abcde0fb94db9ad9359456f5420411b658db475e72c62a409f75da",
+      "unchanged": true
+    },
+    "ROOT-CANDIDATE3-DISPATCH.md": {
+      "sha256": "61f4359ad6af5bc2bc45cb784ca704f857f095c9652c795fee02de40ee2bbd94",
+      "unchanged": true
+    }
+  },
+  "real_input_visual_numerators": {
+    "mouse": 0,
+    "keyboard": 0,
+    "emulated_touch": 0,
+    "physical_touch": 0,
+    "independent_visual": 0
+  },
+  "actual_browser_motion": "NOT VERIFIED"
+}

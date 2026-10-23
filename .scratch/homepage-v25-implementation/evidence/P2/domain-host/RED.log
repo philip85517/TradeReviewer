@@ -1,0 +1,576 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:60244) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (53 tests | 29 failed) 923ms
+     × publishes complete independent slots with their labels in history-first order 15ms
+     × publishes complete independent slots with their labels in period-first order 11ms
+     × supersedes a prior request only in the same domain and ignores its late response 6ms
+     × cancels both local owners at global identity start before the new global finishes 5ms
+     × cancels both local owners at global refresh start before the new global finishes 5ms
+     × cancels both local owners at global apply start before the new global finishes 10ms
+     × leaves the old complete label and data after a period failure, retries the same draft, and cancels history independently 4ms
+     × leaves history failure independent of period success and supports explicit history retry then period cancel 3ms
+     × never accepts an echoed history token with a mismatched generation 4ms
+     × never accepts an echoed history token with a mismatched scopeKey 3ms
+     × never accepts an echoed history token with a mismatched startedAt 12ms
+     × never accepts an echoed history token with a mismatched target 3ms
+     × never accepts an echoed history token with a mismatched domain 3ms
+     × keeps separate absolute deadlines through UI-only mode, filter, sort, drill and page changes 9ms
+     × checks the period response deadline even when its scheduled timer has not run 7ms
+     × checks the history response deadline even when its scheduled timer has not run 7ms
+     × checks the global response deadline even when its scheduled timer has not run 21ms
+     × uses the configured global 15000ms deadline without resetting it on UI updates 6ms
+     × does not publish a partial global package or new label when fromGlobal throws 16ms
+     × keeps accepted period state committed if its notification throws 3ms
+     × keeps accepted history state committed if its notification throws 3ms
+     × keeps both home slots through collection-only acceptance and uses the legacy callback only for that global read 87ms
+     × passes restored source ranges identical to the actually committed snapshot after fresh account fallback 8ms
+     × treats ambient global and domain data as mount seeds rather than accepted updates 4ms
+     × invalidates local owners on accepted unmount lifecycle exit 5ms
+     × invalidates local owners on accepted disable lifecycle exit 2ms
+     × invalidates local owners on accepted route lifecycle exit 2ms
+     × keeps a local owner live when its route guard cancels 6ms
+     × exposes inert local actions without domain configuration and performs no new IO 10ms
+ ❯ app/components/homepage-v25/session-model.test.ts (17 tests | 13 failed) 68ms
+     × retains explicit opaque complete slots and leaves legacy sessions unconfigured 18ms
+     × atomically accepts independent packages in history-first order 2ms
+     × atomically accepts independent packages in period-first order 2ms
+     × invalidates both local owners before a global refresh begins 3ms
+     × invalidates both local owners before a global apply begins 5ms
+     × rejects an echoed period token with a mismatched generation 2ms
+     × rejects an echoed period token with a mismatched scopeKey 1ms
+     × rejects an echoed period token with a mismatched startedAt 1ms
+     × rejects an echoed period token with a mismatched domain 1ms
+     × lets S reject a same-owner different target without publishing the payload 1ms
+     × publishes fresh global and both local packages beside the restored actual snapshot 1ms
+     × keeps all old labels and packages when the global extractor is missing 2ms
+     × keeps all old labels and packages when the global extractor is throw 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 42 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > retains explicit opaque complete slots and leaves legacy sessions unconfigured
+AssertionError: expected undefined to deeply equal { …(2) }
+
+- Expected:
+{
+  "history": {
+    "cards": [
+      "old h1",
+      "old h2",
+      "old h3",
+      "old h4",
+    ],
+    "contribution": [
+      "old historical bucket",
+    ],
+    "series": [
+      "old history point",
+    ],
+  },
+  "period": {
+    "cards": [
+      "old p1",
+      "old p2",
+      "old p3",
+    ],
+    "contribution": [
+      "old current bucket",
+    ],
+    "series": [
+      "old period point",
+    ],
+  },
+}
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/session-model.test.ts:74:31
+     72|
+     73|   it("retains explicit opaque complete slots and leaves legacy session…
+     74|     expect(seed().domainData).toEqual({ period: oldPeriod, history: ol…
+       |                               ^
+     75|     expect(createHomepageSession(createHomepageState(all), globalData)…
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > atomically accepts independent packages in history-first order
+TypeError: completeHomepageHistoryRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:82:47
+     80|     const loading = { ...initial, ui };
+     81|     const p = ui.requests.period!; const h = ui.requests.history!;
+     82|     const first = order === "history-first" ? completeHomepageHistoryR…
+       |                                               ^
+     83|     expect(first.accepted).toBe(true);
+     84|     expect(first.session.data).toBe(globalData);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > atomically accepts independent packages in period-first order
+TypeError: completeHomepagePeriodRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:82:103
+     80|     const loading = { ...initial, ui };
+     81|     const p = ui.requests.period!; const h = ui.requests.history!;
+     82|     const first = order === "history-first" ? completeHomepageHistoryR…
+       |                                                                                                       ^
+     83|     expect(first.accepted).toBe(true);
+     84|     expect(first.session.data).toBe(globalData);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > invalidates both local owners before a global refresh begins
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > invalidates both local owners before a global apply begins
+AssertionError: expected { domain: 'period', …(4) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "domain": "period",
+  "generation": 1,
+  "scopeKey": "{\"domain\":\"period\",\"global\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"target\":{\"preset\":\"custom\",\"from\":\"2026-10-01\",\"to\":\"2026-10-23\"}}",
+  "startedAt": 10,
+  "target": {
+    "from": "2026-10-01",
+    "preset": "custom",
+    "to": "2026-10-23",
+  },
+}
+
+ ❯ app/components/homepage-v25/session-model.test.ts:99:37
+     97|     const ui = beginHomepageHistoryApply(beginHomepagePeriodApply(init…
+     98|     const next = startHomepageRead({ ...initial, ui }, { purpose }, 30…
+     99|     expect(next.ui.requests.period).toBeNull(); expect(next.ui.request…
+       |                                     ^
+    100|     expect(completeHomepagePeriodRead(next, ui.requests.period!, fresh…
+    101|     expect(completeHomepageHistoryRead(next, ui.requests.history!, fre…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > rejects an echoed period token with a mismatched generation
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > rejects an echoed period token with a mismatched scopeKey
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > rejects an echoed period token with a mismatched startedAt
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > rejects an echoed period token with a mismatched domain
+TypeError: completeHomepagePeriodRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:109:20
+    107|     const wrong = { ...token, ...({ generation: { generation: token.ge…
+    108|     // Runtime transport boundary: assert the deliberately malformed e…
+    109|     const result = completeHomepagePeriodRead(loading, wrong as typeof…
+       |                    ^
+    110|     expect(result.accepted).toBe(false); expect(result.session.domainD…
+    111|     expect(result.session.ui.snapshot.period).toEqual(initial.ui.snaps…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > lets S reject a same-owner different target without publishing the payload
+TypeError: completeHomepagePeriodRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:115:20
+    113|   it("lets S reject a same-owner different target without publishing t…
+    114|     const initial = seed(); const loading = { ...initial, ui: beginHom…
+    115|     const result = completeHomepagePeriodRead(loading, { ...loading.ui…
+       |                    ^
+    116|     expect(result.accepted).toBe(false); expect(result.session.ui.erro…
+    117|     expect(result.session.domainData).toBe(initial.domainData); expect…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > publishes fresh global and both local packages beside the restored actual snapshot
+TypeError: completeHomepageGlobalRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:123:20
+    121|     const source = { ...initial.ui.snapshot, period, scope: { ...all, …
+    122|     const loading = startHomepageRead(initial, { purpose: "navigation"…
+    123|     const result = completeHomepageGlobalRead(loading, loading.ui.requ…
+       |                    ^
+    124|       sourceBytes: encodeHomepageSnapshot(source), domainData: accepte…
+    125|         expect(accepted.period).toEqual(period); expect(accepted.histo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/42]⎯
+
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > keeps all old labels and packages when the global extractor is missing
+ FAIL  app/components/homepage-v25/session-model.test.ts > homepage opaque domain sessions > keeps all old labels and packages when the global extractor is throw
+TypeError: completeHomepageGlobalRead is not a function
+ ❯ app/components/homepage-v25/session-model.test.ts:135:20
+    133|     const initial = seed(); const loading = startHomepageRead(initial,…
+    134|     const options = mode === "missing" ? undefined : { domainData: () …
+    135|     const result = completeHomepageGlobalRead(loading, loading.ui.requ…
+       |                    ^
+    136|     expect(result.accepted).toBe(false); expect(result.session.ui.erro…
+    137|     expect(result.session.ui.snapshot).toEqual(initial.ui.snapshot); e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > publishes complete independent slots with their labels in history-first order
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > publishes complete independent slots with their labels in period-first order
+TypeError: result.current.onPeriodDraft is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:413:22
+
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:411:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > supersedes a prior request only in the same domain and ignores its late response
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:442:32
+    440|   it("supersedes a prior request only in the same domain and ignores i…
+    441|     const h = domainHarness(); const { result } = renderHook(() => use…
+    442|     act(() => { result.current.applyPeriod(selectedPeriod); result.cur…
+       |                                ^
+    443|     const historyOwner = result.current.ui.requests.history;
+    444|     await act(async () => h.periods[0].reply.resolve({ request: h.peri…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:442:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > cancels both local owners at global identity start before the new global finishes
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > cancels both local owners at global refresh start before the new global finishes
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > cancels both local owners at global apply start before the new global finishes
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:453:32
+    451|   it.each(["identity", "refresh", "apply"])("cancels both local owners…
+    452|     const h = domainHarness(); const { result } = renderHook(() => use…
+    453|     act(() => { result.current.applyPeriod(selectedPeriod); result.cur…
+       |                                ^
+    454|     act(() => {
+    455|       if (purpose === "identity") result.current.onScope({ live: true,…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:453:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > leaves the old complete label and data after a period failure, retries the same draft, and cancels history independently
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:473:32
+    471|   it("leaves the old complete label and data after a period failure, r…
+    472|     const h = domainHarness(); const { result } = renderHook(() => use…
+    473|     act(() => { result.current.applyPeriod(selectedPeriod); result.cur…
+       |                                ^
+    474|     await act(async () => h.periods[0].reply.reject(new Error("period …
+    475|     expect(result.current.ui.errors.period).toBe("period unavailable")…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:473:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > leaves history failure independent of period success and supports explicit history retry then period cancel
+TypeError: result.current.applyHistory is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:486:32
+    484|   it("leaves history failure independent of period success and support…
+    485|     const h = domainHarness(); const { result } = renderHook(() => use…
+    486|     act(() => { result.current.applyHistory(selectedHistory); result.c…
+       |                                ^
+    487|     await act(async () => h.histories[0].reply.reject(new Error("histo…
+    488|     expect(result.current.ui.errors.history).toBe("history unavailable…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:486:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > never accepts an echoed history token with a mismatched generation
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > never accepts an echoed history token with a mismatched scopeKey
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > never accepts an echoed history token with a mismatched startedAt
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > never accepts an echoed history token with a mismatched target
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > never accepts an echoed history token with a mismatched domain
+TypeError: result.current.applyHistory is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:497:30
+
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:497:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > keeps separate absolute deadlines through UI-only mode, filter, sort, drill and page changes
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:507:30
+    505|     const h = domainHarness(); const { result } = renderHook(() => use…
+    506|     vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-23T00:00:00…
+    507|     act(() => result.current.applyPeriod(selectedPeriod)); const pStar…
+       |                              ^
+    508|     act(() => vi.advanceTimersByTime(5000)); act(() => result.current.…
+    509|     act(() => vi.advanceTimersByTime(9999));
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:507:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > checks the period response deadline even when its scheduled timer has not run
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:525:57
+    523|     const h = domainHarness(); const { result } = renderHook(() => use…
+    524|     vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-23T00:00:00…
+    525|     act(() => { if (domain === "period") result.current.applyPeriod(se…
+       |                                                         ^
+    526|     vi.setSystemTime(Date.now() + 15_000);
+    527|     await act(async () => {
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:525:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > checks the history response deadline even when its scheduled timer has not run
+TypeError: result.current.applyHistory is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:525:132
+    523|     const h = domainHarness(); const { result } = renderHook(() => use…
+    524|     vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-23T00:00:00…
+    525|     act(() => { if (domain === "period") result.current.applyPeriod(se…
+       |                                                                                                                                    ^
+    526|     vi.setSystemTime(Date.now() + 15_000);
+    527|     await act(async () => {
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:525:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > checks the global response deadline even when its scheduled timer has not run
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:532:48
+    530|       else h.globals[0].reply.resolve({ requestId: h.globals[0].id, da…
+    531|     });
+    532|     expect(result.current.ui.timeouts[domain]).toBe(true); expect(resu…
+       |                                                ^
+    533|     expect(h.domainAccepted).not.toHaveBeenCalled(); expect(h.globalAc…
+    534|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > uses the configured global 15000ms deadline without resetting it on UI updates
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:540:47
+    538|     act(() => vi.advanceTimersByTime(14999)); act(() => result.current…
+    539|     expect(result.current.ui.requests.global).not.toBeNull(); act(() =…
+    540|     expect(result.current.ui.timeouts.global).toBe(true); expect(h.glo…
+       |                                               ^
+    541|   });
+    542|   it("does not publish a partial global package or new label when from…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > does not publish a partial global package or new label when fromGlobal throws
+AssertionError: expected { version: 3, scope: { …(4) }, …(10) } to deeply equal { version: 3, scope: { …(4) }, …(10) }
+
+- Expected
++ Received
+
+@@ -52,11 +52,11 @@
+    "scope": {
+      "accounts": [
+        "*",
+      ],
+      "live": true,
+-     "market": "all",
++     "market": "hk",
+      "rangeMode": "all",
+    },
+    "scrollTop": 0,
+    "search": {
+      "open": false,
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:547:40
+    545|     act(() => result.current.onScope({ live: true, market: "hk", accou…
+    546|     await act(async () => h.globals[0].reply.resolve({ requestId: h.gl…
+    547|     expect(result.current.ui.snapshot).toEqual(previous); expect(resul…
+       |                                        ^
+    548|     expect(result.current.ui.requests.global).toBeNull(); expect(resul…
+    549|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > keeps accepted period state committed if its notification throws
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:553:57
+
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:553:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > keeps accepted history state committed if its notification throws
+TypeError: result.current.applyHistory is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:553:106
+
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:553:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > keeps both home slots through collection-only acceptance and uses the legacy callback only for that global read
+AssertionError: expected undefined to deeply equal { period: { …(4) }, history: { …(4) } }
+
+- Expected:
+{
+  "history": {
+    "cards": [
+      "old-history:rounds",
+      "old-history:win-rate",
+      "old-history:ratio",
+      "old-history:holding-days",
+    ],
+    "contribution": [
+      "old-history:bucket",
+    ],
+    "revision": "old-history",
+    "series": [
+      "old-history:point",
+    ],
+  },
+  "period": {
+    "cards": [
+      "old-period:income",
+      "old-period:return",
+      "old-period:realized",
+    ],
+    "contribution": [
+      "old-period:bucket",
+    ],
+    "revision": "old-period",
+    "series": [
+      "old-period:point",
+    ],
+  },
+}
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:564:81
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > passes restored source ranges identical to the actually committed snapshot after fresh account fallback
+AssertionError: expected undefined to deeply equal { …(2) }
+
+- Expected:
+{
+  "historyRange": {
+    "mode": "year",
+    "year": 2025,
+  },
+  "period": {
+    "from": "2026-10-01",
+    "preset": "custom",
+    "to": "2026-10-23",
+  },
+}
+
++ Received:
+undefined
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:572:60
+    570|     history.replaceState(null, "", "/home?scope=live&market=a&accounts…
+    571|     const { result } = renderHook(() => useHomepageHost({ ...h.options…
+    572|     const read = h.globals[0]; expect(read.context.ranges).toEqual({ p…
+       |                                                            ^
+    573|     expect(result.current.data).toBe(h.data); const fresh = currentPac…
+    574|     await act(async () => read.reply.resolve({ requestId: read.id, dat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > treats ambient global and domain data as mount seeds rather than accepted updates
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:583:30
+
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:583:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > invalidates local owners on accepted unmount lifecycle exit
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > invalidates local owners on accepted disable lifecycle exit
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > invalidates local owners on accepted route lifecycle exit
+TypeError: result.current.applyPeriod is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:589:32
+    587|   it.each(["unmount", "disable", "route"])("invalidates local owners o…
+    588|     const h = domainHarness(); const { result, rerender, unmount } = r…
+    589|     act(() => { result.current.applyPeriod(selectedPeriod); result.cur…
+       |                                ^
+    590|     if (mode === "unmount") unmount(); else if (mode === "disable") re…
+    591|     await act(async () => {
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:589:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > keeps a local owner live when its route guard cancels
+TypeError: result.current.applyHistory is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:599:30
+    597|   it("keeps a local owner live when its route guard cancels", async ()…
+    598|     const h = domainHarness(); h.options.guard.mockResolvedValue(false…
+    599|     act(() => result.current.applyHistory(selectedHistory)); await act…
+       |                              ^
+    600|     const fresh = historyPackage("still-home"); await act(async () => …
+    601|     expect(result.current.route.page).toBe("home"); expect(result.curr…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:599:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/42]⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > exposes inert local actions without domain configuration and performs no new IO
+TypeError: result.current.onPeriodDraft is not a function
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:606:22
+    604|     const h = domainHarness(); const { domains: _domains, ...legacy } …
+    605|     act(() => {
+    606|       result.current.onPeriodDraft(selectedPeriod); result.current.onH…
+       |                      ^
+    607|       expect(result.current.applyPeriod(selectedPeriod)).toBe(false); …
+    608|       expect(result.current.retryPeriodRead()).toBe(false); expect(res…
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:47:24
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ node_modules/@testing-library/react/dist/act-compat.js:46:25
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:605:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/42]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  42 failed | 28 passed (70)
+   Start at  11:14:33
+   Duration  7.82s (transform 785ms, setup 717ms, import 1.06s, tests 991ms, environment 3.78s)
+

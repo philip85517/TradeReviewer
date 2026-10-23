@@ -1,0 +1,281 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:13022) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/home-surface.test.tsx (2 tests | 1 failed) 435ms
+     × does not query during IME composition and applies the inline search after 300 ms 75ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/home-surface.test.tsx > real homepage holding controls > does not query during IME composition and applies the inline search after 300 ms
+TestingLibraryElementError: Found multiple elements with the role "button" and name "搜索持仓"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-search"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"16"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"16"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"m21 21-4.34-4.34"[39m
+    [36m/>[39m
+    [36m<circle[39m
+      [33mcx[39m=[32m"11"[39m
+      [33mcy[39m=[32m"11"[39m
+      [33mr[39m=[32m"8"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [36m<span>[39m
+    [0m搜索持仓[0m
+  [36m</span>[39m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-search"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"16"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"16"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"m21 21-4.34-4.34"[39m
+    [36m/>[39m
+    [36m<circle[39m
+      [33mcx[39m=[32m"11"[39m
+      [33mcy[39m=[32m"11"[39m
+      [33mr[39m=[32m"8"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [36m<span>[39m
+    [0m搜索持仓[0m
+  [36m</span>[39m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"hp-home-surface"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-home-background"[39m
+        [33minert[39m=[32m""[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"hp-page-header"[39m
+        [36m>[39m
+          [36m<h1>[39m
+            [0m首页[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"市场"[39m
+            [33mclass[39m=[32m"hp-market-tabs"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m全部[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mA股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m港股[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m美股[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-account"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"listbox"[39m
+              [33mclass[39m=[32m"hp-account-trigger"[39m
+              [33mtitle[39m=[32m"全部账户"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0m全部账户[0m
+              [36m</span>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"标的搜索，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"标的搜索将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"附加筛选，尚未接入"[39m
+            [33mclass[39m=[32m"hp-icon-button"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"附加筛选将在后续阶段接入"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sliders-horizontal"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 5H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 19H3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 3v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 12h-9"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 19h-5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 5h-7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 10v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 12H3"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"hp-updated"[39m
+          [36m>[39m
+            [0m截至 2026-10-23[0m
+          [36m</span>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hp-home-scroll"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-home-content"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"当前表现，尚未接入"[39m
+              [33mclass[39m=[32m"hp-current-reservation"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0m当前表现[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hp-deferred"[39m
+              [36m>[39m
+                [0m期间表现尚未接入[0m
+          ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/home-surface.test.tsx:39:28
+     37|   it("does not query during IME composition and applies the inline sea…
+     38|     vi.useFakeTimers(); render(<Harness />);
+     39|     fireEvent.click(screen.getByRole("button", { name: "搜索持仓" }));
+       |                            ^
+     40|     const input = screen.getByRole("searchbox", { name: "搜索持仓" });
+     41|     fireEvent.compositionStart(input); fireEvent.change(input, { targe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  01:05:11
+   Duration  3.62s (transform 428ms, setup 393ms, import 669ms, tests 435ms, environment 1.69s)
+

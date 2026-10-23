@@ -1,0 +1,355 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+stdout | .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > keeps the parent review mounted until a failed navigation save is retried successfully
+PEER_DOM {"url":"http://localhost:3000/trades?scope=live&market=all&accounts=*&rangeMode=all","history":{"hpV25":true,"hpIndex":1,"hpSource":"{\"version\":2,\"scope\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\"},\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":false},\"holdings\":{\"query\":\"\",\"sort\":\"name\",\"page\":1},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"history\":{\"range\":{\"mode\":\"all\"},\"chartMode\":\"period-pnl\"},\"contribution\":{\"mode\":\"current\",\"current\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\",\"openOnly\":false},\"history\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\"}},\"search\":{\"query\":\"\",\"open\":false,\"resultsScrollTop\":0,\"selectedSymbol\":null,\"triggerFocusId\":null},\"returnState\":{\"source\":null,\"container\":null,\"detailId\":null,\"triggerFocusId\":null,\"missingContainerTitle\":null},\"scrollTop\":0,\"focus\":\"title\",\"futureDisclosureSources\":[]}"},"regions":[{"name":"当前表现，尚未接入","hidden":true},{"name":"当前持仓（最新）","hidden":true},{"name":"历史已平仓，尚未接入","hidden":true},{"name":"数据管理","hidden":true},{"name":"导入交易数据","hidden":true},{"name":"行情数据更新","hidden":true},{"name":"全局行情更新","hidden":true},{"name":"数据健康明细","hidden":true},{"name":"待检查问题","hidden":true},{"name":"TradingView 账户迁移预览","hidden":true},{"name":"TradingView 迁移预览与提交","hidden":true},{"name":"本金与参考收益率配置","hidden":true},{"name":"参考分配资本 v2","hidden":true},{"name":"汇率","hidden":true},{"name":"现金基准","hidden":true},{"name":"现金基准","hidden":true},{"name":"交易库","hidden":false}],"alerts":["当前范围暂无持仓仅显示来源明确的实盘未平仓回合","参考资本配置版本或 records 无效","汇率状态格式无效","现金基准响应格式无效","普通交易库 · 成交日期 全部 · 包含未平仓成交"],"text":"TradeReview历史交易复盘导航我的交易室交易库分析数据策略未开放设置首页全部A股港股美股全部账户截至 2026-10-22T17:59:46.547Z当前表现期间表现尚未接入当前期间统计与曲线将在后续阶段接入当前持仓（最新）持仓市值(CNY)0.00持仓浮动盈亏(CNY)0.00搜索持仓导出标的 ↑持仓天数数量成本价最新价持仓市值(CNY)持仓浮动盈亏(CNY)查看 当前范围暂无持仓仅显示来源明确的实盘未平仓回合共 0 条持仓 · 0 个标的历史已平仓历史统计与贡献将在后续阶段接入按当前市场、账户与期间查看成交，包含未平仓成交进入交易库数据导入、健康与账户设置1 个已导入标的导入记录数据健康账户与计价导入交易数据全量导入与审计，不受共享范围筛选支持 PDF、Excel、TradingView 模拟交易和已适配的成交截图。导入交易记录查看导入记录行情数据更新全量行情更新，不受共享范围筛选更新会保留本地缓存；取消、失败和未完成任务可在这里继续处理。更新全部数据全部已导入 · 1 只数据质量明细质量定位按当前范围；保留记录审计不受共享范围筛选暂无数据健康明细。待检查问题0 个保留记录暂无需要单独检查的保留记录。TradingView 账户迁移预览只读检查，不会修改账户TradingView · simulation单一模拟账户迁移先读取只读预览，核对来源账户、成交和复盘影响；确认提交后才写入归并，回退入口仅提供只读预检。读取只读预览当前预览阶段不会写入；确认提交归并会写入账户与交易数据。本金与参考收益率配置用于收益参考，不代表账户净值Reference capital v2参考分配资本按账户、币种和适用期间记录，仅用于参考收益；不代表账户净值。账户请选择账户测试账户币种CNYUSDHKD起始日期结束日期金额保存参考资本参考资本配置版本或 records 无效当前账本期间配置账户币种期间金额旧版类别配置（未映射，仅只读）未发现旧版类别配置。汇率人民币估算使用的最新汇率当前估值参考汇率（中行）中国银行 · 中行折算价（源报价每100单位外币，以下换算为1外币）用于当前估值参考；不代表历史绩效折算快照。USD/CNY美元1 USD = 暂无 CNYHKD/CNY港币1 HKD = 暂无 CNY暂无可用汇率，原币金额会继续保留。汇率状态格式无效刷新汇率现金基准余额按账户、原币和截至时间记录实盘现金基准按账户、原币和截至时间修正真实现金余额；后续只叠加成交变化，不等于参考分配资本。账户请选择账户测试账户原币CNYUSDHKD余额截至时间来源保存现金基准重置草稿现金基准响应格式无效当前范围现金基准账户原币截至时间余额来源版本当前范围还没有现金基准记录。返回首页普通交易库 · 成交日期 全部 · 包含未平仓成交交易库浏览已导入交易并开始复盘0 个标的 · 0 个回合1T本地用户性质实盘模拟盘来源未知账户范围全部账户报告计价原币CNY参考HKD参考搜索标的按标的浏览按回合浏览还没有导入交易去导入","fetch":[{"url":"/api/trading-room/cash/baselines?nature=live","method":"GET"},{"url":"/api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/fx","method":"GET"},{"url":"/api/storage/tradingview-account-migration/aliases","method":"GET"},{"url":"/api/storage/recall/summaries","method":"GET"},{"url":"/api/trading-room/cash/baselines?nature=live","method":"GET"},{"url":"/api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/fx","method":"GET"},{"url":"/api/trading-room/reference-capital","method":"GET"},{"url":"/api/fx","method":"GET"}]}
+
+stdout | .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > keeps a successful typed save observable when summary refresh fails, then retries with reads only
+PEER_DOM {"url":"http://localhost:3000/home?scope=live&market=all&accounts=*&rangeMode=all","history":{"hpV25":true,"hpIndex":0,"hpSource":"{\"version\":2,\"scope\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\"},\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":false},\"holdings\":{\"query\":\"\",\"sort\":\"name\",\"page\":1},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"history\":{\"range\":{\"mode\":\"all\"},\"chartMode\":\"period-pnl\"},\"contribution\":{\"mode\":\"current\",\"current\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\",\"openOnly\":false},\"history\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\"}},\"search\":{\"query\":\"\",\"open\":false,\"resultsScrollTop\":0,\"selectedSymbol\":null,\"triggerFocusId\":null},\"returnState\":{\"source\":null,\"container\":null,\"detailId\":null,\"triggerFocusId\":null,\"missingContainerTitle\":null},\"scrollTop\":0,\"focus\":\"title\",\"futureDisclosureSources\":[]}"},"regions":[{"name":"当前表现，尚未接入","hidden":true},{"name":"当前持仓（最新）","hidden":true},{"name":"历史已平仓，尚未接入","hidden":true},{"name":"数据管理","hidden":false},{"name":"导入交易数据","hidden":false},{"name":"行情数据更新","hidden":false},{"name":"全局行情更新","hidden":false},{"name":"数据健康明细","hidden":false},{"name":"待检查问题","hidden":false},{"name":"TradingView 账户迁移预览","hidden":false},{"name":"TradingView 迁移预览与提交","hidden":false},{"name":"本金与参考收益率配置","hidden":false},{"name":"账户暂定本金","hidden":false},{"name":"参考分配资本 v2","hidden":false},{"name":"汇率","hidden":false},{"name":"现金基准","hidden":false},{"name":"现金基准","hidden":false}],"alerts":["当前范围暂无持仓仅显示来源明确的实盘未平仓回合","账户暂定本金响应格式无效","参考资本配置版本或 records 无效","汇率状态格式无效","已更新现金基准","已保存现金基准，摘要暂未刷新；请重试读取"],"text":"TradeReview历史交易复盘导航我的交易室交易库分析数据策略未开放设置首页全部A股港股美股全部账户截至 2026-10-22T17:59:47.086Z当前表现期间表现尚未接入当前期间统计与曲线将在后续阶段接入当前持仓（最新）持仓市值(CNY)0.00持仓浮动盈亏(CNY)0.00搜索持仓导出标的 ↑持仓天数数量成本价最新价持仓市值(CNY)持仓浮动盈亏(CNY)查看 当前范围暂无持仓仅显示来源明确的实盘未平仓回合共 0 条持仓 · 0 个标的历史已平仓历史统计与贡献将在后续阶段接入按当前市场、账户与期间查看成交，包含未平仓成交进入交易库数据导入、健康与账户设置1 个已导入标的1T本地用户性质实盘模拟盘来源未知账户范围全部账户TradingView · 模拟盘报告计价原币CNY参考HKD参考搜索标的导入记录数据健康账户与计价导入交易数据全量导入与审计，不受共享范围筛选支持 PDF、Excel、TradingView 模拟交易和已适配的成交截图。导入交易记录查看导入记录行情数据更新全量行情更新，不受共享范围筛选更新会保留本地缓存；取消、失败和未完成任务可在这里继续处理。更新全部数据全部已导入 · 1 只数据质量明细质量定位按当前范围；保留记录审计不受共享范围筛选暂无数据健康明细。待检查问题0 个保留记录暂无需要单独检查的保留记录。TradingView 账户迁移预览只读检查，不会修改账户TradingView · simulation单一模拟账户迁移先读取只读预览，核对来源账户、成交和复盘影响；确认提交后才写入归并，回退入口仅提供只读预检。读取只读预览当前预览阶段不会写入；确认提交归并会写入账户与交易数据。本金与参考收益率配置用于收益参考，不代表账户净值账户参考数据 · tradingview:simulation:default暂定本金本金记录独立于现金基准；缺少记录时保留缺口，不自动填入金额或日期。暂定本金不等于现金基准；本金记录单独维护。账户暂定本金响应格式无效填写暂定本金Reference capital v2参考分配资本按账户、币种和适用期间记录，仅用于参考收益；不代表账户净值。账户请选择账户TradingView · 模拟盘币种CNYUSDHKD起始日期结束日期金额保存参考资本参考资本配置版本或 records 无效当前账本期间配置账户币种期间金额旧版类别配置（未映射，仅只读）未发现旧版类别配置。汇率人民币估算使用的最新汇率当前估值参考汇率（中行）中国银行 · 中行折算价（源报价每100单位外币，以下换算为1外币）用于当前估值参考；不代表历史绩效折算快照。USD/CNY美元1 USD = 暂无 CNYHKD/CNY港币1 HKD = 暂无 CNY暂无可用汇率，原币金额会继续保留。汇率状态格式无效刷新汇率现金基准余额按账户、原币和截至时间记录模拟运行：全部来源（run-null）现金基准按账户、原币和截至时间修正真实现金余额；后续只叠加成交变化，不等于参考分配资本。账户请选择账户TradingView · 模拟盘原币CNYUSDHKD余额截至时间来源保存现金基准重置草稿已更新现金基准已保存现金基准，摘要暂未刷新；请重试读取当前范围现金基准账户原币截至时间余额来源版本TradingView · 模拟盘CNY2026-09-19T00:00:00.000Z120000caller-updated3编辑重试读取现金摘要","fetch":[{"url":"/api/trading-room/cash/baselines?nature=live","method":"GET"},{"url":"/api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/fx","method":"GET"},{"url":"/api/storage/tradingview-account-migration/aliases","method":"GET"},{"url":"/api/trading-room/account-principal?accountId=tradingview%3Asimulation%3Adefault","method":"GET"},{"url":"/api/storage/recall/summaries","method":"GET"},{"url":"/api/trading-room/cash/baselines?accountId=tradingview%3Asimulation%3Adefault&nature=simulation","method":"GET"},{"url":"/api/trading-room/cash?nature=simulation&accountId=tradingview%3Asimulation%3Adefault&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/fx","method":"GET"},{"url":"/api/trading-room/reference-capital","method":"GET"},{"url":"/api/trading-room/cash/baselines","method":"PUT"},{"url":"/api/trading-room/cash/baselines?accountId=tradingview%3Asimulation%3Adefault&nature=simulation","method":"GET"},{"url":"/api/trading-room/cash?nature=simulation&accountId=tradingview%3Asimulation%3Adefault&targetCurrency=CNY&today=2026-10-23","method":"GET"}]}
+
+stdout | .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > returns to the library with its expanded stock context after opening a library round
+PEER_DOM {"url":"http://localhost:3000/trades?scope=live&market=all&accounts=*&rangeMode=all","history":{"hpV25":true,"hpIndex":1,"hpSource":"{\"version\":2,\"scope\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\"},\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":false},\"holdings\":{\"query\":\"\",\"sort\":\"name\",\"page\":1},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"history\":{\"range\":{\"mode\":\"all\"},\"chartMode\":\"period-pnl\"},\"contribution\":{\"mode\":\"current\",\"current\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\",\"openOnly\":false},\"history\":{\"category\":\"long\",\"sort\":\"profit-desc\",\"page\":1,\"market\":null,\"symbol\":null,\"drilldown\":\"markets\"}},\"search\":{\"query\":\"\",\"open\":false,\"resultsScrollTop\":0,\"selectedSymbol\":null,\"triggerFocusId\":null},\"returnState\":{\"source\":null,\"container\":null,\"detailId\":null,\"triggerFocusId\":null,\"missingContainerTitle\":null},\"scrollTop\":0,\"focus\":\"title\",\"futureDisclosureSources\":[]}"},"regions":[{"name":"当前表现，尚未接入","hidden":true},{"name":"当前持仓（最新）","hidden":true},{"name":"历史已平仓，尚未接入","hidden":true},{"name":"数据管理","hidden":true},{"name":"导入交易数据","hidden":true},{"name":"行情数据更新","hidden":true},{"name":"全局行情更新","hidden":true},{"name":"数据健康明细","hidden":true},{"name":"待检查问题","hidden":true},{"name":"TradingView 账户迁移预览","hidden":true},{"name":"TradingView 迁移预览与提交","hidden":true},{"name":"本金与参考收益率配置","hidden":true},{"name":"参考分配资本 v2","hidden":true},{"name":"汇率","hidden":true},{"name":"现金基准","hidden":true},{"name":"现金基准","hidden":true}],"alerts":["账户范围恢复失败：Migration response was invalid重试账户范围恢复","正在读取真实持仓…保留表格位置，读取完成后显示","参考资本配置版本或 records 无效","汇率状态格式无效","现金基准响应格式无效","正在读取目标交易集合…"],"text":"TradeReview历史交易复盘导航我的交易室交易库分析数据策略未开放设置账户范围恢复失败：Migration response was invalid重试账户范围恢复首页全部A股港股美股全部账户截至 2026-10-22T17:59:48.732Z当前表现期间表现尚未接入当前期间统计与曲线将在后续阶段接入当前持仓（最新）持仓市值(CNY)—持仓浮动盈亏(CNY)—搜索持仓导出标的 ↑持仓天数数量成本价最新价持仓市值(CNY)持仓浮动盈亏(CNY)查看 正在读取真实持仓…保留表格位置，读取完成后显示共 0 条持仓 · 0 个标的历史已平仓历史统计与贡献将在后续阶段接入按当前市场、账户与期间查看成交，包含未平仓成交进入交易库数据导入、健康与账户设置1 个已导入标的导入记录数据健康账户与计价导入交易数据全量导入与审计，不受共享范围筛选支持 PDF、Excel、TradingView 模拟交易和已适配的成交截图。导入交易记录查看导入记录行情数据更新全量行情更新，不受共享范围筛选更新会保留本地缓存；取消、失败和未完成任务可在这里继续处理。更新全部数据全部已导入 · 1 只数据质量明细质量定位按当前范围；保留记录审计不受共享范围筛选暂无数据健康明细。待检查问题0 个保留记录暂无需要单独检查的保留记录。TradingView 账户迁移预览只读检查，不会修改账户TradingView · simulation单一模拟账户迁移先读取只读预览，核对来源账户、成交和复盘影响；确认提交后才写入归并，回退入口仅提供只读预检。读取只读预览当前预览阶段不会写入；确认提交归并会写入账户与交易数据。本金与参考收益率配置用于收益参考，不代表账户净值Reference capital v2参考分配资本按账户、币种和适用期间记录，仅用于参考收益；不代表账户净值。账户请选择账户富途币种CNYUSDHKD起始日期结束日期金额保存参考资本参考资本配置版本或 records 无效当前账本期间配置账户币种期间金额旧版类别配置（未映射，仅只读）未发现旧版类别配置。汇率人民币估算使用的最新汇率当前估值参考汇率（中行）中国银行 · 中行折算价（源报价每100单位外币，以下换算为1外币）用于当前估值参考；不代表历史绩效折算快照。USD/CNY美元1 USD = 暂无 CNYHKD/CNY港币1 HKD = 暂无 CNY暂无可用汇率，原币金额会继续保留。汇率状态格式无效刷新汇率现金基准余额按账户、原币和截至时间记录实盘现金基准按账户、原币和截至时间修正真实现金余额；后续只叠加成交变化，不等于参考分配资本。账户请选择账户富途原币CNYUSDHKD余额截至时间来源保存现金基准重置草稿现金基准响应格式无效当前范围现金基准账户原币截至时间余额来源版本当前范围还没有现金基准记录。正在读取目标交易集合…","fetch":[{"url":"/api/trading-room/cash/baselines?nature=live","method":"GET"},{"url":"/api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/fx","method":"GET"},{"url":"/api/storage/tradingview-account-migration/aliases","method":"GET"},{"url":"/api/storage/tradingview-account-migration/aliases","method":"GET"},{"url":"/api/storage/recall/summaries","method":"GET"},{"url":"/api/trading-room/cash/baselines?nature=live","method":"GET"},{"url":"/api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-23","method":"GET"},{"url":"/api/trading-room/reference-capital","method":"GET"},{"url":"/api/fx","method":"GET"}]}
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx (92 tests | 3 failed | 89 skipped) 3762ms
+     × keeps the parent review mounted until a failed navigation save is retried successfully 796ms
+     × keeps a successful typed save observable when summary refresh fails, then retries with reads only 1710ms
+     × returns to the library with its expanded stock context after opening a library round 1253ms
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 89 skipped (92)
+   Start at  01:59:39
+   Duration  10.49s (transform 3.45s, setup 314ms, import 4.47s, tests 3.76s, environment 1.59s)
+
+(node:20128) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > keeps the parent review mounted until a failed navigation save is retried successfully
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/复盘自由黄金-DRS/`
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "交易库页面头部":
+  [36m<header[39m
+    [33maria-label[39m=[32m"交易库页面头部"[39m
+    [33mclass[39m=[32m"_header_b70fc6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "交易库":
+  [36m<h1 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "打开待处理事项":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开待处理事项"[39m
+    [33mclass[39m=[32m"_iconButton_846bfb"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开本地用户菜单":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开本地用户菜单"[39m
+    [33mclass[39m=[32m"_userButton_846bfb "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "共享范围":
+  [36m<div[39m
+    [33maria-label[39m=[32m"共享范围"[39m
+    [33mclass[39m=[32m"_scopeControls_b70fc6"[39m
+    [33mdata-header-scope-controls[39m=[32m"true"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "交易性质":
+  [36m<select[39m
+    [33maria-label[39m=[32m"交易性质"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "共享账户":
+  [36m<select[39m
+    [33maria-label[39m=[32m"共享账户"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "报告计价":
+  [36m<select[39m
+    [33maria-label[39m=[32m"报告计价"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "实盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"live"[39m
+  [36m/>[39m
+
+  Name "模拟盘":
+  [36m<option[39m
+    [33mvalue[39m=[32m"simulation"[39m
+  [36m/>[39m
+
+  Name "来源未知":
+  [36m<option[39m
+    [33mvalue[39m=[32m"unknown"[39m
+  [36m/>[39m
+
+  Name "全部账户":
+  [36m<option[39m
+    [33mvalue[39m=[32m"all"[39m
+  [36m/>[39m
+
+  Name "原币":
+  [36m<option[39m
+    [33mvalue[39m=[32m"original"[39m
+  [36m/>[39m
+
+  Name "CNY参考":
+  [36m<option[39m
+    [33mvalue[39m=[32m"CNY"[39m
+  [36m/>[39m
+
+  Name "HKD参考":
+  [36m<option[39m
+    [33mvalue[39m=[32m"HKD"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "搜索已导入标的":
+  [36m<input[39m
+    [33maria-label[39m=[32m"搜索已导入标的"[39m
+    [33mplaceholder[39m=[32m"搜索已导入标的"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tablist:
+
+  Name "交易库浏览视图":
+  [36m<div[39m
+    [33maria-label[39m=[32m"交易库浏览视图"[39m
+    [33mclass[39m=[32m"module-tabs"[39m
+    [33mrole[39m=[32m"tablist"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tab:
+
+  Name "按标的浏览":
+  [36m<button[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mdata-mode[39m=[32m"stocks"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按回合浏览":
+  [36m<button[39m
+    [33maria-selected[39m=[32m"true"[39m
+    [33mdata-mode[39m=[32m"queue"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "去导入":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary-action"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"交易库"[39m
+  [33mclass[39m=[32m"trade-library"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"_shell_b70fc6 libraryUnifiedHeader"[39m
+  [36m>[39m
+    [36m<header[39m
+      [33maria-label[39m=[32m"交易库页面头部"[39m
+      [33mclass[39m=[32m"_header_b70fc6"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_contentRail_b70fc6"[39m
+        [33mdata-content-layout[39m=[32m"wide"[39m
+        [33mdata-content-rail[39m=[32m"true"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_identityRow_b70fc6"[39m
+          [33mdata-header-row[39m=[32m"identity"[39m
+        [36m...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ renderGoldReplay .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx:885:40
+    883|       const library = await screen.findByRole("region", { name: "交易库" …
+    884|       await user.click(within(library).getByRole("tab", { name: "按回合浏览…
+    885|       await user.click(within(library).getByRole("button", { name: /复盘…
+       |                                        ^
+    886|     } else {
+    887|       await enterImportedReviewFromDashboard();
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx:987:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > keeps a successful typed save observable when summary refresh fails, then retries with reads only
+TestingLibraryElementError: Unable to find a label with the text of: 现金状态
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"trade-review-app  "[39m
+    [36m>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+        [33maria-label[39m=[32m"导入交易记录"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".csv,text/csv"[39m
+        [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m"image/jpeg,image/png,image/we...
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"trade-review-app  "[39m
+      [36m>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+          [33maria-label[39m=[32m"导入交易记录"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mmultiple[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".csv,text/csv"[39m
+          [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        ...
+ ❯ Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx:1359:11
+    1357|     expect(putBodies).toHaveLength(1);
+    1358|     expect(putBodies[0]).toMatchObject({ accountId: TRADINGVIEW_CANONI…
+    1359|     await waitFor(() => {
+       |           ^
+    1360|       expect(screen.getByLabelText("现金状态")).toHaveTextContent(/已保存现金基准…
+    1361|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx > TradeReviewWorkspace > returns to the library with its expanded stock context after opening a library round
+TestingLibraryElementError: Unable to find role="region" and name "交易库"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"trade-review-app  "[39m
+    [36m>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+        [33maria-label[39m=[32m"导入交易记录"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".csv,text/csv"[39m
+        [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m"image/jpeg,image/png,image/we...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"trade-review-app  "[39m
+    [36m>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+        [33maria-label[39m=[32m"导入交易记录"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mmultiple[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m".csv,text/csv"[39m
+        [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mtype[39m=[32m"file"[39m
+      [36m/>[39m
+      [36m<input[39m
+        [33maccept[39m=[32m"image/jpeg,image/png,image/we...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/workspace-three-freeze1/workspace.test.tsx:5440:34
+    5438|       ),
+    5439|     );
+    5440|     const library = await screen.findByRole("region", { name: "交易库" });
+       |                                  ^
+    5441|     expect(within(library).getByRole("tab", { name: "按标的浏览" })).toHave…
+    5442|     const stock = within(library).getByRole("button", { name: /^(展开|收起…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+

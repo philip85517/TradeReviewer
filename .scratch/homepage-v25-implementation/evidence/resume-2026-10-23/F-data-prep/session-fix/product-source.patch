@@ -1,0 +1,122 @@
+--- .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/session-fix/before-source.ts.txt	2026-10-23 01:47:27
++++ app/lib/reviews/homepage-v25-performance.ts	2026-10-23 01:48:14
+@@ -8,6 +8,8 @@
+ import type { StatementEvent } from "../import/monthly-statement";
+ import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
+ import { canonicalInstrumentId } from "../instruments/display-name";
++import { CalendarOutOfRangeError, expectedTradingDates } from "../market/calendar";
++import { requiredMarketDataRange } from "../market/sync-range";
+ 
+ export type HomepageV25Period = { start: string; end: string };
+ export type HomepageV25Scope = { nature: "live" | "simulation"; simulationRunId?: string; accountIds?: readonly string[]; markets?: readonly string[] };
+@@ -56,6 +58,7 @@
+ 
+ type Boundary = { day: string; cursor: string; instant?: number };
+ type Quote = { date: string; price: string | null; currency: string; source: string; quantity?: string; reason?: string };
++type QuoteSelection = { quote: Quote | null; reason?: string };
+ type Group = { key: string; identity: Identity; instrument: Instrument; executions: TradeExecution[]; valuations: HomepageV25Valuation[]; seeds: HomepageV25OpeningPosition[]; conflicts: Set<string>; inventoryConflict: boolean };
+ type State = { boundary: Boundary; ledger: PositionLedgerSnapshot; quantity: Decimal | null; grossRealized: Decimal | null; openFees: Decimal | null; netRealized: Decimal | null; pnlReasons: string[]; quantityReasons: string[]; executions: TradeExecution[] };
+ type Amount = { currency: string; value: Decimal | null; reasons: string[]; eligible: boolean };
+@@ -258,19 +261,43 @@
+   return { boundary, ledger, quantity, grossRealized, openFees: pool, netRealized: grossRealized && pool ? grossRealized.minus(D(ledger.fees)!).plus(pool) : null,
+     pnlReasons: [...pnl], quantityReasons: [...quantityReasons], executions: selected.filter(e => e.source.platform !== "homepage-boundary") };
+ }
+-function quoteFor(input: HomepageV25Input, group: Group, kind: HomepageV25Valuation["kind"], boundary: Boundary): Quote | null {
++function quoteFor(input: HomepageV25Input, group: Group, kind: HomepageV25Valuation["kind"], boundary: Boundary): QuoteSelection {
+   if (input.entries !== undefined) {
++    const market = group.instrument.market;
++    if (market !== "US" && market !== "HK" && market !== "CN-SH" && market !== "CN-SZ") return { quote: null, reason: "quote-market-unsupported" };
++    let completed: string;
++    try {
++      // Shanghai dates bound executions and reporting. Daily raw closes have
++      // the exchange's independent knowledge cutoff, including DST/half days.
++      completed = requiredMarketDataRange(boundary.cursor, boundary.cursor, { market, open: true, now: new Date(boundary.cursor) }).endDate;
++    } catch (error) {
++      if (!(error instanceof CalendarOutOfRangeError)) throw error;
++      return { quote: null, reason: "quote-session-unavailable" };
++    }
+     const candles = input.candlesByInstrument?.[group.instrument.id] ?? [];
+-    const quote = candles.filter(c => c.instrumentId === group.instrument.id && c.adjustmentMode === "raw" && c.tradingDate <= boundary.day && validDay(c.tradingDate) && (boundary.instant === undefined || c.tradingDate < boundary.day)).sort((a, b) => b.tradingDate.localeCompare(a.tradingDate))[0];
+-    return quote ? { date: quote.tradingDate, price: quote.close, currency: quote.currency, source: quote.provider } : null;
++    const candidates = candles.filter(c => c.instrumentId === group.instrument.id && c.adjustmentMode === "raw" && validDay(c.tradingDate) && c.tradingDate <= completed).sort((a, b) => b.tradingDate.localeCompare(a.tradingDate));
++    let unconfirmed = false;
++    for (const candidate of candidates) {
++      try {
++        // A stale weekend/holiday raw row can be below the cutoff, so the
++        // candidate itself must also belong to the supported calendar.
++        if (!expectedTradingDates(market, candidate.tradingDate, candidate.tradingDate).length) continue;
++      } catch (error) {
++        if (!(error instanceof CalendarOutOfRangeError)) throw error;
++        unconfirmed = true;
++        continue;
++      }
++      return { quote: { date: candidate.tradingDate, price: candidate.close, currency: candidate.currency, source: candidate.provider } };
++    }
++    return { quote: null, reason: unconfirmed ? "quote-session-unavailable" : "quote-missing" };
+   }
+   // In the compatibility API an explicit period-start record is a supplied
+   // boundary mark, not a first-day candle. Raw-candle callers use entries.
+   const quotes = group.valuations.filter(v => v.kind === kind && validDay(v.date) && (v.date <= boundary.day || kind === "period-start" && v.date === input.period.start)).sort((a, b) => b.date.localeCompare(a.date));
+   const quote = quotes[0];
+-  return quote ? { ...quote, source: "caller-boundary" } : null;
++  return { quote: quote ? { ...quote, source: "caller-boundary" } : null };
+ }
+-function amount(group: Group, state: State, quote: Quote | null, type: "unrealized" | "market", eligible = true): Amount {
++function amount(group: Group, state: State, quote: Quote | null, type: "unrealized" | "market", eligible = true, quoteReason?: string): Amount {
+   const reasons = new Set(type === "market" ? state.quantityReasons : state.pnlReasons);
+   let quantity = state.quantity;
+   if (quote?.quantity !== undefined) {
+@@ -281,7 +308,7 @@
+   }
+   if (!quantity) reasons.add("quantity-unavailable");
+   if (quantity?.isZero() && !state.quantityReasons.length && (quote?.quantity === undefined || D(quote.quantity)?.isZero())) return { currency: currency(group.instrument.currency), value: new Decimal(0), reasons: [], eligible };
+-  if (!quote || !D(quote.price) || D(quote.price)!.lt(0)) reasons.add(quote?.reason ?? "quote-missing");
++  if (!quote || !D(quote.price) || D(quote.price)!.lt(0)) reasons.add(quote?.reason ?? quoteReason ?? "quote-missing");
+   if (quote && currency(quote.currency) !== currency(group.instrument.currency)) reasons.add("quote-currency-mismatch");
+   if (quote?.reason) reasons.add(quote.reason);
+   if (type === "unrealized" && (state.ledger.costKnown === false || !state.openFees)) reasons.add("cost-unavailable");
+@@ -322,11 +349,11 @@
+   const sum = complete ? values.reduce<Decimal>((total, value) => total.plus(value!), new Decimal(0)) : null;
+   return { value: sum === null ? null : text(sum), available: sum !== null, coverage: { total: eligible.length, available: values.filter(value => value !== null).length }, reasons: [...reasons], money };
+ }
+-function evidence(state: State, quote: Quote | null): SnapshotEvidence {
++function evidence(state: State, quote: Quote | null, quoteReason?: string): SnapshotEvidence {
+   // Fee-only adapter failures do not erase cost already proved by canonical
+   // inventory. Canonical unknown-cost and non-fee ambiguities remain gates.
+   const costKnown = state.quantity !== null && state.ledger.costKnown !== false && state.pnlReasons.every(reason => reason.startsWith("fees-") || reason === "fee-allocation-unavailable" || reason === "ipo-fee-allocation-unavailable");
+-  return { knowledgeCursor: state.boundary.cursor, executionIds: state.executions.map(e => e.id), quantity: state.quantity === null ? null : text(state.quantity), costKnown, feesKnown: state.openFees !== null, openFees: state.openFees === null ? null : text(state.openFees), reasons: unique([...state.pnlReasons, ...state.quantityReasons]), quote: quote ? { date: quote.date, price: quote.price, currency: quote.currency, source: quote.source } : null };
++  return { knowledgeCursor: state.boundary.cursor, executionIds: state.executions.map(e => e.id), quantity: state.quantity === null ? null : text(state.quantity), costKnown, feesKnown: state.openFees !== null, openFees: state.openFees === null ? null : text(state.openFees), reasons: unique([...state.pnlReasons, ...state.quantityReasons, ...(quoteReason ? [quoteReason] : [])]), quote: quote ? { date: quote.date, price: quote.price, currency: quote.currency, source: quote.source } : null };
+ }
+ /** Preferred production API: explicit current cutoff, original library fills and live scope by default. */
+ export function buildHomepageV25PerformanceFromEntries(input: HomepageV25EntriesInput): HomepageV25Performance {
+@@ -359,23 +386,25 @@
+       return state;
+     };
+     const start = atBoundary(startBoundary), end = atBoundary(endBoundary), current = atBoundary(asOf!);
+-    const startQuote = quoteFor(input, group, "period-start", startBoundary), endQuote = quoteFor(input, group, "period-end", endBoundary), currentQuote = quoteFor(input, group, "current", asOf!);
++    const { quote: startQuote, reason: startQuoteReason } = quoteFor(input, group, "period-start", startBoundary);
++    const { quote: endQuote, reason: endQuoteReason } = quoteFor(input, group, "period-end", endBoundary);
++    const { quote: currentQuote, reason: currentQuoteReason } = quoteFor(input, group, "current", asOf!);
+     const code = currency(group.instrument.currency);
+     const eligible = start.executions.length > 0 || end.executions.length > 0 || group.seeds.length > 0 || group.valuations.some(v => v.kind !== "current") || start.quantity === null || end.quantity === null || Boolean(start.quantity?.gt(0) || end.quantity?.abs().gt(0));
+     const realized: Amount = { currency: code, value: start.netRealized !== null && end.netRealized !== null ? end.netRealized.minus(start.netRealized) : null, reasons: unique([...start.pnlReasons, ...end.pnlReasons]), eligible };
+-    const opening = amount(group, start, startQuote, "unrealized", eligible), closing = amount(group, end, endQuote, "unrealized", eligible);
++    const opening = amount(group, start, startQuote, "unrealized", eligible, startQuoteReason), closing = amount(group, end, endQuote, "unrealized", eligible, endQuoteReason);
+     const net: Amount = { currency: code, value: realized.value !== null && opening.value !== null && closing.value !== null ? realized.value.plus(closing.value).minus(opening.value) : null, reasons: unique([...realized.reasons, ...opening.reasons, ...closing.reasons]), eligible };
+     if (input.period.start > effectiveEnd!) { for (const a of [realized, opening, closing, net]) { a.value = null; a.eligible = true; a.reasons = ["period-not-started"]; } }
+     const missingCurrentEvidence = input.entries === undefined && !currentQuote && group.valuations.some(v => v.kind === "period-end" && v.date <= asOf!.day && (!D(v.quantity) || !D(v.quantity)!.isZero()));
+     const currentEligible = missingCurrentEvidence || current.quantity === null || !current.quantity.isZero() || Boolean(currentQuote?.quantity !== undefined && (!D(currentQuote.quantity) || !D(currentQuote.quantity)!.isZero()));
+-    const currentAmount = amount(group, current, currentQuote, "market", currentEligible);
+-    const currentUnrealized = amount(group, current, currentQuote, "unrealized", currentEligible);
++    const currentAmount = amount(group, current, currentQuote, "market", currentEligible, currentQuoteReason);
++    const currentUnrealized = amount(group, current, currentQuote, "unrealized", currentEligible, currentQuoteReason);
+     const currentOpenFees: Amount = { currency: code, value: current.quantity === null ? null : current.openFees, eligible: currentEligible,
+       reasons: unique([...current.quantityReasons, ...(current.openFees === null ? [...current.pnlReasons.filter(reason => reason.includes("fee")), "fee-allocation-unavailable"] : [])]) };
+     if (missingCurrentEvidence) { for (const a of [currentAmount, currentUnrealized]) { a.value = null; a.reasons = unique([...a.reasons, "quote-missing"]); } }
+     realizedAmounts.push(realized); openingAmounts.push(opening); closingAmounts.push(closing); netAmounts.push(net); currentAmounts.push(currentAmount);
+     currentUnrealizedAmounts.push(currentUnrealized); currentOpenFeeAmounts.push(currentOpenFees);
+-    instruments.push({ key: group.key, identity: group.identity, periodRealized: metric([realized], input, asOf), openingUnrealized: metric([opening], input, asOf), closingUnrealized: metric([closing], input, asOf), net: metric([net], input, asOf), currentMarketValue: metric([currentAmount], input, asOf), currentUnrealized: metric([currentUnrealized], input, asOf), currentOpenFees: metric([currentOpenFees], input, asOf), evidence: { executionIds: current.executions.map(e => e.id), opening: evidence(start, startQuote), closing: evidence(end, endQuote), current: evidence(current, currentQuote) } });
++    instruments.push({ key: group.key, identity: group.identity, periodRealized: metric([realized], input, asOf), openingUnrealized: metric([opening], input, asOf), closingUnrealized: metric([closing], input, asOf), net: metric([net], input, asOf), currentMarketValue: metric([currentAmount], input, asOf), currentUnrealized: metric([currentUnrealized], input, asOf), currentOpenFees: metric([currentOpenFees], input, asOf), evidence: { executionIds: current.executions.map(e => e.id), opening: evidence(start, startQuote, startQuoteReason), closing: evidence(end, endQuote, endQuoteReason), current: evidence(current, currentQuote, currentQuoteReason) } });
+   }
+   // An empty input still has a meaningful time boundary. No source rows must
+   // not turn a future reporting period into an available zero.

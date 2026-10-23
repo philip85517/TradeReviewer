@@ -1,0 +1,858 @@
+{
+  "sourceId": "sha256:9e0d5d28fde9f6966b20ea19701f396c702db331064a6499337d4ff7e62533a7",
+  "revisions": {
+    "trades": "1",
+    "metadata": "1",
+    "quotes": "1",
+    "fx": "1"
+  },
+  "policies": {
+    "finance": "F3-2026-10-23",
+    "feePool": "F3-canonical-prefix",
+    "feeFacts": "P2-incurred-knowledge-1",
+    "calendar": "exchange-2010-2030-F3",
+    "dailyCoverage": "P2-strict-completed-1",
+    "fx": "P2-historical-pair-knowledge-1",
+    "quoteKnowledgeMode": "retrospective-completed-session"
+  },
+  "scope": {
+    "nature": "live",
+    "simulationRunId": null,
+    "includedExecutions": 2,
+    "excludedExecutions": 0,
+    "excludedByReason": {}
+  },
+  "asOf": "2026-02-02T10:00:00.000Z",
+  "periodStart": "2026-01-01",
+  "points": [
+    {
+      "periodRealized": {
+        "value": "30",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "30"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "quote-session-unavailable"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "unrealizedChange": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "quote-session-unavailable"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "quote-session-unavailable"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "lifetimeRealizedNet": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "lifetime-source-incomplete"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "lifetimeNet": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "lifetime-source-incomplete"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "marketValue": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "unrealizedNet": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openFees": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "periodFees": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "key": "p",
+      "requestedAt": "2026-01-30",
+      "businessDate": "2026-01-30",
+      "effectiveCursor": "2026-01-30T15:59:59.999Z",
+      "boundaryPrecision": "day",
+      "state": "source-missing",
+      "plottable": false,
+      "instruments": [
+        {
+          "periodRealized": {
+            "value": "30",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "30"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "quote-session-unavailable"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "unrealizedChange": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "quote-session-unavailable"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "quote-session-unavailable"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "lifetimeRealizedNet": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "lifetime-source-incomplete"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "lifetimeNet": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "lifetime-source-incomplete"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "marketValue": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "unrealizedNet": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openFees": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "periodFees": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "evidence": {
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [
+                "buy"
+              ],
+              "quantity": "1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [
+                "quote-session-unavailable"
+              ],
+              "quote": null
+            },
+            "endpoint": {
+              "knowledgeCursor": "2026-01-30T15:59:59.999Z",
+              "executionIds": [
+                "buy",
+                "sell"
+              ],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2025-12-30",
+                "price": "120",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          },
+          "quoteCoverage": {
+            "opening": {
+              "state": "calendar-unavailable",
+              "requiredCompletedSession": null,
+              "selectedDate": null,
+              "missingSessions": [],
+              "reasons": [
+                "quote-session-unavailable"
+              ]
+            },
+            "endpoint": {
+              "state": "missing-completed-session",
+              "requiredCompletedSession": "2026-01-29",
+              "selectedDate": "2025-12-30",
+              "missingSessions": [
+                "2025-12-31",
+                "2026-01-02",
+                "2026-01-05",
+                "2026-01-06",
+                "2026-01-07",
+                "2026-01-08",
+                "2026-01-09",
+                "2026-01-12",
+                "2026-01-13",
+                "2026-01-14",
+                "2026-01-15",
+                "2026-01-16",
+                "2026-01-20",
+                "2026-01-21",
+                "2026-01-22",
+                "2026-01-23",
+                "2026-01-26",
+                "2026-01-27",
+                "2026-01-28",
+                "2026-01-29"
+              ],
+              "reasons": [
+                "quote-completed-session-missing"
+              ]
+            }
+          },
+          "fxCoverage": {
+            "state": "not-required",
+            "businessDate": "2026-01-30",
+            "observationIds": [],
+            "requiredPairs": [],
+            "pairKnowledge": {},
+            "reasons": []
+          },
+          "feeFactIds": [
+            "a|US:AAPL|live||execution:sell"
+          ],
+          "canonicalKnownFees": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "lifetimeCoverage": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "unknown",
+            "coversInception": false,
+            "through": null,
+            "knownAt": null,
+            "evidenceIds": [],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          }
+        }
+      ],
+      "quoteCoverage": {
+        "a|US:AAPL|live|": {
+          "opening": {
+            "state": "calendar-unavailable",
+            "requiredCompletedSession": null,
+            "selectedDate": null,
+            "missingSessions": [],
+            "reasons": [
+              "quote-session-unavailable"
+            ]
+          },
+          "endpoint": {
+            "state": "missing-completed-session",
+            "requiredCompletedSession": "2026-01-29",
+            "selectedDate": "2025-12-30",
+            "missingSessions": [
+              "2025-12-31",
+              "2026-01-02",
+              "2026-01-05",
+              "2026-01-06",
+              "2026-01-07",
+              "2026-01-08",
+              "2026-01-09",
+              "2026-01-12",
+              "2026-01-13",
+              "2026-01-14",
+              "2026-01-15",
+              "2026-01-16",
+              "2026-01-20",
+              "2026-01-21",
+              "2026-01-22",
+              "2026-01-23",
+              "2026-01-26",
+              "2026-01-27",
+              "2026-01-28",
+              "2026-01-29"
+            ],
+            "reasons": [
+              "quote-completed-session-missing"
+            ]
+          }
+        }
+      },
+      "fxCoverage": {
+        "state": "not-required",
+        "businessDate": "2026-01-30",
+        "observationIds": [],
+        "requiredPairs": [],
+        "pairKnowledge": {},
+        "reasons": []
+      },
+      "lifetimeCoverage": [
+        {
+          "accountId": "a",
+          "instrumentId": "US:AAPL",
+          "nature": "live",
+          "simulationRunId": null,
+          "state": "unknown",
+          "coversInception": false,
+          "through": null,
+          "knownAt": null,
+          "evidenceIds": [],
+          "reasons": [
+            "lifetime-source-incomplete"
+          ]
+        }
+      ],
+      "reasons": [
+        "quote-session-unavailable",
+        "lifetime-source-incomplete"
+      ]
+    }
+  ],
+  "current": {
+    "asOf": "2026-02-02T10:00:00.000Z",
+    "currentMarketValue": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 0,
+        "available": 0
+      },
+      "reasons": [],
+      "money": {
+        "originalByCurrency": {},
+        "targetCurrency": null,
+        "conversion": "same-currency",
+        "fx": null
+      }
+    },
+    "currentUnrealized": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 0,
+        "available": 0
+      },
+      "reasons": [],
+      "money": {
+        "originalByCurrency": {},
+        "targetCurrency": null,
+        "conversion": "same-currency",
+        "fx": null
+      }
+    },
+    "currentOpenFees": {
+      "value": "0",
+      "available": true,
+      "coverage": {
+        "total": 0,
+        "available": 0
+      },
+      "reasons": [],
+      "money": {
+        "originalByCurrency": {},
+        "targetCurrency": null,
+        "conversion": "same-currency",
+        "fx": null
+      }
+    },
+    "instruments": [
+      {
+        "key": "a|US:AAPL|live|",
+        "identity": {
+          "accountId": "a",
+          "instrumentId": "US:AAPL",
+          "nature": "live",
+          "simulationRunId": null
+        },
+        "currentMarketValue": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": null,
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "currentUnrealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": null,
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "currentOpenFees": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": null,
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "evidence": {
+          "current": {
+            "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+            "executionIds": [
+              "buy",
+              "sell"
+            ],
+            "quantity": "0",
+            "costKnown": true,
+            "feesKnown": true,
+            "openFees": "0",
+            "reasons": [],
+            "quote": {
+              "date": "2025-12-30",
+              "price": "120",
+              "currency": "USD",
+              "source": "eastmoney"
+            }
+          }
+        }
+      }
+    ],
+    "quoteCoverage": {
+      "a|US:AAPL|live|": {
+        "state": "missing-completed-session",
+        "requiredCompletedSession": "2026-01-30",
+        "selectedDate": "2025-12-30",
+        "missingSessions": [
+          "2025-12-31",
+          "2026-01-02",
+          "2026-01-05",
+          "2026-01-06",
+          "2026-01-07",
+          "2026-01-08",
+          "2026-01-09",
+          "2026-01-12",
+          "2026-01-13",
+          "2026-01-14",
+          "2026-01-15",
+          "2026-01-16",
+          "2026-01-20",
+          "2026-01-21",
+          "2026-01-22",
+          "2026-01-23",
+          "2026-01-26",
+          "2026-01-27",
+          "2026-01-28",
+          "2026-01-29",
+          "2026-01-30"
+        ],
+        "reasons": [
+          "quote-completed-session-missing"
+        ]
+      }
+    },
+    "fxCoverage": {
+      "state": "not-required",
+      "businessDate": "2026-02-02",
+      "observationIds": [],
+      "requiredPairs": [],
+      "pairKnowledge": {},
+      "reasons": []
+    }
+  },
+  "feeFacts": [
+    {
+      "factId": "a|US:AAPL|live||execution:buy",
+      "accountId": "a",
+      "instrumentId": "US:AAPL",
+      "nature": "live",
+      "simulationRunId": null,
+      "kind": "execution-fee",
+      "currency": "USD",
+      "expense": "0",
+      "incurred": {
+        "businessDate": "2025-12-15",
+        "at": "2025-12-15T15:00:00Z",
+        "precision": "instant"
+      },
+      "knowledge": {
+        "amountKnownAt": "2025-12-15T15:00:00.000Z",
+        "attributionKnownAt": "2025-12-15T15:00:00.000Z",
+        "availableAt": "2025-12-15T15:00:00.000Z",
+        "evidenceIds": [
+          "buy"
+        ]
+      },
+      "lineage": {
+        "executionIds": [
+          "buy"
+        ],
+        "eventIds": [],
+        "sourceRows": [
+          "test:1"
+        ]
+      },
+      "coverage": "complete",
+      "reasons": []
+    },
+    {
+      "factId": "a|US:AAPL|live||execution:sell",
+      "accountId": "a",
+      "instrumentId": "US:AAPL",
+      "nature": "live",
+      "simulationRunId": null,
+      "kind": "execution-fee",
+      "currency": "USD",
+      "expense": "0",
+      "incurred": {
+        "businessDate": "2026-01-15",
+        "at": "2026-01-15T15:00:00Z",
+        "precision": "instant"
+      },
+      "knowledge": {
+        "amountKnownAt": "2026-01-15T15:00:00.000Z",
+        "attributionKnownAt": "2026-01-15T15:00:00.000Z",
+        "availableAt": "2026-01-15T15:00:00.000Z",
+        "evidenceIds": [
+          "sell"
+        ]
+      },
+      "lineage": {
+        "executionIds": [
+          "sell"
+        ],
+        "eventIds": [],
+        "sourceRows": [
+          "test:2"
+        ]
+      },
+      "coverage": "complete",
+      "reasons": []
+    }
+  ],
+  "diagnostics": {
+    "canonicalCalls": 3,
+    "canonicalCacheHits": 1,
+    "feeSteps": 2,
+    "feeCheckpointHits": 1,
+    "quoteLookups": 3,
+    "fxLookups": 2,
+    "distinctCanonicalContexts": 3,
+    "cacheEntries": 8,
+    "cacheEstimatedBytes": 10488,
+    "evictions": 0
+  }
+}

@@ -1,0 +1,216 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:59262) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/replay/position-ledger.test.ts (44 tests | 3 failed | 41 skipped) 43ms
+     × observes bonus, pending transfer and reconciliation continue paths without inventing closes 36ms
+     × keeps a statement-only gap and month precision explicit 1ms
+     × matches old snapshots and preserves selection, ties and captured-source isolation 5ms
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (160 tests | 7 failed | 152 skipped) 231ms
+     × O03 keeps late IPO knowledge distinct without changing closing or incurred dates 51ms
+     × O04 records non-execution IPO cover of 1 without fabricating fills 7ms
+     × O04 records non-execution IPO cover of 3 without fabricating fills 6ms
+     × O06 does not trust episode dates over canonical facts and records conflicts 2ms
+     × O06 preserves duplicate inventory and monetary uncertainty separately 1ms
+     × O07 exposes sub-cent native results and keeps historical FX and mixed provenance unknown 16ms
+     × O08 collects facts only on request and retains no memo, source or index growth 141ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam O05/O08 > observes bonus, pending transfer and reconciliation continue paths without inventing closes
+AssertionError: expected [ [ 'execution', '0', '2' ], …(3) ] to deeply equal [ [ 'execution', '0', '2' ], …(3) ]
+
+- Expected
++ Received
+
+@@ -3,20 +3,20 @@
+      "execution",
+      "0",
+      "2",
+    ],
+    [
+-     "bonus",
++     "evidence-status",
++     "2",
+      "2",
+-     "3",
+    ],
+    [
+      "evidence-status",
+-     "3",
++     "2",
+      null,
+    ],
+    [
+      "transfer",
+      null,
+-     "0",
++     "-1",
+    ],
+  ]
+
+ ❯ app/lib/replay/position-ledger.test.ts:1017:94
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam O05/O08 > keeps a statement-only gap and month precision explicit
+ReferenceError: fixturePosition is not defined
+ ❯ app/lib/replay/position-ledger.test.ts:1024:23
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  app/lib/replay/position-ledger.test.ts > P4 canonical fact seam O05/O08 > matches old snapshots and preserves selection, ties and captured-source isolation
+ReferenceError: Decimal is not defined
+ ❯ app/lib/replay/position-ledger.test.ts:1040:185
+
+ ❯ app/lib/replay/position-ledger.test.ts:1040:145
+ ❯ app/lib/replay/position-ledger.test.ts:1038:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O03 keeps late IPO knowledge distinct without changing closing or incurred dates
+AssertionError: expected [] to deeply equal [ StringContaining "fee" ]
+
+- Expected
++ Received
+
+- [
+-   StringContaining "fee",
+- ]
++ []
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1145:90
+    1143|     expect([early, late].map(g => g.incurredFeeFacts.reduce((sum, fact…
+    1144|     expect(late.incurredFeeFacts.find(f => f.lineage.eventIds.includes…
+    1145|     expect(late.allocations.find(f => f.allocationEventId === "allocat…
+       |                                                                                          ^
+    1146|     expect(early.canonical.contextId).not.toBe(late.canonical.contextI…
+    1147|     expect(seamRead(source, "2026-01-18")).toEqual(early);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O04 records non-execution IPO cover of 1 without fabricating fills
+AssertionError: expected [ '-1', '-80', '3', '-83' ] to deeply equal [ '-1', '20', '2', '18' ]
+
+- Expected
++ Received
+
+  [
+    "-1",
+-   "20",
+-   "2",
+-   "18",
++   "-80",
++   "3",
++   "-83",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1154:156
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O04 records non-execution IPO cover of 3 without fabricating fills
+AssertionError: expected [ '1', '106.66666666666666667', …(2) ] to deeply equal [ '1', '106.66666666666666666', …(2) ]
+
+- Expected
++ Received
+
+  [
+    "1",
+-   "106.66666666666666666",
++   "106.66666666666666667",
+    "3.3333333333333333333",
+-   "103.33333333333333333",
++   "103.33333333333333334",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1154:156
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O06 does not trust episode dates over canonical facts and records conflicts
+TypeError: Cannot read properties of undefined (reading 'US:AAPL')
+ ❯ app/lib/trades/library.ts:142:9
+    140|     .flatMap((summary) => {
+    141|       const latestCandle = [...(
+    142|         candlesByInstrument[summary.instrument.id] ?? []
+       |         ^
+    143|       )].sort((a, b) =>
+    144|         a.tradingDate.localeCompare(b.tradingDate),
+ ❯ buildTradeLibraryEntries app/lib/trades/library.ts:140:6
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1161:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O06 preserves duplicate inventory and monetary uncertainty separately
+TypeError: Cannot read properties of undefined (reading 'US:AAPL')
+ ❯ app/lib/trades/library.ts:142:9
+    140|     .flatMap((summary) => {
+    141|       const latestCandle = [...(
+    142|         candlesByInstrument[summary.instrument.id] ?? []
+       |         ^
+    143|       )].sort((a, b) =>
+    144|         a.tradingDate.localeCompare(b.tradingDate),
+ ❯ buildTradeLibraryEntries app/lib/trades/library.ts:140:6
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1170:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O07 exposes sub-cent native results and keeps historical FX and mixed provenance unknown
+AssertionError: expected undefined to match object { state: 'missing', …(1) }
+
+- Expected:
+{
+  "reasons": [
+    "fx-knowledge-unavailable",
+  ],
+  "state": "missing",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1188:30
+    1186|     const group = preparedPerformance.readHomepageV25FinancialFacts(so…
+    1187|     expect(group.nativeRealizedNet.available).toBe(true);
+    1188|     expect(group.fxCoverage).toMatchObject({ state: "missing", reasons…
+       |                              ^
+    1189|     expect(group.classificationCoverage).toMatchObject({ available: fa…
+    1190|     expect(group.classificationCoverage.sourceClasses).toEqual(["ipo",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam O03–O08 > O08 collects facts only on request and retains no memo, source or index growth
+AssertionError: expected [ '100', '2e-9', '99.999999998' ] to deeply equal [ Array(3) ]
+
+- Expected
++ Received
+
+  [
+    "100",
+-   "0.000000002",
++   "2e-9",
+    "99.999999998",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1198:115
+    1196|     expect(second).toEqual(first);
+    1197|     expect(first.diagnostics).toEqual({ evaluations: 1, transitions: 2…
+    1198|     expect([first.canonical.terminal.realizedPnl.value, first.realized…
+       |                                                                                                                   ^
+    1199|     expect(after).toEqual(before);
+    1200|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  10 failed | 1 passed | 193 skipped (204)
+   Start at  11:03:05
+   Duration  2.22s (transform 717ms, setup 356ms, import 856ms, tests 274ms, environment 1.86s)
+

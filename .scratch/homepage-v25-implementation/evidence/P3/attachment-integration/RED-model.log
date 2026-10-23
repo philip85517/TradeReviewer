@@ -1,0 +1,93 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:46974) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ × app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > feeds holdings and CSV from the exact eligible account/instrument groups 57ms
+   → expected [ [ 'A', 'HK:X' ], …(3) ] to deeply equal [ [ 'A', 'HK:X' ], [ 'B', 'HK:Y' ] ]
+ × app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > qualifies open exposure without quotes or unrealized money and retains complete selected histories 14ms
+   → Cannot read properties of undefined (reading 'executions')
+ × app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > does not label completed-looking incomplete histories as pending=no or guess missing stock metadata 8ms
+   → Cannot read properties of undefined (reading 'eligibleGroups')
+ × app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > uses Recall completion from its owned entries and resolves source identity to concrete instruments 13ms
+   → Cannot read properties of undefined (reading 'eligibleGroups')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > feeds holdings and CSV from the exact eligible account/instrument groups
+AssertionError: expected [ [ 'A', 'HK:X' ], …(3) ] to deeply equal [ [ 'A', 'HK:X' ], [ 'B', 'HK:Y' ] ]
+
+- Expected
++ Received
+
+@@ -2,9 +2,17 @@
+    [
+      "A",
+      "HK:X",
+    ],
+    [
++     "A",
++     "HK:Y",
++   ],
++   [
++     "B",
++     "HK:X",
++   ],
++   [
+      "B",
+      "HK:Y",
+    ],
+  ]
+
+ ❯ app/components/homepage-v25/attachment-integration.test.ts:33:78
+     31|     const entries = source([fill("A", "X"), fill("A", "Y"), fill("B", …
+     32|     const result = buildHomepageHoldings(entries, { scope, asOf, instr…
+     33|     expect(result.rows.map(row => [row.accountId, row.instrumentId]).s…
+       |                                                                              ^
+     34|     const csv = holdingsCsv(result.rows);
+     35|     expect(csv).toContain("X证券,HKEX:X,账户A");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > qualifies open exposure without quotes or unrealized money and retains complete selected histories
+TypeError: Cannot read properties of undefined (reading 'executions')
+ ❯ app/components/homepage-v25/attachment-integration.test.ts:49:29
+     47|     expect(result.rows.map(row => [row.accountId, row.instrumentId, ro…
+     48|     expect(result.rows[0].reportPnl).toBeNull();
+     49|     expect(result.selection.executions).toEqual([bought, sold, later]);
+       |                             ^
+     50|     expect(result.selection.executions[0]).toBe(bought);
+     51|     expect(result.selection.executions.map(item => item.fee)).toEqual(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > does not label completed-looking incomplete histories as pending=no or guess missing stock metadata
+TypeError: Cannot read properties of undefined (reading 'eligibleGroups')
+ ❯ app/components/homepage-v25/attachment-integration.test.ts:60:29
+     58|     const result = buildHomepageHoldings(entries, { scope, asOf, instr…
+     59|       attachments: { categories: [], openOnly: false, pendingReview: […
+     60|     expect(result.selection.eligibleGroups.map(group => [group.identit…
+       |                             ^
+     61|     expect(result.selection.groups.find(group => group.identity.accoun…
+     62|     const noMetadata = buildHomepageHoldings(entries, { scope, asOf, i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  app/components/homepage-v25/attachment-integration.test.ts > owned homepage attachment consumer integration > uses Recall completion from its owned entries and resolves source identity to concrete instruments
+TypeError: Cannot read properties of undefined (reading 'eligibleGroups')
+ ❯ app/components/homepage-v25/attachment-integration.test.ts:73:29
+     71|     const result = buildHomepageHoldings(entries, { scope: { ...scope,…
+     72|       symbolInstrumentIds: ["HK:X"], attachments: { categories: [], op…
+     73|     expect(result.selection.eligibleGroups.map(group => group.identity…
+       |                             ^
+     74|     expect(result.selection.entries[0].episodes[0].recallReview?.statu…
+     75|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  06:19:44
+   Duration  2.21s (transform 425ms, setup 197ms, import 505ms, tests 94ms, environment 1.05s)
+

@@ -1,0 +1,1332 @@
+[
+  {
+    "requested": 1440,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n~\t\t\t\t8 标准指标\n~\t\t\t\t13 (selected) 更新失败保留旧值\n~\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand\n~\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 23820.4321 CNY, Secondary Actions: Expand\n~\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n~\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n+\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 358,
+            "right": 414,
+            "top": 163,
+            "width": 56,
+            "x": 358,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 161,
+            "right": 350,
+            "top": 165,
+            "width": 189,
+            "x": 161,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 144,
+            "right": 423,
+            "top": 152,
+            "width": 279,
+            "x": 144,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 161,
+            "right": 406,
+            "top": 189,
+            "width": 245,
+            "x": 161,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 649,
+            "right": 705,
+            "top": 163,
+            "width": 56,
+            "x": 649,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 452,
+            "right": 641,
+            "top": 165,
+            "width": 189,
+            "x": 452,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 435,
+            "right": 714,
+            "top": 152,
+            "width": 279,
+            "x": 435,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 452,
+            "right": 697,
+            "top": 189,
+            "width": 245,
+            "x": 452,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 940,
+            "right": 996,
+            "top": 163,
+            "width": 56,
+            "x": 940,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 743,
+            "right": 932,
+            "top": 165,
+            "width": 189,
+            "x": 743,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 726,
+            "right": 1005,
+            "top": 152,
+            "width": 279,
+            "x": 726,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 743,
+            "right": 988,
+            "top": 189,
+            "width": 245,
+            "x": 743,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 1231,
+            "right": 1287,
+            "top": 163,
+            "width": 56,
+            "x": 1231,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 1034,
+            "right": 1223,
+            "top": 165,
+            "width": 189,
+            "x": 1034,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 1017,
+            "right": 1296,
+            "top": 152,
+            "width": 279,
+            "x": 1017,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 1034,
+            "right": 1279,
+            "top": 189,
+            "width": 245,
+            "x": 1034,
+            "y": 189
+          }
+        }
+      ],
+      "scrollWidth": 1440,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "requested": 1280,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 278,
+            "right": 334,
+            "top": 163,
+            "width": 56,
+            "x": 278,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 81,
+            "right": 270,
+            "top": 165,
+            "width": 189,
+            "x": 81,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 64,
+            "right": 343,
+            "top": 152,
+            "width": 279,
+            "x": 64,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 81,
+            "right": 326,
+            "top": 189,
+            "width": 245,
+            "x": 81,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 569,
+            "right": 625,
+            "top": 163,
+            "width": 56,
+            "x": 569,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 372,
+            "right": 561,
+            "top": 165,
+            "width": 189,
+            "x": 372,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 355,
+            "right": 634,
+            "top": 152,
+            "width": 279,
+            "x": 355,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 372,
+            "right": 617,
+            "top": 189,
+            "width": 245,
+            "x": 372,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 860,
+            "right": 916,
+            "top": 163,
+            "width": 56,
+            "x": 860,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 663,
+            "right": 852,
+            "top": 165,
+            "width": 189,
+            "x": 663,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 646,
+            "right": 925,
+            "top": 152,
+            "width": 279,
+            "x": 646,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 663,
+            "right": 908,
+            "top": 189,
+            "width": 245,
+            "x": 663,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 1151,
+            "right": 1207,
+            "top": 163,
+            "width": 56,
+            "x": 1151,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 954,
+            "right": 1143,
+            "top": 165,
+            "width": 189,
+            "x": 954,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 937,
+            "right": 1216,
+            "top": 152,
+            "width": 279,
+            "x": 937,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 954,
+            "right": 1199,
+            "top": 189,
+            "width": 245,
+            "x": 954,
+            "y": 189
+          }
+        }
+      ],
+      "scrollWidth": 1280,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "requested": 1044,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 163,
+            "width": 56,
+            "x": 199,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 165,
+            "width": 150,
+            "x": 41,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 152,
+            "width": 240,
+            "x": 24,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 189,
+            "width": 206,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 163,
+            "width": 56,
+            "x": 451,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 165,
+            "width": 150,
+            "x": 293,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 152,
+            "width": 240,
+            "x": 276,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 189,
+            "width": 206,
+            "x": 293,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 703,
+            "right": 759,
+            "top": 163,
+            "width": 56,
+            "x": 703,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 545,
+            "right": 695,
+            "top": 165,
+            "width": 150,
+            "x": 545,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 528,
+            "right": 768,
+            "top": 152,
+            "width": 240,
+            "x": 528,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 545,
+            "right": 751,
+            "top": 189,
+            "width": 206,
+            "x": 545,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 955,
+            "right": 1011,
+            "top": 163,
+            "width": 56,
+            "x": 955,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 797,
+            "right": 947,
+            "top": 165,
+            "width": 150,
+            "x": 797,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 780,
+            "right": 1020,
+            "top": 152,
+            "width": 240,
+            "x": 780,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 797,
+            "right": 1003,
+            "top": 189,
+            "width": 206,
+            "x": 797,
+            "y": 189
+          }
+        }
+      ],
+      "scrollWidth": 1044,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1044
+      }
+    }
+  },
+  {
+    "requested": 1043,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 450.5,
+            "right": 506.5,
+            "top": 163,
+            "width": 56,
+            "x": 450.5,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 442.5,
+            "top": 165,
+            "width": 401.5,
+            "x": 41,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 515.5,
+            "top": 152,
+            "width": 491.5,
+            "x": 24,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 498.5,
+            "top": 189,
+            "width": 457.5,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 954,
+            "right": 1010,
+            "top": 163,
+            "width": 56,
+            "x": 954,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 544.5,
+            "right": 946,
+            "top": 165,
+            "width": 401.5,
+            "x": 544.5,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 527.5,
+            "right": 1019,
+            "top": 152,
+            "width": 491.5,
+            "x": 527.5,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 544.5,
+            "right": 1002,
+            "top": 189,
+            "width": 457.5,
+            "x": 544.5,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 450.5,
+            "right": 506.5,
+            "top": 263,
+            "width": 56,
+            "x": 450.5,
+            "y": 263
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 442.5,
+            "top": 265,
+            "width": 401.5,
+            "x": 41,
+            "y": 265
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 515.5,
+            "top": 252,
+            "width": 491.5,
+            "x": 24,
+            "y": 252
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 498.5,
+            "top": 289,
+            "width": 457.5,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 954,
+            "right": 1010,
+            "top": 263,
+            "width": 56,
+            "x": 954,
+            "y": 263
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 285,
+            "height": 20,
+            "left": 544.5,
+            "right": 946,
+            "top": 265,
+            "width": 401.5,
+            "x": 544.5,
+            "y": 265
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 527.5,
+            "right": 1019,
+            "top": 252,
+            "width": 491.5,
+            "x": 527.5,
+            "y": 252
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 544.5,
+            "right": 1002,
+            "top": 289,
+            "width": 457.5,
+            "x": 544.5,
+            "y": 289
+          }
+        }
+      ],
+      "scrollWidth": 1043,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1043
+      }
+    }
+  },
+  {
+    "requested": 540,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 163,
+            "width": 56,
+            "x": 199,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 165,
+            "width": 150,
+            "x": 41,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 152,
+            "width": 240,
+            "x": 24,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 189,
+            "width": 206,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 163,
+            "width": 56,
+            "x": 451,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 165,
+            "width": 150,
+            "x": 293,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 152,
+            "width": 240,
+            "x": 276,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 189,
+            "width": 206,
+            "x": 293,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 263,
+            "width": 56,
+            "x": 199,
+            "y": 263
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 265,
+            "width": 150,
+            "x": 41,
+            "y": 265
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 252,
+            "width": 240,
+            "x": 24,
+            "y": 252
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 289,
+            "width": 206,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 263,
+            "width": 56,
+            "x": 451,
+            "y": 263
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 285,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 265,
+            "width": 150,
+            "x": 293,
+            "y": 265
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 252,
+            "width": 240,
+            "x": 276,
+            "y": 252
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 289,
+            "width": 206,
+            "x": 293,
+            "y": 289
+          }
+        }
+      ],
+      "scrollWidth": 540,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 540
+      }
+    }
+  },
+  {
+    "requested": 539,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 163,
+            "width": 56,
+            "x": 450,
+            "y": 163
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 165,
+            "width": 401,
+            "x": 41,
+            "y": 165
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 152,
+            "width": 491,
+            "x": 24,
+            "y": 152
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 189,
+            "width": 457,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 263,
+            "width": 56,
+            "x": 450,
+            "y": 263
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 265,
+            "width": 401,
+            "x": 41,
+            "y": 265
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 252,
+            "width": 491,
+            "x": 24,
+            "y": 252
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 289,
+            "width": 457,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 387,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 363,
+            "width": 56,
+            "x": 450,
+            "y": 363
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 385,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 365,
+            "width": 401,
+            "x": 41,
+            "y": 365
+          },
+          "rect": {
+            "bottom": 440,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 352,
+            "width": 491,
+            "x": 24,
+            "y": 352
+          },
+          "value": {
+            "bottom": 423,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 389,
+            "width": 457,
+            "x": 41,
+            "y": 389
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 487,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 463,
+            "width": 56,
+            "x": 450,
+            "y": 463
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 485,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 465,
+            "width": 401,
+            "x": 41,
+            "y": 465
+          },
+          "rect": {
+            "bottom": 540,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 452,
+            "width": 491,
+            "x": 24,
+            "y": 452
+          },
+          "value": {
+            "bottom": 523,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 489,
+            "width": 457,
+            "x": 41,
+            "y": 489
+          }
+        }
+      ],
+      "scrollWidth": 539,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 539
+      }
+    }
+  },
+  {
+    "requested": 390,
+    "state": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 30000.432100 CNY, Secondary Actions: Expand",
+    "result": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 239,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 215,
+            "width": 56,
+            "x": 301,
+            "y": 215
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 237,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 217,
+            "width": 252,
+            "x": 41,
+            "y": 217
+          },
+          "rect": {
+            "bottom": 292,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 204,
+            "width": 342,
+            "x": 24,
+            "y": 204
+          },
+          "value": {
+            "bottom": 275,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 241,
+            "width": 308,
+            "x": 41,
+            "y": 241
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 339,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 315,
+            "width": 56,
+            "x": 301,
+            "y": 315
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 337,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 317,
+            "width": 252,
+            "x": 41,
+            "y": 317
+          },
+          "rect": {
+            "bottom": 392,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 304,
+            "width": 342,
+            "x": 24,
+            "y": 304
+          },
+          "value": {
+            "bottom": 375,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 341,
+            "width": 308,
+            "x": 41,
+            "y": 341
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 439,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 415,
+            "width": 56,
+            "x": 301,
+            "y": 415
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 437,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 417,
+            "width": 252,
+            "x": 41,
+            "y": 417
+          },
+          "rect": {
+            "bottom": 492,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 404,
+            "width": 342,
+            "x": 24,
+            "y": 404
+          },
+          "value": {
+            "bottom": 475,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 441,
+            "width": 308,
+            "x": 41,
+            "y": 441
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 539,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 515,
+            "width": 56,
+            "x": 301,
+            "y": 515
+          },
+          "color": "rgb(255, 133, 146)",
+          "font": "28px",
+          "header": {
+            "bottom": 537,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 517,
+            "width": 252,
+            "x": 41,
+            "y": 517
+          },
+          "rect": {
+            "bottom": 592,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 504,
+            "width": 342,
+            "x": 24,
+            "y": 504
+          },
+          "value": {
+            "bottom": 575,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 541,
+            "width": 308,
+            "x": 41,
+            "y": 541
+          }
+        }
+      ],
+      "scrollWidth": 390,
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 390
+      }
+    }
+  }
+]

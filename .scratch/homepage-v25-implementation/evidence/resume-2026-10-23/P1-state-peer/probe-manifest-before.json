@@ -1,0 +1,58 @@
+{
+  "createdAt": "2026-10-22T17:16:37.062Z",
+  "status": "moving implementation pre-review; not frozen acceptance",
+  "files": {
+    "app/components/homepage-v25/session-model.ts": {
+      "sha256": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+      "bytes": 2818
+    },
+    "app/components/homepage-v25/use-homepage-host.ts": {
+      "sha256": "c50d4be2bc51e5ad57d0e2719cb27e849b0f44a3065068c4cb86acaa9f5e0a79",
+      "bytes": 11097
+    },
+    "app/components/homepage-v25/session-model.test.ts": {
+      "sha256": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+      "bytes": 2688
+    },
+    "app/components/homepage-v25/use-homepage-host.test.tsx": {
+      "sha256": "30121c17335863ae97c8310fe72cb9b7c6b20ea49ef58db5096627bd6888f13b",
+      "bytes": 4454
+    },
+    "app/components/homepage-v25/home-surface.tsx": {
+      "sha256": "5d4d549adf1624dc63e08a76ebe0b7eaebebd4d6d2aac8616f5586598c7e957c",
+      "bytes": 20754
+    },
+    "app/components/trade-review-workspace.tsx": {
+      "sha256": "28830034a282ee9265fea54b62a387aaa60b959f5fffbf9f48300f7d4d00918a",
+      "bytes": 274519
+    },
+    "app/components/library/library-browse-state.ts": {
+      "sha256": "0cc575b84582a1386e5e0f80e8c40a516b83e9013cee0a54f1574efe598c6238",
+      "bytes": 24868
+    },
+    "app/components/library/trade-library.tsx": {
+      "sha256": "f08247ef045f620ac18d5c54c8b820ad220c41ddf8e4df47173ba1517adfbd75",
+      "bytes": 64007
+    },
+    "app/lib/reviews/homepage-v25-state.ts": {
+      "sha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "bytes": 30799
+    },
+    "app/home/page.tsx": {
+      "sha256": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "bytes": 293
+    },
+    "app/trades/page.tsx": {
+      "sha256": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "bytes": 295
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx": {
+      "sha256": "a35bbc3ec1066edf301bdf3caa3fcee74584de8a985e0c20f09b8aa255d2eb34",
+      "bytes": 4118
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/focused.vitest.config.ts": {
+      "sha256": "873e6d107a3d9d151b5cceab18b4e9ef8b835f7af425600abed624454f0cf956",
+      "bytes": 389
+    }
+  }
+}

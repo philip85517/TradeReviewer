@@ -1,0 +1,23 @@
+Browser tab: 4, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all
+	2 container 标的搜索
+		3 container
+			4 heading 找到标的, Value: 2, ID: hp-search-results-title
+				5 text 找到标的
+			6 button 关闭标的搜索
+		7 search text field (settable) Description: 搜索标的, Value: ROKU
+		8 button 清除标的搜索
+		9 container 找到标的
+			10 button Roku, Inc. - Class A Common Stock NASDAQ:ROKU · USD · 股票, ID: hp-symbol-NASDAQ%3AROKU%3Astock
+				11 text Roku, Inc. - Class A Common Stock
+				12 text NASDAQ
+				13 text :
+				14 text ROKU
+				15 text  · 
+				16 text USD
+				17 text  · 
+				18 text 股票
+		19 container
+			20 text 目录来自已导入交易与已存证券资料，未覆盖全市场。 输入框内 × 清空查询 · ↑ ↓ 选择 · Enter 查看 · Esc 关闭
+
+The focused UI element is 10 button Roku, Inc. - Class A Common Stock NASDAQ:ROKU · USD · 股票, ID: hp-symbol-NASDAQ%3AROKU%3Astock

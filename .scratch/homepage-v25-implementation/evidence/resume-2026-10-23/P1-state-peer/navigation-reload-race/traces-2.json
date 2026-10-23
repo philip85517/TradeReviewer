@@ -1,0 +1,1085 @@
+{
+  "NR01": [
+    {
+      "stage": "return-read-pending",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 4
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": {
+        "domain": "global",
+        "generation": 6,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707401,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "home-ready",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "hard-remount-before-owned-read",
+      "url": "/home",
+      "initialized": false,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 1
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": {
+        "domain": "global",
+        "generation": 3,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707405,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "hard-remount-read-accepted",
+      "url": "/home?scope=live&market=a&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": null,
+      "data": "fresh-after-hard-reload",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    }
+  ],
+  "NR02": [
+    {
+      "stage": "pending-ui-callback",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 4
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": {
+        "domain": "global",
+        "generation": 6,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707418,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "home-ready",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "hard-remount-accepted",
+      "url": "/home?scope=live&market=a&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": null,
+      "data": "fresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    }
+  ],
+  "NR03": [
+    {
+      "stage": "return-read-pending-no-ui",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 3
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": {
+        "domain": "global",
+        "generation": 4,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707429,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "hard-remount-accepted",
+      "url": "/home?scope=live&market=a&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": null,
+      "data": "fresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    }
+  ],
+  "NR04": [
+    {
+      "stage": "bootstrap-failed",
+      "url": "/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=NASDAQ%3AROKU%3Astock",
+      "initialized": true,
+      "route": {
+        "page": "trades",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "symbolIdentity": "NASDAQ:ROKU:stock"
+        },
+        "collectionOrigin": "homepage",
+        "error": "synthetic-owned-read-failure",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": null,
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "return-read-pending",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 3
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": {
+        "domain": "global",
+        "generation": 4,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707438,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "pending-ui-callback",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 3
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": {
+        "domain": "global",
+        "generation": 4,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707438,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      }
+    },
+    {
+      "stage": "hard-remount-accepted",
+      "url": "/home?scope=live&market=all&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": null,
+      "data": "fresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      }
+    }
+  ],
+  "NR05": [
+    {
+      "stage": "accepted-before-ui",
+      "url": "/home?scope=live&market=a&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 4
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": null,
+      "data": "return-ready",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "hard-remount-accepted",
+      "url": "/home?scope=live&market=a&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 2
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "request": null,
+      "data": "fresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    }
+  ],
+  "NR06": [
+    {
+      "stage": "return-read-pending",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 3
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": {
+        "domain": "global",
+        "generation": 4,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707466,
+        "target": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "navigation"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "refresh-supersedes-navigation",
+      "url": "/home",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 3
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": {
+        "domain": "global",
+        "generation": 5,
+        "scopeKey": "{\"domain\":\"global\",\"purpose\":\"refresh\",\"target\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+        "startedAt": 1792698707467,
+        "target": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all",
+          "attachments": {
+            "categories": [],
+            "openOnly": false,
+            "pendingReview": []
+          }
+        },
+        "purpose": "refresh"
+      },
+      "data": "seed-only",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "a",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": "ROKU"
+      }
+    },
+    {
+      "stage": "refresh-accepted",
+      "url": "/home?scope=live&market=all&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 4
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": null,
+      "data": "newer-refresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      }
+    },
+    {
+      "stage": "late-navigation-ignored",
+      "url": "/home?scope=live&market=all&accounts=*&rangeMode=all",
+      "initialized": true,
+      "route": {
+        "page": "home",
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "error": null,
+        "collectionOrigin": "homepage",
+        "key": 4
+      },
+      "committed": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "request": null,
+      "data": "newer-refresh",
+      "historySource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      },
+      "storageSource": {
+        "scope": {
+          "live": true,
+          "market": "all",
+          "accounts": [
+            "*"
+          ],
+          "rangeMode": "all"
+        },
+        "query": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+Command: /Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node --test .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs
+Exit: 1
+✔ disabled import has no global mutations; hard limits cannot be enlarged (13.004337ms)
+✔ natural srvx discovery, GET/RSC coverage, actual bodies and exact restoration (32.562407ms)
+✖ same stream lock precedes natural target throw, which immediately uninstalls (18.599281ms)
+✔ GET/HEAD do not create streams; POST bridge, tee, read and native body consumers preserve content (13.421503ms)
+✔ request entry never invokes lazy body/bodyUsed/redirect; observed errors and thenables retain identity (1.533556ms)
+✔ all hard budgets stop, remove wrappers, flush once, and permit no later events/patches (3.672969ms)
+✔ automatic real timer removes lifecycle listener and restores even without requests (27.151404ms)
+✔ source drift discovery fails closed; later third-party descriptor is preserved (1.11313ms)
+✔ sink failure does not escape the original synchronous operation (1.70937ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 514.604593
+
+✖ failing tests:
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs:72:1
+✖ same stream lock precedes natural target throw, which immediately uninstalls (18.599281ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(intent.stack.some(s => s.includes('bounded-observer.test.mjs:')))
+  
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs:93:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+

@@ -1,0 +1,72 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25548) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (128 tests | 1 failed) 803ms
+     × matches original wrapper complete finance/evidence for unknown-history 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 canonical/F3 complete endpoint equivalence > matches original wrapper complete finance/evidence for unknown-history
+AssertionError: expected [ { value: null, …(4) }, …(3) ] to deeply equal [ { value: null, …(4) }, …(3) ]
+
+- Expected
++ Received
+
+@@ -12,12 +12,10 @@
+        "targetCurrency": null,
+      },
+      "reasons": [
+        "history-incomplete",
+        "quantity-unavailable",
+-       "execution-direction-unavailable",
+-       "position-coverage-missing",
+      ],
+      "value": null,
+    },
+    {
+      "available": false,
+@@ -49,12 +47,10 @@
+        "fx": null,
+        "originalByCurrency": {},
+        "targetCurrency": null,
+      },
+      "reasons": [
+-       "execution-direction-unavailable",
+-       "position-coverage-missing",
+        "history-incomplete",
+        "quantity-unavailable",
+        "cost-unavailable",
+      ],
+      "value": null,
+@@ -72,12 +68,10 @@
+        "targetCurrency": null,
+      },
+      "reasons": [
+        "history-incomplete",
+        "quantity-unavailable",
+-       "execution-direction-unavailable",
+-       "position-coverage-missing",
+        "cost-unavailable",
+      ],
+      "value": null,
+    },
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:804:94
+    802|     const source=prepareHomepageV25Source({entries,candlesByInstrument…
+    803|     const point=projectHomepageV25Boundaries(source,{...batchQuery,per…
+    804|     expect([point.periodRealized,point.openingUnrealized,point.closing…
+       |                                                                                              ^
+    805|     expect(point.instruments.map(i=>i.evidence)).toEqual(legacy.instru…
+    806|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 127 passed (128)
+   Start at  02:53:18
+   Duration  1.74s (transform 456ms, setup 0ms, import 604ms, tests 803ms, environment 0ms)
+

@@ -1,0 +1,269 @@
+{
+  "at": "2026-10-23T02:23:02.394933+08:00",
+  "rows": [
+    {
+      "path": "app/api/storage/instruments/metadata/route.test.ts",
+      "expected": "765c39923162da4ad2da26ebb7b9d224822004199aa987264ba75c0fdebc509e",
+      "actual": "765c39923162da4ad2da26ebb7b9d224822004199aa987264ba75c0fdebc509e",
+      "match": true
+    },
+    {
+      "path": "app/api/storage/trades/route.test.ts",
+      "expected": "336374ced3af4b089cf08efbb3e3b9ccd9a46581b418920d5606f862d1620620",
+      "actual": "336374ced3af4b089cf08efbb3e3b9ccd9a46581b418920d5606f862d1620620",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/fx-adapter.ts",
+      "expected": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+      "actual": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.test.ts",
+      "expected": "d188d3b717642a4699c56eeda6d4484ed6ec5abf7e8f64f7530315559525ff87",
+      "actual": "d188d3b717642a4699c56eeda6d4484ed6ec5abf7e8f64f7530315559525ff87",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "expected": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+      "actual": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "expected": "5e0817b26ec329735fbd07e73fe9500f47fa9ea4490e49e8b81ae366a80da3ca",
+      "actual": "5e0817b26ec329735fbd07e73fe9500f47fa9ea4490e49e8b81ae366a80da3ca",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "expected": "a5632309e210f0e0450c9b192c17e56d490e45337d26a8f2555c3b651672383f",
+      "actual": "a5632309e210f0e0450c9b192c17e56d490e45337d26a8f2555c3b651672383f",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "expected": "2c2c12f041666b8357e4756956feb30868479c9c4f8847e202e6dc3cc1158c1a",
+      "actual": "2c2c12f041666b8357e4756956feb30868479c9c4f8847e202e6dc3cc1158c1a",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "expected": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+      "actual": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "expected": "c930599635b8360d3fe380c2168f23314bda501a786ad1c905690bed24eaf16b",
+      "actual": "c930599635b8360d3fe380c2168f23314bda501a786ad1c905690bed24eaf16b",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "expected": "756e69d33efe4552bee9f089d963c63b4f2d8e046e3cc1de03ea37398debf051",
+      "actual": "756e69d33efe4552bee9f089d963c63b4f2d8e046e3cc1de03ea37398debf051",
+      "match": true
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "expected": "32fb69710d1bfdb86aef67253f39b162279473b4e70d375235e9ab0fa9f216a6",
+      "actual": "32fb69710d1bfdb86aef67253f39b162279473b4e70d375235e9ab0fa9f216a6",
+      "match": true
+    },
+    {
+      "path": "app/components/library/library-browse-state.test.ts",
+      "expected": "61279c857e7f945540b2ecd5a5485187248aa7aa8d54f276fe399e2032f23659",
+      "actual": "61279c857e7f945540b2ecd5a5485187248aa7aa8d54f276fe399e2032f23659",
+      "match": true
+    },
+    {
+      "path": "app/components/library/library-browse-state.ts",
+      "expected": "380626c697c1edfa71fd09422545577733ff62297ee3205e4a175dd01e6849e7",
+      "actual": "380626c697c1edfa71fd09422545577733ff62297ee3205e4a175dd01e6849e7",
+      "match": true
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "expected": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e",
+      "actual": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e",
+      "match": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "expected": "fb99532a53d88ddb60022a0f521b7bde9bf3de9e965598a84f19c438ab7af06f",
+      "actual": "fb99532a53d88ddb60022a0f521b7bde9bf3de9e965598a84f19c438ab7af06f",
+      "match": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "expected": "983f0b173ba0f29d9058237ab6f34e8b1722d33f70bdcc59f4d48639c5d5d657",
+      "actual": "983f0b173ba0f29d9058237ab6f34e8b1722d33f70bdcc59f4d48639c5d5d657",
+      "match": true
+    },
+    {
+      "path": "app/home/page.tsx",
+      "expected": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "actual": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.test.ts",
+      "expected": "7da1485f8c40f2b0b8b089b4ede520c2f9e9a935c553b9719e2342c7d6509109",
+      "actual": "7da1485f8c40f2b0b8b089b4ede520c2f9e9a935c553b9719e2342c7d6509109",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.ts",
+      "expected": "87f575ebb51764508ccc8d09e579b234c7ae76861949e9061cc380be71465d4d",
+      "actual": "87f575ebb51764508ccc8d09e579b234c7ae76861949e9061cc380be71465d4d",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/providers/metadata-providers.test.ts",
+      "expected": "d167f397b04eabe5d55593a72bad3bc6fe3576fe3896a62e2fbe70525cad5c9d",
+      "actual": "d167f397b04eabe5d55593a72bad3bc6fe3576fe3896a62e2fbe70525cad5c9d",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/providers/nasdaq-directory.ts",
+      "expected": "710f7d4592202a8d686d1633f81497021ae16a54a25a82bca224a70781241651",
+      "actual": "710f7d4592202a8d686d1633f81497021ae16a54a25a82bca224a70781241651",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/providers/sec-company-tickers.ts",
+      "expected": "b76263fce461e2500bdc736dccd69de9249a1d887f8e061c14045e56df6a9f21",
+      "actual": "b76263fce461e2500bdc736dccd69de9249a1d887f8e061c14045e56df6a9f21",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.test.ts",
+      "expected": "9dee69ebd704ca38962defb506067a8af02705794136c87142e5f680c17815cc",
+      "actual": "9dee69ebd704ca38962defb506067a8af02705794136c87142e5f680c17815cc",
+      "match": true
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.ts",
+      "expected": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53",
+      "actual": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53",
+      "match": true
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.test.ts",
+      "expected": "8fb083b780abf21a00a1c4b2c23043124ceda5055142a419f06a5c6efb4f035c",
+      "actual": "8fb083b780abf21a00a1c4b2c23043124ceda5055142a419f06a5c6efb4f035c",
+      "match": true
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.ts",
+      "expected": "54e8d91e3c5da1b47567d0e16360d2d4f44edafa6e64cb0677ad14512179e323",
+      "actual": "54e8d91e3c5da1b47567d0e16360d2d4f44edafa6e64cb0677ad14512179e323",
+      "match": true
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.test.ts",
+      "expected": "139eeb8c8b6fa9aa1cc25e9f955fa53ec273e3870e089c2a86e44708de988f4e",
+      "actual": "139eeb8c8b6fa9aa1cc25e9f955fa53ec273e3870e089c2a86e44708de988f4e",
+      "match": true
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.ts",
+      "expected": "e57f176f9c1299478fdfe3d2b99a0a72433e4da2eaaea0a157f4aff61dd5d486",
+      "actual": "e57f176f9c1299478fdfe3d2b99a0a72433e4da2eaaea0a157f4aff61dd5d486",
+      "match": true
+    },
+    {
+      "path": "app/trades/page.tsx",
+      "expected": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "actual": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "match": true
+    },
+    {
+      "path": "app/page.tsx",
+      "expected": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+      "actual": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+      "match": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "expected": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "actual": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "match": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "expected": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0",
+      "actual": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/INTERFACES.md",
+      "expected": "31277ee9fe2272d71d502b8a24458625e879cd79c48ca7ac94995f616a6fb87e",
+      "actual": "31277ee9fe2272d71d502b8a24458625e879cd79c48ca7ac94995f616a6fb87e",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/INTERFACES.md",
+      "expected": "2756d6d4d45b1af504c696bd02fa1999e6b879ed968ab702c70d1b3a42f2b3e0",
+      "actual": "2756d6d4d45b1af504c696bd02fa1999e6b879ed968ab702c70d1b3a42f2b3e0",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/CONTROL-STATE-MAP.md",
+      "expected": "2b9df15e03c2fe711ba234cb6615e36e64ab0165c72cc5d1d755b8e4080f37c0",
+      "actual": "2b9df15e03c2fe711ba234cb6615e36e64ab0165c72cc5d1d755b8e4080f37c0",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/P1-HOLDINGS-JOURNEY.md",
+      "expected": "9f9174dbd2f976d255596092acc017f0a59518e0130d09d42a29a90f9e51379a",
+      "actual": "9f9174dbd2f976d255596092acc017f0a59518e0130d09d42a29a90f9e51379a",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/04-holdings-journey.md",
+      "expected": "5a179fca8658182deb38114c2e49c29177945b17997f972744700f7b2d6a96f2",
+      "actual": "5a179fca8658182deb38114c2e49c29177945b17997f972744700f7b2d6a96f2",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/visual-contract.md",
+      "expected": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+      "actual": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "expected": "3535627581bcec186d1c96f7abb742e43b1840d34fd84c9c3bd5067e508ad3a1",
+      "actual": "3535627581bcec186d1c96f7abb742e43b1840d34fd84c9c3bd5067e508ad3a1",
+      "match": true
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/CONTROL-STATE-COVERAGE.md",
+      "expected": "86ef44e46571abed5280fd6e5886c63448ad08b2f67a034f7b5dcd1147351f02",
+      "actual": "86ef44e46571abed5280fd6e5886c63448ad08b2f67a034f7b5dcd1147351f02",
+      "match": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "expected": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "actual": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "match": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "expected": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+      "actual": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+      "match": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "expected": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "actual": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "match": true
+    }
+  ]
+}

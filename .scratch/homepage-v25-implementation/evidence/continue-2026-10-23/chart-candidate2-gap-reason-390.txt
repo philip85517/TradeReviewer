@@ -1,0 +1,68 @@
+Browser tab: 11, Title: "收益曲线独立验收", URL: "http://127.0.0.1:3334/chart.html".
+1 AXWebArea 收益曲线独立验收, URL: 127.0.0.1:3334/chart.html
+	2 container
+		3 heading 收益曲线独立验收, Value: 1
+			4 text 收益曲线独立验收
+		5 text 合成受控调用方；无数据库、无财务计算，不代表首页接线已通过。 验收情景 
+		6 pop up button (collapsed, settable) 验收情景, Value: 缺口与未来, Secondary Actions: Expand
+			7 menu
+				8 标准历史
+				9 全部零值
+				10 (selected) 缺口与未来
+				11 加载与失败
+				12 币种不一致
+				13 极长金额与来源
+				14 空数据
+				15 不可用
+		28 container 当前表现日曲线
+			29 container
+				30 heading 期间净盈亏, Value: 3
+					31 text 期间净盈亏
+				32 text CNY 当前表现｜期间净盈亏（按日） 。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。
+				33 container 当前表现｜期间净盈亏（按日）
+				34 image
+					35 button 2026-01-01 数据缺失，金额未知，查看原因
+					36 button Description: 2026-05-15 — 2026-06-30 数据缺失，金额未知，查看原因, Help: 2026-05-15 — 2026-06-30 · 数据缺失 · 缺少完成交易日收盘价，保留断点，不补零；金额未知
+						37 text i
+					38 button Description: 2026-09-15 — 2026-10-15 未来未覆盖，金额未知，查看原因, Help: 2026-09-15 — 2026-10-15 · 未来未覆盖 · 未来未覆盖，金额未知
+						39 text i
+			40 container 数据缺失 · 2026-01-01 · 金额未知时显示 — 当日市值 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1 当日浮盈 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1 累计已实现 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1 累计净盈亏 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1 期间净盈亏 期间净盈亏 CNY —；金额未知；原币金额未知；同币种，无需换汇；覆盖 0/1 期间费用 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1 缺少完成交易日收盘价，保留断点，不补零；金额未知
+				41 container
+					42 text 2026-01-01 CNY
+					43 button (collapsed) Description: 2026-01-01 数据说明, Help: 缺少完成交易日收盘价，保留断点，不补零；金额未知, Secondary Actions: Expand
+				44 container
+					45 text 数据缺失  ·  2026-01-01  · 金额未知时显示 —
+				46 definition list
+					47 container 当日市值
+						48 text 当日市值
+					49 container Description: 当日市值 CNY 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1, Help: 260,102.00；原币：CNY 260,102.00；同币种，无需换汇；覆盖 1/1
+						50 text 260,102.00
+					51 container 当日浮盈
+						52 text 当日浮盈
+					53 container Description: 当日浮盈 CNY +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1, Help: +23,153.00；原币：CNY 23,153.00；同币种，无需换汇；覆盖 1/1
+						54 text +23,153.00
+					55 container 累计已实现
+						56 text 累计已实现
+					57 container Description: 累计已实现 CNY +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1, Help: +12,240.00；原币：CNY 12,240.00；同币种，无需换汇；覆盖 1/1
+						58 text +12,240.00
+					59 container 累计净盈亏
+						60 text 累计净盈亏
+					61 container Description: 累计净盈亏 CNY +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1, Help: +35,393.00；原币：CNY 35,393.00；同币种，无需换汇；覆盖 1/1
+						62 text +35,393.00
+					63 container 期间净盈亏
+						64 text 期间净盈亏
+					65 container Description: 期间净盈亏 CNY —；金额未知；原币金额未知；同币种，无需换汇；覆盖 0/1, Help: —；金额未知；原币金额未知；同币种，无需换汇；覆盖 0/1
+						66 text —
+					67 container 期间费用
+						68 text 期间费用
+					69 container Description: 期间费用 CNY 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1, Help: 640.00；原币：CNY 640.00；同币种，无需换汇；覆盖 1/1
+						70 text 640.00
+				71 text 缺少完成交易日收盘价，保留断点，不补零；金额未知
+		22 heading 下一模块边界, Value: 2
+			23 text 下一模块边界
+		24 text 此区域不应被曲线详情遮挡。
+		25 button 切换数据版本
+		26 container
+			27 text 版本  3
+
+The focused UI element is 35 button 2026-01-01 数据缺失，金额未知，查看原因

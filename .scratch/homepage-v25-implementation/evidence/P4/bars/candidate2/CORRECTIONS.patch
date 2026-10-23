@@ -1,0 +1,105 @@
+--- a/app/components/homepage-v25/contribution-bars.tsx
++++ b/app/components/homepage-v25/contribution-bars.tsx
+@@ -89,6 +89,8 @@
+   const dialog = useRef<HTMLDivElement>(null);
+   const opener = useRef<HTMLButtonElement | null>(null);
+   const active = selection && selection.rows === rows && selection.total === fullTotal && selection.mode === props.mode && selection.currency === reportCurrency ? selection.key : null;
++  // Invalidation is permanent: returning to an old context must require a fresh activation.
++  if (selection !== null && active === null) setSelection(null);
+   const viewRows: ViewRow[] = props.mode === "current" ? (props.rows ?? []).map(source => ({ source,
+     fields: [{ kind: "realized", label: "期间已实现", read: readMetric(source.periodRealized, reportCurrency) },
+       { kind: "unrealized", label: "期间浮盈变动", read: readMetric(source.unrealizedChange, reportCurrency) }], net: readMetric(source.net, reportCurrency) }))
+--- a/app/components/homepage-v25/contribution-bars.css
++++ b/app/components/homepage-v25/contribution-bars.css
+@@ -1,4 +1,5 @@
+ .hp-contribution-bars {
++  --hp-contribution-detail-size: 36px;
+   container-type: inline-size;
+   width: 100%;
+   min-width: 0;
+@@ -8,7 +9,17 @@
+ }
+ 
+ .hp-contribution-bars *, .hp-contribution-bars__detail * { box-sizing: border-box; }
+-.hp-contribution-bars__list { list-style: none; margin: 0; padding: 0; min-height: 344px; }
++.hp-contribution-bars__list { position: relative; list-style: none; margin: 0; padding: 0; min-height: 344px; }
++.hp-contribution-bars__list:not(:empty)::before {
++  content: "";
++  position: absolute;
++  top: 0;
++  bottom: 0;
++  left: calc((100% - var(--hp-contribution-detail-size)) / 2);
++  width: 1px;
++  background: #405065;
++  pointer-events: none;
++}
+ .hp-contribution-bars__list--market { min-height: 210px; }
+ .hp-contribution-bars__row { margin: 0; padding: 0; min-height: 43px; }
+ .hp-contribution-bars__row--market { min-height: 70px; }
+@@ -36,7 +47,7 @@
+ }
+ .hp-contribution-bars__identity { min-width: 0; padding-right: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ .hp-contribution-bars__track { position: relative; display: block; width: 100%; height: 20px; min-width: 0; }
+-.hp-contribution-bars__zero { position: absolute; top: -6px; bottom: -6px; left: 50%; width: 1px; background: #405065; }
++.hp-contribution-bars__zero { display: none; position: absolute; top: -6px; bottom: -6px; left: 50%; width: 1px; background: #405065; }
+ .hp-contribution-bars__segment { position: absolute; top: 3px; display: block; height: 14px; box-sizing: border-box; }
+ .hp-contribution-bars__segment--positive { color: #53D7A0; }
+ .hp-contribution-bars__segment--negative { color: #EF7F89; }
+@@ -73,7 +84,7 @@
+ .hp-contribution-bars__detail button:focus-visible { outline: 2px solid #9ac4ff; outline-offset: 2px; }
+ .hp-contribution-bars .hp-contribution-bars__row-reason { margin: 0 36px 8px 0; color: #b5becb; overflow-wrap: anywhere; }
+ .hp-contribution-bars .hp-contribution-bars__status { margin: 0 0 12px; color: #a7b3c4; overflow-wrap: anywhere; }
+-.hp-contribution-bars__status--error { color: #f2b5bc; }
++.hp-contribution-bars .hp-contribution-bars__status.hp-contribution-bars__status--error { color: #FF8592; }
+ .hp-contribution-bars__loading { min-height: 344px; }
+ .hp-contribution-bars__skeleton { position: relative; height: 43px; }
+ .hp-contribution-bars__skeleton::after { content: ""; position: absolute; top: 15px; left: 0; width: 76%; height: 14px; background: #202d40; border-radius: 2px; }
+@@ -112,6 +123,7 @@
+ 
+ @container (max-width: 735px) {
+   .hp-contribution-bars__list, .hp-contribution-bars__loading { min-height: 512px; }
++  .hp-contribution-bars__list:not(:empty)::before { display: none; }
+   .hp-contribution-bars__list--market { min-height: 210px; }
+   .hp-contribution-bars__skeleton { height: 64px; }
+   .hp-contribution-bars__row-main { align-items: start; padding: 4px 0; }
+@@ -119,11 +131,12 @@
+   .hp-contribution-bars__identity { padding-right: 12px; }
+   .hp-contribution-bars__action .hp-contribution-bars__value { grid-column: 2; grid-row: 1; padding-left: 0; }
+   .hp-contribution-bars__track { grid-column: 1 / -1; grid-row: 2; }
+-  .hp-contribution-bars__zero { top: 0; bottom: 0; }
++  .hp-contribution-bars__zero { display: block; top: 0; bottom: 0; }
+   .hp-contribution-bars__row--market { min-height: 70px; }
+   .hp-contribution-bars__total { gap: 8px; }
+ }
+ @media (pointer: coarse) {
++  .hp-contribution-bars { --hp-contribution-detail-size: 44px; }
+   .hp-contribution-bars__row-main { grid-template-columns: minmax(0, 1fr) 44px; }
+   .hp-contribution-bars .hp-contribution-bars__action { min-height: max(44px, var(--hp-contribution-narrow-height, 36px)); }
+   .hp-contribution-bars .hp-contribution-bars__detail-trigger,
+--- a/app/components/homepage-v25/contribution-bars.test.tsx
++++ b/app/components/homepage-v25/contribution-bars.test.tsx
+@@ -189,4 +189,24 @@
+       expect(screen.getByRole("dialog")).toHaveStyle({ left: "672px", top: "256px" });
+     } finally { rect.mockRestore(); }
+   });
++  it.each<{ name: string; change: (base: CurrentProps) => ContributionBarsProps; target: string }>([
++    { name: "currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "same+，贡献详情" },
++    { name: "immutable row generation", change: base => ({ ...base, rows: Object.freeze([...suppliedRows]) }), target: "same+，贡献详情" },
++    { name: "source identity context", change: base => ({ ...base, rows: Object.freeze([Object.freeze({ ...suppliedRows[0],
++      identity: Object.freeze({ kind: "instrument", accountId: "other-account", instrumentId: "other-instrument", market: "US", nature: "live", simulationRunId: null }) })]) }), target: "same+，贡献详情" },
++    { name: "complete total generation", change: base => ({ ...base, fullTotal: metric("888.111") }), target: "same+，贡献详情" },
++    { name: "current/history mode", change: base => ({ ...base, mode: "history", rows: Object.freeze([Object.freeze({ ...suppliedRows[0], closedResult: metric("-11.234567") })]) }), target: "same+，贡献详情" },
++    { name: "total readout currency", change: base => ({ ...base, reportCurrency: "USD" }), target: "完整贡献合计，贡献详情" },
++  ])("CB-M01 invalidated $name stays closed and leaves outside focus when the original context returns", async ({ change, target }) => {
++    const user = userEvent.setup(); const base = props();
++    const content = (value: ContributionBarsProps) => <><button>外部阅读位置</button><ContributionBars {...value} /></>;
++    const view = render(content(base)); const trigger = screen.getByRole("button", { name: target });
++    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
++    view.rerender(content(change(base))); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(trigger).toHaveFocus();
++    const outside = screen.getByRole("button", { name: "外部阅读位置" }); outside.focus(); expect(outside).toHaveFocus();
++    view.rerender(content(base));
++    expect.soft(screen.queryByRole("dialog"), "restoring an invalidated context must not reopen its old detail").not.toBeInTheDocument();
++    expect.soft(outside, "restoring a context must preserve the reader's outside focus").toHaveFocus();
++    await user.click(trigger); expect(screen.getByRole("dialog")).toHaveFocus();
++  });
+ });

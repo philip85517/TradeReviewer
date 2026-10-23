@@ -1,0 +1,377 @@
+{
+  "runtime": "v26.0.0",
+  "records": [
+    {
+      "name": "complete-three-currency",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 97653,
+      "actualSha256": "b9e64b0fe47f7657c2de53690014cd8d6685e8aae6a242e417109326344998f9",
+      "frozenSha256": "b9e64b0fe47f7657c2de53690014cd8d6685e8aae6a242e417109326344998f9",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 3,
+        "canonicalTransitions": 3,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 3,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 27,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 8,
+        "cacheEstimatedBytes": 494666,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 131050,
+        "indexEstimatedBytes": 136290
+      }
+    },
+    {
+      "name": "complete-three-currency",
+      "order": [
+        "future",
+        "after",
+        "late",
+        "instant",
+        "pre"
+      ],
+      "bytes": 97653,
+      "actualSha256": "55e0cc93faab5677a910c96cf9eb644c5b2cebb1dbfc6830a321809d2bf1f36c",
+      "frozenSha256": "55e0cc93faab5677a910c96cf9eb644c5b2cebb1dbfc6830a321809d2bf1f36c",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 3,
+        "canonicalTransitions": 3,
+        "batchCacheHits": 1,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 3,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 51,
+        "fxLookups": 9,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 9,
+        "cacheEstimatedBytes": 876562,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 131050,
+        "indexEstimatedBytes": 136290
+      }
+    },
+    {
+      "name": "complete-three-currency",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 97653,
+      "actualSha256": "b9e64b0fe47f7657c2de53690014cd8d6685e8aae6a242e417109326344998f9",
+      "frozenSha256": "b9e64b0fe47f7657c2de53690014cd8d6685e8aae6a242e417109326344998f9",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 3,
+        "canonicalTransitions": 3,
+        "batchCacheHits": 3,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 3,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 51,
+        "fxLookups": 9,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 9,
+        "cacheEstimatedBytes": 876562,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 131050,
+        "indexEstimatedBytes": 136290
+      }
+    },
+    {
+      "name": "partial-future-fx-missing-quote",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 57045,
+      "actualSha256": "db1776b57069ffaa144ad5f67a489490bec5830a191b422fd74ef288193cb886",
+      "frozenSha256": "db1776b57069ffaa144ad5f67a489490bec5830a191b422fd74ef288193cb886",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 2,
+        "canonicalTransitions": 2,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 2,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 18,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 6,
+        "cacheEstimatedBytes": 281704,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 75634,
+        "indexEstimatedBytes": 93166
+      }
+    },
+    {
+      "name": "unknown-and-conflict",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 39906,
+      "actualSha256": "6f80bfd0458dde55e7219b65fe5a101a68f356766b6065c1bfbbb1932e720e79",
+      "frozenSha256": "6f80bfd0458dde55e7219b65fe5a101a68f356766b6065c1bfbbb1932e720e79",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 1,
+        "canonicalTransitions": 1,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 9,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 4,
+        "cacheEstimatedBytes": 173398,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 66028,
+        "indexEstimatedBytes": 47306
+      }
+    },
+    {
+      "name": "simulation",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 44766,
+      "actualSha256": "036158eb40195fef8b389706a63584ee20f799f54fd7961c9be494c3e7eff970",
+      "frozenSha256": "036158eb40195fef8b389706a63584ee20f799f54fd7961c9be494c3e7eff970",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 1,
+        "canonicalTransitions": 1,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 1,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 9,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 4,
+        "cacheEstimatedBytes": 206078,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 105098,
+        "indexEstimatedBytes": 50840
+      }
+    },
+    {
+      "name": "late-refund",
+      "order": [
+        "late",
+        "early"
+      ],
+      "bytes": 21733,
+      "actualSha256": "6733b220f4d8e4b0975bd7f931b808987a651e372925688cd1868ae205758cc1",
+      "frozenSha256": "6733b220f4d8e4b0975bd7f931b808987a651e372925688cd1868ae205758cc1",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 0,
+        "canonicalCalls": 10,
+        "canonicalCacheHits": 0,
+        "feeSteps": 6,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 5,
+        "fxLookups": 3,
+        "distinctCanonicalContexts": 10,
+        "cacheEntries": 22,
+        "cacheEstimatedBytes": 172102,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 98930,
+        "indexEstimatedBytes": 36468
+      }
+    },
+    {
+      "name": "late-refund",
+      "order": [
+        "early",
+        "late"
+      ],
+      "bytes": 21733,
+      "actualSha256": "79ad99a86bf200c16912d13db39ec43d51732eedcae617a4146bfd4e4a76ad2f",
+      "frozenSha256": "79ad99a86bf200c16912d13db39ec43d51732eedcae617a4146bfd4e4a76ad2f",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 1,
+        "canonicalCalls": 10,
+        "canonicalCacheHits": 0,
+        "feeSteps": 6,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 9,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 10,
+        "cacheEntries": 23,
+        "cacheEstimatedBytes": 253536,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 98930,
+        "indexEstimatedBytes": 36468
+      }
+    },
+    {
+      "name": "late-refund",
+      "order": [
+        "late",
+        "early"
+      ],
+      "bytes": 21733,
+      "actualSha256": "6733b220f4d8e4b0975bd7f931b808987a651e372925688cd1868ae205758cc1",
+      "frozenSha256": "6733b220f4d8e4b0975bd7f931b808987a651e372925688cd1868ae205758cc1",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 3,
+        "canonicalCalls": 10,
+        "canonicalCacheHits": 0,
+        "feeSteps": 6,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 9,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 10,
+        "cacheEntries": 23,
+        "cacheEstimatedBytes": 253536,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 98930,
+        "indexEstimatedBytes": 36468
+      }
+    },
+    {
+      "name": "empty-future",
+      "order": [
+        "future"
+      ],
+      "bytes": 4134,
+      "actualSha256": "6380a420c78897f718479a45e41037c4823a6ff6fb82c70864bcb52a8d678343",
+      "frozenSha256": "6380a420c78897f718479a45e41037c4823a6ff6fb82c70864bcb52a8d678343",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 0,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 0,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 0,
+        "fxLookups": 1,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 2,
+        "cacheEstimatedBytes": 26946,
+        "evictions": 0,
+        "batchEntries": 1,
+        "sourceEstimatedBytes": 65442,
+        "indexEstimatedBytes": 7716
+      }
+    },
+    {
+      "name": "empty-future",
+      "order": [
+        "pre",
+        "instant",
+        "late",
+        "after",
+        "future"
+      ],
+      "bytes": 14159,
+      "actualSha256": "e67d4890a7326bbf09afd47618fe0cb14b06d1188b92a41692ffba02e0bea2ab",
+      "frozenSha256": "e67d4890a7326bbf09afd47618fe0cb14b06d1188b92a41692ffba02e0bea2ab",
+      "completePublicBytesEqual": true,
+      "excludedFields": [
+        "diagnostics"
+      ],
+      "inspect": {
+        "canonicalSweeps": 0,
+        "canonicalTransitions": 0,
+        "batchCacheHits": 1,
+        "canonicalCalls": 0,
+        "canonicalCacheHits": 0,
+        "feeSteps": 0,
+        "feeCheckpointHits": 0,
+        "quoteLookups": 0,
+        "fxLookups": 5,
+        "distinctCanonicalContexts": 0,
+        "cacheEntries": 3,
+        "cacheEstimatedBytes": 74602,
+        "evictions": 0,
+        "batchEntries": 2,
+        "sourceEstimatedBytes": 65442,
+        "indexEstimatedBytes": 7716
+      }
+    }
+  ]
+}

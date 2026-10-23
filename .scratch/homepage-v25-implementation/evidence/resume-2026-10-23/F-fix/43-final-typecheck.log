@@ -1,0 +1,3 @@
+app/components/homepage-v25/home-surface.test.tsx(16,202): error TS2322: Type 'Mock<Procedure | Constructable>' is not assignable to type '(row: HomepageHolding | null) => void'.
+  Type 'MockInstance<Procedure | Constructable> & (new (...args: any[]) => any) & {}' is not assignable to type '(row: HomepageHolding | null) => void'.
+    Type 'MockInstance<Procedure | Constructable> & (new (...args: any[]) => any) & {}' provides no match for the signature '(row: HomepageHolding | null): void'.

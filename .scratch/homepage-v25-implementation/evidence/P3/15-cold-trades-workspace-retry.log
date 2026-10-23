@@ -1,0 +1,33 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:30648) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (99 tests | 1 failed | 97 skipped) 1465ms
+     × retries a failed cold scoped collection read without publishing an empty library or losing its target 461ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retries a failed cold scoped collection read without publishing an empty library or losing its target
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  owned bootstrap unavailable
+Received:
+  新范围读取失败，仍显示原范围。重试
+ ❯ app/components/trade-review-workspace.test.tsx:750:19
+    748|     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo=…
+    749|     const error = await screen.findByRole("alert");
+    750|     expect(error).toHaveTextContent("owned bootstrap unavailable");
+       |                   ^
+    751|     expect(screen.queryByRole("region", { name: "交易库" })).not.toBeInTh…
+    752|     expect(screen.queryByText("还没有导入交易")).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed | 97 skipped (99)
+   Start at  03:31:06
+   Duration  9.13s (transform 3.67s, setup 586ms, import 4.80s, tests 1.46s, environment 1.89s)
+

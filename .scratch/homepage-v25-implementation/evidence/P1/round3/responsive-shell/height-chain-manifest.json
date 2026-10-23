@@ -1,0 +1,16 @@
+{
+  "status": "IMPLEMENTATION-READY, NOT ACCEPTED",
+  "formalP1": "2/3 FAIL; existing third candidate preparation",
+  "timestamp": "2026-10-22T21:36:43.305412+00:00",
+  "css": "app/components/homepage-v25/home-surface.css",
+  "beforeSha256": "765c420c5d5f6eac81e56626786b4421fdd39925dcb071facac7561446493fbf",
+  "afterSha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d",
+  "patchSha256": "0524c0107103bb5eb7f8dfdaffd6733ad84fbbe88ecf0c0411222545e29adceb",
+  "onlyAuthorizedInsertion": true,
+  "propertiesApplied": {
+    "homepage-v25-app": "height:100dvh",
+    "homepage-v25-app > .app-content": "min-height:0",
+    "homepage-v25-app .workspace.dashboard-mode": "min-height:0"
+  },
+  "overscrollAndAllOtherSource": "unchanged from before snapshot"
+}

@@ -1,0 +1,1269 @@
+[
+  {
+    "requestedWidth": 1044,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 163,
+            "width": 56,
+            "x": 199,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 152,
+            "width": 240,
+            "x": 24,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 165,
+            "width": 150,
+            "x": 41,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 189,
+            "width": 206,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 163,
+            "width": 56,
+            "x": 451,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 152,
+            "width": 240,
+            "x": 276,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 165,
+            "width": 150,
+            "x": 293,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 189,
+            "width": 206,
+            "x": 293,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 703,
+            "right": 759,
+            "top": 163,
+            "width": 56,
+            "x": 703,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 528,
+            "right": 768,
+            "top": 152,
+            "width": 240,
+            "x": 528,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 545,
+            "right": 695,
+            "top": 165,
+            "width": 150,
+            "x": 545,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 545,
+            "right": 751,
+            "top": 189,
+            "width": 206,
+            "x": 545,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 955,
+            "right": 1011,
+            "top": 163,
+            "width": 56,
+            "x": 955,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 780,
+            "right": 1020,
+            "top": 152,
+            "width": 240,
+            "x": 780,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 797,
+            "right": 947,
+            "top": 165,
+            "width": 150,
+            "x": 797,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 797,
+            "right": 1003,
+            "top": 189,
+            "width": 206,
+            "x": 797,
+            "y": 189
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 1044,
+      "scrollWidth": 1044
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-1044.jpg"
+  },
+  {
+    "requestedWidth": 1043,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 450.5,
+            "right": 506.5,
+            "top": 163,
+            "width": 56,
+            "x": 450.5,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 515.5,
+            "top": 152,
+            "width": 491.5,
+            "x": 24,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 442.5,
+            "top": 165,
+            "width": 401.5,
+            "x": 41,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 498.5,
+            "top": 189,
+            "width": 457.5,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 954,
+            "right": 1010,
+            "top": 163,
+            "width": 56,
+            "x": 954,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 527.5,
+            "right": 1019,
+            "top": 152,
+            "width": 491.5,
+            "x": 527.5,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 544.5,
+            "right": 946,
+            "top": 165,
+            "width": 401.5,
+            "x": 544.5,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 544.5,
+            "right": 1002,
+            "top": 189,
+            "width": 457.5,
+            "x": 544.5,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 450.5,
+            "right": 506.5,
+            "top": 263,
+            "width": 56,
+            "x": 450.5,
+            "y": 263
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 515.5,
+            "top": 252,
+            "width": 491.5,
+            "x": 24,
+            "y": 252
+          },
+          "title": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 442.5,
+            "top": 265,
+            "width": 401.5,
+            "x": 41,
+            "y": 265
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 498.5,
+            "top": 289,
+            "width": 457.5,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 954,
+            "right": 1010,
+            "top": 263,
+            "width": 56,
+            "x": 954,
+            "y": 263
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 527.5,
+            "right": 1019,
+            "top": 252,
+            "width": 491.5,
+            "x": 527.5,
+            "y": 252
+          },
+          "title": {
+            "bottom": 285,
+            "height": 20,
+            "left": 544.5,
+            "right": 946,
+            "top": 265,
+            "width": 401.5,
+            "x": 544.5,
+            "y": 265
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 544.5,
+            "right": 1002,
+            "top": 289,
+            "width": 457.5,
+            "x": 544.5,
+            "y": 289
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 1043,
+      "scrollWidth": 1043
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-1043.jpg"
+  },
+  {
+    "requestedWidth": 540,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 163,
+            "width": 56,
+            "x": 199,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 152,
+            "width": 240,
+            "x": 24,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 165,
+            "width": 150,
+            "x": 41,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 189,
+            "width": 206,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 163,
+            "width": 56,
+            "x": 451,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 152,
+            "width": 240,
+            "x": 276,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 165,
+            "width": 150,
+            "x": 293,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 189,
+            "width": 206,
+            "x": 293,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 199,
+            "right": 255,
+            "top": 263,
+            "width": 56,
+            "x": 199,
+            "y": 263
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 264,
+            "top": 252,
+            "width": 240,
+            "x": 24,
+            "y": 252
+          },
+          "title": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 191,
+            "top": 265,
+            "width": 150,
+            "x": 41,
+            "y": 265
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 247,
+            "top": 289,
+            "width": 206,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 451,
+            "right": 507,
+            "top": 263,
+            "width": 56,
+            "x": 451,
+            "y": 263
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 276,
+            "right": 516,
+            "top": 252,
+            "width": 240,
+            "x": 276,
+            "y": 252
+          },
+          "title": {
+            "bottom": 285,
+            "height": 20,
+            "left": 293,
+            "right": 443,
+            "top": 265,
+            "width": 150,
+            "x": 293,
+            "y": 265
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 293,
+            "right": 499,
+            "top": 289,
+            "width": 206,
+            "x": 293,
+            "y": 289
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 540,
+      "scrollWidth": 540
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-540.jpg"
+  },
+  {
+    "requestedWidth": 539,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 163,
+            "width": 56,
+            "x": 450,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 152,
+            "width": 491,
+            "x": 24,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 165,
+            "width": 401,
+            "x": 41,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 189,
+            "width": 457,
+            "x": 41,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 287,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 263,
+            "width": 56,
+            "x": 450,
+            "y": 263
+          },
+          "rect": {
+            "bottom": 340,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 252,
+            "width": 491,
+            "x": 24,
+            "y": 252
+          },
+          "title": {
+            "bottom": 285,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 265,
+            "width": 401,
+            "x": 41,
+            "y": 265
+          },
+          "value": {
+            "bottom": 323,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 289,
+            "width": 457,
+            "x": 41,
+            "y": 289
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 387,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 363,
+            "width": 56,
+            "x": 450,
+            "y": 363
+          },
+          "rect": {
+            "bottom": 440,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 352,
+            "width": 491,
+            "x": 24,
+            "y": 352
+          },
+          "title": {
+            "bottom": 385,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 365,
+            "width": 401,
+            "x": 41,
+            "y": 365
+          },
+          "value": {
+            "bottom": 423,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 389,
+            "width": 457,
+            "x": 41,
+            "y": 389
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 487,
+            "height": 24,
+            "left": 450,
+            "right": 506,
+            "top": 463,
+            "width": 56,
+            "x": 450,
+            "y": 463
+          },
+          "rect": {
+            "bottom": 540,
+            "height": 88,
+            "left": 24,
+            "right": 515,
+            "top": 452,
+            "width": 491,
+            "x": 24,
+            "y": 452
+          },
+          "title": {
+            "bottom": 485,
+            "height": 20,
+            "left": 41,
+            "right": 442,
+            "top": 465,
+            "width": 401,
+            "x": 41,
+            "y": 465
+          },
+          "value": {
+            "bottom": 523,
+            "height": 34,
+            "left": 41,
+            "right": 498,
+            "top": 489,
+            "width": 457,
+            "x": 41,
+            "y": 489
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 539,
+      "scrollWidth": 539
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-539.jpg"
+  },
+  {
+    "requestedWidth": 390,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 239,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 215,
+            "width": 56,
+            "x": 301,
+            "y": 215
+          },
+          "rect": {
+            "bottom": 292,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 204,
+            "width": 342,
+            "x": 24,
+            "y": 204
+          },
+          "title": {
+            "bottom": 237,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 217,
+            "width": 252,
+            "x": 41,
+            "y": 217
+          },
+          "value": {
+            "bottom": 275,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 241,
+            "width": 308,
+            "x": 41,
+            "y": 241
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 339,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 315,
+            "width": 56,
+            "x": 301,
+            "y": 315
+          },
+          "rect": {
+            "bottom": 392,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 304,
+            "width": 342,
+            "x": 24,
+            "y": 304
+          },
+          "title": {
+            "bottom": 337,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 317,
+            "width": 252,
+            "x": 41,
+            "y": 317
+          },
+          "value": {
+            "bottom": 375,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 341,
+            "width": 308,
+            "x": 41,
+            "y": 341
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 439,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 415,
+            "width": 56,
+            "x": 301,
+            "y": 415
+          },
+          "rect": {
+            "bottom": 492,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 404,
+            "width": 342,
+            "x": 24,
+            "y": 404
+          },
+          "title": {
+            "bottom": 437,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 417,
+            "width": 252,
+            "x": 41,
+            "y": 417
+          },
+          "value": {
+            "bottom": 475,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 441,
+            "width": 308,
+            "x": 41,
+            "y": 441
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 539,
+            "height": 24,
+            "left": 301,
+            "right": 357,
+            "top": 515,
+            "width": 56,
+            "x": 301,
+            "y": 515
+          },
+          "rect": {
+            "bottom": 592,
+            "height": 88,
+            "left": 24,
+            "right": 366,
+            "top": 504,
+            "width": 342,
+            "x": 24,
+            "y": 504
+          },
+          "title": {
+            "bottom": 537,
+            "height": 20,
+            "left": 41,
+            "right": 293,
+            "top": 517,
+            "width": 252,
+            "x": 41,
+            "y": 517
+          },
+          "value": {
+            "bottom": 575,
+            "height": 34,
+            "left": 41,
+            "right": 349,
+            "top": 541,
+            "width": 308,
+            "x": 41,
+            "y": 541
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 844,
+      "innerWidth": 390,
+      "scrollWidth": 390
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-390.jpg"
+  },
+  {
+    "requestedWidth": 1280,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 278,
+            "right": 334,
+            "top": 163,
+            "width": 56,
+            "x": 278,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 64,
+            "right": 343,
+            "top": 152,
+            "width": 279,
+            "x": 64,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 81,
+            "right": 270,
+            "top": 165,
+            "width": 189,
+            "x": 81,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 81,
+            "right": 326,
+            "top": 189,
+            "width": 245,
+            "x": 81,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 569,
+            "right": 625,
+            "top": 163,
+            "width": 56,
+            "x": 569,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 355,
+            "right": 634,
+            "top": 152,
+            "width": 279,
+            "x": 355,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 372,
+            "right": 561,
+            "top": 165,
+            "width": 189,
+            "x": 372,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 372,
+            "right": 617,
+            "top": 189,
+            "width": 245,
+            "x": 372,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 860,
+            "right": 916,
+            "top": 163,
+            "width": 56,
+            "x": 860,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 646,
+            "right": 925,
+            "top": 152,
+            "width": 279,
+            "x": 646,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 663,
+            "right": 852,
+            "top": 165,
+            "width": 189,
+            "x": 663,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 663,
+            "right": 908,
+            "top": 189,
+            "width": 245,
+            "x": 663,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 1151,
+            "right": 1207,
+            "top": 163,
+            "width": 56,
+            "x": 1151,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 937,
+            "right": 1216,
+            "top": 152,
+            "width": 279,
+            "x": 937,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 954,
+            "right": 1143,
+            "top": 165,
+            "width": 189,
+            "x": 954,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 954,
+            "right": 1199,
+            "top": 189,
+            "width": 245,
+            "x": 954,
+            "y": 189
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 1280,
+      "scrollWidth": 1280
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-1280.jpg"
+  },
+  {
+    "requestedWidth": 1440,
+    "actual": {
+      "cards": [
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 358,
+            "right": 414,
+            "top": 163,
+            "width": 56,
+            "x": 358,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 144,
+            "right": 423,
+            "top": 152,
+            "width": 279,
+            "x": 144,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 161,
+            "right": 350,
+            "top": 165,
+            "width": 189,
+            "x": 161,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 161,
+            "right": 406,
+            "top": 189,
+            "width": 245,
+            "x": 161,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 649,
+            "right": 705,
+            "top": 163,
+            "width": 56,
+            "x": 649,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 435,
+            "right": 714,
+            "top": 152,
+            "width": 279,
+            "x": 435,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 452,
+            "right": 641,
+            "top": 165,
+            "width": 189,
+            "x": 452,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 452,
+            "right": 697,
+            "top": 189,
+            "width": 245,
+            "x": 452,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 940,
+            "right": 996,
+            "top": 163,
+            "width": 56,
+            "x": 940,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 726,
+            "right": 1005,
+            "top": 152,
+            "width": 279,
+            "x": 726,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 743,
+            "right": 932,
+            "top": 165,
+            "width": 189,
+            "x": 743,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 743,
+            "right": 988,
+            "top": 189,
+            "width": 245,
+            "x": 743,
+            "y": 189
+          }
+        },
+        {
+          "affordance": {
+            "bottom": 187,
+            "height": 24,
+            "left": 1231,
+            "right": 1287,
+            "top": 163,
+            "width": 56,
+            "x": 1231,
+            "y": 163
+          },
+          "rect": {
+            "bottom": 240,
+            "height": 88,
+            "left": 1017,
+            "right": 1296,
+            "top": 152,
+            "width": 279,
+            "x": 1017,
+            "y": 152
+          },
+          "title": {
+            "bottom": 185,
+            "height": 20,
+            "left": 1034,
+            "right": 1223,
+            "top": 165,
+            "width": 189,
+            "x": 1034,
+            "y": 165
+          },
+          "value": {
+            "bottom": 223,
+            "height": 34,
+            "left": 1034,
+            "right": 1279,
+            "top": 189,
+            "width": 245,
+            "x": 1034,
+            "y": 189
+          }
+        }
+      ],
+      "dpr": 1,
+      "innerHeight": 1000,
+      "innerWidth": 1440,
+      "scrollWidth": 1440
+    },
+    "ax": "Browser tab: 13, Title: \"四项指标独立验收\", URL: \"http://127.0.0.1:3334/metrics.html\".\n1 AXWebArea 四项指标独立验收, URL: 127.0.0.1:3334/metrics.html\n\t2 container\n\t\t3 heading 四项指标独立验收, Value: 1\n\t\t\t4 text 四项指标独立验收\n\t\t5 text 合成受控调用方；无财务投影、无数据库，不代表首页财务接线。 验收情景 \n\t\t6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 标准指标\n\t\t\t\t9 正负与零\n\t\t\t\t10 更新保留旧值\n\t\t\t\t11 首次加载\n\t\t\t\t12 空范围\n\t\t\t\t13 (selected) 更新失败保留旧值\n\t\t\t\t14 首次读取失败\n\t\t\t\t15 缺失净值\n\t\t\t\t16 未来期间\n\t\t\t\t17 币种不一致\n\t\t\t\t18 极长金额与来源\n\t\t19 button 提交另一期间\n\t\t20 text 版本 1\n\t\t21 container 当前表现指标\n\t\t\t22 container 期间净盈亏\n\t\t\t\t23 heading 期间净盈亏(CNY), Value: 3\n\t\t\t\t\t24 text 期间净盈亏 ( CNY )\n\t\t\t\t25 text +1.84 万\n\t\t\t\t26 pop up button (collapsed) Description: 期间净盈亏，查看原因，完整金额 18420.567800 CNY, Secondary Actions: Expand\n\t\t\t27 container 期间已实现\n\t\t\t\t28 heading 期间已实现(CNY), Value: 3\n\t\t\t\t\t29 text 期间已实现 ( CNY )\n\t\t\t\t30 text +1.22 万\n\t\t\t\t31 pop up button (collapsed) Description: 期间已实现，查看原因，完整金额 12240.5678 CNY, Secondary Actions: Expand\n\t\t\t32 container 期间浮盈变动\n\t\t\t\t33 heading 期间浮盈变动(CNY), Value: 3\n\t\t\t\t\t34 text 期间浮盈变动 ( CNY )\n\t\t\t\t35 text +6,180.00\n\t\t\t\t36 pop up button (collapsed) Description: 期间浮盈变动，查看原因，完整金额 6180 CNY, Secondary Actions: Expand\n\t\t\t37 container 当前持仓市值\n\t\t\t\t38 heading 当前持仓市值(CNY), Value: 3\n\t\t\t\t\t39 text 当前持仓市值 ( CNY )\n\t\t\t\t40 text 26.01 万\n\t\t\t\t41 pop up button (collapsed) Description: 当前持仓市值，查看原因，完整金额 260102.123400 CNY, Secondary Actions: Expand\n\t\t\t46 text 读取超时，新范围未应用；继续显示原期间\n\t\t42 heading 下一模块边界, Value: 2\n\t\t\t43 text 下一模块边界\n\t\t44 text 详情须完整可读并可返回原触发卡。\n\t\t45 button 外部动作\n\nThe focused UI element is 6 pop up button (collapsed, settable) 验收情景, Value: 更新失败保留旧值, Secondary Actions: Expand",
+    "file": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate2-error-actual-1440.jpg"
+  }
+]

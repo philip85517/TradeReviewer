@@ -1,0 +1,46 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:47733) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ × app/components/homepage-v25/attachment-workspace.test.tsx > owned production Workspace attachment sources > requires fresh Recall for pending predicate, rejects failure, and carries exact composite groups through ordinary return and reload 6170ms
+   → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ × app/components/homepage-v25/attachment-workspace.test.tsx > owned production Workspace attachment sources > cold compatible source uses fresh summaries while keeping the ordinary read free of FX and market reads 5026ms
+   → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/attachment-workspace.test.tsx > owned production Workspace attachment sources > requires fresh Recall for pending predicate, rejects failure, and carries exact composite groups through ordinary return and reload
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/homepage-v25/attachment-workspace.test.tsx:36:3
+     34|
+     35| describe("owned production Workspace attachment sources", () => {
+     36|   it("requires fresh Recall for pending predicate, rejects failure, an…
+       |   ^
+     37|     const storage = client();
+     38|     const app = () => <TradeReviewWorkspace initialFrame={frame} showD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/attachment-workspace.test.tsx > owned production Workspace attachment sources > cold compatible source uses fresh summaries while keeping the ordinary read free of FX and market reads
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/homepage-v25/attachment-workspace.test.tsx:72:3
+     70|   });
+     71|
+     72|   it("cold compatible source uses fresh summaries while keeping the or…
+       |   ^
+     73|     const snapshot = createHomepageState({ live: true, market: "hk", a…
+     74|     snapshot.attachments = { categories: ["stock", "etf"], openOnly: f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  06:29:03
+   Duration  22.09s (transform 5.86s, setup 610ms, import 7.23s, tests 11.20s, environment 2.36s)
+

@@ -1,0 +1,304 @@
+import Decimal from "decimal.js";
+import type { TradeExecution } from "../trades/types";
+import type { TradeLibraryEntry } from "../trades/library";
+import type { DailyCandleRecord } from "../market/contracts";
+import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
+import { replayPositionAtPrice } from "../replay/position-ledger";
+
+export type HomepageV25Period = { start: string; end: string };
+export type HomepageV25OpeningPosition = {
+  accountId: string;
+  instrumentId: string;
+  direction: "long" | "short";
+  quantity: string;
+  unitCost: string;
+  currency: string;
+};
+export type HomepageV25Valuation = {
+  date: string;
+  accountId: string;
+  instrumentId: string;
+  quantity: string;
+  price: string | null;
+  currency: string;
+  kind: "period-start" | "period-end" | "current";
+  fxRateToTarget?: string;
+  reason?: string;
+};
+export type HomepageV25Input = {
+  period: HomepageV25Period;
+  executions: readonly TradeExecution[];
+  openingPositions: readonly HomepageV25OpeningPosition[];
+  valuations: readonly HomepageV25Valuation[];
+  targetCurrency?: string;
+  /** Real homepage source; when provided, the adapter derives the ledger below. */
+  entries?: readonly TradeLibraryEntry[];
+  candlesByInstrument?: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>;
+  fxSnapshot?: RoomFxSnapshot;
+  asOf?: string;
+  instrumentMetadata?: TradingRoomMetadataInput;
+};
+
+export type HomepageV25Metric = {
+  value: string | null;
+  available: boolean;
+  coverage: { total: number; available: number };
+  reasons: string[];
+};
+export type HomepageV25InstrumentResult = {
+  key: string;
+  periodRealized: HomepageV25Metric;
+  openingUnrealized: HomepageV25Metric;
+  closingUnrealized: HomepageV25Metric;
+  net: HomepageV25Metric;
+};
+export type HomepageV25Performance = {
+  periodRealized: HomepageV25Metric;
+  openingUnrealized: HomepageV25Metric;
+  closingUnrealized: HomepageV25Metric;
+  net: HomepageV25Metric;
+  currentMarketValue: HomepageV25Metric;
+  instruments: HomepageV25InstrumentResult[];
+  reasons: string[];
+};
+
+type Lot = { direction: "long" | "short"; quantity: Decimal; unitCost: Decimal };
+type Book = Map<string, Lot[]>;
+
+const decimal = (value: string | null | undefined): Decimal | null => {
+  if (value === null || value === undefined || value.trim() === "") return null;
+  try {
+    const parsed = new Decimal(value);
+    return parsed.isFinite() ? parsed : null;
+  } catch { return null; }
+};
+const keyOf = (accountId: string, instrumentId: string) => `${accountId}|${instrumentId}`;
+const businessDate = (execution: TradeExecution): string => execution.source.tradingDate ?? execution.source.marketCalendarDate ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date(execution.executedAt));
+const metric = (value: Decimal | null, total: number, reasons: Iterable<string> = [], availableOverride?: number): HomepageV25Metric => {
+  const uniqueReasons = [...new Set(reasons)];
+  return { value: value?.toDecimalPlaces(8).toString() ?? null, available: value !== null, coverage: { total, available: availableOverride ?? (value === null ? 0 : total) }, reasons: uniqueReasons };
+};
+const add = (left: Decimal | null, right: Decimal | null): Decimal | null => left && right ? left.plus(right) : null;
+
+function cloneBook(book: Book): Book {
+  return new Map([...book.entries()].map(([key, lots]) => [key, lots.map(lot => ({ ...lot, quantity: lot.quantity, unitCost: lot.unitCost }))]));
+}
+function seedBook(input: HomepageV25Input, reasons: Set<string>): Book {
+  const book: Book = new Map();
+  for (const position of input.openingPositions) {
+    const quantity = decimal(position.quantity);
+    const unitCost = decimal(position.unitCost);
+    if (!quantity || quantity.lte(0) || !unitCost) { reasons.add("opening-position-invalid"); continue; }
+    const key = keyOf(position.accountId, position.instrumentId);
+    const lots = book.get(key) ?? [];
+    lots.push({ direction: position.direction, quantity, unitCost });
+    book.set(key, lots);
+  }
+  return book;
+}
+
+function applyExecution(book: Book, execution: TradeExecution, reasons: Set<string>): Decimal | null {
+  const settlement = execution.source.settlement;
+  const settlementGross = decimal(settlement?.grossAmount);
+  const quantity = decimal(settlement?.quantity) ?? decimal(execution.quantity);
+  const price = settlementGross && quantity?.gt(0) ? settlementGross.div(quantity) : decimal(execution.price);
+  const settlementFeeValues = settlement ? Object.values(settlement.fees).map(value => decimal(value)) : [];
+  if (settlement && settlementFeeValues.some(value => value === null || value.lt(0))) { reasons.add("fees-invalid"); return null; }
+  const settlementFees = settlement ? settlementFeeValues.reduce<Decimal>((sum, value) => sum.plus(value!), new Decimal(0)) : null;
+  const fee = settlementFees ?? decimal(execution.fee);
+  if (!quantity || quantity.lte(0) || !price || !fee || fee.lt(0)) { reasons.add("execution-value-invalid"); return null; }
+  let effect = execution.source.positionEffect;
+  const key = keyOf(execution.accountId, execution.instrument.id);
+  const lots = book.get(key) ?? [];
+  if (!effect && execution.side === "buy") effect = "open-long";
+  if (!effect && execution.side === "sell" && lots.some(lot => lot.direction === "long" && lot.quantity.gt(0))) effect = "close-long";
+  if (!effect) { reasons.add("execution-direction-unavailable"); return null; }
+  if (effect === "open-long" || effect === "open-short") {
+    const unitFee = fee.div(quantity);
+    lots.push({ direction: effect === "open-long" ? "long" : "short", quantity, unitCost: effect === "open-long" ? price.plus(unitFee) : price.minus(unitFee) });
+    book.set(key, lots);
+    return new Decimal(0);
+  }
+  const direction = effect === "close-long" ? "long" : "short";
+  let remaining = quantity;
+  let realized = new Decimal(0);
+  while (remaining.gt(0)) {
+    const index = lots.findIndex(lot => lot.direction === direction && lot.quantity.gt(0));
+    if (index < 0) { reasons.add("position-coverage-missing"); return null; }
+    const lot = lots[index];
+    const matched = Decimal.min(remaining, lot.quantity);
+    realized = realized.plus(direction === "long" ? price.minus(lot.unitCost).mul(matched) : lot.unitCost.minus(price).mul(matched));
+    lot.quantity = lot.quantity.minus(matched);
+    remaining = remaining.minus(matched);
+    if (lot.quantity.isZero()) lots.splice(index, 1);
+  }
+  // A close fee belongs to this close exactly once; opening fees are in unitCost.
+  return realized.minus(fee);
+}
+
+function convert(value: Decimal, valuation: HomepageV25Valuation, targetCurrency: string | undefined, reasons: Set<string>): Decimal | null {
+  if (!targetCurrency || valuation.currency.toUpperCase() === targetCurrency.toUpperCase()) return value;
+  const rate = decimal(valuation.fxRateToTarget);
+  if (!rate || rate.lte(0)) { reasons.add("fx-missing"); return null; }
+  return value.mul(rate);
+}
+function selectValuation(valuations: readonly HomepageV25Valuation[], key: string, kind: HomepageV25Valuation["kind"], period: HomepageV25Period, asOf?: string): HomepageV25Valuation | null {
+  const candidates = valuations.filter(item => keyOf(item.accountId, item.instrumentId) === key);
+  if (kind === "period-start") return candidates.find(item => item.kind === kind && item.date === period.start) ?? candidates.filter(item => item.date <= period.start).sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
+  if (kind === "period-end") return candidates.find(item => item.kind === kind && item.date === period.end) ?? candidates.filter(item => item.date <= period.end).sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
+  const cutoff = (asOf ?? period.end).slice(0, 10);
+  return candidates.filter(item => item.kind === "current" && item.date <= cutoff).sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
+}
+
+export function buildHomepageV25Performance(input: HomepageV25Input): HomepageV25Performance {
+  const reasons = new Set<string>();
+  if (input.entries) return buildHomepageV25PerformanceFromEntries(input, reasons);
+  const startBook = seedBook(input, reasons);
+  const invalidOpening = input.openingPositions.some(position => {
+    const quantity = decimal(position.quantity), cost = decimal(position.unitCost);
+    return !quantity || quantity.lte(0) || !cost;
+  });
+  const endBook = cloneBook(startBook);
+  const periodExecutions = [...input.executions].filter(item => {
+    const date = businessDate(item);
+    return date >= input.period.start && date <= input.period.end;
+  }).sort((a, b) => a.executedAt.localeCompare(b.executedAt) || a.id.localeCompare(b.id));
+  let realized: Decimal | null = new Decimal(0);
+  const realizedByKey = new Map<string, Decimal | null>();
+  for (const execution of periodExecutions) {
+    const key = keyOf(execution.accountId, execution.instrument.id);
+    const value = applyExecution(endBook, execution, reasons);
+    const currency = execution.source.settlement?.currency ?? execution.instrument.currency;
+    const rate = fxRate(input.fxSnapshot, currency, input.targetCurrency ?? currency);
+    const converted = value === null ? null : rate ? value.mul(rate) : input.targetCurrency && currency.toUpperCase() !== input.targetCurrency.toUpperCase() ? (reasons.add("fx-missing"), null) : value;
+    realized = add(realized, converted);
+    const prior = realizedByKey.has(key) ? realizedByKey.get(key)! : new Decimal(0);
+    realizedByKey.set(key, add(prior, converted));
+  }
+
+  const keys = new Set([...startBook.keys(), ...endBook.keys(), ...input.valuations.map(v => keyOf(v.accountId, v.instrumentId))]);
+  const instruments: HomepageV25InstrumentResult[] = [];
+  let opening: Decimal | null = new Decimal(0);
+  let closing: Decimal | null = new Decimal(0);
+  let openingAvailable = 0;
+  let closingAvailable = 0;
+  let realizedAvailable = 0;
+  for (const key of keys) {
+    const keyReasons = new Set<string>();
+    const start = selectValuation(input.valuations, key, "period-start", input.period, input.asOf);
+    const end = selectValuation(input.valuations, key, "period-end", input.period, input.asOf);
+    const startPrice = start ? decimal(start.price) : null;
+    const endPrice = end ? decimal(end.price) : null;
+    const startQuantity = start ? decimal(start.quantity) : null;
+    const endQuantity = end ? decimal(end.quantity) : null;
+    const bookStartQuantity = (startBook.get(key) ?? []).reduce((sum, lot) => sum.plus(lot.direction === "long" ? lot.quantity : lot.quantity.neg()), new Decimal(0));
+    const bookEndQuantity = (endBook.get(key) ?? []).reduce((sum, lot) => sum.plus(lot.direction === "long" ? lot.quantity : lot.quantity.neg()), new Decimal(0));
+    const quantityMismatch = Boolean((startQuantity && !startQuantity.eq(bookStartQuantity)) || (endQuantity && !endQuantity.eq(bookEndQuantity)));
+    if (quantityMismatch) { keyReasons.add("valuation-quantity-mismatch"); reasons.add("valuation-quantity-mismatch"); }
+    const startCost = (startBook.get(key) ?? []).reduce((sum, lot) => sum.plus(lot.unitCost.mul(lot.quantity)), new Decimal(0));
+    const endCost = (endBook.get(key) ?? []).reduce((sum, lot) => sum.plus(lot.unitCost.mul(lot.quantity)), new Decimal(0));
+    const startRaw = startPrice && startQuantity ? (startQuantity.gte(0) ? startPrice.mul(startQuantity).minus(startCost) : startCost.minus(startPrice.mul(startQuantity.abs()))) : null;
+    const endRaw = endPrice && endQuantity ? (endQuantity.gte(0) ? endPrice.mul(endQuantity).minus(endCost) : endCost.minus(endPrice.mul(endQuantity.abs()))) : null;
+    const hasStartExposure = !bookStartQuantity.isZero() || (!startBook.has(key) && Boolean(startQuantity && !startQuantity.isZero()));
+    const hasEndExposure = !bookEndQuantity.isZero() || (!endBook.has(key) && Boolean(endQuantity && !endQuantity.isZero()));
+    const startValue = !hasStartExposure ? new Decimal(0) : start && startRaw ? convert(startRaw, start, input.targetCurrency, keyReasons) : null;
+    const endValue = !hasEndExposure ? new Decimal(0) : end && endRaw ? convert(endRaw, end, input.targetCurrency, keyReasons) : null;
+    if (start?.reason) keyReasons.add(start.reason);
+    if (end?.reason) keyReasons.add(end.reason);
+    if (hasStartExposure && (!start || !startPrice || !startQuantity)) keyReasons.add(start?.reason ?? "quote-missing");
+    if (hasEndExposure && (!end || !endPrice || !endQuantity)) keyReasons.add(end?.reason ?? "quote-missing");
+    for (const reason of keyReasons) reasons.add(reason);
+    const openingValue = quantityMismatch ? null : startValue;
+    const closingValue = quantityMismatch ? null : endValue;
+    const realizedValue = realizedByKey.has(key) ? realizedByKey.get(key)! : new Decimal(0);
+    const executionCount = periodExecutions.filter(e => keyOf(e.accountId, e.instrument.id) === key).length;
+    const unavailable = [...keyReasons];
+    const result = {
+      key,
+      periodRealized: metric(realizedValue, executionCount, unavailable, realizedValue === null ? 0 : executionCount),
+      openingUnrealized: metric(openingValue, hasStartExposure ? 1 : 0, unavailable, openingValue === null ? 0 : (hasStartExposure ? 1 : 0)),
+      closingUnrealized: metric(closingValue, hasEndExposure ? 1 : 0, unavailable, closingValue === null ? 0 : (hasEndExposure ? 1 : 0)),
+      net: metric(null, 1),
+    };
+    result.net = metric(result.periodRealized.value !== null && result.openingUnrealized.value !== null && result.closingUnrealized.value !== null ? new Decimal(result.periodRealized.value).plus(result.closingUnrealized.value).minus(result.openingUnrealized.value) : null, 1, unavailable);
+    instruments.push(result);
+    if (result.periodRealized.value !== null) realizedAvailable++;
+    if (result.openingUnrealized.value !== null) openingAvailable++;
+    if (result.closingUnrealized.value !== null) closingAvailable++;
+    opening = add(opening, openingValue); closing = add(closing, closingValue);
+  }
+  const currentValues: Decimal[] = [];
+  const currentReasons = new Set<string>();
+  let currentAvailable = 0;
+  let currentEligible = 0;
+  for (const key of keys) {
+    const current = selectValuation(input.valuations, key, "current", input.period, input.asOf);
+    const bookQuantity = (endBook.get(key) ?? []).reduce((sum, lot) => sum.plus(lot.quantity), new Decimal(0));
+    const endingInventory = selectValuation(input.valuations, key, "period-end", input.period, input.asOf);
+    const endingQuantity = endingInventory ? decimal(endingInventory.quantity) : null;
+    if (!current && bookQuantity.isZero() && (!endingQuantity || endingQuantity.isZero())) continue;
+    currentEligible++;
+    if (!current || !decimal(current.price)) { currentReasons.add(current?.reason ?? "quote-missing"); continue; }
+    const converted = convert(decimal(current.price)!.mul(decimal(current.quantity)!), current, input.targetCurrency, currentReasons);
+    if (converted) { currentValues.push(converted); currentAvailable++; }
+  }
+  const current = currentReasons.size ? null : currentValues.reduce((sum, value) => sum.plus(value), new Decimal(0));
+  const finalRealized = invalidOpening ? null : realized;
+  const finalNet = invalidOpening || finalRealized === null || opening === null || closing === null ? null : finalRealized.plus(closing).minus(opening);
+  return {
+    periodRealized: metric(finalRealized, keys.size, reasons, finalRealized === null ? realizedAvailable : keys.size),
+    openingUnrealized: metric(opening, keys.size, reasons, opening === null ? openingAvailable : keys.size),
+    closingUnrealized: metric(closing, keys.size, reasons, closing === null ? closingAvailable : keys.size),
+    net: metric(finalNet, keys.size, reasons, finalNet === null ? 0 : keys.size),
+    currentMarketValue: metric(current, currentEligible, currentReasons, current === null ? currentAvailable : currentEligible),
+    instruments,
+    reasons: [...reasons],
+  };
+}
+
+function candleAt(candles: readonly DailyCandleRecord[] | undefined, cutoff: string): DailyCandleRecord | undefined {
+  return [...(candles ?? [])].filter(candle => candle.tradingDate <= cutoff).sort((a, b) => b.tradingDate.localeCompare(a.tradingDate))[0];
+}
+
+function fxRate(snapshot: RoomFxSnapshot | undefined, source: string, target: string): string | undefined {
+  const from = source.toUpperCase(), to = target.toUpperCase();
+  if (from === to) return "1";
+  const sourceCny = from === "CNY" ? 1 : snapshot?.rates[from];
+  const targetCny = to === "CNY" ? 1 : snapshot?.rates[to];
+  return sourceCny && targetCny ? new Decimal(sourceCny).div(targetCny).toString() : undefined;
+}
+
+/** Adapt the real homepage library + candle/FX sources into the pure projection input. */
+function buildHomepageV25PerformanceFromEntries(input: HomepageV25Input, reasons: Set<string>): HomepageV25Performance {
+  const entries = input.entries ?? [];
+  const groups = new Map<string, { accountId: string; instrument: (typeof entries[number]["episodes"][number]["episode"]["instrument"]); direction: "long" | "short"; executions: TradeExecution[] }>();
+  for (const entry of entries) for (const item of entry.episodes) {
+    const episode = item.episode;
+    const key = keyOf(episode.accountId, episode.instrument.id);
+    const group = groups.get(key) ?? { accountId: episode.accountId, instrument: episode.instrument, direction: episode.direction, executions: [] };
+    group.executions.push(...episode.executions);
+    groups.set(key, group);
+  }
+  const executions = [...groups.values()].flatMap(group => group.executions);
+  const positions: HomepageV25OpeningPosition[] = [];
+  const valuations: HomepageV25Valuation[] = [];
+  for (const group of groups.values()) {
+    const candles = input.candlesByInstrument?.[group.instrument.id] ?? [];
+    const startCandle = candleAt(candles, input.period.start);
+    const endCandle = candleAt(candles, input.period.end);
+    const currentCandle = [...candles].sort((a, b) => b.tradingDate.localeCompare(a.tradingDate))[0];
+    const snapshot = replayPositionAtPrice({ executions: group.executions, markPrice: startCandle?.close ?? "0", cursor: `${input.period.start}T00:00:00.000Z` });
+    const endSnapshot = replayPositionAtPrice({ executions: group.executions, markPrice: endCandle?.close ?? "0", cursor: `${input.period.end}T23:59:59.999Z` });
+    const currentSnapshot = replayPositionAtPrice({ executions: group.executions, markPrice: currentCandle?.close ?? "0" });
+    if (snapshot.quantityKnown !== false && snapshot.costKnown !== false && snapshot.quantity !== "0") positions.push({ accountId: group.accountId, instrumentId: group.instrument.id, direction: group.direction, quantity: snapshot.quantity.replace("-", ""), unitCost: snapshot.averageCost, currency: group.instrument.currency });
+    const addValuation = (candle: DailyCandleRecord | undefined, kind: HomepageV25Valuation["kind"]) => {
+      if (!candle) { reasons.add(`${kind}-quote-missing`); return; }
+      const quantity = kind === "period-start" ? snapshot.quantity : kind === "period-end" ? endSnapshot.quantity : currentSnapshot.quantity;
+      valuations.push({ date: candle.tradingDate, accountId: group.accountId, instrumentId: group.instrument.id, quantity, price: candle.close, currency: candle.currency, kind, fxRateToTarget: fxRate(input.fxSnapshot, candle.currency, input.targetCurrency ?? candle.currency), reason: candle.tradingDate > (input.asOf ?? input.period.end).slice(0, 10) ? "quote-future" : undefined });
+    };
+    addValuation(startCandle, "period-start");
+    addValuation(endCandle, "period-end");
+    if (currentCandle) valuations.push({ date: currentCandle.tradingDate, accountId: group.accountId, instrumentId: group.instrument.id, quantity: currentSnapshot.quantity, price: currentCandle.close, currency: currentCandle.currency, kind: "current", fxRateToTarget: fxRate(input.fxSnapshot, currentCandle.currency, input.targetCurrency ?? currentCandle.currency) });
+  }
+  return buildHomepageV25Performance({ ...input, entries: undefined, executions, openingPositions: positions, valuations, targetCurrency: input.targetCurrency });
+}

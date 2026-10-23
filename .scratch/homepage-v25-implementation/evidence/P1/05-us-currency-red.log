@@ -1,0 +1,32 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:11116) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/holdings-model.test.ts (5 tests | 1 failed) 65ms
+     × reports US in USD without needing FX for USD, converting other settlement currencies only with evidence 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/holdings-model.test.ts > homepage holdings projection > reports US in USD without needing FX for USD, converting other settlement currencies only with evidence
+AssertionError: expected 'CNY' to be 'USD' // Object.is equality
+
+Expected: "USD"
+Received: "CNY"
+
+ ❯ app/components/homepage-v25/holdings-model.test.ts:47:32
+     45|     const usQuote = { "US:TEST": { ...quotes["CN-SH:600519"], currency…
+     46|     const usd = buildHomepageHoldings(entries([us]), { scope: { ...sco…
+     47|     expect(usd.reportCurrency).toBe("USD");
+       |                                ^
+     48|     expect(usd.rows[0].marketValue).toBe("233.75");
+     49|     const foreign = { ...us, id: "foreign", accountId: "two", instrume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  01:00:24
+   Duration  3.17s (transform 333ms, setup 434ms, import 364ms, tests 65ms, environment 1.71s)
+

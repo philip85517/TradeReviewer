@@ -1,0 +1,6 @@
+app/components/homepage-v25/home-surface.test.tsx(9,29): error TS2307: Cannot find module './home-surface' or its corresponding type declarations.
+app/components/homepage-v25/home-surface.test.tsx(16,123): error TS7006: Parameter 'patch' implicitly has an 'any' type.
+app/lib/reviews/homepage-v25-performance.test.ts(89,91): error TS2322: Type '{ commission: string; } | { commission?: undefined; }' is not assignable to type 'Record<string, string>'.
+  Type '{ commission?: undefined; }' is not assignable to type 'Record<string, string>'.
+    Property 'commission' is incompatible with index signature.
+      Type 'undefined' is not assignable to type 'string'.

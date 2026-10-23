@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-22T17:25:19.638Z",
+  "status": "Current additive implementation-ready; root round 2/3 pending. P2/P4 plan-only, no daily/attribution implementation.",
+  "frozenSourceSha256": "1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5",
+  "frozenTestSha256": "fabfc2b43e6d57edc52177dcc950b83eaa4e54b5a3424e26de50fbf3ff34a921",
+  "files": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/P2-P4-DATA-PLAN.md",
+      "sha256": "a93ed5bef8a8e0835712617057382a22dceb703e11daa985a0bf4edb10277e36",
+      "bytes": 25830
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/CURRENT-INTERFACES.md",
+      "sha256": "f42d15173e045f55ea0caab66d6664e7377480ecd8dc1ae74dbcd153c8e1a60d",
+      "bytes": 3295
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/CURRENT-REPORT.md",
+      "sha256": "80743be29f50adbcea85b2b5cc3a99baaf7bc66e927853c099c6bdc54179476f",
+      "bytes": 3781
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/probe-results.json",
+      "sha256": "1de178a89ab1f6693446147713d5c9e5ead1e23e0f09e585b5a7dcbe87c11d40",
+      "bytes": 87055
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/read-only-probes.test.ts",
+      "sha256": "56107bb599b203c38227821e113a8e4e3424200efdcbdd49f0880cab9d3df0f4",
+      "bytes": 6980
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-data-prep/prior-evidence-integrity.json",
+      "sha256": "0172f5e62bd32ccaadc64e85a67cd42395786dbbbe212a7f8e92b5fb9463846f",
+      "bytes": 15711
+    }
+  ]
+}

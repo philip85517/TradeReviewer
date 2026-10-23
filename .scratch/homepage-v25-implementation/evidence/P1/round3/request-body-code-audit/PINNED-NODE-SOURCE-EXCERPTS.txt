@@ -1,0 +1,228 @@
+SOURCE internal/deps/undici/undici 4739-4741
+4739     webidl.util.MakeTypeAssertion = function(I) {
+4740       return (O) => FunctionPrototypeSymbolHasInstance(I, O);
+4741     };
+SOURCE internal/deps/undici/undici 6741-6750
+6741       } else if (typeof object[Symbol.asyncIterator] === "function") {
+6742         if (keepalive) {
+6743           throw new TypeError("keepalive");
+6744         }
+6745         if (util.isDisturbed(object) || object.locked) {
+6746           throw new TypeError(
+6747             "Response body object should not be disturbed or locked"
+6748           );
+6749         }
+6750         stream = webidl.is.ReadableStream(object) ? object : ReadableStreamFrom(object);
+SOURCE internal/deps/undici/undici 11842-11850
+11842       constructor(input, init = void 0) {
+11843         webidl.util.markAsUncloneable(this);
+11844         if (input === kConstruct) {
+11845           return;
+11846         }
+11847         const prefix = "Request constructor";
+11848         webidl.argumentLengthCheck(arguments, 1, prefix);
+11849         input = webidl.converters.RequestInfo(input);
+11850         init = webidl.converters.RequestInit(init);
+SOURCE internal/deps/undici/undici 11855-11875
+11855         if (typeof input === "string") {
+11856           this.#dispatcher = init.dispatcher;
+11857           let parsedURL;
+11858           try {
+11859             parsedURL = new URL(input, baseUrl);
+11860           } catch (err) {
+11861             throw new TypeError("Failed to parse URL from " + input, { cause: err });
+11862           }
+11863           if (parsedURL.username || parsedURL.password) {
+11864             throw new TypeError(
+11865               "Request cannot be constructed from a URL that includes credentials: " + input
+11866             );
+11867           }
+11868           request = makeRequest({ urlList: [parsedURL] });
+11869           fallbackMode = "cors";
+11870         } else {
+11871           assert(webidl.is.Request(input));
+11872           request = input.#state;
+11873           signal = input.#signal;
+11874           this.#dispatcher = init.dispatcher || input.#dispatcher;
+11875         }
+SOURCE internal/deps/undici/undici 12066-12109
+12066         const inputBody = webidl.is.Request(input) ? input.#state.body : null;
+12067         if ((init.body != null || inputBody != null) && (request.method === "GET" || request.method === "HEAD")) {
+12068           throw new TypeError("Request with GET/HEAD method cannot have body.");
+12069         }
+12070         let initBody = null;
+12071         if (init.body != null) {
+12072           const [extractedBody, contentType] = extractBody(
+12073             init.body,
+12074             request.keepalive
+12075           );
+12076           initBody = extractedBody;
+12077           if (contentType && !getHeadersList(this.#headers).contains("content-type", true)) {
+12078             this.#headers.append("content-type", contentType, true);
+12079           }
+12080         }
+12081         const inputOrInitBody = initBody ?? inputBody;
+12082         if (inputOrInitBody != null && inputOrInitBody.source == null) {
+12083           if (initBody != null && init.duplex == null) {
+12084             throw new TypeError("RequestInit: duplex option is required when sending a body.");
+12085           }
+12086           if (request.mode !== "same-origin" && request.mode !== "cors") {
+12087             throw new TypeError(
+12088               'If request is made from ReadableStream, mode should be "same-origin" or "cors"'
+12089             );
+12090           }
+12091           request.useCORSPreflightFlag = true;
+12092         }
+12093         let finalBody = inputOrInitBody;
+12094         if (initBody == null && inputBody != null) {
+12095           if (bodyUnusable(input.#state)) {
+12096             throw new TypeError(
+12097               "Cannot construct a Request with a Request object that has already been used."
+12098             );
+12099           }
+12100           const identityTransform = new TransformStream();
+12101           inputBody.stream.pipeThrough(identityTransform);
+12102           finalBody = {
+12103             source: inputBody.source,
+12104             length: inputBody.length,
+12105             stream: identityTransform.readable
+12106           };
+12107         }
+12108         this.#state.body = finalBody;
+12109       }
+SOURCE internal/deps/undici/undici 12418-12427
+12418     webidl.is.Request = webidl.util.MakeTypeAssertion(Request);
+12419     webidl.converters.RequestInfo = function(V) {
+12420       if (typeof V === "string") {
+12421         return webidl.converters.USVString(V);
+12422       }
+12423       if (webidl.is.Request(V)) {
+12424         return V;
+12425       }
+12426       return webidl.converters.USVString(V);
+12427     };
+SOURCE internal/webstreams/adapters 461-483
+461 function newReadableStreamFromStreamReadable(streamReadable, options = kEmptyObject) {
+462   // Not using the internal/streams/utils isReadableNodeStream utility
+463   // here because it will return false if streamReadable is a Duplex
+464   // whose readable option is false. For a Duplex that is not readable,
+465   // we want it to pass this check but return a closed ReadableStream.
+466   if (typeof streamReadable?._readableState !== 'object') {
+467     throw new ERR_INVALID_ARG_TYPE(
+468       'streamReadable',
+469       'stream.Readable',
+470       streamReadable);
+471   }
+472   validateObject(options, 'options');
+473   if (options.type !== undefined) {
+474     validateOneOf(options.type, 'options.type', ['bytes', undefined]);
+475   }
+476 
+477   const isBYOB = options.type === 'bytes';
+478 
+479   if (isDestroyed(streamReadable) || !isReadable(streamReadable)) {
+480     const readable = new ReadableStream();
+481     readable.cancel();
+482     return readable;
+483   }
+SOURCE internal/webstreams/adapters 510-560
+510   function onData(chunk) {
+511     // Copy the Buffer to detach it from the pool.
+512     if (Buffer.isBuffer(chunk) && !objectMode)
+513       chunk = new Uint8Array(chunk);
+514     controller.enqueue(chunk);
+515     if (controller.desiredSize <= 0)
+516       streamReadable.pause();
+517   }
+518 
+519   streamReadable.pause();
+520 
+521   const cleanup = eos(streamReadable, (error) => {
+522     error = handleKnownInternalErrors(error);
+523 
+524     cleanup();
+525     // This is a protection against non-standard, legacy streams
+526     // that happen to emit an error event again after finished is called.
+527     streamReadable.on('error', () => {});
+528     if (error)
+529       return controller.error(error);
+530     // Was already canceled
+531     if (wasCanceled) {
+532       return;
+533     }
+534     controller.close();
+535   });
+536 
+537   streamReadable.on('data', onData);
+538 
+539   return new ReadableStream({
+540     type: isBYOB ? 'bytes' : undefined,
+541     start(c) {
+542       controller = c;
+543       if (isBYOB) {
+544         streamReadable.once('end', () => {
+545           // close the controller
+546           controller.close();
+547           // And unlock the last BYOB read request
+548           controller.byobRequest?.respond(0);
+549           wasCanceled = true;
+550         });
+551       }
+552     },
+553 
+554     pull() { streamReadable.resume(); },
+555 
+556     cancel(reason) {
+557       wasCanceled = true;
+558       destroy(streamReadable, reason);
+559     },
+560   }, strategy);
+SOURCE _http_server 840-850
+840 function socketOnClose(socket, state) {
+841   debug('server socket close');
+842   freeParser(socket.parser, null, socket);
+843   abortIncoming(state.incoming);
+844 }
+845 
+846 function abortIncoming(incoming) {
+847   while (incoming.length) {
+848     const req = incoming.shift();
+849     req.destroy(new ConnResetException('aborted'));
+850   }
+SOURCE _http_incoming 202-213
+202 IncomingMessage.prototype._read = function _read(n) {
+203   if (!this._consuming) {
+204     this._readableState.readingMore = false;
+205     this._consuming = true;
+206   }
+207 
+208   // We actually do almost nothing here, because the parserOnBody
+209   // function fills up our internal buffer directly.  However, we
+210   // do need to unpause the underlying socket so that it flows.
+211   if (this.socket.readable)
+212     readStart(this.socket);
+213 };
+SOURCE _http_incoming 218-240
+218 IncomingMessage.prototype._destroy = function _destroy(err, cb) {
+219   if (!this.readableEnded || !this.complete) {
+220     this.aborted = true;
+221     this.emit('aborted');
+222   }
+223 
+224   // If aborted and the underlying socket is not already destroyed,
+225   // destroy it.
+226   // We have to check if the socket is already destroyed because finished
+227   // does not call the callback when this method is invoked from `_http_client`
+228   // in `test/parallel/test-http-client-spurious-aborted.js`
+229   if (this.socket && !this.socket.destroyed && this.aborted) {
+230     this.socket.destroy(err);
+231     const cleanup = finished(this.socket, (e) => {
+232       if (e?.code === 'ERR_STREAM_PREMATURE_CLOSE') {
+233         e = null;
+234       }
+235       cleanup();
+236       process.nextTick(onError, this, e || err, cb);
+237     });
+238   } else {
+239     process.nextTick(onError, this, err, cb);
+240   }

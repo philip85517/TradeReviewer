@@ -1,0 +1,87 @@
+{
+  "generatedAt": "2026-10-22T16:19:49.231Z",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "node": "v26.0.0",
+  "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "platform": "darwin",
+  "arch": "x64",
+  "TZ": null,
+  "intlTimezone": "Asia/Shanghai",
+  "gitHead": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "gitStatus": "?? .scratch/homepage-v25-implementation/\n?? .scratch/homepage-v25-wayfinder/\n?? app/lib/reviews/homepage-v25-performance.test.ts\n?? app/lib/reviews/homepage-v25-performance.ts\n?? app/lib/reviews/homepage-v25-state.test.ts\n?? app/lib/reviews/homepage-v25-state.ts\n",
+  "vitest": "4.1.10",
+  "files": {
+    "app/lib/reviews/homepage-v25-performance.ts": {
+      "sha256": "81038783d8d2f8b7c5c680f6fd6179ebfceba6f960147cdda66076d474d99345",
+      "bytes": 20129
+    },
+    "app/lib/reviews/homepage-v25-performance.test.ts": {
+      "sha256": "dd947dfaf7c2f6816e254c2a581a3ba8de03e10f281e1084945cdf935696e3ce",
+      "bytes": 11129
+    },
+    "app/lib/replay/position-ledger.ts": {
+      "sha256": "53ac0845cdec18723e45201d231550158b14d22894fef9374e89ffbc04a7d113",
+      "bytes": 22780
+    },
+    "app/lib/import/statement-evidence.ts": {
+      "sha256": "45360f1373f4b185250182aad0acdac12d1c78cce9e3e7a1c40ec258c04ad6c2",
+      "bytes": 41456
+    },
+    "app/lib/trades/episodes.ts": {
+      "sha256": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+      "bytes": 33854
+    },
+    "app/lib/trades/library.ts": {
+      "sha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83",
+      "bytes": 11233
+    },
+    "app/lib/trades/instruments.ts": {
+      "sha256": "4cc93e949b7d7bceff751e9154376281ca6dacaaf5159ba644aaa7921e33cc23",
+      "bytes": 2095
+    },
+    "app/lib/trades/episode-metrics.ts": {
+      "sha256": "8596a1c86324c02302a2c00e77e1335c74aa24c59258d3a5902669aba39e2509",
+      "bytes": 8707
+    },
+    "app/lib/trades/types.ts": {
+      "sha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "bytes": 7870
+    },
+    "app/lib/reviews/trading-room-history.ts": {
+      "sha256": "b04556c73e6764524d8919a70f1cb256294939cfbdf25b82440f1089be7e3c7a",
+      "bytes": 42401
+    },
+    "app/lib/reviews/trading-room-holdings.ts": {
+      "sha256": "390f8332e106d1659be551adeea1b8aa3dd9e8cf48dafdc76fac7f506d747f96",
+      "bytes": 31370
+    },
+    "app/lib/reviews/trading-room-portfolio.ts": {
+      "sha256": "1c3654e1a9678495b91aacfbce9697bb02573d7106e427f7ffa76e6191d160a9",
+      "bytes": 4677
+    },
+    "app/lib/reviews/trading-room-scope.ts": {
+      "sha256": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16",
+      "bytes": 23544
+    },
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": {
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "bytes": 62054
+    },
+    ".scratch/homepage-v25-implementation/evidence/F/coordinator-round3.vitest.config.ts": {
+      "sha256": "c0cc169e44cf1a9fb0e785414ab78905821a2e005569e9782a25d7fcbed39ade",
+      "bytes": 381
+    },
+    ".scratch/homepage-v25-implementation/evidence/F/coordinator-round3-boundaries.test.ts": {
+      "sha256": "a2ebd36091b77e3ae2fc1255079e92a6aca843f12152ef5980cb1d5096eb9593",
+      "bytes": 3229
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/boundary-probe.test.ts": {
+      "sha256": "5e4b1b78d909c1a895faa56837f8108ee5bc37b942ec4959903dd0e35040e3bb",
+      "bytes": 13806
+    },
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-debug/diagnostic.vitest.config.ts": {
+      "sha256": "fee2604cf676a791142c4d3416cc41cbdebd471fdea3d79ee99e2c037d08722e",
+      "bytes": 248
+    }
+  }
+}

@@ -1,0 +1,48 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:59645) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (163 tests | 1 failed | 160 skipped) 138ms
+     × retains event-only inventory and uncovered source as different facts 63ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 F fact seam coverage counterexamples > retains event-only inventory and uncovered source as different facts
+AssertionError: expected [] to deeply equal [ …(3) ]
+
+- Expected
++ Received
+
+- [
+-   [
+-     "position-reconciliation",
+-     "2",
+-   ],
+-   [
+-     "evidence-status",
+-     null,
+-   ],
+-   [
+-     "transfer",
+-     "0",
+-   ],
+- ]
++ []
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1214:78
+    1212|     const group = seamRead(preparedFixture(executions, [], { entries }…
+    1213|     expect(group.canonical.selectedExecutionIds).toEqual([]);
+    1214|     expect(group.canonical.facts.map(f => [f.kind, f.after.quantity.va…
+       |                                                                              ^
+    1215|     expect(group.canonical.terminal.realizedPnl.value).toBeNull();
+    1216|     expect(group.nativeRealizedNet).toMatchObject({ value: null, avail…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed | 160 skipped (163)
+   Start at  11:06:34
+   Duration  4.41s (transform 1.08s, setup 413ms, import 1.21s, tests 138ms, environment 2.08s)
+

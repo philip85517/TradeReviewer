@@ -1,0 +1,147 @@
+Browser tab: 9, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3333/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=SSE%3A600102".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=SSE%3A600102
+	2 container
+		3 container 主导航
+			4 text TradeReview
+			5 text 历史交易复盘
+			6 button (collapsed) Description: 导航, Secondary Actions: Expand
+			7 container 辅助导航
+				8 button 设置
+		9 button 返回首页
+		10 text 普通交易库 · 成交日期  全部  · 包含未平仓成交  · SSE:600102
+		11 container 交易库
+			12 container 交易库页面头部
+				13 heading 交易库, Value: 1
+					14 text 交易库
+				15 text 浏览已导入交易并开始复盘
+				16 container
+					17 text 1  个标的 ·  4  个回合
+				18 container 交易室全局工具
+					19 button (collapsed) Description: 打开待处理事项, Secondary Actions: Expand
+						20 container 943 条待处理事项
+							21 text 99+
+					22 button (collapsed) Description: 打开本地用户菜单, Secondary Actions: Expand
+				23 container 共享范围
+					24 container 共享交易范围
+						25 container
+							26 text 性质
+							27 pop up button (collapsed, settable) Description: 交易性质, Value: 实盘, Secondary Actions: Expand
+								28 menu
+									29 (selected) 实盘
+									30 模拟盘
+									31 来源未知
+						32 container
+							33 text 报告计价
+							34 pop up button (collapsed, settable) Description: 报告计价, Value: 原币, Secondary Actions: Expand
+								35 menu
+									36 (selected) 原币
+									37 CNY参考
+									38 HKD参考
+						39 container
+							40 text 账户范围
+							41 pop up button (collapsed, settable) Description: 共享账户, Value: 全部账户, Secondary Actions: Expand
+								42 menu
+									43 (selected) 全部账户
+									44 P1 50 行
+									45 P1 09 行
+									46 P1 08 行
+									47 P1 05 行
+									48 P1 p1-edge-short 行
+									49 P1 01 行
+									50 P1 00 行
+									51 P1 p1-edge-markets 行
+				52 container
+					53 text 搜索标的
+					54 search text field (settable) 搜索已导入标的
+			55 tab group 交易库浏览视图
+				56 tab (selected, settable, boolean) 按标的浏览, Value: 1
+				57 tab (selectable, settable, boolean) 按回合浏览, Value: 0
+			58 container 交易库常用筛选
+				59 container
+					60 text 市场
+					61 pop up button (collapsed, settable) Description: 按市场筛选, Value: A股, Secondary Actions: Expand
+						62 menu
+							63 全部
+							64 (selected) A股
+							65 沪市
+							66 港股
+							67 美股
+				68 container
+					69 text 搜索
+					70 search text field (settable) 搜索股票
+				71 container
+					72 text 复盘状态
+					73 pop up button (collapsed, settable) Description: 按复盘状态筛选, Value: 全部回合, Secondary Actions: Expand
+						74 menu
+							75 (selected) 全部回合
+							76 待复盘
+							77 已复盘
+				78 container
+					79 text 排序
+					80 pop up button (collapsed, settable) Description: 交易库排序, Value: 最近成交在前, Secondary Actions: Expand
+						81 menu
+							82 (selected) 最近成交在前
+							83 最早成交在前
+							84 未复盘优先
+							85 已复盘优先
+							86 净盈利优先
+							87 净亏损优先
+							88 收益率高到低
+							89 收益率低到高
+				90 button 开始复盘（4）
+					91 text 开始复盘
+					92 text （4）
+				93 button 重置筛选
+				94 button 高级筛选（1）
+					95 text 高级筛选
+					96 text （1）
+			97 container 已应用筛选
+				98 text 首页范围：CN-SH、CN-SZ 市场
+				99 button 移除首页范围：CN-SH、CN-SZ 市场
+			100 container 交易库原币金额
+				101 text 原币金额
+				102 text 当前范围按原币显示，不合并不同币种 · 共享 BOC 快照 · 2026-10-22T16:01:00.000Z
+				103 button (collapsed) 折算用途与快照, Secondary Actions: Expand
+					104 text 折算用途与快照
+			105 container 当前筛选绩效汇总
+				106 button (collapsed) 绩效摘要 · 0 个可信已平仓回合 · 不可用, Secondary Actions: Expand
+					107 text 绩效摘要 · 
+					108 text 0
+					109 text  个可信已平仓回合 · 
+					110 text 不可用
+			111 container 股票列表分页
+				112 text 显示  1 - 1 / 1
+				113 button (disabled) 上一页
+				114 container 第1页，共1页
+					115 text 1 / 1
+				116 button (disabled) 下一页
+			117 button (collapsed) Description: 展开P1 持仓 03交易回合, Secondary Actions: Expand
+				118 text CN-SH
+				119 text P1 持仓 03
+				120 text 600102
+				121 text 实盘
+				122 text 4
+				123 text  个账户 · 
+				124 text 4
+				125 text  笔成交 · 
+				126 text 4
+				127 text  个回合
+				128 text 累计 R —
+				129 text  · 
+				130 text 标签待确认
+				131 text 复盘进度 
+				132 text 0
+				133 text /
+				134 text 4
+				135 text 2026/10/23
+				136 text —
+				137 text 2026/10/23
+				138 text 持仓中
+				139 text 日线：行情部分可用；1H：行情源待连接
+				140 text 已平仓净盈亏暂不可用
+				141 text 暂无可信已平仓样本
+				142 text 净盈亏样本 0 · 收益率样本 0
+				143 text 加权收益率（按开仓金额）暂不可用
+				144 text 持仓中 4 个回合 · CNY浮盈亏 不可用（4 个不可用）
+
+The focused UI element is 1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3333/trades?scope=live&market=a&accounts=*&rangeMode=all&symbol=SSE%3A600102

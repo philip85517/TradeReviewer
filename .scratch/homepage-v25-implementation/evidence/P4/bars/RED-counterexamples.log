@@ -1,0 +1,593 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "app/components/homepage-v25/contribution-bars.test.tsx", "--maxWorkers=1", "-t", "Escape also closes|unknown complete total"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx (21 tests | 2 failed | 19 skipped) 302ms
+     × CB05 Escape also closes after keyboard focus moves back to the original trigger 274ms
+     × CB08 unknown complete total presents its supplied reason without fabricating a subtotal 25ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 19 skipped (21)
+   Start at  07:17:16
+   Duration  2.00s (transform 120ms, setup 175ms, import 203ms, tests 302ms, environment 952ms)
+
+
+STDERR
+(node:53100) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05 Escape also closes after keyboard focus moves back to the original trigger
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-labelledby="_r_0_-detail-title"
+  aria-modal="false"
+  class="hp-contribution-bars__detail"
+  id="_r_0_-detail"
+  role="dialog"
+  style="left: 12px; top: 8px;"
+  tabindex="-1"
+>
+  <div
+    class="hp-contribution-bars__detail-heading"
+  >
+    <h4
+      id="_r_0_-detail-title"
+    >
+      mixed+
+       · 贡献详情
+    </h4>
+    <button
+      aria-label="关闭贡献详情"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+  <p
+    class="hp-contribution-bars__context"
+  >
+    当前贡献
+     · 报表币种 
+    CNY
+  </p>
+  <section
+    aria-label="期间已实现"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间已实现
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        100 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        3 / 3
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          123.456789
+           
+          USD
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        <span>
+          人工汇率来源/完整名称
+        </span>
+        <span>
+          2026-10-20T08:30:00Z
+           · 
+          fx-exact-01
+           · 
+          complete
+        </span>
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="期间浮盈变动"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      期间浮盈变动
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        -50 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        3 / 3
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          123.456789
+           
+          USD
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        <span>
+          人工汇率来源/完整名称
+        </span>
+        <span>
+          2026-10-20T08:30:00Z
+           · 
+          fx-exact-01
+           · 
+          complete
+        </span>
+      </dd>
+    </dl>
+  </section>
+  <section
+    aria-label="贡献净值"
+    class="hp-contribution-bars__facts-section"
+  >
+    <h5>
+      贡献净值
+    </h5>
+    <dl
+      class="hp-contribution-bars__facts"
+    >
+      <dt>
+        完整金额
+      </dt>
+      <dd>
+        50 CNY
+      </dd>
+      <dt>
+        覆盖数量
+      </dt>
+      <dd>
+        3 / 3
+      </dd>
+      <dt>
+        原币金额
+      </dt>
+      <dd>
+        <span>
+          123.456789
+           
+          USD
+        </span>
+      </dd>
+      <dt>
+        汇率来源
+      </dt>
+      <dd>
+        <span>
+          人工汇率来源/完整名称
+        </span>
+        <span>
+          2026-10-20T08:30:00Z
+           · 
+          fx-exact-01
+           · 
+          complete
+        </span>
+      </dd>
+    </dl>
+  </section>
+</div> instead
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:152:46
+    150|     const user = userEvent.setup(); render(<ContributionBars {...props…
+    151|     await user.click(trigger); trigger.focus(); await user.keyboard("{…
+    152|     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expe…
+       |                                              ^
+    153|   });
+    154|   it("CB08 unknown complete total presents its supplied reason without…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB08 unknown complete total presents its supplied reason without fabricating a subtotal
+TestingLibraryElementError: Unable to find an element with the text: 完整范围缺少港股期末价. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-busy[39m=[32m"false"[39m
+      [33maria-label[39m=[32m"贡献当前列表（CNY）"[39m
+      [33mclass[39m=[32m"hp-contribution-bars"[39m
+    [36m>[39m
+      [36m<ul[39m
+        [33maria-label[39m=[32m"已提交贡献行"[39m
+        [33mclass[39m=[32m"hp-contribution-bars__list"[39m
+      [36m>[39m
+        [36m<li[39m
+          [33maria-label[39m=[32m"same+ 贡献"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__row hp-contribution-bars__row--instrument"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-contribution-bars__row-main"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"查看 same+ 贡献"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__action"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__identity"[39m
+                [33mtitle[39m=[32m"same+"[39m
+              [36m>[39m
+                [0msame+[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"hp-contribution-bars__track"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__zero"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive"[39m
+                  [33mdata-kind[39m=[32m"realized"[39m
+                  [33mdata-sign[39m=[32m"positive"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 50%; width: 25%;"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive"[39m
+                  [33mdata-kind[39m=[32m"unrealized"[39m
+                  [33mdata-sign[39m=[32m"positive"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 75%; width: 25%;"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+                [33mdata-testid[39m=[32m"contribution-value"[39m
+                [33mdata-tone[39m=[32m"positive"[39m
+              [36m>[39m
+                [0m+777.00[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33maria-label[39m=[32m"same+，贡献详情"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+              [36m>[39m
+                [0mⓘ[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</li>[39m
+        [36m<li[39m
+          [33maria-label[39m=[32m"same- 贡献"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__row hp-contribution-bars__row--instrument"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-contribution-bars__row-main"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"查看 same- 贡献"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__action"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__identity"[39m
+                [33mtitle[39m=[32m"same-"[39m
+              [36m>[39m
+                [0msame-[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"hp-contribution-bars__track"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__zero"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative"[39m
+                  [33mdata-kind[39m=[32m"realized"[39m
+                  [33mdata-sign[39m=[32m"negative"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 35%; width: 15%;"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative"[39m
+                  [33mdata-kind[39m=[32m"unrealized"[39m
+                  [33mdata-sign[39m=[32m"negative"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 25%; width: 10%;"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+                [33mdata-testid[39m=[32m"contribution-value"[39m
+                [33mdata-tone[39m=[32m"negative"[39m
+              [36m>[39m
+                [0m-100.00[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33maria-label[39m=[32m"same-，贡献详情"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+              [36m>[39m
+                [0mⓘ[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</li>[39m
+        [36m<li[39m
+          [33maria-label[39m=[32m"mixed+ 贡献"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__row hp-contribution-bars__row--instrument"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-contribution-bars__row-main"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"查看 mixed+ 贡献"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__action"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__identity"[39m
+                [33mtitle[39m=[32m"mixed+"[39m
+              [36m>[39m
+                [0mmixed+[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"hp-contribution-bars__track"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__zero"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive"[39m
+                  [33mdata-kind[39m=[32m"realized"[39m
+                  [33mdata-sign[39m=[32m"positive"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 50%; width: 25%;"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative"[39m
+                  [33mdata-kind[39m=[32m"unrealized"[39m
+                  [33mdata-sign[39m=[32m"negative"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 37.5%; width: 12.5%;"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+                [33mdata-testid[39m=[32m"contribution-value"[39m
+                [33mdata-tone[39m=[32m"positive"[39m
+              [36m>[39m
+                [0m+50.00[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33maria-label[39m=[32m"mixed+，贡献详情"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+              [36m>[39m
+                [0mⓘ[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</li>[39m
+        [36m<li[39m
+          [33maria-label[39m=[32m"mixed- 贡献"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__row hp-contribution-bars__row--instrument"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-contribution-bars__row-main"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"查看 mixed- 贡献"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__action"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__identity"[39m
+                [33mtitle[39m=[32m"mixed-"[39m
+              [36m>[39m
+                [0mmixed-[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"hp-contribution-bars__track"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__zero"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--negative"[39m
+                  [33mdata-kind[39m=[32m"realized"[39m
+                  [33mdata-sign[39m=[32m"negative"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 25%; width: 25%;"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--positive"[39m
+                  [33mdata-kind[39m=[32m"unrealized"[39m
+                  [33mdata-sign[39m=[32m"positive"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 50%; width: 12.5%;"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+                [33mdata-testid[39m=[32m"contribution-value"[39m
+                [33mdata-tone[39m=[32m"negative"[39m
+              [36m>[39m
+                [0m-50.00[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33maria-label[39m=[32m"mixed-，贡献详情"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+              [36m>[39m
+                [0mⓘ[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</li>[39m
+        [36m<li[39m
+          [33maria-label[39m=[32m"net0 贡献"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__row hp-contribution-bars__row--instrument"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hp-contribution-bars__row-main"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"查看 net0 贡献"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__action"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__identity"[39m
+                [33mtitle[39m=[32m"net0"[39m
+              [36m>[39m
+                [0mnet0[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"hp-contribution-bars__track"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__zero"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--solid hp-contribution-bars__segment--positive"[39m
+                  [33mdata-kind[39m=[32m"realized"[39m
+                  [33mdata-sign[39m=[32m"positive"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 50%; width: 25%;"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"hp-contribution-bars__segment hp-contribution-bars__segment--hollow hp-contribution-bars__segment--negative"[39m
+                  [33mdata-kind[39m=[32m"unrealized"[39m
+                  [33mdata-sign[39m=[32m"negative"[39m
+                  [33mdata-testid[39m=[32m"contribution-segment"[39m
+                  [33mstyle[39m=[32m"left: 25%; width: 25%;"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+                [33mdata-testid[39m=[32m"contribution-value"[39m
+                [33mdata-tone[39m=[32m"neutral"[39m
+              [36m>[39m
+                [0m0.00[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33maria-label[39m=[32m"net0，贡献详情"[39m
+              [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+              [36m>[39m
+                [0mⓘ[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</li>[39m
+      [36m</ul>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-contribution-bars__total"[39m
+      [36m>[39m
+        [36m<span>[39m
+          [0m合计（[0m
+          [0mCNY[0m
+          [0m）[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"hp-contribution-bars__value"[39m
+          [33mdata-testid[39m=[32m"contribution-total-value"[39m
+          [33mdata-tone[39m=[32m"neutral"[39m
+        [36m>[39m
+          [0m不可计算[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-haspopup[39m=[32m"dialog"[39m
+          [33maria-label[39m=[32m"完整贡献合计，贡献详情"[39m
+          [33mclass[39m=[32m"hp-contribution-bars__detail-trigger"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m>[39m
+            [0mⓘ[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:156:101
+    154|   it("CB08 unknown complete total presents its supplied reason without…
+    155|     render(<ContributionBars {...props({ fullTotal: metric(null, { rea…
+    156|     expect(screen.getByTestId("contribution-total-value")).toHaveTextC…
+       |                                                                                                     ^
+    157|   });
+    158|   it("CB07/14 rounds cents symmetrically while retaining exact source …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+EXIT 1

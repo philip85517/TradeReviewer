@@ -1,0 +1,11 @@
+{
+  "extends": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/tsconfig.json",
+  "compilerOptions": { "incremental": false, "noEmit": true },
+  "files": [
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/tests/setup.ts",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/home-surface.tsx",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/app/components/homepage-v25/search-recovery.test.tsx"
+  ],
+  "include": [],
+  "exclude": ["/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/node_modules"]
+}

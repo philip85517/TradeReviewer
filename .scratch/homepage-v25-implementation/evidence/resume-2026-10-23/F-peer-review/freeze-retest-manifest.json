@@ -1,0 +1,17 @@
+{
+  "reviewedAt": "2026-10-22T16:59:50.191Z",
+  "node": "v26.0.0",
+  "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/focused.vitest.config.ts",
+  "exit": 0,
+  "before": {
+    "app/lib/reviews/homepage-v25-performance.ts": "9d7b44e00229e63dca5485589871ab442df636d953cfecd8224a374fc399e7b5",
+    "app/lib/reviews/homepage-v25-performance.test.ts": "2131a3a78e6eeeef4ebd97ddd9cbe31b95cde956909a402ab3a7171e87dd8207",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts": "47b74bf1a41b4fac6bcb01b8c77b6e4b62cbcf26791fc33767937790ddacc004"
+  },
+  "after": {
+    "app/lib/reviews/homepage-v25-performance.ts": "9d7b44e00229e63dca5485589871ab442df636d953cfecd8224a374fc399e7b5",
+    "app/lib/reviews/homepage-v25-performance.test.ts": "2131a3a78e6eeeef4ebd97ddd9cbe31b95cde956909a402ab3a7171e87dd8207",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts": "47b74bf1a41b4fac6bcb01b8c77b6e4b62cbcf26791fc33767937790ddacc004"
+  },
+  "unchanged": true
+}

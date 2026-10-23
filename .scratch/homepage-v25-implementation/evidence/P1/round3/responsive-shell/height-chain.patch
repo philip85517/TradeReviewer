@@ -1,0 +1,12 @@
+--- a/app/components/homepage-v25/home-surface.css
++++ b/app/components/homepage-v25/home-surface.css
+@@ -114,6 +114,9 @@
+ .hp-detail-dialog .hp-detail-return { max-width:100%; min-height:36px; height:auto; padding:0 8px; border:0; color:#6CA8FF; white-space:normal; text-align:center; }
+ @media(max-width:900px) { .hp-page-header { flex-wrap:wrap; height:auto; flex-basis:auto; min-height:64px; padding:12px 16px; } .hp-updated { display:none; } .hp-home-content { padding:16px; } .hp-holdings { min-width:960px; } .hp-home-scroll { overflow:auto; } .hp-holdings-toolbar { gap:8px; } .hp-holdings-summary { gap:16px; } .hp-detail-values { grid-template-columns:1fr 1fr; } }
+ @media(max-width:759px) {
++  .homepage-v25-app { height:100dvh; }
++  .homepage-v25-app > .app-content,
++  .homepage-v25-app .workspace.dashboard-mode { min-height:0; }
+   .homepage-v25-app > .app-sidebar { width:100%; min-width:0; flex-basis:auto; padding:6px 12px; gap:10px; }
+   .homepage-v25-app > .app-sidebar .brand { justify-content:flex-start; }
+ }

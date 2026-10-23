@@ -1,0 +1,89 @@
+{
+  "startedAt": "2026-10-22T19:14:52.269Z",
+  "endedAt": "2026-10-22T19:14:52.291Z",
+  "runtime": "v26.0.0",
+  "fixture": {
+    "fills": 1,
+    "events": 4,
+    "accounts": 1,
+    "markets": 1,
+    "endpoints": 2,
+    "quotes": 3,
+    "historicalFxObservations": 0
+  },
+  "prepareMs": 6.232122999999774,
+  "batchMs": 11.60705599999892,
+  "coldMs": 22.579024000000572,
+  "repeats": [
+    {
+      "ms": 0.23512900000059744,
+      "identical": true
+    },
+    {
+      "ms": 0.06222200000047451,
+      "identical": true
+    },
+    {
+      "ms": 0.035262999999758904,
+      "identical": true
+    }
+  ],
+  "diagnostics": {
+    "canonicalSweeps": 0,
+    "canonicalTransitions": 0,
+    "batchCacheHits": 3,
+    "canonicalCalls": 10,
+    "canonicalCacheHits": 0,
+    "feeSteps": 6,
+    "feeCheckpointHits": 0,
+    "quoteLookups": 9,
+    "fxLookups": 5,
+    "distinctCanonicalContexts": 10,
+    "cacheEntries": 23,
+    "cacheEstimatedBytes": 504654,
+    "evictions": 0,
+    "batchEntries": 2,
+    "sourceEstimatedBytes": 41586,
+    "indexEstimatedBytes": 33290
+  },
+  "first": [
+    {
+      "key": "late",
+      "fees": "3",
+      "realized": "18",
+      "unrealized": "9",
+      "net": "27",
+      "openFees": "1",
+      "canonicalFees": "3"
+    },
+    {
+      "key": "early",
+      "fees": "3",
+      "realized": null,
+      "unrealized": null,
+      "net": null,
+      "openFees": null,
+      "canonicalFees": "1"
+    }
+  ],
+  "reverse": [
+    {
+      "key": "early",
+      "fees": "3",
+      "realized": null,
+      "unrealized": null,
+      "net": null,
+      "openFees": null,
+      "canonicalFees": "1"
+    },
+    {
+      "key": "late",
+      "fees": "3",
+      "realized": "18",
+      "unrealized": "9",
+      "net": "27",
+      "openFees": "1",
+      "canonicalFees": "3"
+    }
+  ]
+}

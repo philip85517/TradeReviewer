@@ -1,0 +1,54 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades bundle before opening its collection after delayed readiness 47ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > owns the cold /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22&symbol=SSE%3A600519 bundle before opening its collection after delayed readiness 13ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps a direct collection read failure recoverable and retries its URL without replacing its readonly home source 123ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through null, reload and guarded return 22ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=date&date=2026-10-22 through SSE:600519, reload and guarded return 13ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=custom&from=2026-10-01&to=2026-10-22 through null, reload and guarded return 16ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > retains the direct homepage date scope rangeMode=custom&from=2026-10-01&to=2026-10-22 through SSE:600519, reload and guarded return 15ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps the homepage navigation's applied scope and source UI while global addresses and indexed pops derive their own origin 13ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > derives collection origin from the direct address /trades 4ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > derives collection origin from the direct address /trades?scope=live&market=a&accounts=one&rangeMode=date&date=2026-10-22 4ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard cancel 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit a global collection scope when its guard throw 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > commits only the latest guarded global transition and preserves the homepage source for return 12ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > waits for the actual compensating pop before invoking a guarded back, and cancellation retains the current entry 19ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > reads a complete legacy v2 source only when v3 is absent, then persists a UI-only v3 snapshot 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > performs a first owned read after catalog readiness instead of freezing the pre-market initial bundle 58ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > settles the initial non-default URL and restored source with its own accepted bundle and callback 11ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > waits for catalogs before rejecting a target account and never silently widens it 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not commit route or source UI if the existing review guard cancels 5ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > keeps labels and data together until a new bootstrap revision, then restores source UI with fresh data 11ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > does not publish an earlier reader's bundle under a later scope token 8ms
+ ✓ app/components/homepage-v25/use-homepage-host.test.tsx > homepage workspace host > validates a returning source against its own fresh catalog and keeps non-scope UI on explicit fallback 7ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R01 preserves source bytes through a pending UI callback and hard remount, then accepts fresh owned data 114ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03 retains full source after return failure and retries the same navigation with a new generation 15ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R05 deduplicates reload during source navigation instead of refreshing the old committed scope 9ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R03b retries a failed return with its captured full UI even without an intervening UI callback 11ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old resolve during retry 14ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R04 preserves recovery through timeout and ignores a late old reject during retry 8ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves failure recovery manual despite focus/visibility and resumes normal refresh after acceptance 14ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R06 leaves timeout recovery manual despite focus/visibility and resumes normal refresh after acceptance 10ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R07 protects full source when its scope equals the old committed scope but its search, page and focus differ 11ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed scoped departure captures its outgoing entry 9ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps protected source when an allowed global departure captures its outgoing entry 7ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps URL, source and commit unchanged when the outgoing global guard cancel 10ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 keeps URL, source and commit unchanged when the outgoing global guard throw 7ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R08 commits only the newest allowed departure and never replaces protected source with the old committed UI 8ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A resolve cannot release its source protection 7ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 lets explicit identity B commit its owned bundle while late A reject cannot release its source protection 9ms
+ ✓ app/components/homepage-v25/navigation-recovery.test.tsx > homepage source recovery ownership > R09 retains protected source after explicit identity B failure but retries identity B without restoring source A 7ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > commits matching business rows and applied labels atomically, ignoring an older completion 8ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > restores UI only alongside a fresh data result and uses period dates for the ordinary collection 6ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > refreshes committed attachments while preserving a separately edited draft, then hands off the native date 1ms
+ ✓ app/components/homepage-v25/session-model.test.ts > homepage integrated session > keeps every instrument of one directory identity in the ordinary collection without selecting a first record 1ms
+
+ Test Files  3 passed (3)
+      Tests  43 passed (43)
+   Start at  04:13:28
+   Duration  7.88s (transform 403ms, setup 1.21s, import 791ms, tests 715ms, environment 4.10s)
+
+(node:35025) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

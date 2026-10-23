@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:60752) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx (54 tests | 1 failed | 53 skipped) 135ms
+     × cancels both local owners when a guarded pop accepts an invalid collection address 129ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/use-homepage-host.test.tsx > configured homepage domain host > cancels both local owners when a guarded pop accepts an invalid collection address
+AssertionError: expected { domain: 'period', …(4) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "domain": "period",
+  "generation": 1,
+  "scopeKey": "{\"domain\":\"period\",\"global\":{\"live\":true,\"market\":\"all\",\"accounts\":[\"*\"],\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"target\":{\"preset\":\"custom\",\"from\":\"2026-10-01\",\"to\":\"2026-10-23\"}}",
+  "startedAt": 1792725630064,
+  "target": {
+    "from": "2026-10-01",
+    "preset": "custom",
+    "to": "2026-10-23",
+  },
+}
+
+ ❯ app/components/homepage-v25/use-homepage-host.test.tsx:608:47
+    606|     });
+    607|     expect(result.current.route).toMatchObject({ page: "trades", error…
+    608|     expect(result.current.ui.requests.period).toBeNull(); expect(resul…
+       |                                               ^
+    609|     await act(async () => {
+    610|       h.periods[0].reply.resolve({ request: h.periods[0].context.reque…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 53 skipped (54)
+   Start at  11:20:25
+   Duration  4.44s (transform 1.13s, setup 408ms, import 1.40s, tests 135ms, environment 1.91s)
+

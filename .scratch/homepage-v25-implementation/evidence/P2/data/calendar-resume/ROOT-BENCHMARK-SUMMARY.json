@@ -1,0 +1,46 @@
+{
+  "root": "/root",
+  "candidate": "same A task, explicit resume 1/3",
+  "result": "PASS — pure financial A only",
+  "runtime": "Node26.0.0 / SQLite3.53.0",
+  "shapes": {
+    "rounds": {
+      "coldMs": [
+        1096.2486359999998,
+        1098.808385,
+        1080.1455339999998
+      ],
+      "maxRepeatMs": 5.090032000000065,
+      "cacheBytes": 53026188
+    },
+    "long-prefix": {
+      "coldMs": [
+        1045.854571,
+        1035.3551400000001,
+        1215.3009940000002
+      ],
+      "maxRepeatMs": 1.711598999999751,
+      "cacheBytes": 53658846
+    },
+    "multimarket": {
+      "coldMs": [
+        1953.393326,
+        1932.744604,
+        1925.027014
+      ],
+      "maxRepeatMs": 1.6591849999999795,
+      "cacheBytes": 67101836
+    }
+  },
+  "sourceSha256": "1e64b1c23aa0d42b96331d1eb89b6ec4c16e7d26c13454edc7c7449567df0542",
+  "testSha256": "4e65eef8d568d9a56d258e328229a7f06c9f513583b90d85f328d4902395c33a",
+  "rootChecks": {
+    "targeted": 207,
+    "independent": 1,
+    "equivalence": 8,
+    "tscExit": 0,
+    "eslintExit": 0
+  },
+  "wholeP2": "0/3, NOT VERIFIED",
+  "oldFailures": "preserved"
+}

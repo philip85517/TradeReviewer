@@ -1,0 +1,4 @@
+First implementation verification command:
+/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node --test .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-bounded/bounded-observer.test.mjs
+
+See subsequent logs for expanded coverage. This file intentionally does not assert test results; exact output is recorded in green-02.log onward.

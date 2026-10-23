@@ -1,0 +1,88 @@
+{
+  "status": "Implementation-ready; frozen; independent candidate 2 browser/visual acceptance NOT VERIFIED",
+  "timestampUTC": "2026-10-22T22:11:22.653675+00:00",
+  "model": "gpt-6.1-sol / ultra",
+  "rounds": {
+    "leaf": "1/3 formal FAIL preserved; candidate 2 awaiting root independent round",
+    "P4": "0/3",
+    "P1": "2/3 FAIL"
+  },
+  "before": {
+    "app/components/homepage-v25/history-controls.tsx": "ff683de0f9d6768dc832e285eab62f58037c6eec3b74b565469e687f89720d54",
+    "app/components/homepage-v25/history-controls.css": "09eca11df78da441a7f16e2c5d6589540f1840b34d4921f5e3b282fe657a4ed0",
+    "app/components/homepage-v25/history-controls.test.tsx": "9bed86ff7641040c18b673b47aaa60deed182fc519d111f3e6713c1f131edfac"
+  },
+  "after": {
+    "app/components/homepage-v25/history-controls.tsx": "a2090b6c52b85665431b0ad63517cdd8aa6112588f7705410f0b8709a355e3cd",
+    "app/components/homepage-v25/history-controls.css": "fb0bde9b33c436885f4bc1a8632fbc18d86050f14733e5696b1f1e4c42aef7ae",
+    "app/components/homepage-v25/history-controls.test.tsx": "e6e58ed6a550d9d077444ee112c9b3910cf2885fd0658024755a712b80442e14"
+  },
+  "protected": {
+    "path": "app/components/homepage-v25/home-surface.css",
+    "beforeSha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d",
+    "afterSha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d",
+    "unchanged": true
+  },
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "commands": {
+    "tests": "node node_modules/vitest/vitest.mjs run app/components/homepage-v25/history-controls.test.tsx --maxWorkers=1 --reporter=verbose",
+    "typecheck": "node node_modules/typescript/lib/tsc.js --noEmit --incremental false --target ES2017 --lib dom,dom.iterable,esnext --module esnext --moduleResolution bundler --jsx react-jsx --strict --skipLibCheck --esModuleInterop --types vitest/globals,@testing-library/jest-dom app/components/homepage-v25/history-controls.tsx app/components/homepage-v25/history-controls.test.tsx",
+    "lint": "node node_modules/eslint/bin/eslint.js app/components/homepage-v25/history-controls.tsx app/components/homepage-v25/history-controls.test.tsx",
+    "cssParse": "PostCSS.parse actual history-controls.css; walkRules and walkDecls"
+  },
+  "checks": {
+    "RED": {
+      "exitCode": 1,
+      "passed": 31,
+      "failed": 7,
+      "total": 38,
+      "log": "candidate2-RED.log"
+    },
+    "GREEN": {
+      "exitCode": 0,
+      "passed": 38,
+      "failed": 0,
+      "total": 38,
+      "seconds": 5.62,
+      "log": "candidate2-GREEN.log"
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "log": "candidate2-typecheck.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "log": "candidate2-lint.log"
+    },
+    "cssParse": {
+      "exitCode": 0,
+      "rules": 20,
+      "declarations": 98,
+      "log": "candidate2-css-parse.json"
+    }
+  },
+  "logNotes": [
+    "Vitest emits Node DEP0205 module.register deprecation warning; no component assertion/runtime failure.",
+    "Typecheck and lint logs are empty because both commands exit 0 without diagnostics."
+  ],
+  "notRun": [
+    "browser",
+    "service",
+    "DB",
+    "performance",
+    "full suite",
+    "subagents",
+    "product integration",
+    "commit",
+    "push"
+  ],
+  "evidenceSha256": {
+    "candidate2-RED.log": "f93fd85146db7a8eadab03cba193e167ca7f6ee5ccfbfa54a051efdfee50cdb1",
+    "candidate2-GREEN.log": "b3792bfdf4ca7f7349e700799d97cbf90640002f7ce97e0c7fa912446bd5754b",
+    "candidate2-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate2-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate2-css-parse.json": "14fd7b772284c85194b4a6b3f80717e62e832886366ed304c2a415be2a23ee91",
+    "candidate2.patch": "6f7d63481b09daa66fc057af291df2e70b761947642bdb6ef122ce4341d87f0f",
+    "candidate2-product.patch": "64ab18ed34ba42e3a3c57cb370ce2c97b08167749435949598249bdf700c2792"
+  }
+}

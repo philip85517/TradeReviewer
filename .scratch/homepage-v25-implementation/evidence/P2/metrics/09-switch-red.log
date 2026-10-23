@@ -1,0 +1,347 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:52382) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/homepage-v25/metric-cards.test.tsx (20 tests | 1 failed) 1272ms
+     × M01–04 moving directly between card triggers replaces the detail and restores the new opener 72ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/metric-cards.test.tsx > four controlled homepage metric readouts > M01–04 moving directly between card triggers replaces the detail and restores the new opener
+TestingLibraryElementError: Unable to find an accessible element with the role "dialog"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "当前表现指标":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"当前表现指标"[39m
+    [33mclass[39m=[32m"hp-metric-cards"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "期间净盈亏":
+  [36m<article[39m
+    [33maria-label[39m=[32m"期间净盈亏"[39m
+    [33mclass[39m=[32m"hp-metric-cards__card"[39m
+  [36m/>[39m
+
+  Name "期间已实现":
+  [36m<article[39m
+    [33maria-label[39m=[32m"期间已实现"[39m
+    [33mclass[39m=[32m"hp-metric-cards__card"[39m
+  [36m/>[39m
+
+  Name "期间浮盈变动":
+  [36m<article[39m
+    [33maria-label[39m=[32m"期间浮盈变动"[39m
+    [33mclass[39m=[32m"hp-metric-cards__card"[39m
+  [36m/>[39m
+
+  Name "当前持仓市值":
+  [36m<article[39m
+    [33maria-label[39m=[32m"当前持仓市值"[39m
+    [33mclass[39m=[32m"hp-metric-cards__card"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "期间净盈亏(CNY)":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_7_-net-label"[39m
+  [36m/>[39m
+
+  Name "期间已实现(CNY)":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_7_-periodRealized-label"[39m
+  [36m/>[39m
+
+  Name "期间浮盈变动(CNY)":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_7_-unrealizedChange-label"[39m
+  [36m/>[39m
+
+  Name "当前持仓市值(CNY)":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_7_-currentMarketValue-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+    [33mdata-testid[39m=[32m"hp-metric-value"[39m
+    [33mdata-tone[39m=[32m"positive"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+    [33mdata-testid[39m=[32m"hp-metric-value"[39m
+    [33mdata-tone[39m=[32m"positive"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+    [33mdata-testid[39m=[32m"hp-metric-value"[39m
+    [33mdata-tone[39m=[32m"positive"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--neutral"[39m
+    [33mdata-testid[39m=[32m"hp-metric-value"[39m
+    [33mdata-tone[39m=[32m"neutral"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "期间净盈亏，口径详情，完整金额 18420.567800 CNY":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"期间净盈亏，口径详情，完整金额 18420.567800 CNY"[39m
+    [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "期间已实现，口径详情，完整金额 12240.5678 CNY":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"期间已实现，口径详情，完整金额 12240.5678 CNY"[39m
+    [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "期间浮盈变动，口径详情，完整金额 6180 CNY":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"期间浮盈变动，口径详情，完整金额 6180 CNY"[39m
+    [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "当前持仓市值，口径详情，完整金额 260102.123400 CNY":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"当前持仓市值，口径详情，完整金额 260102.123400 CNY"[39m
+    [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-busy[39m=[32m"false"[39m
+      [33maria-label[39m=[32m"当前表现指标"[39m
+      [33mclass[39m=[32m"hp-metric-cards"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"hp-metric-cards__grid"[39m
+      [36m>[39m
+        [36m<article[39m
+          [33maria-label[39m=[32m"期间净盈亏"[39m
+          [33mclass[39m=[32m"hp-metric-cards__card"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-net-label"[39m
+          [36m>[39m
+            [0m期间净盈亏[0m
+            [0m([0m
+            [0mCNY[0m
+            [0m)[0m
+          [36m</h3>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+            [33mdata-testid[39m=[32m"hp-metric-value"[39m
+            [33mdata-tone[39m=[32m"positive"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__number"[39m
+            [36m>[39m
+              [0m+1.84[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__unit"[39m
+            [36m>[39m
+              [0m [0m
+              [0m万[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"期间净盈亏，口径详情，完整金额 18420.567800 CNY"[39m
+            [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__affordance"[39m
+            [36m>[39m
+              [0m口径详情[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</article>[39m
+        [36m<article[39m
+          [33maria-label[39m=[32m"期间已实现"[39m
+          [33mclass[39m=[32m"hp-metric-cards__card"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-periodRealized-label"[39m
+          [36m>[39m
+            [0m期间已实现[0m
+            [0m([0m
+            [0mCNY[0m
+            [0m)[0m
+          [36m</h3>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+            [33mdata-testid[39m=[32m"hp-metric-value"[39m
+            [33mdata-tone[39m=[32m"positive"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__number"[39m
+            [36m>[39m
+              [0m+1.22[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__unit"[39m
+            [36m>[39m
+              [0m [0m
+              [0m万[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"期间已实现，口径详情，完整金额 12240.5678 CNY"[39m
+            [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__affordance"[39m
+            [36m>[39m
+              [0m口径详情[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</article>[39m
+        [36m<article[39m
+          [33maria-label[39m=[32m"期间浮盈变动"[39m
+          [33mclass[39m=[32m"hp-metric-cards__card"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-unrealizedChange-label"[39m
+          [36m>[39m
+            [0m期间浮盈变动[0m
+            [0m([0m
+            [0mCNY[0m
+            [0m)[0m
+          [36m</h3>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--positive"[39m
+            [33mdata-testid[39m=[32m"hp-metric-value"[39m
+            [33mdata-tone[39m=[32m"positive"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__number"[39m
+            [36m>[39m
+              [0m+6,180.00[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"期间浮盈变动，口径详情，完整金额 6180 CNY"[39m
+            [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__affordance"[39m
+            [36m>[39m
+              [0m口径详情[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</article>[39m
+        [36m<article[39m
+          [33maria-label[39m=[32m"当前持仓市值"[39m
+          [33mclass[39m=[32m"hp-metric-cards__card"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_7_-currentMarketValue-label"[39m
+          [36m>[39m
+            [0m当前持仓市值[0m
+            [0m([0m
+            [0mCNY[0m
+            [0m)[0m
+          [36m</h3>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hp-metric-cards__value hp-metric-cards__value--neutral"[39m
+            [33mdata-testid[39m=[32m"hp-metric-value"[39m
+            [33mdata-tone[39m=[32m"neutral"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__number"[39m
+            [36m>[39m
+              [0m26.01[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__unit"[39m
+            [36m>[39m
+              [0m [0m
+              [0m万[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"当前持仓市值，口径详情，完整金额 260102.123400 CNY"[39m
+            [33mclass[39m=[32m"hp-metric-cards__trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hp-metric-cards__affordance"[39m
+            [36m>[39m
+              [0m口径详情[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</article>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/metric-cards.test.tsx:94:19
+     92|     await user.click(trigger("期间净盈亏"));
+     93|     await user.click(trigger("当前持仓市值"));
+     94|     expect(screen.getByRole("dialog")).toHaveAccessibleName("当前持仓市值 · …
+       |                   ^
+     95|     await user.keyboard("{Escape}");
+     96|     expect(trigger("当前持仓市值")).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  07:12:12
+   Duration  4.09s (transform 168ms, setup 356ms, import 318ms, tests 1.27s, environment 1.77s)
+

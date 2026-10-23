@@ -1,0 +1,164 @@
+.hp-history-controls {
+  position: relative;
+  width: 282px;
+  max-width: min(100%, calc(100vw - 48px));
+  color: #e6edf7;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.hp-history-controls .hp-history-controls__combo {
+  position: relative;
+  display: flex;
+  height: 36px;
+  background: #111a26;
+  border-radius: 7px;
+}
+
+.hp-history-controls .hp-history-controls__combo::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border: 1px solid #283448;
+  border-radius: inherit;
+  pointer-events: none;
+  content: "";
+}
+
+.hp-history-controls button.hp-history-controls__trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  height: 36px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.hp-history-controls button.hp-history-controls__trigger--range {
+  flex: 0 1 auto;
+  min-width: 80px;
+  border-radius: 7px 0 0 7px;
+}
+
+.hp-history-controls button.hp-history-controls__trigger--range::after {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  height: 20px;
+  border-right: 1px solid #283448;
+  content: "";
+}
+
+.hp-history-controls button.hp-history-controls__trigger--metric {
+  flex: 1 0 auto;
+  border-radius: 0 7px 7px 0;
+}
+
+.hp-history-controls .hp-history-controls__label {
+  min-width: 0;
+}
+
+.hp-history-controls .hp-history-controls__arrow {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  color: #a8b6cb;
+}
+
+.hp-history-controls button.hp-history-controls__trigger:hover:not(:disabled),
+.hp-history-controls button.hp-history-controls__trigger[aria-expanded="true"] {
+  background: #162233;
+}
+
+.hp-history-controls button.hp-history-controls__trigger:active:not(:disabled) {
+  background: #243b5c;
+}
+
+.hp-history-controls button.hp-history-controls__trigger:focus-visible,
+.hp-history-controls button.hp-history-controls__option:focus-visible,
+.hp-history-controls .hp-history-controls__menu:focus-visible {
+  z-index: 2;
+  outline: 2px solid #4da3ff;
+  outline-offset: 2px;
+}
+
+.hp-history-controls .hp-history-controls__menu {
+  position: absolute;
+  z-index: 30;
+  top: 40px;
+  right: 0;
+  left: 0;
+  box-sizing: border-box;
+  max-height: min(320px, calc(100dvh - 96px));
+  padding: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #283448;
+  border-radius: 6px;
+  background: #162233;
+  box-shadow: 0 8px 22px #0008;
+}
+
+.hp-history-controls button.hp-history-controls__option {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  min-height: 36px;
+  justify-content: flex-start;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.hp-history-controls button.hp-history-controls__option:hover:not(:disabled),
+.hp-history-controls button.hp-history-controls__option[aria-selected="true"] {
+  background: #243b5c;
+}
+
+.hp-history-controls button.hp-history-controls__option[aria-disabled="true"] {
+  color: #a8b6cb;
+  cursor: not-allowed;
+}
+
+.hp-history-controls .hp-history-controls__menu-reason,
+.hp-history-controls .hp-history-controls__feedback {
+  margin: 8px 0 0;
+  color: #a8b6cb;
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+
+.hp-history-controls .hp-history-controls__menu-reason {
+  margin: 0;
+  padding: 7px 10px;
+}
+
+.hp-history-controls .hp-history-controls__feedback--error {
+  color: #ff8592;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-history-controls button.hp-history-controls__trigger {
+    transition: none;
+  }
+}

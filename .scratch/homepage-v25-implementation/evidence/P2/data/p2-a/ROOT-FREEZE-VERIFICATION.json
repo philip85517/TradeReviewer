@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-22T19:28:04.831188+00:00",
+  "reviewer": "root",
+  "manifestSha256": "2ebb31253006401ff4bfce91d791f1462cadb92ade0b284f0d0cd6374a6fbb62",
+  "filesChecked": 130,
+  "mismatches": [],
+  "acceptedPrefixChecks": [
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.test.ts",
+      "bytes": 50705,
+      "equal": true
+    },
+    {
+      "path": "app/lib/replay/position-ledger.test.ts",
+      "bytes": 32966,
+      "equal": true
+    }
+  ],
+  "acceptance": "NOT accepted; required multi-market performance FAIL; architecture discussion pending"
+}

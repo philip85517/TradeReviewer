@@ -1,0 +1,12 @@
+{
+  "frozenAtUtc": "2026-10-23T02:53:42.239189+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "model": "GPT-6.1 SOL / ultra",
+  "leafFormalRoundsUsed": 0,
+  "p4FormalRoundsUsed": 0,
+  "files": {
+    "app/components/homepage-v25/history-stats-cards.tsx": "24f6cd248f57e918c51bf81da45d99618f47a6e9d9e908cd9f5258cdf4d1498c",
+    "app/components/homepage-v25/history-stats-cards.css": "2aa7ab4edad05a0aa0c76903577c8fa7ef30152d7280c4264b193f94c3d18842",
+    "app/components/homepage-v25/history-stats-cards.test.tsx": "f2bf240a36bd0b050515c9b1abd1420361308e8f9655f5092f5154681d711348"
+  }
+}

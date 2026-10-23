@@ -1,0 +1,33 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:57927) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/calendar-resume/equivalence.test.ts (8 tests | 1 failed) 515ms
+   × records the explicit pre-exposure FX oracle correction without changing its native money 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/data/calendar-resume/equivalence.test.ts > records the explicit pre-exposure FX oracle correction without changing its native money
+AssertionError: expected [ 'HKD/CNY', 'USD/CNY' ] to deeply equal [ 'USD/CNY', 'HKD/CNY' ]
+
+- Expected
++ Received
+
+  [
+-   "USD/CNY",
+    "HKD/CNY",
++   "USD/CNY",
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/calendar-resume/equivalence.test.ts:68:55
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  10:38:40
+   Duration  1.54s (transform 472ms, setup 0ms, import 609ms, tests 515ms, environment 0ms)
+

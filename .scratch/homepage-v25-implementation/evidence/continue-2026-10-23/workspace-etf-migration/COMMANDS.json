@@ -1,0 +1,42 @@
+[
+  {
+    "phase": "original-name RED",
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace passes stored instrument metadata into the trading room scope$'",
+    "raw": "RED-original-etf.log",
+    "exit_code": 1,
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 100,
+    "total_file_tests": 101
+  },
+  {
+    "phase": "first migrated candidate; retained asynchronous-wait failure",
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace (passes stored instrument metadata into the trading room scope|keeps unknown instrument metadata out of stock and ETF homepage categories)$'",
+    "raw": "GREEN-etf-and-unknown.log",
+    "exit_code": 1,
+    "executed": 2,
+    "passed": 0,
+    "failed": 2,
+    "skipped": 100,
+    "total_file_tests": 102
+  },
+  {
+    "phase": "same candidate after initial row wait correction",
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace (passes stored instrument metadata into the trading room scope|keeps unknown instrument metadata out of stock and ETF homepage categories)$'",
+    "raw": "GREEN-2-etf-and-unknown.log",
+    "exit_code": 0,
+    "executed": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 100,
+    "total_file_tests": 102
+  },
+  {
+    "phase": "scoped ESLint",
+    "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/components/trade-review-workspace.test.tsx",
+    "raw": "LINT-workspace-test.log",
+    "exit_code": 0,
+    "stdout_stderr": "empty"
+  }
+]

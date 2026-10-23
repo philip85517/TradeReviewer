@@ -1,0 +1,40 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", "node_modules/vitest/vitest.mjs", "run", "app/components/homepage-v25/contribution-bars.test.tsx", "--maxWorkers=1", "-t", "clamps floating readout"]
+STDOUT
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx (22 tests | 1 failed | 21 skipped) 336ms
+     × CB05/15 clamps floating readout position when its trigger scrolls outside the viewport 332ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 skipped (22)
+   Start at  07:20:46
+   Duration  3.89s (transform 272ms, setup 689ms, import 501ms, tests 336ms, environment 1.95s)
+
+
+STDERR
+(node:53396) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/contribution-bars.test.tsx > controlled contribution bars consumer > CB05/15 clamps floating readout position when its trigger scrolls outside the viewport
+Error: expect(element).toHaveStyle()
+
+- Expected
+
+  left: 12px;
+- top: 12px;
++ top: -356px;
+ ❯ app/components/homepage-v25/contribution-bars.test.tsx:178:42
+    176|       expect(window.innerWidth).toBe(1024); expect(window.innerHeight)…
+    177|       render(<ContributionBars {...props()} />); await user.click(scre…
+    178|       expect(screen.getByRole("dialog")).toHaveStyle({ left: "12px", t…
+       |                                          ^
+    179|       anchor = new DOMRect(900, 1000, 36, 36); window.dispatchEvent(ne…
+    180|       expect(screen.getByRole("dialog")).toHaveStyle({ left: "672px", …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+EXIT 1

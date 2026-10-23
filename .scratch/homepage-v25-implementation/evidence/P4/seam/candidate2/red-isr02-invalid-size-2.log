@@ -1,0 +1,72 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63405) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (178 tests | 1 failed | 177 skipped) 86ms
+     × ISR02 rejects allocation roles for an invalid raw size while retaining its independent fee 81ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR02 rejects allocation roles for an invalid raw size while retaining its independent fee
+AssertionError: expected [ { value: '0', …(2) }, …(4) ] to deeply equal [ { value: null, …(2) }, …(4) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-invalid",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "0",
+    },
+    {
+      "available": false,
+-     "reasons": [
+-       "quantity-invalid",
+-     ],
++     "reasons": [],
+      "value": null,
+    },
+    {
+      "available": false,
+-     "reasons": [
+-       "quantity-invalid",
+-     ],
++     "reasons": [],
+      "value": null,
+    },
+    {
+      "available": false,
+-     "reasons": [
+-       "quantity-invalid",
+-     ],
++     "reasons": [],
+      "value": null,
+    },
+    {
+      "available": false,
+-     "reasons": [
+-       "quantity-invalid",
+-     ],
++     "reasons": [],
+      "value": null,
+    },
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1298:169
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 177 skipped (178)
+   Start at  12:37:48
+   Duration  916.72s (transform 914ms, setup 679ms, import 1.11s, tests 86ms, environment 908.37s)
+

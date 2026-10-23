@@ -1,0 +1,67 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:15016) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx (5 tests | 3 failed) 77ms
+     × must explain a saved account removed by the fresh return bootstrap 17ms
+     × must pass an untagged same-document back/forward entry through the leave guard 6ms
+     × must preserve the accepted fresh FX when workspace publishes its rebuilt options.data 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must explain a saved account removed by the fresh return bootstrap
+AssertionError: expected '' to contain '账户'
+
+- Expected
++ Received
+
+- 账户
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:56:71
+     54|     await act(async () => reply({ requestId: 1, data: "fresh-account-d…
+     55|     rerender({ accounts: [] });
+     56|     expect(result.current.notice ?? result.current.route.error ?? "").…
+       |                                                                       ^
+     57|   });
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must pass an untagged same-document back/forward entry through the leave guard
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'trades' ]
+
+Number of calls: 0
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:66:19
+     64|     history.replaceState(null, "", "/trades?scope=live&market=all&acco…
+     65|     act(() => window.dispatchEvent(new PopStateEvent("popstate", { sta…
+     66|     expect(guard).toHaveBeenCalledWith("trades");
+       |                   ^
+     67|   });
+     68|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx > P1 independent state seam probes (not browser acceptance) > must preserve the accepted fresh FX when workspace publishes its rebuilt options.data
+AssertionError: expected 'old-fx' to be 'fresh-fx' // Object.is equality
+
+Expected: "fresh-fx"
+Received: "old-fx"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx:87:44
+     85|     expect(result.current.ui.snapshot.scope.market).toBe("hk");
+     86|     expect(result.current.data.entries).toBe("fresh-entries");
+     87|     expect(result.current.data.fxSnapshot).toBe("fresh-fx");
+       |                                            ^
+     88|   });
+     89| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  01:17:22
+   Duration  1.85s (transform 328ms, setup 172ms, import 402ms, tests 77ms, environment 875ms)
+

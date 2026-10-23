@@ -1,0 +1,1526 @@
+[
+  {
+    "name": "standard",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "gaps",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 相邻五种缺口, Secondary Actions: Expand\n~\t\t\t\t15 常规12个月\n~\t\t\t\t16 (selected) 相邻五种缺口\n~\t\t\t\t\t48 button 2月，—，独立状态1，保留准确原因；该期间无已关闭回合\n~\t\t\t\t\t49 button 3月，—，独立状态2，保留准确原因；该字段未提交；数据缺失\n~\t\t\t\t\t50 button 4月，—，独立状态3，保留准确原因；尚未到达或未覆盖\n~\t\t\t\t\t51 button 5月，—，独立状态4，保留准确原因；正在读取该期间\n~\t\t\t\t\t52 button 6月，—，独立状态5，保留准确原因；该期间读取失败\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "pending",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 旧数据更新中, Secondary Actions: Expand\n~\t\t\t\t16 相邻五种缺口\n~\t\t\t\t17 (selected) 旧数据更新中\n~\t\t\t\t\t48 button 2月，26400.5000 CNY，\n~\t\t\t\t\t49 button 3月，-12345.678900 CNY，\n~\t\t\t\t\t50 button 4月，42000.1200 CNY，\n~\t\t\t\t\t51 button 5月，—，该期间无已关闭回合\n~\t\t\t\t\t52 button 6月，6800.4500 CNY，\n+\t\t\t\t74 container 正在更新，保留原完整范围\n+\t\t\t\t\t75 text 正在更新，保留原完整范围\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [
+        "正在更新，保留原完整范围"
+      ],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "error",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 旧数据读取失败, Secondary Actions: Expand\n~\t\t\t\t17 旧数据更新中\n~\t\t\t\t18 (selected) 旧数据读取失败\n~\t\t\t\t74 container 读取失败，保留原完整范围，可重试\n~\t\t\t\t\t75 text 读取失败，保留原完整范围，可重试\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [
+        "读取失败，保留原完整范围，可重试"
+      ],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "longPending",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 过长更新原因, Secondary Actions: Expand\n~\t\t\t\t18 旧数据读取失败\n~\t\t\t\t19 (selected) 过长更新原因\n~\t\t\t\t74 container 历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。\n~\t\t\t\t\t75 text 历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [
+        "历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。历史数据正在更新，保留原完整范围。"
+      ],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "longError",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 过长失败原因, Secondary Actions: Expand\n~\t\t\t\t19 过长更新原因\n~\t\t\t\t20 (selected) 过长失败原因\n~\t\t\t\t74 container 历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。\n~\t\t\t\t\t75 text 历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 12,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 3,
+      "statuses": [
+        "历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。历史数据读取失败，保留原完整范围，可重试。"
+      ],
+      "ticks": [
+        {
+          "text": "-2.00万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2.00万",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "4.00万",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "6.00万",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "2月",
+          "x": "106",
+          "y": "312"
+        },
+        {
+          "text": "3月",
+          "x": "128",
+          "y": "298"
+        },
+        {
+          "text": "4月",
+          "x": "150",
+          "y": "312"
+        },
+        {
+          "text": "5月",
+          "x": "172",
+          "y": "298"
+        },
+        {
+          "text": "6月",
+          "x": "194",
+          "y": "312"
+        },
+        {
+          "text": "7月",
+          "x": "216",
+          "y": "298"
+        },
+        {
+          "text": "8月",
+          "x": "238",
+          "y": "312"
+        },
+        {
+          "text": "9月",
+          "x": "260",
+          "y": "298"
+        },
+        {
+          "text": "10月",
+          "x": "282",
+          "y": "312"
+        },
+        {
+          "text": "11月",
+          "x": "304",
+          "y": "298"
+        },
+        {
+          "text": "12月",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "initial",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 42, 44-70, 74-75\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 初始等待, Secondary Actions: Expand\n~\t\t\t\t20 过长失败原因\n~\t\t\t\t21 (selected) 初始等待\n~\t\t\t\t41 container 每月净盈亏，尚无已提交范围\n+\t\t\t\t\t74 text 1\n+\t\t\t\t\t75 text 2\n+\t\t\t\t\t76 text 3\n+\t\t\t\t\t77 text 4\n+\t\t\t\t78 text 正在读取历史数据\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 0,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 0,
+      "statuses": [
+        "正在读取历史数据"
+      ],
+      "ticks": [
+        {
+          "text": "0",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "1",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "3",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "4",
+          "x": "70",
+          "y": "80"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "firstError",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 初始读取失败, Secondary Actions: Expand\n~\t\t\t\t21 初始等待\n~\t\t\t\t22 (selected) 初始读取失败\n~\t\t\t\t78 text 历史数据读取失败，可通过范围控件重试\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 0,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 0,
+      "statuses": [
+        "历史数据读取失败，可通过范围控件重试"
+      ],
+      "ticks": [
+        {
+          "text": "0",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "1",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "3",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "4",
+          "x": "70",
+          "y": "80"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "empty",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 空范围, Secondary Actions: Expand\n~\t\t\t\t22 初始读取失败\n~\t\t\t\t23 (selected) 空范围\n~\t\t\t\t41 container 每月净盈亏，2026\n~\t\t\t\t78 text 所选范围无已平仓回合\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 0,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 0,
+      "statuses": [
+        "所选范围无已平仓回合"
+      ],
+      "ticks": [
+        {
+          "text": "0",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "1",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "3",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "4",
+          "x": "70",
+          "y": "80"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "years3",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\n1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html\n\t2 container\n\t\t3 heading 历史图完整独立验收, Value: 1\n\t\t\t4 text 历史图完整独立验收\n\t\t5 text 字面量调用方；无数据库、财务聚合或模拟曲线。版本： 1 图表模式\n\t\t6 pop up button (collapsed, settable) 图表模式, Value: 各期净盈亏, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 各期净盈亏\n\t\t\t\t9 累计净盈亏\n\t\t\t\t10 各期胜率\n\t\t\t\t11 各期回合数\n\t\t12 text 验收状态\n\t\t13 pop up button (collapsed, settable) 验收状态, Value: 三年, Secondary Actions: Expand\n\t\t\t14 menu\n\t\t\t\t15 常规12个月\n\t\t\t\t16 相邻五种缺口\n\t\t\t\t17 旧数据更新中\n\t\t\t\t18 旧数据读取失败\n\t\t\t\t19 过长更新原因\n\t\t\t\t20 过长失败原因\n\t\t\t\t21 初始等待\n\t\t\t\t22 初始读取失败\n\t\t\t\t23 空范围\n\t\t\t\t24 (selected) 三年\n\t\t\t\t25 全部30年\n\t\t\t\t26 全部40年\n\t\t\t\t27 超长精度与来源\n\t\t\t\t28 非零微小金额\n\t\t\t\t29 非法读数\n\t\t30 text 报表币种\n\t\t31 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t32 menu\n\t\t\t\t33 (selected) CNY\n\t\t\t\t34 USD\n\t\t35 button 提交另一数据版本\n\t\t36 container 每年净盈亏\n\t\t\t37 container\n\t\t\t\t38 heading 每年净盈亏, Value: 3\n\t\t\t\t\t39 text 每年净盈亏\n\t\t\t\t40 text CNY\n\t\t\t\t41 container 每年净盈亏，全部\n\t\t\t\t\t74 text -1.50万\n\t\t\t\t\t75 text -1.00万\n\t\t\t\t\t76 text -5,000\n\t\t\t\t\t43 text 0\n\t\t\t\t\t77 button 1980，-12345.678900 CNY，\n\t\t\t\t\t78 button 1981，-12345.678900 CNY，\n\t\t\t\t\t79 button 1982，-12345.678900 CNY，\n\t\t\t\t\t80 text 1980\n\t\t\t\t\t81 text 1981\n\t\t\t\t\t82 text 1982\n\t\t71 heading 下一个模块, Value: 2\n\t\t\t72 text 下一个模块\n\t\t73 button 外部动作\n\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 3,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 1,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-1.50万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "-1.00万",
+          "x": "70",
+          "y": "213.33333333333331"
+        },
+        {
+          "text": "-5,000",
+          "x": "70",
+          "y": "146.66666666666666"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1980",
+          "x": "84",
+          "y": "312"
+        },
+        {
+          "text": "1981",
+          "x": "205",
+          "y": "312"
+        },
+        {
+          "text": "1982",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "years30",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 全部30年, Secondary Actions: Expand\n~\t\t\t\t24 三年\n~\t\t\t\t25 (selected) 全部30年\n~\t\t\t\t\t81 button 1983，-12345.678900 CNY，\n~\t\t\t\t\t82 button 1984，-12345.678900 CNY，\n+\t\t\t\t\t83 button 1985，-12345.678900 CNY，\n+\t\t\t\t\t84 button 1986，-12345.678900 CNY，\n+\t\t\t\t\t85 button 1987，-12345.678900 CNY，\n+\t\t\t\t\t86 button 1988，-12345.678900 CNY，\n+\t\t\t\t\t87 button 1989，-12345.678900 CNY，\n+\t\t\t\t\t88 button 1990，-12345.678900 CNY，\n+\t\t\t\t\t89 button 1991，-12345.678900 CNY，\n+\t\t\t\t\t90 button 1992，-12345.678900 CNY，\n+\t\t\t\t\t91 button 1993，-12345.678900 CNY，\n+\t\t\t\t\t92 button 1994，-12345.678900 CNY，\n+\t\t\t\t\t93 button 1995，-12345.678900 CNY，\n+\t\t\t\t\t94 button 1996，-12345.678900 CNY，\n+\t\t\t\t\t95 button 1997，-12345.678900 CNY，\n+\t\t\t\t\t96 button 1998，-12345.678900 CNY，\n+\t\t\t\t\t97 button 1999，-12345.678900 CNY，\n+\t\t\t\t\t98 button 2000，-12345.678900 CNY，\n+\t\t\t\t\t99 button 2001，-12345.678900 CNY，\n+\t\t\t\t\t100 button 2002，-12345.678900 CNY，\n+\t\t\t\t\t101 button 2003，-12345.678900 CNY，\n+\t\t\t\t\t102 button 2004，-12345.678900 CNY，\n+\t\t\t\t\t103 button 2005，-12345.678900 CNY，\n+\t\t\t\t\t104 button 2006，-12345.678900 CNY，\n+\t\t\t\t\t105 button 2007，-12345.678900 CNY，\n+\t\t\t\t\t106 button 2008，-12345.678900 CNY，\n+\t\t\t\t\t107 button 2009，-12345.678900 CNY，\n+\t\t\t\t\t80 text 1980\n+\t\t\t\t\t108 text 1983\n+\t\t\t\t\t109 text 1986\n+\t\t\t\t\t110 text 1989\n+\t\t\t\t\t111 text 1992\n+\t\t\t\t\t112 text 1995\n+\t\t\t\t\t113 text 1998\n+\t\t\t\t\t114 text 2001\n+\t\t\t\t\t115 text 2004\n+\t\t\t\t\t116 text 2007\n+\t\t\t\t\t117 text 2009\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 30,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 1,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-1.50万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "-1.00万",
+          "x": "70",
+          "y": "213.33333333333331"
+        },
+        {
+          "text": "-5,000",
+          "x": "70",
+          "y": "146.66666666666666"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1980",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "1981",
+          "x": "92.34482758620689",
+          "y": "312"
+        },
+        {
+          "text": "1982",
+          "x": "100.6896551724138",
+          "y": "312"
+        },
+        {
+          "text": "1983",
+          "x": "109.0344827586207",
+          "y": "312"
+        },
+        {
+          "text": "1984",
+          "x": "117.37931034482759",
+          "y": "312"
+        },
+        {
+          "text": "1985",
+          "x": "125.72413793103448",
+          "y": "312"
+        },
+        {
+          "text": "1986",
+          "x": "134.0689655172414",
+          "y": "298"
+        },
+        {
+          "text": "1987",
+          "x": "142.41379310344828",
+          "y": "312"
+        },
+        {
+          "text": "1988",
+          "x": "150.75862068965517",
+          "y": "312"
+        },
+        {
+          "text": "1989",
+          "x": "159.10344827586206",
+          "y": "312"
+        },
+        {
+          "text": "1990",
+          "x": "167.44827586206895",
+          "y": "312"
+        },
+        {
+          "text": "1991",
+          "x": "175.79310344827587",
+          "y": "312"
+        },
+        {
+          "text": "1992",
+          "x": "184.13793103448276",
+          "y": "298"
+        },
+        {
+          "text": "1993",
+          "x": "192.48275862068965",
+          "y": "312"
+        },
+        {
+          "text": "1994",
+          "x": "200.82758620689657",
+          "y": "312"
+        },
+        {
+          "text": "1995",
+          "x": "209.17241379310343",
+          "y": "312"
+        },
+        {
+          "text": "1996",
+          "x": "217.51724137931035",
+          "y": "312"
+        },
+        {
+          "text": "1997",
+          "x": "225.86206896551724",
+          "y": "312"
+        },
+        {
+          "text": "1998",
+          "x": "234.20689655172413",
+          "y": "298"
+        },
+        {
+          "text": "1999",
+          "x": "242.55172413793105",
+          "y": "312"
+        },
+        {
+          "text": "2000",
+          "x": "250.89655172413794",
+          "y": "312"
+        },
+        {
+          "text": "2001",
+          "x": "259.2413793103448",
+          "y": "312"
+        },
+        {
+          "text": "2002",
+          "x": "267.58620689655174",
+          "y": "312"
+        },
+        {
+          "text": "2003",
+          "x": "275.9310344827586",
+          "y": "312"
+        },
+        {
+          "text": "2004",
+          "x": "284.2758620689655",
+          "y": "298"
+        },
+        {
+          "text": "2005",
+          "x": "292.62068965517244",
+          "y": "312"
+        },
+        {
+          "text": "2006",
+          "x": "300.9655172413793",
+          "y": "312"
+        },
+        {
+          "text": "2007",
+          "x": "309.3103448275862",
+          "y": "312"
+        },
+        {
+          "text": "2008",
+          "x": "317.65517241379314",
+          "y": "312"
+        },
+        {
+          "text": "2009",
+          "x": "326",
+          "y": "298"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "years40",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 全部40年, Secondary Actions: Expand\n~\t\t\t\t25 全部30年\n~\t\t\t\t26 (selected) 全部40年\n+\t\t\t\t\t117 button 2010，-12345.678900 CNY，\n+\t\t\t\t\t118 button 2011，-12345.678900 CNY，\n+\t\t\t\t\t119 button 2012，-12345.678900 CNY，\n+\t\t\t\t\t120 button 2013，-12345.678900 CNY，\n+\t\t\t\t\t121 button 2014，-12345.678900 CNY，\n+\t\t\t\t\t122 button 2015，-12345.678900 CNY，\n+\t\t\t\t\t123 button 2016，-12345.678900 CNY，\n+\t\t\t\t\t124 button 2017，-12345.678900 CNY，\n+\t\t\t\t\t125 button 2018，-12345.678900 CNY，\n+\t\t\t\t\t126 button 2019，-12345.678900 CNY，\n+\t\t\t\t\t127 text 2010\n+\t\t\t\t\t128 text 2013\n+\t\t\t\t\t129 text 2016\n+\t\t\t\t\t130 text 2019\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 40,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 1,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-1.50万",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "-1.00万",
+          "x": "70",
+          "y": "213.33333333333331"
+        },
+        {
+          "text": "-5,000",
+          "x": "70",
+          "y": "146.66666666666666"
+        },
+        {
+          "text": "0",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1980",
+          "x": "84",
+          "y": "298"
+        },
+        {
+          "text": "1981",
+          "x": "90.2051282051282",
+          "y": "312"
+        },
+        {
+          "text": "1982",
+          "x": "96.41025641025641",
+          "y": "312"
+        },
+        {
+          "text": "1983",
+          "x": "102.61538461538461",
+          "y": "312"
+        },
+        {
+          "text": "1984",
+          "x": "108.82051282051282",
+          "y": "312"
+        },
+        {
+          "text": "1985",
+          "x": "115.02564102564102",
+          "y": "312"
+        },
+        {
+          "text": "1986",
+          "x": "121.23076923076923",
+          "y": "298"
+        },
+        {
+          "text": "1987",
+          "x": "127.43589743589743",
+          "y": "312"
+        },
+        {
+          "text": "1988",
+          "x": "133.64102564102564",
+          "y": "312"
+        },
+        {
+          "text": "1989",
+          "x": "139.84615384615384",
+          "y": "312"
+        },
+        {
+          "text": "1990",
+          "x": "146.05128205128204",
+          "y": "312"
+        },
+        {
+          "text": "1991",
+          "x": "152.25641025641028",
+          "y": "312"
+        },
+        {
+          "text": "1992",
+          "x": "158.46153846153845",
+          "y": "298"
+        },
+        {
+          "text": "1993",
+          "x": "164.66666666666669",
+          "y": "312"
+        },
+        {
+          "text": "1994",
+          "x": "170.87179487179486",
+          "y": "312"
+        },
+        {
+          "text": "1995",
+          "x": "177.0769230769231",
+          "y": "312"
+        },
+        {
+          "text": "1996",
+          "x": "183.28205128205127",
+          "y": "312"
+        },
+        {
+          "text": "1997",
+          "x": "189.4871794871795",
+          "y": "312"
+        },
+        {
+          "text": "1998",
+          "x": "195.69230769230768",
+          "y": "298"
+        },
+        {
+          "text": "1999",
+          "x": "201.8974358974359",
+          "y": "312"
+        },
+        {
+          "text": "2000",
+          "x": "208.1025641025641",
+          "y": "312"
+        },
+        {
+          "text": "2001",
+          "x": "214.30769230769232",
+          "y": "312"
+        },
+        {
+          "text": "2002",
+          "x": "220.51282051282053",
+          "y": "312"
+        },
+        {
+          "text": "2003",
+          "x": "226.71794871794873",
+          "y": "312"
+        },
+        {
+          "text": "2004",
+          "x": "232.92307692307693",
+          "y": "298"
+        },
+        {
+          "text": "2005",
+          "x": "239.12820512820514",
+          "y": "312"
+        },
+        {
+          "text": "2006",
+          "x": "245.33333333333334",
+          "y": "312"
+        },
+        {
+          "text": "2007",
+          "x": "251.53846153846155",
+          "y": "312"
+        },
+        {
+          "text": "2008",
+          "x": "257.7435897435897",
+          "y": "312"
+        },
+        {
+          "text": "2009",
+          "x": "263.94871794871796",
+          "y": "312"
+        },
+        {
+          "text": "2010",
+          "x": "270.1538461538462",
+          "y": "298"
+        },
+        {
+          "text": "2011",
+          "x": "276.35897435897436",
+          "y": "312"
+        },
+        {
+          "text": "2012",
+          "x": "282.56410256410254",
+          "y": "312"
+        },
+        {
+          "text": "2013",
+          "x": "288.7692307692308",
+          "y": "312"
+        },
+        {
+          "text": "2014",
+          "x": "294.974358974359",
+          "y": "312"
+        },
+        {
+          "text": "2015",
+          "x": "301.1794871794872",
+          "y": "312"
+        },
+        {
+          "text": "2016",
+          "x": "307.38461538461536",
+          "y": "298"
+        },
+        {
+          "text": "2017",
+          "x": "313.5897435897436",
+          "y": "312"
+        },
+        {
+          "text": "2018",
+          "x": "319.7948717948718",
+          "y": "312"
+        },
+        {
+          "text": "2019",
+          "x": "326",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "long",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\n1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html\n\t2 container\n\t\t3 heading 历史图完整独立验收, Value: 1\n\t\t\t4 text 历史图完整独立验收\n\t\t5 text 字面量调用方；无数据库、财务聚合或模拟曲线。版本： 1 图表模式\n\t\t6 pop up button (collapsed, settable) 图表模式, Value: 各期净盈亏, Secondary Actions: Expand\n\t\t\t7 menu\n\t\t\t\t8 (selected) 各期净盈亏\n\t\t\t\t9 累计净盈亏\n\t\t\t\t10 各期胜率\n\t\t\t\t11 各期回合数\n\t\t12 text 验收状态\n\t\t13 pop up button (collapsed, settable) 验收状态, Value: 超长精度与来源, Secondary Actions: Expand\n\t\t\t14 menu\n\t\t\t\t15 常规12个月\n\t\t\t\t16 相邻五种缺口\n\t\t\t\t17 旧数据更新中\n\t\t\t\t18 旧数据读取失败\n\t\t\t\t19 过长更新原因\n\t\t\t\t20 过长失败原因\n\t\t\t\t21 初始等待\n\t\t\t\t22 初始读取失败\n\t\t\t\t23 空范围\n\t\t\t\t24 三年\n\t\t\t\t25 全部30年\n\t\t\t\t26 全部40年\n\t\t\t\t27 (selected) 超长精度与来源\n\t\t\t\t28 非零微小金额\n\t\t\t\t29 非法读数\n\t\t30 text 报表币种\n\t\t31 pop up button (collapsed, settable) 报表币种, Value: CNY, Secondary Actions: Expand\n\t\t\t32 menu\n\t\t\t\t33 (selected) CNY\n\t\t\t\t34 USD\n\t\t35 button 提交另一数据版本\n\t\t36 container 每月净盈亏\n\t\t\t37 container\n\t\t\t\t38 heading 每月净盈亏, Value: 3\n\t\t\t\t\t39 text 每月净盈亏\n\t\t\t\t40 text CNY\n\t\t\t\t41 container 每月净盈亏，2026\n\t\t\t\t\t74 text -1.50e+21亿\n\t\t\t\t\t75 text -1.00e+21亿\n\t\t\t\t\t76 text -5.00e+20亿\n\t\t\t\t\t43 text 0\n\t\t\t\t\t77 button 1月，-123456789012345678901234567890.12345678901234567890 CNY，\n\t\t\t\t\t78 text 1月\n\t\t71 heading 下一个模块, Value: 2\n\t\t\t72 text 下一个模块\n\t\t73 button 外部动作\n\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 1,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 1,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "-1.50e+21亿",
+          "x": "73",
+          "y": "280"
+        },
+        {
+          "text": "-1.00e+21亿",
+          "x": "73",
+          "y": "213.33333333333331"
+        },
+        {
+          "text": "-5.00e+20亿",
+          "x": "73",
+          "y": "146.66666666666666"
+        },
+        {
+          "text": "0",
+          "x": "73",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "206.5",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "subunit",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 74-76\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 非零微小金额, Secondary Actions: Expand\n~\t\t\t\t27 超长精度与来源\n~\t\t\t\t28 (selected) 非零微小金额\n+\t\t\t\t\t79 text 5e-20\n+\t\t\t\t\t80 text 1e-19\n+\t\t\t\t\t81 text 1.5e-19\n~\t\t\t\t\t77 button 1月，0.000000000000000000123 CNY，\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 1,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 1,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "0",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "5e-20",
+          "x": "70",
+          "y": "213.33333333333331"
+        },
+        {
+          "text": "1e-19",
+          "x": "70",
+          "y": "146.66666666666666"
+        },
+        {
+          "text": "1.5e-19",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "205",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  },
+  {
+    "name": "invalid",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t13 pop up button (collapsed, settable) 验收状态, Value: 非法读数, Secondary Actions: Expand\n~\t\t\t\t28 非零微小金额\n~\t\t\t\t29 (selected) 非法读数\n~\t\t\t\t\t79 text 1\n~\t\t\t\t\t80 text 2\n~\t\t\t\t\t81 text 3\n+\t\t\t\t\t82 text 4\n~\t\t\t\t\t77 button 1月，—，读数格式无效\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "facts": {
+      "card": {
+        "height": 320,
+        "width": 342,
+        "x": 24,
+        "y": 268
+      },
+      "hits": 1,
+      "next": {
+        "height": 102,
+        "width": 342,
+        "x": 24,
+        "y": 612
+      },
+      "scroll": 390,
+      "segments": 0,
+      "statuses": [],
+      "ticks": [
+        {
+          "text": "0",
+          "x": "70",
+          "y": "280"
+        },
+        {
+          "text": "1",
+          "x": "70",
+          "y": "230"
+        },
+        {
+          "text": "2",
+          "x": "70",
+          "y": "180"
+        },
+        {
+          "text": "3",
+          "x": "70",
+          "y": "130"
+        },
+        {
+          "text": "4",
+          "x": "70",
+          "y": "80"
+        },
+        {
+          "text": "1月",
+          "x": "205",
+          "y": "312"
+        }
+      ],
+      "viewport": [
+        390,
+        1000
+      ]
+    }
+  }
+]

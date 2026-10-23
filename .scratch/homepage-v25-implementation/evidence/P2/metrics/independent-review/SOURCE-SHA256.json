@@ -1,0 +1,174 @@
+{
+  "frozenAt": "2026-10-22T23:23:34.396940+00:00",
+  "reviewer": "/root/series_bundle_review",
+  "actualModel": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "verdict": {
+    "Critical": 0,
+    "Important": 1,
+    "Minor": 1,
+    "accepted": false
+  },
+  "productAndFrozenDependencies": [
+    {
+      "path": "app/components/homepage-v25/metric-cards.tsx",
+      "beforeSha256": "344ee710457cc95f2cf384a882b9c800e84cc5c1ea068216c44cc4e915284bea",
+      "afterSha256": "344ee710457cc95f2cf384a882b9c800e84cc5c1ea068216c44cc4e915284bea",
+      "unchanged": true
+    },
+    {
+      "path": "app/components/homepage-v25/metric-cards.css",
+      "beforeSha256": "5a99e9f9a77cb2e7d20340d9a40e0757cbc7917222e74fbc358646c4c9267194",
+      "afterSha256": "5a99e9f9a77cb2e7d20340d9a40e0757cbc7917222e74fbc358646c4c9267194",
+      "unchanged": true
+    },
+    {
+      "path": "app/components/homepage-v25/metric-cards.test.tsx",
+      "beforeSha256": "4c4aeb1393c09bdc7a81d127002d3a032c2fb5850011cf502117426abf2e3d3a",
+      "afterSha256": "4c4aeb1393c09bdc7a81d127002d3a032c2fb5850011cf502117426abf2e3d3a",
+      "unchanged": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-series.ts",
+      "beforeSha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "afterSha256": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+      "unchanged": true
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "beforeSha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+      "afterSha256": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+      "unchanged": true
+    }
+  ],
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb"
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "sha256": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/ROOT-DISPATCH.md",
+      "sha256": "33148a511e742bb1c9d72baf22078a09076487baa6d0bc979ce7e9bebb1fe559"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/IMPLEMENTATION-READY.md",
+      "sha256": "5808e2ca015b4d9b780438c1aebb1fd38cd9c1c7d8ac2c6d228a9370097ceeee"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/CONTROL-STATE-MAP.md",
+      "sha256": "14009d560fd14c6569df222cebad77534c6ad9dc896b0f5c8f5965fe26f73b38"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/REFERENCE-READS.md",
+      "sha256": "561b776fdf105cc10518722df531e58ea8cd0e809bd781f2b45067d1b0525c05"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/COMMANDS.md",
+      "sha256": "5b4fce3ce7be5ed329613e194e38633df73b8671b6dcce29852c2f7e64d1d0cc"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/SOURCE-SHA256.json",
+      "sha256": "7284cff1762f21a60f17fae8bab11c48ce15b12035bf3f6bc87cf8ed50b43990"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg",
+      "sha256": "cbb24603defed540ebc49b5234639a264246f105029f911d8d2b6fa8328e2315"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg",
+      "sha256": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a"
+    },
+    {
+      "path": "/private/tmp/tradereview-atom-metric.png",
+      "sha256": "22009c9303d1cda94b8d8959bf8c5e7f970d0419b304a6a4e2f3897969b3ce40"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/environment/reference-home-1440.png",
+      "sha256": "53782cf138192d3edfd130a81df10a53ee88c9e39a758ed0ec15a7645e9e2cc8"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961"
+    },
+    {
+      "path": "conf/native-environment.json",
+      "sha256": "0696e9467559261f591f47e73795258ee147eb0923f5fd27b76506a172914b0a"
+    },
+    {
+      "path": "tests/setup.ts",
+      "sha256": "fa0fbe0255ef099b2d65d5157aa2559fe54b44bbc0ae9c25e91a1474d021da62"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "65edd14a4f19041dbbf8d9523f7ed6f679ffd1b3808deb954bebb2aad50692cc"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/selector/root-browser/metrics-harness.tsx",
+      "sha256": "f64e30a30275ca29544af09950ab21a288cdcf209005240d0f70e35c4c8185f5"
+    }
+  ],
+  "rootBrowserEvidence": {
+    "path": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/metrics-candidate1-long-focus-390.jpg",
+    "sha256": "69c97b5c37932038ced271b7cef4dcdf3f58d8d09793d41c435f5d87dd79e04d",
+    "provenance": "Root real browser; reviewer direct screenshot and source inspection; no reviewer browser reproduction"
+  },
+  "newIndependentExecution": {
+    "runs": 1,
+    "files": 1,
+    "tests": 1,
+    "failed": 1,
+    "exitCode": 1,
+    "node": "26.0.0",
+    "vitest": "4.1.10",
+    "maxWorkers": 1,
+    "existing20TestsRepeated": false
+  },
+  "artifacts": [
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/REVIEW.md",
+      "sha256": "c3f5000145bf83f6e40ecb4fe4c787e728000599f6a18857491f713f385605ed"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/currency-context-detail.test.tsx",
+      "sha256": "e8a618ab4ff4fe85b6e2400ed30963dd6a764c75b211a4e5debb3d2292c55e32"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/vitest.config.mjs",
+      "sha256": "b41542c820397ba76c684aa0a21bf4be66fcd7174e16e9b141043d5b838b0ac2"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/COUNTEREXAMPLE.log",
+      "sha256": "65ee100dcef99bf3fb9c6cc99ec1b689b5e99c53b0af5acbaae0ae0a8cbffeca"
+    }
+  ],
+  "freeze": "No further review writes after this manifest and read-only final verification. No implementation or formal acceptance authorized."
+}

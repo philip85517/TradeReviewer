@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-22T17:21:34.096Z",
+  "before": {
+    "app/components/homepage-v25/use-homepage-host.ts": "6677d100386f959e58744a2b22fcc57714528808509bfcf99b0fcd6d943dfc85",
+    "app/components/trade-review-workspace.tsx": "1169f6728dac506d47a4c554c395b569ecea96c16bbc5cc2aee766111c65ed25",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/focused.vitest.config.ts": "873e6d107a3d9d151b5cceab18b4e9ef8b835f7af425600abed624454f0cf956"
+  },
+  "after": {
+    "app/components/homepage-v25/use-homepage-host.ts": "6677d100386f959e58744a2b22fcc57714528808509bfcf99b0fcd6d943dfc85",
+    "app/components/trade-review-workspace.tsx": "1169f6728dac506d47a4c554c395b569ecea96c16bbc5cc2aee766111c65ed25",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/host-peer.test.tsx": "64b67b64b755e207b8f1b44c7973651878541e0e31194f9c3eabcf79b3df9740",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/focused.vitest.config.ts": "873e6d107a3d9d151b5cceab18b4e9ef8b835f7af425600abed624454f0cf956"
+  },
+  "finishedAt": "2026-10-22T17:21:38.032Z",
+  "exitCode": 1,
+  "stable": true
+}

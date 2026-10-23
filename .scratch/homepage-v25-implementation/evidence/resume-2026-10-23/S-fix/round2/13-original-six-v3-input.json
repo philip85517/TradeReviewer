@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "appliedAttachmentsSurviveSnapshot": true,
+    "snapshotScopeHasNoAttachments": true,
+    "nestedBusinessDoesNotEnterSerialization": true,
+    "explicitAllAccountsWorksWithKnownAccountList": true,
+    "historicalChartModeRepresented": true,
+    "illegalDateRejected": true
+  },
+  "observed": {
+    "appliedAttachments": {
+      "categories": [
+        "long"
+      ],
+      "openOnly": true,
+      "pendingReview": []
+    },
+    "snapshotAttachments": {
+      "categories": [
+        "long"
+      ],
+      "openOnly": true,
+      "pendingReview": []
+    },
+    "scopeKeys": [
+      "live",
+      "market",
+      "accounts",
+      "rangeMode"
+    ],
+    "historyKeys": [
+      "range",
+      "chartMode"
+    ]
+  },
+  "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+}

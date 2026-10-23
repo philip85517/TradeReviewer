@@ -176,7 +176,9 @@ function addNasdaqRows(
     }
 
     const assetType: InstrumentAssetType = etf === "Y" ? "etf" : "stock";
+    const exchangeCode = symbolHeader === "Symbol" ? "NASDAQ" : row.Exchange === "N" ? "NYSE" : row.Exchange === "P" ? "ARCA" : undefined;
     directory.set(symbol, {
+      ...(exchangeCode ? { exchange: { code: exchangeCode, source: "nasdaq", resolvedAt } } : {}),
       market: "US",
       symbol,
       name,

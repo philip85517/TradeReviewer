@@ -1,0 +1,32 @@
+{
+  "revision": 3,
+  "updatedAt": "2026-10-22T19:38:09.653Z",
+  "exactStoredDocumentUnchanged": true,
+  "input": {
+    "direction": "long",
+    "currency": "CNY",
+    "priceBasis": "raw",
+    "entry": "100",
+    "initialStop": "92",
+    "targets": [
+      {
+        "id": "target-1",
+        "price": "120",
+        "quantity": null,
+        "ratio": null
+      }
+    ],
+    "sizeInputMode": "quantity",
+    "sizeInputValue": "20",
+    "resolvedQuantity": "20",
+    "quantityUnit": "share",
+    "capital": null,
+    "sizing": {
+      "quantityStep": "1",
+      "stepSource": "manual-reference",
+      "rounding": "floor",
+      "derivedUnroundedQuantity": "20",
+      "roundingDelta": "0"
+    }
+  }
+}

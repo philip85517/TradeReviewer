@@ -1,0 +1,244 @@
+{
+  "kind": "P1 implementation-ready / independent acceptance round 1 candidate",
+  "frozenAt": "2026-10-23T01:48:49.947979+08:00",
+  "owner": "/root/integration_g61",
+  "model": "gpt-6.1-sol / ultra",
+  "ownedFileCount": 29,
+  "ownedFiles": [
+    {
+      "path": "app/api/storage/instruments/metadata/route.test.ts",
+      "sha256": "765c39923162da4ad2da26ebb7b9d224822004199aa987264ba75c0fdebc509e",
+      "bytes": 3798
+    },
+    {
+      "path": "app/components/homepage-v25/fx-adapter.ts",
+      "sha256": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+      "bytes": 1155
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.test.ts",
+      "sha256": "677b45f25529c9c8d1f620cf495321dd1c6b69aa4741acc324e35fea5841f690",
+      "bytes": 10881
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "sha256": "8fe5dd40ad258f48bbc3cddee16f925798b8ecb089caf03f6991a2f7ab45621c",
+      "bytes": 12286
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "sha256": "1ddb24d850e83c261e6603763d1f93f37bc7001226569afbe5e4ca40f033c753",
+      "bytes": 10741
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "sha256": "a00b421534496a4207d67c5acf8daca1c8aa564bb0d2a3de91066f130258673f",
+      "bytes": 6759
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "sha256": "11e9111792fb403bcbaa8c1f829ee72efab3a3586ee48692445873441d75d58e",
+      "bytes": 22216
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "sha256": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+      "bytes": 2688
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+      "bytes": 2818
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "sha256": "15520b1eff91d9e342f212bc1edc32aa5892a5f85e6776580db90cf8006be929",
+      "bytes": 8064
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "sha256": "67ca968a215963a648c09033ac76f65a2c321b23f88e896f71aa18693c2ca4b9",
+      "bytes": 15282
+    },
+    {
+      "path": "app/components/library/library-browse-state.test.ts",
+      "sha256": "61279c857e7f945540b2ecd5a5485187248aa7aa8d54f276fe399e2032f23659",
+      "bytes": 21777
+    },
+    {
+      "path": "app/components/library/library-browse-state.ts",
+      "sha256": "380626c697c1edfa71fd09422545577733ff62297ee3205e4a175dd01e6849e7",
+      "bytes": 25343
+    },
+    {
+      "path": "app/components/library/trade-library.tsx",
+      "sha256": "cabf9131a3d968a0725497ffdb36f1c4836da1e915b3aa4b439188c97fe4ce3e",
+      "bytes": 64105
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "sha256": "eadb211335a32dbb21e929f4d59fc203f6b9a69e7de1e03a225ab6bebfd266ab",
+      "bytes": 228369
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "sha256": "55e40ada6ba54e64fe1e714eeca7af7a267822471fff5169ce1761b6af52db8c",
+      "bytes": 275869
+    },
+    {
+      "path": "app/home/page.tsx",
+      "sha256": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+      "bytes": 293
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.test.ts",
+      "sha256": "7da1485f8c40f2b0b8b089b4ede520c2f9e9a935c553b9719e2342c7d6509109",
+      "bytes": 5389
+    },
+    {
+      "path": "app/lib/instruments/metadata-contracts.ts",
+      "sha256": "69e82452c2b27e09ad87235e7eaf890d3a3678c2abd8d0814a633beb3c15dc67",
+      "bytes": 6030
+    },
+    {
+      "path": "app/lib/instruments/providers/metadata-providers.test.ts",
+      "sha256": "d167f397b04eabe5d55593a72bad3bc6fe3576fe3896a62e2fbe70525cad5c9d",
+      "bytes": 24358
+    },
+    {
+      "path": "app/lib/instruments/providers/nasdaq-directory.ts",
+      "sha256": "710f7d4592202a8d686d1633f81497021ae16a54a25a82bca224a70781241651",
+      "bytes": 8861
+    },
+    {
+      "path": "app/lib/instruments/providers/sec-company-tickers.ts",
+      "sha256": "b76263fce461e2500bdc736dccd69de9249a1d887f8e061c14045e56df6a9f21",
+      "bytes": 5639
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.test.ts",
+      "sha256": "9dee69ebd704ca38962defb506067a8af02705794136c87142e5f680c17815cc",
+      "bytes": 15301
+    },
+    {
+      "path": "app/lib/instruments/resolve-service.ts",
+      "sha256": "605fcfff6cc7edad48c613dd9216e09c3b0fca582a464919c1a15dedd90cdb53",
+      "bytes": 10368
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.test.ts",
+      "sha256": "8fb083b780abf21a00a1c4b2c23043124ceda5055142a419f06a5c6efb4f035c",
+      "bytes": 5057
+    },
+    {
+      "path": "app/lib/storage/indexeddb-instrument-metadata-repository.ts",
+      "sha256": "54e8d91e3c5da1b47567d0e16360d2d4f44edafa6e64cb0677ad14512179e323",
+      "bytes": 3375
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.test.ts",
+      "sha256": "139eeb8c8b6fa9aa1cc25e9f955fa53ec273e3870e089c2a86e44708de988f4e",
+      "bytes": 73980
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.ts",
+      "sha256": "878a0b0b21b0324a0219469ea90713238db116e409ab57f416e1a254474cd2ee",
+      "bytes": 94797
+    },
+    {
+      "path": "app/trades/page.tsx",
+      "sha256": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d",
+      "bytes": 295
+    }
+  ],
+  "ownedManifestSha256": "766c4cc69c7075be36ef61abe772129c04950b3cb7c5a2ce6966563a8a0fed9f",
+  "consumedInputsObserved": [
+    {
+      "path": "app/page.tsx",
+      "sha256": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+      "bytes": 1349
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "bytes": 30799
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "e91dce9cdddf83137370ef44647dda260336b03bd49b5082d201352664f762b0",
+      "bytes": 37176
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/INTERFACES.md",
+      "sha256": "31277ee9fe2272d71d502b8a24458625e879cd79c48ca7ac94995f616a6fb87e",
+      "bytes": 12377
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/INTERFACES.md",
+      "sha256": "2756d6d4d45b1af504c696bd02fa1999e6b879ed968ab702c70d1b3a42f2b3e0",
+      "bytes": 1620
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/CONTROL-STATE-MAP.md",
+      "sha256": "2b9df15e03c2fe711ba234cb6615e36e64ab0165c72cc5d1d755b8e4080f37c0",
+      "bytes": 30368
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/A/P1-HOLDINGS-JOURNEY.md",
+      "sha256": "9f9174dbd2f976d255596092acc017f0a59518e0130d09d42a29a90f9e51379a",
+      "bytes": 9802
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/04-holdings-journey.md",
+      "sha256": "97d0b6b79ab9d542a1de8d8353737ba6afe7eff83aa446c78dada0816388350c",
+      "bytes": 9292
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/visual-contract.md",
+      "sha256": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+      "bytes": 6480
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "sha256": "a98f78eaf16fa1931b73bae18d7fd8fd5dd3b6668128ebe0d44a462172cbb61d",
+      "bytes": 44581
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/CONTROL-STATE-COVERAGE.md",
+      "sha256": "86ef44e46571abed5280fd6e5886c63448ad08b2f67a034f7b5dcd1147351f02",
+      "bytes": 55245
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "bytes": 62054
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0",
+      "bytes": 66828
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "sha256": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "bytes": 17814
+    }
+  ],
+  "dependencyStatus": {
+    "S": "accepted v2 source ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+    "F": "current additive accepted at 1e9757d35b09ade0debdc6ef08c6a49ffa78bb607383ce49d16efd5cbe79abf5; quote completed-session dependency reopened by root; observed source is not a new acceptance",
+    "A": "accepted preparation only; no product acceptance"
+  },
+  "notOwned": [
+    "F/S source and tests",
+    "shared trackers and baseline documents",
+    "service/browser/DB",
+    "layout/globals/dependencies/config"
+  ],
+  "acceptance": {
+    "functional": "FAIL: 3 scoped Workspace neighboring regression tests remain failing; real browser journey NOT VERIFIED",
+    "statePersistence": "NOT VERIFIED: root owns actual isolated persistence/reload/back/forward acceptance",
+    "visual": "NOT VERIFIED: root owns actual two-width reference comparison",
+    "touch": "NOT VERIFIED: no emulated or physical touch claims"
+  }
+}

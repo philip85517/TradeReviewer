@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-10-22T17:15:20.457944+00:00",
+  "phase": "preflight, implementation still changing; not formal acceptance",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "preview": "http://127.0.0.1:3333/home",
+  "database": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite",
+  "viewports": [
+    [
+      1440,
+      1000
+    ],
+    [
+      1280,
+      800
+    ]
+  ],
+  "dpr": 1,
+  "files": {
+    "app/components/homepage-v25/session-model.ts": "45e73c3b315b75f1660d6829694272d0d5bfcd1f51452a95fcacd2accf652973",
+    "app/components/homepage-v25/use-homepage-host.ts": "c50d4be2bc51e5ad57d0e2719cb27e849b0f44a3065068c4cb86acaa9f5e0a79",
+    "app/components/homepage-v25/holdings-model.ts": "0308ba1548b5fa54370745442ae1b282c8f8c9ee8c13f1fbe36bc1bce853fc75",
+    "app/components/homepage-v25/home-surface.test.tsx": "52cc4fb7e0cfe8bed3610c10c5dee55bb6d3b2717de6c19ed63477faeba170c5",
+    "app/components/homepage-v25/home-surface.css": "50dcb18fe2105dd2f3dff673f3bee937d490f1f4ab328619bdbe5c3b952920e8",
+    "app/components/homepage-v25/home-surface.tsx": "cef561f8a113f4344a9d3dd13f2263ea5c6691361fb74e525ff6e187d379586b",
+    "app/components/homepage-v25/session-model.test.ts": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "30121c17335863ae97c8310fe72cb9b7c6b20ea49ef58db5096627bd6888f13b",
+    "app/components/homepage-v25/holdings-model.test.ts": "aaa4b8841b2a43700e6f11d8f003da17649859c287294003671d198153a1d1be",
+    "app/components/trade-review-workspace.tsx": "32115c171d7cdaada605cbaeef3570969e37acde350ddc653ac6fbfe0b0ab459",
+    "app/page.tsx": "76de4eb447c1ef8fa19620e4176a767a567544f8bca83b94c7e27a6eb11afed5",
+    "app/home/page.tsx": "30cf179d48257d0ac48d3f92f6866907022b17caec6614e5019f8c52f30a1a7c",
+    "app/trades/page.tsx": "23947c67b07fe1ef541081c3382edf815431e2066a864c6be31581b2a1743a9d"
+  }
+}

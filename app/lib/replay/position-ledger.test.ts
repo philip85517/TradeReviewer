@@ -768,3 +768,331 @@ it("scopes evidence-only inventory events and ignores identity overrides when re
   const execution = fill("buy", "2026-09-17", "2", "10", "0");
   expect(replayPositionAtPrice({ executions: [execution], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("2");
 });
+
+// P2 prepared seam. The original canonical tests above are preserved.
+import * as preparedCanonical from "./position-ledger";
+const frozenOriginalSnapshots = [
+  {
+    "quantity": "1",
+    "averageCost": "100",
+    "realizedPnl": "0",
+    "unrealizedPnl": "60",
+    "netPnl": "59",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "59"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  },
+  {
+    "quantity": "1",
+    "averageCost": "150",
+    "realizedPnl": "30",
+    "unrealizedPnl": "10",
+    "netPnl": "37",
+    "fees": "3",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "12.33333333"
+  },
+  {
+    "quantity": "-1",
+    "averageCost": "190",
+    "realizedPnl": "70",
+    "unrealizedPnl": "30",
+    "netPnl": "96",
+    "fees": "4",
+    "grossCapitalDeployed": "490",
+    "returnPercent": "19.59183673"
+  },
+  {
+    "quantity": "-0.5",
+    "averageCost": "190",
+    "realizedPnl": "75",
+    "unrealizedPnl": "15",
+    "netPnl": "85",
+    "fees": "5",
+    "grossCapitalDeployed": "490",
+    "returnPercent": "17.34693878"
+  },
+  {
+    "quantity": "-1",
+    "averageCost": "180",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "19",
+    "fees": "1",
+    "grossCapitalDeployed": "180",
+    "returnPercent": "10.55555556"
+  },
+  {
+    "costKnown": false,
+    "accuracy": {
+      "pnl": "unavailable",
+      "reasons": [
+        "unknown-fees"
+      ]
+    },
+    "quantity": "1",
+    "averageCost": "0",
+    "realizedPnl": "0",
+    "unrealizedPnl": "0",
+    "netPnl": "0",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "0"
+  },
+  {
+    "costKnown": false,
+    "accuracy": {
+      "pnl": "unavailable",
+      "reasons": [
+        "history-incomplete"
+      ]
+    },
+    "quantityKnown": false,
+    "quantity": "0",
+    "averageCost": "0",
+    "realizedPnl": "0",
+    "unrealizedPnl": "0",
+    "netPnl": "0",
+    "fees": "1",
+    "grossCapitalDeployed": "100",
+    "returnPercent": "0"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  },
+  {
+    "quantity": "2",
+    "averageCost": "150",
+    "realizedPnl": "0",
+    "unrealizedPnl": "20",
+    "netPnl": "18",
+    "fees": "2",
+    "grossCapitalDeployed": "300",
+    "returnPercent": "6"
+  }
+];
+function preparedOracleInputs() {
+  const make = (id: string, side: "buy" | "sell", quantity: string, price: string): TradeExecution => ({ id, accountId: "a", accountLabel: "A", instrument: { id: "US:AAPL", market: "US", symbol: "AAPL", name: "Apple", currency: "USD" }, side, quantity, price, fee: "1", executedAt: "2026-01-" + String(Number(id)+5).padStart(2,"0") + "T15:00:00Z", source: { platform: "original-oracle", row: Number(id), tradeNature: "live", positionEffect: side === "buy" ? "open-long" : "open-short" } });
+  const executions = [make("0","buy","1","100"),make("1","buy","1","200"),make("2","sell","1","180"),make("3","sell","2","190"),make("4","buy","0.5","180")];
+  return [
+    ...executions.map((_,i)=>({executions,markPrice:"160",visibleExecutionIds:executions.slice(0,i+1).map(e=>e.id),cursor:"2026-01-01T00:00:00Z"})),
+    {executions,markPrice:"160",visibleExecutionIds:["2"],cursor:"2026-01-01T00:00:00Z"},
+    {executions:[{...executions[0],source:{...executions[0].source,feeStatus:"unknown" as const}}],markPrice:"160"},
+    {executions:[{...executions[0],source:{...executions[0].source,historyIncomplete:["prior"]}}],markPrice:"160"},
+    {executions:[executions[0],{...executions[1],id:"0"}],markPrice:"160",visibleExecutionIds:["0"]},
+    {executions:[executions[0],{...executions[1],executedAt:executions[0].executedAt}],markPrice:"160"},
+  ];
+}
+describe("prepared canonical boundaries", () => {
+  it("preserves complete original numerical snapshots including explicit IDs after cursor", () => {
+    expect(preparedOracleInputs().map(input=>replayPositionAtPrice(input))).toEqual(frozenOriginalSnapshots);
+  });
+  it("traverses ordinary source once and answers all prefix marks without reevaluation", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    const inputs=preparedOracleInputs(), source=preparedCanonical.preparePositionLedger({executions:inputs[0].executions});
+    const result=preparedCanonical.replayPreparedPositionBoundaries(source,inputs.slice(0,5));
+    expect(result.results.map(r=>r.snapshot)).toEqual(frozenOriginalSnapshots.slice(0,5));
+    expect(source.kind).toBe("ordinary-sweep");
+    expect(source.diagnostics).toEqual({sweeps:1,transitions:5});
+    expect(result.diagnostics).toEqual({evaluations:0,transitions:0});
+    expect(source.transitions.map(t=>[t.before.quantity,t.after.quantity])).toEqual([["0","1"],["1","2"],["2","1"],["1","-1"],["-1","-0.5"]]);
+    expect(Object.isFrozen(source.transitions[0].before)).toBe(true);
+  });
+  it("keeps nonprefix IDs, duplicates, timestamp ties and future carrier evidence in exact fallback", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    const inputs=preparedOracleInputs();
+    for (const index of [5,8,9]) {
+      const input=inputs[index], source=preparedCanonical.preparePositionLedger({executions:input.executions});
+      const projected=preparedCanonical.replayPreparedPositionBoundaries(source,[input]);
+      expect(projected.results[0].snapshot).toEqual(frozenOriginalSnapshots[index]);
+      expect(projected.results[0].mode).toBe("exact-context-fallback");
+      expect(projected.diagnostics.evaluations).toBe(1);
+    }
+    const original=inputs[0].executions;
+    const executions=structuredClone(original);
+    executions[4].source.positionEvents=[fixtureEvent({id:"future-carrier",kind:"transfer-in",date:"2026-01-05",quantity:"2",accountId:"a",market:"US",symbol:"AAPL",description:"prior transfer"})];
+    const source=preparedCanonical.preparePositionLedger({executions});
+    expect(source.kind).toBe("exact-context-fallback");
+    const query={markPrice:"160",cursor:"2026-01-06T23:00:00Z",visibleExecutionIds:["0","1"]};
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,[query]).results[0].snapshot).toEqual(replayPositionAtPrice({executions,...query}));
+  });
+  it("captures caller evidence and keeps unknown flags for ordinary prefixes", () => {
+    expect(preparedCanonical.preparePositionLedger).toBeTypeOf("function");
+    for (const index of [6,7]) {
+      const input=preparedOracleInputs()[index], source=preparedCanonical.preparePositionLedger({executions:input.executions});
+      input.executions[0].price="999";
+      expect(preparedCanonical.replayPreparedPositionBoundaries(source,[{markPrice:"160"}]).results[0].snapshot).toEqual(frozenOriginalSnapshots[index]);
+    }
+  });
+});
+
+describe("prepared canonical evidence query-order isolation",()=>{
+  it("uses exact evaluation for attached positions, transfers, bonus and late IPO cash in either query order",()=>{
+    const base=preparedOracleInputs()[0].executions;
+    const common={accountId:"a",market:"US",symbol:"AAPL",currency:"USD",source:[{page:1,row:1}]};
+    const variants=[
+      [{...common,id:"bonus",kind:"corporate-action" as const,date:"2026-01-07",quantity:"1",amount:"0",description:"bonus shares"}],
+      [{...common,id:"transfer",kind:"transfer-in" as const,date:"2026-01-07",quantity:"1",description:"transfer"}],
+      [
+        {...common,id:"application",kind:"ipo" as const,date:"2026-01-02",amount:"-220",description:"IPO application"},
+        {...common,id:"fee",kind:"fee" as const,date:"2026-01-02",amount:"-2",description:"IPO fee"},
+        {...common,id:"allocation",kind:"ipo" as const,date:"2026-01-03",quantity:"2",displayTimePolicy:"session-open" as const,description:"IPO allocation"},
+        {...common,id:"refund",kind:"ipo" as const,date:"2026-01-20",amount:"20",description:"IPO refund"},
+      ],
+    ];
+    const queries=[{markPrice:"160",cursor:"2026-01-08T23:00:00Z"},{markPrice:"170",cursor:"2026-01-22T23:00:00Z"}];
+    for(const events of variants){
+      const executions=structuredClone(base);executions[4].source.positionEvents=events;
+      const source=preparedCanonical.preparePositionLedger({executions});
+      expect(source.kind).toBe("exact-context-fallback");
+      for(const order of [queries,[...queries].reverse()]){
+        const batch=preparedCanonical.replayPreparedPositionBoundaries(source,order);
+        expect(batch.results.map(r=>r.snapshot)).toEqual(order.map(query=>replayPositionAtPrice({executions,...query})));
+        expect(batch.diagnostics.evaluations).toBe(2);
+      }
+    }
+    const executions=structuredClone(base);
+    executions[4].source.statementPositions=[{accountId:"a",market:"US",symbol:"AAPL",date:"2026-01-01",phase:"opening",quantity:"5",source:[{page:1,row:1}]}];
+    const source=preparedCanonical.preparePositionLedger({executions});expect(source.kind).toBe("exact-context-fallback");
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,queries).results.map(r=>r.snapshot)).toEqual(queries.map(query=>replayPositionAtPrice({executions,...query})));
+  });
+  it("keeps repeating average-cost checkpoints unrounded and immutable",()=>{
+    const original=preparedOracleInputs()[0].executions;
+    const executions=[{...original[0],quantity:"3",price:"100.123456789"},{...original[1],price:"200.987654321"},{...original[2],quantity:"0.123456789",price:"180.987654321"}];
+    const source=preparedCanonical.preparePositionLedger({executions});
+    const queries=executions.map((_,i)=>({markPrice:"161.123456789",visibleExecutionIds:executions.slice(0,i+1).map(e=>e.id)}));
+    const first=preparedCanonical.replayPreparedPositionBoundaries(source,queries);
+    expect(first.results.map(r=>r.snapshot)).toEqual(queries.map(query=>replayPositionAtPrice({executions,...query})));
+    expect(Object.isFrozen(first.results[0].snapshot)).toBe(true);
+    expect(preparedCanonical.replayPreparedPositionBoundaries(source,[...queries].reverse()).results.map(r=>r.snapshot)).toEqual([...first.results].reverse().map(r=>r.snapshot));
+  });
+});
+
+
+describe("P4 canonical fact seam O01/O02", () => {
+  it("records partial closes and the final flat movement with full precision", () => {
+    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100", "2"), fill("buy", "2026-01-06T15:00:00Z", "1", "200", "4"), fill("sell", "2026-01-07T15:00:00Z", "1", "180", "2"), fill("sell", "2026-01-08T15:00:00Z", "1", "190", "2")];
+    expect(preparedCanonical.readPreparedPositionFacts).toBeTypeOf("function");
+    const source = preparedCanonical.preparePositionLedger({ executions });
+    const [partial, final] = preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-07T16:00:00Z" }, { cursor: "2026-01-08T16:00:00Z" }]).results;
+    expect([partial.terminal.quantity.value, partial.terminal.averageCost.value, partial.terminal.realizedPnl.value, partial.terminal.fees.value]).toEqual(["1", "150", "30", "8"]);
+    expect([final.terminal.quantity.value, final.terminal.averageCost.value, final.terminal.realizedPnl.value, final.terminal.fees.value]).toEqual(["0", "0", "70", "10"]);
+    expect(final.facts.map(f => [f.matchedClosedQuantity.value, f.openedQuantity.value, f.realizedDelta.value])).toEqual([["0", "1", "0"], ["0", "1", "0"], ["1", "0", "30"], ["1", "0", "40"]]);
+    expect(final.facts.map(f => f.after.quantity.value)).toEqual(["1", "2", "1", "0"]);
+    expect(final.facts.every(f => f.contextId === final.contextId)).toBe(true);
+    expect(Object.isFrozen(final.facts[0].before)).toBe(true);
+  });
+  it("records one reversing raw fill as an actual close and open", () => {
+    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100", "2"), fill("sell", "2026-01-06T15:00:00Z", "2", "120", "4"), fill("buy", "2026-01-07T15:00:00Z", "1", "110", "1")];
+    expect(preparedCanonical.readPreparedPositionFacts).toBeTypeOf("function");
+    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions }), [{}]).results[0];
+    expect(result.facts.map(f => [f.before.quantity.value, f.after.quantity.value, f.matchedClosedQuantity.value, f.openedQuantity.value, f.realizedDelta.value])).toEqual([["0", "1", "0", "1", "0"], ["1", "-1", "1", "1", "20"], ["-1", "0", "1", "0", "10"]]);
+    expect(result.selectedExecutionIds).toEqual(executions.map(e => e.id));
+    expect(result.terminal.realizedPnl.value).toBe("30");
+  });
+});
+
+import Decimal from "decimal.js";
+
+describe("P4 canonical fact seam O05/O08", () => {
+  it("observes bonus, pending transfer and reconciliation continue paths without inventing closes", () => {
+    const execution = fill("buy", "2026-01-05T15:00:00Z", "2", "100", "0");
+    execution.source.positionEvents = [fixtureEvent({ id: "bonus", kind: "corporate-action", date: "2026-01-07", quantity: "1", amount: "0", description: "bonus shares", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "transfer", kind: "transfer-out", date: "2026-01-08", quantity: "3", description: "stock out", symbol: "TEST", market: "US", currency: "USD" })];
+    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [execution] }), [{}]).results[0];
+    expect(result.facts.map(f => [f.kind, f.before.quantity.value, f.after.quantity.value])).toEqual([["execution", "0", "2"], ["bonus", "2", "3"], ["evidence-status", "3", null], ["transfer", null, "0"]]);
+    expect(result.facts.filter(f => f.kind !== "execution").every(f => f.matchedClosedQuantity.value === null)).toBe(true);
+    expect(result.terminal.quantity.value).toBe("0");
+    expect(result.terminal.realizedPnl).toMatchObject({ available: false, value: null });
+    expect(result.coverage.chronology.available).toBe(false);
+  });
+  it("keeps a statement-only gap and month precision explicit", () => {
+    const positions = [{ accountId: "fixture-account", market: "HK", symbol: fixtureInstrument.symbol, date: "2026-01-01", phase: "opening" as const, quantity: "2", source: [] }, { accountId: "fixture-account", market: "HK", symbol: fixtureInstrument.symbol, date: "2026-03-31", phase: "closing" as const, quantity: "0", source: [] }];
+    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [], inventoryIdentity: { accountId: "fixture-account", symbol: fixtureInstrument.symbol, market: "HK" }, evidence: [{ accountId: "fixture-account", month: "2026-03", events: [fixtureEvent({ id: "unsupported", kind: "corporate-action", date: "2026-03", quantity: "1", description: "unsupported" })], positions }] }), [{}]).results[0];
+    expect(result.terminal.quantity.value).toBe("0");
+    expect(result.terminal.realizedPnl.value).toBeNull();
+    expect(result.coverage.chronology).toMatchObject({ available: false, reasons: expect.arrayContaining(["initial-position", "position-gap"]) });
+    expect(result.facts.find(f => f.eventId === "unsupported")?.time).toMatchObject({ precision: "month", sourceDate: "2026-03" });
+    expect(result.facts.some(f => f.executionId !== null)).toBe(false);
+  });
+  it("matches old snapshots and preserves selection, ties and captured-source isolation", () => {
+    const executions = [fill("buy", "2026-01-05T15:00:00Z", "1", "100.12345678901", "0.000000001"), fill("sell", "2026-01-06T15:00:00Z", "1", "101.12345678901", "0.000000002")];
+    const original = structuredClone(executions), source = preparedCanonical.preparePositionLedger({ executions });
+    executions[0].quantity = "99";
+    const queries = [{}, { cursor: "2026-01-05T16:00:00Z" }, { cursor: "2026-01-01", visibleExecutionIds: [original[1].id, "unknown", original[0].id] }, { visibleExecutionIds: [original[1].id] }];
+    const results = preparedCanonical.readPreparedPositionFacts(source, queries);
+    results.results.forEach((result, index) => {
+      const old = replayPositionAtPrice({ executions: original, ...queries[index], markPrice: "0" });
+      expect([result.terminal.quantity.value, result.terminal.averageCost.value, result.terminal.realizedPnl.value, result.terminal.fees.value].map(value => value === null ? "0" : new Decimal(value).toDecimalPlaces(8).toString())).toEqual([old.quantity, old.averageCost, old.realizedPnl, old.fees]);
+      expect(result.terminal.reasons).toEqual(old.accuracy?.reasons ?? []);
+      expect(result.terminal.warnings).toEqual(old.warnings ?? []);
+    });
+    expect(results.results.map(r => r.mode)).toEqual(["ordinary-sweep", "ordinary-sweep", "ordinary-sweep", "exact-context-fallback"]);
+    expect(results.results[2].selectedExecutionIds).toEqual(original.map(e => e.id));
+    expect(preparedCanonical.readPreparedPositionFacts(source, [{ ...queries[2], visibleExecutionIds: original.map(e => e.id) }]).results[0].contextId).toBe(results.results[2].contextId);
+    expect(() => Reflect.set(results.results[0].terminal.quantity, "value", "99")).not.toThrow();
+    expect(results.results[0].terminal.quantity.value).toBe("0");
+    const tied = original.map(e => ({ ...e, executedAt: original[0].executedAt }));
+    const forward = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: tied }), [{}]).results[0];
+    const reverse = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [...tied].reverse() }), [{}]).results[0];
+    expect(forward.mode).toBe("exact-context-fallback");
+    expect(forward.contextId).not.toBe(reverse.contextId);
+    expect(forward.terminal.realizedPnl.value).toBe("1");
+    expect(reverse.terminal.realizedPnl.value).toBe("1");
+  });
+});
+
+describe("P4 canonical fact seam exactness counterexamples", () => {
+  it("does not let missing IPO cash turn known inventory chronology into unknown or certify partial fees", () => {
+    const sale = fill("sell", "2026-01-16T15:00:00Z", "2", "130", "2");
+    sale.source.positionEvents = [fixtureEvent({ id: "application", date: "2026-01-08", kind: "ipo", amount: "-220", description: "IPO application", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "fee", date: "2026-01-08", kind: "fee", amount: "-2", description: "IPO fee", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "allocation", date: "2026-01-10", kind: "ipo", quantity: "2", displayTimePolicy: "session-open", description: "IPO allocation", symbol: "TEST", market: "US", currency: "USD" }), fixtureEvent({ id: "refund", date: "2026-01-20", kind: "ipo", amount: "20", description: "IPO refund", symbol: "TEST", market: "US", currency: "USD" })];
+    const source = preparedCanonical.preparePositionLedger({ executions: [sale] });
+    const [early, late] = preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-18" }, { cursor: "2026-01-22" }]).results;
+    expect([early.coverage.quantity.available, early.coverage.chronology.available, early.coverage.costAndRealized.available]).toEqual([true, true, false]);
+    expect(early.terminal.fees).toMatchObject({ value: null, available: false, reasons: ["ipo-fee-allocation-unavailable"] });
+    expect(late.terminal.fees.value).toBe("4");
+  });
+  it("reports bounded prefix index work and one observed sweep for many empty queries", () => {
+    const executions = Array.from({ length: 256 }, (_, index) => fill("buy", new Date(Date.UTC(2026, 0, 5, 0, index)).toISOString(), "1", "100", "0"));
+    const source = preparedCanonical.preparePositionLedger({ executions });
+    const result = preparedCanonical.readPreparedPositionFacts(source, Array.from({ length: 128 }, () => ({ cursor: "2026-01-01" })));
+    expect(result.diagnostics).toMatchObject({ evaluations: 1, transitions: 256, retainedFactBytes: 0 });
+    expect(result.diagnostics.indexProbes).toBe(128 * 9);
+    expect(result.results.every(value => value.facts.length === 0 && value.selectedExecutionIds.length === 0)).toBe(true);
+  });
+  it("records execution-backed suppression rather than a second IPO movement", () => {
+    const buy = fill("buy", "2026-01-10T15:00:00Z", "2", "100", "2");
+    buy.source.positionEvents = [fixtureEvent({ id: "allocation", date: "2026-01-10", kind: "ipo", quantity: "2", amount: "-200", description: "IPO allocation", displayTimePolicy: "session-open", symbol: "TEST", market: "US", currency: "USD" })];
+    buy.source.sourceTradeId = "ipo-allocation";
+    const result = preparedCanonical.readPreparedPositionFacts(preparedCanonical.preparePositionLedger({ executions: [buy] }), [{}]).results[0];
+    expect(result.facts.map(f => [f.kind, f.effect, f.after.quantity.value])).toEqual([["ipo-allocation", "suppressed-duplicate", "0"], ["execution", "applied", "2"]]);
+    expect(result.terminal.fees.value).toBe("2");
+  });
+});
+
+describe("P4 canonical fact seam exception compatibility", () => {
+  it("preserves original Decimal errors and future-evidence filtering on the observed path", () => {
+    const buy = fill("buy", "2026-01-05T15:00:00Z", "1", "100", "0");
+    buy.source.positionEvents = [fixtureEvent({ id: "bad-allocation", date: "2026-02-10", kind: "ipo", quantity: "invalid", description: "malformed allocation", symbol: "TEST", market: "US", currency: "USD" })];
+    const source = preparedCanonical.preparePositionLedger({ executions: [buy] });
+    expect(preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-10" }]).results[0].terminal.quantity.value).toBe("1");
+    expect(() => replayPositionAtPrice({ executions: [buy], cursor: "2026-02-12", markPrice: "0" })).toThrow("DecimalError");
+    expect(() => preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-02-12" }])).toThrow("DecimalError");
+  });
+});

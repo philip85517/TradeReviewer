@@ -1,0 +1,304 @@
+✖ inert import and one install never change Request or extend hard bounds (8.575626ms)
+✖ natural discovery captures clean bridge identity with no extra stream consumption (45.329681ms)
+✔ only exact two PUT routes allocate identities; static GET cannot exhaust the window (6.356838ms)
+✔ normal-drain: before/after same N and S retain terminal cause and stop at natural target throw (12.226477ms)
+✔ unread-destroy: before/after same N and S retain terminal cause and stop at natural target throw (18.429693ms)
+✔ request entry leaves lazy getters untouched and natural Request results retain identity (4.292879ms)
+✖ each hard budget restores immediately with one explicit bounded stop marker (2.289996ms)
+✖ real wall timer expires even with only static GET requests (30.23542ms)
+✔ later descriptors survive; stale wrapper delegates; failed sink cannot change natural dispatch (4.129322ms)
+✔ source drift fails closed and custom stack formatter is never invoked (2.24169ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 6
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 443.203634
+
+✖ failing tests:
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:52:1
+✖ inert import and one install never change Request or extend hard bounds (8.575626ms)
+  AssertionError [ERR_ASSERTION]: surface 5
+  
+  ... Skipped lines
+  {
+    Symbol(Symbol.toStringTag): {
+      configurable: true,
+      enumerable: false,
+      value: 'Request',
+      writable: false
+    },
+    Symbol(nodejs.util.inspect.custom): {
+      configurable: true,
+      enumerable: false,
+      value: [Function: [nodejs.util.inspect.custom]],
+      writable: true
+    },
+    arrayBuffer: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: arrayBuffer],
+      writable: true
+    },
+    attribute: {
+      configurable: false,
+      enumerable: true,
+      value: undefined,
+      writable: false
+    },
+    blob: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: blob],
+      writable: true
+    },
+    body: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get body],
+      set: undefined
+    },
+    bodyUsed: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get bodyUsed],
+      set: undefined
+    },
+    bytes: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: bytes],
+      writable: true
+    },
+    cache: {
+  ...}
+  
+      at assertRestored (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:39:52)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:53:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:68:1
+✖ natural discovery captures clean bridge identity with no extra stream consumption (45.329681ms)
+  AssertionError [ERR_ASSERTION]: surface 5
+  
+  ... Skipped lines
+  {
+    Symbol(Symbol.toStringTag): {
+      configurable: true,
+      enumerable: false,
+      value: 'Request',
+      writable: false
+    },
+    Symbol(nodejs.util.inspect.custom): {
+      configurable: true,
+      enumerable: false,
+      value: [Function: [nodejs.util.inspect.custom]],
+      writable: true
+    },
+    arrayBuffer: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: arrayBuffer],
+      writable: true
+    },
+    attribute: {
+      configurable: false,
+      enumerable: true,
+      value: undefined,
+      writable: false
+    },
+    blob: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: blob],
+      writable: true
+    },
+    body: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get body],
+      set: undefined
+    },
+    bodyUsed: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get bodyUsed],
+      set: undefined
+    },
+    bytes: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: bytes],
+      writable: true
+    },
+    cache: {
+  ...}
+  
+      at assertRestored (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:39:52)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:95:3)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:163:1
+✖ each hard budget restores immediately with one explicit bounded stop marker (2.289996ms)
+  AssertionError [ERR_ASSERTION]: surface 5
+  
+  ... Skipped lines
+  {
+    Symbol(Symbol.toStringTag): {
+      configurable: true,
+      enumerable: false,
+      value: 'Request',
+      writable: false
+    },
+    Symbol(nodejs.util.inspect.custom): {
+      configurable: true,
+      enumerable: false,
+      value: [Function: [nodejs.util.inspect.custom]],
+      writable: true
+    },
+    arrayBuffer: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: arrayBuffer],
+      writable: true
+    },
+    attribute: {
+      configurable: false,
+      enumerable: true,
+      value: undefined,
+      writable: false
+    },
+    blob: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: blob],
+      writable: true
+    },
+    body: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get body],
+      set: undefined
+    },
+    bodyUsed: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get bodyUsed],
+      set: undefined
+    },
+    bytes: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: bytes],
+      writable: true
+    },
+    cache: {
+  ...}
+  
+      at assertRestored (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:39:52)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:186:7)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at .scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:192:1
+✖ real wall timer expires even with only static GET requests (30.23542ms)
+  AssertionError [ERR_ASSERTION]: surface 5
+  
+  ... Skipped lines
+  {
+    Symbol(Symbol.toStringTag): {
+      configurable: true,
+      enumerable: false,
+      value: 'Request',
+      writable: false
+    },
+    Symbol(nodejs.util.inspect.custom): {
+      configurable: true,
+      enumerable: false,
+      value: [Function: [nodejs.util.inspect.custom]],
+      writable: true
+    },
+    arrayBuffer: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: arrayBuffer],
+      writable: true
+    },
+    attribute: {
+      configurable: false,
+      enumerable: true,
+      value: undefined,
+      writable: false
+    },
+    blob: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: blob],
+      writable: true
+    },
+    body: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get body],
+      set: undefined
+    },
+    bodyUsed: {
+      configurable: true,
+      enumerable: true,
+      get: [Function: get bodyUsed],
+      set: undefined
+    },
+    bytes: {
+      configurable: true,
+      enumerable: true,
+      value: [Function: bytes],
+      writable: true
+    },
+    cache: {
+  ...}
+  
+      at assertRestored (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:39:52)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-terminal-observer/terminal-observer.test.mjs:197:88)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

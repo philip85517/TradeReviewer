@@ -1,0 +1,95 @@
+.hp-history-stats {
+  container: hp-history-stats / inline-size;
+  min-width: 0;
+  color: var(--hp-text, #e6edf7);
+  font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.hp-history-stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.hp-history-stats .hp-history-stats__card {
+  container: hp-history-card / inline-size;
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 88px;
+  border: 1px solid var(--hp-line, #283448);
+  border-radius: 10px;
+  background: var(--hp-surface, #111a26);
+}
+.hp-history-stats__content { box-sizing: border-box; height: 86px; padding: 12px 19px; }
+.hp-history-stats .hp-history-stats__card h3 {
+  overflow: hidden; margin: 0 58px 0 0; color: var(--hp-secondary, #a8b6cb);
+  font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; white-space: nowrap; text-overflow: ellipsis;
+}
+.hp-history-stats__currency { font-size: 12px; }
+.hp-history-stats__readings { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; margin-top: 4px; animation: hp-history-readings-in 150ms ease-out; }
+.hp-history-stats .hp-history-stats__value { display: flex; min-width: 0; margin: 0; font-size: 28px; font-weight: 600; line-height: 34px; white-space: nowrap; }
+.hp-history-stats .hp-history-stats__card--winRate .hp-history-stats__value { flex: 0 0 auto; max-width: 58%; }
+.hp-history-stats__number { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hp-history-stats__unit { flex: 0 0 auto; white-space: pre; }
+.hp-history-stats__value--positive { color: #53d7a0; }
+.hp-history-stats__value--negative { color: #ff8592; }
+.hp-history-stats__value--neutral { color: var(--hp-text, #e6edf7); }
+.hp-history-stats__value--unknown { color: var(--hp-secondary, #a8b6cb); }
+.hp-history-stats__ratio { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; flex: 0 1 auto; min-width: 0; color: var(--hp-secondary, #a8b6cb); font-size: 11px; line-height: 16px; text-align: right; white-space: nowrap; }
+.hp-history-stats__ratio-count { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hp-history-stats__ratio-prefix { display: none; }
+.hp-history-stats button.hp-history-stats__trigger,
+.hp-history-stats .hp-history-stats__trigger:hover:not(:disabled),
+.hp-history-stats .hp-history-stats__trigger:active:not(:disabled) {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px;
+  background: transparent; color: #6ca8ff; cursor: pointer; font: inherit;
+}
+.hp-history-stats .hp-history-stats__trigger:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-history-stats__affordance { position: absolute; top: 8px; right: 8px; padding: 2px 4px; border-radius: 4px; background: #162233; font-size: 12px; line-height: 16px; opacity: 0; transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease; }
+.hp-history-stats__trigger:hover .hp-history-stats__affordance,
+.hp-history-stats__trigger:focus-visible .hp-history-stats__affordance,
+.hp-history-stats__affordance--error { opacity: 1; }
+.hp-history-stats__affordance--error { color: #ff8592; }
+.hp-history-stats__update { position: absolute; bottom: 0; right: 10px; color: var(--hp-blue, #6ca8ff); font-size: 12px; line-height: 16px; }
+.hp-history-stats__skeleton { width: 60%; height: 28px; margin-top: 2px; border-radius: 4px; background: #283448; }
+.hp-history-stats .hp-history-stats__status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.hp-history-stats .hp-history-stats__status--pending { color: var(--hp-blue, #6ca8ff); }
+.hp-history-stats .hp-history-stats__status--error { color: #ff8592; }
+.hp-history-stats__detail,
+.hp-history-stats__detail * { box-sizing: border-box; }
+.hp-history-stats__detail {
+  position: fixed; z-index: 100; width: min(440px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow-y: auto; padding: 16px;
+  border: 1px solid #283448; border-radius: 8px; background: #162233; color: #e6edf7; box-shadow: 0 12px 32px #0006;
+  font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+  animation: hp-history-detail-in 160ms ease-out;
+}
+.hp-history-stats__detail--closing { pointer-events: none; animation: hp-history-detail-out 160ms ease-out forwards; }
+.hp-history-stats__detail:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-history-stats__detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.hp-history-stats__detail h4 { margin: 0; font-size: 16px; font-weight: 600; line-height: 24px; }
+.hp-history-stats__detail p { margin: 8px 0; }
+.hp-history-stats__detail-header button { flex: 0 0 36px; width: 36px; height: 36px; margin-top: -8px; margin-right: -8px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #a8b6cb; font-size: 24px; cursor: pointer; transition: color 120ms ease, background-color 120ms ease; }
+.hp-history-stats__detail-header button:hover { color: #e6edf7; background: #1c2b42; }
+.hp-history-stats__detail-header button:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-history-stats__facts { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 8px 12px; margin: 12px 0 0; }
+.hp-history-stats__facts dt { color: #a8b6cb; }
+.hp-history-stats__facts dd { min-width: 0; margin: 0; text-align: right; }
+.hp-history-stats__facts dd span { display: block; }
+.hp-history-stats__reasons { margin: 12px 0 0; padding-left: 18px; color: #a8b6cb; }
+.hp-history-stats__notice { color: #a8b6cb; }
+.hp-history-stats__notice--pending { color: #6ca8ff; }
+.hp-history-stats__notice--error { color: #ff8592; }
+/* Four cards retain318px at1326px and278.5px/B at1168px; each card needs at least240px. */
+@container hp-history-stats (width < 1014px) { .hp-history-stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container hp-history-stats (width < 498px) { .hp-history-stats__grid { grid-template-columns: minmax(0, 1fr); } }
+/* The card owns A/B selection, including when embedded in a narrow desktop container. */
+@container hp-history-card (width < 298px) {
+  .hp-history-stats__content { height: 102px; }
+  .hp-history-stats__ratio { grid-template-columns: minmax(0, 1fr); }
+  .hp-history-stats__ratio-prefix { position: absolute; right: 0; bottom: calc(100% + 4px); display: block; }
+  .hp-history-stats__ratio-suffix { display: none; }
+}
+@media (pointer: coarse) { .hp-history-stats__detail-header button { flex-basis: 44px; width: 44px; height: 44px; } }
+@keyframes hp-history-readings-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hp-history-detail-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hp-history-detail-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .hp-history-stats__readings, .hp-history-stats__detail { animation: none; }
+  .hp-history-stats__affordance, .hp-history-stats__detail-header button { transition: none; }
+}

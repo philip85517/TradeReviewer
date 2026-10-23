@@ -71,6 +71,7 @@ import {
 } from "./library-stock-rounds";
 import {
   aggregateTradeLibraryStockDisplayEntries,
+  tradeLibraryPerformanceFilterState,
   applyTradeNature,
   buildTradeLibraryBrowseRows,
   createTradeLibraryBrowseCache,
@@ -158,6 +159,9 @@ const PAGINATION_RESET_KEYS: ReadonlySet<keyof TradeLibraryBrowseState> = new Se
   "year",
   "closeDateFrom",
   "closeDateTo",
+  "executionDateFrom",
+  "executionDateTo",
+  "collectionInstrumentId",
   "roomFilters",
   "tradeNature",
   "simulationRunId",
@@ -408,6 +412,9 @@ export function TradeLibrary({
     year,
     closeDateFrom,
     closeDateTo,
+    executionDateFrom,
+    executionDateTo,
+    collectionInstrumentId,
     roomFilters,
     tradeNature,
     simulationRunId,
@@ -565,6 +572,9 @@ export function TradeLibrary({
       year,
       closeDateFrom,
       closeDateTo,
+      executionDateFrom,
+      executionDateTo,
+      collectionInstrumentId,
       roomFilters: roomFilters
         ? {
             ...roomFilters,
@@ -597,6 +607,9 @@ export function TradeLibrary({
       tag,
       closeDateFrom,
       closeDateTo,
+      executionDateFrom,
+      executionDateTo,
+      collectionInstrumentId,
       roomFilters,
       year,
       effectiveAccount,
@@ -652,7 +665,7 @@ export function TradeLibrary({
     const allStatusBrowseRows = reviewStatus === "all"
       ? browseRows
       : buildSortedRows(allStatusFilterState);
-    const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows);
+    const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows, browseFilterState);
     const model: TradeLibraryBrowseDerivedModel = {
       browseRows,
       allStatusBrowseRows,
@@ -663,7 +676,7 @@ export function TradeLibrary({
         filteredEntries,
       ),
       performanceSummary: summarizeLibraryPerformance(
-        browseRows,
+        buildSortedRows(tradeLibraryPerformanceFilterState(browseFilterState)),
         effectiveFxSnapshot ?? undefined,
         performanceTargetCurrency,
       ),

@@ -1,0 +1,173 @@
+{
+  "at": "2026-10-22T20:59:00.120836+00:00",
+  "actualModel": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "readBeforeImplementation": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f"
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92"
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb"
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/CONTINUE-2026-10-23.md",
+      "sha256": "2f73ce390151efdd504503ce0e4303836c72f6a91617f6ab55fec1b212532096"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/PRE-DISPATCH-STATE-CONTRACT.md",
+      "sha256": "016580e865e3e0be2bcab814dbdf62292836c7a16071ddbba98a7b40de618057"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/ROOT-DISPATCH.md",
+      "sha256": "1657c7404c14dc4f43b45d1b758d32b0aee652a99466ddd67975d4db65bffd20"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/issues/06-search-filter.md",
+      "sha256": "ed7ef75508f5d23688d84d8295000e72fb8ac6c9c245290a620249106b3794ec"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "sha256": "0be3485f103eab84160fea5a48c87f3a2419bd5d91542f35c4f7f84ba16d1578"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/visual-contract.md",
+      "sha256": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/S-fix/round2/INTERFACES.md",
+      "sha256": "7e62af4073f26344ea12e1e2ab15f894c8f01962107ef34df823f1825606ace4"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e"
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "sha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27"
+    },
+    {
+      "path": "app/components/homepage-v25/catalog-model.ts",
+      "sha256": "5b5594c59695d38bed0565cc96321f78c1e3ca93a5f3b50be410ea705bee88c3"
+    },
+    {
+      "path": "app/lib/reviews/trading-room-scope.ts",
+      "sha256": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16"
+    },
+    {
+      "path": "app/lib/reviews/review-queue.ts",
+      "sha256": "2f669a97182ef7ce90b83bc4a30a00b3a09462482416711508c00bf36b882212"
+    },
+    {
+      "path": "app/lib/trades/types.ts",
+      "sha256": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1"
+    },
+    {
+      "path": "app/lib/trades/library.ts",
+      "sha256": "e02ef93ec0866b349d693f412335b41589ac1e180d84a87e7c7895d5b83f3e83"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "sha256": "637f07933247a6d4dbcea5336e946e68b98e3ff5fe7ddc39e24ff194d79e8c4b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg",
+      "sha256": "d5182ba7030cf8052405785122f79e8eb39a46ffcbe99d8172cdc51297f602ec"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/filter.png",
+      "sha256": "9bcae5e18ab5f402ab7c6c54bb2fd51610a2fbc47b90b5ce83e65f8c25dc514f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied.svg",
+      "sha256": "d03db33e3660ca3a0054b7cb4e912ae6df59ba60237da0b0e06b57c27a415181"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/multi-applied.png",
+      "sha256": "477bb731477fb135f57188f09f751aeabea9d0d62a0a118ae54a608f64ec664b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied--reopen.svg",
+      "sha256": "54fb6956e21cd5e72e6e8d58dc5afe18c9bdda740433c235257daab3e5fb9405"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/multi-applied--reopen.png",
+      "sha256": "1c3da99f9b77bf6ae6cd9490897f3acf55dd749014ac90e7f9b5ee41f6e823c6"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments.svg",
+      "sha256": "f16dec43c9457a46b161b891604e61d171ff4747f120a3c15aed7e949f1fc456"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/clear-attachments.png",
+      "sha256": "a255c950deb3e5bb70d8ac1d68f569f9b8cdad0bd4ce4775bed4c95fa779af6f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments--after-clear.svg",
+      "sha256": "b937d08da29d52a225b9664ed00c14b70b48f6d747512d9837189af74d8272a5"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/clear-attachments--after-clear.png",
+      "sha256": "bd241c23d5e8b76787f8b793c675690ccec7e3f3cf92cc4e34d15916c56420fa"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset.svg",
+      "sha256": "7beba1abdc564bb19f9e7e8aebd51e1204f0445b4db81f2a2dfd96d5b4207e43"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/reset.png",
+      "sha256": "10f65f34e3e88a27f8267eb7900be38dfccf78d8b4472f53cd9e69db3e28449f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset--reset.svg",
+      "sha256": "0019ea5a874eb9449dfc9da0ff455f98f8a350f6b4de28468befb797726d05e6"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/reset--reset.png",
+      "sha256": "cfb61a5053eda93e28d87cb58ef3f9d49379279f9f09b7fde74858b84592be52"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel.svg",
+      "sha256": "4567ad852e2c1ba70f054397f7f55042ebd3e2faebc9bb68a3a9e3f8ed9d1b7c"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/cancel.png",
+      "sha256": "7cdc2e61d25ba5ff7690ce8ad30ac1c78dc847b490f9b31984d2b79e963ad669"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel--cancelled.svg",
+      "sha256": "9288b0cabf7d432b2b67b4ca6967ec90c3dcd95aed5f12e71f6e6de4548bf887"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/evidence/P3/reference-readback/cancel--cancelled.png",
+      "sha256": "96faa3921b59c7c8ed815bad4b40abef3b967ff9660a6f92a1ea1bf3c07d77af"
+    }
+  ],
+  "imageEvidence": "Original SVG source read, matching existing reference-readback PNGs directly viewed; these are reference assets, not product screenshots."
+}

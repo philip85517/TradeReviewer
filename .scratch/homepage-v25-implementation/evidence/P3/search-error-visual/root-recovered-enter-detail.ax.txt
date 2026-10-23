@@ -1,0 +1,40 @@
+Browser tab: 7, Title: "TradeReview — 历史交易复盘", URL: "http://127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all".
+1 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all
+	2 container
+		3 container 中国铝业 标的详情
+			4 container
+				5 heading 中国铝业, Value: 2
+					6 text 中国铝业
+				7 text HKEX:2600:stock  ·  HK  ·  HKD  ·  股票
+				8 button 关闭标的详情
+			9 definition list 核心持仓指标
+				10 container 数量
+					11 text 数量
+				12 button (collapsed) Description: 数量完整值, Secondary Actions: Expand
+				13 container 成本价(HKD)
+					14 text 成本价( HKD )
+				15 button (collapsed) Description: 成本价完整值, Secondary Actions: Expand
+				16 container 持仓市值(HKD)
+					17 text 持仓市值( HKD )
+				18 button (collapsed) Description: 持仓市值完整值, Secondary Actions: Expand
+				19 container 持仓浮动盈亏(HKD)
+					20 text 持仓浮动盈亏( HKD )
+				21 button (collapsed) Description: 持仓浮动盈亏完整值, Secondary Actions: Expand
+			22 definition list 持仓补充信息
+				23 container 最新价(HKD)
+					24 text 最新价( HKD )
+				25 button (collapsed) Description: 最新价完整值, Secondary Actions: Expand
+				26 container 账户
+					27 text 账户
+				28 text 当前范围无持仓账户
+				29 container 持仓天数
+					30 text 持仓天数
+				31 text —
+			32 text 来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+			33 text 当前范围暂无该标的持仓
+			34 button 更新数据
+			35 container
+				36 button 查看交易
+				37 button 返回原搜索结果 · 恢复原滚动位置
+
+The focused UI element is 8 button 关闭标的详情

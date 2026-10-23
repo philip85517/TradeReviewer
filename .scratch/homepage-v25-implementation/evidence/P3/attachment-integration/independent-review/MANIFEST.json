@@ -1,0 +1,101 @@
+{
+  "frozenAt": "2026-10-22T23:01:17.633128+00:00",
+  "reviewer": "/root/attachment_review",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "gitHeadBefore": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "gitHeadAfter": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "productFiles": [
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "beforeSha256": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+      "afterSha256": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+      "baselineSha256": "84897ee2c53bf1c8a81428dcf2e4997cef326b065d58dacae036a2e2b9d2b6c2",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 39120,
+      "lines": 368
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "beforeSha256": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+      "afterSha256": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+      "baselineSha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 16666,
+      "lines": 153
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "beforeSha256": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+      "afterSha256": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+      "baselineSha256": "21c8c64874873b37c6a6f28e8f13152dd4219d7dc3135b8ddc881ff09bd4f42d",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 23916,
+      "lines": 353
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "beforeSha256": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+      "afterSha256": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+      "baselineSha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 4055,
+      "lines": 49
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-groups.ts",
+      "beforeSha256": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+      "afterSha256": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+      "baselineSha256": "28fd2e1ae6b22b08e842d8da71d94335cf4cd289c1faf7536f79f2382d5a7073",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 14512,
+      "lines": 222
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "beforeSha256": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+      "afterSha256": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+      "baselineSha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 13272,
+      "lines": 179
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "beforeSha256": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+      "afterSha256": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+      "baselineSha256": "410eed339bb9b6915d2b13763731ae3ca3065c7b000cf9eab4e506439973916a",
+      "matchesWorkerFreeze": true,
+      "unchangedDuringReview": true,
+      "bytes": 280842,
+      "lines": 6595
+    }
+  ],
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "verdict": "static review found no new confirmed defect; not feature acceptance; runtime, visual and persistence gates not verified by reviewer",
+  "formalStatus": {
+    "P3": "0/3",
+    "P1": "2/3 FAIL"
+  },
+  "pendingFactCaveatRetained": true,
+  "testsExecuted": [],
+  "independentCounterexampleFixture": null,
+  "forbiddenOperationsPerformed": [],
+  "writesOnly": [
+    ".scratch/homepage-v25-implementation/evidence/P3/attachment-integration/independent-review/REVIEW.md",
+    ".scratch/homepage-v25-implementation/evidence/P3/attachment-integration/independent-review/MANIFEST.json"
+  ],
+  "reportSha256": "13c5716ffb1bd6b13493b0b763cbcc5d8146276d32789ce37163077df99679c2",
+  "freezePolicy": "No further writes by this reviewer after this report and manifest."
+}

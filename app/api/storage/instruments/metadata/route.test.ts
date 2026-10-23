@@ -31,6 +31,18 @@ const request = (body: unknown) => new Request("http://localhost/api/storage/ins
 afterEach(() => vi.clearAllMocks());
 
 describe("/api/storage/instruments/metadata", () => {
+  it("retains validated official exchange evidence in the narrow write and read payloads", async () => {
+    const record = { ...metadata, exchange: { code: "NASDAQ", source: "sec", resolvedAt: metadata.resolvedAt } };
+    openSqliteDatabase.mockReturnValue({}); getInstrumentMetadata.mockReturnValue([{ id: "US:AAPL", metadata: record }]);
+    expect((await PUT(request(record))).status).toBe(200);
+    expect(putInstrumentMetadata).toHaveBeenCalledWith(record);
+    const response = await GET(new Request("http://localhost/api/storage/instruments/metadata?id=US:AAPL"));
+    expect(await response.json()).toEqual({ instruments: [{ id: "US:AAPL", metadata: record }] });
+  });
+  it("rejects a guessed exchange before storage", async () => {
+    expect((await PUT(request({ ...metadata, exchange: { code: "US", source: "nasdaq", resolvedAt: metadata.resolvedAt } }))).status).toBe(400);
+    expect(openSqliteDatabase).not.toHaveBeenCalled();
+  });
   it("reads a deduplicated batch of instrument metadata without bootstrap data", async () => {
     openSqliteDatabase.mockReturnValue({});
     getInstrumentMetadata.mockReturnValue([{ id: "HK:700" }]);

@@ -1,0 +1,109 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:25865) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (131 tests | 3 failed) 701ms
+     × counts known actual fees before an allocation establishes any stock exposure 21ms
+     × rejects conflicting historical observation IDs in both orders, with native money retained 6ms
+     × preserves the actual current FX snapshot metadata and F3 metric/evidence values 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 evidence completeness beyond held exposure > counts known actual fees before an allocation establishes any stock exposure
+AssertionError: expected '0' to be '2' // Object.is equality
+
+Expected: "2"
+Received: "0"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:819:36
+    817|     ]}});
+    818|     const source=preparedFixture([e],[]),point=projectHomepageV25Bound…
+    819|     expect(point.periodFees.value).toBe("2");expect(point.instruments[…
+       |                                    ^
+    820|   });
+    821|   it("rejects conflicting historical observation IDs in both orders, w…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 evidence completeness beyond held exposure > rejects conflicting historical observation IDs in both orders, with native money retained
+AssertionError: expected '70' to be null
+
+- Expected:
+null
+
++ Received:
+"70"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:826:31
+    824|       const source=preparedFixture([fill("buy","2026-01-05T15:00:00Z")…
+    825|       const point=projectHomepageV25Boundaries(source,{...batchQuery,t…
+    826|       expect(point.net.value).toBeNull();expect(point.net.money.origin…
+       |                               ^
+    827|     }
+    828|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P2 evidence completeness beyond held exposure > preserves the actual current FX snapshot metadata and F3 metric/evidence values
+AssertionError: expected [ { value: '770', …(4) }, …(2) ] to deeply equal [ { value: '770', …(4) }, …(2) ]
+
+- Expected
++ Received
+
+@@ -6,11 +6,11 @@
+        "total": 1,
+      },
+      "money": {
+        "conversion": "complete",
+        "fx": {
+-         "asOf": "2026-02-02T00:00:00Z",
++         "asOf": "2026-02-02T10:00:00.000Z",
+          "id": "latest-original-id",
+          "source": "real-source",
+          "status": "complete",
+        },
+        "originalByCurrency": {
+@@ -28,11 +28,11 @@
+        "total": 1,
+      },
+      "money": {
+        "conversion": "complete",
+        "fx": {
+-         "asOf": "2026-02-02T00:00:00Z",
++         "asOf": "2026-02-02T10:00:00.000Z",
+          "id": "latest-original-id",
+          "source": "real-source",
+          "status": "complete",
+        },
+        "originalByCurrency": {
+@@ -50,11 +50,11 @@
+        "total": 1,
+      },
+      "money": {
+        "conversion": "complete",
+        "fx": {
+-         "asOf": "2026-02-02T00:00:00Z",
++         "asOf": "2026-02-02T10:00:00.000Z",
+          "id": "latest-original-id",
+          "source": "real-source",
+          "status": "complete",
+        },
+        "originalByCurrency": {
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:835:92
+    833|     const current=projectHomepageV25Boundaries(source,{...batchQuery,t…
+    834|     const legacy=buildHomepageV25PerformanceFromEntries({entries,candl…
+    835|     expect([current.currentMarketValue,current.currentUnrealized,curre…
+       |                                                                                            ^
+    836|   });
+    837| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 128 passed (131)
+   Start at  02:55:00
+   Duration  1.52s (transform 353ms, setup 0ms, import 460ms, tests 701ms, environment 1ms)
+

@@ -1,0 +1,80 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:29860) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx (3 tests | 2 failed) 76ms
+     × RED: a cold direct scoped /trades must publish ready bootstrap entries rather than the first empty bundle 38ms
+     × control: cold /home accepts the same ready bootstrap through one owned read 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx > frozen P3 direct ordinary collection diagnosis > RED: a cold direct scoped /trades must publish ready bootstrap entries rather than the first empty bundle
+AssertionError: expected { entryCount: +0, …(2) } to deeply equal { entryCount: 1, …(2) }
+
+- Expected
++ Received
+
+  {
+-   "collectionCount": 1,
+-   "entryCount": 1,
+-   "ownedReads": 1,
++   "collectionCount": 0,
++   "entryCount": 0,
++   "ownedReads": 0,
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx:65:138
+     63|     // This is the same source used by Workspace ordinaryEntries at li…
+     64|     const collection = filterEntriesBySharedScope(explicitLiveEntries(…
+     65|     expect({ entryCount: result.current.data.entries.length, collectio…
+       |                                                                                                                                          ^
+     66|   });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx > frozen P3 direct ordinary collection diagnosis > control: cold /home accepts the same ready bootstrap through one owned read
+AssertionError: expected { domain: 'global', …(5) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "domain": "global",
+  "generation": 2,
+  "purpose": "navigation",
+  "scopeKey": "{\"domain\":\"global\",\"purpose\":\"navigation\",\"target\":{\"live\":true,\"market\":\"a\",\"accounts\":[\"p1-count-09\"],\"rangeMode\":\"all\",\"attachments\":{\"categories\":[],\"openOnly\":false,\"pendingReview\":[]}},\"period\":{\"preset\":\"all\",\"from\":null,\"to\":null},\"historyRange\":{\"mode\":\"all\"}}",
+  "startedAt": 1792697084576,
+  "target": {
+    "accounts": [
+      "p1-count-09",
+    ],
+    "attachments": {
+      "categories": [],
+      "openOnly": false,
+      "pendingReview": [],
+    },
+    "live": true,
+    "market": "a",
+    "rangeMode": "all",
+  },
+}
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P3/frozen-direct-trades.test.tsx:80:47
+     78|     rerender({ ready: true, data: loaded });
+     79|     await waitFor(() => expect(result.current.data.entries).toHaveLeng…
+     80|     expect(result.current.ui.requests.global).toBeNull();
+       |                                               ^
+     81|     expect(reload).toHaveBeenCalledTimes(1);
+     82|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  03:24:41
+   Duration  3.41s (transform 530ms, setup 443ms, import 668ms, tests 76ms, environment 1.87s)
+

@@ -1,0 +1,59 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:8689) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts (5 tests | 3 failed) 43ms
+     × assigns old short and IPO acquisition fees to a full non-execution close 27ms
+     × assigns the IPO fee across short close and new long inventory 4ms
+     × does not trust one arbitrary quantity from conflicting raw execution duplicates 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts > independent F contract peer probes > assigns old short and IPO acquisition fees to a full non-execution close
+AssertionError: expected '50' to be '45' // Object.is equality
+
+Expected: "45"
+Received: "50"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts:40:41
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts > independent F contract peer probes > assigns the IPO fee across short close and new long inventory
+AssertionError: expected '50' to be '46.5' // Object.is equality
+
+Expected: "46.5"
+Received: "50"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts:46:41
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts > independent F contract peer probes > does not trust one arbitrary quantity from conflicting raw execution duplicates
+AssertionError: expected '110' to be null
+
+- Expected:
+null
+
++ Received:
+"110"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/resume-2026-10-23/F-peer-review/peer.test.ts:55:45
+     53|     const result = run("duplicate-conflicting-quantity", [original, { …
+     54|     expect(result.periodRealized.value).toBeNull();
+     55|     expect(result.currentMarketValue.value).toBeNull();
+       |                                             ^
+     56|     expect(result.currentMarketValue.reasons).toContain("duplicate-exe…
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  00:53:53
+   Duration  693ms (transform 255ms, setup 0ms, import 341ms, tests 43ms, environment 0ms)
+

@@ -1,0 +1,1059 @@
+{
+  "generatedAt": "2026-10-22T20:02:03.267Z",
+  "node": "v26.0.0",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/root-window-02-analysis.mjs"
+  ],
+  "scope": "offline read-only log aggregation; no preload execution, service, HTTP, browser, or DB",
+  "inputHashesBefore": {
+    "root-window-02.33284.ndjson": "e5bbfefcdafceaf70e34db934c7de70fc5a07b4940c6cbbcc31ad08c419ba334",
+    "root-window-02.33286.ndjson": "0ae599f389904d3464f2672c6cb3b555a3e1459791407c545a24dbee79c4e277"
+  },
+  "supplementalHashes": {
+    "candidate-observer.mjs": "864628680b8aaaaa0a8628390a31a8526271bce3add330e9f0bd0d8a3f646613",
+    "candidate-preload.mjs": "2cc07345628ba3b43439dedcea55d0eccee9625ad58f48f7e2fc0324b1fa3733",
+    "root-window-02-timeout.ax.txt": "5f45d64dcfad429424dac0437311a08749862fa9f407ae95ff6f7db5285694d8",
+    "root-window-02-timeout.png": "6606bdb04b3fb0171681e840b2a54245a2729c15a22b0a6c111ca0988ab5cbb7"
+  },
+  "files": [
+    {
+      "name": "root-window-02.33284.ndjson",
+      "sha256": "e5bbfefcdafceaf70e34db934c7de70fc5a07b4940c6cbbcc31ad08c419ba334",
+      "bytes": 286,
+      "lines": 2,
+      "firstTimed": {
+        "at": "2026-10-22T19:57:20.640Z",
+        "phase": "candidate-preload",
+        "node": "v26.0.0"
+      },
+      "lastTimed": {
+        "seq": 1,
+        "at": "2026-10-22T19:57:20.642Z",
+        "phase": "observer-ready"
+      },
+      "sequence": {
+        "first": 1,
+        "last": 1,
+        "contiguous": true
+      },
+      "requestCount": 0,
+      "methodCounts": {},
+      "routes": [],
+      "phaseCounts": {
+        "candidate-preload": 1,
+        "observer-ready": 1
+      },
+      "getterBeginCounts": {},
+      "getterReturnCounts": {},
+      "consumptionIntentCounts": {},
+      "firstIntentCounts": {},
+      "operationCounts": {},
+      "operationThrows": [],
+      "errorOrAbortEvents": [],
+      "webBodyStates": [],
+      "requestsWithoutFirstIntent": [],
+      "requestsWithoutNodeEnd": [],
+      "nonGet": [],
+      "cutoff": {
+        "at": "2026-10-22T19:57:20.642Z",
+        "monotonicMs": 178.078531,
+        "pid": 33284,
+        "seq": 1,
+        "phase": "observer-ready",
+        "maxEvents": 2000,
+        "maxRequests": 200,
+        "evidenceLine": 2
+      },
+      "lastThreeTimed": [
+        {
+          "at": "2026-10-22T19:57:20.640Z",
+          "phase": "candidate-preload",
+          "node": "v26.0.0"
+        },
+        {
+          "seq": 1,
+          "at": "2026-10-22T19:57:20.642Z",
+          "phase": "observer-ready"
+        }
+      ]
+    },
+    {
+      "name": "root-window-02.33286.ndjson",
+      "sha256": "0ae599f389904d3464f2672c6cb3b555a3e1459791407c545a24dbee79c4e277",
+      "bytes": 928349,
+      "lines": 2002,
+      "firstTimed": {
+        "at": "2026-10-22T19:57:20.864Z",
+        "phase": "candidate-preload",
+        "node": "v26.0.0"
+      },
+      "lastTimed": {
+        "seq": 2000,
+        "at": "2026-10-22T19:57:49.115Z",
+        "id": "rb-33286-67",
+        "method": "GET",
+        "route": "/api/storage/market-data",
+        "phase": "getter-begin",
+        "operation": "srvx:_request",
+        "node": {
+          "disturbed": false,
+          "readableEnded": false,
+          "flowing": null,
+          "destroyed": false,
+          "complete": true,
+          "aborted": false
+        },
+        "callerStack": [
+          "    at desc.get [as mode] (file://<worktree>/node_modules/srvx/dist/_chunks/_url.mjs:11:16)",
+          "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:620:21)",
+          "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+          "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+        ]
+      },
+      "sequence": {
+        "first": 1,
+        "last": 2001,
+        "contiguous": true
+      },
+      "requestCount": 70,
+      "methodCounts": {
+        "GET": 68,
+        "PUT": 2
+      },
+      "routes": [
+        {
+          "methodRoute": "GET /api/instruments/resolve",
+          "requests": 8,
+          "eventCount": 224,
+          "phases": {
+            "consumption-intent": 12,
+            "getter-begin": 80,
+            "getter-return": 80,
+            "node-close": 6,
+            "node-end": 6,
+            "operation": 24,
+            "request-entry": 8,
+            "server-dispatch-return": 8
+          }
+        },
+        {
+          "methodRoute": "GET /api/storage/instruments/metadata",
+          "requests": 4,
+          "eventCount": 120,
+          "phases": {
+            "consumption-intent": 8,
+            "getter-begin": 40,
+            "getter-return": 40,
+            "node-close": 4,
+            "node-end": 4,
+            "operation": 16,
+            "request-entry": 4,
+            "server-dispatch-return": 4
+          }
+        },
+        {
+          "methodRoute": "GET /api/storage/market-data",
+          "requests": 19,
+          "eventCount": 469,
+          "phases": {
+            "consumption-intent": 30,
+            "getter-begin": 156,
+            "getter-return": 155,
+            "node-close": 15,
+            "node-end": 15,
+            "operation": 60,
+            "request-entry": 19,
+            "server-dispatch-return": 19
+          }
+        },
+        {
+          "methodRoute": "GET /api/trading-room/cash",
+          "requests": 8,
+          "eventCount": 240,
+          "phases": {
+            "consumption-intent": 16,
+            "getter-begin": 80,
+            "getter-return": 80,
+            "node-close": 8,
+            "node-end": 8,
+            "operation": 32,
+            "request-entry": 8,
+            "server-dispatch-return": 8
+          }
+        },
+        {
+          "methodRoute": "GET /api/trading-room/cash/baselines",
+          "requests": 8,
+          "eventCount": 240,
+          "phases": {
+            "consumption-intent": 16,
+            "getter-begin": 80,
+            "getter-return": 80,
+            "node-close": 8,
+            "node-end": 8,
+            "operation": 32,
+            "request-entry": 8,
+            "server-dispatch-return": 8
+          }
+        },
+        {
+          "methodRoute": "GET /api/trading-room/fx",
+          "requests": 4,
+          "eventCount": 120,
+          "phases": {
+            "consumption-intent": 8,
+            "getter-begin": 40,
+            "getter-return": 40,
+            "node-close": 4,
+            "node-end": 4,
+            "operation": 16,
+            "request-entry": 4,
+            "server-dispatch-return": 4
+          }
+        },
+        {
+          "methodRoute": "GET /api/trading-room/principal",
+          "requests": 2,
+          "eventCount": 60,
+          "phases": {
+            "consumption-intent": 4,
+            "getter-begin": 20,
+            "getter-return": 20,
+            "node-close": 2,
+            "node-end": 2,
+            "operation": 8,
+            "request-entry": 2,
+            "server-dispatch-return": 2
+          }
+        },
+        {
+          "methodRoute": "GET /api/trading-room/reference-capital",
+          "requests": 2,
+          "eventCount": 60,
+          "phases": {
+            "consumption-intent": 4,
+            "getter-begin": 20,
+            "getter-return": 20,
+            "node-close": 2,
+            "node-end": 2,
+            "operation": 8,
+            "request-entry": 2,
+            "server-dispatch-return": 2
+          }
+        },
+        {
+          "methodRoute": "GET /trades",
+          "requests": 1,
+          "eventCount": 30,
+          "phases": {
+            "consumption-intent": 2,
+            "getter-begin": 10,
+            "getter-return": 10,
+            "node-close": 1,
+            "node-end": 1,
+            "operation": 4,
+            "request-entry": 1,
+            "server-dispatch-return": 1
+          }
+        },
+        {
+          "methodRoute": "GET <redacted-path>",
+          "requests": 12,
+          "eventCount": 360,
+          "phases": {
+            "consumption-intent": 24,
+            "getter-begin": 120,
+            "getter-return": 120,
+            "node-close": 12,
+            "node-end": 12,
+            "operation": 48,
+            "request-entry": 12,
+            "server-dispatch-return": 12
+          }
+        },
+        {
+          "methodRoute": "PUT /api/storage/reviews",
+          "requests": 2,
+          "eventCount": 76,
+          "phases": {
+            "consumption-intent": 8,
+            "getter-begin": 20,
+            "getter-return": 20,
+            "node-close": 2,
+            "node-end": 2,
+            "operation": 18,
+            "request-entry": 2,
+            "server-dispatch-return": 2,
+            "web-body-returned": 2
+          }
+        }
+      ],
+      "phaseCounts": {
+        "candidate-preload": 1,
+        "consumption-intent": 132,
+        "getter-begin": 666,
+        "getter-return": 665,
+        "node-close": 64,
+        "node-end": 64,
+        "observer-ready": 1,
+        "operation": 266,
+        "request-entry": 70,
+        "server-dispatch-return": 70,
+        "trace-budget-exhausted": 1,
+        "web-body-returned": 2
+      },
+      "getterBeginCounts": {
+        "srvx:_request": 466,
+        "srvx:body": 200
+      },
+      "getterReturnCounts": {
+        "srvx:_request": 465,
+        "srvx:body": 200
+      },
+      "consumptionIntentCounts": {
+        "node:on:data": 2,
+        "node:read": 64,
+        "node:resume": 64,
+        "web:tee": 2
+      },
+      "firstIntentCounts": {
+        "node:on:data": 2,
+        "node:resume": 62
+      },
+      "operationCounts": {
+        "node:read": 194,
+        "node:resume": 70,
+        "web:tee": 2
+      },
+      "earliestIntent": {
+        "seq": 24,
+        "at": "2026-10-22T19:57:33.934Z",
+        "id": "rb-33286-1",
+        "method": "GET",
+        "route": "/trades",
+        "phase": "consumption-intent",
+        "operation": "node:resume",
+        "first": true,
+        "node": {
+          "disturbed": false,
+          "readableEnded": false,
+          "flowing": null,
+          "destroyed": false,
+          "complete": true,
+          "aborted": false
+        },
+        "callerStack": [
+          "    at IncomingMessage._dump (node:_http_incoming:444:10)",
+          "    at resOnFinish (node:_http_server:1138:9)",
+          "    at ServerResponse.emit (node:events:521:24)",
+          "    at onFinish (node:_http_outgoing:1026:10)",
+          "    at afterWrite (node:internal/streams/writable:708:5)",
+          "    at afterWriteTick (node:internal/streams/writable:694:10)",
+          "    at processTicksAndRejections (node:internal/process/task_queues:89:21)"
+        ]
+      },
+      "earliestGetter": {
+        "seq": 4,
+        "at": "2026-10-22T19:57:28.404Z",
+        "id": "rb-33286-1",
+        "method": "GET",
+        "route": "/trades",
+        "phase": "getter-begin",
+        "operation": "srvx:body",
+        "node": {
+          "disturbed": false,
+          "readableEnded": false,
+          "flowing": null,
+          "destroyed": false,
+          "complete": true,
+          "aborted": false
+        },
+        "callerStack": [
+          "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:615:21)",
+          "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+          "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+        ]
+      },
+      "operationThrows": [],
+      "errorOrAbortEvents": [],
+      "webBodyStates": [
+        {
+          "seq": 1284,
+          "at": "2026-10-22T19:57:48.627Z",
+          "id": "rb-33286-46",
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "phase": "web-body-returned",
+          "node": {
+            "disturbed": false,
+            "readableEnded": false,
+            "flowing": false,
+            "destroyed": false,
+            "complete": true,
+            "aborted": false
+          },
+          "web": {
+            "locked": false,
+            "disturbed": false
+          }
+        },
+        {
+          "seq": 1412,
+          "at": "2026-10-22T19:57:48.691Z",
+          "id": "rb-33286-50",
+          "method": "PUT",
+          "route": "/api/storage/reviews",
+          "phase": "web-body-returned",
+          "node": {
+            "disturbed": false,
+            "readableEnded": false,
+            "flowing": false,
+            "destroyed": false,
+            "complete": true,
+            "aborted": false
+          },
+          "web": {
+            "locked": false,
+            "disturbed": false
+          }
+        }
+      ],
+      "firstDisturbed": {
+        "seq": 1312,
+        "at": "2026-10-22T19:57:48.639Z",
+        "id": "rb-33286-46",
+        "method": "PUT",
+        "route": "/api/storage/reviews",
+        "phase": "operation",
+        "operation": "node:resume",
+        "node": {
+          "disturbed": true,
+          "readableEnded": false,
+          "flowing": true,
+          "destroyed": false,
+          "complete": true,
+          "aborted": false
+        }
+      },
+      "requestsWithoutFirstIntent": [
+        {
+          "id": "rb-33286-65",
+          "method": "GET",
+          "route": "/api/instruments/resolve",
+          "entrySeq": 1826
+        },
+        {
+          "id": "rb-33286-66",
+          "method": "GET",
+          "route": "/api/instruments/resolve",
+          "entrySeq": 1828
+        },
+        {
+          "id": "rb-33286-67",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1886
+        },
+        {
+          "id": "rb-33286-68",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1888
+        },
+        {
+          "id": "rb-33286-69",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1918
+        },
+        {
+          "id": "rb-33286-70",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1948
+        }
+      ],
+      "requestsWithoutNodeEnd": [
+        {
+          "id": "rb-33286-65",
+          "method": "GET",
+          "route": "/api/instruments/resolve",
+          "entrySeq": 1826
+        },
+        {
+          "id": "rb-33286-66",
+          "method": "GET",
+          "route": "/api/instruments/resolve",
+          "entrySeq": 1828
+        },
+        {
+          "id": "rb-33286-67",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1886
+        },
+        {
+          "id": "rb-33286-68",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1888
+        },
+        {
+          "id": "rb-33286-69",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1918
+        },
+        {
+          "id": "rb-33286-70",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "entrySeq": 1948
+        }
+      ],
+      "nonGet": [
+        {
+          "entry": {
+            "seq": 1280,
+            "at": "2026-10-22T19:57:48.595Z",
+            "id": "rb-33286-46",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "request-entry",
+            "node": {
+              "disturbed": false,
+              "readableEnded": false,
+              "flowing": null,
+              "destroyed": false,
+              "complete": false,
+              "aborted": false
+            }
+          },
+          "evidenceLines": [
+            1281,
+            1318
+          ],
+          "eventCount": 38,
+          "phaseCounts": {
+            "consumption-intent": 4,
+            "getter-begin": 10,
+            "getter-return": 10,
+            "node-close": 1,
+            "node-end": 1,
+            "operation": 9,
+            "request-entry": 1,
+            "server-dispatch-return": 1,
+            "web-body-returned": 1
+          },
+          "operationCounts": {
+            "node:on:data": 1,
+            "node:read": 5,
+            "node:resume": 5,
+            "srvx:_request": 14,
+            "srvx:body": 6,
+            "web:tee": 2
+          },
+          "intents": [
+            {
+              "seq": 1283,
+              "at": "2026-10-22T19:57:48.626Z",
+              "id": "rb-33286-46",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:on:data",
+              "first": true,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at Object.newReadableStreamFromStreamReadable (node:internal/webstreams/adapters:537:18)",
+                "    at Readable.toWeb (node:internal/streams/readable:1784:27)",
+                "    at get body (file://<worktree>/node_modules/srvx/dist/adapters/node.mjs:258:76)",
+                "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:615:21)",
+                "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+                "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+              ]
+            },
+            {
+              "seq": 1304,
+              "at": "2026-10-22T19:57:48.631Z",
+              "id": "rb-33286-46",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:resume",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at Object.pull (node:internal/webstreams/adapters:554:29)",
+                "    at invokePromiseCallback (node:internal/webstreams/util:172:10)",
+                "    at Object.pullAlgorithm (node:internal/webstreams/util:177:23)",
+                "    at readableStreamDefaultControllerCallPullIfNeeded (node:internal/webstreams/readablestream:2465:24)",
+                "    at node:internal/webstreams/readablestream:2553:7"
+              ]
+            },
+            {
+              "seq": 1306,
+              "at": "2026-10-22T19:57:48.637Z",
+              "id": "rb-33286-46",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "web:tee",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": true,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at cloneBody (node:internal/deps/undici/undici:6789:48)",
+                "    at cloneRequest (node:internal/deps/undici/undici:12375:27)",
+                "    at Request.clone (node:internal/deps/undici/undici:12234:31)",
+                "    at new NextRequest (<worktree>/node_modules/vinext/src/shims/server.ts:107:81)",
+                "    at wrapRequest (<worktree>/node_modules/vinext/src/server/app-route-handler-runtime.ts:297:11)",
+                "    at createTrackedAppRouteRequest (<worktree>/node_modules/vinext/src/server/app-route-handler-runtime.ts:397:14)",
+                "    at runAppRouteHandler (<worktree>/node_modules/vinext/src/server/app-route-handler-execution.ts:112:26)"
+              ]
+            },
+            {
+              "seq": 1309,
+              "at": "2026-10-22T19:57:48.639Z",
+              "id": "rb-33286-46",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:read",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": true,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at resume_ (node:internal/streams/readable:1269:12)",
+                "    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)"
+              ]
+            }
+          ],
+          "bodyStates": [
+            {
+              "seq": 1284,
+              "at": "2026-10-22T19:57:48.627Z",
+              "id": "rb-33286-46",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "web-body-returned",
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "web": {
+                "locked": false,
+                "disturbed": false
+              }
+            }
+          ],
+          "firstNodeDisturbed": {
+            "seq": 1312,
+            "at": "2026-10-22T19:57:48.639Z",
+            "id": "rb-33286-46",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "operation",
+            "operation": "node:resume",
+            "node": {
+              "disturbed": true,
+              "readableEnded": false,
+              "flowing": true,
+              "destroyed": false,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "end": {
+            "seq": 1315,
+            "at": "2026-10-22T19:57:48.639Z",
+            "id": "rb-33286-46",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "node-end",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": false,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "close": {
+            "seq": 1316,
+            "at": "2026-10-22T19:57:48.639Z",
+            "id": "rb-33286-46",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "node-close",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": true,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "last": {
+            "seq": 1317,
+            "at": "2026-10-22T19:57:48.641Z",
+            "id": "rb-33286-46",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "operation",
+            "operation": "node:resume",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": true,
+              "complete": true,
+              "aborted": false
+            }
+          }
+        },
+        {
+          "entry": {
+            "seq": 1380,
+            "at": "2026-10-22T19:57:48.669Z",
+            "id": "rb-33286-50",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "request-entry",
+            "node": {
+              "disturbed": false,
+              "readableEnded": false,
+              "flowing": null,
+              "destroyed": false,
+              "complete": false,
+              "aborted": false
+            }
+          },
+          "evidenceLines": [
+            1381,
+            1446
+          ],
+          "eventCount": 38,
+          "phaseCounts": {
+            "consumption-intent": 4,
+            "getter-begin": 10,
+            "getter-return": 10,
+            "node-close": 1,
+            "node-end": 1,
+            "operation": 9,
+            "request-entry": 1,
+            "server-dispatch-return": 1,
+            "web-body-returned": 1
+          },
+          "operationCounts": {
+            "node:on:data": 1,
+            "node:read": 5,
+            "node:resume": 5,
+            "srvx:_request": 14,
+            "srvx:body": 6,
+            "web:tee": 2
+          },
+          "intents": [
+            {
+              "seq": 1411,
+              "at": "2026-10-22T19:57:48.691Z",
+              "id": "rb-33286-50",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:on:data",
+              "first": true,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at Object.newReadableStreamFromStreamReadable (node:internal/webstreams/adapters:537:18)",
+                "    at Readable.toWeb (node:internal/streams/readable:1784:27)",
+                "    at get body (file://<worktree>/node_modules/srvx/dist/adapters/node.mjs:258:76)",
+                "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:615:21)",
+                "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+                "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+              ]
+            },
+            {
+              "seq": 1432,
+              "at": "2026-10-22T19:57:48.693Z",
+              "id": "rb-33286-50",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:resume",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at Object.pull (node:internal/webstreams/adapters:554:29)",
+                "    at invokePromiseCallback (node:internal/webstreams/util:172:10)",
+                "    at Object.pullAlgorithm (node:internal/webstreams/util:177:23)",
+                "    at readableStreamDefaultControllerCallPullIfNeeded (node:internal/webstreams/readablestream:2465:24)",
+                "    at node:internal/webstreams/readablestream:2553:7"
+              ]
+            },
+            {
+              "seq": 1434,
+              "at": "2026-10-22T19:57:48.695Z",
+              "id": "rb-33286-50",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "web:tee",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": true,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at cloneBody (node:internal/deps/undici/undici:6789:48)",
+                "    at cloneRequest (node:internal/deps/undici/undici:12375:27)",
+                "    at Request.clone (node:internal/deps/undici/undici:12234:31)",
+                "    at new NextRequest (<worktree>/node_modules/vinext/src/shims/server.ts:107:81)",
+                "    at wrapRequest (<worktree>/node_modules/vinext/src/server/app-route-handler-runtime.ts:297:11)",
+                "    at createTrackedAppRouteRequest (<worktree>/node_modules/vinext/src/server/app-route-handler-runtime.ts:397:14)",
+                "    at runAppRouteHandler (<worktree>/node_modules/vinext/src/server/app-route-handler-execution.ts:112:26)"
+              ]
+            },
+            {
+              "seq": 1437,
+              "at": "2026-10-22T19:57:48.695Z",
+              "id": "rb-33286-50",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "consumption-intent",
+              "operation": "node:read",
+              "first": false,
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": true,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "callerStack": [
+                "    at resume_ (node:internal/streams/readable:1269:12)",
+                "    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)"
+              ]
+            }
+          ],
+          "bodyStates": [
+            {
+              "seq": 1412,
+              "at": "2026-10-22T19:57:48.691Z",
+              "id": "rb-33286-50",
+              "method": "PUT",
+              "route": "/api/storage/reviews",
+              "phase": "web-body-returned",
+              "node": {
+                "disturbed": false,
+                "readableEnded": false,
+                "flowing": false,
+                "destroyed": false,
+                "complete": true,
+                "aborted": false
+              },
+              "web": {
+                "locked": false,
+                "disturbed": false
+              }
+            }
+          ],
+          "firstNodeDisturbed": {
+            "seq": 1440,
+            "at": "2026-10-22T19:57:48.696Z",
+            "id": "rb-33286-50",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "operation",
+            "operation": "node:resume",
+            "node": {
+              "disturbed": true,
+              "readableEnded": false,
+              "flowing": true,
+              "destroyed": false,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "end": {
+            "seq": 1443,
+            "at": "2026-10-22T19:57:48.697Z",
+            "id": "rb-33286-50",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "node-end",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": false,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "close": {
+            "seq": 1444,
+            "at": "2026-10-22T19:57:48.697Z",
+            "id": "rb-33286-50",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "node-close",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": true,
+              "complete": true,
+              "aborted": false
+            }
+          },
+          "last": {
+            "seq": 1445,
+            "at": "2026-10-22T19:57:48.781Z",
+            "id": "rb-33286-50",
+            "method": "PUT",
+            "route": "/api/storage/reviews",
+            "phase": "operation",
+            "operation": "node:resume",
+            "node": {
+              "disturbed": true,
+              "readableEnded": true,
+              "flowing": true,
+              "destroyed": true,
+              "complete": true,
+              "aborted": false
+            }
+          }
+        }
+      ],
+      "cutoff": {
+        "phase": "trace-budget-exhausted",
+        "pid": 33286,
+        "seq": 2001,
+        "evidenceLine": 2002
+      },
+      "lastThreeTimed": [
+        {
+          "seq": 1998,
+          "at": "2026-10-22T19:57:49.115Z",
+          "id": "rb-33286-67",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "phase": "getter-begin",
+          "operation": "srvx:_request",
+          "node": {
+            "disturbed": false,
+            "readableEnded": false,
+            "flowing": null,
+            "destroyed": false,
+            "complete": true,
+            "aborted": false
+          },
+          "callerStack": [
+            "    at desc.get [as cache] (file://<worktree>/node_modules/srvx/dist/_chunks/_url.mjs:11:16)",
+            "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:619:22)",
+            "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+            "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+          ]
+        },
+        {
+          "seq": 1999,
+          "at": "2026-10-22T19:57:49.115Z",
+          "id": "rb-33286-67",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "phase": "getter-return",
+          "operation": "srvx:_request",
+          "node": {
+            "disturbed": false,
+            "readableEnded": false,
+            "flowing": null,
+            "destroyed": false,
+            "complete": true,
+            "aborted": false
+          }
+        },
+        {
+          "seq": 2000,
+          "at": "2026-10-22T19:57:49.115Z",
+          "id": "rb-33286-67",
+          "method": "GET",
+          "route": "/api/storage/market-data",
+          "phase": "getter-begin",
+          "operation": "srvx:_request",
+          "node": {
+            "disturbed": false,
+            "readableEnded": false,
+            "flowing": null,
+            "destroyed": false,
+            "complete": true,
+            "aborted": false
+          },
+          "callerStack": [
+            "    at desc.get [as mode] (file://<worktree>/node_modules/srvx/dist/_chunks/_url.mjs:11:16)",
+            "    at cloneRequestWithHeaders (<worktree>/node_modules/vinext/src/server/request-pipeline.ts:620:21)",
+            "    at appRscHandler (<worktree>/node_modules/vinext/src/server/app-rsc-handler.ts:562:21)",
+            "    at async file://<worktree>/node_modules/@vitejs/plugin-rsc/dist/plugin-BhzHKRFo.js:786:8"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputHashesAfter": {
+    "root-window-02.33284.ndjson": "e5bbfefcdafceaf70e34db934c7de70fc5a07b4940c6cbbcc31ad08c419ba334",
+    "root-window-02.33286.ndjson": "0ae599f389904d3464f2672c6cb3b555a3e1459791407c545a24dbee79c4e277"
+  },
+  "inputsStable": true
+}

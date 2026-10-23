@@ -1,0 +1,118 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:23441) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-state.test.ts (105 tests | 13 failed | 92 skipped) 27ms
+     × refreshes committed conditions and preserves newer unsubmitted attachment edits through success 12ms
+     × retries a terminal refresh as refresh, retaining D and rejecting late data: failure 2ms
+     × retries a terminal refresh as refresh, retaining D and rejecting late data: timeout 1ms
+     × retries a terminal refresh as refresh, retaining D and rejecting late data: cancel 1ms
+     × applies the chosen draft through the same read entry without clearing its attachments 1ms
+     × changes identity while retaining period/history, clearing old filter drafts and invalidating every old token 1ms
+     × treats native navigation 'date' as authoritative only after its owned read succeeds 1ms
+     × treats native navigation 'custom' as authoritative only after its owned read succeeds 1ms
+     × treats native navigation 'all' as authoritative only after its owned read succeeds 1ms
+     × keeps old committed scope/period when navigation terminates and rejects late response: failure 1ms
+     × keeps old committed scope/period when navigation terminates and rejects late response: timeout 1ms
+     × keeps old committed scope/period when navigation terminates and rejects late response: cancel 1ms
+     × does not accept a navigation response after an independent period change succeeds 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > refreshes committed conditions and preserves newer unsubmitted attachment edits through success
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:651:26
+    649|   it("refreshes committed conditions and preserves newer unsubmitted a…
+    650|     const initial = withUnsubmitted();
+    651|     let state = homepage.beginHomepageRead(initial, { purpose: "refres…
+       |                          ^
+    652|     expect(state.request!.purpose).toBe("refresh");
+    653|     expect(state.request!.target.attachments).toEqual({ categories: ["…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > retries a terminal refresh as refresh, retaining D and rejecting late data: failure
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > retries a terminal refresh as refresh, retaining D and rejecting late data: timeout
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > retries a terminal refresh as refresh, retaining D and rejecting late data: cancel
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:662:26
+    660|
+    661|   it.each(["failure", "timeout", "cancel"] as const)("retries a termin…
+    662|     let state = homepage.beginHomepageRead(withUnsubmitted(), { purpos…
+       |                          ^
+    663|     const first = state.request!;
+    664|     state = terminal === "timeout" ? markHomepageRequestTimedOut(state…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > applies the chosen draft through the same read entry without clearing its attachments
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:678:28
+    676|
+    677|   it("applies the chosen draft through the same read entry without cle…
+    678|     const state = homepage.beginHomepageRead(withUnsubmitted(), { purp…
+       |                            ^
+    679|     expect(state.request!.purpose).toBe("apply");
+    680|     expect(success(state).snapshot.attachments).toEqual({ categories: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > changes identity while retaining period/history, clearing old filter drafts and invalidating every old token
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:688:22
+    686|     const period = state.requests.period!;
+    687|     const history = state.requests.history!;
+    688|     state = homepage.beginHomepageRead(state, { purpose: "identity", s…
+       |                      ^
+    689|     expect(state.snapshot.scope).toEqual(scope);
+    690|     expect(state.draft.attachments).toEqual({ categories: [], openOnly…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > treats native navigation 'date' as authoritative only after its owned read succeeds
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > treats native navigation 'custom' as authoritative only after its owned read succeeds
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > treats native navigation 'all' as authoritative only after its owned read succeeds
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:709:28
+    707|     const target = { ...allScope, market: "us" as const, accounts: ["u…
+    708|     const initial = committed();
+    709|     const state = homepage.beginHomepageRead(initial, { purpose: "navi…
+       |                            ^
+    710|     expect(state.snapshot.scope).toEqual(scope);
+    711|     expect(state.snapshot.period).toEqual({ preset: "custom", from: "2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > keeps old committed scope/period when navigation terminates and rejects late response: failure
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > keeps old committed scope/period when navigation terminates and rejects late response: timeout
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > keeps old committed scope/period when navigation terminates and rejects late response: cancel
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:723:26
+    721|   it.each(["failure", "timeout", "cancel"] as const)("keeps old commit…
+    722|     const target: HomepageScope = { ...allScope, rangeMode: "date", da…
+    723|     let state = homepage.beginHomepageRead(committed(), { purpose: "na…
+       |                          ^
+    724|     const token = state.request!;
+    725|     state = terminal === "timeout" ? markHomepageRequestTimedOut(state…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-state.test.ts > S recovery round2 read intents > does not accept a navigation response after an independent period change succeeds
+TypeError: beginHomepageRead is not a function
+ ❯ app/lib/reviews/homepage-v25-state.test.ts:738:26
+    736|
+    737|   it("does not accept a navigation response after an independent perio…
+    738|     let state = homepage.beginHomepageRead(committed(), { purpose: "na…
+       |                          ^
+    739|     const navigation = state.request!;
+    740|     state = homepage.beginHomepagePeriodApply(state, customPeriod, 1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 92 skipped (105)
+   Start at  02:33:53
+   Duration  1.75s (transform 110ms, setup 173ms, import 103ms, tests 27ms, environment 1.08s)
+

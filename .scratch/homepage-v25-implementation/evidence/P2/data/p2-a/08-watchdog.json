@@ -1,0 +1,25 @@
+{
+  "reason": "batch exceeded independent 15s wall bound; engineering cold goal is 2s",
+  "elapsedMs": 16686,
+  "progress": {
+    "runtime": "v26.0.0",
+    "fixture": {
+      "fills": 1866,
+      "groups": 1,
+      "endpoints": 365,
+      "nature": "controlled explicit live; no database read or rewritten"
+    },
+    "stage": "batch",
+    "stageStartedAt": 1792694497462,
+    "elapsedMs": 340.114067,
+    "upstreamMs": 100.62278900000001,
+    "entries": 1,
+    "rawFillsInEntries": 1866,
+    "quotes": 252,
+    "prepareMs": 227.0247270000001,
+    "heapBeforeBatch": 22822120,
+    "canonicalCalls": 1100,
+    "selectedPrefixMembers": 604450,
+    "batchElapsedMs": 13281.592204
+  }
+}

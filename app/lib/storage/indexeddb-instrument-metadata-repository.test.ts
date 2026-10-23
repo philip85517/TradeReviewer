@@ -24,6 +24,20 @@ afterEach(async () => {
 });
 
 describe("IndexedDbInstrumentMetadataRepository", () => {
+  it("round-trips exchange evidence and keeps it through a name-only update", async () => {
+    const name = `exchange-${crypto.randomUUID()}`; databases.push(name);
+    const repository = new IndexedDbInstrumentMetadataRepository(name);
+    const record = { market: "US" as const, symbol: "AAPL", name: "Apple Inc.", assetType: "stock" as const, source: "sec" as const, confidence: "official" as const, resolvedAt: "2026-10-22T00:00:00.000Z" };
+    const exchange = { code: "NASDAQ" as const, source: "sec" as const, resolvedAt: "2026-10-21T00:00:00.000Z" };
+    await repository.put({ ...record, exchange });
+    expect((await repository.get("US:AAPL"))?.exchange).toEqual(exchange);
+    await repository.put({ ...record, resolvedAt: "2026-10-23T00:00:00.000Z" });
+    expect((await repository.getMany(["US:AAPL"])).get("US:AAPL")?.exchange).toEqual(exchange);
+    const newer = { code: "NYSE" as const, source: "nasdaq" as const, resolvedAt: "2026-10-23T00:00:00.000Z" };
+    await repository.put({ ...record, exchange: newer });
+    await repository.put({ ...record, exchange });
+    expect((await repository.get("US:AAPL"))?.exchange).toEqual(newer);
+  });
   it("round-trips one canonical metadata record", async () => {
     const databaseName = `metadata-${crypto.randomUUID()}`;
     databases.push(databaseName);

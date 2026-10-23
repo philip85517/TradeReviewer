@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-22T18:40:08.282760+00:00",
+  "owner": "/root/state_g61",
+  "actualModel": "gpt-6.1-sol",
+  "reasoningEffort": "ultra",
+  "issue": "S same issue recovery round2/3 implementation-ready candidate; independent acceptance pending",
+  "files": [
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "beforeSha256": "ddceb3cb717d83431605fdbe2764c9d619321f883b8fbd7234bea3897aaafc1b",
+      "bytes": 36223
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.test.ts",
+      "sha256": "4f474e134ed06d19e2961df7aa66d65356a4a3c537749a6584429479e7d6759a",
+      "beforeSha256": "25c0af4452056c1763017a96f76fe45fd5a375159dde10013b98c32a80b19a68",
+      "bytes": 53656
+    }
+  ],
+  "approvedContract": {
+    "path": ".scratch/homepage-v25-implementation/evidence/P3/PRE-DISPATCH-STATE-CONTRACT.md",
+    "sha256": "016580e865e3e0be2bcab814dbdf62292836c7a16071ddbba98a7b40de618057"
+  },
+  "readOnlyConsumers": [
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "sha256": "c930599635b8360d3fe380c2168f23314bda501a786ad1c905690bed24eaf16b"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "sha256": "32fb69710d1bfdb86aef67253f39b162279473b4e70d375235e9ab0fa9f216a6"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "sha256": "46003a93af2f0d095a5f3063309f8fd2ce84d9638088b58be029de1baded2869"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "sha256": "756e69d33efe4552bee9f089d963c63b4f2d8e046e3cc1de03ea37398debf051"
+    }
+  ]
+}

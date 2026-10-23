@@ -1,0 +1,43 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.data/tradereview-test.sqlite",
+  "asOf": "2026-10-23",
+  "source": "homepage-p1-acceptance-v1",
+  "mode": "dry-run/no database opened",
+  "accounts": [
+    {
+      "id": "p1-count-00",
+      "activeHoldingRows": 0
+    },
+    {
+      "id": "p1-count-01",
+      "activeHoldingRows": 1
+    },
+    {
+      "id": "p1-count-05",
+      "activeHoldingRows": 5
+    },
+    {
+      "id": "p1-count-08",
+      "activeHoldingRows": 8
+    },
+    {
+      "id": "p1-count-09",
+      "activeHoldingRows": 9
+    },
+    {
+      "id": "p1-count-50",
+      "activeHoldingRows": 50
+    }
+  ],
+  "instruments": 53,
+  "executions": 83,
+  "persistedDailyCandles": 52,
+  "officialExchangeRecords": 1,
+  "officialExchangeSource": "https://www.sec.gov/files/company_tickers_exchange.json",
+  "excludedQuoteInstrument": "CN-SH:600105",
+  "additionalAccounts": [
+    "p1-edge-short",
+    "p1-edge-markets"
+  ],
+  "note": "Synthetic acceptance records are explicitly isolated and persist through production repositories. Existing records are preserved. AAPL official exchange evidence is the SEC row captured in official-exchange-source.md; UNRESOLVED stays unknown. Fresh FX is seeded only with --fx complete|missing|partial; business DB is never opened."
+}

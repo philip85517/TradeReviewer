@@ -1,0 +1,14 @@
+$ /Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run --config .scratch/homepage-v25-implementation/evidence/P2/metrics/independent-review/vitest.config.mjs --configLoader native
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:55142) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  07:36:37
+   Duration  3.27s (transform 203ms, setup 277ms, import 325ms, tests 381ms, environment 1.57s)
+
+
+EXIT=0

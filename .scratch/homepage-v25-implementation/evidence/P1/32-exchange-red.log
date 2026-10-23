@@ -1,0 +1,54 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:16498) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/instruments/metadata-contracts.test.ts (7 tests | 1 failed) 24ms
+     × retains only source-backed US exchange evidence and merges it independently of name recency 15ms
+ ❯ app/lib/instruments/providers/metadata-providers.test.ts (32 tests | 1 failed) 106ms
+     × keeps the actual SEC exchange and Nasdaq directory Exchange field without inferring from the provider 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/instruments/metadata-contracts.test.ts > instrument metadata contracts > retains only source-backed US exchange evidence and merges it independently of name recency
+AssertionError: expected undefined to deeply equal { code: 'NASDAQ', source: 'sec', …(1) }
+
+- Expected:
+{
+  "code": "NASDAQ",
+  "resolvedAt": "2026-10-21T00:00:00.000Z",
+  "source": "sec",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/instruments/metadata-contracts.test.ts:17:86
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/instruments/providers/metadata-providers.test.ts > official catalog providers > keeps the actual SEC exchange and Nasdaq directory Exchange field without inferring from the provider
+AssertionError: expected undefined to deeply equal { code: 'NASDAQ', source: 'sec', …(1) }
+
+- Expected:
+{
+  "code": "NASDAQ",
+  "resolvedAt": "2026-10-22T00:00:00.000Z",
+  "source": "sec",
+}
+
++ Received:
+undefined
+
+ ❯ app/lib/instruments/providers/metadata-providers.test.ts:437:39
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 37 passed (39)
+   Start at  01:27:45
+   Duration  4.22s (transform 268ms, setup 1.34s, import 296ms, tests 130ms, environment 5.66s)
+

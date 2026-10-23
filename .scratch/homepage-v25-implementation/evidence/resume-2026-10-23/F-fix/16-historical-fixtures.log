@@ -1,0 +1,127 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:3448) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts (5 tests | 5 failed) 36ms
+     × computes opening float100 + realized150 + closing float0 as net50 19ms
+     × includes timestamp-only trades by Shanghai business day 2ms
+     × records available current coverage without publishing a false complete total 7ms
+     × keeps a failed realized instrument unknown after a later valid opening execution 1ms
+     × aggregates multiple episodes for one account and instrument before valuation 2ms
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts (5 tests | 1 failed) 28ms
+     × does not seed period-start executions into opening inventory and replay them twice 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts > coordinator independent financial counterexamples round 2 > does not seed period-start executions into opening inventory and replay them twice
+AssertionError: expected '0' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round2.test.ts:26:44
+     24|     const result = build(base({ asOf: "2026-01-31", entries: [entry], …
+     25|     expect(result.openingUnrealized.value).toBe("0");
+     26|     expect(result.closingUnrealized.value).toBe("10");
+       |                                            ^
+     27|     expect(result.net.value).toBe("10");
+     28|     expect(result.reasons).not.toContain("valuation-quantity-mismatch"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts > coordinator remaining specified finance boundaries > computes opening float100 + realized150 + closing float0 as net50
+AssertionError: expected [ null, null, null, null ] to deeply equal [ '100', '150', '0', '50' ]
+
+- Expected
++ Received
+
+  [
+-   "100",
+-   "150",
+-   "0",
+-   "50",
++   null,
++   null,
++   null,
++   null,
+  ]
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts:15:122
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts > coordinator remaining specified finance boundaries > includes timestamp-only trades by Shanghai business day
+AssertionError: expected null to be '10' // Object.is equality
+
+- Expected:
+"10"
+
++ Received:
+null
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts:19:44
+     17|   it("includes timestamp-only trades by Shanghai business day", () => {
+     18|     const result = build(base({ executions: [execution("midnight", "bu…
+     19|     expect(result.closingUnrealized.value).toBe("10");
+       |                                            ^
+     20|     expect(result.net.value).toBe("10");
+     21|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts > coordinator remaining specified finance boundaries > records available current coverage without publishing a false complete total
+AssertionError: expected { total: 1, available: +0 } to deeply equal { total: 2, available: 1 }
+
+- Expected
++ Received
+
+  {
+-   "available": 1,
+-   "total": 2,
++   "available": 0,
++   "total": 1,
+  }
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts:25:48
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts > coordinator remaining specified finance boundaries > keeps a failed realized instrument unknown after a later valid opening execution
+AssertionError: expected undefined to be null
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts:30:88
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts > coordinator remaining specified finance boundaries > aggregates multiple episodes for one account and instrument before valuation
+AssertionError: expected '0' to be '10' // Object.is equality
+
+Expected: "10"
+Received: "0"
+
+ ❯ .scratch/homepage-v25-implementation/evidence/F/coordinator-round3.test.ts:39:30
+     37|     const entry={instrument,executions:[oldBuy,oldSell,newBuy],episode…
+     38|     const result=build(base({entries:[entry],asOf:"2026-01-31",candles…
+     39|     expect(result.net.value).toBe("10");
+       |                              ^
+     40|     expect(result.currentMarketValue.value).toBe("110");
+     41|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  6 failed | 8 passed (14)
+   Start at  00:41:56
+   Duration  2.22s (transform 540ms, setup 0ms, import 837ms, tests 98ms, environment 1ms)
+

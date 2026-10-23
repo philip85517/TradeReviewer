@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-22T20:26:02.697Z",
+  "ownedProduct": "app/components/homepage-v25/home-surface.tsx",
+  "externalSourceChanges": [
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "before": "85731c885096209b54cf5918cc9a9ee82aeab5f76e30905f8a2af9430484f5e0",
+      "current": "3218407b84c45656989bc0a2ac700c9741e6c55135f55ed2873e7ed2b968b167",
+      "ownership": "integration; not modified or tested by this worker"
+    }
+  ],
+  "comment": "First broad protected-input comparison found external host drift and stopped before producing diffs. Scope report binds Surface/test only; reviewed host is historical and not inherited."
+}

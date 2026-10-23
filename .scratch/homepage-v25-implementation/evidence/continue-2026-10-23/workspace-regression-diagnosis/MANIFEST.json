@@ -1,0 +1,97 @@
+{
+  "task": "workspace-regression-diagnosis",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "ultra",
+  "frozen_at_utc": "2026-10-22T23:25:07.453387+00:00",
+  "head_before": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "head_after": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "head_unchanged": true,
+  "baseline_provenance": "HEAD read at this diagnostic start; eight prior file hashes from immediately preceding frozen independent attachment review at same HEAD",
+  "source_sha256_at_freeze": {
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/homepage-v25/home-surface.css": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/attachment-groups.ts": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+    "app/components/homepage-v25/holdings-model.ts": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/components/trade-review-workspace.test.tsx": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5",
+    "app/components/homepage-v25/attachment-filter.tsx": "e865b6aa071247e33158fd81833d7b86163af20b874a58a1b8d35c7dc859444f",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/lib/trades/types.ts": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+    "app/lib/reviews/trading-room-scope.ts": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16",
+    "app/lib/recall/summary-client.ts": "96b27fcc1a3b70f54969a4103476331ad7de9ea6d8f556babfc80009d940a152",
+    "app/components/homepage-v25/fx-adapter.ts": "23451ce5881217e289a991663ce49f26bd0d3bea6b5a91b6bedb9e7f989761e5",
+    "vitest.config.ts": "e13d698288ac14428059e4da2e1c650c87b5b341afae688cc4a037234118ae2d",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/ROOT-current-workspace-all.log": "fc097f4e3e785fa2ebb954164dc996a16b673c55e5aef047b62b944575cd246c"
+  },
+  "prior_eight_source_sha256": {
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/homepage-v25/home-surface.css": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/attachment-groups.ts": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+    "app/components/homepage-v25/holdings-model.ts": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/components/trade-review-workspace.test.tsx": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5"
+  },
+  "prior_eight_sources_unchanged": {
+    "app/components/homepage-v25/home-surface.tsx": true,
+    "app/components/homepage-v25/home-surface.css": true,
+    "app/components/homepage-v25/use-homepage-host.ts": true,
+    "app/components/homepage-v25/session-model.ts": true,
+    "app/components/homepage-v25/attachment-groups.ts": true,
+    "app/components/homepage-v25/holdings-model.ts": true,
+    "app/components/trade-review-workspace.tsx": true,
+    "app/components/trade-review-workspace.test.tsx": true
+  },
+  "owned_artifact_sha256": {
+    "REVIEW.md": "651b3812c06fe44b760fb27ab24a592e88f3ecb9b0909728ef8cd0a9de9ae5c7",
+    "vitest.diagnosis.config.ts": "c4fdc2029b7fe0cb92811481c63e91227ed54388eadbe0490866b802ed697eec",
+    "fixtures.diagnosis.test.ts": "264325c8fa3955de4155bff028421cee59465e6cf230bbe9d98186a571cf739f",
+    "RAW-fixture-diagnosis.log": "e373f89ba18b4c3c89aa33a24e6e991f83a9c66c35c7c868b9999e72bcae2cc8"
+  },
+  "root_test_evidence": {
+    "file": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/ROOT-current-workspace-all.log",
+    "total": 101,
+    "pass": 99,
+    "fail": 2,
+    "stops": [
+      "trade-review-workspace.test.tsx:5523",
+      "trade-review-workspace.test.tsx:5672"
+    ],
+    "business_journeys_reached": false
+  },
+  "diagnostic_command": {
+    "attempts": 1,
+    "intended": "only literal pure fixtures",
+    "actual": "mergeConfig include concatenated repository includes; workspace 101/2FAIL reported, runner interrupted",
+    "exit_code": 130,
+    "raw_log": "RAW-fixture-diagnosis.log",
+    "pure_fixture_result": "NOT VERIFIED: no completion evidence",
+    "new_coverage": false,
+    "official_round_increment": 0,
+    "rerun": false
+  },
+  "new_product_defects": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "interpretation": "No new verified defect; static review is not functional acceptance"
+  },
+  "gates": {
+    "function": "root 2 FAIL remain; static diagnosis complete; pure fixture NOT VERIFIED",
+    "browser": "NOT VERIFIED",
+    "visual": "NOT VERIFIED",
+    "database_persistence": "NOT VERIFIED",
+    "P1": "2/3 FAIL",
+    "P3": "0/3"
+  },
+  "write_boundary": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/evidence/continue-2026-10-23/workspace-regression-diagnosis",
+  "product_or_original_test_edits": false,
+  "childagents": false,
+  "service_or_browser_started": false,
+  "pending_fact_caveat_preserved": true,
+  "report_frozen": true
+}

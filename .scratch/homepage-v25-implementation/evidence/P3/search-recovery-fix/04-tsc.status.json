@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-10-22T20:24:02.123Z",
+  "endedAt": "2026-10-22T20:24:05.565Z",
+  "node": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+  "nodeVersion": "v26.0.0",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    ".scratch/homepage-v25-implementation/evidence/P3/search-recovery-fix/tsconfig.search-recovery.json",
+    "--noEmit"
+  ],
+  "status": 2,
+  "signal": null,
+  "error": null
+}

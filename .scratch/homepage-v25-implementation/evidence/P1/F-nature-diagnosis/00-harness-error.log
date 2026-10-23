@@ -1,0 +1,41 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:24165) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx (2 tests | 2 failed) 23ms
+     × F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source 20ms
+     × F-control bare global scope already supplies nature-matched account and run choices 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-RED homepage collection nature change must atomically enter bare global scope and keep homepage source
+ReferenceError: productionStorageClient is not defined
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:683:94
+    681|     history.replaceState(null, "", "/home?scope=live&market=a&accounts…
+    682|     const user = userEvent.setup();
+    683|     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo=…
+       |                                                                                              ^
+    684|     await screen.findByRole("button", { name: "查看持仓详情" });
+    685|     await user.click(within(screen.getByRole("navigation", { name: "主导…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx > TradeReviewWorkspace > F-control bare global scope already supplies nature-matched account and run choices
+ReferenceError: productionStorageClient is not defined
+ ❯ .scratch/homepage-v25-implementation/evidence/P1/F-nature-diagnosis/f-nature.test.tsx:708:94
+    706|     history.replaceState(null, "", "/trades");
+    707|     const user = userEvent.setup();
+    708|     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo=…
+       |                                                                                              ^
+    709|     const library = await screen.findByRole("region", { name: "交易库" });
+    710|     await user.selectOptions(within(library).getByRole("combobox", { n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  02:41:20
+   Duration  5.24s (transform 2.86s, setup 165ms, import 3.87s, tests 23ms, environment 841ms)
+

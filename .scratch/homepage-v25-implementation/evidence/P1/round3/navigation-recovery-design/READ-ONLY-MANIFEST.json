@@ -1,0 +1,53 @@
+{
+  "model": "gpt-6.1-sol / ultra",
+  "scope": "Read-only diagnosis and design only; product/tests/service/browser/HTTP/DB untouched",
+  "startedAt": "2026-10-22T20:01:36.638325+00:00",
+  "before": {
+    "app/components/homepage-v25/use-homepage-host.ts": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/components/homepage-v25/home-surface.tsx": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5",
+    "app/components/homepage-v25/home-surface.css": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+    "app/components/trade-review-workspace.tsx": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/REPORT.md": "a788b4a12fb66a6b5f2a0922bd0f5bc8f1f708ba24434583fc3a4503a1d93b86",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/SOURCE-DRIFT.md": "4c815a3ef88051c890ea3ee9c602af367912d2f3f75bbc70aaac484e293135dd",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx": "eee58df4115200c9906241744c94ba9a53f36ca9fbec35adb0d29e3130c18e2d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/traces-2.json": "5cda003259df8eebe05a9f23385ebfff10f836657fa44c2b3e9d8ea67958779e",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/run-2.log": "5e86aaf95fe6febbbfd7cae21462e263b47af28088184359577c6c2248cb3aca",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/manifest-2.json": "077420369ac8daabd7ecec9b79bfd12cf93b03e102d5c7da2ffb62b73007f2bb",
+    ".scratch/homepage-v25-implementation/evidence/P3/detail-visual-limited/ROOT-CHECKPOINT.md": "9828d45390b2beeaf1593eb348ece87e04f3540f4f61f34f60ca10354a80d566"
+  },
+  "completedAt": "2026-10-22T20:03:05.302688+00:00",
+  "after": {
+    "app/components/homepage-v25/use-homepage-host.ts": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/components/homepage-v25/home-surface.tsx": "914f13c9cb429c40b76acf45a562168fbc4e309a6fdbaeb5248a52a2529f95b5",
+    "app/components/homepage-v25/home-surface.css": "d34b54ab5eb9b5232847607d3b5c94e9b93833da3703b2292793066e6dff43d1",
+    "app/components/trade-review-workspace.tsx": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/REPORT.md": "a788b4a12fb66a6b5f2a0922bd0f5bc8f1f708ba24434583fc3a4503a1d93b86",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/SOURCE-DRIFT.md": "4c815a3ef88051c890ea3ee9c602af367912d2f3f75bbc70aaac484e293135dd",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx": "eee58df4115200c9906241744c94ba9a53f36ca9fbec35adb0d29e3130c18e2d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/traces-2.json": "5cda003259df8eebe05a9f23385ebfff10f836657fa44c2b3e9d8ea67958779e",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/run-2.log": "5e86aaf95fe6febbbfd7cae21462e263b47af28088184359577c6c2248cb3aca",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/manifest-2.json": "077420369ac8daabd7ecec9b79bfd12cf93b03e102d5c7da2ffb62b73007f2bb",
+    ".scratch/homepage-v25-implementation/evidence/P3/detail-visual-limited/ROOT-CHECKPOINT.md": "9828d45390b2beeaf1593eb348ece87e04f3540f4f61f34f60ca10354a80d566"
+  },
+  "inputsStable": true,
+  "outputs": {
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/navigation-recovery-design/DESIGN-AND-RED-PLAN.md": "266e50e3862a23dde17a4dbb9d9d9505f457a451a7f7bd76fcc1256aaa8bef3b"
+  },
+  "checks": {
+    "newTests": "NOT RUN: read-only design authorization",
+    "browser": "NOT ACCESSED: root owns browser",
+    "serviceOrHttp": "NOT ACCESSED",
+    "database": "NOT ACCESSED",
+    "productOrTestWrites": "NONE"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../../../../next-env.d.ts",
+    "../../../../../app/lib/reviews/homepage-v25-performance.ts",
+    "../../../../../app/lib/reviews/homepage-v25-performance.test.ts"
+  ]
+}

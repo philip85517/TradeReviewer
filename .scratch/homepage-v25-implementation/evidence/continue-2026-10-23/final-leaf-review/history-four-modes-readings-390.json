@@ -1,0 +1,410 @@
+[
+  {
+    "mode": "period-pnl",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea 历史图完整独立验收, URL: 127.0.0.1:3334/history-full.html",
+    "reads": [
+      {
+        "month": "1月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 1月 · 月度读数 2026-01-01 — 2026-01-28 · Asia/Shanghai 0 CNY 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n+\t\t\t\t106 heading 1月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 1月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-01-01  —  2026-01-28  ·  Asia/Shanghai\n+\t\t\t\t110 text 0 CNY\n+\t\t\t\t111 container 每期净盈亏\n+\t\t\t\t\t112 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t113 text 每期净盈亏\n+\t\t\t\t\t114 definition list\n+\t\t\t\t\t\t115 container 来源金额\n+\t\t\t\t\t\t\t116 text 来源金额\n+\t\t\t\t\t\t117 container\n+\t\t\t\t\t\t\t118 text 0 CNY\n+\t\t\t\t\t\t119 container 覆盖数量\n+\t\t\t\t\t\t\t120 text 覆盖数量\n+\t\t\t\t\t\t121 container\n+\t\t\t\t\t\t\t122 text 7  /  7\n+\t\t\t\t\t\t123 container 原币金额\n+\t\t\t\t\t\t\t124 text 原币金额\n+\t\t\t\t\t\t125 container\n+\t\t\t\t\t\t\t126 text 0 CNY\n+\t\t\t\t\t\t127 container 汇率来源\n+\t\t\t\t\t\t\t128 text 汇率来源\n+\t\t\t\t\t\t129 text 同币种，无需换汇\n+\t\t\t\t130 container 累计净盈亏\n+\t\t\t\t\t131 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t132 text 累计净盈亏\n+\t\t\t\t\t133 definition list\n+\t\t\t\t\t\t134 container 来源金额\n+\t\t\t\t\t\t\t135 text 来源金额\n+\t\t\t\t\t\t136 container\n+\t\t\t\t\t\t\t137 text 98765.432100 CNY\n+\t\t\t\t\t\t138 container 覆盖数量\n+\t\t\t\t\t\t\t139 text 覆盖数量\n+\t\t\t\t\t\t140 container\n+\t\t\t\t\t\t\t141 text 7  /  7\n+\t\t\t\t\t\t142 container 原币金额\n+\t\t\t\t\t\t\t143 text 原币金额\n+\t\t\t\t\t\t144 container\n+\t\t\t\t\t\t\t145 text 98765.432100 CNY\n+\t\t\t\t\t\t146 container 汇率来源\n+\t\t\t\t\t\t\t147 text 汇率来源\n+\t\t\t\t\t\t148 text 同币种，无需换汇\n+\t\t\t\t149 definition list\n+\t\t\t\t\t150 container 回合数\n+\t\t\t\t\t\t151 text 回合数\n+\t\t\t\t\t152 text 3\n+\t\t\t\t\t153 container 盈利回合数\n+\t\t\t\t\t\t154 text 盈利回合数\n+\t\t\t\t\t155 text 2\n+\t\t\t\t\t156 container 各期胜率\n+\t\t\t\t\t\t157 text 各期胜率\n+\t\t\t\t\t158 text 12.345%\nThe focused UI element is 77 button 1月，0 CNY，",
+        "geometry": {
+          "active": "1月，0 CNY，",
+          "chartHeight": 742,
+          "leaked": false,
+          "nextY": 1034,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1010,\"height\":410,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai0 CNY每期净盈亏来源金额0 CNY覆盖数量7 / 7原币金额0 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "2月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 2月 · 月度读数 2026-02-01 — 2026-02-28 · Asia/Shanghai — 独立状态1，保留准确原因 该期间无已关闭回合 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t106 heading 2月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 2月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-02-01  —  2026-02-28  ·  Asia/Shanghai\n+\t\t\t\t110 text —\n+\t\t\t\t111 text 独立状态1，保留准确原因\n+\t\t\t\t112 text 该期间无已关闭回合\n+\t\t\t\t113 container 每期净盈亏\n+\t\t\t\t\t114 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t115 text 每期净盈亏\n+\t\t\t\t\t116 definition list\n+\t\t\t\t\t\t117 container 来源金额\n+\t\t\t\t\t\t\t118 text 来源金额\n+\t\t\t\t\t\t119 container\n+\t\t\t\t\t\t\t120 text 999999.999 CNY\n+\t\t\t\t\t\t121 container 覆盖数量\n+\t\t\t\t\t\t\t122 text 覆盖数量\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text 7  /  7\n+\t\t\t\t\t\t125 container 原币金额\n+\t\t\t\t\t\t\t126 text 原币金额\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 999999.999 CNY\n+\t\t\t\t\t\t129 container 汇率来源\n+\t\t\t\t\t\t\t130 text 汇率来源\n+\t\t\t\t\t\t131 text 同币种，无需换汇\n+\t\t\t\t132 container 累计净盈亏\n+\t\t\t\t\t133 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t134 text 累计净盈亏\n+\t\t\t\t\t135 definition list\n+\t\t\t\t\t\t136 container 来源金额\n+\t\t\t\t\t\t\t137 text 来源金额\n+\t\t\t\t\t\t138 container\n+\t\t\t\t\t\t\t139 text 123.456 CNY\n+\t\t\t\t\t\t140 container 覆盖数量\n+\t\t\t\t\t\t\t141 text 覆盖数量\n+\t\t\t\t\t\t142 container\n+\t\t\t\t\t\t\t143 text 7  /  7\n+\t\t\t\t\t\t144 container 原币金额\n+\t\t\t\t\t\t\t145 text 原币金额\n+\t\t\t\t\t\t146 container\n+\t\t\t\t\t\t\t147 text 123.456 CNY\n+\t\t\t\t\t\t148 container 汇率来源\n+\t\t\t\t\t\t\t149 text 汇率来源\n+\t\t\t\t\t\t150 text 同币种，无需换汇\n+\t\t\t\t151 definition list\n+\t\t\t\t\t152 container 回合数\n+\t\t\t\t\t\t153 text 回合数\n+\t\t\t\t\t154 text 7\n+\t\t\t\t\t155 container 盈利回合数\n+\t\t\t\t\t\t156 text 盈利回合数\n+\t\t\t\t\t157 text 3\n+\t\t\t\t\t158 container 各期胜率\n+\t\t\t\t\t\t159 text 各期胜率\n+\t\t\t\t\t160 text 42.857142857%\nThe focused UI element is 83 button 2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+        "geometry": {
+          "active": "2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+          "chartHeight": 794,
+          "leaked": true,
+          "nextY": 1086,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1062,\"height\":462,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "2月 · 月度读数2026-02-01 — 2026-02-28 · Asia/Shanghai—独立状态1，保留准确原因该期间无已关闭回合每期净盈亏来源金额999999.999 CNY覆盖数量7 / 7原币金额999999.999 CNY汇率来源同币种，无需换汇累计净盈亏来源金额123.456 CNY覆盖数量7 / 7原币金额123.456 CNY汇率来源同币种，无需换汇回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "3月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 3月 · 月度读数 2026-03-01 — 2026-03-28 · Asia/Shanghai — 独立状态2，保留准确原因 该字段未提交 数据缺失 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t106 heading 3月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 3月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-03-01  —  2026-03-28  ·  Asia/Shanghai\n+\t\t\t\t110 text —\n+\t\t\t\t111 text 独立状态2，保留准确原因\n+\t\t\t\t112 text 该字段未提交\n+\t\t\t\t113 text 数据缺失\n+\t\t\t\t114 container 每期净盈亏\n+\t\t\t\t\t115 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t116 text 每期净盈亏\n+\t\t\t\t\t117 definition list\n+\t\t\t\t\t\t118 container 来源金额\n+\t\t\t\t\t\t\t119 text 来源金额\n+\t\t\t\t\t\t120 container\n+\t\t\t\t\t\t\t121 text — CNY\n+\t\t\t\t\t\t122 container 覆盖数量\n+\t\t\t\t\t\t\t123 text 覆盖数量\n+\t\t\t\t\t\t124 container\n+\t\t\t\t\t\t\t125 text 0  /  7\n+\t\t\t\t\t\t126 container 原币金额\n+\t\t\t\t\t\t\t127 text 原币金额\n+\t\t\t\t\t\t128 container 汇率来源\n+\t\t\t\t\t\t\t129 text 汇率来源\n+\t\t\t\t\t\t130 text 同币种，无需换汇\n+\t\t\t\t\t131 text 该字段未提交\n+\t\t\t\t132 container 累计净盈亏\n+\t\t\t\t\t133 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t134 text 累计净盈亏\n+\t\t\t\t\t135 definition list\n+\t\t\t\t\t\t136 container 来源金额\n+\t\t\t\t\t\t\t137 text 来源金额\n+\t\t\t\t\t\t138 container\n+\t\t\t\t\t\t\t139 text — CNY\n+\t\t\t\t\t\t140 container 覆盖数量\n+\t\t\t\t\t\t\t141 text 覆盖数量\n+\t\t\t\t\t\t142 container\n+\t\t\t\t\t\t\t143 text 0  /  7\n+\t\t\t\t\t\t144 container 原币金额\n+\t\t\t\t\t\t\t145 text 原币金额\n+\t\t\t\t\t\t146 container 汇率来源\n+\t\t\t\t\t\t\t147 text 汇率来源\n+\t\t\t\t\t\t148 text 同币种，无需换汇\n+\t\t\t\t\t149 text 该字段未提交\n+\t\t\t\t150 definition list\n+\t\t\t\t\t151 container 回合数\n+\t\t\t\t\t\t152 text 回合数\n+\t\t\t\t\t153 text 7\n+\t\t\t\t\t154 container 盈利回合数\n+\t\t\t\t\t\t155 text 盈利回合数\n+\t\t\t\t\t156 text 3\n+\t\t\t\t\t157 container 各期胜率\n+\t\t\t\t\t\t158 text 各期胜率\n+\t\t\t\t\t159 text 42.857142857%\nThe focused UI element is 84 button 3月，—，独立状态2，保留准确原因；该字段未提交；数据缺失",
+        "geometry": {
+          "active": "3月，—，独立状态2，保留准确原因；该字段未提交；数据缺失",
+          "chartHeight": 864,
+          "leaked": false,
+          "nextY": 1156,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1132,\"height\":532,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "3月 · 月度读数2026-03-01 — 2026-03-28 · Asia/Shanghai—独立状态2，保留准确原因该字段未提交数据缺失每期净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交累计净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "4月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 4月 · 月度读数 2026-04-01 — 2026-04-28 · Asia/Shanghai — 独立状态3，保留准确原因 尚未到达或未覆盖\n+\t\t\t\t106 heading 4月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 4月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-04-01  —  2026-04-28  ·  Asia/Shanghai\n+\t\t\t\t110 text —\n+\t\t\t\t111 text 独立状态3，保留准确原因\n+\t\t\t\t112 text 尚未到达或未覆盖\nThe focused UI element is 85 button 4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+        "geometry": {
+          "active": "4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "4月 · 月度读数2026-04-01 — 2026-04-28 · Asia/Shanghai—独立状态3，保留准确原因尚未到达或未覆盖"
+            }
+          ]
+        }
+      },
+      {
+        "month": "5月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 5月 · 月度读数 2026-05-01 — 2026-05-28 · Asia/Shanghai — 独立状态4，保留准确原因 正在读取该期间\n+\t\t\t\t106 heading 5月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 5月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-05-01  —  2026-05-28  ·  Asia/Shanghai\n+\t\t\t\t110 text —\n+\t\t\t\t111 text 独立状态4，保留准确原因\n+\t\t\t\t112 text 正在读取该期间\nThe focused UI element is 86 button 5月，—，独立状态4，保留准确原因；正在读取该期间",
+        "geometry": {
+          "active": "5月，—，独立状态4，保留准确原因；正在读取该期间",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "5月 · 月度读数2026-05-01 — 2026-05-28 · Asia/Shanghai—独立状态4，保留准确原因正在读取该期间"
+            }
+          ]
+        }
+      },
+      {
+        "month": "6月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t105 container 6月 · 月度读数 2026-06-01 — 2026-06-28 · Asia/Shanghai — 独立状态5，保留准确原因 该期间读取失败\n+\t\t\t\t106 heading 6月 · 月度读数, Value: 4\n+\t\t\t\t\t107 text 6月  ·  月度 读数\n+\t\t\t\t108 container\n+\t\t\t\t\t109 text 2026-06-01  —  2026-06-28  ·  Asia/Shanghai\n+\t\t\t\t110 text —\n+\t\t\t\t111 text 独立状态5，保留准确原因\n+\t\t\t\t112 text 该期间读取失败\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+        "geometry": {
+          "active": "6月，—，独立状态5，保留准确原因；该期间读取失败",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "6月 · 月度读数2026-06-01 — 2026-06-28 · Asia/Shanghai—独立状态5，保留准确原因该期间读取失败"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "mode": "cumulative-pnl",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 79-82\n~\t\t6 pop up button (collapsed, settable) 图表模式, Value: 累计净盈亏, Secondary Actions: Expand\n~\t\t\t\t8 各期净盈亏\n~\t\t\t\t9 (selected) 累计净盈亏\n~\t\t36 container 累计净盈亏\n~\t\t\t\t38 heading 累计净盈亏, Value: 3\n~\t\t\t\t\t39 text 累计净盈亏\n~\t\t\t\t41 container 累计净盈亏，2026\n+\t\t\t\t\t105 text 10.00万\n+\t\t\t\t\t106 text 20.00万\n+\t\t\t\t\t107 text 30.00万\n~\t\t\t\t\t77 button 1月，98765.432100 CNY，\n~\t\t\t\t\t83 button 2月，123.456 CNY，独立状态1，保留准确原因；该期间无已关闭回合\n~\t\t\t\t\t88 button 7月，145820.483200 CNY，\n~\t\t\t\t\t89 button 8月，145820.483200 CNY，该期间无已关闭回合\n~\t\t\t\t\t90 button 9月，178421.263200 CNY，\n~\t\t\t\t\t91 button 10月，204822.163200 CNY，\n~\t\t\t\t\t92 button 11月，245822.713200 CNY，\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+    "reads": [
+      {
+        "month": "1月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 1月 · 月度读数 2026-01-01 — 2026-01-28 · Asia/Shanghai 98765.432100 CNY 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n+\t\t\t\t109 heading 1月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 1月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-01-01  —  2026-01-28  ·  Asia/Shanghai\n+\t\t\t\t113 text 98765.432100 CNY\n+\t\t\t\t114 container 每期净盈亏\n+\t\t\t\t\t115 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t116 text 每期净盈亏\n+\t\t\t\t\t117 definition list\n+\t\t\t\t\t\t118 container 来源金额\n+\t\t\t\t\t\t\t119 text 来源金额\n+\t\t\t\t\t\t120 container\n+\t\t\t\t\t\t\t121 text 0 CNY\n+\t\t\t\t\t\t122 container 覆盖数量\n+\t\t\t\t\t\t\t123 text 覆盖数量\n+\t\t\t\t\t\t124 container\n+\t\t\t\t\t\t\t125 text 7  /  7\n+\t\t\t\t\t\t126 container 原币金额\n+\t\t\t\t\t\t\t127 text 原币金额\n+\t\t\t\t\t\t128 container\n+\t\t\t\t\t\t\t129 text 0 CNY\n+\t\t\t\t\t\t130 container 汇率来源\n+\t\t\t\t\t\t\t131 text 汇率来源\n+\t\t\t\t\t\t132 text 同币种，无需换汇\n+\t\t\t\t133 container 累计净盈亏\n+\t\t\t\t\t134 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t135 text 累计净盈亏\n+\t\t\t\t\t136 definition list\n+\t\t\t\t\t\t137 container 来源金额\n+\t\t\t\t\t\t\t138 text 来源金额\n+\t\t\t\t\t\t139 container\n+\t\t\t\t\t\t\t140 text 98765.432100 CNY\n+\t\t\t\t\t\t141 container 覆盖数量\n+\t\t\t\t\t\t\t142 text 覆盖数量\n+\t\t\t\t\t\t143 container\n+\t\t\t\t\t\t\t144 text 7  /  7\n+\t\t\t\t\t\t145 container 原币金额\n+\t\t\t\t\t\t\t146 text 原币金额\n+\t\t\t\t\t\t147 container\n+\t\t\t\t\t\t\t148 text 98765.432100 CNY\n+\t\t\t\t\t\t149 container 汇率来源\n+\t\t\t\t\t\t\t150 text 汇率来源\n+\t\t\t\t\t\t151 text 同币种，无需换汇\n+\t\t\t\t152 definition list\n+\t\t\t\t\t153 container 回合数\n+\t\t\t\t\t\t154 text 回合数\n+\t\t\t\t\t155 text 3\n+\t\t\t\t\t156 container 盈利回合数\n+\t\t\t\t\t\t157 text 盈利回合数\n+\t\t\t\t\t158 text 2\n+\t\t\t\t\t159 container 各期胜率\n+\t\t\t\t\t\t160 text 各期胜率\n+\t\t\t\t\t161 text 12.345%\nThe focused UI element is 77 button 1月，98765.432100 CNY，",
+        "geometry": {
+          "active": "1月，98765.432100 CNY，",
+          "chartHeight": 742,
+          "leaked": false,
+          "nextY": 1034,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1010,\"height\":410,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai98765.432100 CNY每期净盈亏来源金额0 CNY覆盖数量7 / 7原币金额0 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "2月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 2月 · 月度读数 2026-02-01 — 2026-02-28 · Asia/Shanghai 123.456 CNY 独立状态1，保留准确原因 该期间无已关闭回合 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t109 heading 2月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 2月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-02-01  —  2026-02-28  ·  Asia/Shanghai\n+\t\t\t\t113 text 123.456 CNY\n+\t\t\t\t114 text 独立状态1，保留准确原因\n+\t\t\t\t115 text 该期间无已关闭回合\n+\t\t\t\t116 container 每期净盈亏\n+\t\t\t\t\t117 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t118 text 每期净盈亏\n+\t\t\t\t\t119 definition list\n+\t\t\t\t\t\t120 container 来源金额\n+\t\t\t\t\t\t\t121 text 来源金额\n+\t\t\t\t\t\t122 container\n+\t\t\t\t\t\t\t123 text 999999.999 CNY\n+\t\t\t\t\t\t124 container 覆盖数量\n+\t\t\t\t\t\t\t125 text 覆盖数量\n+\t\t\t\t\t\t126 container\n+\t\t\t\t\t\t\t127 text 7  /  7\n+\t\t\t\t\t\t128 container 原币金额\n+\t\t\t\t\t\t\t129 text 原币金额\n+\t\t\t\t\t\t130 container\n+\t\t\t\t\t\t\t131 text 999999.999 CNY\n+\t\t\t\t\t\t132 container 汇率来源\n+\t\t\t\t\t\t\t133 text 汇率来源\n+\t\t\t\t\t\t134 text 同币种，无需换汇\n+\t\t\t\t135 container 累计净盈亏\n+\t\t\t\t\t136 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t137 text 累计净盈亏\n+\t\t\t\t\t138 definition list\n+\t\t\t\t\t\t139 container 来源金额\n+\t\t\t\t\t\t\t140 text 来源金额\n+\t\t\t\t\t\t141 container\n+\t\t\t\t\t\t\t142 text 123.456 CNY\n+\t\t\t\t\t\t143 container 覆盖数量\n+\t\t\t\t\t\t\t144 text 覆盖数量\n+\t\t\t\t\t\t145 container\n+\t\t\t\t\t\t\t146 text 7  /  7\n+\t\t\t\t\t\t147 container 原币金额\n+\t\t\t\t\t\t\t148 text 原币金额\n+\t\t\t\t\t\t149 container\n+\t\t\t\t\t\t\t150 text 123.456 CNY\n+\t\t\t\t\t\t151 container 汇率来源\n+\t\t\t\t\t\t\t152 text 汇率来源\n+\t\t\t\t\t\t153 text 同币种，无需换汇\n+\t\t\t\t154 definition list\n+\t\t\t\t\t155 container 回合数\n+\t\t\t\t\t\t156 text 回合数\n+\t\t\t\t\t157 text 7\n+\t\t\t\t\t158 container 盈利回合数\n+\t\t\t\t\t\t159 text 盈利回合数\n+\t\t\t\t\t160 text 3\n+\t\t\t\t\t161 container 各期胜率\n+\t\t\t\t\t\t162 text 各期胜率\n+\t\t\t\t\t163 text 42.857142857%\nThe focused UI element is 83 button 2月，123.456 CNY，独立状态1，保留准确原因；该期间无已关闭回合",
+        "geometry": {
+          "active": "2月，123.456 CNY，独立状态1，保留准确原因；该期间无已关闭回合",
+          "chartHeight": 794,
+          "leaked": true,
+          "nextY": 1086,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1062,\"height\":462,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "2月 · 月度读数2026-02-01 — 2026-02-28 · Asia/Shanghai123.456 CNY独立状态1，保留准确原因该期间无已关闭回合每期净盈亏来源金额999999.999 CNY覆盖数量7 / 7原币金额999999.999 CNY汇率来源同币种，无需换汇累计净盈亏来源金额123.456 CNY覆盖数量7 / 7原币金额123.456 CNY汇率来源同币种，无需换汇回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "3月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 3月 · 月度读数 2026-03-01 — 2026-03-28 · Asia/Shanghai — 独立状态2，保留准确原因 该字段未提交 数据缺失 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t109 heading 3月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 3月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-03-01  —  2026-03-28  ·  Asia/Shanghai\n+\t\t\t\t113 text —\n+\t\t\t\t114 text 独立状态2，保留准确原因\n+\t\t\t\t115 text 该字段未提交\n+\t\t\t\t116 text 数据缺失\n+\t\t\t\t117 container 每期净盈亏\n+\t\t\t\t\t118 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t119 text 每期净盈亏\n+\t\t\t\t\t120 definition list\n+\t\t\t\t\t\t121 container 来源金额\n+\t\t\t\t\t\t\t122 text 来源金额\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text — CNY\n+\t\t\t\t\t\t125 container 覆盖数量\n+\t\t\t\t\t\t\t126 text 覆盖数量\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 0  /  7\n+\t\t\t\t\t\t129 container 原币金额\n+\t\t\t\t\t\t\t130 text 原币金额\n+\t\t\t\t\t\t131 container 汇率来源\n+\t\t\t\t\t\t\t132 text 汇率来源\n+\t\t\t\t\t\t133 text 同币种，无需换汇\n+\t\t\t\t\t134 text 该字段未提交\n+\t\t\t\t135 container 累计净盈亏\n+\t\t\t\t\t136 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t137 text 累计净盈亏\n+\t\t\t\t\t138 definition list\n+\t\t\t\t\t\t139 container 来源金额\n+\t\t\t\t\t\t\t140 text 来源金额\n+\t\t\t\t\t\t141 container\n+\t\t\t\t\t\t\t142 text — CNY\n+\t\t\t\t\t\t143 container 覆盖数量\n+\t\t\t\t\t\t\t144 text 覆盖数量\n+\t\t\t\t\t\t145 container\n+\t\t\t\t\t\t\t146 text 0  /  7\n+\t\t\t\t\t\t147 container 原币金额\n+\t\t\t\t\t\t\t148 text 原币金额\n+\t\t\t\t\t\t149 container 汇率来源\n+\t\t\t\t\t\t\t150 text 汇率来源\n+\t\t\t\t\t\t151 text 同币种，无需换汇\n+\t\t\t\t\t152 text 该字段未提交\n+\t\t\t\t153 definition list\n+\t\t\t\t\t154 container 回合数\n+\t\t\t\t\t\t155 text 回合数\n+\t\t\t\t\t156 text 7\n+\t\t\t\t\t157 container 盈利回合数\n+\t\t\t\t\t\t158 text 盈利回合数\n+\t\t\t\t\t159 text 3\n+\t\t\t\t\t160 container 各期胜率\n+\t\t\t\t\t\t161 text 各期胜率\n+\t\t\t\t\t162 text 42.857142857%\nThe focused UI element is 84 button 3月，—，独立状态2，保留准确原因；该字段未提交；数据缺失",
+        "geometry": {
+          "active": "3月，—，独立状态2，保留准确原因；该字段未提交；数据缺失",
+          "chartHeight": 864,
+          "leaked": false,
+          "nextY": 1156,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1132,\"height\":532,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "3月 · 月度读数2026-03-01 — 2026-03-28 · Asia/Shanghai—独立状态2，保留准确原因该字段未提交数据缺失每期净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交累计净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "4月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 4月 · 月度读数 2026-04-01 — 2026-04-28 · Asia/Shanghai — 独立状态3，保留准确原因 尚未到达或未覆盖\n+\t\t\t\t109 heading 4月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 4月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-04-01  —  2026-04-28  ·  Asia/Shanghai\n+\t\t\t\t113 text —\n+\t\t\t\t114 text 独立状态3，保留准确原因\n+\t\t\t\t115 text 尚未到达或未覆盖\nThe focused UI element is 85 button 4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+        "geometry": {
+          "active": "4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "4月 · 月度读数2026-04-01 — 2026-04-28 · Asia/Shanghai—独立状态3，保留准确原因尚未到达或未覆盖"
+            }
+          ]
+        }
+      },
+      {
+        "month": "5月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 5月 · 月度读数 2026-05-01 — 2026-05-28 · Asia/Shanghai — 独立状态4，保留准确原因 正在读取该期间\n+\t\t\t\t109 heading 5月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 5月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-05-01  —  2026-05-28  ·  Asia/Shanghai\n+\t\t\t\t113 text —\n+\t\t\t\t114 text 独立状态4，保留准确原因\n+\t\t\t\t115 text 正在读取该期间\nThe focused UI element is 86 button 5月，—，独立状态4，保留准确原因；正在读取该期间",
+        "geometry": {
+          "active": "5月，—，独立状态4，保留准确原因；正在读取该期间",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "5月 · 月度读数2026-05-01 — 2026-05-28 · Asia/Shanghai—独立状态4，保留准确原因正在读取该期间"
+            }
+          ]
+        }
+      },
+      {
+        "month": "6月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t108 container 6月 · 月度读数 2026-06-01 — 2026-06-28 · Asia/Shanghai — 独立状态5，保留准确原因 该期间读取失败\n+\t\t\t\t109 heading 6月 · 月度读数, Value: 4\n+\t\t\t\t\t110 text 6月  ·  月度 读数\n+\t\t\t\t111 container\n+\t\t\t\t\t112 text 2026-06-01  —  2026-06-28  ·  Asia/Shanghai\n+\t\t\t\t113 text —\n+\t\t\t\t114 text 独立状态5，保留准确原因\n+\t\t\t\t115 text 该期间读取失败\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+        "geometry": {
+          "active": "6月，—，独立状态5，保留准确原因；该期间读取失败",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "6月 · 月度读数2026-06-01 — 2026-06-28 · Asia/Shanghai—独立状态5，保留准确原因该期间读取失败"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "mode": "win-rate",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 图表模式, Value: 各期胜率, Secondary Actions: Expand\n~\t\t\t\t9 累计净盈亏\n~\t\t\t\t10 (selected) 各期胜率\n~\t\t36 container 各期胜率\n~\t\t\t\t38 heading 各期胜率, Value: 3\n~\t\t\t\t\t39 text 各期胜率\n~\t\t\t\t40 text %\n~\t\t\t\t41 container 各期胜率，2026\n~\t\t\t\t\t43 text 0%\n~\t\t\t\t\t105 text 25%\n~\t\t\t\t\t106 text 50%\n~\t\t\t\t\t107 text 75%\n+\t\t\t\t\t108 text 100%\n~\t\t\t\t\t77 button 1月，12.345%，\n~\t\t\t\t\t83 button 2月，—，独立状态1，保留准确原因；该期间无已关闭回合\n~\t\t\t\t\t84 button 3月，42.857142857%，独立状态2，保留准确原因；数据缺失\n~\t\t\t\t\t88 button 7月，25%，\n~\t\t\t\t\t89 button 8月，—，该期间无已关闭回合；该字段未提交\n~\t\t\t\t\t90 button 9月，66.666667%，\n~\t\t\t\t\t91 button 10月，72.727273%，\n~\t\t\t\t\t92 button 11月，75%，\n~\t\t\t\t\t93 button 12月，—，尚未到达该期间；该字段未提交；尚未到达或未覆盖\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+    "reads": [
+      {
+        "month": "1月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 1月 · 月度读数 2026-01-01 — 2026-01-28 · Asia/Shanghai 12.345% 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n+\t\t\t\t110 heading 1月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 1月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-01-01  —  2026-01-28  ·  Asia/Shanghai\n+\t\t\t\t114 text 12.345%\n+\t\t\t\t115 container 每期净盈亏\n+\t\t\t\t\t116 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t117 text 每期净盈亏\n+\t\t\t\t\t118 definition list\n+\t\t\t\t\t\t119 container 来源金额\n+\t\t\t\t\t\t\t120 text 来源金额\n+\t\t\t\t\t\t121 container\n+\t\t\t\t\t\t\t122 text 0 CNY\n+\t\t\t\t\t\t123 container 覆盖数量\n+\t\t\t\t\t\t\t124 text 覆盖数量\n+\t\t\t\t\t\t125 container\n+\t\t\t\t\t\t\t126 text 7  /  7\n+\t\t\t\t\t\t127 container 原币金额\n+\t\t\t\t\t\t\t128 text 原币金额\n+\t\t\t\t\t\t129 container\n+\t\t\t\t\t\t\t130 text 0 CNY\n+\t\t\t\t\t\t131 container 汇率来源\n+\t\t\t\t\t\t\t132 text 汇率来源\n+\t\t\t\t\t\t133 text 同币种，无需换汇\n+\t\t\t\t134 container 累计净盈亏\n+\t\t\t\t\t135 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t136 text 累计净盈亏\n+\t\t\t\t\t137 definition list\n+\t\t\t\t\t\t138 container 来源金额\n+\t\t\t\t\t\t\t139 text 来源金额\n+\t\t\t\t\t\t140 container\n+\t\t\t\t\t\t\t141 text 98765.432100 CNY\n+\t\t\t\t\t\t142 container 覆盖数量\n+\t\t\t\t\t\t\t143 text 覆盖数量\n+\t\t\t\t\t\t144 container\n+\t\t\t\t\t\t\t145 text 7  /  7\n+\t\t\t\t\t\t146 container 原币金额\n+\t\t\t\t\t\t\t147 text 原币金额\n+\t\t\t\t\t\t148 container\n+\t\t\t\t\t\t\t149 text 98765.432100 CNY\n+\t\t\t\t\t\t150 container 汇率来源\n+\t\t\t\t\t\t\t151 text 汇率来源\n+\t\t\t\t\t\t152 text 同币种，无需换汇\n+\t\t\t\t153 definition list\n+\t\t\t\t\t154 container 回合数\n+\t\t\t\t\t\t155 text 回合数\n+\t\t\t\t\t156 text 3\n+\t\t\t\t\t157 container 盈利回合数\n+\t\t\t\t\t\t158 text 盈利回合数\n+\t\t\t\t\t159 text 2\n+\t\t\t\t\t160 container 各期胜率\n+\t\t\t\t\t\t161 text 各期胜率\n+\t\t\t\t\t162 text 12.345%\nThe focused UI element is 77 button 1月，12.345%，",
+        "geometry": {
+          "active": "1月，12.345%，",
+          "chartHeight": 742,
+          "leaked": false,
+          "nextY": 1034,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1010,\"height\":410,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai12.345%每期净盈亏来源金额0 CNY覆盖数量7 / 7原币金额0 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "2月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 2月 · 月度读数 2026-02-01 — 2026-02-28 · Asia/Shanghai — 独立状态1，保留准确原因 该期间无已关闭回合 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t110 heading 2月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 2月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-02-01  —  2026-02-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态1，保留准确原因\n+\t\t\t\t116 text 该期间无已关闭回合\n+\t\t\t\t117 container 每期净盈亏\n+\t\t\t\t\t118 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t119 text 每期净盈亏\n+\t\t\t\t\t120 definition list\n+\t\t\t\t\t\t121 container 来源金额\n+\t\t\t\t\t\t\t122 text 来源金额\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text 999999.999 CNY\n+\t\t\t\t\t\t125 container 覆盖数量\n+\t\t\t\t\t\t\t126 text 覆盖数量\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 7  /  7\n+\t\t\t\t\t\t129 container 原币金额\n+\t\t\t\t\t\t\t130 text 原币金额\n+\t\t\t\t\t\t131 container\n+\t\t\t\t\t\t\t132 text 999999.999 CNY\n+\t\t\t\t\t\t133 container 汇率来源\n+\t\t\t\t\t\t\t134 text 汇率来源\n+\t\t\t\t\t\t135 text 同币种，无需换汇\n+\t\t\t\t136 container 累计净盈亏\n+\t\t\t\t\t137 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t138 text 累计净盈亏\n+\t\t\t\t\t139 definition list\n+\t\t\t\t\t\t140 container 来源金额\n+\t\t\t\t\t\t\t141 text 来源金额\n+\t\t\t\t\t\t142 container\n+\t\t\t\t\t\t\t143 text 123.456 CNY\n+\t\t\t\t\t\t144 container 覆盖数量\n+\t\t\t\t\t\t\t145 text 覆盖数量\n+\t\t\t\t\t\t146 container\n+\t\t\t\t\t\t\t147 text 7  /  7\n+\t\t\t\t\t\t148 container 原币金额\n+\t\t\t\t\t\t\t149 text 原币金额\n+\t\t\t\t\t\t150 container\n+\t\t\t\t\t\t\t151 text 123.456 CNY\n+\t\t\t\t\t\t152 container 汇率来源\n+\t\t\t\t\t\t\t153 text 汇率来源\n+\t\t\t\t\t\t154 text 同币种，无需换汇\n+\t\t\t\t155 definition list\n+\t\t\t\t\t156 container 回合数\n+\t\t\t\t\t\t157 text 回合数\n+\t\t\t\t\t158 text 7\n+\t\t\t\t\t159 container 盈利回合数\n+\t\t\t\t\t\t160 text 盈利回合数\n+\t\t\t\t\t161 text 3\n+\t\t\t\t\t162 container 各期胜率\n+\t\t\t\t\t\t163 text 各期胜率\n+\t\t\t\t\t164 text 42.857142857%\nThe focused UI element is 83 button 2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+        "geometry": {
+          "active": "2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+          "chartHeight": 794,
+          "leaked": true,
+          "nextY": 1086,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1062,\"height\":462,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "2月 · 月度读数2026-02-01 — 2026-02-28 · Asia/Shanghai—独立状态1，保留准确原因该期间无已关闭回合每期净盈亏来源金额999999.999 CNY覆盖数量7 / 7原币金额999999.999 CNY汇率来源同币种，无需换汇累计净盈亏来源金额123.456 CNY覆盖数量7 / 7原币金额123.456 CNY汇率来源同币种，无需换汇回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "3月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 3月 · 月度读数 2026-03-01 — 2026-03-28 · Asia/Shanghai 42.857142857% 独立状态2，保留准确原因 数据缺失 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t110 heading 3月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 3月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-03-01  —  2026-03-28  ·  Asia/Shanghai\n+\t\t\t\t114 text 42.857142857%\n+\t\t\t\t115 text 独立状态2，保留准确原因\n+\t\t\t\t116 text 数据缺失\n+\t\t\t\t117 container 每期净盈亏\n+\t\t\t\t\t118 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t119 text 每期净盈亏\n+\t\t\t\t\t120 definition list\n+\t\t\t\t\t\t121 container 来源金额\n+\t\t\t\t\t\t\t122 text 来源金额\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text — CNY\n+\t\t\t\t\t\t125 container 覆盖数量\n+\t\t\t\t\t\t\t126 text 覆盖数量\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 0  /  7\n+\t\t\t\t\t\t129 container 原币金额\n+\t\t\t\t\t\t\t130 text 原币金额\n+\t\t\t\t\t\t131 container 汇率来源\n+\t\t\t\t\t\t\t132 text 汇率来源\n+\t\t\t\t\t\t133 text 同币种，无需换汇\n+\t\t\t\t\t134 text 该字段未提交\n+\t\t\t\t135 container 累计净盈亏\n+\t\t\t\t\t136 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t137 text 累计净盈亏\n+\t\t\t\t\t138 definition list\n+\t\t\t\t\t\t139 container 来源金额\n+\t\t\t\t\t\t\t140 text 来源金额\n+\t\t\t\t\t\t141 container\n+\t\t\t\t\t\t\t142 text — CNY\n+\t\t\t\t\t\t143 container 覆盖数量\n+\t\t\t\t\t\t\t144 text 覆盖数量\n+\t\t\t\t\t\t145 container\n+\t\t\t\t\t\t\t146 text 0  /  7\n+\t\t\t\t\t\t147 container 原币金额\n+\t\t\t\t\t\t\t148 text 原币金额\n+\t\t\t\t\t\t149 container 汇率来源\n+\t\t\t\t\t\t\t150 text 汇率来源\n+\t\t\t\t\t\t151 text 同币种，无需换汇\n+\t\t\t\t\t152 text 该字段未提交\n+\t\t\t\t153 definition list\n+\t\t\t\t\t154 container 回合数\n+\t\t\t\t\t\t155 text 回合数\n+\t\t\t\t\t156 text 7\n+\t\t\t\t\t157 container 盈利回合数\n+\t\t\t\t\t\t158 text 盈利回合数\n+\t\t\t\t\t159 text 3\n+\t\t\t\t\t160 container 各期胜率\n+\t\t\t\t\t\t161 text 各期胜率\n+\t\t\t\t\t162 text 42.857142857%\nThe focused UI element is 84 button 3月，42.857142857%，独立状态2，保留准确原因；数据缺失",
+        "geometry": {
+          "active": "3月，42.857142857%，独立状态2，保留准确原因；数据缺失",
+          "chartHeight": 838,
+          "leaked": false,
+          "nextY": 1130,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1106,\"height\":506,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "3月 · 月度读数2026-03-01 — 2026-03-28 · Asia/Shanghai42.857142857%独立状态2，保留准确原因数据缺失每期净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交累计净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "4月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 4月 · 月度读数 2026-04-01 — 2026-04-28 · Asia/Shanghai — 独立状态3，保留准确原因 尚未到达或未覆盖\n+\t\t\t\t110 heading 4月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 4月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-04-01  —  2026-04-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态3，保留准确原因\n+\t\t\t\t116 text 尚未到达或未覆盖\nThe focused UI element is 85 button 4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+        "geometry": {
+          "active": "4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "4月 · 月度读数2026-04-01 — 2026-04-28 · Asia/Shanghai—独立状态3，保留准确原因尚未到达或未覆盖"
+            }
+          ]
+        }
+      },
+      {
+        "month": "5月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 5月 · 月度读数 2026-05-01 — 2026-05-28 · Asia/Shanghai — 独立状态4，保留准确原因 正在读取该期间\n+\t\t\t\t110 heading 5月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 5月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-05-01  —  2026-05-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态4，保留准确原因\n+\t\t\t\t116 text 正在读取该期间\nThe focused UI element is 86 button 5月，—，独立状态4，保留准确原因；正在读取该期间",
+        "geometry": {
+          "active": "5月，—，独立状态4，保留准确原因；正在读取该期间",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "5月 · 月度读数2026-05-01 — 2026-05-28 · Asia/Shanghai—独立状态4，保留准确原因正在读取该期间"
+            }
+          ]
+        }
+      },
+      {
+        "month": "6月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 6月 · 月度读数 2026-06-01 — 2026-06-28 · Asia/Shanghai — 独立状态5，保留准确原因 该期间读取失败\n+\t\t\t\t110 heading 6月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 6月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-06-01  —  2026-06-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态5，保留准确原因\n+\t\t\t\t116 text 该期间读取失败\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+        "geometry": {
+          "active": "6月，—，独立状态5，保留准确原因；该期间读取失败",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "6月 · 月度读数2026-06-01 — 2026-06-28 · Asia/Shanghai—独立状态5，保留准确原因该期间读取失败"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "mode": "round-count",
+    "ax": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t6 pop up button (collapsed, settable) 图表模式, Value: 各期回合数, Secondary Actions: Expand\n~\t\t\t\t10 各期胜率\n~\t\t\t\t11 (selected) 各期回合数\n~\t\t36 container 各期回合数\n~\t\t\t\t38 heading 各期回合数, Value: 3\n~\t\t\t\t\t39 text 各期回合数\n~\t\t\t\t40 text 回合\n~\t\t\t\t41 container 各期回合数，2026\n~\t\t\t\t\t43 text 0\n~\t\t\t\t\t105 text 3\n~\t\t\t\t\t106 text 6\n~\t\t\t\t\t107 text 9\n~\t\t\t\t\t108 text 12\n~\t\t\t\t\t77 button 1月，3 回合，\n~\t\t\t\t\t84 button 3月，7 回合，独立状态2，保留准确原因；数据缺失\n~\t\t\t\t\t88 button 7月，4 回合，\n~\t\t\t\t\t89 button 8月，—，该期间无已关闭回合\n~\t\t\t\t\t90 button 9月，6 回合，\n~\t\t\t\t\t91 button 10月，11 回合，\n~\t\t\t\t\t92 button 11月，12 回合，\n~\t\t\t\t\t93 button 12月，—，尚未到达该期间；尚未到达或未覆盖\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+    "reads": [
+      {
+        "month": "1月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 1月 · 月度读数 2026-01-01 — 2026-01-28 · Asia/Shanghai 3 回合 每期净盈亏 累计净盈亏 回合数 3 盈利回合数 2 各期胜率 12.345%\n+\t\t\t\t110 heading 1月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 1月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-01-01  —  2026-01-28  ·  Asia/Shanghai\n+\t\t\t\t114 text 3 回合\n+\t\t\t\t115 container 每期净盈亏\n+\t\t\t\t\t116 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t117 text 每期净盈亏\n+\t\t\t\t\t118 definition list\n+\t\t\t\t\t\t119 container 来源金额\n+\t\t\t\t\t\t\t120 text 来源金额\n+\t\t\t\t\t\t121 container\n+\t\t\t\t\t\t\t122 text 0 CNY\n+\t\t\t\t\t\t123 container 覆盖数量\n+\t\t\t\t\t\t\t124 text 覆盖数量\n+\t\t\t\t\t\t125 container\n+\t\t\t\t\t\t\t126 text 7  /  7\n+\t\t\t\t\t\t127 container 原币金额\n+\t\t\t\t\t\t\t128 text 原币金额\n+\t\t\t\t\t\t129 container\n+\t\t\t\t\t\t\t130 text 0 CNY\n+\t\t\t\t\t\t131 container 汇率来源\n+\t\t\t\t\t\t\t132 text 汇率来源\n+\t\t\t\t\t\t133 text 同币种，无需换汇\n+\t\t\t\t134 container 累计净盈亏\n+\t\t\t\t\t135 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t136 text 累计净盈亏\n+\t\t\t\t\t137 definition list\n+\t\t\t\t\t\t138 container 来源金额\n+\t\t\t\t\t\t\t139 text 来源金额\n+\t\t\t\t\t\t140 container\n+\t\t\t\t\t\t\t141 text 98765.432100 CNY\n+\t\t\t\t\t\t142 container 覆盖数量\n+\t\t\t\t\t\t\t143 text 覆盖数量\n+\t\t\t\t\t\t144 container\n+\t\t\t\t\t\t\t145 text 7  /  7\n+\t\t\t\t\t\t146 container 原币金额\n+\t\t\t\t\t\t\t147 text 原币金额\n+\t\t\t\t\t\t148 container\n+\t\t\t\t\t\t\t149 text 98765.432100 CNY\n+\t\t\t\t\t\t150 container 汇率来源\n+\t\t\t\t\t\t\t151 text 汇率来源\n+\t\t\t\t\t\t152 text 同币种，无需换汇\n+\t\t\t\t153 definition list\n+\t\t\t\t\t154 container 回合数\n+\t\t\t\t\t\t155 text 回合数\n+\t\t\t\t\t156 text 3\n+\t\t\t\t\t157 container 盈利回合数\n+\t\t\t\t\t\t158 text 盈利回合数\n+\t\t\t\t\t159 text 2\n+\t\t\t\t\t160 container 各期胜率\n+\t\t\t\t\t\t161 text 各期胜率\n+\t\t\t\t\t162 text 12.345%\nThe focused UI element is 77 button 1月，3 回合，",
+        "geometry": {
+          "active": "1月，3 回合，",
+          "chartHeight": 742,
+          "leaked": false,
+          "nextY": 1034,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1010,\"height\":410,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "1月 · 月度读数2026-01-01 — 2026-01-28 · Asia/Shanghai3 回合每期净盈亏来源金额0 CNY覆盖数量7 / 7原币金额0 CNY汇率来源同币种，无需换汇累计净盈亏来源金额98765.432100 CNY覆盖数量7 / 7原币金额98765.432100 CNY汇率来源同币种，无需换汇回合数3盈利回合数2各期胜率12.345%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "2月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 2月 · 月度读数 2026-02-01 — 2026-02-28 · Asia/Shanghai — 独立状态1，保留准确原因 该期间无已关闭回合 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t110 heading 2月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 2月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-02-01  —  2026-02-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态1，保留准确原因\n+\t\t\t\t116 text 该期间无已关闭回合\n+\t\t\t\t117 container 每期净盈亏\n+\t\t\t\t\t118 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t119 text 每期净盈亏\n+\t\t\t\t\t120 definition list\n+\t\t\t\t\t\t121 container 来源金额\n+\t\t\t\t\t\t\t122 text 来源金额\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text 999999.999 CNY\n+\t\t\t\t\t\t125 container 覆盖数量\n+\t\t\t\t\t\t\t126 text 覆盖数量\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 7  /  7\n+\t\t\t\t\t\t129 container 原币金额\n+\t\t\t\t\t\t\t130 text 原币金额\n+\t\t\t\t\t\t131 container\n+\t\t\t\t\t\t\t132 text 999999.999 CNY\n+\t\t\t\t\t\t133 container 汇率来源\n+\t\t\t\t\t\t\t134 text 汇率来源\n+\t\t\t\t\t\t135 text 同币种，无需换汇\n+\t\t\t\t136 container 累计净盈亏\n+\t\t\t\t\t137 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t138 text 累计净盈亏\n+\t\t\t\t\t139 definition list\n+\t\t\t\t\t\t140 container 来源金额\n+\t\t\t\t\t\t\t141 text 来源金额\n+\t\t\t\t\t\t142 container\n+\t\t\t\t\t\t\t143 text 123.456 CNY\n+\t\t\t\t\t\t144 container 覆盖数量\n+\t\t\t\t\t\t\t145 text 覆盖数量\n+\t\t\t\t\t\t146 container\n+\t\t\t\t\t\t\t147 text 7  /  7\n+\t\t\t\t\t\t148 container 原币金额\n+\t\t\t\t\t\t\t149 text 原币金额\n+\t\t\t\t\t\t150 container\n+\t\t\t\t\t\t\t151 text 123.456 CNY\n+\t\t\t\t\t\t152 container 汇率来源\n+\t\t\t\t\t\t\t153 text 汇率来源\n+\t\t\t\t\t\t154 text 同币种，无需换汇\n+\t\t\t\t155 definition list\n+\t\t\t\t\t156 container 回合数\n+\t\t\t\t\t\t157 text 回合数\n+\t\t\t\t\t158 text 7\n+\t\t\t\t\t159 container 盈利回合数\n+\t\t\t\t\t\t160 text 盈利回合数\n+\t\t\t\t\t161 text 3\n+\t\t\t\t\t162 container 各期胜率\n+\t\t\t\t\t\t163 text 各期胜率\n+\t\t\t\t\t164 text 42.857142857%\nThe focused UI element is 83 button 2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+        "geometry": {
+          "active": "2月，—，独立状态1，保留准确原因；该期间无已关闭回合",
+          "chartHeight": 794,
+          "leaked": true,
+          "nextY": 1086,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1062,\"height\":462,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "2月 · 月度读数2026-02-01 — 2026-02-28 · Asia/Shanghai—独立状态1，保留准确原因该期间无已关闭回合每期净盈亏来源金额999999.999 CNY覆盖数量7 / 7原币金额999999.999 CNY汇率来源同币种，无需换汇累计净盈亏来源金额123.456 CNY覆盖数量7 / 7原币金额123.456 CNY汇率来源同币种，无需换汇回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "3月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 3月 · 月度读数 2026-03-01 — 2026-03-28 · Asia/Shanghai 7 回合 独立状态2，保留准确原因 数据缺失 每期净盈亏 累计净盈亏 回合数 7 盈利回合数 3 各期胜率 42.857142857%\n+\t\t\t\t110 heading 3月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 3月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-03-01  —  2026-03-28  ·  Asia/Shanghai\n+\t\t\t\t114 text 7 回合\n+\t\t\t\t115 text 独立状态2，保留准确原因\n+\t\t\t\t116 text 数据缺失\n+\t\t\t\t117 container 每期净盈亏\n+\t\t\t\t\t118 heading 每期净盈亏, Value: 4\n+\t\t\t\t\t\t119 text 每期净盈亏\n+\t\t\t\t\t120 definition list\n+\t\t\t\t\t\t121 container 来源金额\n+\t\t\t\t\t\t\t122 text 来源金额\n+\t\t\t\t\t\t123 container\n+\t\t\t\t\t\t\t124 text — CNY\n+\t\t\t\t\t\t125 container 覆盖数量\n+\t\t\t\t\t\t\t126 text 覆盖数量\n+\t\t\t\t\t\t127 container\n+\t\t\t\t\t\t\t128 text 0  /  7\n+\t\t\t\t\t\t129 container 原币金额\n+\t\t\t\t\t\t\t130 text 原币金额\n+\t\t\t\t\t\t131 container 汇率来源\n+\t\t\t\t\t\t\t132 text 汇率来源\n+\t\t\t\t\t\t133 text 同币种，无需换汇\n+\t\t\t\t\t134 text 该字段未提交\n+\t\t\t\t135 container 累计净盈亏\n+\t\t\t\t\t136 heading 累计净盈亏, Value: 4\n+\t\t\t\t\t\t137 text 累计净盈亏\n+\t\t\t\t\t138 definition list\n+\t\t\t\t\t\t139 container 来源金额\n+\t\t\t\t\t\t\t140 text 来源金额\n+\t\t\t\t\t\t141 container\n+\t\t\t\t\t\t\t142 text — CNY\n+\t\t\t\t\t\t143 container 覆盖数量\n+\t\t\t\t\t\t\t144 text 覆盖数量\n+\t\t\t\t\t\t145 container\n+\t\t\t\t\t\t\t146 text 0  /  7\n+\t\t\t\t\t\t147 container 原币金额\n+\t\t\t\t\t\t\t148 text 原币金额\n+\t\t\t\t\t\t149 container 汇率来源\n+\t\t\t\t\t\t\t150 text 汇率来源\n+\t\t\t\t\t\t151 text 同币种，无需换汇\n+\t\t\t\t\t152 text 该字段未提交\n+\t\t\t\t153 definition list\n+\t\t\t\t\t154 container 回合数\n+\t\t\t\t\t\t155 text 回合数\n+\t\t\t\t\t156 text 7\n+\t\t\t\t\t157 container 盈利回合数\n+\t\t\t\t\t\t158 text 盈利回合数\n+\t\t\t\t\t159 text 3\n+\t\t\t\t\t160 container 各期胜率\n+\t\t\t\t\t\t161 text 各期胜率\n+\t\t\t\t\t162 text 42.857142857%\nThe focused UI element is 84 button 3月，7 回合，独立状态2，保留准确原因；数据缺失",
+        "geometry": {
+          "active": "3月，7 回合，独立状态2，保留准确原因；数据缺失",
+          "chartHeight": 838,
+          "leaked": false,
+          "nextY": 1130,
+          "readings": [
+            {
+              "rect": "{\"bottom\":1106,\"height\":506,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "3月 · 月度读数2026-03-01 — 2026-03-28 · Asia/Shanghai7 回合独立状态2，保留准确原因数据缺失每期净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交累计净盈亏来源金额— CNY覆盖数量0 / 7原币金额汇率来源同币种，无需换汇该字段未提交回合数7盈利回合数3各期胜率42.857142857%"
+            }
+          ]
+        }
+      },
+      {
+        "month": "4月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 4月 · 月度读数 2026-04-01 — 2026-04-28 · Asia/Shanghai — 独立状态3，保留准确原因 尚未到达或未覆盖\n+\t\t\t\t110 heading 4月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 4月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-04-01  —  2026-04-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态3，保留准确原因\n+\t\t\t\t116 text 尚未到达或未覆盖\nThe focused UI element is 85 button 4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+        "geometry": {
+          "active": "4月，—，独立状态3，保留准确原因；尚未到达或未覆盖",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "4月 · 月度读数2026-04-01 — 2026-04-28 · Asia/Shanghai—独立状态3，保留准确原因尚未到达或未覆盖"
+            }
+          ]
+        }
+      },
+      {
+        "month": "5月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 5月 · 月度读数 2026-05-01 — 2026-05-28 · Asia/Shanghai — 独立状态4，保留准确原因 正在读取该期间\n+\t\t\t\t110 heading 5月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 5月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-05-01  —  2026-05-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态4，保留准确原因\n+\t\t\t\t116 text 正在读取该期间\nThe focused UI element is 86 button 5月，—，独立状态4，保留准确原因；正在读取该期间",
+        "geometry": {
+          "active": "5月，—，独立状态4，保留准确原因；正在读取该期间",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "5月 · 月度读数2026-05-01 — 2026-05-28 · Asia/Shanghai—独立状态4，保留准确原因正在读取该期间"
+            }
+          ]
+        }
+      },
+      {
+        "month": "6月",
+        "detail": "Browser tab: 13, Title: \"历史图完整独立验收\", URL: \"http://127.0.0.1:3334/history-full.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t109 container 6月 · 月度读数 2026-06-01 — 2026-06-28 · Asia/Shanghai — 独立状态5，保留准确原因 该期间读取失败\n+\t\t\t\t110 heading 6月 · 月度读数, Value: 4\n+\t\t\t\t\t111 text 6月  ·  月度 读数\n+\t\t\t\t112 container\n+\t\t\t\t\t113 text 2026-06-01  —  2026-06-28  ·  Asia/Shanghai\n+\t\t\t\t114 text —\n+\t\t\t\t115 text 独立状态5，保留准确原因\n+\t\t\t\t116 text 该期间读取失败\nThe focused UI element is 87 button 6月，—，独立状态5，保留准确原因；该期间读取失败",
+        "geometry": {
+          "active": "6月，—，独立状态5，保留准确原因；该期间读取失败",
+          "chartHeight": 496,
+          "leaked": false,
+          "nextY": 788,
+          "readings": [
+            {
+              "rect": "{\"bottom\":764,\"height\":164,\"left\":24,\"right\":366,\"top\":600,\"width\":342,\"x\":24,\"y\":600}",
+              "text": "6月 · 月度读数2026-06-01 — 2026-06-28 · Asia/Shanghai—独立状态5，保留准确原因该期间读取失败"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

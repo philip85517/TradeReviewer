@@ -27,6 +27,7 @@ import { isMonthlyEvidenceScope, isMonthlyStatement } from "../import/monthly-st
 import { canonicalInstrumentId } from "../instruments/display-name";
 import {
   validateResolvedInstrument,
+  mergeInstrumentExchange,
   validateLocalizedInstrumentName,
   type LocalizedInstrumentName,
   type ResolvedInstrument,
@@ -421,6 +422,9 @@ function validateInstrument(value: unknown): asserts value is StoredInstrument {
     const metadata = asRecord(instrument.metadata, "instrument metadata");
     assertStringFields(metadata, ["market", "symbol", "name", "assetType", "source", "confidence", "resolvedAt"], "instrument metadata");
     if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol) {
+      throw new Error("Invalid instrument metadata");
+    }
+    if (!storedMetadata(metadata)) {
       throw new Error("Invalid instrument metadata");
     }
     if (metadata.localizedName !== undefined) {
@@ -1076,7 +1080,7 @@ export class SqliteStore {
         currency: existing?.currency ?? marketCurrency(normalized.market),
         ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
         metadata: {
-          ...newestMetadata,
+          ...mergeInstrumentExchange(normalized, mergeInstrumentExchange(existingMetadata, newestMetadata)),
           ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
         },
       });
@@ -1588,6 +1592,12 @@ export class SqliteStore {
       ? validateLocalizedInstrumentName(instrument.localizedName)
       : undefined;
     const existed = this.hasInstrument(instrument.id);
+    let metadata = instrument.metadata;
+    if (metadata) {
+      const previousRow = this.database.prepare("select metadata_json from instruments where id = ?").get(instrument.id) as Row | undefined;
+      const previous = previousRow?.metadata_json ? storedMetadata(JSON.parse(String(previousRow.metadata_json))) : undefined;
+      metadata = mergeInstrumentExchange(previous, metadata);
+    }
     this.database.prepare(`
       insert into instruments (id, symbol, name, market, currency, metadata_json, localized_name_json, updated_at)
       values (?, ?, ?, ?, ?, ?, ?, current_timestamp)
@@ -1605,7 +1615,7 @@ export class SqliteStore {
       instrument.name,
       instrument.market,
       instrument.currency,
-      instrument.metadata ? json(instrument.metadata, "instrument metadata") : null,
+      metadata ? json(metadata, "instrument metadata") : null,
       localizedName
         ? json(localizedName, "localized instrument name")
         : null,

@@ -1,0 +1,867 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:44887) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 158ms
+   → Unable to find an accessible element with the role "button"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 9ms
+   → Unable to find an accessible element with the role "button"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 6ms
+   → Unable to find an accessible element with the role "button"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 7ms
+   → Unable to find an accessible element with the role "button"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 23ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  button:
+
+  Name "外部":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m外部[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 10ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  button:
+
+  Name "之前":
+  [36m<button />[39m
+
+  Name "之后":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m之前[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m之后[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 3ms
+   → Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 2ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 15ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  textbox:
+
+  Name "页面其他状态":
+  [36m<input[39m
+    [33maria-label[39m=[32m"页面其他状态"[39m
+    [33mvalue[39m=[32m"保持"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"页面其他状态"[39m
+      [33mvalue[39m=[32m"保持"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 2ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 3ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 5ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 4ms
+   → Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 31 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control
+TestingLibraryElementError: Unable to find an accessible element with the role "button"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ app/components/homepage-v25/history-controls.test.tsx:31:19
+     29|   ] as const)("renders applied %j without a separate granularity contr…
+     30|     render(<HistoryControls {...props({ appliedRange })} />);
+     31|     expect(screen.getAllByRole("button")).toHaveLength(2);
+       |                   ^
+     32|     expect(rangeTrigger()).toHaveTextContent(label);
+     33|     expect(metricTrigger()).toHaveTextContent(metric);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:40:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:48:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:59:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:74:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:85:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  button:
+
+  Name "外部":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m外部[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:92:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:99:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  button:
+
+  Name "之前":
+  [36m<button />[39m
+
+  Name "之后":
+  [36m<button />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m之前[0m
+    [36m</button>[39m
+    [36m<button>[39m
+      [0m之后[0m
+    [36m</button>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:107:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:116:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape
+TestingLibraryElementError: Unable to find an accessible element with the role "status"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/homepage-v25/history-controls.test.tsx:130:19
+    128|   it("blocks range resubmission during pending but permits navigation …
+    129|     const p = props({ pending: true }); const user = userEvent.setup()…
+    130|     expect(screen.getByRole("status")).toHaveTextContent(/加载|读取/);
+       |                   ^
+    131|     await user.click(rangeTrigger());
+    132|     expect(screen.getByRole("option", { name: "2026" })).toHaveAttribu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ metricTrigger app/components/homepage-v25/history-controls.test.tsx:20:42
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+       |                                          ^
+     21|
+     22| // Removing controlled labels or introducing a third selector breaks t…
+ ❯ app/components/homepage-v25/history-controls.test.tsx:144:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:152:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+Here are the accessible roles:
+
+  textbox:
+
+  Name "页面其他状态":
+  [36m<input[39m
+    [33maria-label[39m=[32m"页面其他状态"[39m
+    [33mvalue[39m=[32m"保持"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<input[39m
+      [33maria-label[39m=[32m"页面其他状态"[39m
+      [33mvalue[39m=[32m"保持"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:167:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ metricTrigger app/components/homepage-v25/history-controls.test.tsx:20:42
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+       |                                          ^
+     21|
+     22| // Removing controlled labels or introducing a third selector breaks t…
+ ❯ app/components/homepage-v25/history-controls.test.tsx:182:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史指标：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ metricTrigger app/components/homepage-v25/history-controls.test.tsx:20:42
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+       |                                          ^
+     21|
+     22| // Removing controlled labels or introducing a third selector breaks t…
+ ❯ app/components/homepage-v25/history-controls.test.tsx:194:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:208:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5}
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null}
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0}
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000}
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024}
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026}
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:221:63
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:230:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/31]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/^历史范围：/`
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ rangeTrigger app/components/homepage-v25/history-controls.test.tsx:19:41
+     17|     onRangeApply: vi.fn(), onChartModeChange: vi.fn(), ...overrides };
+     18| }
+     19| function rangeTrigger() { return screen.getByRole("button", { name: /^…
+       |                                         ^
+     20| function metricTrigger() { return screen.getByRole("button", { name: /…
+     21|
+ ❯ app/components/homepage-v25/history-controls.test.tsx:236:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/31]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  31 failed (31)
+   Start at  05:50:53
+   Duration  3.41s (transform 80ms, setup 484ms, import 221ms, tests 321ms, environment 1.94s)
+

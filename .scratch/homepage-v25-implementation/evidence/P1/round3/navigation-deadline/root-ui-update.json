@@ -1,0 +1,5 @@
+{
+  "at": "2026-10-22T20:31:49.146Z",
+  "elapsed": 19569,
+  "ax": "Browser tab: 7, Title: \"TradeReview — 历史交易复盘\", URL: \"http://127.0.0.1:3334/home?scope=live&market=a&accounts=*&rangeMode=all\".\n0 AXWebArea TradeReview — 历史交易复盘, URL: 127.0.0.1:3334/home?scope=live&market=a&accounts=*&rangeMode=all\n\t1 container 标的搜索\n\t\t2 container\n\t\t\t3 heading 找到标的, Value: 2, ID: hp-search-results-title\n\t\t\t\t4 text 找到标的\n\t\t\t5 button 关闭标的搜索\n\t\t6 search text field (settable) Description: 搜索标的, Value: ROKU\n\t\t7 button 清除标的搜索\n\t\t8 container 找到标的\n\t\t\t12 container\n\t\t\t\t13 text 证券目录读取失败，原查询仍保留。\n\t\t\t\t14 button 重试\n\t\t10 container\n\t\t\t11 text 目录来自已导入交易与已存证券资料，未覆盖全市场。 输入框内 × 清空查询 · ↑ ↓ 选择 · Enter 查看 · Esc 关闭\n\nThe focused UI element is 6 search text field (settable) Description: 搜索标的, Value: ROKU"
+}

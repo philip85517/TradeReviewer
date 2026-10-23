@@ -1,0 +1,2 @@
+{"seq":1,"at":"2026-10-22T21:13:32.755Z","elapsedMs":3,"pid":41224,"phase":"observer-ready","limits":{"durationMs":60000,"requests":100,"events":1024,"bytes":262144,"descriptors":512},"srvxDiscovery":"natural-exact-fingerprint","bodies":"never-probed"}
+{"phase":"observer-stop","at":"2026-10-22T21:13:33.933Z","pid":41224,"reason":"before-exit","lastSeq":1,"requests":0,"elapsedMs":1179,"regularBytes":253,"restoration":{"restored":22,"skipped":0,"failed":0,"ownedRemaining":0}}

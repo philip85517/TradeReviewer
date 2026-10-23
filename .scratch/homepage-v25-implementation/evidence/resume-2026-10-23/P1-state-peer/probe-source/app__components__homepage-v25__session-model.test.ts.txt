@@ -1,0 +1,37 @@
+import { describe, expect, it } from "vitest";
+import { createHomepageState, encodeHomepageSnapshot, updateHomepageUi } from "../../lib/reviews/homepage-v25-state";
+import { createHomepageSession, startHomepageRead, finishHomepageRead, homepageCollectionState, homepageTradeUrl } from "./session-model";
+
+const all = { live: true as const, market: "all" as const, accounts: ["*"], rangeMode: "all" as const };
+describe("homepage integrated session", () => {
+  it("commits matching business rows and applied labels atomically, ignoring an older completion", () => {
+    const original = createHomepageSession(createHomepageState(all), ["old"]);
+    const first = startHomepageRead(original, { ...all, market: "a" }, 10);
+    const firstToken = first.ui.request!;
+    const second = startHomepageRead(first, { ...all, market: "hk" }, 20);
+    expect(second.ui.snapshot.scope.market).toBe("all");
+    expect(second.data).toEqual(["old"]);
+    const stale = finishHomepageRead(second, firstToken, ["stale"]);
+    expect(stale.data).toEqual(["old"]);
+    expect(stale.ui.snapshot.scope.market).toBe("all");
+    const current = finishHomepageRead(stale, second.ui.request!, ["new"]);
+    expect(current.ui.snapshot.scope.market).toBe("hk");
+    expect(current.data).toEqual(["new"]);
+  });
+  it("restores UI only alongside a fresh data result and uses period dates for the ordinary collection", () => {
+    const sourceUi = updateHomepageUi(createHomepageState(all), { holdings: { query: "茅台", sort: "name-desc", page: 3 }, scrollTop: 321 });
+    const bytes = encodeHomepageSnapshot(sourceUi.snapshot);
+    const loading = startHomepageRead(createHomepageSession(createHomepageState(all), ["outdated"]), all, 10);
+    const restored = finishHomepageRead(loading, loading.ui.request!, ["fresh"], bytes);
+    expect(restored.data).toEqual(["fresh"]);
+    expect(restored.ui.snapshot.holdings).toEqual({ query: "茅台", sort: "name-desc", page: 3 });
+    expect(restored.ui.snapshot.scrollTop).toBe(321);
+    const ui = { ...sourceUi.snapshot, period: { preset: "custom" as const, from: "2026-10-01", to: "2026-10-23" } };
+    const url = homepageTradeUrl(ui, "SSE:600519");
+    expect(url).toContain("rangeMode=custom");
+    expect(url).toContain("from=2026-10-01");
+    expect(url).not.toContain("queue");
+    const browse = homepageCollectionState({ ...all, rangeMode: "date", date: "2026-10-22", symbolIdentity: "SSE:600519" }, "CN-SH:600519");
+    expect(browse).toMatchObject({ mode: "stocks", selectedInstrumentId: null, selectedEpisodeId: null, executionDateFrom: "2026-10-22", executionDateTo: "2026-10-22", collectionInstrumentId: "CN-SH:600519", reviewStatus: "all" });
+  });
+});

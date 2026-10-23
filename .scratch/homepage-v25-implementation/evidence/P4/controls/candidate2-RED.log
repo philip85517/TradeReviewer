@@ -1,0 +1,171 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:46047) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"year","year":2026} without a separate granularity control 195ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"this-year","year":2026} without a separate granularity control 18ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"years","fromYear":2024,"toYear":2026} without a separate granularity control 14ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > renders applied {"mode":"all"} without a separate granularity control 16ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > uses caller years instead of constructing prototype years or reading current year 52ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps an applied range absent from options rather than selecting the first available range 24ms
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"year","year":2038} compact while preserving the full caller label in accessible, title and menu text 17ms
+   → expected '2038：全部已经确认可用、用于核对真实历史范围的详细说明' to be '2038' // Object.is equality
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"this-year","year":2038} compact while preserving the full caller label in accessible, title and menu text 8ms
+   → expected '今年：全部已经确认可用、用于核对真实历史范围的详细说明' to be '今年' // Object.is equality
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"years","fromYear":2036,"toYear":2038} compact while preserving the full caller label in accessible, title and menu text 11ms
+   → expected '2036–2038：全部已经确认可用、用于核对真实历史范围的详细说明' to be '2036–2038' // Object.is equality
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"all"} compact while preserving the full caller label in accessible, title and menu text 9ms
+   → expected '全部：全部已经确认可用、用于核对真实历史范围的详细说明' to be '全部' // Object.is equality
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > refreshes caller descriptions without changing the compact applied range or issuing requests 13ms
+   → expected '2026：外部更新后的完整年度范围说明，保留给辅助技术和展开选项' to be '2026' // Object.is equality
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > opens on the current selected option and navigates without applying until Space 72ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Enter requests the exact range once, closes, and retains applied selection until caller commits 45ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Escape discards navigation and restores trigger focus without a request 31ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > outside click closes and restores the original trigger without submitting 43ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Tab closes without trapping focus and advances from range to the metric trigger 63ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > Shift+Tab leaves backward and Tab from metric reaches the next outside control 95ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > handles Escape locally without closing another page state 33ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls explicit range submission and keyboard > switches or toggles menus without applying and never opens both 62ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > blocks range resubmission during pending but permits navigation and Escape 83ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > keeps metric interaction independent of pending and reports only chart mode 52ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains old applied range through request/pending/error, permits retry, and changes only on caller commit 116ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > syncs external applied selection while open without callback backflow or unrelated state changes 59ms
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains compact applied text and full long descriptions through pending, error, retry, keyboard exit and caller commit 10ms
+   → expected '2026：全部已经确认可用的很长历史年度范围' to be '2026' // Object.is equality
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports period-pnl from click while preserving caller-controlled selection 76ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports cumulative-pnl from click while preserving caller-controlled selection 64ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports win-rate from click while preserving caller-controlled selection 79ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > reports round-count from click while preserving caller-controlled selection 102ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls chart modes > uses the same explicit navigation/submit/close contract for the metric menu 83ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > shows a readable empty reason without inventing year options 73ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":2026.5} 53ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":null} 46ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"year","year":0} 44ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"this-year","year":10000} 46ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2026,"toYear":2024} 55ms
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > does not submit malformed range {"mode":"years","fromYear":2024.5,"toYear":2026} 38ms
+ × app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text 11ms
+   → expected '0001–9999' to be '1–9999' // Object.is equality
+ ✓ app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > updates a caller-supplied option list while open without stale submit targets 65ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"year","year":2038} compact while preserving the full caller label in accessible, title and menu text
+AssertionError: expected '2038：全部已经确认可用、用于核对真实历史范围的详细说明' to be '2038' // Object.is equality
+
+Expected: "2038"
+Received: "2038：全部已经确认可用、用于核对真实历史范围的详细说明"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:63:40
+     61|     const custom = [{ id: "descriptive", label: fullLabel, range: appl…
+     62|     render(<HistoryControls {...props({ appliedRange, rangeOptions: cu…
+     63|     expect(rangeTrigger().textContent).toBe(shortLabel);
+       |                                        ^
+     64|     expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
+     65|     expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"this-year","year":2038} compact while preserving the full caller label in accessible, title and menu text
+AssertionError: expected '今年：全部已经确认可用、用于核对真实历史范围的详细说明' to be '今年' // Object.is equality
+
+Expected: "今年"
+Received: "今年：全部已经确认可用、用于核对真实历史范围的详细说明"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:63:40
+     61|     const custom = [{ id: "descriptive", label: fullLabel, range: appl…
+     62|     render(<HistoryControls {...props({ appliedRange, rangeOptions: cu…
+     63|     expect(rangeTrigger().textContent).toBe(shortLabel);
+       |                                        ^
+     64|     expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
+     65|     expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"years","fromYear":2036,"toYear":2038} compact while preserving the full caller label in accessible, title and menu text
+AssertionError: expected '2036–2038：全部已经确认可用、用于核对真实历史范围的详细说明' to be '2036–2038' // Object.is equality
+
+Expected: "2036–2038"
+Received: "2036–2038：全部已经确认可用、用于核对真实历史范围的详细说明"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:63:40
+     61|     const custom = [{ id: "descriptive", label: fullLabel, range: appl…
+     62|     render(<HistoryControls {...props({ appliedRange, rangeOptions: cu…
+     63|     expect(rangeTrigger().textContent).toBe(shortLabel);
+       |                                        ^
+     64|     expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
+     65|     expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > keeps {"mode":"all"} compact while preserving the full caller label in accessible, title and menu text
+AssertionError: expected '全部：全部已经确认可用、用于核对真实历史范围的详细说明' to be '全部' // Object.is equality
+
+Expected: "全部"
+Received: "全部：全部已经确认可用、用于核对真实历史范围的详细说明"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:63:40
+     61|     const custom = [{ id: "descriptive", label: fullLabel, range: appl…
+     62|     render(<HistoryControls {...props({ appliedRange, rangeOptions: cu…
+     63|     expect(rangeTrigger().textContent).toBe(shortLabel);
+       |                                        ^
+     64|     expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
+     65|     expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls controlled labels > refreshes caller descriptions without changing the compact applied range or issuing requests
+AssertionError: expected '2026：外部更新后的完整年度范围说明，保留给辅助技术和展开选项' to be '2026' // Object.is equality
+
+Expected: "2026"
+Received: "2026：外部更新后的完整年度范围说明，保留给辅助技术和展开选项"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:79:40
+     77|     const fullLabel = "2026：外部更新后的完整年度范围说明，保留给辅助技术和展开选项";
+     78|     rerender(<HistoryControls {...p} rangeOptions={[{ ...options[0], l…
+     79|     expect(rangeTrigger().textContent).toBe("2026");
+       |                                        ^
+     80|     expect(rangeTrigger()).toHaveAccessibleName(`历史范围：${fullLabel}`);
+     81|     expect(rangeTrigger()).toHaveAttribute("title", fullLabel);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls pending, error and external commit > retains compact applied text and full long descriptions through pending, error, retry, keyboard exit and caller commit
+AssertionError: expected '2026：全部已经确认可用的很长历史年度范围' to be '2026' // Object.is equality
+
+Expected: "2026"
+Received: "2026：全部已经确认可用的很长历史年度范围"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:226:40
+    224|     const p = props({ rangeOptions: longOptions }); const user = userE…
+    225|     const { rerender } = render(<HistoryControls {...p} />);
+    226|     expect(rangeTrigger().textContent).toBe("2026");
+       |                                        ^
+    227|     await user.click(rangeTrigger()); await user.tab();
+    228|     expect(metricTrigger()).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  app/components/homepage-v25/history-controls.test.tsx > HistoryControls caller option boundaries > preserves the full long numerical range and caller error text
+AssertionError: expected '0001–9999' to be '1–9999' // Object.is equality
+
+Expected: "1–9999"
+Received: "0001–9999"
+
+ ❯ app/components/homepage-v25/history-controls.test.tsx:313:40
+    311|     const custom = [{ id: "full", label: "0001–9999", range: { mode: "…
+    312|     render(<HistoryControls {...props({ rangeOptions: custom, appliedR…
+    313|     expect(rangeTrigger().textContent).toBe("1–9999");
+       |                                        ^
+    314|     expect(rangeTrigger()).toHaveAccessibleName("历史范围：0001–9999");
+    315|     expect(rangeTrigger()).toHaveAttribute("title", "0001–9999");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 31 passed (38)
+   Start at  06:09:48
+   Duration  5.62s (transform 177ms, setup 540ms, import 333ms, tests 1.98s, environment 2.36s)
+

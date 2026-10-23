@@ -1,0 +1,69 @@
+.hp-metric-cards {
+  container: hp-metrics / inline-size;
+  min-width: 0;
+  color: var(--hp-text, #e6edf7);
+  font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.hp-metric-cards__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.hp-metric-cards .hp-metric-cards__card {
+  box-sizing: border-box;
+  position: relative;
+  min-width: 0;
+  height: 88px;
+  padding: 12px 16px;
+  border: 1px solid var(--hp-line, #283448);
+  border-radius: 8px;
+  background: var(--hp-surface, #111a26);
+}
+.hp-metric-cards .hp-metric-cards__card h3 { margin: 0 56px 0 0; color: var(--hp-secondary, #a8b6cb); font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; }
+.hp-metric-cards .hp-metric-cards__value { display: flex; margin: 4px 0 0; font-size: 28px; font-weight: 600; line-height: 34px; white-space: nowrap; }
+.hp-metric-cards__number { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hp-metric-cards__unit { flex: 0 0 auto; white-space: pre; }
+.hp-metric-cards__value--positive { color: #53d7a0; }
+.hp-metric-cards__value--negative { color: #ff8592; }
+.hp-metric-cards__value--neutral { color: var(--hp-text, #e6edf7); }
+.hp-metric-cards button.hp-metric-cards__trigger,
+.hp-metric-cards .hp-metric-cards__trigger:hover:not(:disabled),
+.hp-metric-cards .hp-metric-cards__trigger:active:not(:disabled) {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #6ca8ff; cursor: pointer; font: inherit;
+}
+.hp-metric-cards .hp-metric-cards__trigger:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+/* Header reservation leaves the full 28/34 value line available in every action state. */
+.hp-metric-cards__affordance { position: absolute; right: 8px; top: 10px; padding: 2px 4px; border-radius: 4px; background: #162233; font-size: 12px; line-height: 20px; opacity: 0; transition: opacity 120ms ease, color 120ms ease; }
+.hp-metric-cards__trigger:hover .hp-metric-cards__affordance,
+.hp-metric-cards__trigger:focus-visible .hp-metric-cards__affordance,
+.hp-metric-cards__affordance--error { opacity: 1; }
+.hp-metric-cards__affordance--error { color: #ff8592; }
+.hp-metric-cards__skeleton { width: 60%; height: 28px; margin-top: 6px; border-radius: 4px; background: #283448; }
+.hp-metric-cards__loading { position: absolute; bottom: 0; right: 10px; color: #a8b6cb; font-size: 12px; line-height: 16px; }
+.hp-metric-cards .hp-metric-cards__status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.hp-metric-cards__detail,
+.hp-metric-cards__detail * { box-sizing: border-box; }
+.hp-metric-cards__detail {
+  position: fixed; z-index: 100; width: min(440px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow-y: auto; padding: 16px;
+  border: 1px solid #283448; border-radius: 8px; background: #162233; color: #e6edf7; box-shadow: 0 12px 32px #0006;
+  font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+  animation: hp-metric-detail-in 160ms ease-out;
+}
+.hp-metric-cards__detail:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-metric-cards__detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.hp-metric-cards__detail h4 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
+.hp-metric-cards__detail h5 { margin: 16px 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; }
+.hp-metric-cards__detail p { margin: 8px 0; }
+.hp-metric-cards__detail .hp-metric-cards__context { color: #a8b6cb; font-size: 12px; line-height: 20px; }
+.hp-metric-cards__detail-header button { flex: 0 0 36px; width: 36px; height: 36px; margin-top: -8px; margin-right: -8px; padding: 0; border: 0; border-radius: 6px; color: #a8b6cb; background: transparent; font-size: 24px; cursor: pointer; }
+.hp-metric-cards__detail-header button:hover { color: #e6edf7; background: #1c2b42; }
+.hp-metric-cards__detail-header button:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-metric-cards__facts { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px 12px; margin: 12px 0 0; }
+.hp-metric-cards__facts dt { color: #a8b6cb; }
+.hp-metric-cards__facts dd { min-width: 0; margin: 0; text-align: right; }
+.hp-metric-cards__facts dd span { display: block; }
+.hp-metric-cards__reasons { margin: 12px 0 0; padding-left: 18px; color: #a8b6cb; }
+.hp-metric-cards__notice { color: #a8b6cb; }
+/* Four readable baseline cards require 4×240px + 3×12px; two require 2×240px + 12px. */
+@container hp-metrics (width < 996px) { .hp-metric-cards__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container hp-metrics (width < 492px) { .hp-metric-cards__grid { grid-template-columns: minmax(0, 1fr); } }
+@media (pointer: coarse) { .hp-metric-cards__detail-header button { flex-basis: 44px; width: 44px; height: 44px; } }
+@keyframes hp-metric-detail-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .hp-metric-cards__affordance { transition: none; } .hp-metric-cards__detail { animation: none; } }

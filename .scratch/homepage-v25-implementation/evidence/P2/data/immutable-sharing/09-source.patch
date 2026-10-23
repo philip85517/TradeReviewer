@@ -1,0 +1,171 @@
+--- .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/before-performance.ts
++++ app/lib/reviews/homepage-v25-performance.ts
+@@ -519,13 +519,13 @@
+   }
+   /** These arrays contain the existing source execution IDs or indexed fee fact IDs by reference. Slots still count. */
+   accountSourceStrings(value: readonly string[]) { this.sourceStringArrays.add(value); }
+-  private retain(value: unknown) {
++  private retain(value: unknown, staged?: Map<object, ReturnType<ProjectionMemo["shape"]>>) {
+     if (!value || typeof value !== "object" || this.permanent.has(value)) return;
+     const previous=this.retained.get(value);
+     if(previous){previous.references++;return;}
+-    const shape=this.shape(value);
++    const shape=staged?.get(value) ?? this.shape(value);
+     this.retained.set(value,{...shape,references:1});this.bytes+=shape.bytes;
+-    shape.children.forEach(child=>this.retain(child));
++    shape.children.forEach(child=>this.retain(child,staged));
+   }
+   private release(value: unknown) {
+     if(!value || typeof value!=="object")return;
+@@ -540,17 +540,32 @@
+     this.values.delete(key); this.values.set(key, hit);
+     return hit.value as T;
+   }
+-  set(key: string, value: unknown) {
++  set(key: string, value: unknown): boolean {
++    const bytes = 256 + 2 * key.length + (value && typeof value === "object" ? 0 : this.primitiveBytes(value));
++    const limit = 64 * 1024 * 1024;
++    // Measure the complete candidate before touching the live working set.
++    // Existing shared shapes are reusable, but still count in its standalone
++    // size: an oversized candidate cannot fit even after every entry expires.
++    const staged = new Map<object, ReturnType<ProjectionMemo["shape"]>>();
++    const pending: unknown[] = [value];
++    let candidateBytes = bytes;
++    while (pending.length && candidateBytes <= limit) {
++      const node = pending.pop();
++      if (!node || typeof node !== "object" || this.permanent.has(node) || staged.has(node)) continue;
++      const shape = this.retained.get(node) ?? this.shape(node);
++      staged.set(node, shape); candidateBytes += shape.bytes;
++      pending.push(...shape.children);
++    }
++    if (candidateBytes > limit) { staged.clear(); return false; }
+     this.delete(key);
+-    const bytes = 256 + 2 * key.length + (value && typeof value === "object" ? 0 : this.primitiveBytes(value));
+-    this.retain(value);this.bytes+=bytes;
+-    while (this.values.size >= 8192 || this.bytes > 64 * 1024 * 1024) {
++    this.retain(value, staged); staged.clear(); this.bytes += bytes;
++    while (this.values.size >= 8192 || this.bytes > limit) {
+       const first = this.values.keys().next().value;
+       if (first === undefined) break;
+-      this.delete(first);this.evictions++;
+-    }
+-    if(this.bytes>64*1024*1024){this.release(value);this.bytes-=bytes;return;}
++      this.delete(first); this.evictions++;
++    }
+     this.values.set(key, { value, bytes });
++    return true;
+   }
+   get size() { return this.values.size; }
+   count(prefix: string) { return [...this.values.keys()].filter(key=>key.startsWith(prefix)).length; }
+@@ -571,6 +586,38 @@
+     Object.values(value).forEach(freezeProjection); Object.freeze(value);
+   }
+   return value;
++}
++/** Construction-only sharing of complete public values. No table escapes
++ * into the handle, source/index, memo or returned graph. */
++class ProjectionSharing {
++  private values = new Map<string, object>();
++  private contexts: Map<string, HomepageV25Metric>[] = [];
++  private exact<T extends object>(value: T): T {
++    // Public projection values are plain JSON records/arrays. Ordered complete
++    // content includes coverage, reason order, native subtotals and FX clocks.
++    const key = JSON.stringify(value), previous = this.values.get(key);
++    if (previous) return previous as T;
++    freezeProjection(value); this.values.set(key, value); return value;
++  }
++  forBoundary(input: HomepageV25Input, boundary: Boundary) {
++    const context = new Map<string, HomepageV25Metric>(); this.contexts.push(context);
++    return (amounts: Amount[]): HomepageV25Metric => {
++      // Reuse the unchanged policy oracle only for the exact full-precision
++      // Amount input under this same target, FX snapshot and knowledge cursor.
++      const key = JSON.stringify(amounts.map(a => [a.currency, a.value?.toString() ?? null, a.reasons, a.eligible]));
++      const previous = context.get(key); if (previous) return previous;
++      const result = metric(amounts, input, boundary);
++      result.coverage = this.exact(result.coverage); result.reasons = this.exact(result.reasons);
++      result.money.originalByCurrency = this.exact(result.money.originalByCurrency);
++      if (result.money.fx) result.money.fx = this.exact(result.money.fx);
++      result.money = this.exact(result.money);
++      const shared = this.exact(result); context.set(key, shared); return shared;
++    };
++  }
++  clear() {
++    this.contexts.forEach(context => context.clear()); this.contexts.length = 0;
++    this.values.clear();
++  }
+ }
+ function stableProjectionJson(value: unknown): string {
+   if (Array.isArray(value)) return `[${value.map(stableProjectionJson).join(",")}]`;
+@@ -834,11 +881,12 @@
+ }
+ const endpointMetricNames = ["periodRealized", "openingUnrealized", "closingUnrealized", "unrealizedChange", "net", "lifetimeRealizedNet", "lifetimeNet", "marketValue", "unrealizedNet", "openFees", "periodFees"] as const;
+ type EndpointAmounts = Record<(typeof endpointMetricNames)[number], Amount>;
+-function projectedCurrent(data: PreparedData, boundary: Boundary, targetCurrency?: string): CurrentProjection {
++function projectedCurrent(data: PreparedData, boundary: Boundary, sharing: ProjectionSharing, targetCurrency?: string): CurrentProjection {
+   const key = `current:${boundary.cursor}:${targetCurrency ?? ""}`;
+   const cached = data.memo.get<CurrentProjection>(key);
+   if (cached) return cached;
+   const fx = fxFor(data, boundary, data.groups.map(g => currency(g.instrument.currency)), targetCurrency, true), input = asProjectionInput(data, targetCurrency, fx.snapshot);
++  const sharedMetric = sharing.forBoundary(input, boundary);
+   const markets: Amount[] = [], unrealized: Amount[] = [], fees: Amount[] = [], instruments: CurrentInstrument[] = [], quoteCoverage: Record<string, QuoteCoverage> = {};
+   for (const group of data.groups) {
+     const state = projectedState(data, group, boundary), indexed = indexedQuote(data, group, boundary), quote = quoteFor(input, group, "current", boundary), eligible = state.quantity === null || !state.quantity.isZero();
+@@ -846,9 +894,11 @@
+     const fee: Amount = { currency: currency(group.instrument.currency), value: state.quantity === null ? null : state.openFees, eligible, reasons: unique([...state.quantityReasons, ...(state.openFees === null ? [...state.pnlReasons.filter(r => r.includes("fee")), "fee-allocation-unavailable"] : [])]) };
+     markets.push(mv); unrealized.push(uf); fees.push(fee); quoteCoverage[group.key] = indexed.coverage;
+     const currentEvidence=evidence(state, quote.quote, quote.reason);data.memo.accountSourceStrings(currentEvidence.executionIds);
+-    instruments.push({ key: group.key, identity: group.identity, currentMarketValue: metric([mv], input, boundary), currentUnrealized: metric([uf], input, boundary), currentOpenFees: metric([fee], input, boundary), evidence: { current: currentEvidence } });
+-  }
+-  const result = { asOf: boundary.cursor, currentMarketValue: metric(markets, input, boundary), currentUnrealized: metric(unrealized, input, boundary), currentOpenFees: metric(fees, input, boundary), instruments, quoteCoverage, fxCoverage: fx.coverage };
++    instruments.push({ key: group.key, identity: group.identity, currentMarketValue: sharedMetric([mv]), currentUnrealized: sharedMetric([uf]), currentOpenFees: sharedMetric([fee]), evidence: { current: currentEvidence } });
++  }
++  const result = { asOf: boundary.cursor, currentMarketValue: sharedMetric(markets), currentUnrealized: sharedMetric(unrealized), currentOpenFees: sharedMetric(fees), instruments, quoteCoverage, fxCoverage: fx.coverage };
++  freezeProjection(result);
++  sharing.clear();
+   data.memo.set(key, result);
+   return result;
+ }
+@@ -874,13 +924,14 @@
+     data.batches = data.batches.filter(key=>key!==batchKey); data.batches.push(batchKey);
+     return cached;
+   }
++  const sharing = new ProjectionSharing();
+   const openingBoundary = dayBoundary(previousDay(request.periodStart));
+   const points: HomepageV25BoundaryPoint[] = [];
+   for (const endpoint of endpoints) {
+     const future = endpoint.boundary.day > asOf.day || endpoint.boundary.instant !== undefined && endpoint.boundary.instant > asOf.instant;
+     const boundary = endpoint.boundary.day === asOf.day && Date.parse(endpoint.boundary.cursor) > asOf.instant ? asOf : endpoint.boundary;
+     const fx = future ? { coverage: { state: "missing" as const, businessDate: boundary.day, observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: ["endpoint-future"] } } : fxFor(data, boundary, data.groups.map(g => currency(g.instrument.currency)), request.targetCurrency);
+-    const input = asProjectionInput(data, request.targetCurrency, fx.snapshot);
++    const input = asProjectionInput(data, request.targetCurrency, fx.snapshot), sharedMetric = sharing.forBoundary(input, boundary);
+     const totals = Object.fromEntries(endpointMetricNames.map(name => [name, [] as Amount[]])) as Record<(typeof endpointMetricNames)[number], Amount[]>;
+     const instruments: BoundaryInstrument[] = [], quoteCoverage: Record<string, { opening: QuoteCoverage; endpoint: QuoteCoverage }> = {};
+     if (!future) for (const group of data.groups) {
+@@ -896,21 +947,22 @@
+       const fee = feeAmount(data, group, request.periodStart, boundary, eligible);
+       const amounts: EndpointAmounts = { periodRealized: realized, openingUnrealized: ouf, closingUnrealized: cuf, unrealizedChange: change, net, lifetimeRealizedNet: lifetimeRealized, lifetimeNet, marketValue: strictAmount(group, end, eq, "market", eligible), unrealizedNet: cuf,
+         openFees: { currency: code, value: end.quantity === null ? null : end.openFees, reasons: unique([...end.quantityReasons, ...(end.openFees === null ? ["fee-allocation-unavailable"] : [])]), eligible }, periodFees: fee.amount };
+-      const values = Object.fromEntries(endpointMetricNames.map(name => { totals[name].push(amounts[name]); return [name, metric([amounts[name]], input, boundary)]; })) as EndpointMetrics;
++      const values = Object.fromEntries(endpointMetricNames.map(name => { totals[name].push(amounts[name]); return [name, sharedMetric([amounts[name]])]; })) as EndpointMetrics;
+       const qc = { opening: oq.coverage, endpoint: eq.coverage }; quoteCoverage[group.key] = qc;
+       const openingEvidence=evidence(opening,oq.quote,oq.reason),endpointEvidence=evidence(end,eq.quote,eq.reason);
+       for(const ids of [openingEvidence.executionIds,endpointEvidence.executionIds,fee.ids])data.memo.accountSourceStrings(ids);
+       instruments.push({ ...values, key: group.key, identity: group.identity, evidence: { opening: openingEvidence, endpoint: endpointEvidence }, quoteCoverage: qc, fxCoverage: fx.coverage, feeFactIds: fee.ids,
+-        canonicalKnownFees: metric([{ currency: code, value: [...(end.ledger.accuracy?.reasons ?? []), ...end.pnlReasons.filter(r => r === "fees-invalid" || r === "fees-conflict" || r === "duplicate-execution-conflict")].some(r => r.includes("fee") || r === "duplicate-execution-conflict") ? null : D(end.ledger.fees), reasons: (end.ledger.accuracy?.reasons ?? []).filter(r => r.includes("fee")), eligible }], input, boundary), lifetimeCoverage: life });
++        canonicalKnownFees: sharedMetric([{ currency: code, value: [...(end.ledger.accuracy?.reasons ?? []), ...end.pnlReasons.filter(r => r === "fees-invalid" || r === "fees-conflict" || r === "duplicate-execution-conflict")].some(r => r.includes("fee") || r === "duplicate-execution-conflict") ? null : D(end.ledger.fees), reasons: (end.ledger.accuracy?.reasons ?? []).filter(r => r.includes("fee")), eligible }]), lifetimeCoverage: life });
+     }
+     if (future) for (const name of endpointMetricNames) totals[name].push({ currency: request.targetCurrency ?? "", value: null, reasons: ["endpoint-future"], eligible: true });
+-    const values = Object.fromEntries(endpointMetricNames.map(name => [name, metric(totals[name], input, boundary)])) as EndpointMetrics;
++    const values = Object.fromEntries(endpointMetricNames.map(name => [name, sharedMetric(totals[name])])) as EndpointMetrics;
+     points.push({ ...values, key: endpoint.key, requestedAt: endpoint.at, businessDate: boundary.day, effectiveCursor: future ? null : boundary.cursor, boundaryPrecision: boundary.instant === undefined ? "day" : "instant", state: future ? "future" : values.net.available ? "value" : "source-missing", plottable: values.net.available, instruments, quoteCoverage, fxCoverage: fx.coverage, lifetimeCoverage: instruments.map(i => i.lifetimeCoverage), reasons: unique(endpointMetricNames.flatMap(name => values[name].reasons)) });
+   }
+-  const current = projectedCurrent(data, asOf, request.targetCurrency);
++  const current = projectedCurrent(data, asOf, sharing, request.targetCurrency);
+   const diagnostics: ProjectionDiagnostics = { ...data.counts, distinctCanonicalContexts: data.memo.count("canonical:"), cacheEntries: data.memo.size, cacheEstimatedBytes: data.memo.bytes, evictions: data.memo.evictions };
+   const result = freezeProjection({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, scope: data.scope, asOf: asOf.cursor, periodStart: request.periodStart, points, current, feeFacts: visibleFeeFacts(data, asOf), diagnostics });
+-  data.memo.set(batchKey, result); data.batches.push(batchKey);
++  sharing.clear();
++  if (data.memo.set(batchKey, result)) data.batches.push(batchKey);
+   // Result entries share the same global memo limits and an additional four
+   // batch cap. Old entries expire naturally via bounded LRU.
+   if (data.batches.length > 4) data.memo.delete(data.batches.shift()!);

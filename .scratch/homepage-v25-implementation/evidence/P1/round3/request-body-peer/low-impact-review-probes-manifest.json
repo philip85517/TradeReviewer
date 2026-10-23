@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-10-22T19:55:30.966Z",
+  "completedAt": "2026-10-22T19:55:31.419Z",
+  "node": "v26.0.0",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "--test",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/low-impact-review-probes.test.mjs"
+  ],
+  "before": {
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-observer.mjs": "864628680b8aaaaa0a8628390a31a8526271bce3add330e9f0bd0d8a3f646613",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-preload.mjs": "2cc07345628ba3b43439dedcea55d0eccee9625ad58f48f7e2fc0324b1fa3733",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/low-impact-review-probes.test.mjs": "71f1ec7a40b058a78acf79dbdde6de6eef84c7d4d67de3241e2f0d889f6d5200"
+  },
+  "after": {
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-observer.mjs": "864628680b8aaaaa0a8628390a31a8526271bce3add330e9f0bd0d8a3f646613",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/candidate-preload.mjs": "2cc07345628ba3b43439dedcea55d0eccee9625ad58f48f7e2fc0324b1fa3733",
+    ".scratch/homepage-v25-implementation/evidence/P1/round3/request-body-peer/low-impact-review-probes.test.mjs": "71f1ec7a40b058a78acf79dbdde6de6eef84c7d4d67de3241e2f0d889f6d5200"
+  },
+  "stable": true,
+  "exitCode": 0,
+  "scope": "synthetic EventEmitter only; preload unexecuted; no listen/network/app/DB"
+}

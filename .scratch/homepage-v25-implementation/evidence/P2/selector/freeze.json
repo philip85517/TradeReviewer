@@ -1,0 +1,78 @@
+{
+  "generatedAt": "2026-10-22T21:47:47.382Z",
+  "root": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/",
+  "task": "P2 controlled period selector isolated leaf; formal P2 remains0/3",
+  "model": "gpt-6.1-sol / ultra",
+  "source": {
+    "app/components/homepage-v25/period-selector.tsx": {
+      "bytes": 10923,
+      "sha256": "7dd84cd1c3523855efa754be356c37aaa91afc638012b821bb10df084d9a12da"
+    },
+    "app/components/homepage-v25/period-selector.css": {
+      "bytes": 4065,
+      "sha256": "a5206ab1f6640fd2957194d443d7718670b423b578639da09501665e4dac9989"
+    },
+    "app/components/homepage-v25/period-selector.test.tsx": {
+      "bytes": 18344,
+      "sha256": "193520ba99a46fb258323555f413cb88d9a08a839662cb4c5b324d8dc537e46c"
+    }
+  },
+  "evidence": {
+    "visual-contract.md": {
+      "bytes": 9907,
+      "sha256": "971bf0bf1c85e9531ff68cb7a9b8eb3c6ace3118905e962930e4e32fcf2ef1f6"
+    },
+    "tsconfig.selector.json": {
+      "bytes": 368,
+      "sha256": "88dc7b1092c81c464c38c25aae93c2fcd79d6a21ecd69307ba03f4120ed07e6f"
+    },
+    "REPORT.md": {
+      "bytes": 11982,
+      "sha256": "586a361a8f150d3ee60a572e36df64d207bf9903d26bcc290e3c479a398588ae"
+    },
+    "red-missing-component.log": {
+      "bytes": 2038,
+      "sha256": "c2e9152ede61f6c3b900fe62299254e708b35098f68f9b49569fa84364a64793"
+    },
+    "red-behavior.log": {
+      "bytes": 1693,
+      "sha256": "03f64f0db49f6665b312f7491de3e80409c85bcff099e239b0aa201ee2065f19"
+    },
+    "green-attempt-1.log": {
+      "bytes": 430,
+      "sha256": "eb0eb182b15a2eac87ec8029d12b69208dac945bf2cea29f4bc7e889abb81471"
+    },
+    "green-final.log": {
+      "bytes": 430,
+      "sha256": "01522cc3a20c05f51a3eda23baec6951bc1f31a3d0930e7242c3795afbee6cf0"
+    },
+    "typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "css-parse.log": {
+      "bytes": 84,
+      "sha256": "182c40ed45750c6f57a8f27482cbb9f074ca4a530cb4c3d754a5e0235220b9fc"
+    }
+  },
+  "results": {
+    "targeted": "PASS30/30",
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "cssParseExit": 0,
+    "browser": "NOT VERIFIED",
+    "independentVisual": "NOT VERIFIED",
+    "integratedE2E": "NOT VERIFIED",
+    "persistence": "NOT APPLICABLE to read-only controlled leaf",
+    "formalP2": "0/3; prior FAIL unchanged"
+  },
+  "commands": {
+    "targeted": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/homepage-v25/period-selector.test.tsx --maxWorkers=1",
+    "typecheck": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/typescript/bin/tsc --project .scratch/homepage-v25-implementation/evidence/P2/selector/tsconfig.selector.json",
+    "lint": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/components/homepage-v25/period-selector.tsx app/components/homepage-v25/period-selector.test.tsx"
+  }
+}

@@ -1,0 +1,24 @@
+# P1 execution ledger — issues/04-holdings-journey.md
+
+2026-10-23. Formal authorization: root. One product owner integration_g61 (GPT 6.1 / ultra); root independently accepts. P1 recovery 0/3. Internal slices do not reset rounds. No P2–P4 work or dependent interface changes.
+
+Approved V2.5 source, current component manual, actual reference images, visual-contract, exact task bounds, 55 design rows and 96 control states remain binding. Root owns service 3333, browser and explicitly isolated database acceptance. No service/browser/database actions were performed by this owner.
+
+Implemented pending independent acceptance:
+- Explicit-live holdings reconstructed at one real ISO cutoff; stable account+episode rows; credible Shanghai day age; signed quantity, precision and unknowns. USD/HKD/CNY report currency retained locally without changing old room types.
+- One accepted F current projection supplies net unrealized P&L, exposure, quote and fee evidence. No local fee ledger. Future fills excluded before legacy row projection. Partial/future FX remains unknown; slash/colon production FX keys accepted by F.
+- Native /home and ordinary /trades collection wiring, execution-date membership including open fills, no queue/auto-first-episode. Existing closed-date statistics remain a separate projection.
+- Owned request bundles commit atomically with S v2 UI. Initial readiness, fresh return/focus read, stale result rejection, fresh catalog validation/fallback, route error recovery and full UI-only source restoration wired. Arbitrary external data cannot overwrite an accepted owned bundle.
+- Fixed eight-slot table, C summary inline, controlled search/IME/sort/page/CSV, account loading/empty/error, detail identity/unknowns/focus/one forward action. Detail survives owned data refresh and returns focus on source disappearance. Root performs actual visual comparison.
+- Optional official exchange evidence parsed, validated and preserved independently of name freshness across resolve → repository → readback. SEC explicit field and Nasdaq directory records only; unresolved US remains unresolved. No route/TTL/schema changes.
+
+Evidence retains every RED and failed intermediate check (01–46). Latest targeted passes before final sweep: 36 F+exchange/provider 48 PASS; 38 persistence/resolve 84 PASS; 40 holdings 10 PASS; 42 holdings+library state 31 PASS; 45 surface+host 9 PASS. Type preflight 43 found one missing type import, now corrected. Unknown cost/quote copy consumption RED added in 46, correction in progress.
+
+Frozen for root's formal recovery round 1: see IMPLEMENTATION-READY-1.md and source-manifest.freeze-1.json (29 files, owned manifest 766c4cc69c7075be36ef61abe772129c04950b3cb7c5a2ce6966563a8a0fed9f). Unknown cost/quote now 暂无/待更新. Known hpIndex guard waits for actual compensating popstate before prompting, RED50 → GREEN64. Final home24 PASS; 11 targeted files175 PASS; strict tsc exit0. Lint has one demonstrated HEAD baseline cash effect error. Workspace selection remains 2PASS/3FAIL after address isolation; original isolation hypothesis disproved, failures and uncertainty preserved in readiness. Empty-account import/empty next-step are known implementation gaps. F quote session dependency has been reopened by root; peer broad-merge exchange bypass risk pending independent report. Product edits stopped per root; waiting concentrated acceptance feedback. Whole real journey/persistence/visual/touch remain NOT VERIFIED.
+
+
+## Formal round 1 FAIL → frozen candidate 2
+
+Root acceptance-1.md is retained; round counter 1/3 used, next2/3. Round2 fixes detail core-card hierarchy, post-inert focus, known/missing value semantics and actual popover, empty actions through existing import, broad shared metadata write validation and historical read fail-closed identity. Global bare /trades preserves legacy compatibility; homepage nav/CTA/details preserve strict applied scope, date/custom URL and UI-only source restore. No source nature was invented. Aliases HTTP error/retry remains strict. US positive fixtures corrected to completed Oct22 sessions under accepted F3.
+
+Frozen30 files: source-manifest.freeze-2.json, aggregate b5611a7a229ca1d661fe3a0533ac8729ec0761f265d673aa9a5830edc204a2d1. Exact readiness, commands and NV in IMPLEMENTATION-READY-2.md; controls updated in controls/FROZEN-SOURCE-INVENTORY-2.md; RED/rootcause/realGREEN chain in ROUND-2-ROOT-CAUSES.md. Final81=194,88=9 (original three included;86 skipped),86=62 PASS,16 files265 executed tests. Strict tsc87 exit0. Lint84 FAIL1existing cash effect error+14warnings; baseline60 retained. 79 namedgreen is actually2FAIL and is not used as PASS;80/82 original failures retained. No new tests/service/browser/DB/product edits after freeze. Candidate2 actual functional/persistence/visual and physical/emulated touch NV pending root; P2–P4 not implemented.

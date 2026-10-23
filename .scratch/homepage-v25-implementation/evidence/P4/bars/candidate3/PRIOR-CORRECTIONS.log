@@ -1,0 +1,9 @@
+COMMAND ["/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node", ".scratch/homepage-v25-implementation/evidence/P4/bars/candidate2/verify-corrections.mjs"]
+STDOUT
+PASS CB-M02 error wins the generic status cascade
+PASS CB-M03 desktop has one full-height list axis, narrow keeps row axes
+STATIC/SYNTHETIC ONLY: jsdom computes the flat declaration cascade; postcss checks desktop/narrow axis structure. No browser rendering, axis rect measurement, actual overflow or visual PASS.
+
+STDERR
+
+EXIT 0

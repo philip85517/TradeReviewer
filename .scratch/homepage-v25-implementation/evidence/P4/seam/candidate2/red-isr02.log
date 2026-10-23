@@ -1,0 +1,90 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:63028) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (169 tests | 1 failed | 168 skipped) 63ms
+     × ISR02 keeps raw fee totals independent while matching and pool lineage stay unknown 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > P4 seam candidate2 independent source review > ISR02 keeps raw fee totals independent while matching and pool lineage stay unknown
+AssertionError: expected [ { value: '2', …(2) }, …(4) ] to deeply equal [ { value: null, …(2) }, …(4) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-unavailable",
+-       "history-incomplete",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "2",
+    },
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-unavailable",
+-       "history-incomplete",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "0",
+    },
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-unavailable",
+-       "history-incomplete",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "0",
+    },
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-unavailable",
+-       "history-incomplete",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "2",
+    },
+    {
+-     "available": false,
+-     "reasons": [
+-       "quantity-unavailable",
+-       "history-incomplete",
+-     ],
+-     "value": null,
++     "available": true,
++     "reasons": [],
++     "value": "0",
+    },
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:1298:144
+    1296|     expect(first.openingPoolBefore).toEqual({ value: "0", available: t…
+    1297|     const unknown = { value: null, available: false, reasons: ["quanti…
+    1298|     expect([first.openingPoolAfter, first.releasedOpeningFee, first.mo…
+       |                                                                                                                                                ^
+    1299|     expect(next.openingPoolBefore).toEqual(unknown);
+    1300|     expect(next.movementFeeTotal).toEqual({ value: "2", available: tru…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 168 skipped (169)
+   Start at  11:43:32
+   Duration  4.88s (transform 597ms, setup 579ms, import 685ms, tests 63ms, environment 2.81s)
+

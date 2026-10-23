@@ -1,0 +1,133 @@
+--- input/homepage-v25-performance.test.ts
++++ app/lib/reviews/homepage-v25-performance.test.ts
+@@ -969,3 +969,130 @@
+     expect(projectHomepageV25Boundaries(source, query)).toBe(first);
+   });
+ });
++
++// Calendar-resume candidate 1: additive FX eligibility regressions.
++describe("P2 boundary FX eligibility follows native dependencies", () => {
++  const hkd = { id: "HK:00005", symbol: "00005", name: "HSBC", market: "HK", currency: "HKD" };
++  const currentUsd = { snapshot: { id: "current-usd", baseCurrency: "CNY" as const, source: "broker", asOf: "2026-02-02T00:00:00Z", status: "complete" as const, rates: { "USD/CNY": "7" } }, fetchedAt: "2026-02-02T00:01:00Z", publishedAtByPair: { "USD/CNY": "2026-02-02T00:00:00Z" }, sourceRevision: "f1", evidenceIds: ["current-fetch"] };
++  const query = { ...batchQuery, periodStart: "2026-01-30", targetCurrency: "CNY" };
++  const usdBuy = () => fill("eligible-usd", "2026-01-05T15:00:00Z");
++  const futureHkd = (source: TradeExecution["source"] = { platform: "statement", row: 2 }) => fill("future-hkd", "2026-03-05T05:00:00Z", { instrument: hkd, source });
++  const quotes = () => [raw("2026-01-28", "110"), raw("2026-01-29", "110"), raw("2026-01-30", "120"), raw("2026-01-30", "110", hkd)];
++  it("does not require future-only HKD to convert independent endpoint and current USD", () => {
++    const source = preparedFixture([usdBuy(), futureHkd()], quotes(), { fxObservations: [observation("2026-01-30", "7")], currentFxSnapshot: currentUsd });
++    const batch = projectHomepageV25Boundaries(source, query), point = batch.points[0];
++    expect([point.net.value, point.marketValue.value, batch.current.currentMarketValue.value, batch.current.currentUnrealized.value]).toEqual(["0", "770", "840", "140"]);
++    expect(point.fxCoverage.requiredPairs).toEqual(["USD/CNY"]);
++    expect(batch.current.fxCoverage.requiredPairs).toEqual(["USD/CNY"]);
++    expect(point.instruments.find(i => i.identity.instrumentId === hkd.id)?.evidence.endpoint.executionIds).toEqual([]);
++    expect(point.marketValue.money.originalByCurrency).toEqual({ USD: "110" });
++  });
++  it("keeps an actual HKD exposure unavailable without its own rate", () => {
++    const source = preparedFixture([usdBuy(), fill("active-hkd", "2026-01-05T05:00:00Z", { instrument: hkd })], quotes(), { fxObservations: [observation("2026-01-30", "7")], currentFxSnapshot: currentUsd });
++    const batch = projectHomepageV25Boundaries(source, query);
++    expect(batch.points[0].fxCoverage).toMatchObject({ state: "partial", requiredPairs: ["USD/CNY", "HKD/CNY"] });
++    expect(batch.points[0].marketValue.value).toBeNull(); expect(batch.current.currentMarketValue.value).toBeNull();
++    expect(batch.points[0].marketValue.money.originalByCurrency).toEqual({ HKD: "110", USD: "110" });
++  });
++  it("retains closed-period realized HKD while independent flat current needs no HKD", () => {
++    const source = preparedFixture([usdBuy(), fill("hkd-buy", "2026-01-05T05:00:00Z", { instrument: hkd }), fill("hkd-close", "2026-01-15T05:00:00Z", { instrument: hkd, side: "sell", price: "130" })], quotes(), { fxObservations: [observation("2026-01-30", "7")], currentFxSnapshot: currentUsd });
++    const batch = projectHomepageV25Boundaries(source, { ...query, periodStart: "2026-01-01" });
++    expect(batch.points[0].periodRealized.money.originalByCurrency).toEqual({ HKD: "30", USD: "0" });
++    expect(batch.points[0].periodRealized.value).toBeNull();
++    expect(batch.points[0].fxCoverage.requiredPairs).toEqual(["HKD/CNY", "USD/CNY"]);
++    expect(batch.current.fxCoverage.requiredPairs).toEqual(["USD/CNY"]);
++    expect(batch.current.currentMarketValue.value).toBe("840");
++  });
++  it("retains unknown-quantity FX dependencies instead of treating them as flat", () => {
++    const e = fill("unknown-hkd", "2026-01-05T05:00:00Z", { instrument: hkd });
++    const candlesByInstrument = { [hkd.id]: [raw("2026-01-30", "110", hkd)] };
++    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries([e]), {}, {});
++    entries[0].executions[0].quantity = "unavailable";
++    const source = prepareHomepageV25Source({ entries, candlesByInstrument, fxObservations: [observation("2026-01-30", "7")], currentFxSnapshot: currentUsd, lifetimeSourceCoverage: [], revisions: { trades: "unknown", quotes: "q", metadata: "m", fx: "f" } });
++    const batch = projectHomepageV25Boundaries(source, query);
++    expect(batch.points[0].instruments[0].evidence.endpoint.quantity).toBeNull();
++    expect(batch.points[0].fxCoverage.requiredPairs).toEqual(["HKD/CNY"]);
++    expect(batch.current.fxCoverage.requiredPairs).toEqual(["HKD/CNY"]);
++    expect(batch.current.currentMarketValue.value).toBeNull();
++  });
++  it("requires FX for an early fee attached to a future carrier even without stock exposure", () => {
++    const event = { id: "early-fee", accountId: "a", market: "HK", symbol: "00005", currency: "HKD", kind: "fee" as const, date: "2026-01-08", amount: "-2", description: "statement fee", source: [{ page: 1, row: 1 }] };
++    const known = "2026-01-30T00:00:00Z", fx = { ...observation("2026-01-30", "7"), rates: { "HKD/CNY": "0.9" }, publishedAtByPair: { "HKD/CNY": known }, knownAtByPair: { "HKD/CNY": known } };
++    const source = preparedFixture([futureHkd({ platform: "statement", row: 2, positionEvents: [event] })], quotes(), { fxObservations: [fx] });
++    const batch = projectHomepageV25Boundaries(source, { ...query, periodStart: "2026-01-01" });
++    expect(batch.points[0].periodFees).toMatchObject({ value: "1.8", coverage: { total: 1, available: 1 }, money: { originalByCurrency: { HKD: "2" } } });
++    expect(batch.points[0].fxCoverage.requiredPairs).toEqual(["HKD/CNY"]);
++    expect(batch.points[0].instruments[0].evidence.endpoint.executionIds).toEqual([]);
++    expect(batch.points[0].instruments[0].feeFactIds).toHaveLength(1);
++    expect(batch.current.fxCoverage.state).toBe("not-required");
++  });
++  it("keeps early statement inventory attached to a future carrier eligible", () => {
++    const position = { accountId: "a", market: "HK", symbol: "00005", phase: "opening" as const, date: "2026-01-01", quantity: "2", source: [{ page: 1, row: 1 }] };
++    const source = preparedFixture([futureHkd({ platform: "statement", row: 2, statementPositions: [position] })], quotes(), { fxObservations: [observation("2026-01-30", "7")], currentFxSnapshot: currentUsd });
++    const batch = projectHomepageV25Boundaries(source, query);
++    expect(batch.points[0].instruments[0].evidence.endpoint).toMatchObject({ executionIds: [], quantity: "2" });
++    expect(batch.points[0].marketValue.money.originalByCurrency).toEqual({ HKD: "220" });
++    expect(batch.points[0].fxCoverage.requiredPairs).toEqual(["HKD/CNY"]);
++    expect(batch.current.fxCoverage.requiredPairs).toEqual(["HKD/CNY"]);
++    expect(batch.current.currentMarketValue.value).toBeNull();
++  });
++});
++
++import * as marketCalendar from "../market/calendar";
++import * as marketSyncRange from "../market/sync-range";
++describe("P2 batch-local market calendar sharing", () => {
++  it("resolves each exact market/cursor once per batch while quotes stay instrument-specific", () => {
++    const markets = ["US", "HK", "CN-SH", "CN-SZ"] as const;
++    const instruments = markets.flatMap(market => [0, 1].map(i => ({ id: `${market}:CAL${i}`, market, symbol: `CAL${i}`, name: `Calendar ${i}`, currency: market === "US" ? "USD" : market === "HK" ? "HKD" : "CNY" })));
++    const dates = ["2026-10-20", "2026-10-21", "2026-10-22", "2026-11-02", "2026-11-03", "2026-11-25", "2026-11-27"];
++    const source = preparedFixture(instruments.map((instrument, i) => fill(`calendar-${i}`, "2026-01-05T05:00:00Z", { instrument })), instruments.flatMap((instrument, i) => dates.map(date => raw(date, String(110 + i), instrument))));
++    const instants = ["2026-10-22T06:59:59Z", "2026-10-22T07:00:00Z", "2026-10-22T08:09:59Z", "2026-10-22T08:10:00Z", "2026-10-22T17:30:00Z", "2026-10-22T20:00:00Z", "2026-11-03T20:30:00Z", "2026-11-03T21:00:00Z", "2026-11-27T17:59:59Z", "2026-11-27T18:00:00Z"];
++    const query = { periodStart: "2026-10-22", asOf: "2026-11-30T10:00:00Z", endpoints: instants.map((at, i) => ({ key: `session-${i}`, at })) };
++    const range = vi.spyOn(marketSyncRange, "requiredMarketDataRange");
++    try {
++      const first = projectHomepageV25Boundaries(source, query);
++      const byMarket = (point: (typeof first.points)[number], market: string) => point.instruments.filter(i => i.identity.instrumentId.startsWith(`${market}:`));
++      expect(byMarket(first.points[0], "CN-SH")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-21");
++      expect(byMarket(first.points[1], "CN-SH")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-22");
++      expect(byMarket(first.points[2], "HK")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-21");
++      expect(byMarket(first.points[3], "HK")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-22");
++      expect(byMarket(first.points[4], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-21");
++      expect(byMarket(first.points[5], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-10-22");
++      expect(byMarket(first.points[6], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-11-02");
++      expect(byMarket(first.points[7], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-11-03");
++      expect(byMarket(first.points[8], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-11-25");
++      expect(byMarket(first.points[9], "US")[0].quoteCoverage.endpoint.requiredCompletedSession).toBe("2026-11-27");
++      expect(byMarket(first.points[5], "US").map(i => i.marketValue.value)).toEqual(["110", "111"]);
++      const keys = range.mock.calls.map(([start, end, options]) => `${options?.market}|${start}|${end}`);
++      expect(keys).toHaveLength(new Set(keys).size);
++      expect(keys).toHaveLength(markets.length * (instants.length + 2));
++      range.mockClear();
++      // A different batch must recalculate calendar facts; no retained source
++      // cache may bypass the existing graph/memo budget.
++      projectHomepageV25Boundaries(source, { ...query, endpoints: query.endpoints.map(e => ({ ...e, key: `second-${e.key}` })) });
++      expect(range.mock.calls).toHaveLength(markets.length * (instants.length + 1));
++    } finally { range.mockRestore(); }
++  });
++  it("shares completed-session failures only within the exact market/cursor", () => {
++    const instruments = [0, 1].map(i => ({ ...usdInstrument, id: `US:UNAVAILABLE${i}`, symbol: `UNAVAILABLE${i}` }));
++    const source = preparedFixture(instruments.map((instrument, i) => fill(`range-${i}`, "2026-01-05T15:00:00Z", { instrument })), instruments.map(instrument => raw("2026-01-30", "110", instrument)));
++    const range = vi.spyOn(marketSyncRange, "requiredMarketDataRange");
++    try {
++      const batch = projectHomepageV25Boundaries(source, { periodStart: "2031-01-02", asOf: "2031-01-03T22:00:00Z", endpoints: [{ key: "range", at: "2031-01-02T22:00:00Z" }] });
++      expect(batch.points[0].instruments.map(i => i.quoteCoverage.endpoint.state)).toEqual(["calendar-unavailable", "calendar-unavailable"]);
++      expect(batch.current.instruments.map(i => i.currentMarketValue.reasons)).toEqual([["quote-session-unavailable"], ["quote-session-unavailable"]]);
++      expect(range.mock.calls).toHaveLength(3);
++    } finally { range.mockRestore(); }
++  });
++  it("keeps a missing instrument session independent from a complete peer", () => {
++    const peer = { ...usdInstrument, id: "US:PEER", symbol: "PEER" };
++    const source = preparedFixture([fill("gap-original", "2026-01-05T15:00:00Z"), fill("complete-peer", "2026-01-05T15:00:00Z", { instrument: peer })], [raw("2026-01-28", "110"), raw("2026-01-29", "120", peer)]);
++    const dates = vi.spyOn(marketCalendar, "expectedTradingDates");
++    try {
++      const point = projectHomepageV25Boundaries(source, { ...batchQuery, endpoints: [{ key: "gap-peer", at: "2026-01-30T10:00:00Z" }] }).points[0];
++      expect(point.instruments.map(i => [i.identity.instrumentId, i.marketValue.value, i.quoteCoverage.endpoint.state])).toEqual([["US:AAPL", null, "missing-completed-session"], ["US:PEER", "120", "session-in-progress-carry"]]);
++      expect(point.instruments[0].quoteCoverage.endpoint.missingSessions).toEqual(["2026-01-29"]);
++      expect(dates.mock.calls.length).toBeGreaterThan(0);
++    } finally { dates.mockRestore(); }
++  });
++});

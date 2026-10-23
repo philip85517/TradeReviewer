@@ -1,0 +1,9 @@
+{
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "historySourceFiles": "absent before implementation",
+  "frozenMetricCards": {
+    "metric-cards.tsx": "ed77d89813457c8b5c2819d45fe539d208e9b04b1a9214478319a5dcde2b9035",
+    "metric-cards.css": "d692b241e863a7141815220938141dec3e9342c559dc13e3f493ace9f3d6b10c",
+    "metric-cards.test.tsx": "d007bfa4a30a50aa4317fe3ea2e82d527b035b41d6e96b264e2fe89512e0151d"
+  }
+}

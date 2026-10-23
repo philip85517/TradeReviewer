@@ -1,0 +1,106 @@
+{
+  "status": "IMPLEMENTATION-READY; frozen; root independent acceptance pending",
+  "owner_model": "gpt-6.1-sol",
+  "owner_reasoning": "ultra",
+  "freeze_at_utc": "2026-10-22T23:35:43.283440+00:00",
+  "head_before": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "head_after": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "test_file": "app/components/trade-review-workspace.test.tsx",
+  "test_sha256_before": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5",
+  "test_sha256_after": "1fbb9dc85466ed0677c4ef654631a6b83274ed7ff5753b871b1fe011ecd5b9af",
+  "scope_checks": {
+    "prefix_before_original_test_unchanged": true,
+    "suffix_after_adjacent_negative_unchanged": true,
+    "one_original_positive_name": true,
+    "one_new_negative_name": true,
+    "old_return_test_still_present": true,
+    "all_ten_protected_source_and_config_sha_unchanged": true,
+    "HEAD_unchanged": true
+  },
+  "commands": [
+    {
+      "phase": "original-name RED",
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace passes stored instrument metadata into the trading room scope$'",
+      "raw": "RED-original-etf.log",
+      "exit_code": 1,
+      "executed": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 100,
+      "total_file_tests": 101
+    },
+    {
+      "phase": "first migrated candidate; retained asynchronous-wait failure",
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace (passes stored instrument metadata into the trading room scope|keeps unknown instrument metadata out of stock and ETF homepage categories)$'",
+      "raw": "GREEN-etf-and-unknown.log",
+      "exit_code": 1,
+      "executed": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 100,
+      "total_file_tests": 102
+    },
+    {
+      "phase": "same candidate after initial row wait correction",
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/vitest/vitest.mjs run app/components/trade-review-workspace.test.tsx --configLoader native --maxWorkers 1 -t '^TradeReviewWorkspace (passes stored instrument metadata into the trading room scope|keeps unknown instrument metadata out of stock and ETF homepage categories)$'",
+      "raw": "GREEN-2-etf-and-unknown.log",
+      "exit_code": 0,
+      "executed": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 100,
+      "total_file_tests": 102
+    },
+    {
+      "phase": "scoped ESLint",
+      "command": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node node_modules/eslint/bin/eslint.js app/components/trade-review-workspace.test.tsx",
+      "raw": "LINT-workspace-test.log",
+      "exit_code": 0,
+      "stdout_stderr": "empty"
+    }
+  ],
+  "formal_rounds": {
+    "P1": "2/3 FAIL unchanged",
+    "P3": "0/3 unchanged"
+  },
+  "gate_caveats": [
+    "No browser/visual/persistence acceptance",
+    "Old return test unchanged, not run",
+    "Default pendingFact evidence caveat preserved; not resolved or tested",
+    "No full suite or custom config; no other 100 original tests executed"
+  ],
+  "references_sha256": {
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg": "d5182ba7030cf8052405785122f79e8eb39a46ffcbe99d8172cdc51297f602ec",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--detail.svg": "1e810a84b1861578383c2542c1d0ccb10a0c4d35a21b3f8de14d3b527a8920c3"
+  },
+  "protected_sha256": {
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/homepage-v25/home-surface.css": "3b52912f1a57a4b358ebb765b6eb25c54a55e04c3350132f28aabb9bef33d961",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/attachment-groups.ts": "d3136eaafdde57896779d42058d40f4e52db7ccbdde883357f1d5071e6dac16b",
+    "app/components/homepage-v25/attachment-filter.tsx": "e865b6aa071247e33158fd81833d7b86163af20b874a58a1b8d35c7dc859444f",
+    "app/components/homepage-v25/holdings-model.ts": "d2eaff0c9f9139307a5a81740ffef81f20dc5c09cbd6cbb2a4519464a336f880",
+    "vitest.config.ts": "e13d698288ac14428059e4da2e1c650c87b5b341afae688cc4a037234118ae2d",
+    "app/lib/reviews/trading-room-scope.ts": "2a38546b586acefe78ae0c11621ec5a72a32a1587c0578d73593a08734c63a16"
+  },
+  "evidence_sha256": {
+    "AFTER.json": "f864fa94409dced688b5093935a92fe7c7236e3c91cb54cdc28698db076f7c09",
+    "BEFORE.json": "85e7179ac646443b28e9de2ff684d1c8a19624eebe766ecd91a5337488f1bc31",
+    "CHECKS.json": "8d9464f8080478a763fb4a7f40159fc7b6263d45be56104988ed6c0823a66209",
+    "COMMANDS.json": "3fd4dc90a180427eed10216386ec0c99f0bd4c4da1f3021f825b72574089dfe1",
+    "ETF-only.patch": "3f41778a9d9b272ddff1c0e46ee51f268834a54dee864ce4f1b416fab111813c",
+    "GREEN-2-etf-and-unknown.log": "2b8f5c8eca4bc63a63470ae7b8c9dcb8ece18358c0261c862b1081bddbf5b612",
+    "GREEN-etf-and-unknown.log": "cc492bbe38ca15970228798a21b967cdc1f2d83f9aa542c184f1af2deb255405",
+    "IMPLEMENTATION-READY.md": "000d9edb89f6a65dd289bcdee4ac60e0ee36ef79ed25982b49e3aeea47422bfa",
+    "LINT-workspace-test.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "RED-original-etf.log": "83567882d1336ecbfaf2e41757af9702b1468ff1ff0db8605c7e9b0350c9d6f2",
+    "REFERENCE-filter.png": "9bcae5e18ab5f402ab7c6c54bb2fd51610a2fbc47b90b5ce83e65f8c25dc514f",
+    "REFERENCE-holding-return--detail.png": "1f1c0a3b20134a33f23fea26b4ba6f2c694a2f55bbce2d0ec52f082799f18ddd",
+    "ROOT-DISPATCH.md": "f06befccc85b691783214772551487589e345e453c93494b938ac7e310ab8675",
+    "TEST-DESIGN.md": "22f4fe03220bf7adfbeeaab3f0ab36e48e94d10f6b0348840b495d2046d0981a",
+    "workspace.test.before.txt": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5"
+  }
+}

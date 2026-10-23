@@ -1,0 +1,127 @@
+{
+  "cwd": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "files": [
+    {
+      "path": "app/components/homepage-v25/home-surface.tsx",
+      "exists": true,
+      "sha256": "84897ee2c53bf1c8a81428dcf2e4997cef326b065d58dacae036a2e2b9d2b6c2"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.css",
+      "exists": true,
+      "sha256": "28af46a70f2583e63e3296a2532da4a6f5f74d0fbb5b0a861ab6a86563e65b4d"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "exists": true,
+      "sha256": "21c8c64874873b37c6a6f28e8f13152dd4219d7dc3135b8ddc881ff09bd4f42d"
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.test.tsx",
+      "exists": true,
+      "sha256": "308b5ff8f0f4caa41e121c845e8cda9ed0af8a9ca8629a3e9c80cfa96c62f515"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.ts",
+      "exists": true,
+      "sha256": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e"
+    },
+    {
+      "path": "app/components/homepage-v25/session-model.test.ts",
+      "exists": true,
+      "sha256": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-filter.tsx",
+      "exists": true,
+      "sha256": "e865b6aa071247e33158fd81833d7b86163af20b874a58a1b8d35c7dc859444f"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-filter.css",
+      "exists": true,
+      "sha256": "047665fecce14515ba4136dc7a36986f841cd1230b77872d2793e2dffa69192f"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-filter.test.tsx",
+      "exists": true,
+      "sha256": "7b88c51103b374e8f4ce1c0f6c93b483a48be44034af54e122622e7e4f7b8fc8"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-groups.ts",
+      "exists": true,
+      "sha256": "28fd2e1ae6b22b08e842d8da71d94335cf4cd289c1faf7536f79f2382d5a7073"
+    },
+    {
+      "path": "app/components/homepage-v25/attachment-groups.test.ts",
+      "exists": true,
+      "sha256": "f3ddd331a143a5f3378621b66c37c41eab4dedcfb7f9d11f1f6e150152636b18"
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "exists": true,
+      "sha256": "56c46875fbc678b93c484614e82341a83219013d2c84a03571a7af8ff1e93b27"
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.test.ts",
+      "exists": true,
+      "sha256": "d188d3b717642a4699c56eeda6d4484ed6ec5abf7e8f64f7530315559525ff87"
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "exists": true,
+      "sha256": "410eed339bb9b6915d2b13763731ae3ca3065c7b000cf9eab4e506439973916a"
+    },
+    {
+      "path": "app/components/homepage-v25/home-surface.test.tsx",
+      "exists": true,
+      "sha256": "799c185a031d35f5f8141a1166eab1c930bb495b457d4544f6c88abeb4ad465f"
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "exists": true,
+      "sha256": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e"
+    },
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "exists": true,
+      "sha256": "bab6d85aff029372fe77422e27f3076117298baa18aec3e6463509b1985704b5",
+      "protected": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.refresh.test.tsx",
+      "exists": true,
+      "sha256": "f1ce6c9d5b288ab17a542e8aae8764f49e3dc3faa75622febebb508dbcdcc943",
+      "protected": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.recall-bridge.test.tsx",
+      "exists": true,
+      "sha256": "44762827e38f0ac685c0c55a1994df783f2dc9d47180dc839db0d8476d17c9bb",
+      "protected": true
+    },
+    {
+      "path": "app/components/homepage-v25/search-surface.test.tsx",
+      "exists": true,
+      "sha256": "c2369ebcb6daf32097f54653a9732e45e6bc0318bf2ea3e4e3831143c6c8c788",
+      "protected": true
+    },
+    {
+      "path": "app/components/homepage-v25/search-recovery.test.tsx",
+      "exists": true,
+      "sha256": "840df3f07bf2debfc5da27bb043ce523292b5fe45dc4a45c9984bac379e72ff5",
+      "protected": true
+    },
+    {
+      "path": "app/components/homepage-v25/navigation-recovery.test.tsx",
+      "exists": true,
+      "sha256": "1f8e62d6d8ab1a1e4a59657c9e1e0ffdc644fd31e9351c8257d54be693ebbf09",
+      "protected": true
+    },
+    {
+      "path": "app/components/homepage-v25/navigation-deadline.test.tsx",
+      "exists": true,
+      "sha256": "f10c3e7ececd6322d155778ef9ccb74def1f861eeeef89e95c76131dba6aa457",
+      "protected": true
+    }
+  ]
+}

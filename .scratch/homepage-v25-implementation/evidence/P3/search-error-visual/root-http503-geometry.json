@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-22T20:43:56.008Z",
+  "focus": "搜索标的",
+  "message": {
+    "background": "rgba(0, 0, 0, 0)",
+    "border": "0px solid rgb(255, 133, 146)",
+    "borderRadius": "0px",
+    "color": "rgb(255, 133, 146)",
+    "fontSize": "16px",
+    "height": 24,
+    "lineHeight": "24px",
+    "width": 256,
+    "x": 548,
+    "y": 267
+  },
+  "query": "6",
+  "results": {
+    "background": "rgb(17, 26, 38)",
+    "border": "1px solid rgb(40, 52, 72)",
+    "borderRadius": "8px",
+    "color": "rgb(230, 237, 247)",
+    "fontSize": "14px",
+    "height": 408,
+    "lineHeight": "20px",
+    "width": 926,
+    "x": 213,
+    "y": 145
+  },
+  "retry": {
+    "background": "rgb(17, 26, 38)",
+    "border": "1px solid rgb(40, 52, 72)",
+    "borderRadius": "6px",
+    "color": "rgb(230, 237, 247)",
+    "fontSize": "14px",
+    "height": 36,
+    "lineHeight": "20px",
+    "width": 88,
+    "x": 632,
+    "y": 315
+  },
+  "stage": {
+    "background": "rgb(22, 34, 51)",
+    "border": "1px solid rgb(40, 52, 72)",
+    "borderRadius": "8px",
+    "color": "rgb(230, 237, 247)",
+    "fontSize": "14px",
+    "height": 610,
+    "lineHeight": "20px",
+    "width": 960,
+    "x": 196,
+    "y": 24
+  },
+  "url": "http://127.0.0.1:3334/home?scope=live&market=hk&accounts=*&rangeMode=all",
+  "viewport": {
+    "dpr": 2,
+    "height": 720,
+    "width": 1280
+  }
+}

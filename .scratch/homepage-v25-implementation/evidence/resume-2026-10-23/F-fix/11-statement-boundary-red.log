@@ -1,0 +1,96 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:2460) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts (52 tests | 5 failed | 47 skipped) 181ms
+     × does not include Shanghai-next-day statement closing knowledge in current inventory 152ms
+     × uses a Shanghai opening cutoff for attached statement knowledge 5ms
+     × keeps statement period-end and current knowledge cutoffs independent 4ms
+     × does not reveal a date-only stock event before its real knowledge cursor 7ms
+     × does not borrow next-Shanghai-day cash to certify an IPO acquisition cost 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not include Shanghai-next-day statement closing knowledge in current inventory
+AssertionError: expected [ '990', '9' ] to deeply equal [ '110', '1' ]
+
+- Expected
++ Received
+
+  [
+-   "110",
+-   "1",
++   "990",
++   "9",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:236:94
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > uses a Shanghai opening cutoff for attached statement knowledge
+AssertionError: expected '9' to be '1' // Object.is equality
+
+Expected: "1"
+Received: "9"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:241:61
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > keeps statement period-end and current knowledge cutoffs independent
+AssertionError: expected [ '9', '9' ] to deeply equal [ '1', '9' ]
+
+- Expected
++ Received
+
+  [
+-   "1",
++   "9",
+    "9",
+  ]
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:246:112
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not reveal a date-only stock event before its real knowledge cursor
+AssertionError: expected '330' to be '110' // Object.is equality
+
+Expected: "110"
+Received: "330"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:250:55
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  app/lib/reviews/homepage-v25-performance.test.ts > homepage evidence-preserving financial contract > does not borrow next-Shanghai-day cash to certify an IPO acquisition cost
+AssertionError: expected '30' to be null
+
+- Expected:
+null
+
++ Received:
+"30"
+
+ ❯ app/lib/reviews/homepage-v25-performance.test.ts:261:29
+    259|     ] } })];
+    260|     const today = real(executions), nextDay = real(executions, { asOf:…
+    261|     expect(today.net.value).toBeNull();
+       |                             ^
+    262|     expect(today.instruments[0].evidence.current.costKnown).toBe(false…
+    263|     expect(today.currentMarketValue.value).toBe("330");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 3 skipped (4)
+      Tests  5 failed | 65 skipped (70)
+   Start at  00:40:47
+   Duration  2.22s (transform 341ms, setup 0ms, import 666ms, tests 181ms, environment 2ms)
+

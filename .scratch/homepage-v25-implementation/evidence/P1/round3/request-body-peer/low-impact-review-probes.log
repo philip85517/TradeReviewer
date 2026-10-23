@@ -1,0 +1,11 @@
+✔ OB01 current canonical home GET and RSC GET are skipped; home POST path is redacted (5.942291ms)
+✔ OB02 event budget stops logs but naturally returned new streams are still patched (1.946175ms)
+✔ OB03 one-time Web state snapshot stays unlocked after a real natural lock (3.16909ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 283.644777

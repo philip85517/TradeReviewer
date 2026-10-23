@@ -1,0 +1,2839 @@
+[
+  {
+    "label": "average-cost-components",
+    "input": {
+      "entries": [
+        {
+          "scopeKey": "live",
+          "tradeNature": "live",
+          "groupId": "US:AAPL|live",
+          "tradingLabel": "实盘",
+          "instrument": {
+            "id": "US:AAPL",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "market": "US",
+            "currency": "USD"
+          },
+          "executions": [
+            {
+              "id": "old100",
+              "executedAt": "2025-12-15T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "100",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            },
+            {
+              "id": "old200",
+              "executedAt": "2025-12-16T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "200",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            },
+            {
+              "id": "new300",
+              "executedAt": "2026-01-15T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "300",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            },
+            {
+              "id": "sell400",
+              "executedAt": "2026-01-20T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "sell",
+              "quantity": "1",
+              "price": "400",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            }
+          ],
+          "episodes": [
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222025-12-15T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "long",
+                "status": "open",
+                "startedAt": "2025-12-15T15:00:00Z",
+                "openingQuantity": "3",
+                "remainingQuantity": "2",
+                "executions": [
+                  {
+                    "id": "old100",
+                    "executedAt": "2025-12-15T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "100",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  },
+                  {
+                    "id": "old200",
+                    "executedAt": "2025-12-16T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "200",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  },
+                  {
+                    "id": "new300",
+                    "executedAt": "2026-01-15T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "300",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  },
+                  {
+                    "id": "sell400",
+                    "executedAt": "2026-01-20T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "sell",
+                    "quantity": "1",
+                    "price": "400",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  }
+                ]
+              },
+              "metrics": {
+                "buyCount": 3,
+                "sellCount": 1,
+                "boughtQuantity": "3",
+                "soldQuantity": "1",
+                "grossExposure": "600",
+                "fees": "0",
+                "realizedPnl": "200",
+                "unrealizedPnl": "300",
+                "netPnl": "500",
+                "returnPercent": "83.333333333333333333",
+                "holdingMilliseconds": null
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            }
+          ],
+          "accountCount": 1,
+          "tradeCount": 4,
+          "episodeCount": 1,
+          "firstTradeAt": "2025-12-15T15:00:00Z",
+          "lastTradeAt": "2026-01-20T15:00:00Z",
+          "status": "open",
+          "netPnl": "500",
+          "returnPercent": "83.333333333333333333",
+          "reviewedEpisodeCount": 0,
+          "confirmedTagIds": [],
+          "cumulativeR": null,
+          "latestQuote": {
+            "price": "350",
+            "currency": "USD",
+            "quoteDate": "2026-01-31",
+            "fetchedAt": "2026-01-31T23:00:00Z",
+            "provider": "eastmoney",
+            "status": "ready"
+          }
+        }
+      ],
+      "candlesByInstrument": {
+        "US:AAPL": [
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2025-12-31",
+            "open": "200",
+            "high": "200",
+            "low": "200",
+            "close": "200",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2025-12-31T23:00:00Z"
+          },
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2026-01-31",
+            "open": "350",
+            "high": "350",
+            "low": "350",
+            "close": "350",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2026-01-31T23:00:00Z"
+          }
+        ]
+      },
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "asOf": "2026-01-31"
+    },
+    "summaries": [
+      {
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "old100",
+            "executedAt": "2025-12-15T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          },
+          {
+            "id": "old200",
+            "executedAt": "2025-12-16T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "200",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          },
+          {
+            "id": "new300",
+            "executedAt": "2026-01-15T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "300",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          },
+          {
+            "id": "sell400",
+            "executedAt": "2026-01-20T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "sell",
+            "quantity": "1",
+            "price": "400",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          }
+        ],
+        "tradeCount": 4,
+        "firstTradeAt": "2025-12-15T15:00:00Z",
+        "lastTradeAt": "2026-01-20T15:00:00Z"
+      }
+    ],
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 4,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": "200",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "200"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": "100",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "100"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": "300",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "300"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": "400",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "400"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "currentMarketValue": {
+        "value": "700",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "700"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": "200",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "200"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": "100",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "100"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": "300",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "300"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": "400",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "400"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "old100",
+              "old200",
+              "new300",
+              "sell400"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [
+                "old100",
+                "old200"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2025-12-31",
+                "price": "200",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "old100",
+                "old200",
+                "new300",
+                "sell400"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "350",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "old100",
+                "old200",
+                "new300",
+                "sell400"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "350",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          }
+        }
+      ],
+      "reasons": []
+    },
+    "canonical": [
+      {
+        "key": "a|US:AAPL|live|",
+        "snapshots": {
+          "opening": {
+            "quantity": "2",
+            "averageCost": "150",
+            "realizedPnl": "0",
+            "unrealizedPnl": "-300",
+            "netPnl": "-300",
+            "fees": "0",
+            "grossCapitalDeployed": "300",
+            "returnPercent": "-100"
+          },
+          "closing": {
+            "quantity": "2",
+            "averageCost": "200",
+            "realizedPnl": "200",
+            "unrealizedPnl": "-400",
+            "netPnl": "-200",
+            "fees": "0",
+            "grossCapitalDeployed": "600",
+            "returnPercent": "-33.33333333"
+          },
+          "current": {
+            "quantity": "2",
+            "averageCost": "200",
+            "realizedPnl": "200",
+            "unrealizedPnl": "-400",
+            "netPnl": "-200",
+            "fees": "0",
+            "grossCapitalDeployed": "600",
+            "returnPercent": "-33.33333333"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "label": "unknown-fees-known-market-value",
+    "input": {
+      "entries": [
+        {
+          "scopeKey": "live",
+          "tradeNature": "live",
+          "groupId": "US:AAPL|live",
+          "tradingLabel": "实盘",
+          "instrument": {
+            "id": "US:AAPL",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "market": "US",
+            "currency": "USD"
+          },
+          "executions": [
+            {
+              "id": "unknown-fees",
+              "executedAt": "2026-01-15T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "100",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live",
+                "feeStatus": "unknown"
+              }
+            }
+          ],
+          "episodes": [
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-15T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "long",
+                "status": "open",
+                "startedAt": "2026-01-15T15:00:00Z",
+                "openingQuantity": "1",
+                "remainingQuantity": "1",
+                "executions": [
+                  {
+                    "id": "unknown-fees",
+                    "executedAt": "2026-01-15T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "100",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live",
+                      "feeStatus": "unknown"
+                    }
+                  }
+                ],
+                "accuracy": {
+                  "pnl": "unavailable",
+                  "reasons": [
+                    "unknown-fees"
+                  ]
+                }
+              },
+              "metrics": {
+                "pnlAvailable": false,
+                "buyCount": 1,
+                "sellCount": 0,
+                "boughtQuantity": "1",
+                "soldQuantity": "0",
+                "grossExposure": "100",
+                "fees": "0",
+                "realizedPnl": "0",
+                "unrealizedPnl": null,
+                "netPnl": null,
+                "returnPercent": null,
+                "holdingMilliseconds": null
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            }
+          ],
+          "accountCount": 1,
+          "tradeCount": 1,
+          "episodeCount": 1,
+          "firstTradeAt": "2026-01-15T15:00:00Z",
+          "lastTradeAt": "2026-01-15T15:00:00Z",
+          "status": "open",
+          "netPnl": null,
+          "returnPercent": null,
+          "reviewedEpisodeCount": 0,
+          "confirmedTagIds": [],
+          "cumulativeR": null,
+          "latestQuote": {
+            "price": "110",
+            "currency": "USD",
+            "quoteDate": "2026-01-31",
+            "fetchedAt": "2026-01-31T23:00:00Z",
+            "provider": "eastmoney",
+            "status": "ready"
+          }
+        }
+      ],
+      "candlesByInstrument": {
+        "US:AAPL": [
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2026-01-31",
+            "open": "110",
+            "high": "110",
+            "low": "110",
+            "close": "110",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2026-01-31T23:00:00Z"
+          }
+        ]
+      },
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "asOf": "2026-01-31"
+    },
+    "summaries": [
+      {
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "unknown-fees",
+            "executedAt": "2026-01-15T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live",
+              "feeStatus": "unknown"
+            }
+          }
+        ],
+        "tradeCount": 1,
+        "firstTradeAt": "2026-01-15T15:00:00Z",
+        "lastTradeAt": "2026-01-15T15:00:00Z"
+      }
+    ],
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 1,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "unknown-fees"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "unknown-fees",
+          "cost-unavailable"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": null,
+        "available": false,
+        "coverage": {
+          "total": 1,
+          "available": 0
+        },
+        "reasons": [
+          "unknown-fees",
+          "cost-unavailable"
+        ],
+        "money": {
+          "originalByCurrency": {},
+          "targetCurrency": null,
+          "conversion": "partial",
+          "fx": null
+        }
+      },
+      "currentMarketValue": {
+        "value": "110",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "110"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "unknown-fees"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "unknown-fees",
+              "cost-unavailable"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": null,
+            "available": false,
+            "coverage": {
+              "total": 1,
+              "available": 0
+            },
+            "reasons": [
+              "unknown-fees",
+              "cost-unavailable"
+            ],
+            "money": {
+              "originalByCurrency": {},
+              "targetCurrency": null,
+              "conversion": "partial",
+              "fx": null
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "unknown-fees"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": null
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "unknown-fees"
+              ],
+              "quantity": "1",
+              "costKnown": false,
+              "feesKnown": false,
+              "openFees": null,
+              "reasons": [
+                "unknown-fees"
+              ],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "unknown-fees"
+              ],
+              "quantity": "1",
+              "costKnown": false,
+              "feesKnown": false,
+              "openFees": null,
+              "reasons": [
+                "unknown-fees"
+              ],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          }
+        }
+      ],
+      "reasons": [
+        "unknown-fees",
+        "cost-unavailable"
+      ]
+    },
+    "canonical": [
+      {
+        "key": "a|US:AAPL|live|",
+        "snapshots": {
+          "opening": {
+            "quantity": "0",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "0",
+            "returnPercent": "0"
+          },
+          "closing": {
+            "costKnown": false,
+            "accuracy": {
+              "pnl": "unavailable",
+              "reasons": [
+                "unknown-fees"
+              ]
+            },
+            "quantity": "1",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "0"
+          },
+          "current": {
+            "costKnown": false,
+            "accuracy": {
+              "pnl": "unavailable",
+              "reasons": [
+                "unknown-fees"
+              ]
+            },
+            "quantity": "1",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "0"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "label": "statement-future-knowledge",
+    "input": {
+      "entries": [
+        {
+          "scopeKey": "live",
+          "tradeNature": "live",
+          "groupId": "US:AAPL|live",
+          "tradingLabel": "实盘",
+          "instrument": {
+            "id": "US:AAPL",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "market": "US",
+            "currency": "USD"
+          },
+          "executions": [
+            {
+              "id": "known",
+              "executedAt": "2026-01-15T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "100",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live",
+                "statementPositions": [
+                  {
+                    "accountId": "a",
+                    "market": "US",
+                    "symbol": "AAPL",
+                    "phase": "closing",
+                    "date": "2026-01-31",
+                    "quantity": "9",
+                    "source": [
+                      {
+                        "page": 1,
+                        "row": 1
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "episodes": [
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-15T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "long",
+                "status": "open",
+                "startedAt": "2026-01-15T15:00:00Z",
+                "openingQuantity": "1",
+                "remainingQuantity": "9",
+                "executions": [
+                  {
+                    "id": "known",
+                    "executedAt": "2026-01-15T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "100",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live",
+                      "statementPositions": [
+                        {
+                          "accountId": "a",
+                          "market": "US",
+                          "symbol": "AAPL",
+                          "phase": "closing",
+                          "date": "2026-01-31",
+                          "quantity": "9",
+                          "source": [
+                            {
+                              "page": 1,
+                              "row": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "accuracy": {
+                  "pnl": "unavailable",
+                  "reasons": [
+                    "position-gap",
+                    "unknown-cost"
+                  ]
+                }
+              },
+              "metrics": {
+                "pnlAvailable": false,
+                "buyCount": 1,
+                "sellCount": 0,
+                "boughtQuantity": "1",
+                "soldQuantity": "0",
+                "grossExposure": "100",
+                "fees": "0",
+                "realizedPnl": "0",
+                "unrealizedPnl": null,
+                "netPnl": null,
+                "returnPercent": null,
+                "holdingMilliseconds": null
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            }
+          ],
+          "accountCount": 1,
+          "tradeCount": 1,
+          "episodeCount": 1,
+          "firstTradeAt": "2026-01-15T15:00:00Z",
+          "lastTradeAt": "2026-01-15T15:00:00Z",
+          "status": "open",
+          "netPnl": null,
+          "returnPercent": null,
+          "reviewedEpisodeCount": 0,
+          "confirmedTagIds": [],
+          "cumulativeR": null,
+          "latestQuote": {
+            "price": "110",
+            "currency": "USD",
+            "quoteDate": "2026-01-31",
+            "fetchedAt": "2026-01-31T23:00:00Z",
+            "provider": "eastmoney",
+            "status": "ready"
+          }
+        }
+      ],
+      "candlesByInstrument": {
+        "US:AAPL": [
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2026-01-31",
+            "open": "110",
+            "high": "110",
+            "low": "110",
+            "close": "110",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2026-01-31T23:00:00Z"
+          }
+        ]
+      },
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "asOf": "2026-01-31"
+    },
+    "summaries": [
+      {
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "known",
+            "executedAt": "2026-01-15T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live",
+              "statementPositions": [
+                {
+                  "accountId": "a",
+                  "market": "US",
+                  "symbol": "AAPL",
+                  "phase": "closing",
+                  "date": "2026-01-31",
+                  "quantity": "9",
+                  "source": [
+                    {
+                      "page": 1,
+                      "row": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "tradeCount": 1,
+        "firstTradeAt": "2026-01-15T15:00:00Z",
+        "lastTradeAt": "2026-01-15T15:00:00Z"
+      }
+    ],
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 1,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": "10",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "10"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": "10",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "10"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "currentMarketValue": {
+        "value": "110",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "110"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": "10",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "10"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": "10",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "10"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "known"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": null
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "known"
+              ],
+              "quantity": "1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "known"
+              ],
+              "quantity": "1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          }
+        }
+      ],
+      "reasons": []
+    },
+    "canonical": [
+      {
+        "key": "a|US:AAPL|live|",
+        "snapshots": {
+          "opening": {
+            "quantity": "0",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "0",
+            "returnPercent": "0"
+          },
+          "closing": {
+            "quantity": "1",
+            "averageCost": "100",
+            "realizedPnl": "0",
+            "unrealizedPnl": "-100",
+            "netPnl": "-100",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "-100"
+          },
+          "current": {
+            "quantity": "1",
+            "averageCost": "100",
+            "realizedPnl": "0",
+            "unrealizedPnl": "-100",
+            "netPnl": "-100",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "-100"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "label": "raw-reversal-settlement",
+    "input": {
+      "entries": [
+        {
+          "scopeKey": "live",
+          "tradeNature": "live",
+          "groupId": "US:AAPL|live",
+          "tradingLabel": "实盘",
+          "instrument": {
+            "id": "US:AAPL",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "market": "US",
+            "currency": "USD"
+          },
+          "executions": [
+            {
+              "id": "buy",
+              "executedAt": "2026-01-05T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "100",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            },
+            {
+              "id": "reverse",
+              "executedAt": "2026-01-10T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "sell",
+              "quantity": "2",
+              "price": "120",
+              "fee": "2",
+              "source": {
+                "platform": "statement",
+                "row": 2,
+                "tradeNature": "live",
+                "positionEffect": "open-short",
+                "positionEffectEvidence": {
+                  "kind": "explicit",
+                  "confidence": "high",
+                  "reason": "broker short sale"
+                },
+                "settlement": {
+                  "currency": "USD",
+                  "quantity": "2",
+                  "grossAmount": "240",
+                  "netAmount": "238",
+                  "fees": {
+                    "commission": "2"
+                  }
+                }
+              }
+            }
+          ],
+          "episodes": [
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-10T15%3A00%3A00Z%22%2C%22sell%22%2C%221%22%2C%22120%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "short",
+                "status": "open",
+                "startedAt": "2026-01-10T15:00:00Z",
+                "openingQuantity": "1",
+                "remainingQuantity": "1",
+                "executions": [
+                  {
+                    "id": "reverse:reverse",
+                    "executedAt": "2026-01-10T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "sell",
+                    "quantity": "1",
+                    "price": "120",
+                    "fee": "1",
+                    "source": {
+                      "platform": "statement",
+                      "row": 2,
+                      "tradeNature": "live",
+                      "positionEffect": "open-short",
+                      "positionEffectEvidence": {
+                        "kind": "explicit",
+                        "confidence": "high",
+                        "reason": "broker short sale"
+                      },
+                      "settlement": {
+                        "currency": "USD",
+                        "quantity": "2",
+                        "grossAmount": "240",
+                        "netAmount": "238",
+                        "fees": {
+                          "commission": "2"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "metrics": {
+                "buyCount": 0,
+                "sellCount": 1,
+                "boughtQuantity": "0",
+                "soldQuantity": "1",
+                "grossExposure": "120",
+                "fees": "1",
+                "realizedPnl": "0",
+                "unrealizedPnl": "10",
+                "netPnl": "9",
+                "returnPercent": "7.5",
+                "holdingMilliseconds": null
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            },
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-05T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "long",
+                "status": "closed",
+                "startedAt": "2026-01-05T15:00:00Z",
+                "openingQuantity": "1",
+                "remainingQuantity": "0",
+                "executions": [
+                  {
+                    "id": "buy",
+                    "executedAt": "2026-01-05T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "100",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  },
+                  {
+                    "id": "reverse:close",
+                    "executedAt": "2026-01-10T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "sell",
+                    "quantity": "1",
+                    "price": "120",
+                    "fee": "1",
+                    "source": {
+                      "platform": "statement",
+                      "row": 2,
+                      "tradeNature": "live",
+                      "positionEffect": "open-short",
+                      "positionEffectEvidence": {
+                        "kind": "explicit",
+                        "confidence": "high",
+                        "reason": "broker short sale"
+                      },
+                      "settlement": {
+                        "currency": "USD",
+                        "quantity": "2",
+                        "grossAmount": "240",
+                        "netAmount": "238",
+                        "fees": {
+                          "commission": "2"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "endedAt": "2026-01-10T15:00:00Z"
+              },
+              "metrics": {
+                "buyCount": 1,
+                "sellCount": 1,
+                "boughtQuantity": "1",
+                "soldQuantity": "1",
+                "grossExposure": "100",
+                "fees": "1",
+                "realizedPnl": "20",
+                "unrealizedPnl": "0",
+                "netPnl": "19",
+                "returnPercent": "19",
+                "holdingMilliseconds": 432000000
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            }
+          ],
+          "accountCount": 1,
+          "tradeCount": 2,
+          "episodeCount": 2,
+          "firstTradeAt": "2026-01-05T15:00:00Z",
+          "lastTradeAt": "2026-01-10T15:00:00Z",
+          "status": "open",
+          "netPnl": "28",
+          "returnPercent": "12.727272727272727273",
+          "reviewedEpisodeCount": 0,
+          "confirmedTagIds": [],
+          "cumulativeR": null,
+          "latestQuote": {
+            "price": "110",
+            "currency": "USD",
+            "quoteDate": "2026-01-31",
+            "fetchedAt": "2026-01-31T23:00:00Z",
+            "provider": "eastmoney",
+            "status": "ready"
+          }
+        }
+      ],
+      "candlesByInstrument": {
+        "US:AAPL": [
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2026-01-31",
+            "open": "110",
+            "high": "110",
+            "low": "110",
+            "close": "110",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2026-01-31T23:00:00Z"
+          }
+        ]
+      },
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "asOf": "2026-01-31"
+    },
+    "summaries": [
+      {
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "buy",
+            "executedAt": "2026-01-05T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          },
+          {
+            "id": "reverse",
+            "executedAt": "2026-01-10T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "sell",
+            "quantity": "2",
+            "price": "120",
+            "fee": "2",
+            "source": {
+              "platform": "statement",
+              "row": 2,
+              "tradeNature": "live",
+              "positionEffect": "open-short",
+              "positionEffectEvidence": {
+                "kind": "explicit",
+                "confidence": "high",
+                "reason": "broker short sale"
+              },
+              "settlement": {
+                "currency": "USD",
+                "quantity": "2",
+                "grossAmount": "240",
+                "netAmount": "238",
+                "fees": {
+                  "commission": "2"
+                }
+              }
+            }
+          }
+        ],
+        "tradeCount": 2,
+        "firstTradeAt": "2026-01-05T15:00:00Z",
+        "lastTradeAt": "2026-01-10T15:00:00Z"
+      }
+    ],
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 2,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": "19",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "19"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "openingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "closingUnrealized": {
+        "value": "9",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "9"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "net": {
+        "value": "28",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "28"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "currentMarketValue": {
+        "value": "-110",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "-110"
+          },
+          "targetCurrency": null,
+          "conversion": "same-currency",
+          "fx": null
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": "19",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "19"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "openingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "closingUnrealized": {
+            "value": "9",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "9"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "net": {
+            "value": "28",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "28"
+              },
+              "targetCurrency": null,
+              "conversion": "same-currency",
+              "fx": null
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "buy",
+              "reverse"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": null
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "buy",
+                "reverse"
+              ],
+              "quantity": "-1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "1",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "buy",
+                "reverse"
+              ],
+              "quantity": "-1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "1",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          }
+        }
+      ],
+      "reasons": []
+    },
+    "canonical": [
+      {
+        "key": "a|US:AAPL|live|",
+        "snapshots": {
+          "opening": {
+            "quantity": "0",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "0",
+            "returnPercent": "0"
+          },
+          "closing": {
+            "quantity": "-1",
+            "averageCost": "120",
+            "realizedPnl": "20",
+            "unrealizedPnl": "120",
+            "netPnl": "138",
+            "fees": "2",
+            "grossCapitalDeployed": "220",
+            "returnPercent": "62.72727273"
+          },
+          "current": {
+            "quantity": "-1",
+            "averageCost": "120",
+            "realizedPnl": "20",
+            "unrealizedPnl": "120",
+            "netPnl": "138",
+            "fees": "2",
+            "grossCapitalDeployed": "220",
+            "returnPercent": "62.72727273"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "label": "production-fx-provenance",
+    "input": {
+      "entries": [
+        {
+          "scopeKey": "live",
+          "tradeNature": "live",
+          "groupId": "US:AAPL|live",
+          "tradingLabel": "实盘",
+          "instrument": {
+            "id": "US:AAPL",
+            "symbol": "AAPL",
+            "name": "Apple",
+            "market": "US",
+            "currency": "USD"
+          },
+          "executions": [
+            {
+              "id": "known",
+              "executedAt": "2026-01-15T15:00:00Z",
+              "instrument": {
+                "id": "US:AAPL",
+                "symbol": "AAPL",
+                "name": "Apple",
+                "market": "US",
+                "currency": "USD"
+              },
+              "accountId": "a",
+              "accountLabel": "A",
+              "side": "buy",
+              "quantity": "1",
+              "price": "100",
+              "fee": "0",
+              "source": {
+                "platform": "statement",
+                "row": 1,
+                "tradeNature": "live"
+              }
+            }
+          ],
+          "episodes": [
+            {
+              "episode": {
+                "id": "episode:%5B%22a%3AUS%3AAAPL%3Alive%22%2C%222026-01-15T15%3A00%3A00Z%22%2C%22buy%22%2C%221%22%2C%22100%22%5D:1",
+                "accountId": "a",
+                "accountLabel": "A",
+                "instrument": {
+                  "id": "US:AAPL",
+                  "symbol": "AAPL",
+                  "name": "Apple",
+                  "market": "US",
+                  "currency": "USD"
+                },
+                "tradeNature": "live",
+                "direction": "long",
+                "status": "open",
+                "startedAt": "2026-01-15T15:00:00Z",
+                "openingQuantity": "1",
+                "remainingQuantity": "1",
+                "executions": [
+                  {
+                    "id": "known",
+                    "executedAt": "2026-01-15T15:00:00Z",
+                    "instrument": {
+                      "id": "US:AAPL",
+                      "symbol": "AAPL",
+                      "name": "Apple",
+                      "market": "US",
+                      "currency": "USD"
+                    },
+                    "accountId": "a",
+                    "accountLabel": "A",
+                    "side": "buy",
+                    "quantity": "1",
+                    "price": "100",
+                    "fee": "0",
+                    "source": {
+                      "platform": "statement",
+                      "row": 1,
+                      "tradeNature": "live"
+                    }
+                  }
+                ]
+              },
+              "metrics": {
+                "buyCount": 1,
+                "sellCount": 0,
+                "boughtQuantity": "1",
+                "soldQuantity": "0",
+                "grossExposure": "100",
+                "fees": "0",
+                "realizedPnl": "0",
+                "unrealizedPnl": "10",
+                "netPnl": "10",
+                "returnPercent": "10",
+                "holdingMilliseconds": null
+              },
+              "reviewStatus": "pending",
+              "confirmedTagIds": [],
+              "tagDictionaryVersion": 1,
+              "rMultiple": null
+            }
+          ],
+          "accountCount": 1,
+          "tradeCount": 1,
+          "episodeCount": 1,
+          "firstTradeAt": "2026-01-15T15:00:00Z",
+          "lastTradeAt": "2026-01-15T15:00:00Z",
+          "status": "open",
+          "netPnl": "10",
+          "returnPercent": "10",
+          "reviewedEpisodeCount": 0,
+          "confirmedTagIds": [],
+          "cumulativeR": null,
+          "latestQuote": {
+            "price": "110",
+            "currency": "USD",
+            "quoteDate": "2026-01-31",
+            "fetchedAt": "2026-01-31T23:00:00Z",
+            "provider": "eastmoney",
+            "status": "ready"
+          }
+        }
+      ],
+      "candlesByInstrument": {
+        "US:AAPL": [
+          {
+            "instrumentId": "US:AAPL",
+            "tradingDate": "2026-01-31",
+            "open": "110",
+            "high": "110",
+            "low": "110",
+            "close": "110",
+            "currency": "USD",
+            "volume": "1",
+            "provider": "eastmoney",
+            "providerSymbol": "AAPL",
+            "adjustmentMode": "raw",
+            "fetchedAt": "2026-01-31T23:00:00Z"
+          }
+        ]
+      },
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "asOf": "2026-01-31",
+      "targetCurrency": "CNY",
+      "fxSnapshot": {
+        "id": "fx-pair",
+        "baseCurrency": "CNY",
+        "asOf": "2026-01-31",
+        "source": "broker",
+        "status": "complete",
+        "rates": {
+          "USD:CNY": "7"
+        }
+      }
+    },
+    "summaries": [
+      {
+        "instrument": {
+          "id": "US:AAPL",
+          "symbol": "AAPL",
+          "name": "Apple",
+          "market": "US",
+          "currency": "USD"
+        },
+        "executions": [
+          {
+            "id": "known",
+            "executedAt": "2026-01-15T15:00:00Z",
+            "instrument": {
+              "id": "US:AAPL",
+              "symbol": "AAPL",
+              "name": "Apple",
+              "market": "US",
+              "currency": "USD"
+            },
+            "accountId": "a",
+            "accountLabel": "A",
+            "side": "buy",
+            "quantity": "1",
+            "price": "100",
+            "fee": "0",
+            "source": {
+              "platform": "statement",
+              "row": 1,
+              "tradeNature": "live"
+            }
+          }
+        ],
+        "tradeCount": 1,
+        "firstTradeAt": "2026-01-15T15:00:00Z",
+        "lastTradeAt": "2026-01-15T15:00:00Z"
+      }
+    ],
+    "output": {
+      "boundary": {
+        "businessTimezone": "Asia/Shanghai",
+        "asOf": "2026-01-31",
+        "effectiveEnd": "2026-01-31",
+        "periodStart": "2026-01-01",
+        "requestedEnd": "2026-01-31"
+      },
+      "scope": {
+        "nature": "live",
+        "simulationRunId": null,
+        "includedExecutions": 1,
+        "excludedExecutions": 0,
+        "excludedByReason": {}
+      },
+      "periodRealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "fx-pair",
+            "source": "broker",
+            "asOf": "2026-01-31",
+            "status": "complete"
+          }
+        }
+      },
+      "openingUnrealized": {
+        "value": "0",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "0"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "fx-pair",
+            "source": "broker",
+            "asOf": "2026-01-31",
+            "status": "complete"
+          }
+        }
+      },
+      "closingUnrealized": {
+        "value": "70",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "10"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "fx-pair",
+            "source": "broker",
+            "asOf": "2026-01-31",
+            "status": "complete"
+          }
+        }
+      },
+      "net": {
+        "value": "70",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "10"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "fx-pair",
+            "source": "broker",
+            "asOf": "2026-01-31",
+            "status": "complete"
+          }
+        }
+      },
+      "currentMarketValue": {
+        "value": "770",
+        "available": true,
+        "coverage": {
+          "total": 1,
+          "available": 1
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "USD": "110"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "fx-pair",
+            "source": "broker",
+            "asOf": "2026-01-31",
+            "status": "complete"
+          }
+        }
+      },
+      "instruments": [
+        {
+          "key": "a|US:AAPL|live|",
+          "identity": {
+            "accountId": "a",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "periodRealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "fx-pair",
+                "source": "broker",
+                "asOf": "2026-01-31",
+                "status": "complete"
+              }
+            }
+          },
+          "openingUnrealized": {
+            "value": "0",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "fx-pair",
+                "source": "broker",
+                "asOf": "2026-01-31",
+                "status": "complete"
+              }
+            }
+          },
+          "closingUnrealized": {
+            "value": "70",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "10"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "fx-pair",
+                "source": "broker",
+                "asOf": "2026-01-31",
+                "status": "complete"
+              }
+            }
+          },
+          "net": {
+            "value": "70",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "10"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "fx-pair",
+                "source": "broker",
+                "asOf": "2026-01-31",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "executionIds": [
+              "known"
+            ],
+            "opening": {
+              "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+              "executionIds": [],
+              "quantity": "0",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": null
+            },
+            "closing": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "known"
+              ],
+              "quantity": "1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            },
+            "current": {
+              "knowledgeCursor": "2026-01-31T15:59:59.999Z",
+              "executionIds": [
+                "known"
+              ],
+              "quantity": "1",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-31",
+                "price": "110",
+                "currency": "USD",
+                "source": "eastmoney"
+              }
+            }
+          }
+        }
+      ],
+      "reasons": []
+    },
+    "canonical": [
+      {
+        "key": "a|US:AAPL|live|",
+        "snapshots": {
+          "opening": {
+            "quantity": "0",
+            "averageCost": "0",
+            "realizedPnl": "0",
+            "unrealizedPnl": "0",
+            "netPnl": "0",
+            "fees": "0",
+            "grossCapitalDeployed": "0",
+            "returnPercent": "0"
+          },
+          "closing": {
+            "quantity": "1",
+            "averageCost": "100",
+            "realizedPnl": "0",
+            "unrealizedPnl": "-100",
+            "netPnl": "-100",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "-100"
+          },
+          "current": {
+            "quantity": "1",
+            "averageCost": "100",
+            "realizedPnl": "0",
+            "unrealizedPnl": "-100",
+            "netPnl": "-100",
+            "fees": "0",
+            "grossCapitalDeployed": "100",
+            "returnPercent": "-100"
+          }
+        }
+      }
+    ]
+  }
+]

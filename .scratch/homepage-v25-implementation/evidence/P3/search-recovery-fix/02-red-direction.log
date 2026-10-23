@@ -1,0 +1,1464 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+ × app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR01 restores nonzero result scroll, query, selection and input focus after close/reopen on the same mount and restoreKey 562ms
+   → expected +0 to be 816 // Object.is equality
+ × app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source 154ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  (none)
+Received:
+  NASDAQ:META:stock
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  {"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null}
+Received:
+  {"source":"detail","container":"search","detailId":"NASDAQ:META:stock","triggerFocusId":"hp-symbol-NASDAQ%3AMETA%3Astock","missingContainerTitle":"搜索结果"}
+ × app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source 142ms
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      disabled=""
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      disabled=""
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  (none)
+Received:
+  NASDAQ:META:stock
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  {"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null}
+Received:
+  {"source":"detail","container":"search","detailId":"NASDAQ:META:stock","triggerFocusId":"hp-symbol-NASDAQ%3AMETA%3Astock","missingContainerTitle":"搜索结果"}
+ × app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source 145ms
+   → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+   → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  (none)
+Received:
+  NASDAQ:META:stock
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  {"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null}
+Received:
+  {"source":"detail","container":"search","detailId":"NASDAQ:META:stock","triggerFocusId":"hp-symbol-NASDAQ%3AMETA%3Astock","missingContainerTitle":"搜索结果"}
+ × app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source 126ms
+   → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+   → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  (none)
+Received:
+  NASDAQ:META:stock
+   → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  {"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null}
+Received:
+  {"source":"detail","container":"search","detailId":"NASDAQ:META:stock","triggerFocusId":"hp-symbol-NASDAQ%3AMETA%3Astock","missingContainerTitle":"搜索结果"}
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: becoming ready on the same mount permits Enter again 145ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: becoming ready on the same mount permits Enter again 153ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: becoming ready on the same mount permits Enter again 146ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: becoming ready on the same mount permits Enter again 145ms
+ ✓ app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > keeps settled old candidates inert to Enter during IME and commits the completed word only after 300ms 134ms
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 5 passed (10)
+   Start at  04:22:52
+   Duration  5.08s (transform 547ms, setup 449ms, import 810ms, tests 1.85s, environment 1.65s)
+
+
+--- STDERR ---
+(node:36250) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR01 restores nonzero result scroll, query, selection and input focus after close/reopen on the same mount and restoreKey
+AssertionError: expected +0 to be 816 // Object.is equality
+
+- Expected
++ Received
+
+- 816
++ 0
+
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:104:68
+    102|     expect(screen.getByRole("button", { name: /Meta Platforms.*NASDAQ/…
+    103|     expect(screen.getByLabelText("已应用范围")).toHaveTextContent(appliedSc…
+    104|     expect(screen.getByRole("region", { name: "找到标的" }).scrollTop).toB…
+       |                                                                    ^
+    105|   });
+    106|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:125:69
+    123|     fireEvent.keyDown(input, { key: "Enter" });
+    124|     // Keep the complete causal evidence if one wrong Enter mutates al…
+    125|     expect.soft(screen.queryByRole("dialog", { name: /标的详情/ })).not.to…
+       |                                                                     ^
+    126|     expect.soft(screen.getByLabelText("已选标的")).toHaveTextContent("(non…
+    127|     expect.soft(screen.getByLabelText("来源状态")).toHaveTextContent(noSou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  (none)
+Received:
+  NASDAQ:META:stock
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:126:48
+    124|     // Keep the complete causal evidence if one wrong Enter mutates al…
+    125|     expect.soft(screen.queryByRole("dialog", { name: /标的详情/ })).not.to…
+    126|     expect.soft(screen.getByLabelText("已选标的")).toHaveTextContent("(non…
+       |                                                ^
+    127|     expect.soft(screen.getByLabelText("来源状态")).toHaveTextContent(noSou…
+    128|     expect.soft(screen.getByLabelText("已应用范围")).toHaveTextContent(appl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 not-ready: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  {"source":null,"container":null,"detailId":null,"triggerFocusId":null,"missingContainerTitle":null}
+Received:
+  {"source":"detail","container":"search","detailId":"NASDAQ:META:stock","triggerFocusId":"hp-symbol-NASDAQ%3AMETA%3Astock","missingContainerTitle":"搜索结果"}
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:127:48
+    125|     expect.soft(screen.queryByRole("dialog", { name: /标的详情/ })).not.to…
+    126|     expect.soft(screen.getByLabelText("已选标的")).toHaveTextContent("(non…
+    127|     expect.soft(screen.getByLabelText("来源状态")).toHaveTextContent(noSou…
+       |                                                ^
+    128|     expect.soft(screen.getByLabelText("已应用范围")).toHaveTextContent(appl…
+    129|     expect.soft(screen.getByLabelText("已提交搜索词")).toHaveTextContent("ME…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-pending: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-label="Meta Platforms 标的详情"
+  aria-modal="true"
+  class="hp-detail-dialog"
+  role="dialog"
+>
+  <header>
+    <div>
+      <h2>
+        Meta Platforms
+      </h2>
+      <p>
+        NASDAQ:META:stock
+         · 
+        US
+         · 
+        USD
+         · 
+        股票
+      </p>
+    </div>
+    <button
+      aria-label="关闭标的详情"
+      class="hp-icon-button"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-x"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6 6 18"
+        />
+        <path
+          d="m6 6 12 12"
+        />
+      </svg>
+    </button>
+  </header>
+  <dl
+    aria-label="核心持仓指标"
+    class="hp-detail-values"
+  >
+    <div>
+      <dt>
+        数量
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="数量完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        成本价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="成本价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          暂无
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓市值(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓市值完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓浮动盈亏(
+        CNY
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="持仓浮动盈亏完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          —
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <dl
+    aria-label="持仓补充信息"
+    class="hp-detail-secondary"
+  >
+    <div>
+      <dt>
+        最新价(
+        USD
+        )
+      </dt>
+      <dd>
+        <span
+          aria-expanded="false"
+          aria-label="最新价完整值"
+          class="hp-value hp-weak"
+          role="button"
+          tabindex="0"
+        >
+          待更新
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt>
+        账户
+      </dt>
+      <dd>
+        当前范围无持仓账户
+      </dd>
+    </div>
+    <div>
+      <dt>
+        持仓天数
+      </dt>
+      <dd
+        title="当前范围暂无该标的持仓"
+      >
+        —
+      </dd>
+    </div>
+  </dl>
+  <p
+    class="hp-detail-evidence"
+  >
+    来自已导入交易与已存证券资料的可知目录；未知持仓数据不按零计算。
+  </p>
+  <div
+    class="hp-detail-reasons"
+  >
+    <p>
+      当前范围暂无该标的持仓
+    </p>
+    <button
+      disabled=""
+      type="button"
+    >
+      更新数据
+    </button>
+  </div>
+  <footer>
+    <button
+      class="hp-detail-trades"
+      disabled=""
+      type="button"
+    >
+      查看交易
+    </button>
+    <button
+      class="hp-detail-return"
+      type="button"
+    >
+      返回原搜索结果 · 恢复原滚动位置
+    </button>
+  </footer>
+</div> instead
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:125:69
+    123|     fireEvent.keyDown(input, { key: "Enter" });
+    124|     // Keep the complete causal evidence if one wrong Enter mutates al…
+    125|     expect.soft(screen.queryByRole("dialog", { name: /标的详情/ })).not.to…
+       |                                                                     ^
+    126|     expect.soft(screen.getByLabelText("已选标的")).toHaveTextContent("(non…
+    127|     expect.soft(screen.getByLabelText("来源状态")).toHaveTextContent(noSou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:117:24
+    115|     expect(input).toHaveValue("META");
+    116|     fireEvent.keyDown(input, { key: "ArrowDown" });
+    117|     expect.soft(input).toHaveFocus();
+       |                        ^
+    118|     // Isolate each input action if the preceding wrong branch stole f…
+    119|     input.focus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 global-error: Enter cannot open a hidden old result or mutate selection/source
+ FAIL  app/components/homepage-v25/search-recovery.test.tsx > homepage search recovery — CR01 / CR02 > CR02 account-error: Enter cannot open a hidden old result or mutate selection/source
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  aria-label="搜索标的"
+  placeholder="输入名称或代码"
+  type="search"
+  value="META"
+/>
+Received element with focus:
+  <button
+  type="button"
+>
+  重试
+</button>
+ ❯ app/components/homepage-v25/search-recovery.test.tsx:121:24
+    119|     input.focus();
+    120|     fireEvent.keyDown(input, { key: "ArrowUp" });
+    121|     expect.soft(input).toHaveFocus();
+       |                        ^
+    122|     input.focus();
+    123|     fireEvent.keyDown(input, { key: "Enter" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+

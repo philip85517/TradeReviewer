@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "task": "homepage-v25 period/history/contribution integration gap map",
+  "agent": "/root/attachment_review",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "ultra",
+  "mode": "read-only planning; documentation-only evidence",
+  "repository": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview",
+  "head_before": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "head_at_freeze": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "allowed_write_directory": ".scratch/homepage-v25-implementation/evidence/continue-2026-10-23/integration-gap-map/",
+  "files_written": [
+    "GAP-MAP.md",
+    "MANIFEST.json"
+  ],
+  "report_sha256": "85b22ff1e7fc71f50c3fc37573100a73a73f334191227eeb37c8d9c68fe278aa",
+  "source_readset_before": {
+    ".scratch/homepage-v25-implementation/README.md": "74f7003edcc5987845eabec638669a4d2dcab39a87ce2a770c2f56a2a64ec107",
+    ".scratch/homepage-v25-implementation/FINAL-ACCEPTANCE.md": "a0a3492deac076bcc536dd4d04ed5ddcd2dacb34bc6b0b2d4b7ed9c7b35b4076",
+    ".scratch/homepage-v25-implementation/PLAN.md": "292565f85d2b7f8ed74853d453af826afb45f2954f506a17d1faaed25aa36c06",
+    ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md": "cdf5754f1d0eed348c04464c7f06e43e88bb2ef2b8bf4576a1b1cd54e9ca38d4",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "app/components/homepage-v25/period-selector.tsx": "3aa54639958f90abd3b33d1103463c90ee00d7f78db4c332cbec636d091ca29b",
+    "app/components/homepage-v25/history-controls.tsx": "a2090b6c52b85665431b0ad63517cdd8aa6112588f7705410f0b8709a355e3cd",
+    "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+    "app/components/homepage-v25/performance-chart.tsx": "387434f05ffded9744742d66a11abd761f2ec1a2c67b0b8117ef971f269e834c",
+    "app/components/homepage-v25/contribution-bars.tsx": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+    ".scratch/homepage-v25-implementation/evidence/P4/ROOT-FINANCIAL-DECISIONS.md": "5ebe2ff314be1126baec8359390fbf0f810dd6e9f040fa5d0f34a887df28118e",
+    ".scratch/homepage-v25-implementation/evidence/P4/CANONICAL-READ-FACT-SEAM-PROPOSAL.md": "31783b8fa9f46e01e3d50180b2d7e530570c71b8348ae6f8149636d6c7b4175b",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/P4-COORDINATOR-PROVENANCE-DECISION.md": "0c0bb00c0d52ec0f278c52e375cb9a4b7def8f1de366cd517401e9297f30a378",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/ROOT-CHECKPOINT.md": "67cf1d3bca99208c79fc5659723b32807edabb765aead35dca952064ea443d53",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/REVIEW.md": "3dd9266a0d68b4a4b01d52c8314edefcc61ccdd9a67ec254a9416d2f5a3c1eee"
+  },
+  "source_readset_at_freeze": {
+    ".scratch/homepage-v25-implementation/README.md": "f5a663b4562c6b884043fa446d9525ea02458bd962e3179785c4e36760dcf6fb",
+    ".scratch/homepage-v25-implementation/FINAL-ACCEPTANCE.md": "cb7e183888b25ab70ede794a60574c66546548206edceb6f6e38706674f1790b",
+    ".scratch/homepage-v25-implementation/PLAN.md": "292565f85d2b7f8ed74853d453af826afb45f2954f506a17d1faaed25aa36c06",
+    ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md": "651eaa96a1d8baebe4d881280405f9f8f8eab761fb3730c70b6ac54b7962622f",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "app/components/homepage-v25/session-model.ts": "f1182c22624a3f7fc2f1e7cff8319489ff8dc6a097a19f19f98a9cfe24d88289",
+    "app/components/homepage-v25/use-homepage-host.ts": "de530fe19eb18aa4eeca5c86ce68b771eb08b0eb2228beca92d4213e8ea917f8",
+    "app/components/homepage-v25/home-surface.tsx": "322566ca374e1674b92ff9308ec2375f5ca03ebdd1312a116358af1c8b0d38c0",
+    "app/components/trade-review-workspace.tsx": "740b967993335c4bf0e01bd6a08878efe74521a6d47a806bbbfb930b982d8da0",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "app/lib/reviews/homepage-v25-performance.ts": "094b24161c7714149535cb3c1893ed2fe8304d140ed090ec26a81df3decacd5a",
+    "app/lib/reviews/homepage-v25-series.ts": "30c96eb082ea82dcede6574583c07f53859caf57ff8134705b85a0d45a106ac6",
+    "app/components/homepage-v25/period-selector.tsx": "3aa54639958f90abd3b33d1103463c90ee00d7f78db4c332cbec636d091ca29b",
+    "app/components/homepage-v25/history-controls.tsx": "a2090b6c52b85665431b0ad63517cdd8aa6112588f7705410f0b8709a355e3cd",
+    "app/components/homepage-v25/metric-cards.tsx": "072c0dd7a3c24d7362e36e740b2ad2df05f19a140d4000c1439196a34e229535",
+    "app/components/homepage-v25/performance-chart.tsx": "387434f05ffded9744742d66a11abd761f2ec1a2c67b0b8117ef971f269e834c",
+    "app/components/homepage-v25/contribution-bars.tsx": "d4fb8688a12c5c4ae828baed24b931e7726a05342c317097a9a4b5b89b831108",
+    ".scratch/homepage-v25-implementation/evidence/P4/ROOT-FINANCIAL-DECISIONS.md": "5ebe2ff314be1126baec8359390fbf0f810dd6e9f040fa5d0f34a887df28118e",
+    ".scratch/homepage-v25-implementation/evidence/P4/CANONICAL-READ-FACT-SEAM-PROPOSAL.md": "31783b8fa9f46e01e3d50180b2d7e530570c71b8348ae6f8149636d6c7b4175b",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/P4-COORDINATOR-PROVENANCE-DECISION.md": "0c0bb00c0d52ec0f278c52e375cb9a4b7def8f1de366cd517401e9297f30a378",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/ROOT-CHECKPOINT.md": "67cf1d3bca99208c79fc5659723b32807edabb765aead35dca952064ea443d53",
+    ".scratch/homepage-v25-implementation/evidence/P2/data/p2-b/independent-review/REVIEW.md": "3dd9266a0d68b4a4b01d52c8314edefcc61ccdd9a67ec254a9416d2f5a3c1eee"
+  },
+  "concurrent_readset_changes": [
+    {
+      "path": ".scratch/homepage-v25-implementation/README.md",
+      "before_sha256": "74f7003edcc5987845eabec638669a4d2dcab39a87ce2a770c2f56a2a64ec107",
+      "freeze_sha256": "f5a663b4562c6b884043fa446d9525ea02458bd962e3179785c4e36760dcf6fb",
+      "origin": "Concurrent workspace update; not written by this read-only task"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/FINAL-ACCEPTANCE.md",
+      "before_sha256": "a0a3492deac076bcc536dd4d04ed5ddcd2dacb34bc6b0b2d4b7ed9c7b35b4076",
+      "freeze_sha256": "cb7e183888b25ab70ede794a60574c66546548206edceb6f6e38706674f1790b",
+      "origin": "Concurrent workspace update; not written by this read-only task"
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "before_sha256": "cdf5754f1d0eed348c04464c7f06e43e88bb2ef2b8bf4576a1b1cd54e9ca38d4",
+      "freeze_sha256": "651eaa96a1d8baebe4d881280405f9f8f8eab761fb3730c70b6ac54b7962622f",
+      "origin": "Concurrent workspace update; not written by this read-only task"
+    },
+    {
+      "path": "app/components/homepage-v25/contribution-bars.tsx",
+      "before_sha256": "50bf4799f53f4dbae22c25d9b2d37fb68f144d809c78dd823a25ecd772ca5574",
+      "freeze_sha256": "d4fb8688a12c5c4ae828baed24b931e7726a05342c317097a9a4b5b89b831108",
+      "origin": "Concurrent workspace update; not written by this read-only task"
+    }
+  ],
+  "freeze_notes": [
+    "Source hashes bind dirty/untracked contents independently of Git HEAD.",
+    "README/FINAL/DESIGN-COVERAGE concurrent checkpoint updates were reread in preparation; report status checkpoint is 07:49.",
+    "Contribution-bars.tsx changed concurrently after direct review. Its final candidate is not reviewed or accepted by this report.",
+    "No product, tests, old evidence, shared docs, tracker, configuration or dependency files were written by this task.",
+    "No tests, browser, service, database, network or performance commands were run; no child agents or commits.",
+    "Documentation parsing and hashes are evidence integrity checks only, not product verification.",
+    "This manifest and GAP-MAP.md are frozen after integrity verification; later decisions belong in the final handoff note."
+  ],
+  "preserved_status_as_reported": {
+    "P1": "2/3 FAIL",
+    "P2": "0/3",
+    "P3": "0/3",
+    "P4": "0/3",
+    "P5": "NOT VERIFIED",
+    "metric_leaf": "2/3 FAIL; third final candidate pending independent root acceptance",
+    "bars_leaf": "2/3 FAIL; third final candidate pending independent root acceptance",
+    "old_workspace_full": "101 tests: 99 PASS / 2 FAIL; original logs preserved",
+    "etf_root_targeted": "2/2 PASS finite slice",
+    "post_migration_workspace_full": "102 tests NOT RUN by this task",
+    "return_journey": "FAIL / NOT VERIFIED retained",
+    "financial_A": "At report snapshot: three-candidate pause; cold performance and future-only HKD contamination failures preserved"
+  },
+  "concrete_dispatch_proposals": [
+    {
+      "id": "C-HC",
+      "owner": "/root/metric_cards after original leaf freeze",
+      "files": [
+        "app/components/homepage-v25/history-stats-cards.tsx",
+        "app/components/homepage-v25/history-stats-cards.css",
+        "app/components/homepage-v25/history-stats-cards.test.tsx"
+      ],
+      "depends_on": "Prepared per-metric values/coverage/reasons plus currency, range label, context key, read state; no A/B or canonical calculations"
+    },
+    {
+      "id": "C-HP",
+      "owner": "/root/daily_chart after original leaf freeze",
+      "files": [
+        "app/components/homepage-v25/history-chart.tsx",
+        "app/components/homepage-v25/history-chart.css",
+        "app/components/homepage-v25/history-chart.test.tsx"
+      ],
+      "depends_on": "S history mode/range plus caller-prepared typed bucket values and coverage; no aggregation or finance calculations"
+    },
+    {
+      "id": "C-CP",
+      "owner": "/root/contribution_bars after original leaf freeze",
+      "files": [
+        "app/components/homepage-v25/contribution-panel.tsx",
+        "app/components/homepage-v25/contribution-panel.css",
+        "app/components/homepage-v25/contribution-panel.test.tsx"
+      ],
+      "depends_on": "S two-mode view intents, caller-selected complete ordered prepared rows/fullTotal, controlled callbacks; no categorization or finance calculations"
+    },
+    {
+      "id": "C-HOST",
+      "owner": "/root/workspace_integration with fresh bounded dispatch",
+      "files": [
+        "app/components/homepage-v25/session-model.ts",
+        "app/components/homepage-v25/use-homepage-host.ts",
+        "matching exact owned tests"
+      ],
+      "depends_on": "Existing frozen S period/history tokens; opaque independently committed result slots and optional loaders; no A/B calls; serialize with current owner"
+    }
+  ],
+  "acceptance": "NOT ACCEPTED; gap planning adds no functional, browser, visual, database or formal-round coverage"
+}

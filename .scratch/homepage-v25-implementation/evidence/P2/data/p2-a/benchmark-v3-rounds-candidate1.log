@@ -1,0 +1,47 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:27876) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3.test.ts (1 test | 1 failed) 12894ms
+   × measures captured-source cold/repeat, exact work, memory and all365 independent oracles 12892ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3.test.ts > measures captured-source cold/repeat, exact work, memory and all365 independent oracles
+AssertionError: expected { …(10) } to be { …(10) } // Object.is equality
+
+- Expected
++ Received
+
+@@ -2012,15 +2012,15 @@
+      "canonicalCacheHits": 0,
+      "canonicalCalls": 0,
+      "canonicalSweeps": 1,
+      "canonicalTransitions": 1866,
+      "distinctCanonicalContexts": 0,
+-     "evictions": 118,
++     "evictions": 485,
+      "feeCheckpointHits": 0,
+      "feeSteps": 1866,
+-     "fxLookups": 366,
+-     "quoteLookups": 731,
++     "fxLookups": 732,
++     "quoteLookups": 1462,
+    },
+    "feeFacts": [
+      {
+        "accountId": "a",
+        "coverage": "complete",
+
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/p2-a/performance-v3.test.ts:45:79
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  03:06:23
+   Duration  14.10s (transform 518ms, setup 0ms, import 671ms, tests 12.89s, environment 0ms)
+

@@ -1,0 +1,112 @@
+{
+  "status": "IMPLEMENTATION_READY_FOR_ROOT_REVIEW",
+  "model": "gpt-6.1-sol",
+  "effort": "ultra",
+  "sourceHashesStableAfterVerification": true,
+  "regression": {
+    "exitCode": 0,
+    "files": 5,
+    "originalTestsPreserved": 218,
+    "newTests": 26,
+    "totalPassed": 244
+  },
+  "strictDependencyTypeScript": {
+    "exitCode": 0,
+    "strictUnrelaxed": true
+  },
+  "workspaceTypeScript": {
+    "exitCode": 0,
+    "earlierConcurrentFailuresPreserved": true
+  },
+  "fourOwnedFilesLint": {
+    "exitCode": 0
+  },
+  "acceptedInputPublicEquivalence": {
+    "status": "PASS",
+    "cases": [
+      "cumulative",
+      "reverse",
+      "late-ipo",
+      "future-currency"
+    ],
+    "batches": 8,
+    "wrappers": 12,
+    "fullPublicJsonBytes": 195379,
+    "fullPublicSha256": "41cf1229bcc25ffebcdc2ac0189f15d198eb4c12565df027c25fff302949e643",
+    "compared": [
+      "every legacy wrapper field",
+      "complete A public result including reasons/coverage/FX/diagnostics",
+      "initial and retained source/index/cache counters",
+      "cached repeat public result"
+    ],
+    "explicitFactsRetainedGrowth": 0,
+    "baselineSources": {
+      "app/lib/replay/position-ledger.ts": "f46564c0ac473d78859f31c057ade82c3dc78852de8f55cfb04eee6e46927126",
+      "app/lib/reviews/homepage-v25-performance.ts": "1e64b1c23aa0d42b96331d1eb89b6ec4c16e7d26c13454edc7c7449567df0542"
+    }
+  },
+  "formalHeavyPerformance": {
+    "status": "NOT_RUN",
+    "owner": "root",
+    "quietWindowReleaseRequired": true,
+    "acceptedAPreviousNineSamplesUnchanged": true
+  },
+  "formalAcceptance": {
+    "seamAttempts": 0,
+    "seamBudget": 3,
+    "wholeP4Attempts": 0,
+    "wholeP4Budget": 3,
+    "workerAcceptsFeature": false
+  },
+  "remaining": [
+    "root independent source/financial review and rerun on frozen hashes",
+    "root quiet-window formal A three-shape nine-sample performance",
+    "root acceptance decision and subsequent P4/UI/history work outside this seam"
+  ],
+  "logs": {
+    "regression-final.log": {
+      "bytes": 434,
+      "sha256": "bc7f6d5c56cee45e587077f1a8c545fca4f9455537defc2f9691a6521ee93569"
+    },
+    "tsc-strict-dependencies-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsc-workspace-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "public-equivalence.json": {
+      "bytes": 779,
+      "sha256": "d2818f02dda9cf71a9638690b234e143e48949e7931fcc32220fd2afd1db7318"
+    },
+    "public-equivalence.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "red-fee-knownness.log": {
+      "bytes": 1712,
+      "sha256": "414a16a0df92551ad7ef96db230be32dfcf18f663c26c4c250dfe035b42ac3cd"
+    },
+    "green-fee-knownness.log": {
+      "bytes": 443,
+      "sha256": "076b31acc44e6c6605c3a52e4fe47e79691fde42d5edc6497f15db0baaece3c6"
+    },
+    "README.md": {
+      "bytes": 6183,
+      "sha256": "a66b8fe66deb29edc12de8d8763cb87dd4918bec40955734b40748e29799016b"
+    },
+    "DESIGN-COVERAGE.md": {
+      "bytes": 8218,
+      "sha256": "205156233470119b134c37e221611f3438d609c36563dc0e2d4862a9a4175259"
+    },
+    "COMMANDS.md": {
+      "bytes": 4531,
+      "sha256": "bec291bfccf66b77b43f33b234c656b1f59694a7bba18eebc27befd8ca373729"
+    }
+  }
+}

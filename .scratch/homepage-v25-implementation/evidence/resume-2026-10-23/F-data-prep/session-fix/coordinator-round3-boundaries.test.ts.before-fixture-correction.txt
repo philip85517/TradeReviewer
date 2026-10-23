@@ -1,0 +1,49 @@
+import { describe, expect, it } from "vitest";
+import { buildHomepageV25Performance as build, type HomepageV25Input } from "../../../../../../app/lib/reviews/homepage-v25-performance";
+import { buildTradeLibraryEntries } from "../../../../../../app/lib/trades/library";
+import { buildInstrumentTradeSummaries } from "../../../../../../app/lib/trades/instruments";
+import type { TradeExecution } from "../../../../../../app/lib/trades/types";
+import type { DailyCandleRecord } from "../../../../../../app/lib/market/contracts";
+
+const instrument = { id: "US:AAPL", symbol: "AAPL", name: "Apple", market: "US" as const, currency: "USD" };
+const buy = (id: string, executedAt: string): TradeExecution => ({
+  id, accountId: "a", accountLabel: "A", instrument, side: "buy", quantity: "1", price: "100", fee: "0", executedAt,
+  source: { platform: "statement", row: 1, tradeNature: "live" },
+});
+const candle = (tradingDate: string, close: string): DailyCandleRecord => ({
+  instrumentId: instrument.id, tradingDate, open: close, high: close, low: close, close, volume: "1", currency: "USD",
+  provider: "eastmoney", providerSymbol: "AAPL", adjustmentMode: "raw", fetchedAt: `${tradingDate}T23:00:00Z`,
+});
+const project = (executions: TradeExecution[], candles: DailyCandleRecord[], overrides: Partial<HomepageV25Input> = {}) => {
+  const candlesByInstrument = { [instrument.id]: candles };
+  return build({
+    period: { start: "2026-01-01", end: "2026-01-31" }, asOf: "2026-01-31",
+    executions: [], openingPositions: [], valuations: [],
+    entries: buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), candlesByInstrument, { [instrument.id]: "ready" }),
+    candlesByInstrument, ...overrides,
+  });
+};
+
+describe("coordinator round 3 real-library cutoff consistency", () => {
+  it("does not seed a Shanghai first-day execution into pre-period inventory", () => {
+    const result = project([buy("shanghai-first-day", "2025-12-31T16:30:00Z")], [candle("2025-12-31", "100"), candle("2026-01-31", "110")]);
+    expect({ opening: result.openingUnrealized.value, net: result.net.value }).toEqual({ opening: "0", net: "10" });
+  });
+
+  it("excludes executions after asOf from current inventory as well as from prices", () => {
+    const result = project([buy("known", "2026-01-15T15:00:00Z"), buy("future", "2026-02-02T15:00:00Z")], [candle("2026-01-01", "100"), candle("2026-01-31", "110")]);
+    expect(result.currentMarketValue.value).toBe("110");
+  });
+
+  it("selects the latest eligible current candle when a later candle also exists", () => {
+    const result = project([buy("known", "2026-01-15T15:00:00Z")], [candle("2026-01-01", "100"), candle("2026-01-31", "110"), candle("2026-02-02", "999")]);
+    expect(result.currentMarketValue.value).toBe("110");
+  });
+
+  it("does not publish post-asOf period gains as known results", () => {
+    const result = project([buy("future", "2026-02-02T15:00:00Z")], [candle("2026-01-01", "100"), candle("2026-12-31", "999")], { period: { start: "2026-01-01", end: "2026-12-31" } });
+    // A complete 899 would require a future execution and future quote. The
+    // boundary may reject the range, or return zero/unknown through the cutoff.
+    expect([null, "0"]).toContain(result.net.value);
+  });
+});

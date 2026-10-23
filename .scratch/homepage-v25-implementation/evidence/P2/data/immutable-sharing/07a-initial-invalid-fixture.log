@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0dc6/TradeReview
+
+(node:40106) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/equivalence.test.ts (6 tests | 1 failed) 350ms
+   × matches empty and future period classifications 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/equivalence.test.ts > matches empty and future period classifications
+HomepageV25ProjectionInputError: endpoint-invalid
+ ❯ app/lib/reviews/homepage-v25-performance.ts:916:64
+    914|     keys.add(endpoint.key);
+    915|     const boundary = parseAsOf(endpoint.at);
+    916|     if (!boundary || boundary.day < request.periodStart) throw new Hom…
+       |                                                                ^
+    917|     return { ...endpoint, boundary };
+    918|   });
+ ❯ Module.projectHomepageV25Boundaries app/lib/reviews/homepage-v25-performance.ts:912:39
+ ❯ compare .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/equivalence.test.ts:21:28
+ ❯ .scratch/homepage-v25-implementation/evidence/P2/data/immutable-sharing/equivalence.test.ts:50:58
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  05:02:48
+   Duration  1.12s (transform 343ms, setup 0ms, import 448ms, tests 350ms, environment 0ms)
+

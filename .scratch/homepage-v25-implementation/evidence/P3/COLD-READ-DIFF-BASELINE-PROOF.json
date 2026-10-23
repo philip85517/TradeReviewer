@@ -1,0 +1,12 @@
+[
+  {
+    "path": "app/components/homepage-v25/use-homepage-host.ts",
+    "sha256": "e9e446bdddc7f333932955038568f59e5e2e47bb5f691b40306b563e51c41233",
+    "matches0321FrozenBaseline": true
+  },
+  {
+    "path": "app/components/trade-review-workspace.tsx",
+    "sha256": "ee29515346366905d0bba6b4d220b22cee4f4b8f4310e247aebcaed951a7d490",
+    "matches0321FrozenBaseline": true
+  }
+]

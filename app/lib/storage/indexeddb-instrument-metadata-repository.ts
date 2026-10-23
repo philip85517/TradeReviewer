@@ -1,6 +1,6 @@
 /** MIGRATION-ONLY: retired IndexedDB repository for browser-state-export/tests. */
 import { canonicalInstrumentId } from "../instruments/display-name";
-import type { ResolvedInstrument } from "../instruments/metadata-contracts";
+import { mergeInstrumentExchange, validateResolvedInstrument, type ResolvedInstrument } from "../instruments/metadata-contracts";
 import {
   INSTRUMENT_METADATA,
   openTradeReviewDatabase,
@@ -16,6 +16,7 @@ function resolvedInstrument(
   record: StoredInstrumentMetadata,
 ): ResolvedInstrument {
   return {
+    ...(record.exchange ? { exchange: record.exchange } : {}),
     market: record.market,
     symbol: record.symbol,
     name: record.name,
@@ -86,9 +87,14 @@ export class IndexedDbInstrumentMetadataRepository
         "readwrite",
       );
       const completion = transactionDone(transaction);
-      transaction.objectStore(INSTRUMENT_METADATA).put({
-        ...record,
-        instrumentId: canonicalInstrumentId(record.symbol, record.market),
+      const store = transaction.objectStore(INSTRUMENT_METADATA);
+      const instrumentId = canonicalInstrumentId(record.symbol, record.market);
+      const previous = await requestValue(store.get(instrumentId)) as StoredInstrumentMetadata | undefined;
+      const normalized = validateResolvedInstrument(record, record);
+      const merged = mergeInstrumentExchange(previous ? validateResolvedInstrument(previous, record) : undefined, normalized);
+      store.put({
+        ...merged,
+        instrumentId,
       } satisfies StoredInstrumentMetadata);
       await completion;
     } finally {

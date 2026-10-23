@@ -1,0 +1,3536 @@
+{
+  "reason": "The old oracle requests FX from future-only groups before their first eligible native fact. This intentional correction is independent of calendar sharing.",
+  "actual": {
+    "sourceId": "sha256:98f3a8e7dc9cb86e837c786329f15cacaf14570922a2e3de57f3a00ecf790331",
+    "revisions": {
+      "trades": "immutable-check",
+      "quotes": "same-captured",
+      "fx": "same-evidence",
+      "metadata": "none"
+    },
+    "policies": {
+      "finance": "F3-2026-10-23",
+      "feePool": "F3-canonical-prefix",
+      "feeFacts": "P2-incurred-knowledge-1",
+      "calendar": "exchange-2010-2030-F3",
+      "dailyCoverage": "P2-strict-completed-1",
+      "fx": "P2-historical-pair-knowledge-1",
+      "quoteKnowledgeMode": "retrospective-completed-session"
+    },
+    "scope": {
+      "nature": "live",
+      "simulationRunId": null,
+      "includedExecutions": 3,
+      "excludedExecutions": 0,
+      "excludedByReason": {}
+    },
+    "asOf": "2026-02-02T10:00:00.000Z",
+    "periodStart": "2026-01-01",
+    "points": [
+      {
+        "periodRealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "openingUnrealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "closingUnrealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "unrealizedChange": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "net": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "lifetimeRealizedNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "lifetimeNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "marketValue": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "unrealizedNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "openFees": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "periodFees": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": null
+          }
+        },
+        "key": "pre",
+        "requestedAt": "2026-01-02",
+        "businessDate": "2026-01-02",
+        "effectiveCursor": "2026-01-02T15:59:59.999Z",
+        "boundaryPrecision": "day",
+        "state": "value",
+        "plottable": true,
+        "instruments": [
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "key": "a2|CN-SH:600000|live|",
+            "identity": {
+              "accountId": "a2",
+              "instrumentId": "CN-SH:600000",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "CNY",
+                  "source": "controlled"
+                }
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "CNY",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "complete",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              },
+              "endpoint": {
+                "state": "market-closed-carry",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "not-required",
+              "businessDate": "2026-01-02",
+              "observationIds": [],
+              "requiredPairs": [],
+              "pairKnowledge": {},
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a2",
+              "instrumentId": "CN-SH:600000",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-2"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          },
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "key": "a1|HK:00700|live|",
+            "identity": {
+              "accountId": "a1",
+              "instrumentId": "HK:00700",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "HKD",
+                  "source": "controlled"
+                }
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2026-01-02",
+                  "price": "110",
+                  "currency": "HKD",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "complete",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              },
+              "endpoint": {
+                "state": "complete",
+                "requiredCompletedSession": "2026-01-02",
+                "selectedDate": "2026-01-02",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "not-required",
+              "businessDate": "2026-01-02",
+              "observationIds": [],
+              "requiredPairs": [],
+              "pairKnowledge": {},
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a1",
+              "instrumentId": "HK:00700",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-1"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          },
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "key": "a0|US:AAPL|live|",
+            "identity": {
+              "accountId": "a0",
+              "instrumentId": "US:AAPL",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [
+                  "quote-session-unavailable"
+                ],
+                "quote": null
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "USD",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "calendar-unavailable",
+                "requiredCompletedSession": null,
+                "selectedDate": null,
+                "missingSessions": [],
+                "reasons": [
+                  "quote-session-unavailable"
+                ]
+              },
+              "endpoint": {
+                "state": "session-in-progress-carry",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "not-required",
+              "businessDate": "2026-01-02",
+              "observationIds": [],
+              "requiredPairs": [],
+              "pairKnowledge": {},
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": null
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a0",
+              "instrumentId": "US:AAPL",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-0"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          }
+        ],
+        "quoteCoverage": {
+          "a2|CN-SH:600000|live|": {
+            "opening": {
+              "state": "complete",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            },
+            "endpoint": {
+              "state": "market-closed-carry",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            }
+          },
+          "a1|HK:00700|live|": {
+            "opening": {
+              "state": "complete",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            },
+            "endpoint": {
+              "state": "complete",
+              "requiredCompletedSession": "2026-01-02",
+              "selectedDate": "2026-01-02",
+              "missingSessions": [],
+              "reasons": []
+            }
+          },
+          "a0|US:AAPL|live|": {
+            "opening": {
+              "state": "calendar-unavailable",
+              "requiredCompletedSession": null,
+              "selectedDate": null,
+              "missingSessions": [],
+              "reasons": [
+                "quote-session-unavailable"
+              ]
+            },
+            "endpoint": {
+              "state": "session-in-progress-carry",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            }
+          }
+        },
+        "fxCoverage": {
+          "state": "not-required",
+          "businessDate": "2026-01-02",
+          "observationIds": [],
+          "requiredPairs": [],
+          "pairKnowledge": {},
+          "reasons": []
+        },
+        "lifetimeCoverage": [
+          {
+            "accountId": "a2",
+            "instrumentId": "CN-SH:600000",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-2"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          },
+          {
+            "accountId": "a1",
+            "instrumentId": "HK:00700",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-1"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          },
+          {
+            "accountId": "a0",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-0"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    ],
+    "current": {
+      "asOf": "2026-02-02T10:00:00.000Z",
+      "currentMarketValue": {
+        "value": "2004.2",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "220",
+            "HKD": "220",
+            "USD": "220"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "currentUnrealized": {
+        "value": "178.82592594",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "19.62962963",
+            "HKD": "19.62962963",
+            "USD": "19.62962963"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "currentOpenFees": {
+        "value": "1.12469135",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "0.12345679",
+            "HKD": "0.12345679",
+            "USD": "0.12345679"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "instruments": [
+        {
+          "key": "a2|CN-SH:600000|live|",
+          "identity": {
+            "accountId": "a2",
+            "instrumentId": "CN-SH:600000",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "220",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "19.62962963",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.12345679",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-2"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-02-02",
+                "price": "110",
+                "currency": "CNY",
+                "source": "controlled"
+              }
+            }
+          }
+        },
+        {
+          "key": "a1|HK:00700|live|",
+          "identity": {
+            "accountId": "a1",
+            "instrumentId": "HK:00700",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "200.2",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "17.86296296",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.11234568",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-1"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-02-02",
+                "price": "110",
+                "currency": "HKD",
+                "source": "controlled"
+              }
+            }
+          }
+        },
+        {
+          "key": "a0|US:AAPL|live|",
+          "identity": {
+            "accountId": "a0",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "1584",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "141.33333334",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.88888888",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-0"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-30",
+                "price": "110",
+                "currency": "USD",
+                "source": "controlled"
+              }
+            }
+          }
+        }
+      ],
+      "quoteCoverage": {
+        "a2|CN-SH:600000|live|": {
+          "state": "complete",
+          "requiredCompletedSession": "2026-02-02",
+          "selectedDate": "2026-02-02",
+          "missingSessions": [],
+          "reasons": []
+        },
+        "a1|HK:00700|live|": {
+          "state": "complete",
+          "requiredCompletedSession": "2026-02-02",
+          "selectedDate": "2026-02-02",
+          "missingSessions": [],
+          "reasons": []
+        },
+        "a0|US:AAPL|live|": {
+          "state": "session-in-progress-carry",
+          "requiredCompletedSession": "2026-01-30",
+          "selectedDate": "2026-01-30",
+          "missingSessions": [],
+          "reasons": []
+        }
+      },
+      "fxCoverage": {
+        "state": "complete",
+        "businessDate": "2026-02-02",
+        "observationIds": [
+          "current-separate"
+        ],
+        "requiredPairs": [
+          "HKD/CNY",
+          "USD/CNY"
+        ],
+        "pairKnowledge": {
+          "HKD/CNY": {
+            "publishedAt": "2026-02-02T09:00:00Z",
+            "knownAt": "2026-02-02T09:05:00Z",
+            "fetchedAt": "2026-02-02T09:05:00Z",
+            "source": "broker-current"
+          },
+          "USD/CNY": {
+            "publishedAt": "2026-02-02T09:00:00Z",
+            "knownAt": "2026-02-02T09:05:00Z",
+            "fetchedAt": "2026-02-02T09:05:00Z",
+            "source": "broker-current"
+          }
+        },
+        "reasons": []
+      }
+    },
+    "feeFacts": [
+      {
+        "factId": "a2|CN-SH:600000|live||execution:fill-2",
+        "accountId": "a2",
+        "instrumentId": "CN-SH:600000",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "CNY",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-2"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-2"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:2"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      },
+      {
+        "factId": "a1|HK:00700|live||execution:fill-1",
+        "accountId": "a1",
+        "instrumentId": "HK:00700",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "HKD",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-1"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-1"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:1"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      },
+      {
+        "factId": "a0|US:AAPL|live||execution:fill-0",
+        "accountId": "a0",
+        "instrumentId": "US:AAPL",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "USD",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-0"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-0"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:0"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      }
+    ]
+  },
+  "original": {
+    "sourceId": "sha256:98f3a8e7dc9cb86e837c786329f15cacaf14570922a2e3de57f3a00ecf790331",
+    "revisions": {
+      "trades": "immutable-check",
+      "quotes": "same-captured",
+      "fx": "same-evidence",
+      "metadata": "none"
+    },
+    "policies": {
+      "finance": "F3-2026-10-23",
+      "feePool": "F3-canonical-prefix",
+      "feeFacts": "P2-incurred-knowledge-1",
+      "calendar": "exchange-2010-2030-F3",
+      "dailyCoverage": "P2-strict-completed-1",
+      "fx": "P2-historical-pair-knowledge-1",
+      "quoteKnowledgeMode": "retrospective-completed-session"
+    },
+    "scope": {
+      "nature": "live",
+      "simulationRunId": null,
+      "includedExecutions": 3,
+      "excludedExecutions": 0,
+      "excludedByReason": {}
+    },
+    "asOf": "2026-02-02T10:00:00.000Z",
+    "periodStart": "2026-01-01",
+    "points": [
+      {
+        "periodRealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "openingUnrealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "closingUnrealized": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "unrealizedChange": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "net": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "lifetimeRealizedNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "lifetimeNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "marketValue": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "unrealizedNet": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "openFees": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "periodFees": {
+          "value": "0",
+          "available": true,
+          "coverage": {
+            "total": 0,
+            "available": 0
+          },
+          "reasons": [],
+          "money": {
+            "originalByCurrency": {},
+            "targetCurrency": "CNY",
+            "conversion": "same-currency",
+            "fx": {
+              "id": "fx-2026-01-02",
+              "source": "archive",
+              "asOf": "2026-01-02T15:59:59.999Z",
+              "status": "complete"
+            }
+          }
+        },
+        "key": "pre",
+        "requestedAt": "2026-01-02",
+        "businessDate": "2026-01-02",
+        "effectiveCursor": "2026-01-02T15:59:59.999Z",
+        "boundaryPrecision": "day",
+        "state": "value",
+        "plottable": true,
+        "instruments": [
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "key": "a2|CN-SH:600000|live|",
+            "identity": {
+              "accountId": "a2",
+              "instrumentId": "CN-SH:600000",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "CNY",
+                  "source": "controlled"
+                }
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "CNY",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "complete",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              },
+              "endpoint": {
+                "state": "market-closed-carry",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "complete",
+              "businessDate": "2026-01-02",
+              "observationIds": [
+                "fx-2026-01-02"
+              ],
+              "requiredPairs": [
+                "HKD/CNY",
+                "USD/CNY"
+              ],
+              "pairKnowledge": {
+                "HKD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T02:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                },
+                "USD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T01:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                }
+              },
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a2",
+              "instrumentId": "CN-SH:600000",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-2"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          },
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "key": "a1|HK:00700|live|",
+            "identity": {
+              "accountId": "a1",
+              "instrumentId": "HK:00700",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "HKD",
+                  "source": "controlled"
+                }
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2026-01-02",
+                  "price": "110",
+                  "currency": "HKD",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "complete",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              },
+              "endpoint": {
+                "state": "complete",
+                "requiredCompletedSession": "2026-01-02",
+                "selectedDate": "2026-01-02",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "complete",
+              "businessDate": "2026-01-02",
+              "observationIds": [
+                "fx-2026-01-02"
+              ],
+              "requiredPairs": [
+                "HKD/CNY",
+                "USD/CNY"
+              ],
+              "pairKnowledge": {
+                "HKD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T02:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                },
+                "USD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T01:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                }
+              },
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a1",
+              "instrumentId": "HK:00700",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-1"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          },
+          {
+            "periodRealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "closingUnrealized": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedChange": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "net": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeRealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "marketValue": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "unrealizedNet": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "openFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "periodFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "key": "a0|US:AAPL|live|",
+            "identity": {
+              "accountId": "a0",
+              "instrumentId": "US:AAPL",
+              "nature": "live",
+              "simulationRunId": null
+            },
+            "evidence": {
+              "opening": {
+                "knowledgeCursor": "2025-12-31T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [
+                  "quote-session-unavailable"
+                ],
+                "quote": null
+              },
+              "endpoint": {
+                "knowledgeCursor": "2026-01-02T15:59:59.999Z",
+                "executionIds": [],
+                "quantity": "0",
+                "costKnown": true,
+                "feesKnown": true,
+                "openFees": "0",
+                "reasons": [],
+                "quote": {
+                  "date": "2025-12-31",
+                  "price": "110",
+                  "currency": "USD",
+                  "source": "controlled"
+                }
+              }
+            },
+            "quoteCoverage": {
+              "opening": {
+                "state": "calendar-unavailable",
+                "requiredCompletedSession": null,
+                "selectedDate": null,
+                "missingSessions": [],
+                "reasons": [
+                  "quote-session-unavailable"
+                ]
+              },
+              "endpoint": {
+                "state": "session-in-progress-carry",
+                "requiredCompletedSession": "2025-12-31",
+                "selectedDate": "2025-12-31",
+                "missingSessions": [],
+                "reasons": []
+              }
+            },
+            "fxCoverage": {
+              "state": "complete",
+              "businessDate": "2026-01-02",
+              "observationIds": [
+                "fx-2026-01-02"
+              ],
+              "requiredPairs": [
+                "HKD/CNY",
+                "USD/CNY"
+              ],
+              "pairKnowledge": {
+                "HKD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T02:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                },
+                "USD/CNY": {
+                  "publishedAt": "2026-01-02T00:00:00Z",
+                  "knownAt": "2026-01-02T01:00:00Z",
+                  "fetchedAt": "2026-01-02T03:00:00Z",
+                  "source": "archive"
+                }
+              },
+              "reasons": []
+            },
+            "feeFactIds": [],
+            "canonicalKnownFees": {
+              "value": "0",
+              "available": true,
+              "coverage": {
+                "total": 0,
+                "available": 0
+              },
+              "reasons": [],
+              "money": {
+                "originalByCurrency": {},
+                "targetCurrency": "CNY",
+                "conversion": "same-currency",
+                "fx": {
+                  "id": "fx-2026-01-02",
+                  "source": "archive",
+                  "asOf": "2026-01-02T15:59:59.999Z",
+                  "status": "complete"
+                }
+              }
+            },
+            "lifetimeCoverage": {
+              "accountId": "a0",
+              "instrumentId": "US:AAPL",
+              "nature": "live",
+              "simulationRunId": null,
+              "state": "partial",
+              "coversInception": true,
+              "through": "2026-02-02",
+              "knownAt": "2026-02-02T00:00:00Z",
+              "evidenceIds": [
+                "lifetime-fill-0"
+              ],
+              "reasons": [
+                "lifetime-source-incomplete"
+              ]
+            }
+          }
+        ],
+        "quoteCoverage": {
+          "a2|CN-SH:600000|live|": {
+            "opening": {
+              "state": "complete",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            },
+            "endpoint": {
+              "state": "market-closed-carry",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            }
+          },
+          "a1|HK:00700|live|": {
+            "opening": {
+              "state": "complete",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            },
+            "endpoint": {
+              "state": "complete",
+              "requiredCompletedSession": "2026-01-02",
+              "selectedDate": "2026-01-02",
+              "missingSessions": [],
+              "reasons": []
+            }
+          },
+          "a0|US:AAPL|live|": {
+            "opening": {
+              "state": "calendar-unavailable",
+              "requiredCompletedSession": null,
+              "selectedDate": null,
+              "missingSessions": [],
+              "reasons": [
+                "quote-session-unavailable"
+              ]
+            },
+            "endpoint": {
+              "state": "session-in-progress-carry",
+              "requiredCompletedSession": "2025-12-31",
+              "selectedDate": "2025-12-31",
+              "missingSessions": [],
+              "reasons": []
+            }
+          }
+        },
+        "fxCoverage": {
+          "state": "complete",
+          "businessDate": "2026-01-02",
+          "observationIds": [
+            "fx-2026-01-02"
+          ],
+          "requiredPairs": [
+            "HKD/CNY",
+            "USD/CNY"
+          ],
+          "pairKnowledge": {
+            "HKD/CNY": {
+              "publishedAt": "2026-01-02T00:00:00Z",
+              "knownAt": "2026-01-02T02:00:00Z",
+              "fetchedAt": "2026-01-02T03:00:00Z",
+              "source": "archive"
+            },
+            "USD/CNY": {
+              "publishedAt": "2026-01-02T00:00:00Z",
+              "knownAt": "2026-01-02T01:00:00Z",
+              "fetchedAt": "2026-01-02T03:00:00Z",
+              "source": "archive"
+            }
+          },
+          "reasons": []
+        },
+        "lifetimeCoverage": [
+          {
+            "accountId": "a2",
+            "instrumentId": "CN-SH:600000",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-2"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          },
+          {
+            "accountId": "a1",
+            "instrumentId": "HK:00700",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-1"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          },
+          {
+            "accountId": "a0",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null,
+            "state": "partial",
+            "coversInception": true,
+            "through": "2026-02-02",
+            "knownAt": "2026-02-02T00:00:00Z",
+            "evidenceIds": [
+              "lifetime-fill-0"
+            ],
+            "reasons": [
+              "lifetime-source-incomplete"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    ],
+    "current": {
+      "asOf": "2026-02-02T10:00:00.000Z",
+      "currentMarketValue": {
+        "value": "2004.2",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "220",
+            "HKD": "220",
+            "USD": "220"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "currentUnrealized": {
+        "value": "178.82592594",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "19.62962963",
+            "HKD": "19.62962963",
+            "USD": "19.62962963"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "currentOpenFees": {
+        "value": "1.12469135",
+        "available": true,
+        "coverage": {
+          "total": 3,
+          "available": 3
+        },
+        "reasons": [],
+        "money": {
+          "originalByCurrency": {
+            "CNY": "0.12345679",
+            "HKD": "0.12345679",
+            "USD": "0.12345679"
+          },
+          "targetCurrency": "CNY",
+          "conversion": "complete",
+          "fx": {
+            "id": "current-separate",
+            "source": "broker-current",
+            "asOf": "2026-02-02T09:00:00Z",
+            "status": "complete"
+          }
+        }
+      },
+      "instruments": [
+        {
+          "key": "a2|CN-SH:600000|live|",
+          "identity": {
+            "accountId": "a2",
+            "instrumentId": "CN-SH:600000",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "220",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "19.62962963",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.12345679",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "CNY": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "same-currency",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-2"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-02-02",
+                "price": "110",
+                "currency": "CNY",
+                "source": "controlled"
+              }
+            }
+          }
+        },
+        {
+          "key": "a1|HK:00700|live|",
+          "identity": {
+            "accountId": "a1",
+            "instrumentId": "HK:00700",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "200.2",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "17.86296296",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.11234568",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "HKD": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-1"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-02-02",
+                "price": "110",
+                "currency": "HKD",
+                "source": "controlled"
+              }
+            }
+          }
+        },
+        {
+          "key": "a0|US:AAPL|live|",
+          "identity": {
+            "accountId": "a0",
+            "instrumentId": "US:AAPL",
+            "nature": "live",
+            "simulationRunId": null
+          },
+          "currentMarketValue": {
+            "value": "1584",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "220"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentUnrealized": {
+            "value": "141.33333334",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "19.62962963"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "currentOpenFees": {
+            "value": "0.88888888",
+            "available": true,
+            "coverage": {
+              "total": 1,
+              "available": 1
+            },
+            "reasons": [],
+            "money": {
+              "originalByCurrency": {
+                "USD": "0.12345679"
+              },
+              "targetCurrency": "CNY",
+              "conversion": "complete",
+              "fx": {
+                "id": "current-separate",
+                "source": "broker-current",
+                "asOf": "2026-02-02T09:00:00Z",
+                "status": "complete"
+              }
+            }
+          },
+          "evidence": {
+            "current": {
+              "knowledgeCursor": "2026-02-02T10:00:00.000Z",
+              "executionIds": [
+                "fill-0"
+              ],
+              "quantity": "2",
+              "costKnown": true,
+              "feesKnown": true,
+              "openFees": "0.12345679",
+              "reasons": [],
+              "quote": {
+                "date": "2026-01-30",
+                "price": "110",
+                "currency": "USD",
+                "source": "controlled"
+              }
+            }
+          }
+        }
+      ],
+      "quoteCoverage": {
+        "a2|CN-SH:600000|live|": {
+          "state": "complete",
+          "requiredCompletedSession": "2026-02-02",
+          "selectedDate": "2026-02-02",
+          "missingSessions": [],
+          "reasons": []
+        },
+        "a1|HK:00700|live|": {
+          "state": "complete",
+          "requiredCompletedSession": "2026-02-02",
+          "selectedDate": "2026-02-02",
+          "missingSessions": [],
+          "reasons": []
+        },
+        "a0|US:AAPL|live|": {
+          "state": "session-in-progress-carry",
+          "requiredCompletedSession": "2026-01-30",
+          "selectedDate": "2026-01-30",
+          "missingSessions": [],
+          "reasons": []
+        }
+      },
+      "fxCoverage": {
+        "state": "complete",
+        "businessDate": "2026-02-02",
+        "observationIds": [
+          "current-separate"
+        ],
+        "requiredPairs": [
+          "HKD/CNY",
+          "USD/CNY"
+        ],
+        "pairKnowledge": {
+          "HKD/CNY": {
+            "publishedAt": "2026-02-02T09:00:00Z",
+            "knownAt": "2026-02-02T09:05:00Z",
+            "fetchedAt": "2026-02-02T09:05:00Z",
+            "source": "broker-current"
+          },
+          "USD/CNY": {
+            "publishedAt": "2026-02-02T09:00:00Z",
+            "knownAt": "2026-02-02T09:05:00Z",
+            "fetchedAt": "2026-02-02T09:05:00Z",
+            "source": "broker-current"
+          }
+        },
+        "reasons": []
+      }
+    },
+    "feeFacts": [
+      {
+        "factId": "a2|CN-SH:600000|live||execution:fill-2",
+        "accountId": "a2",
+        "instrumentId": "CN-SH:600000",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "CNY",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-2"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-2"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:2"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      },
+      {
+        "factId": "a1|HK:00700|live||execution:fill-1",
+        "accountId": "a1",
+        "instrumentId": "HK:00700",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "HKD",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-1"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-1"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:1"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      },
+      {
+        "factId": "a0|US:AAPL|live||execution:fill-0",
+        "accountId": "a0",
+        "instrumentId": "US:AAPL",
+        "nature": "live",
+        "simulationRunId": null,
+        "kind": "execution-fee",
+        "currency": "USD",
+        "expense": "0.12345679",
+        "incurred": {
+          "businessDate": "2026-01-05",
+          "at": "2026-01-05T14:00:00Z",
+          "precision": "instant"
+        },
+        "knowledge": {
+          "amountKnownAt": "2026-01-05T14:00:00.000Z",
+          "attributionKnownAt": "2026-01-05T14:00:00.000Z",
+          "availableAt": "2026-01-05T14:00:00.000Z",
+          "evidenceIds": [
+            "fill-0"
+          ]
+        },
+        "lineage": {
+          "executionIds": [
+            "fill-0"
+          ],
+          "eventIds": [],
+          "sourceRows": [
+            "statement:0"
+          ]
+        },
+        "coverage": "complete",
+        "reasons": []
+      }
+    ]
+  }
+}

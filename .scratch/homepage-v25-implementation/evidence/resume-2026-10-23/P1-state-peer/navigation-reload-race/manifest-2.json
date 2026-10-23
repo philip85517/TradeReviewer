@@ -1,0 +1,43 @@
+{
+  "startedAt": "2026-10-22T19:51:44.907Z",
+  "completedAt": "2026-10-22T19:51:47.537Z",
+  "model": "gpt-6.1-sol / ultra",
+  "command": [
+    "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/vitest.config.ts"
+  ],
+  "nodeVersion": "v26.0.0",
+  "before": {
+    "app/components/homepage-v25/use-homepage-host.ts": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/components/homepage-v25/home-surface.tsx": "6e79152cb0fd02b370a61f047dec3610cdaa946efea0bb76c0fdf9089aa8a6d1",
+    "app/components/trade-review-workspace.tsx": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "tests/setup.ts": "fa0fbe0255ef099b2d65d5157aa2559fe54b44bbc0ae9c25e91a1474d021da62",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx": "eee58df4115200c9906241744c94ba9a53f36ca9fbec35adb0d29e3130c18e2d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/vitest.config.ts": "f4903869076ea7ede8248938d50b4ef6ffc7948da5e021ff7a622b61acc66242",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/run-2.mjs": "af4fef24597ccc766b7a048da94095c11f4d85b586154e031aded51592f0879a"
+  },
+  "after": {
+    "app/components/homepage-v25/use-homepage-host.ts": "74d765fe938aaa126ef115a683dea7f96181aab67c24de6e33e3e51fde08d2f2",
+    "app/components/homepage-v25/use-homepage-host.test.tsx": "327c1c9ce4b0587abf9618e70bb961f0c520defe8485c173689cc82cc5262caa",
+    "app/components/homepage-v25/session-model.ts": "828162fd03dcba7d4632a189444e54e1c4f0761d937c7bf0b4e4ad96abb4766e",
+    "app/components/homepage-v25/session-model.test.ts": "587f467f2aa78000f4d81ef6ee198373d05b3cd390e56de34b955c13c694be06",
+    "app/components/homepage-v25/home-surface.tsx": "6e79152cb0fd02b370a61f047dec3610cdaa946efea0bb76c0fdf9089aa8a6d1",
+    "app/components/trade-review-workspace.tsx": "6d255f0e1ed1a0af1d094cedb769cfe7fd33c6164c87b46a8ba8f57944581d22",
+    "app/lib/reviews/homepage-v25-state.ts": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+    "tests/setup.ts": "fa0fbe0255ef099b2d65d5157aa2559fe54b44bbc0ae9c25e91a1474d021da62",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/navigation-reload-race.test.tsx": "eee58df4115200c9906241744c94ba9a53f36ca9fbec35adb0d29e3130c18e2d",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/vitest.config.ts": "f4903869076ea7ede8248938d50b4ef6ffc7948da5e021ff7a622b61acc66242",
+    ".scratch/homepage-v25-implementation/evidence/resume-2026-10-23/P1-state-peer/navigation-reload-race/run-2.mjs": "af4fef24597ccc766b7a048da94095c11f4d85b586154e031aded51592f0879a"
+  },
+  "stable": true,
+  "exitCode": 1,
+  "signal": null,
+  "scope": "Evidence-only jsdom host, synthetic deferred bundles; no service/browser/HTTP/DB; no product writes"
+}

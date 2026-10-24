@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TradingView 工具条对齐提案 · 审阅原型</title>
+  <link rel="stylesheet" href="prototype.css">
+  <style>.replay-mock{height:60px;background:#0b0d10;border:1px solid #303845;border-radius:9px;color:#c6ced9;display:flex;align-items:center;justify-content:center;gap:26px}.replay-mock i{height:28px;border-left:1px solid #536070}.replay-mock b{font-size:25px;font-weight:300;margin-left:30px}.compare-grid{grid-template-columns:1fr}.slots{min-width:0;max-width:100%}.hero h1{font-size:32px;line-height:1.08}</style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span class="brand-mark">TR</span><div><strong>复盘工作区</strong><small>TradingView 对齐提案 · v0.1</small></div></div><div class="top-meta"><span class="pill">纯静态设计原型</span><span class="muted">2026.10.24</span></div></header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">REVIEW WORKSPACE / DESIGN CONTRACT</p><h1>工具条与回放入口的<br><em>逐项对照审阅</em></h1><p class="lede">这是可审阅的视觉与状态提案，不是产品功能。点击仅用于查看槽位契约，不会绘制、播放、下单或写入数据。</p></div><div class="hero-note"><span class="note-dot"></span><div><b>本轮审阅边界</b><br>原图像素裁切 · 拟制轮廓 · 状态说明 · 缺证清单</div></div></section>
+    <nav class="view-tabs" aria-label="审阅视图"><a href="?view=compare" data-view="compare">01　原图对照</a><a href="?view=context" data-view="context">02　工作区语境</a><a href="?view=states" data-view="states">03　状态与契约</a></nav>
+    <div id="app" aria-live="polite"></div>
+  </main>
+  <footer><span>设计提案 · 交互仅用于审阅 · 不代表 TradingView 官方资源或产品功能已完成</span><span><a href="../../source/references/2026-10-24-tradingview-toolbar-reference.png">查看原图</a><a href="contract.md">查看契约</a></span></footer>
+  <script src="prototype.js"></script>
+</body>
+</html>

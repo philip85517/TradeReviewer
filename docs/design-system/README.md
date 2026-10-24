@@ -7,6 +7,7 @@
 |[交易库视觉设计规范](baselines/2026-10-26-trading-library-v2.0/visual-spec.html)|**V2.0 · 当前交易库视觉规范**|依据《交易库设计规范》校正练习、复盘回合、日期、导入保护及统计图例；保留 E 布局|
 |[交易库 V1.1](baselines/2026-10-24-trading-library-v1.1/visual-spec.html)|历史冻结版本|保留 E 定型过程与原评论；逻辑修订见 V2.0|
 |[交易库 V1.0](baselines/2026-10-22-trading-library-v1.0/visual-spec.html)|历史工作版本|保留原评论和布局探索；现行交易库规范见 V2.0|
+|[复盘页视觉规范](baselines/2026-10-22-review-workspace-v1.0/visual-spec.html)|**V1.0 · 设计提案**|仅复盘工作区；三阶段、回放边界、记录、保存、响应式与导出；继承 V2.5 公共规范|
 |[拆分前完整快照](baselines/2026-10-22-homepage-v2.4.2/visual-spec.html)|V2.4.2 · 冻结基线|保存拆分前累计内容、图稿和43条评论；不作为后续新增修订入口|
 |[版本拆分与验收记录](iterations/2026-10-22-design-doc-split/README.md)|本次追溯入口|版本职责、评论归属、完整性检查和启动说明|
 |[原首页 V2.4.1](baselines/2026-10-20-homepage-v2.4.1/visual-spec.html)|历史工作版本|原目录保留，不覆盖历史内容|
@@ -15,3 +16,5 @@
 预览启动：在仓库根目录运行 `./docs/design-system/start-design-preview.sh`。默认端口 3090，当前规范使用各自独立的评论身份；历史版本与评论继续保留。
 
 修改《交易库设计规范》源文档后，运行 `python3 docs/design-system/build-trading-library-spec.py` 同步其阅读页。确认来源保留在仓库，源文档继续提供原始引用。
+
+复盘工作区 V1.0 独立预览：在当前仓库根目录执行 `PORT=3091 docs/design-system/start-design-preview.sh`。详见该版本 [README](baselines/2026-10-22-review-workspace-v1.0/README.md)。

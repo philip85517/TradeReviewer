@@ -1,0 +1,48 @@
+{
+  "source_sha256": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+  "html_sha256": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b",
+  "manifest_fingerprint": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+  "chapters": [
+    "chapter-RV01",
+    "chapter-RV02",
+    "chapter-RV03",
+    "chapter-RV04",
+    "chapter-RV05",
+    "chapter-RV06",
+    "chapter-RV07",
+    "chapter-RV08",
+    "chapter-RV09",
+    "chapter-RV10"
+  ],
+  "element_rows": 22,
+  "new_element_rows": 4,
+  "task_rows": 12,
+  "svg_figures": 5,
+  "local_link_occurrences_checked": 110,
+  "external_link_occurrences_not_rechecked": 0,
+  "link_errors": [],
+  "comments_count": 4,
+  "comments_sha256": "1f06911428bd27722d31413bd1c9801512791aebe7d115c4403ed9026a55a376",
+  "comment_statuses": [
+    "pending-review",
+    "pending-review",
+    "pending-review",
+    "pending-review"
+  ],
+  "comments_unchanged": true,
+  "calculations": {
+    "1440_plot": 788,
+    "1280_plot_left_collapsed": 812,
+    "both_open_min": 1292,
+    "left_collapsed_min": 1108,
+    "right_collapsed_min": 1028,
+    "both_collapsed_min": 844,
+    "remaining_qty": 80,
+    "exit_gross": 120,
+    "combo_realized_R": 0.75,
+    "normal_net_R": 2.98,
+    "short_R": 1.5,
+    "peak_drawdown_R": -2.5,
+    "experience_candidate": 7.0
+  }
+}

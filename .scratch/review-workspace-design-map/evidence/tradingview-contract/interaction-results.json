@@ -1,0 +1,111 @@
+{
+  "slots": [
+    {
+      "id": "D01",
+      "title": "D01 · 斐波那契回撤（候选）"
+    },
+    {
+      "id": "D02",
+      "title": "D02 · 文字 Text（候选）"
+    },
+    {
+      "id": "D03",
+      "title": "D03 · 多头仓位（高置信候选）"
+    },
+    {
+      "id": "D04",
+      "title": "D04 · 空头仓位（高置信候选）"
+    },
+    {
+      "id": "D05",
+      "title": "D05 · 矩形（候选）"
+    },
+    {
+      "id": "D06",
+      "title": "D06 · 箭头 / 箭头标记（待区分）"
+    },
+    {
+      "id": "D07",
+      "title": "D07 · 趋势线（候选）"
+    },
+    {
+      "id": "D08",
+      "title": "D08 · 向上箭头标记（候选）"
+    },
+    {
+      "id": "D09",
+      "title": "D09 · 向下箭头标记（候选）"
+    },
+    {
+      "id": "D10",
+      "title": "D10 · 旋转矩形（候选）"
+    },
+    {
+      "id": "D11",
+      "title": "D11 · 多节点图形（身份未知）"
+    },
+    {
+      "id": "D12",
+      "title": "D12 · 框内T注释（身份未知）"
+    },
+    {
+      "id": "D13",
+      "title": "D13 · 水平射线（候选）"
+    },
+    {
+      "id": "R01",
+      "title": "R01 · 选择日期"
+    },
+    {
+      "id": "R02",
+      "title": "R02 · 播放 / 暂停"
+    },
+    {
+      "id": "R03",
+      "title": "R03 · 向前一步"
+    },
+    {
+      "id": "R04",
+      "title": "R04 · 速度 1x"
+    },
+    {
+      "id": "R05",
+      "title": "R05 · “天”（身份未知）"
+    },
+    {
+      "id": "R06",
+      "title": "R06 · 返回实时（候选）"
+    },
+    {
+      "id": "R07",
+      "title": "R07 · 关闭回放面板"
+    }
+  ],
+  "states": [
+    {
+      "state": "hover",
+      "sample": "state-sample hover",
+      "disabled": false
+    },
+    {
+      "state": "selected",
+      "sample": "state-sample selected",
+      "disabled": false
+    },
+    {
+      "state": "disabled",
+      "sample": "state-sample disabled",
+      "disabled": true
+    },
+    {
+      "state": "focus",
+      "sample": "state-sample focus",
+      "disabled": false
+    },
+    {
+      "state": "default",
+      "sample": "state-sample default",
+      "disabled": false
+    }
+  ]
+}

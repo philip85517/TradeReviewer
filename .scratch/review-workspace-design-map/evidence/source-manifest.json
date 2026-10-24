@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-24 Asia/Shanghai",
+  "commentRevision": 4,
+  "files": {
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/references/2026-10-24-tradingview-toolbar-reference.png": "b1cebf52d131a0d9da0186f2328621ad488514e428f6e39d74bd54d399ec78a7",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/references/2026-10-24-tradingview-toolbar-contract.md": "ecb184b5679c75658f4749597edb12018900db2cfab42e9ddb1964a6ac30221a",
+    "docs/design-system/reviews/REVIEW-WORKSPACE-V10.json": "1f06911428bd27722d31413bd1c9801512791aebe7d115c4403ed9026a55a376",
+    "CONTEXT.md": "c152e98381382bd5f072b271ab83d37d426f1831989625d2064355d1f5de2f51"
+  }
+}

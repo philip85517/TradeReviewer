@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg"><defs><g id="toolbar-icons" viewBox="0 0 916 68" fill="none" stroke="#bdc5cf" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="25" r="3" fill="#7e8794" stroke="none"/><circle cx="26" cy="25" r="3" fill="#7e8794" stroke="none"/><circle cx="16" cy="34" r="3" fill="#7e8794" stroke="none"/><circle cx="26" cy="34" r="3" fill="#7e8794" stroke="none"/><circle cx="16" cy="43" r="3" fill="#7e8794" stroke="none"/><circle cx="26" cy="43" r="3" fill="#7e8794" stroke="none"/>
+<path d="M57 16h38M57 27h38M57 38h38M57 49h38"/><circle cx="95" cy="27" r="3"/><circle cx="57" cy="49" r="3"/>
+<path d="M132 18h24M144 18v31"/>
+<path d="M195 20h34M195 40h34M195 49h34"/><circle cx="195" cy="20" r="3"/><circle cx="195" cy="49" r="3"/><text x="208" y="36" fill="#bdc5cf" stroke="none" font-size="14" font-family="Arial">L</text>
+<path d="M262 20h34M262 40h34M262 49h34"/><circle cx="262" cy="20" r="3"/><circle cx="262" cy="49" r="3"/><text x="274" y="36" fill="#bdc5cf" stroke="none" font-size="14" font-family="Arial">S</text>
+<rect x="330" y="19" width="30" height="30"/><circle cx="330" cy="19" r="3"/><circle cx="360" cy="19" r="3"/><circle cx="330" cy="49" r="3"/><circle cx="360" cy="49" r="3"/>
+<path d="M395 51 416 23 411 24 428 17 422 34 422 28Z"/>
+<path d="M464 49 494 19"/><circle cx="464" cy="49" r="3"/><circle cx="494" cy="19" r="3"/>
+<path d="M530 38 546 19 562 38H552V49H540V38Z"/>
+<path d="M613 30 629 49 645 30H635V19H623V30Z"/>
+<path d="M660 42 684 14 704 32 680 56Z"/><circle cx="660" cy="42" r="3"/><circle cx="684" cy="14" r="3"/><circle cx="704" cy="32" r="3"/><circle cx="680" cy="56" r="3"/><circle cx="672" cy="28" r="3"/><circle cx="694" cy="23" r="3"/>
+<path d="M729 18 741 23 753 31 768 15M729 48 741 46 753 52M729 48 741 23M741 46 753 31M753 52 768 15"/><circle cx="729" cy="18" r="3"/><circle cx="741" cy="23" r="3"/><circle cx="753" cy="31" r="3"/><circle cx="768" cy="15" r="3"/><circle cx="729" cy="48" r="3"/><circle cx="741" cy="46" r="3"/><circle cx="753" cy="52" r="3"/>
+<rect x="798" y="14" width="32" height="24"/><text x="807" y="32" fill="#bdc5cf" stroke="none" font-size="16" font-family="Arial">T</text><path d="M814 38v13"/><circle cx="814" cy="51" r="3"/>
+<path d="M869 34h31"/><circle cx="869" cy="34" r="3"/></g></defs></svg>

@@ -1,0 +1,158 @@
+{
+  "documentId": "REVIEW-WORKSPACE-V10",
+  "revision": 4,
+  "comments": [
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T12:01:23Z",
+      "documentId": "REVIEW-WORKSPACE-V10",
+      "fingerprint": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T12:01:23Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-43d41134f6d84b51ae365b8c47bd74ea",
+      "image": null,
+      "opinion": "挤出视图吧，不是视口",
+      "quote": "本地输入不丢失，不能因错误状态把图表挤出视口",
+      "replies": [],
+      "revisions": [],
+      "segments": [
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B039",
+          "chapter": "RV01",
+          "quote": "本地输入不丢失，不能因错误状态把图表挤出视口"
+        }
+      ],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T12:46:50Z",
+      "documentId": "REVIEW-WORKSPACE-V10",
+      "fingerprint": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T12:46:50Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-008a5711d29a4d3a865817ede35e45bf",
+      "image": {
+        "chapter": "RV02",
+        "fingerprint": "ec00f6f4275176be49ec1c21b7c1f79de2018dae2c3c09456b7913156ebf6828",
+        "id": "06-entry-1280",
+        "occurrenceId": "06-entry-1280@82",
+        "src": "source/images/06-entry-1280.svg"
+      },
+      "opinion": "这张图与前一章图是重复的；要么就是在这张图中展示布局的数字要求图例",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T14:38:56Z",
+      "documentId": "REVIEW-WORKSPACE-V10",
+      "fingerprint": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T14:38:56Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-a0b107f6b69049249cbe82d45ccfc299",
+      "image": null,
+      "opinion": "这里有一个逻辑阶段的划分，与实际页面布局设计的之间的信息拆解的问题，我是这么理解这个问题的：\n逻辑上的复盘，确实可以认为对于每一个笔交易，均存在买入前/持仓/和复盘\n但这里有个问题，上面是个“虚拟的概念”，我们实际用户的操作动线，打开一支标的后，他面对的是一系列时间从近到远的交易记录（有的已复盘，有的待复盘）\n然后他想逐个交易进行复盘，那显然要从最近的一笔未复盘的交易记录在大盘上进行逐个展示\n所以交易前的状态，实际上是和开仓的那笔交易绑定的，在进入到一笔新的交易开仓时，显然就是开仓前需要录入的一个节点；右侧的录入信息处就应该有一个默认弹出，然后待用户录入一些信息，包括当时规划的买入/卖出价格点，同时在买入点和卖出点弄两条线段，线段能看出来价格；同时自动结算买入计划时候的盈亏比\n这一步结束之后，用户的操作不会是点击持仓中，而是会点击下一根，或者是播放/暂停。在这个逐根播放的过程中，交易时的心绪和回忆就会勾起，逐步开始会进行画图和在图中进行标注当时的心态，和逐根K线让自己对盘面的变化的判断。所以这个播放的过程就是“持仓过程”，这个过程中，复盘者会在某些bar上有感想，对某些均线和价格之间的关系有想法，对整个区间的形态有想法，这个是真实持仓心态的复盘（因为对最终交易盈亏有关系，还有持仓体验是否符合预期有关）。在这个持仓过程中，系统应当自动记录持仓过程中实际的盈亏比是怎样的，用于未来的数据分析，判断我们的止损策略和初始止损位置是否过宽/过紧，以及实际我们的交易策略，买入后的X根Bar的亏损概率，真实暴露的持仓亏损风险是多少？\n当有一笔平仓交易产生时，就是一次完整交易完成的时候，这个时候就是这次交易的感想和交易完成后的复盘，这时候需要有自动的交易摘要记录，包括实际是否是亏损，实际交易中打到止损还是止盈，是否提前止损和是否止盈；假如提前止损和止盈，需要提示让用户录入原因，帮助未来挖掘和进行归因；真实的回撤/盈亏比和预期的差异是什么？\n同时我们可以考虑事后进行星级的打分，我们可以制作相应的卡片进行评分：\n比如都是五星打分逻辑，例如可能维度为：\n1.交易纪律\n2. 交易机会评分（买入点/盈亏比/波动性等进行综合打分）\n3. 仓位控制\n4. 持股体验（例如买入后的回撤等）\n这个卡片的风格未来可以迭代\n然后可以有结构性的感想部分，未来\n这样未来我们能对好坏交易有个很好的评分量化逻辑\n这个评分的细节我们可以标记为未来待定，大概率是程序自动按照规则给到的，也可能是用户给到的，我更倾向前者，能保证更好的一致性，但规则和域值我还没想好，我们后面可以在迭代中可以量化，当前可以先设计默认计算规则，也可以人工修改，先把交互打分的样式定好\n然后上述描述的是单笔交易\n实际上一个标的可以有多笔连续交易，尤其是频繁的加仓减仓\n我们判断一笔完整交易的原则是：\n1.仓位从0开始变动，则是一笔交易的开始（做多或者做空）\n2. 在有仓位的情况下同方向加仓，我们认为是另一笔独立交易的开始，这笔交易同样共享；当有减仓动作的时候，就是一笔独立交易的结束，结束的交易优先匹配最近一笔方向相反的交易，当然整体的盈利或亏损要更新到最新的持仓股数。",
+      "quote": "三阶段分别回答“入场前如何计划”“持仓时如何判断”和“结果出现后如何评价”",
+      "replies": [],
+      "revisions": [],
+      "segments": [
+        {
+          "after": "。侧栏随问题变化，主图始终保留观察依据。信息层级的取舍是先呈现当时可知、当前可编辑的内容，再展开来源和全量记录，防止后续结果干扰早期判断。",
+          "before": "",
+          "blockId": "HOME-DOC-B383",
+          "chapter": "RV04",
+          "quote": "三阶段分别回答“入场前如何计划”“持仓时如何判断”和“结果出现后如何评价”"
+        }
+      ],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T14:47:03Z",
+      "documentId": "REVIEW-WORKSPACE-V10",
+      "fingerprint": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T14:47:03Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-2afcebadf41146fda27cda35948d8d54",
+      "image": {
+        "chapter": "RV02",
+        "fingerprint": "13f353d6c42320931f805594394e327f98e72ad17d7198abc1114c1ecb9f3a79",
+        "id": "01-entry-1440",
+        "occurrenceId": "01-entry-1440@61",
+        "src": "source/images/01-entry-1440.svg"
+      },
+      "opinion": "整体的界面设计原则有这几个：\n1）交易界面的风格，严格参考Tradingview的功能组件，尤其左侧画图的工具组件，最好是完全使用Tradingview开源的组件库，能够保证复用的体验\n2）这个复盘交易的功能，我觉着可以是沉浸式大屏的概念，我们可以理解为交易库中点击某一个标的才会进入到这个界面，点开后我理解可以覆盖整个网页的大小，不用受制于左侧导航栏，上方标签栏和功能栏目的大小限制，完全可以以一个独立覆盖层的概念去规划空间，点击一个叉叉就可以退出，或者进入到下一笔，上一笔等，不需要在交易复盘界面说要进入到左侧的ICON功能，用户完全可以关闭后显示交易库界面的时候才操作\n3）上方的入场前/持仓过程/事后复盘这种功能键是否重要？其实没太重要，空间还不如省出来给到图表或者其它的地方\n4）左侧应该是缺一些交易列表；左侧和右侧的功能区，都能够支持收缩\n5）右侧的记录区可以考虑按照是否需要弹出的节点来进行判断，在持仓推进时自动收缩\n6）其它的缺陷：保存/导出/更多这种功能没有设计规范，同时上方也有些对齐和字体大小不协调的问题。\n先按照总原则进行设计调整，再规范细节的视觉元素问题",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    }
+  ]
+}

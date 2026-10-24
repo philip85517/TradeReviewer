@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-24",
+  "scope": "static design proposal",
+  "sourceSha256": {
+    "index.html": "60e907d0d9479b3e36589087aec33b2a9c445f561654f4e64bf519bbdbd7445b",
+    "prototype.css": "49ffbe171c082ce2d91cb557ad1194e601677663fe79b907bb5d3ad34709a200",
+    "prototype.js": "a564b1d041aa96805749f0e1237855976ee8d2ce175e26261838525e5e420ff5",
+    "icons.svg": "2dda073b2e46554184f6c00960f2cc9222dd005a31d598e94ea8b2e01cc96e7b",
+    "data.json": "5cbfa0727ab1f09be6b5d658abdfeafee786742b1d470a578af8fe48d46079e7",
+    "contract.md": "481724d4ff56972db1152a934aafe187ef44b0abe50497d1195e821f971bf4df",
+    "README.md": "0533d68de36d3cfc0b1e40b57abe0f630e576e68fb03790420666ef45973de04"
+  },
+  "servedByteComparison": "NOT VERIFIED: shell loopback network restricted; live page independently checked in CUA"
+}

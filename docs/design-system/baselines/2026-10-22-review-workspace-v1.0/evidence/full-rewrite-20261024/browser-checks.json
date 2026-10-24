@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-24",
+  "scope": "document reader only",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "clientWidth": 1425,
+      "scrollWidth": 1425
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "clientWidth": 375,
+      "scrollWidth": 375
+    }
+  ],
+  "images": [
+    {
+      "alt": "空间预算图：1440 双栏与 1280 左栏收起的尺寸构成",
+      "loaded": true,
+      "src": "source/images/rewrite-space-budget.svg"
+    },
+    {
+      "alt": "数量配对图：先买100、再买60、卖80后两笔独立交易分别余80和0",
+      "loaded": true,
+      "src": "source/images/rewrite-trade-pairing.svg"
+    },
+    {
+      "alt": "连续动线图：入场前置暂停、揭示并播放、退出后暂停与继续",
+      "loaded": true,
+      "src": "source/images/rewrite-node-journey.svg"
+    },
+    {
+      "alt": "评分状态图：未评分、资料不足、系统建议和人工修改",
+      "loaded": true,
+      "src": "source/images/rewrite-rating-states.svg"
+    },
+    {
+      "alt": "响应状态图：桌面并排、窄屏单内容和键盘打开的分工",
+      "loaded": true,
+      "src": "source/images/rewrite-responsive-states.svg"
+    }
+  ],
+  "chapterNavigationClicked": [
+    "RV02",
+    "RV06",
+    "RV10",
+    "document title"
+  ],
+  "comments": {
+    "listed": 4,
+    "imageDetailRead": "008a5711",
+    "textDetailRead": "43d41134",
+    "allStatuses": "pending-review",
+    "writes": false
+  },
+  "screenshots": [
+    "reader-overview-1440.png",
+    "reader-rv02-1440.png",
+    "reader-rv06-1440.png",
+    "reader-rv10-1440.png",
+    "reader-390.png",
+    "diagram-a.png",
+    "diagram-b.png",
+    "diagram-c.png",
+    "diagram-d.png",
+    "diagram-e.png",
+    "comments-read.png",
+    "comment-image-migration.png",
+    "comment-text-migration.png"
+  ],
+  "final_reload": {
+    "title": "复盘页视觉规范 V1.0",
+    "all_five_images_loaded": true,
+    "viewport_restored": true,
+    "service_observation": "Browser reload succeeded; terminal curl probe returned exit 7 / HTTP 000 and was not counted as success."
+  }
+}

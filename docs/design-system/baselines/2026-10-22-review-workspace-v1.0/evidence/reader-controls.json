@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-22T16:35:56.934Z",
+  "imageDialogs": [
+    {
+      "index": 1,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 2,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 3,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 4,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 5,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 6,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 7,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 8,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 9,
+      "dialog": true,
+      "close": true
+    },
+    {
+      "index": 10,
+      "dialog": true,
+      "close": true
+    }
+  ],
+  "chapters": [
+    {
+      "hash": "#chapter-RV01",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV02",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV03",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV04",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV05",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV06",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV07",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV08",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV09",
+      "headingVisible": true
+    },
+    {
+      "hash": "#chapter-RV10",
+      "headingVisible": true
+    }
+  ],
+  "escape": {
+    "closed": true,
+    "focusTag": "A",
+    "focusAria": "打开入场前 · 1440×900完整工作区原尺寸图稿（100%）",
+    "focusRestored": true
+  },
+  "scope": "document reader only; final HTML; static SVG reviewed independently after image freeze",
+  "finalPreview": {
+    "checkedAt": "2026-10-22T16:47:54.073Z",
+    "dpr": 2,
+    "horizontalOverflow": false,
+    "loadedImages": 10,
+    "title": "复盘页视觉规范 V1.0",
+    "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html#chapter-RV01",
+    "viewport": [
+      1280,
+      720
+    ]
+  }
+}

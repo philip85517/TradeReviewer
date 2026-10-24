@@ -1,0 +1,162 @@
+[
+  {
+    "disabled": false,
+    "id": "D08",
+    "label": "default · 拟制选中槽 D08",
+    "sampleClass": "state-sample default",
+    "state": "default",
+    "viewBox": "518 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D08",
+    "label": "hover · 拟制选中槽 D08",
+    "sampleClass": "state-sample hover",
+    "state": "hover",
+    "viewBox": "518 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D08",
+    "label": "selected · 拟制选中槽 D08",
+    "sampleClass": "state-sample selected",
+    "state": "selected",
+    "viewBox": "518 7 56 54"
+  },
+  {
+    "disabled": true,
+    "id": "D08",
+    "label": "disabled · 拟制选中槽 D08",
+    "sampleClass": "state-sample disabled",
+    "state": "disabled",
+    "viewBox": "518 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D08",
+    "label": "focus · 拟制选中槽 D08",
+    "sampleClass": "state-sample focus",
+    "state": "focus",
+    "viewBox": "518 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D09",
+    "label": "default · 拟制选中槽 D09",
+    "sampleClass": "state-sample default",
+    "state": "default",
+    "viewBox": "585 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D09",
+    "label": "hover · 拟制选中槽 D09",
+    "sampleClass": "state-sample hover",
+    "state": "hover",
+    "viewBox": "585 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D09",
+    "label": "selected · 拟制选中槽 D09",
+    "sampleClass": "state-sample selected",
+    "state": "selected",
+    "viewBox": "585 7 56 54"
+  },
+  {
+    "disabled": true,
+    "id": "D09",
+    "label": "disabled · 拟制选中槽 D09",
+    "sampleClass": "state-sample disabled",
+    "state": "disabled",
+    "viewBox": "585 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D09",
+    "label": "focus · 拟制选中槽 D09",
+    "sampleClass": "state-sample focus",
+    "state": "focus",
+    "viewBox": "585 7 56 54"
+  },
+  {
+    "disabled": false,
+    "id": "D10",
+    "label": "default · 拟制选中槽 D10",
+    "sampleClass": "state-sample default",
+    "state": "default",
+    "viewBox": "650 5 62 56"
+  },
+  {
+    "disabled": false,
+    "id": "D10",
+    "label": "hover · 拟制选中槽 D10",
+    "sampleClass": "state-sample hover",
+    "state": "hover",
+    "viewBox": "650 5 62 56"
+  },
+  {
+    "disabled": false,
+    "id": "D10",
+    "label": "selected · 拟制选中槽 D10",
+    "sampleClass": "state-sample selected",
+    "state": "selected",
+    "viewBox": "650 5 62 56"
+  },
+  {
+    "disabled": true,
+    "id": "D10",
+    "label": "disabled · 拟制选中槽 D10",
+    "sampleClass": "state-sample disabled",
+    "state": "disabled",
+    "viewBox": "650 5 62 56"
+  },
+  {
+    "disabled": false,
+    "id": "D10",
+    "label": "focus · 拟制选中槽 D10",
+    "sampleClass": "state-sample focus",
+    "state": "focus",
+    "viewBox": "650 5 62 56"
+  },
+  {
+    "disabled": false,
+    "id": "D12",
+    "label": "default · 拟制选中槽 D12",
+    "sampleClass": "state-sample default",
+    "state": "default",
+    "viewBox": "786 2 56 61"
+  },
+  {
+    "disabled": false,
+    "id": "D12",
+    "label": "hover · 拟制选中槽 D12",
+    "sampleClass": "state-sample hover",
+    "state": "hover",
+    "viewBox": "786 2 56 61"
+  },
+  {
+    "disabled": false,
+    "id": "D12",
+    "label": "selected · 拟制选中槽 D12",
+    "sampleClass": "state-sample selected",
+    "state": "selected",
+    "viewBox": "786 2 56 61"
+  },
+  {
+    "disabled": true,
+    "id": "D12",
+    "label": "disabled · 拟制选中槽 D12",
+    "sampleClass": "state-sample disabled",
+    "state": "disabled",
+    "viewBox": "786 2 56 61"
+  },
+  {
+    "disabled": false,
+    "id": "D12",
+    "label": "focus · 拟制选中槽 D12",
+    "sampleClass": "state-sample focus",
+    "state": "focus",
+    "viewBox": "786 2 56 61"
+  }
+]

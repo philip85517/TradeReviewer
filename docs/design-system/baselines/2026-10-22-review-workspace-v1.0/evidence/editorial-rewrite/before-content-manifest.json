@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-22T16:45:25.749704+00:00",
+  "baselineCommit": "5a94ee3f",
+  "scope": "final design source, generator and document reader; evidence files excluded to avoid circular hashes",
+  "files": {
+    "README.md": "9070a37377cfe84910fb7222a6125f69dcb09c68ed072429536c5ed11e91ac93",
+    "build-command.txt": "6aa97a9253f9280ab2f1a34bb53f692af770a15e0fc15503a14f96b379ca454b",
+    "build-visual-spec.py": "cc9edb0a243ff4b406012e31debd49ec87280599b96bd4c5864c57af2fdaa3da",
+    "comments-snapshot.json": "3dbcbd0ef8f5e0a9d9637508de76a1209e8c0534f2cce9a4f83327699e6426d6",
+    "document-identity.json": "c2edd197f3d7e08211e64686f6ba4e5d8560aacf54fcd6cbfebcd96ffa160f4b",
+    "document-manifest.json": "e3b062987c20676164e59556ae1c339acb5413b1656a8cedbff0182e844f54a0",
+    "review-client.css": "a7f8479ba7d61b74d32c2efe16c78193591d782e7a70d13a3874f0537fe47ab0",
+    "review-client.js": "ceac59dbde3050515fa1ce042ea2dc9d092c7069e24e2abbabd94c8d30060551",
+    "source/generate-boards.py": "316ae9d68367ebf53b65a8470d060db62eeff2c6d5725cd6016447715b37a766",
+    "source/images/01-entry-1440.svg": "13f353d6c42320931f805594394e327f98e72ad17d7198abc1114c1ecb9f3a79",
+    "source/images/02-holding-1440.svg": "d7f86c3471a0cae1d98624930df2e1d59d1f44a8a178b0a20fb89c49002257cc",
+    "source/images/03-final-1440.svg": "2ae0cb5bb14ee920087b5802d68ebbe700809990e640f767dcc2ad599eea93ff",
+    "source/images/04-records-1440.svg": "0fae1e534cadf172f7933f14ad3734dfd5a5f8152169dd5f5fa92ae8329e8783",
+    "source/images/05-conflict-1440.svg": "0f0566ae8c55120d39d05f6e8d9d5e99ad576e9718860ec4659bc39a24c63939",
+    "source/images/06-entry-1280.svg": "ec00f6f4275176be49ec1c21b7c1f79de2018dae2c3c09456b7913156ebf6828",
+    "source/images/07-entry-390.svg": "d4ba7fb5c6c8076187cad40274c29d294bfc17b9b49ef31f325bafcb44fdac7a",
+    "source/images/08-boundaries.svg": "fd65fa4108baa063ee85d976b3db2b334aedbfc9c99194fb6f7a56f64704a2b5",
+    "source/images/09-export.svg": "6196edaa6ee99b2154b39eec91b7fa3c7eb9a610c634ec384476bffc525be07d",
+    "source/images/10-nav-expanded.svg": "86c279f47f8e0098a38b4caf09a78081da08ad124a822c3cf2269793ee9b863b",
+    "source/visual-design.candidate.md": "ea28437fdb4cd56cc2a5a1697ff9158942cda5ae3ba374eb3870eeafeb21016b",
+    "visual-spec.html": "b8333f984f7f9070e10d00f760c9e9f979164153528360dc365ff2ff9df4aea2"
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "changed_files": [
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-home-entry.svg",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/library-return.svg",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-return.svg"
+  ],
+  "unchanged_svg_count": 36,
+  "fixture_unchanged": true,
+  "prose_unchanged": true,
+  "public_control_nodes_identical": true,
+  "contribution_bars": {
+    "count": 2,
+    "solid_visible_height": 14,
+    "hollow_visible_height": 14,
+    "same_color": "#53D7A0"
+  },
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "sha256": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py",
+      "sha256": "c5fdf5be91a9718e7814de1d3d650f11d07a53a17585b876d3cc72f23183a5f3"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/library-design-fixture.json",
+      "sha256": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg",
+      "sha256": "48037f11337085bb90ac42c6ea647166a0cd2932831d2e828704eea7f357c8db",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-1280.svg",
+      "sha256": "c011cabc5b9221013f7fc34d83aab8e106cf0c8d375192acb0b2c32958341e38",
+      "width": "1280",
+      "height": "800"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-month.svg",
+      "sha256": "b64ff13b06b41d2481abf6cfe9e407f73bde21c7f1ae15a78edb186e3331ae4e",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-sim-ab.svg",
+      "sha256": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-rounds-a.svg",
+      "sha256": "554d53e75782bd3bb97259b710ca424401eaf0d041b819e9a548562c7ac73bb2",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a1.svg",
+      "sha256": "87e4d1e49f4d3c57610d87d151d52b4486a40d6e7275e50243a57d35d51070ee",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a2.svg",
+      "sha256": "62f0a47b99e1362d6c1429d0f394540b493b40456b3cbe3978d491c023b8648c",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-a-return.svg",
+      "sha256": "15b58e7f9453332cb885795947c02ce04d2b7a7967f347776647e6bba37f73df",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-simulation-return.svg",
+      "sha256": "ad40bf25c0900fcf90c112e7c2c116636f15f177c594d2bf0246ddf8f1909760",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-b.svg",
+      "sha256": "d1c2a8c79be29488252446d4c027af19d7bb81a360be24584b8131c93e428104",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-b1.svg",
+      "sha256": "084caccc591db64ff587cbd0858d54ff2a000fe37a52da37e671cbcb114e7409",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/01-live-normal.svg",
+      "sha256": "e9f1b2a37b00700faeac9ce3d6a10a52a08a1399e1a19400d9e44e8270587847",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg",
+      "sha256": "45a33ae73279cf72ab1eaa12f693a5e5ebeb3ab1face08682bb6bfa2840609a4",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/distribution-amount.svg",
+      "sha256": "9242283cbdab2a299b1513258a8b244dbfe6c2a5bacab583f076b443c3bda523",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/03-distribution-selected.svg",
+      "sha256": "4484d1a9282b7295fe131baed24c2559d7a7f31bbdcb171c727670f8a13ac1fb",
+      "width": "1440",
+      "height": "1454"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/04-return.svg",
+      "sha256": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "width": "1440",
+      "height": "1454"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-gap.svg",
+      "sha256": "7b8b73d73d31920ec118a9e088900478e4c28a11baa41d788f787f9dfb7eae5e",
+      "width": "1440",
+      "height": "1298"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-single.svg",
+      "sha256": "b4278ae178b3e63473205e42eeb9eae1167df922ea9a4234907765d122962cf8",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-empty.svg",
+      "sha256": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-month.svg",
+      "sha256": "84cd4600c0dc351be8dc0a3d639399da1fb836b25b05786537f763ddcca58f36",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-year.svg",
+      "sha256": "51ef92807eca27cde7cfb36d35eef3a938b9590f1f876d71715a4845f923ffd7",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg",
+      "sha256": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "width": "1440",
+      "height": "2346"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-home-entry.svg",
+      "sha256": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "width": "1440",
+      "height": "2346"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list.svg",
+      "sha256": "5a2bc154c7300acff34bff74b62cef66e61d977b5f874d47bcd8723b05f51f21",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds.svg",
+      "sha256": "15cdf3278190dabea5706cb6bd417c89c705e0ae7df9a8da479de82cc6514137",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-replay.svg",
+      "sha256": "d5467163ffa1c2bce5578c99aecbd65c5f94fb03bfb8486164186ec9f1b18f08",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds-return.svg",
+      "sha256": "7879b1c1036938115e07b4b2f21e7c960329f7672814ae4fbffa26f9dbdcc58d",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list-return.svg",
+      "sha256": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-simulation.svg",
+      "sha256": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-restore.svg",
+      "sha256": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library.svg",
+      "sha256": "10cfd2216559b05c52cfd83903b3d6428ed9d8090845c395bf5d03b10d4a0f7c",
+      "width": "1440",
+      "height": "1000"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library-1280.svg",
+      "sha256": "ba04dbdd62656999343373c5ff08c1bcf589a56eb8ad6288bc914b711b5babb3",
+      "width": "1280",
+      "height": "800"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/library-return.svg",
+      "sha256": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "width": "1440",
+      "height": "2346"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-return.svg",
+      "sha256": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "width": "1440",
+      "height": "2346"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-return.svg",
+      "sha256": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "width": "1440",
+      "height": "1454"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/05-loading.svg",
+      "sha256": "f338cf9ef978b2d75676015d27058fa5fc2717b7e6112f53db14c02e1ce25c67",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/06-empty.svg",
+      "sha256": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "width": "1440",
+      "height": "1206"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/07-error.svg",
+      "sha256": "226f8e666a14a04410d2809e3c67c0224487201d54a55b1cf8760d3daf7156dc",
+      "width": "1440",
+      "height": "1298"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/08-extreme.svg",
+      "sha256": "ae841fc2d68fb47211b57bf05e3e082fd63f3f88f78843233f7d2ab98bc783f0",
+      "width": "1440",
+      "height": "1322"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/09-missing-input.svg",
+      "sha256": "b6a0bf6685594fb583f278d69e365a9f587bbbb18f859d2174af89b61e4f9742",
+      "width": "1440",
+      "height": "1298"
+    }
+  ]
+}

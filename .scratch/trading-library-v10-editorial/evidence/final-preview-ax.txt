@@ -1,0 +1,859 @@
+Browser tab: 1, Title: "交易库视觉设计方案 V1.0", URL: "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01".
+1 AXWebArea 交易库视觉设计方案 V1.0, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01
+	2 container 文档目录
+		3 text 交易库视觉方案
+		4 text 文档 1.0
+		5 link Description: 交易库视觉设计方案 V1.0, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E4%BA%A4%E6%98%93%E5%BA%93%E8%A7%86%E8%A7%89%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88-v10
+		6 link Description: 一、目标与取舍, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01
+		7 link Description: 设计取舍, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%AE%BE%E8%AE%A1%E5%8F%96%E8%88%8D
+		8 link Description: 范围与边界, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%8C%83%E5%9B%B4%E4%B8%8E%E8%BE%B9%E7%95%8C
+		9 link Description: 二、布局与视觉规范, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT02
+		10 link Description: 三、范围、日期与搜索, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT03
+		11 link Description: 进入与默认, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%BF%9B%E5%85%A5%E4%B8%8E%E9%BB%98%E8%AE%A4
+		12 link Description: 切换视角与保存, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%88%87%E6%8D%A2%E8%A7%86%E8%A7%92%E4%B8%8E%E4%BF%9D%E5%AD%98
+		13 link Description: 日期规则, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%97%A5%E6%9C%9F%E8%A7%84%E5%88%99
+		14 link Description: 搜索与刷新, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%88%B7%E6%96%B0
+		15 link Description: 四、列表、练习与回合, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT04
+		16 link Description: 实盘列表, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%AE%9E%E7%9B%98%E5%88%97%E8%A1%A8
+		17 link Description: 模拟盘练习列表, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%A8%A1%E6%8B%9F%E7%9B%98%E7%BB%83%E4%B9%A0%E5%88%97%E8%A1%A8
+		18 link Description: 五、统计与分布, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT05
+		19 link Description: 样本与日期, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%A0%B7%E6%9C%AC%E4%B8%8E%E6%97%A5%E6%9C%9F
+		20 link Description: 指标与结果口径, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%8C%87%E6%A0%87%E4%B8%8E%E7%BB%93%E6%9E%9C%E5%8F%A3%E5%BE%84
+		21 link Description: 趋势粒度, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%B6%8B%E5%8A%BF%E7%B2%92%E5%BA%A6
+		22 link Description: 分布与下钻, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%88%86%E5%B8%83%E4%B8%8E%E4%B8%8B%E9%92%BB
+		23 link Description: 六、查看详情、进入复盘与返回, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT06
+		24 link Description: 七、异常状态, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT07
+		25 link Description: 八、组件复用与职责, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT08
+		26 link Description: 九、实现验收, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT09
+		27 link Description: 功能验收, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%8A%9F%E8%83%BD%E9%AA%8C%E6%94%B6
+		28 link Description: 状态与持久化验收, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E7%8A%B6%E6%80%81%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96%E9%AA%8C%E6%94%B6
+		29 link Description: 视觉验收, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%A7%86%E8%A7%89%E9%AA%8C%E6%94%B6
+		30 link Description: 十、来源映射、历史与未决项, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT10
+		31 link Description: 实现约定, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%AE%9E%E7%8E%B0%E7%BA%A6%E5%AE%9A
+		32 link Description: 已确认决定, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%B7%B2%E7%A1%AE%E8%AE%A4%E5%86%B3%E5%AE%9A
+		33 link Description: 待确认项, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%BE%85%E7%A1%AE%E8%AE%A4%E9%A1%B9
+	34 container reader-document
+		35 container review-tool-strip
+			36 text 文档 1.0 · 交易库视觉方案
+			37 button 评论, ID: review-open
+		38 heading 交易库视觉设计方案 V1.0, Value: 1, ID: 交易库视觉设计方案-v10
+			39 text 交易库视觉设计方案 V1.0
+		40 text 本方案说明交易库如何组织实盘交易与模拟盘练习，以及用户如何查看统计、进入回合复盘并返回来源页面。正文覆盖页面结构、操作规则和验收要求，供设计与开发共同使用。
+		41 text 交易库沿用以下规范；本页补充交易库自身的页面与业务规则。
+		42 container 规则表
+			43 table
+				44 row
+					45 cell
+						46 text 用途
+					47 cell
+						48 text 权威来源
+				49 row
+					50 cell
+						51 text 首页日期入口、交易库进入与返回
+					52 cell
+						53 link Description: 冻结 V2.4.2 视觉规范 HP06, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP06
+				54 row
+					55 cell
+						56 text 交易库布局、条件、练习、统计与分镜
+					57 cell
+						58 link Description: 冻结 V2.4.2 交易库补充规范 HP07, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07
+				59 row
+					60 cell
+						61 text 全站共享结构和控件基础
+					62 cell
+						63 link Description: V2.5 共享规范 HP08, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html#chapter-HP08
+						64 text 、
+						65 link Description: 视觉基础 HP11, Value: 127.0.0.1:3090/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html#chapter-HP11
+						66 text 、
+						67 link Description: 全站原则, Value: …
+				68 row
+					69 cell
+						70 text 控件外观、状态与命中区
+					71 cell
+						72 link Description: V2.5 控件手册, Value: …
+				73 row
+					74 cell
+						75 text 跨页参数、范围重建与返回字段
+					76 cell
+						77 link Description: V2.5 入口状态约定, Value: …
+		78 heading 一、目标与取舍, Value: 2, ID: chapter-BT01
+			79 text 一、目标与取舍
+		80 text 交易库帮助用户查找和核对交易、理解交易结果，并进入具体回合完成复盘。为实现这一目标，设计分为以下三个方面。
+		81 container
+			82 text 查找和核对交易。  用户从首页日期入口或普通交易库入口进入后，能够看到已经生效的来源条件，并在实盘成交和模拟盘练习中定位需要核对的对象。
+		83 container
+			84 text 理解交易结果。  用户能够分别阅读实盘与模拟盘的列表和统计，按各自的日期口径理解结果，并区分已平仓回合、未平仓成交和缺失数据。
+		85 container
+			86 text 完成回合复盘。  用户能够从标的或练习进入回合集，再进入带有必要开仓上下文的回合复盘，完成后逐层返回并恢复来源位置和状态。
+		87 heading 设计取舍, Value: 3
+			88 text 设计取舍
+		89 text 实盘和模拟盘复用列表、统计与详情的呈现方式，但分别保存条件和导航状态；从列表直接进入标的或练习回合集，保持进入、复盘、返回的短路径。这样可以复用稳定的页面结构，同时保留两种视角各自的业务口径和恢复状态。
+		90 heading 范围与边界, Value: 3
+			91 text 范围与边界
+		92 text V1.0 覆盖交易库的列表、统计、回合集、复盘进入和返回；公共视觉规范由 V2.5 维护。首页入口布局不在本章展开，详情容器不新增双栏，模拟盘不新增账户模型，相关边界在第二、三、八章说明。
+		93 heading 二、布局与视觉规范, Value: 2, ID: chapter-BT02
+			94 text 二、布局与视觉规范
+		95 text 交易库的页面结构服务于条件确认、结果阅读、对象进入和返回恢复。布局沿用 V2.5 的公共表面、颜色、字体、间距、焦点和状态规则，具体区块职责如下。
+		96 container 规则表
+			97 table
+				98 row
+					99 cell
+						100 text 区块
+					101 cell
+						102 text 职责
+				103 row
+					104 cell
+						105 text 顶栏
+					106 cell
+						107 text 显示实盘/模拟盘视角、来源条件和返回来源动作。
+				108 row
+					109 cell
+						110 text 条件工具区
+					111 cell
+						112 text 编辑日期、市场、账户和局部搜索；独立显示已生效条件摘要。
+				113 row
+					114 cell
+						115 text 列表或统计主体
+					116 cell
+						117 text 列表按交易或练习阅读，统计按回合样本阅读；不把两种日期口径合并。
+				118 row
+					119 cell
+						120 text 详情、回合集与复盘
+					121 cell
+						122 text 沿用既有容器，逐层携带对象身份和必要的开仓上下文。
+				123 row
+					124 cell
+						125 text 分页与状态反馈
+					126 cell
+						127 text 在加载、空态、失败和重试时保持结果区尺寸与位置。
+		128 text 控件与文字采用以下对齐规则。按钮、分段标签、日期快捷项和应用动作在命中盒内水平、垂直居中；输入文字、名称、说明和错误文案左对齐；金额表头和金额数据右对齐。
+		129 container 规则表
+			130 table
+				131 row
+					132 cell
+						133 text 部位
+					134 cell
+						135 text 尺寸与规则
+				136 row
+					137 cell
+						138 text 交易库搜索
+					139 cell
+						140 text 宽220px。
+				141 row
+					142 cell
+						143 text 刷新动作
+					144 cell
+						145 text 36×36px命中盒；与搜索的间隔为28px。
+				146 row
+					147 cell
+						148 text 筛选浮层
+					149 cell
+						150 text 宽320px，字段高36px。
+				151 row
+					152 cell
+						153 text 图标与动作
+					154 cell
+						155 text 公共图标视觉尺寸16px；页头搜索与筛选图标18px；外层图标和动作按钮保持36px命中盒。
+				156 row
+					157 cell
+						158 text 日期和年份图标
+					159 cell
+						160 text 日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。
+				161 row
+					162 cell
+						163 text 表格
+					164 cell
+						165 text 沿用公共列定义；金额列共用右边界，名称和说明左对齐，表头与结果区不重叠。
+		166 text 数字显示遵循公共格式：价格保留两位小数；金额绝对值达到1万显示“万”、达到1亿显示“亿”，均保留两位小数，不增加“万亿”。详情、提示、悬停或聚焦、复制和导出都能查到完整值，缩写不改变原始数据。窄栏的占比另行按第五章换行。
+		167 heading 三、范围、日期与搜索, Value: 2, ID: chapter-BT03
+			168 text 三、范围、日期与搜索
+		169 heading 进入与默认, Value: 3
+			170 text 进入与默认
+		171 text 首页入口默认进入“实盘”。来源日期、市场、账户、标的和返回上下文随入口传入，条件到达后立即生效，用户不需要再次点击应用。未传入的条件保持交易库自身范围。交易库内修改条件不回写首页，返回首页时恢复原期间、滚动位置和触发焦点。
+		172 container
+			173 text 入口、刷新和直达都按 URL 重建已生效范围；参数的完整约定见 
+			174 link Description: V2.5 入口状态约定, Value: …
+			175 text 。首页只产生实盘视角，交易库内部待复盘由用户显式筛选。
+		176 heading 切换视角与保存, Value: 3
+			177 text 切换视角与保存
+		178 text 交易库分为互斥的“实盘 / 模拟盘”视角。两个视角分别记忆日期、市场、账户条件、搜索、排序、页码、滚动位置和焦点；列表和统计共享当前视角的日期、市场与账户条件。切换视角不得覆盖另一视角已保存的账户选择，也不得把实盘账户作为模拟盘练习身份。这里仅约定条件的保存与恢复，不新增模拟盘账户控件或账户业务模型。
+		179 heading 日期规则, Value: 3
+			180 text 日期规则
+		181 container 规则表
+			182 table
+				183 row
+					184 cell
+						185 text 日期方式
+					186 cell
+						187 text 规则
+				188 row
+					189 cell
+						190 text 单日
+					191 cell
+						192 text 按该日筛选，包含起止日。
+				193 row
+					194 cell
+						195 text 区间
+					196 cell
+						197 text 按实际起止日期筛选，包含起止日。
+				198 row
+					199 cell
+						200 text 全部
+					201 cell
+						202 text 不限定日期范围。
+				203 row
+					204 cell
+						205 text 本周
+					206 cell
+						207 text 上海时区自然周，从周一开始，截至今天，包含起止日。
+				208 row
+					209 cell
+						210 text 本月
+					211 cell
+						212 text 上海时区自然月，从每月1日开始，截至今天，包含起止日。
+				213 row
+					214 cell
+						215 text 本年
+					216 cell
+						217 text 上海时区自然年，从1月1日开始，截至今天，包含起止日。
+		218 text 提交后实际起止日期必须可见。日期范围缺失或不合法时显示可修正提示，不静默换成另一个范围。
+		219 heading 搜索与刷新, Value: 3
+			220 text 搜索与刷新
+		221 text 交易库内搜索是局部表内筛选，只过滤交易库表，不打开全局全屏搜索遮罩。来源范围、日期、市场和账户的条件摘要与搜索并列；摘要只作只读说明，与按钮分开显示。清空、无匹配和失败都保留工具区尺寸与位置；刷新保留当前有效条件。搜索无匹配与没有交易是两种不同空态，缺失数据不能以零代替。
+		222 container 按步骤读懂状态变化, ID: state-demo-1
+			223 container
+				224 text 截图状态对照 · 文档演示
+				225 heading 按步骤读懂状态变化, Value: 3, ID: state-demo-1-title
+					226 text 按步骤读懂状态变化
+				227 text 截图状态对照 · 文档演示；按钮仅切换截图，不操作产品
+				228 container 分镜控制
+					229 button (disabled) 上一步
+					230 button (disabled) 下一步
+					231 button (disabled) 播放
+					232 button (disabled) 暂停
+					233 button 重播
+			234 container
+				235 text 按日期进入 文档演示
+				236 link Description: 打开按日期进入原尺寸图稿（100%）, Value: …
+				237 text 来源日期、市场和账户已生效，列表按成交日筛选。
+				238 button 评论这张图
+			239 text 第 1 / 1 帧 · 按日期进入
+		240 text 交易库内部搜索沿用 V2.5 公共规范的表内筛选规则；本交易库分镜不重复摆放首页搜索图稿。
+		241 heading 四、列表、练习与回合, Value: 2, ID: chapter-BT04
+			242 text 四、列表、练习与回合
+		243 text 成交是交易库中可按条件核对的买卖记录；一次练习对应一个标的，可以包含多个交易回合；回合由开仓与平仓成交按配对规则形成。同一标的同一天的多次练习仍保持独立身份；回合详情可携带范围外必要的开仓上下文，但不改变列表和统计归属。
+		244 heading 实盘列表, Value: 3
+			245 text 实盘列表
+		246 text 实盘列表按每笔成交日期筛选，并保留未平仓成交。打开某个标的的交易后，进入既有详情容器查看该标的的回合集，不增加中间页面。关闭或返回时恢复来源列表的标的、筛选、排序、页码、滚动位置和触发焦点。
+		247 heading 模拟盘练习列表, Value: 3
+			248 text 模拟盘练习列表
+		249 text 模拟盘以一次练习为列表入口。列表分别显示练习记录数与已平仓回合数；点击练习直接进入该练习的回合集，操作与实盘进入某个标的的回合集一致，不增加中间页面。进入回合复盘后返回，恢复原练习、筛选、排序、页码、滚动位置和焦点；同一标的的其他练习不混入当前回合集。
+		250 text 中途加减仓按最近开仓优先配对。例子按以下步骤计算：
+		251 container 规则表
+			252 table
+				253 row
+					254 cell
+						255 text 步骤
+					256 cell
+						257 text 成交
+					258 cell
+						259 text 配对结果
+				260 row
+					261 cell
+						262 text 1
+					263 cell
+						264 text 先买100
+					265 cell
+						266 text 形成较早的开仓量100。
+				267 row
+					268 cell
+						269 text 2
+					270 cell
+						271 text 再买50
+					272 cell
+						273 text 形成较晚的开仓量50。
+				274 row
+					275 cell
+						276 text 3
+					277 cell
+						278 text 卖80
+					279 cell
+						280 text 先配对较晚的50，再从较早的100中配对30。
+				281 row
+					282 cell
+						283 text 4
+					284 cell
+						285 text 完成配对
+					286 cell
+						287 text 形成两回合，剩余70仍未平仓。
+		288 text 配对不跨练习，每个有效配对算一回合；上述余70排除在已平仓回合统计之外。不要求练习另有开始或结束状态。
+		289 container 按步骤读懂状态变化, ID: state-demo-2
+			290 container
+				291 text 截图状态对照 · 文档演示
+				292 heading 按步骤读懂状态变化, Value: 3, ID: state-demo-2-title
+					293 text 按步骤读懂状态变化
+				294 text 截图状态对照 · 文档演示；按钮仅切换截图，不操作产品
+				295 container 分镜控制
+					296 button (disabled) 上一步
+					297 button 下一步
+					298 button 播放
+					299 button (disabled) 暂停
+					300 button 重播
+			301 container
+				302 text 练习列表 文档演示
+				303 link Description: 打开练习列表原尺寸图稿（100%）, Value: …
+				304 text 相同标的的多次练习分别保留。
+				305 button 评论这张图
+			306 text 第 1 / 5 帧 · 练习列表
+		307 heading 五、统计与分布, Value: 2, ID: chapter-BT05
+			308 text 五、统计与分布
+		309 text 本章说明统计样本的日期归属、结果指标、趋势粒度和分布下钻，实盘与模拟盘使用各自的数据口径。统计页复用趋势与盈亏分布组件。
+		310 heading 样本与日期, Value: 3
+			311 text 样本与日期
+		312 container 规则表
+			313 table
+				314 row
+					315 cell
+						316 text 范围
+					317 cell
+						318 text 列表日期
+					319 cell
+						320 text 统计日期
+				321 row
+					322 cell
+						323 text 实盘
+					324 cell
+						325 text 成交日
+					326 cell
+						327 text 回合平仓日
+				328 row
+					329 cell
+						330 text 模拟盘
+					331 cell
+						332 text 导入文件中保存的练习日期
+					333 cell
+						334 text 导入文件中保存的练习日期
+		335 text 统计只纳入有效的已平仓回合，未平仓成交仍保留在实盘列表。模拟盘使用文件中保存的练习日期，不以行情日期替代。
+		336 heading 指标与结果口径, Value: 3
+			337 text 指标与结果口径
+		338 text 扣费后收益大于0为盈利、小于0为亏损、等于0为持平。胜率分母包含持平回合，平均盈利和平均亏损不含持平回合。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。分布默认使用回合收益率，也可切换金额；极端金额、负值和集中分布保持可读刻度、正确正负和稳定布局。
+		339 heading 趋势粒度, Value: 3
+			340 text 趋势粒度
+		341 text 日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。粒度随当前统计范围确定。
+		342 heading 分布与下钻, Value: 3
+			343 text 分布与下钻
+		344 text 每个区间显示回合数与占比，占比保留2位小数；窄栏把占比放到回合数下一行。占比分母固定为当前范围内全部有效回合。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布；点击回合进入复盘，返回后恢复原区间与列表位置。
+		345 container 按步骤读懂状态变化, ID: state-demo-3
+			346 container
+				347 text 截图状态对照 · 文档演示
+				348 heading 按步骤读懂状态变化, Value: 3, ID: state-demo-3-title
+					349 text 按步骤读懂状态变化
+				350 text 截图状态对照 · 文档演示；按钮仅切换截图，不操作产品
+				351 container 分镜控制
+					352 button (disabled) 上一步
+					353 button 下一步
+					354 button 播放
+					355 button (disabled) 暂停
+					356 button 重播
+			357 container
+				358 text 实盘统计 文档演示
+				359 link Description: 打开实盘统计原尺寸图稿（100%）, Value: …
+				360 text 按回合平仓日期统计。
+				361 button 评论这张图
+			362 text 第 1 / 4 帧 · 实盘统计
+		363 heading 六、查看详情、进入复盘与返回, Value: 2, ID: chapter-BT06
+			364 text 六、查看详情、进入复盘与返回
+		365 text 这一章按用户从来源页面进入交易库、打开对象、完成回合复盘并逐层返回的旅程说明页面如何交接条件和恢复位置。
+		366 container 规则表
+			367 table
+				368 row
+					369 cell
+						370 text 阶段
+					371 cell
+						372 text 用户动作
+					373 cell
+						374 text 界面与返回结果
+				375 row
+					376 cell
+						377 text 首页日期点
+					378 cell
+						379 text 打开日期详情后点击查看交易
+					380 cell
+						381 text 进入实盘，应用首页传入的范围；来源日期、市场和账户立即生效，无需再次应用。
+				382 row
+					383 cell
+						384 text 普通交易库入口
+					385 cell
+						386 text 打开交易库入口
+					387 cell
+						388 text 进入实盘，应用首页传入的范围；入口不携带待复盘口径。
+				389 row
+					390 cell
+						391 text 库内待复盘筛选
+					392 cell
+						393 text 在交易库内显式选择待复盘
+					394 cell
+						395 text 保持来源条件；完成复盘后能在交易库内核对筛选结果变化。
+				396 row
+					397 cell
+						398 text 实盘列表
+					399 cell
+						400 text 打开某个标的的交易
+					401 cell
+						402 text 在既有详情容器内查看该标的的回合集，不增加中间页面。
+				403 row
+					404 cell
+						405 text 模拟盘列表
+					406 cell
+						407 text 切换到模拟盘并打开一次练习
+					408 cell
+						409 text 直接显示这次练习的回合集，同标的的其他练习不混入。
+				410 row
+					411 cell
+						412 text 回合集
+					413 cell
+						414 text 选择一个回合进入复盘
+					415 cell
+						416 text 携带该回合及必要的开仓上下文；范围外上下文不改变统计归属。
+				417 row
+					418 cell
+						419 text 回合复盘
+					420 cell
+						421 text 关闭或返回
+					422 cell
+						423 text 恢复原回合集、标的或练习、筛选、排序、页码、滚动位置和触发焦点。
+				424 row
+					425 cell
+						426 text 回合集返回
+					427 cell
+						428 text 返回来源列表
+					429 cell
+						430 text 恢复原标的/练习在来源列表的位置与状态，并保留筛选、排序、页码、滚动位置和触发焦点。
+				431 row
+					432 cell
+						433 text 交易库返回首页
+					434 cell
+						435 text 使用返回来源入口
+					436 cell
+						437 text 恢复首页原期间、贡献模式、表格状态、滚动位置和触发焦点。
+		438 text 返回字段按来源保存如下：
+		439 container 规则表
+			440 table
+				441 row
+					442 cell
+						443 text 来源
+					444 cell
+						445 text 恢复字段
+				446 row
+					447 cell
+						448 text 交易库列表、标的或练习
+					449 cell
+						450 text 标的或练习身份、日期、市场、账户、搜索、筛选、排序、页码、滚动位置和触发焦点。
+				451 row
+					452 cell
+						453 text 首页日期或普通入口
+					454 cell
+						455 text 原期间、市场、证券、日期、账户、附加筛选、表格状态、排序、页码、滚动位置和触发焦点。
+				456 row
+					457 cell
+						458 text 首页贡献下钻
+					459 cell
+						460 text 贡献模式，以及当前期间和历史已平仓两种模式各自的分类、排序、下钻、页码；同时恢复市场、证券、日期、账户、筛选、滚动位置和触发焦点。
+		461 text 若刷新导致原标的消失，焦点回到来源容器标题并保留仍有效的条件；不能从泛化“进入贡献”按钮直接跳到固定证券详情。
+		462 container 按步骤读懂状态变化, ID: state-demo-4
+			463 container
+				464 text 截图状态对照 · 文档演示
+				465 heading 按步骤读懂状态变化, Value: 3, ID: state-demo-4-title
+					466 text 按步骤读懂状态变化
+				467 text 截图状态对照 · 文档演示；按钮仅切换截图，不操作产品
+				468 container 分镜控制
+					469 button (disabled) 上一步
+					470 button 下一步
+					471 button 播放
+					472 button (disabled) 暂停
+					473 button 重播
+			474 container
+				475 text 首页到交易库的条件交接 文档演示
+				476 link Description: 打开首页到交易库的条件交接原尺寸图稿（100%）, Value: …
+				477 text 来源条件传入并立即生效，不要求重复应用。
+				478 button 评论这张图
+			479 text 第 1 / 5 帧 · 首页到交易库的条件交接
+		480 text 入口帧和到达帧的职责分开：入口帧的导航按钮负责进入普通交易库；到达帧显示已生效条件和交易列表，不再要求重复点击“进入交易库”。待复盘分镜只表达交易库内的显式筛选，不代表首页入口或默认队列。首页 V2.5 只展示普通入口帧，交易库 V1.0 展示完整到达、列表、回合、复盘和返回链路。
+		481 heading 七、异常状态, Value: 2, ID: chapter-BT07
+			482 text 七、异常状态
+		483 text 异常状态按情况、呈现和保留与恢复区分；没有交易、搜索无匹配、没有已平仓回合、数据缺失和计算输入缺失分别表达，不能将它们合并为零。
+		484 container 规则表
+			485 table
+				486 row
+					487 cell
+						488 text 情况
+					489 cell
+						490 text 呈现
+					491 cell
+						492 text 保留与恢复
+				493 row
+					494 cell
+						495 text 首次加载
+					496 cell
+						497 text 标题、工具区、表头和行槽使用最终尺寸占位。
+					498 cell
+						499 text 保留工具区、表头和结果区尺寸与位置。
+				500 row
+					501 cell
+						502 text 已有数据后台更新
+					503 cell
+						504 text 显示上一组完整有效数据，并说明正在更新。
+					505 cell
+						506 text 保留旧范围和有效值。
+				507 row
+					508 cell
+						509 text 更新失败或超时
+					510 cell
+						511 text 说明新范围未应用，并提供按原筛选条件重试。
+					512 cell
+						513 text 保留旧范围和上一组有效值。
+				514 row
+					515 cell
+						516 text 没有交易
+					517 cell
+						518 text 显示“没有交易”的独立空态。
+					519 cell
+						520 text 保留当前范围和工具区。
+				521 row
+					522 cell
+						523 text 搜索无匹配
+					524 cell
+						525 text 显示“当前搜索无匹配”的独立空态。
+					526 cell
+						527 text 保留搜索词、范围和工具区尺寸与位置。
+				528 row
+					529 cell
+						530 text 没有已平仓回合
+					531 cell
+						532 text 显示没有已平仓回合的空态，不生成虚构回合。
+					533 cell
+						534 text 保留日期、视角和统计结构。
+				535 row
+					536 cell
+						537 text 数据缺失
+					538 cell
+						539 text 显示“—”或“不可计算”，不伪造零值。
+					540 cell
+						541 text 保留可用字段和原范围。
+				542 row
+					543 cell
+						544 text 计算输入缺失
+					545 cell
+						546 text 显示“不可计算”或破折号，不纳入完整分布。
+					547 cell
+						548 text 保留其他可计算样本。
+				549 row
+					550 cell
+						551 text 读取失败
+					552 cell
+						553 text 显示可恢复错误和重试动作。
+					554 cell
+						555 text 保留原筛选条件。
+				556 row
+					557 cell
+						558 text 连续切换范围
+					559 cell
+						560 text 只应用最后一次仍有效的选择；迟到旧请求不得覆盖新选择。
+					561 cell
+						562 text 保留最后一次仍有效选择的范围和结果。
+				563 row
+					564 cell
+						565 text 非法市场参数
+					566 cell
+						567 text 显示参数提示，市场回到 
+						568 text all
+						569 text 。
+					570 cell
+						571 text 保留可用的其他条件。
+				572 row
+					573 cell
+						574 text 非法或不完整范围参数
+					575 cell
+						576 text 显示可修正提示，不能静默扩为全部。
+					577 cell
+						578 text 具体回退规则待规格明确。
+				579 row
+					580 cell
+						581 text 账户等缺少已确认默认值的参数
+					582 cell
+						583 text 显示参数错误，不伪造默认值。
+					584 cell
+						585 text 具体回退规则待规格明确。
+		586 container 按步骤读懂状态变化, ID: state-demo-5
+			587 container
+				588 text 截图状态对照 · 文档演示
+				589 heading 按步骤读懂状态变化, Value: 3, ID: state-demo-5-title
+					590 text 按步骤读懂状态变化
+				591 text 截图状态对照 · 文档演示；按钮仅切换截图，不操作产品
+				592 container 分镜控制
+					593 button (disabled) 上一步
+					594 button 下一步
+					595 button 播放
+					596 button (disabled) 暂停
+					597 button 重播
+			598 container
+				599 text 切换范围时等待 文档演示
+				600 link Description: 打开切换范围时等待原尺寸图稿（100%）, Value: …
+				601 text 保留绘图区和坐标位置，等待当前请求返回。
+				602 button 评论这张图
+			603 text 第 1 / 5 帧 · 切换范围时等待
+		604 heading 八、组件复用与职责, Value: 2, ID: chapter-BT08
+			605 text 八、组件复用与职责
+		606 text 交易库按公共、组合、业务和容器四层使用组件。公共层沿用 V2.5 的外观、状态、命中区、动效和基础视觉；组合层组织交易库页面；业务层承载第三至七章的条件、练习、回合、统计和异常规则；容器层承载详情、回合集、复盘及返回上下文。第二章负责布局和尺寸，本章不重复定义。
+		607 container 规则表
+			608 table
+				609 row
+					610 cell
+						611 text 层级
+					612 cell
+						613 text 职责与边界
+				614 row
+					615 cell
+						616 text 公共组件
+					617 cell
+						618 text 保证交易库与全站控件状态、命中区和视觉基础一致，不另行设计公共外观、尺寸或状态顺序。
+				619 row
+					620 cell
+						621 text 组合组件
+					622 cell
+						623 text 把条件工具区、实盘/模拟盘视角、列表、统计、局部表内筛选、练习与回合集入口、分布下钻组合为页面阶段。
+				624 row
+					625 cell
+						626 text 业务组件
+					627 cell
+						628 text 表达来源条件立即生效、配对、日期口径、收益分类、显式待复盘筛选和逐层恢复等规则；不增加无依据中间页或模拟盘账户模型。
+				629 row
+					630 cell
+						631 text 容器组件
+					632 cell
+						633 text 复用既有交易详情容器、回合集和回合复盘，恢复日期、筛选、标的/练习入口、焦点和滚动位置；不新增双栏容器。
+		634 text 公共技术名称按类别列出，具体使用位置见第二至七章。
+		635 container 规则表
+			636 table
+				637 row
+					638 cell
+						639 text 类别
+					640 cell
+						641 text 公共组件名称
+				642 row
+					643 cell
+						644 text 基础操作
+					645 cell
+						646 text IconButton、SegmentedTabs
+				647 row
+					648 cell
+						649 text 选择与浮层
+					650 cell
+						651 text Select、Popover、FilterPopover
+				652 row
+					653 cell
+						654 text 状态与标记
+					655 cell
+						656 text Token、StatusBadge
+				657 row
+					658 cell
+						659 text 数据展示
+					660 cell
+						661 text DataTable、Metric、ChartTooltip
+				662 row
+					663 cell
+						664 text 空态与恢复
+					665 cell
+						666 text EmptyState、RetryAction
+		667 heading 九、实现验收, Value: 2, ID: chapter-BT09
+			668 text 九、实现验收
+		669 text 静态分镜说明设计预期，不证明产品实现已经完成。功能、状态与持久化、视觉验收分别记录可观察结果，任何一项未验证都不能写成通过。
+		670 heading 功能验收, Value: 3
+			671 text 功能验收
+		672 content list
+			673 container
+				674 AXListMarker • 
+				675 text 从首页日期点和普通交易库入口进入，确认来源条件立即生效；在库内显式选择待复盘，确认结果只在库内出现。
+			676 container
+				677 AXListMarker • 
+				678 text 分别进入实盘标的、模拟盘练习、统计区间和回合复盘，确认列表、练习、回合、日期口径、配对、分布下钻和逐层返回符合本方案。
+			679 container
+				680 AXListMarker • 
+				681 text 验证搜索只过滤交易库表，清空、无匹配、刷新、失败、重试和非法参数提示都保留正确的工具区与范围语义。
+		682 heading 状态与持久化验收, Value: 3
+			683 text 状态与持久化验收
+		684 content list
+			685 container
+				686 AXListMarker • 
+				687 text 在隔离数据库中完成一次回合复盘，返回、刷新并重新打开，确认日期、视角、账户、列表或练习、回合、区间、排序、页码、滚动位置和焦点仍一致。
+			688 container
+				689 AXListMarker • 
+				690 text 检查后台更新、连续请求、迟到结果、空态、缺失和重试；旧有效结果不能被失败请求覆盖，缺失值不能变成零。
+			691 container
+				692 AXListMarker • 
+				693 text 写入验收不得改变原始交易数据，并记录隔离数据库、请求范围和恢复字段的实际结果。
+		694 heading 视觉验收, Value: 3
+			695 text 视觉验收
+		696 content list
+			697 container
+				698 AXListMarker • 
+				699 text 使用批准视口和相同导航、数据状态对照真实页面，按第二章检查布局层级、工具区职责、表格列对齐和返回焦点。
+			700 container
+				701 AXListMarker • 
+				702 text 检查价格两位小数、金额“万/亿”阈值与完整值可查、占比两位小数、窄栏换行，以及没有交易、无匹配、无已平仓回合、错误、极端和缺失状态的独立呈现。
+			703 container
+				704 AXListMarker • 
+				705 text 功能、数据持久化、真实页面行为和同状态视觉比较分别记录结果；静态图、DOM存在或 HTTP 成功不能替代视觉证据。
+		706 heading 十、来源映射、历史与未决项, Value: 2, ID: chapter-BT10
+			707 text 十、来源映射、历史与未决项
+		708 text 本章集中记录来源迁移、实现引用和历史边界；历史版本与候选方案只用于追溯，当前验收以本正文和分镜为准。
+		709 container 规则表
+			710 table
+				711 row
+					712 cell
+						713 text 来源
+					714 cell
+						715 text 当前章节
+					716 cell
+						717 text 图稿或保留主题
+				718 row
+					719 cell
+						720 link Description: HP06, Value: …
+					721 cell
+						722 link Description: 第一章, Value: …
+						723 text 、
+						724 link Description: 第三章, Value: …
+						725 text 、
+						726 link Description: 第六章, Value: …
+					727 cell
+						728 text 日期入口、普通交易库入口、条件立即生效、详情与首页返回；保留 
+						729 text handoff
+						730 text 、
+						731 text journeys-date
+						732 text 、
+						733 text journeys-library-entry
+						734 text 、
+						735 text library-return
+						736 text 、
+						737 text hcr06-final-*
+						738 text 。
+				739 row
+					740 cell
+						741 link Description: HP07 共享布局与条件, Value: …
+					742 cell
+						743 link Description: 第二章, Value: …
+						744 text 至
+						745 link Description: 第五章, Value: …
+					746 cell
+						747 text 实盘/模拟盘视角、条件记忆、自然日期和上海时区、日期口径、练习与回合、收益与统计规则。
+				748 row
+					749 cell
+						750 link Description: HP07 工具区与搜索, Value: …
+					751 cell
+						752 link Description: 第二章, Value: …
+						753 text 、
+						754 link Description: 第三章, Value: …
+					755 cell
+						756 text 局部表内筛选、搜索220px、刷新36×36px、间隔28px、条件摘要、日期/年份图标边界。
+				757 row
+					758 cell
+						759 link Description: HP07 从入口到回合再返回, Value: …
+					760 cell
+						761 link Description: 第六章, Value: …
+					762 cell
+						763 text 日期→实盘、实盘标的→回合集、模拟练习→回合集、回合复盘→返回和上下文恢复。
+				764 row
+					765 cell
+						766 link Description: HP07 练习到回合分镜, Value: …
+					767 cell
+						768 link Description: 第四章, Value: …
+					769 cell
+						770 text hcr06-final-sim-ab
+						771 text 、
+						772 text hcr06-final-rounds-a
+						773 text 、
+						774 text hcr06-final-replay-a1/a2/b1
+						775 text ，图稿字节和顺序不改。
+				776 row
+					777 cell
+						778 link Description: HP07 统计与分布分镜, Value: …
+					779 cell
+						780 link Description: 第五章, Value: …
+						781 text 、
+						782 link Description: 第七章, Value: …
+					783 cell
+						784 text 01-live-normal
+						785 text  至 
+						786 text 09-missing-input
+						787 text ，包括粒度、收益率/金额、2位小数、固定分母、区间展开、返回位置和异常状态。
+		788 heading 实现约定, Value: 3
+			789 text 实现约定
+		790 container 规则表
+			791 table
+				792 row
+					793 cell
+						794 text 实现约定
+					795 cell
+						796 text 依据
+				797 row
+					798 cell
+						799 text 普通入口不带 
+						800 text queue
+						801 text  或 
+						802 text pending-review
+						803 text ；待复盘只由交易库内显式筛选进入。
+					804 cell
+						805 text V2.5 入口状态约定；正文用户旅程见
+						806 link Description: 第六章, Value: …
+						807 text 。
+				808 row
+					809 cell
+						810 text 刷新和直达按 URL 重建范围；非法市场回 
+						811 text all
+						812 text  并提示；非法或不完整范围显示可修正提示，不能静默扩为全部。
+					813 cell
+						814 link Description: V2.5 入口状态约定, Value: …
+						815 text 。
+				816 row
+					817 cell
+						818 text 账户参数必须显式传递；未定义的账户默认值继续待明确。
+					819 cell
+						820 link Description: V2.5 入口状态约定, Value: …
+						821 text 。
+		822 heading 已确认决定, Value: 3
+			823 text 已确认决定
+		824 content list
+			825 container
+				826 AXListMarker • 
+				827 text 2026-10-22 用户确认“首页取消独立待复盘入口，统一进入交易库”。当前正文使用普通交易库入口；原待复盘数量分镜仅作历史来源，并保留交易库内显式待复盘筛选的依据。
+		828 heading 待确认项, Value: 3
+			829 text 待确认项
+		830 container 规则表
+			831 table
+				832 row
+					833 cell
+						834 text 问题
+					835 cell
+						836 text 当前处理
+					837 cell
+						838 text 依据
+				839 row
+					840 cell
+						841 text O02 状态徽章使用24px高，还是20px高并采用自适应宽？
+					842 cell
+						843 text 当前沿用24px高；20px高、自适应宽方案继续待确认。
+					844 cell
+						845 text O02 视觉验收项。
+				846 row
+					847 cell
+						848 text 日期、账户等未明确默认值是什么？
+					849 cell
+						850 text 记录为规格待明确，不自行决定回退值，也不把缺少参数静默解释为全部范围。
+					851 cell
+						852 text V2.5 入口状态约定与现有业务规则。
+		853 container
+			854 text 历史承接自冻结的首页交易库业务与分镜；统一入口图稿为  journeys-library-entry.svg ，普通交易库来源返回图稿为  library-return.svg ，全部分镜继续使用原 SVG。冻结评论与迁移依据见
+			855 link Description: 拆分评论记录, Value: …
+			856 text 。
+
+The focused UI element is 1 AXWebArea 交易库视觉设计方案 V1.0, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01

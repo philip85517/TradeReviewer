@@ -1,0 +1,152 @@
+[
+  {
+    "dpr": 2,
+    "focus": "c07-mode-simulation",
+    "height": 720,
+    "rects": [
+      {
+        "id": "c07-mode-slider",
+        "rect": {
+          "bottom": 202,
+          "height": 44,
+          "left": 96,
+          "right": 306,
+          "top": 158,
+          "width": 210,
+          "x": 96,
+          "y": 158
+        }
+      },
+      {
+        "id": "c07-page-tabs",
+        "rect": {
+          "bottom": 269.9453125,
+          "height": 37,
+          "left": 1086,
+          "right": 1232,
+          "top": 232.9453125,
+          "width": 146,
+          "x": 1086,
+          "y": 232.9453125
+        }
+      }
+    ],
+    "state": {
+      "mode": "simulation",
+      "preview": "normal",
+      "tab": "stats"
+    },
+    "width": 1280
+  },
+  {
+    "action": "click simulation list",
+    "focus": "c07-tab-list",
+    "rects": [
+      {
+        "id": "c07-mode-slider",
+        "rect": {
+          "bottom": 202,
+          "height": 44,
+          "left": 96,
+          "right": 306,
+          "top": 158,
+          "width": 210,
+          "x": 96,
+          "y": 158
+        }
+      },
+      {
+        "id": "c07-page-tabs",
+        "rect": {
+          "bottom": 269.9453125,
+          "height": 37,
+          "left": 1086,
+          "right": 1232,
+          "top": 232.9453125,
+          "width": 146,
+          "x": 1086,
+          "y": 232.9453125
+        }
+      }
+    ],
+    "state": {
+      "mode": "simulation",
+      "preview": "normal",
+      "tab": "list"
+    }
+  },
+  {
+    "action": "ArrowRight simulation list to stats",
+    "focus": "c07-tab-stats",
+    "rects": [
+      {
+        "id": "c07-mode-slider",
+        "rect": {
+          "bottom": 202,
+          "height": 44,
+          "left": 96,
+          "right": 306,
+          "top": 158,
+          "width": 210,
+          "x": 96,
+          "y": 158
+        }
+      },
+      {
+        "id": "c07-page-tabs",
+        "rect": {
+          "bottom": 269.9453125,
+          "height": 37,
+          "left": 1086,
+          "right": 1232,
+          "top": 232.9453125,
+          "width": 146,
+          "x": 1086,
+          "y": 232.9453125
+        }
+      }
+    ],
+    "state": {
+      "mode": "simulation",
+      "preview": "normal",
+      "tab": "stats"
+    }
+  },
+  {
+    "action": "click live from simulation stats",
+    "focus": "c07-mode-live",
+    "rects": [
+      {
+        "id": "c07-mode-slider",
+        "rect": {
+          "bottom": 202,
+          "height": 44,
+          "left": 96,
+          "right": 306,
+          "top": 158,
+          "width": 210,
+          "x": 96,
+          "y": 158
+        }
+      },
+      {
+        "id": "c07-page-tabs",
+        "rect": {
+          "bottom": 269.9453125,
+          "height": 37,
+          "left": 1086,
+          "right": 1232,
+          "top": 232.9453125,
+          "width": 146,
+          "x": 1086,
+          "y": 232.9453125
+        }
+      }
+    ],
+    "state": {
+      "mode": "live",
+      "preview": "normal",
+      "tab": "list"
+    }
+  }
+]

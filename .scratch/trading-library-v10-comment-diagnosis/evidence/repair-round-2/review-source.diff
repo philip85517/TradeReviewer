@@ -1,0 +1,1575 @@
+--- before/source/visual-design.candidate.md
++++ current/source/visual-design.candidate.md
+@@ -50,13 +50,13 @@
+ |分页与状态反馈|在加载、空态、失败和重试时保持结果区尺寸与位置。|
+ 
+ 控件与文字采用以下对齐规则。按钮、分段标签、日期快捷项和应用动作在命中盒内水平、垂直居中；输入文字、名称、说明和错误文案左对齐；金额表头和金额数据右对齐。
+ 
+ |部位|尺寸与规则|
+ |---|---|
+-|内容区|左缘96px、右边距24px；所有完整状态图使用1440×1000或1280×800母版。|
++|内容区|左缘96px、右边距24px；比较视口为1440×1000和1280×800，字号与控件不随长页缩小。交易库自然画布由内容向下增长：普通列表/复盘最低1000px，窄版最低800px；统计1206px，下钻1454px，异常态按提示继续增长。首页直接使用V2.5完整1440×2346宿主。超出比较视口的内容纵向滚动，不是裁切。|
+ |字号|页面标题24/32、模块标题18/24、正文和控件14/20、说明12/16、指标28/34。|
+ |交易库搜索|宽220px。|
+ |刷新动作|36×36px命中盒；与搜索的间隔为28px。|
+ |筛选浮层|宽320px，字段高36px。|
+ |图标与动作|公共图标视觉尺寸16px；页头搜索与筛选图标18px；外层图标和动作按钮保持36px命中盒。|
+ |日期和年份图标|日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。|
+@@ -129,13 +129,16 @@
+ 配对不跨练习，每个有效配对算一回合；上述余70排除在已平仓回合统计之外。不要求练习另有开始或结束状态。
+ 
+ :::state-demo
+ images/hcr06-final-sim-ab.svg|练习列表|相同标的的多次练习分别保留。
+ images/hcr06-final-rounds-a.svg|练习回合集|点击练习后直接到达，不增加中间层。
+ images/hcr06-final-replay-a1.svg|第一个回合|复盘携带练习和回合身份。
+-images/hcr06-final-replay-a2.svg|第二个回合|最近开仓优先配对，未平仓余量不计入已平仓统计。
++images/hcr06-final-replay-a2.svg|第二个回合|切换回合2：突出10-01开仓的30股配对；原买100/卖80的成交数量保留，余70股不计入已平仓统计。
++images/journeys-rounds-a-return.svg|返回练习 A 回合集|从回合2返回，焦点落在回合2；保存日期范围和练习身份不变。
++images/journeys-simulation-return.svg|返回模拟盘列表|从练习 A 回合集返回，焦点落在练习 A，恢复10-15至10-19、保存日期升序、第1页和滚动起点。
++images/journeys-rounds-b.svg|选择练习 B|在同一模拟盘列表选中练习 B，先到 B 的独立回合集，再进入其回合复盘。
+ images/hcr06-final-replay-b1.svg|另一练习|同一标的的其他练习不混入当前回合集。
+ :::
+ 
+ ## 五、统计与分布 {#chapter-BT05}
+ 
+ 本章说明统计样本的日期归属、结果指标、趋势粒度和分布下钻，实盘与模拟盘使用各自的数据口径。统计页复用趋势与盈亏分布组件。
+@@ -158,28 +161,40 @@
+ 日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。粒度随当前统计范围确定。
+ 
+ ### 分布与下钻
+ 
+ 每个区间显示回合数与占比，占比保留2位小数；窄栏把占比放到回合数下一行。占比分母固定为当前范围内全部有效回合。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布；点击回合进入复盘，返回后恢复原区间与列表位置。
+ 
+-:::state-demo
+-### 实盘统计
+-
+-images/01-live-normal.svg|实盘统计 · 回合平仓日|5 个有效已平仓回合、747.14 CNY 累计净盈亏，趋势终点与汇总一致。
+-
+-### 模拟盘统计
+-
+-images/02-simulation-normal.svg|模拟盘统计 · 练习保存日|7 个有效已平仓回合、5 个保存日期；同标的同日练习保持独立身份。
+-
+-images/03-distribution-selected.svg|分布下钻|展开金额区间并显示五个区间、两位小数占比和区间回合；顶部条件与固定分母保持不变。
+-images/04-return.svg|统计视角返回|恢复原范围、分布区间与区间局部回合。
+-images/journeys-trend-gap.svg|日期缺口|缺失日期保持断点，不补零、不跨缺失连接。
+-images/journeys-trend-single.svg|单点趋势|单个有效日期保留，不能外推不存在的值。
+-images/journeys-trend-empty.svg|空样本趋势|没有有效样本显示破折号，统计结构保持。
+-images/journeys-trend-month.svg|月粒度趋势|跨度触发月粒度；月值由有效回合按月聚合。
+-images/journeys-trend-year.svg|年粒度趋势|跨度触发年粒度；年值由有效回合按年聚合。
++### 实盘普通统计
++
++:::state-demo
++images/01-live-normal.svg|实盘统计 · 回合平仓日|默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。
++:::
++
++### 模拟盘普通统计
++
++:::state-demo
++images/02-simulation-normal.svg|模拟盘统计 · 练习保存日|默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。
++:::
++
++### 金额切换、下钻与返回
++
++:::state-demo
++images/distribution-amount.svg|切换金额|在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。
++images/03-distribution-selected.svg|分布下钻|选择盈利大于100区间；高亮该行并在下方展示1个回合，分母仍为5，条件不变。
++images/04-return.svg|统计视角返回|从该回合复盘返回；金额区间保持选中，局部贵州茅台回合显示触发行焦点。
++:::
++
++### 趋势边界与粒度
++
++:::state-demo
++images/journeys-trend-gap.svg|缺失与无成交日|10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。
++images/journeys-trend-single.svg|单点趋势|10-15的3个模拟回合按保存日聚合为一个点，零线留在绘图区内，不外推其他日期。
++images/journeys-trend-empty.svg|空样本趋势|10-20至10-25没有回合；回合数、净额、费用为0，胜率和均值为破折号，与异常章空态一致。
++images/journeys-trend-month.svg|月粒度趋势|全年范围按月聚合，样例只有2026-10一个有效月；完整月份标签可见，其余月份没有新增回合。
++images/journeys-trend-year.svg|年粒度趋势|2020至2026范围按年聚合，样例只有2026一个有效年；年份标签与全部五区间保留在自然画布内。
+ :::
+ 
+ ## 六、查看详情、进入复盘与返回 {#chapter-BT06}
+ 
+ 这一章按用户从来源页面进入交易库、打开对象、完成回合复盘并逐层返回的旅程说明页面如何交接条件和恢复位置。
+ 
+@@ -204,25 +219,32 @@
+ |首页贡献下钻|贡献模式，以及当前期间和历史已平仓两种模式各自的分类、排序、下钻、页码；同时恢复市场、证券、日期、账户、筛选、滚动位置和触发焦点。|
+ 
+ 若刷新导致原标的消失，焦点回到来源容器标题并保留仍有效的条件；不能从泛化“进入贡献”按钮直接跳到固定证券详情。
+ 
+ :::state-demo
+ images/handoff.svg|首页到交易库的条件交接|来源条件传入并立即生效，不要求重复应用。
+-images/journeys-home-entry.svg|完整首页交易库入口|以首页64px页头、四指标卡、主趋势和持仓预览表达宿主位置；普通入口不带待复盘。
++images/journeys-home-entry.svg|完整首页交易库入口|直接沿用V2.5完整首页的页头工具、本月选择、四指标、期间趋势、完整持仓表、历史统计与贡献；普通入口不带待复盘。
+ images/journeys-library-list.svg|普通实盘列表|首页侧导航交易库入口到达实盘列表，日期范围与来源条件一致。
+ images/journeys-live-rounds.svg|实盘对象回合集|选择贵州茅台后显示同一对象的已闭合回合与余量。
+-images/journeys-library-replay.svg|实盘回合复盘|保留实际买卖成交标记、数量、价格和回合净盈亏。
++images/journeys-library-replay.svg|实盘回合复盘|同一贵州茅台40股回合进入K线容器：原买100/卖40，配对40股、1712→1735、净909.64；回合选中、开/平仓定位控件可见。
+ images/journeys-live-rounds-return.svg|回合集返回|回到同一对象回合集并保留当前回合焦点。
+-images/journeys-library-list-return.svg|列表返回|回到原实盘列表范围和页码。
+-images/journeys-view-restore.svg|视角往返恢复|实盘→模拟盘→实盘，恢复各自日期范围、筛选与局部位置。
++images/journeys-library-list-return.svg|列表返回|回到原10-01至10-15列表、第1页及顶部滚动位置，贵州茅台买入100股行恢复焦点。
++images/journeys-view-simulation.svg|切换到模拟盘|从实盘切换，显示模拟盘自身10-15至10-19、全部市场、空搜索、保存日期升序和第1页。
++images/journeys-view-restore.svg|切回实盘|与前面的实盘列表返回帧比较：恢复10-01至10-15、全部市场/账户、空搜索、成交日期升序、第1页、顶部滚动和贵州茅台触发行焦点。
+ images/hcr06-final-pending-library.svg|交易库内待复盘筛选|保持来源账户与市场；该帧是库内显式待复盘筛选示例，不是首页默认目的地。
+ images/hcr06-final-pending-library-1280.svg|交易库内待复盘筛选 · 1280px|1280px 下保持相同条件与操作；该帧是库内显式筛选示例。
+ images/library-return.svg|交易库返回首页|恢复首页来源范围、位置与交易库入口焦点。
+ images/journeys-library-return.svg|返回同一首页位置|完整首页可见区域恢复原期间、位置和交易库入口焦点。
+ images/hcr06-final-return.svg|统计视角返回|恢复原统计范围、已选区间和局部回合。
+ :::
++
++本组分镜的共享来源快照为：首页本月 `2026-10-01—2026-10-15`、全部市场/账户、贡献模式“当前期间 / 做多 / 盈利最高”、滚动起点0；实盘列表保留该范围，成交日期升序、空搜索、第1页、每页6笔。选择贵州茅台后在回合集与复盘中保持同一来源，返回逐层恢复回合/成交行焦点；首页返回仅给原交易库侧栏入口焦点，不新增返回按钮。模拟盘保存日期范围独立为`2026-10-15—2026-10-19`，保存日期升序、空搜索、第1页、每页6次练习。两个视角的条件分别存储。
++
++待复盘是显式的成交复盘状态，与是否留仓无关。样例待复盘为茅台买100股、卖40股和宁德时代已平仓卖50股；中芯国际尚有80股持仓但已复盘，因此不在待复盘结果中。
++
++首页估值使用设计行情样例，时点为`2026-10-15 15:00 Asia/Shanghai`，人民币原币、汇率1，覆盖全部2个持仓。期初无仓位、浮盈为0；期末茅台60股报价1740、中芯80股报价94，持仓市值111920.00。留存开仓费用计入持仓成本，期末浮盈1831.91；已实现747.14，期间净盈亏为2579.05。主趋势逐日用当日已实现加当日浮盈计算，具体报价输入见`library-design-fixture.json`；图中万/亿缩写可通过金额标题提示查完整值。复盘K线同属设计行情样例，标记为原始成交数量，配对数量另列于图表下方，不把配对部分当作原成交。
+ 
+ 入口帧和到达帧的职责分开：入口帧的导航按钮负责进入普通交易库；到达帧显示已生效条件和交易列表，不再要求重复点击“进入交易库”。待复盘分镜只表达交易库内的显式筛选，不代表首页入口或默认队列。首页 V2.5 只展示普通入口帧，交易库 V1.0 展示完整到达、列表、回合、复盘和返回链路。
+ 
+ ## 七、异常状态 {#chapter-BT07}
+ 
+ 异常状态按情况、呈现和保留与恢复区分；没有交易、搜索无匹配、没有已平仓回合、数据缺失和计算输入缺失分别表达，不能将它们合并为零。
+@@ -241,17 +263,17 @@
+ |连续切换范围|只应用最后一次仍有效的选择；迟到旧请求不得覆盖新选择。|保留最后一次仍有效选择的范围和结果。|
+ |非法市场参数|显示参数提示，市场回到 `all`。|保留可用的其他条件。|
+ |非法或不完整范围参数|显示可修正提示，不能静默扩为全部。|具体回退规则待规格明确。|
+ |账户等缺少已确认默认值的参数|显示参数错误，不伪造默认值。|具体回退规则待规格明确。|
+ 
+ :::state-demo
+-images/05-loading.svg|切换范围时等待|保留绘图区和坐标位置，等待当前请求返回。
++images/05-loading.svg|切换范围时等待|首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。
+ images/06-empty.svg|范围没有已平仓回合|空态与数据缺失分开表达，不生成虚构回合。
+-images/07-error.svg|读取失败与重试|显示可恢复错误，重试保留原筛选条件。
++images/07-error.svg|读取失败与重试|更新新范围失败；顶部提示紧邻旧结果，明确旧范围仍生效；点击重试重新请求失败范围，成功前不替换旧结果。
+ images/08-extreme.svg|极端分布|大额、负值和集中分布下保持可读刻度。
+-images/09-missing-input.svg|计算输入缺失|以破折号表达缺失，不把缺失混入完整分布。
++images/09-missing-input.svg|计算输入缺失|10-12的宁德时代回合缺平仓费用，排除后可计算4/5回合，净1003.64；全范围结果为破折号，分布分母为4。
+ :::
+ 
+ ## 八、组件复用与职责 {#chapter-BT08}
+ 
+ 交易库按公共、组合、业务和容器四层使用组件。公共层沿用 V2.5 的外观、状态、命中区、动效和基础视觉；组合层组织交易库页面；业务层承载第三至七章的条件、练习、回合、统计和异常规则；容器层承载详情、回合集、复盘及返回上下文。第二章负责布局和尺寸，本章不重复定义。
+ 
+--- before/source/library-design-fixture.json
++++ current/source/library-design-fixture.json
+@@ -4,105 +4,306 @@
+   "source": {
+     "date": "2026-10-15",
+     "market": "全部市场",
+     "account": "全部账户"
+   },
+   "live_trades": [
+-    {"id": "live-00a", "date": "2026-10-02", "symbol": "招商银行", "code": "600036", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+-    {"id": "live-00b", "date": "2026-10-03", "symbol": "招商银行", "code": "600036", "side": "卖出", "quantity": 10, "price": 105.00, "fee": 1.00},
+-    {"id": "live-00c", "date": "2026-10-04", "symbol": "平安银行", "code": "000001", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+-    {"id": "live-00d", "date": "2026-10-05", "symbol": "平安银行", "code": "000001", "side": "卖出", "quantity": 10, "price": 95.00, "fee": 1.00},
+-    {"id": "live-01", "date": "2026-10-03", "symbol": "贵州茅台", "code": "600519", "side": "买入", "quantity": 100, "price": 1712.00, "fee": 8.56},
+-    {"id": "live-02", "date": "2026-10-07", "symbol": "贵州茅台", "code": "600519", "side": "卖出", "quantity": 40, "price": 1735.00, "fee": 6.94},
+-    {"id": "live-00e", "date": "2026-10-08", "symbol": "立讯精密", "code": "002475", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+-    {"id": "live-00f", "date": "2026-10-09", "symbol": "立讯精密", "code": "002475", "side": "卖出", "quantity": 10, "price": 110.00, "fee": 1.00},
+-    {"id": "live-03", "date": "2026-10-09", "symbol": "宁德时代", "code": "300750", "side": "买入", "quantity": 50, "price": 219.00, "fee": 3.29},
+-    {"id": "live-04", "date": "2026-10-12", "symbol": "宁德时代", "code": "300750", "side": "卖出", "quantity": 50, "price": 214.00, "fee": 3.21},
+-    {"id": "live-05", "date": "2026-10-15", "symbol": "中芯国际", "code": "688981", "side": "买入", "quantity": 80, "price": 92.00, "fee": 2.95}
++    {
++      "id": "live-00a",
++      "date": "2026-10-02",
++      "symbol": "招商银行",
++      "code": "600036",
++      "side": "买入",
++      "quantity": 10,
++      "price": 100.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-00b",
++      "date": "2026-10-03",
++      "symbol": "招商银行",
++      "code": "600036",
++      "side": "卖出",
++      "quantity": 10,
++      "price": 105.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-00c",
++      "date": "2026-10-04",
++      "symbol": "平安银行",
++      "code": "000001",
++      "side": "买入",
++      "quantity": 10,
++      "price": 100.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-00d",
++      "date": "2026-10-05",
++      "symbol": "平安银行",
++      "code": "000001",
++      "side": "卖出",
++      "quantity": 10,
++      "price": 95.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-01",
++      "date": "2026-10-03",
++      "symbol": "贵州茅台",
++      "code": "600519",
++      "side": "买入",
++      "quantity": 100,
++      "price": 1712.0,
++      "fee": 8.56,
++      "review_status": "pending"
++    },
++    {
++      "id": "live-02",
++      "date": "2026-10-07",
++      "symbol": "贵州茅台",
++      "code": "600519",
++      "side": "卖出",
++      "quantity": 40,
++      "price": 1735.0,
++      "fee": 6.94,
++      "review_status": "pending"
++    },
++    {
++      "id": "live-00e",
++      "date": "2026-10-08",
++      "symbol": "立讯精密",
++      "code": "002475",
++      "side": "买入",
++      "quantity": 10,
++      "price": 100.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-00f",
++      "date": "2026-10-09",
++      "symbol": "立讯精密",
++      "code": "002475",
++      "side": "卖出",
++      "quantity": 10,
++      "price": 110.0,
++      "fee": 1.0,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-03",
++      "date": "2026-10-09",
++      "symbol": "宁德时代",
++      "code": "300750",
++      "side": "买入",
++      "quantity": 50,
++      "price": 219.0,
++      "fee": 3.29,
++      "review_status": "reviewed"
++    },
++    {
++      "id": "live-04",
++      "date": "2026-10-12",
++      "symbol": "宁德时代",
++      "code": "300750",
++      "side": "卖出",
++      "quantity": 50,
++      "price": 214.0,
++      "fee": 3.21,
++      "review_status": "pending"
++    },
++    {
++      "id": "live-05",
++      "date": "2026-10-15",
++      "symbol": "中芯国际",
++      "code": "688981",
++      "side": "买入",
++      "quantity": 80,
++      "price": 92.0,
++      "fee": 2.95,
++      "review_status": "reviewed"
++    }
+   ],
+   "simulation_exercises": [
+     {
+       "id": "practice-a-20261015-01",
+       "label": "练习 A",
+       "symbol": "贵州茅台",
+       "code": "600519",
+       "saved_date": "2026-10-15",
+       "trades": [
+-        {"id": "a-buy-100", "date": "2026-10-01", "side": "买入", "quantity": 100, "price": 100.00, "fee": 10.00},
+-        {"id": "a-buy-50", "date": "2026-10-05", "side": "买入", "quantity": 50, "price": 110.00, "fee": 5.00},
+-        {"id": "a-sell-80", "date": "2026-10-15", "side": "卖出", "quantity": 80, "price": 130.00, "fee": 8.00}
++        {
++          "id": "a-buy-100",
++          "date": "2026-10-01",
++          "side": "买入",
++          "quantity": 100,
++          "price": 100.0,
++          "fee": 10.0
++        },
++        {
++          "id": "a-buy-50",
++          "date": "2026-10-05",
++          "side": "买入",
++          "quantity": 50,
++          "price": 110.0,
++          "fee": 5.0
++        },
++        {
++          "id": "a-sell-80",
++          "date": "2026-10-15",
++          "side": "卖出",
++          "quantity": 80,
++          "price": 130.0,
++          "fee": 8.0
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 2,
+       "expected_open_quantity": 70
+     },
+     {
+       "id": "practice-b-20261018-01",
+       "label": "练习 B",
+       "symbol": "贵州茅台",
+       "code": "600519",
+       "saved_date": "2026-10-18",
+       "trades": [
+-        {"id": "b-buy-20", "date": "2026-10-16", "side": "买入", "quantity": 20, "price": 120.00, "fee": 2.00},
+-        {"id": "b-sell-20", "date": "2026-10-18", "side": "卖出", "quantity": 20, "price": 115.00, "fee": 2.00}
++        {
++          "id": "b-buy-20",
++          "date": "2026-10-16",
++          "side": "买入",
++          "quantity": 20,
++          "price": 120.0,
++          "fee": 2.0
++        },
++        {
++          "id": "b-sell-20",
++          "date": "2026-10-18",
++          "side": "卖出",
++          "quantity": 20,
++          "price": 115.0,
++          "fee": 2.0
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 1,
+       "expected_open_quantity": 0
+     },
+     {
+       "id": "practice-c-20261016-01",
+       "label": "练习 C",
+       "symbol": "平安银行",
+       "code": "000001",
+       "saved_date": "2026-10-16",
+       "trades": [
+-        {"id": "c-buy-30", "date": "2026-10-14", "side": "买入", "quantity": 30, "price": 100.00, "fee": 3.00},
+-        {"id": "c-sell-30", "date": "2026-10-16", "side": "卖出", "quantity": 30, "price": 112.00, "fee": 3.00}
++        {
++          "id": "c-buy-30",
++          "date": "2026-10-14",
++          "side": "买入",
++          "quantity": 30,
++          "price": 100.0,
++          "fee": 3.0
++        },
++        {
++          "id": "c-sell-30",
++          "date": "2026-10-16",
++          "side": "卖出",
++          "quantity": 30,
++          "price": 112.0,
++          "fee": 3.0
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 1,
+       "expected_open_quantity": 0
+     },
+     {
+       "id": "practice-d-20261017-01",
+       "label": "练习 D",
+       "symbol": "宁德时代",
+       "code": "300750",
+       "saved_date": "2026-10-17",
+       "trades": [
+-        {"id": "d-buy-15", "date": "2026-10-15", "side": "买入", "quantity": 15, "price": 150.00, "fee": 1.50},
+-        {"id": "d-sell-15", "date": "2026-10-17", "side": "卖出", "quantity": 15, "price": 145.00, "fee": 1.50}
++        {
++          "id": "d-buy-15",
++          "date": "2026-10-15",
++          "side": "买入",
++          "quantity": 15,
++          "price": 150.0,
++          "fee": 1.5
++        },
++        {
++          "id": "d-sell-15",
++          "date": "2026-10-17",
++          "side": "卖出",
++          "quantity": 15,
++          "price": 145.0,
++          "fee": 1.5
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 1,
+       "expected_open_quantity": 0
+     },
+     {
+       "id": "practice-e-20261015-02",
+       "label": "练习 E",
+       "symbol": "贵州茅台",
+       "code": "600519",
+       "saved_date": "2026-10-15",
+       "trades": [
+-        {"id": "e-buy-10", "date": "2026-10-14", "side": "买入", "quantity": 10, "price": 200.00, "fee": 1.00},
+-        {"id": "e-sell-10", "date": "2026-10-15", "side": "卖出", "quantity": 10, "price": 210.00, "fee": 1.00}
++        {
++          "id": "e-buy-10",
++          "date": "2026-10-14",
++          "side": "买入",
++          "quantity": 10,
++          "price": 200.0,
++          "fee": 1.0
++        },
++        {
++          "id": "e-sell-10",
++          "date": "2026-10-15",
++          "side": "卖出",
++          "quantity": 10,
++          "price": 210.0,
++          "fee": 1.0
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 1,
+       "expected_open_quantity": 0
+     },
+     {
+       "id": "practice-f-20261019-01",
+       "label": "练习 F",
+       "symbol": "招商银行",
+       "code": "600036",
+       "saved_date": "2026-10-19",
+       "trades": [
+-        {"id": "f-buy-12", "date": "2026-10-18", "side": "买入", "quantity": 12, "price": 80.00, "fee": 1.00},
+-        {"id": "f-sell-12", "date": "2026-10-19", "side": "卖出", "quantity": 12, "price": 90.00, "fee": 1.00}
++        {
++          "id": "f-buy-12",
++          "date": "2026-10-18",
++          "side": "买入",
++          "quantity": 12,
++          "price": 80.0,
++          "fee": 1.0
++        },
++        {
++          "id": "f-sell-12",
++          "date": "2026-10-19",
++          "side": "卖出",
++          "quantity": 12,
++          "price": 90.0,
++          "fee": 1.0
++        }
+       ],
+       "matching": "LIFO",
+       "expected_closed_rounds": 1,
+       "expected_open_quantity": 0
+     }
+   ],
+@@ -111,33 +312,362 @@
+       "id": "boundary-profit",
+       "label": "极值盈利",
+       "symbol": "极值样例",
+       "code": "EDGE+",
+       "saved_date": "2026-10-03",
+       "trades": [
+-        {"id": "edge-profit-buy", "date": "2026-10-01", "side": "买入", "quantity": 10000, "price": 100.00, "fee": 100.00},
+-        {"id": "edge-profit-sell", "date": "2026-10-03", "side": "卖出", "quantity": 10000, "price": 225.00, "fee": 100.00}
++        {
++          "id": "edge-profit-buy",
++          "date": "2026-10-01",
++          "side": "买入",
++          "quantity": 10000,
++          "price": 100.0,
++          "fee": 100.0
++        },
++        {
++          "id": "edge-profit-sell",
++          "date": "2026-10-03",
++          "side": "卖出",
++          "quantity": 10000,
++          "price": 225.0,
++          "fee": 100.0
++        }
+       ]
+     },
+     {
+       "id": "boundary-loss",
+       "label": "极值亏损",
+       "symbol": "极值样例",
+       "code": "EDGE-",
+       "saved_date": "2026-10-07",
+       "trades": [
+-        {"id": "edge-loss-buy", "date": "2026-10-05", "side": "买入", "quantity": 10000, "price": 100.00, "fee": 100.00},
+-        {"id": "edge-loss-sell", "date": "2026-10-07", "side": "卖出", "quantity": 10000, "price": 2.00, "fee": 100.00}
++        {
++          "id": "edge-loss-buy",
++          "date": "2026-10-05",
++          "side": "买入",
++          "quantity": 10000,
++          "price": 100.0,
++          "fee": 100.0
++        },
++        {
++          "id": "edge-loss-sell",
++          "date": "2026-10-07",
++          "side": "卖出",
++          "quantity": 10000,
++          "price": 2.0,
++          "fee": 100.0
++        }
+       ]
+     }
+   ],
+   "missing_inputs": {
+     "date": "2026-10-12",
+     "missing_count": 1,
+-    "missing_fields": ["平仓费用"]
++    "missing_fields": [
++      "平仓费用"
++    ]
+   },
+   "trend_modes": {
+-    "gap_dates": ["2026-10-15", "2026-10-16", "2026-10-19"],
++    "gap_dates": [
++      "2026-10-15",
++      "2026-10-16",
++      "2026-10-19"
++    ],
+     "single_date": "2026-10-15",
+-    "empty_dates": []
++    "empty_dates": [],
++    "gap_scenario": {
++      "start": "2026-10-15",
++      "end": "2026-10-20",
++      "dates": [
++        {
++          "date": "2026-10-15",
++          "status": "available"
++        },
++        {
++          "date": "2026-10-16",
++          "status": "available"
++        },
++        {
++          "date": "2026-10-17",
++          "status": "missing",
++          "reason": "练习文件读取失败"
++        },
++        {
++          "date": "2026-10-18",
++          "status": "missing",
++          "reason": "练习文件读取失败"
++        },
++        {
++          "date": "2026-10-19",
++          "status": "available"
++        },
++        {
++          "date": "2026-10-20",
++          "status": "no_trades"
++        }
++      ]
++    }
++  },
++  "navigation": {
++    "live": {
++      "start": "2026-10-01",
++      "end": "2026-10-15",
++      "market": "全部市场",
++      "account": "全部账户",
++      "search": "",
++      "sort": "成交日期 ↑",
++      "page": 1,
++      "page_size": 6,
++      "scroll": 0,
++      "focus": "live-01",
++      "object": "600519",
++      "round": "600519-1"
++    },
++    "simulation": {
++      "start": "2026-10-15",
++      "end": "2026-10-19",
++      "market": "全部市场",
++      "search": "",
++      "sort": "保存日期 ↑",
++      "page": 1,
++      "page_size": 6,
++      "scroll": 0,
++      "focus": "practice-a-20261015-01"
++    },
++    "home": {
++      "period": "本月",
++      "start": "2026-10-01",
++      "end": "2026-10-15",
++      "contribution": "当前期间",
++      "category": "做多",
++      "sort": "盈利最高",
++      "scroll": 0,
++      "focus": "交易库"
++    },
++    "error_attempt": {
++      "start": "2026-10-01",
++      "end": "2026-10-20"
++    }
++  },
++  "valuation": {
++    "as_of": "2026-10-15 15:00 Asia/Shanghai",
++    "currency": "CNY",
++    "fx": 1,
++    "fx_source": "人民币原币，无需换算",
++    "coverage": "全部持仓 2/2；全部期间交易",
++    "opening_unrealized": 0,
++    "opening_position_count": 0,
++    "cost_includes_opening_fee": true,
++    "quotes_by_date": {
++      "2026-10-01": {},
++      "2026-10-02": {
++        "600036": 102
++      },
++      "2026-10-03": {
++        "600519": 1715
++      },
++      "2026-10-04": {
++        "600519": 1710,
++        "000001": 98
++      },
++      "2026-10-05": {
++        "600519": 1720
++      },
++      "2026-10-07": {
++        "600519": 1735
++      },
++      "2026-10-08": {
++        "600519": 1730,
++        "002475": 102
++      },
++      "2026-10-09": {
++        "600519": 1732,
++        "300750": 220
++      },
++      "2026-10-12": {
++        "600519": 1738
++      },
++      "2026-10-15": {
++        "600519": 1740,
++        "688981": 94
++      }
++    }
++  },
++  "chart_samples": {
++    "600519": {
++      "label": "设计行情样例",
++      "bars": [
++        {
++          "date": "2026-10-03",
++          "open": 1706.86,
++          "close": 1712.0,
++          "high": 1722.27,
++          "low": 1696.62
++        },
++        {
++          "date": "2026-10-04",
++          "open": 1722.9,
++          "close": 1717.75,
++          "high": 1733.24,
++          "low": 1707.44
++        },
++        {
++          "date": "2026-10-05",
++          "open": 1718.33,
++          "close": 1723.5,
++          "high": 1733.84,
++          "low": 1708.02
++        },
++        {
++          "date": "2026-10-06",
++          "open": 1734.44,
++          "close": 1729.25,
++          "high": 1744.84,
++          "low": 1718.87
++        },
++        {
++          "date": "2026-10-07",
++          "open": 1729.8,
++          "close": 1735.0,
++          "high": 1745.41,
++          "low": 1719.42
++        }
++      ]
++    },
++    "practice-a-20261015-01": {
++      "label": "设计行情样例",
++      "bars": [
++        {
++          "date": "2026-10-01",
++          "open": 99.7,
++          "close": 100.0,
++          "high": 100.6,
++          "low": 99.1
++        },
++        {
++          "date": "2026-10-02",
++          "open": 102.81,
++          "close": 102.5,
++          "high": 103.42,
++          "low": 101.89
++        },
++        {
++          "date": "2026-10-03",
++          "open": 104.69,
++          "close": 105.0,
++          "high": 105.63,
++          "low": 104.06
++        },
++        {
++          "date": "2026-10-04",
++          "open": 107.82,
++          "close": 107.5,
++          "high": 108.47,
++          "low": 106.86
++        },
++        {
++          "date": "2026-10-05",
++          "open": 109.67,
++          "close": 110.0,
++          "high": 110.66,
++          "low": 109.01
++        },
++        {
++          "date": "2026-10-06",
++          "open": 112.34,
++          "close": 112.0,
++          "high": 113.01,
++          "low": 111.33
++        },
++        {
++          "date": "2026-10-07",
++          "open": 113.66,
++          "close": 114.0,
++          "high": 114.68,
++          "low": 112.98
++        },
++        {
++          "date": "2026-10-08",
++          "open": 116.35,
++          "close": 116.0,
++          "high": 117.05,
++          "low": 115.3
++        },
++        {
++          "date": "2026-10-09",
++          "open": 117.65,
++          "close": 118.0,
++          "high": 118.71,
++          "low": 116.94
++        },
++        {
++          "date": "2026-10-10",
++          "open": 120.36,
++          "close": 120.0,
++          "high": 121.08,
++          "low": 119.28
++        },
++        {
++          "date": "2026-10-11",
++          "open": 121.63,
++          "close": 122.0,
++          "high": 122.73,
++          "low": 120.9
++        },
++        {
++          "date": "2026-10-12",
++          "open": 124.37,
++          "close": 124.0,
++          "high": 125.12,
++          "low": 123.26
++        },
++        {
++          "date": "2026-10-13",
++          "open": 125.62,
++          "close": 126.0,
++          "high": 126.76,
++          "low": 124.87
++        },
++        {
++          "date": "2026-10-14",
++          "open": 128.38,
++          "close": 128.0,
++          "high": 129.15,
++          "low": 127.23
++        },
++        {
++          "date": "2026-10-15",
++          "open": 129.61,
++          "close": 130.0,
++          "high": 130.78,
++          "low": 128.83
++        }
++      ]
++    },
++    "practice-b-20261018-01": {
++      "label": "设计行情样例",
++      "bars": [
++        {
++          "date": "2026-10-16",
++          "open": 119.64,
++          "close": 120.0,
++          "high": 120.72,
++          "low": 118.92
++        },
++        {
++          "date": "2026-10-17",
++          "open": 117.85,
++          "close": 117.5,
++          "high": 118.56,
++          "low": 116.8
++        },
++        {
++          "date": "2026-10-18",
++          "open": 114.66,
++          "close": 115.0,
++          "high": 115.69,
++          "low": 113.97
++        }
++      ]
++    }
+   }
+ }
+--- before/source/generate-library-frames.py
++++ current/source/generate-library-frames.py
+@@ -34,13 +34,14 @@
+ 
+ 
+ def text(x: float, y: float, value: object, size: int = 14, fill: str = "text",
+          weight: int = 400, anchor: str = "start", cls: str = "") -> str:
+     c = f' class="{cls}"' if cls else ""
+     return (f'<text x="{x:g}" y="{y:g}" font-size="{size}" fill="{COLORS[fill]}" '
+-            f'font-weight="{weight}" text-anchor="{anchor}"{c}>{esc(value)}</text>')
++            f'font-weight="{weight}" text-anchor="{anchor}"{c}>{esc(value)}'
++            +(f'<title>{value.full_amount:,.2f} CNY</title>' if hasattr(value,'full_amount') else '')+'</text>')
+ 
+ 
+ def rect(x: float, y: float, w: float, h: float, fill: str = "surface",
+          stroke: str = "border", radius: int = 8) -> str:
+     return (f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" rx="{radius}" '
+             f'fill="{COLORS[fill]}" stroke="{COLORS[stroke]}"/>')
+@@ -115,100 +116,21 @@
+     else:
+         out.append(text(x + 12, y + 23, value, 14, "text"))
+         out.append(text(x + w - 14, y + 23, "⌄", 14, "muted", 600, "end"))
+     return "".join(out)
+ 
+ 
+-def table_card(x: float, y: float, w: float, h: float, rows: list[dict], narrow: bool) -> str:
+-    out = [rect(x, y, w, h), text(x + 24, y + 34, "实盘交易", 18, "text", 600),
+-           text(x + 24, y + 56, "来源日期条件已生效 · 保留未平仓成交", 12, "muted"),
+-           text(x + w - 24, y + 34, f"{len(rows)} 笔交易", 14, "muted", 500, "end")]
+-    headers = [("成交日期", x + 24, "start"), ("标的", x + 156, "start"),
+-               ("方向", x + 456, "start"), ("数量", x + 576, "end"),
+-               ("成交价", x + 721, "end"), ("状态", x + 871, "start")]
+-    for name, colx, anchor in headers:
+-        out.append(text(colx, y + 88, name, 12, "muted", 400, anchor))
+-    out.append(line(x + 24, y + 100, x + w - 24, y + 100, "border"))
+-    row_y = y + 136
+-    for i, row in enumerate(rows):
+-        out.extend([
+-            text(x + 24, row_y, row["date"], 14, "text"),
+-            text(x + 156, row_y, f'{row["symbol"]} · {row["code"]}', 14, "text"),
+-            text(x + 456, row_y, row["side"], 14, "positive" if row["side"] == "卖出" else "text"),
+-            text(x + 576, row_y, row["quantity"], 14, "text", 400, "end"),
+-            text(x + 721, row_y, f'{row["price"]:,.2f}', 14, "text", 400, "end"),
+-            text(x + 871, row_y, "已记录" if row["side"] == "卖出" else "未平仓", 14, "muted"),
+-            line(x + 24, row_y + 19, x + w - 24, row_y + 19, "border")
+-        ])
+-        row_y += 48
+-    out.append(text(x + 24, y + h - 24, f"设计样例 · 共 {len(rows)} 笔 · 第 1 页", 12, "subtle"))
+-    return "".join(out)
+-
+-
+-def summary_cards(x: float, y: float, w: float, narrow: bool, rows: list[dict]) -> str:
+-    gap = 16
+-    count = 2 if narrow else 3
+-    cardw = (w - gap * (count - 1)) / count
+-    open_count = sum(1 for row in rows if row["side"] == "买入")
+-    data = [("当前范围", "2026-10-15"), ("交易笔数", f"{len(rows)} 笔"), ("未平仓", f"{open_count} 笔")]
+-    out = []
+-    for i, (label, value) in enumerate(data[:count]):
+-        xx = x + i * (cardw + gap)
+-        out.extend([rect(xx, y, cardw, 88), text(xx + 16, y + 28, label, 12, "muted"), text(xx + 16, y + 62, value, 28, "text", 600)])
+-    return "".join(out)
+-
+-
+-def build_date_frame(width: int, height: int, fixture: dict) -> str:
+-    narrow = width <= 1280
+-    content_x = 96
+-    content_w = width - content_x - 24
+-    source_date = fixture["source"]["date"]
+-    rows = [row for row in fixture["live_trades"] if row["date"] == source_date]
+-    if not rows:
+-        raise ValueError(f"date fixture has no live row for {source_date}")
+-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="journeys-date {width}">',
+-           f'<style>text{{font-family:{FONT};font-variant-numeric:tabular-nums}}</style>',
+-           f'<rect width="{width}" height="{height}" fill="{COLORS["bg"]}"/>', sidebar(height), header(width),
+-           text(content_x, 96, "首页 / 交易库", 12, "muted"),
+-           text(content_x, 130, "按日期进入 · 实盘交易", 24, "text", 600),
+-           text(content_x, 154, "来源日期、市场和账户已应用；列表按成交日筛选。", 12, "muted"),
+-           text(width - 24, 130, "已应用条件", 12, "blue", 600, "end"),
+-           text(width - 24, 154, "2026-10-15 · 全部市场 · 全部账户", 12, "muted", 400, "end"),
+-           text(content_x, 188, "视角", 12, "muted"),
+-           rect(content_x, 196, 182, 36, "raised"),
+-           f'<rect x="{content_x + 4}" y="200" width="82" height="28" rx="6" fill="{COLORS["blue"]}"/>',
+-           text(content_x + 45, 219, "实盘", 14, "bg", 600, "middle"), text(content_x + 136, 219, "模拟盘", 14, "muted", 600, "middle"),
+-           text(content_x + 206, 188, "页面", 12, "muted"),
+-           rect(content_x + 206, 196, 176, 36, "raised"),
+-           f'<rect x="{content_x + 210}" y="200" width="78" height="28" rx="6" fill="{COLORS["blue"]}"/>',
+-           text(content_x + 249, 219, "列表", 14, "bg", 600, "middle"), text(content_x + 334, 219, "统计", 14, "muted", 600, "middle")]
+-    y = 262 if narrow else 268
+-    out.extend([control(content_x, y, 220, "成交日期", "2026-10-15", "date"),
+-                control(content_x + 248, y, 160, "市场", "全部市场"),
+-                control(content_x + 436, y, 176, "账户", "全部账户"),
+-                control(width - 24 - 220 - 28 - 36, y, 220, "交易搜索", "筛选当前列表", "search"),
+-                f'<rect x="{width - 24 - 36}" y="{y:g}" width="36" height="36" rx="8" fill="{COLORS["surface"]}" stroke="{COLORS["border"]}"/>',
+-                icon_refresh(width - 24 - 36 + 10, y + 10),
+-                text(width - 24 - 36 + 18, y + 52, "刷新", 10, "subtle", 400, "middle")])
+-    table_y = y + 74
+-    table_h = 404 if narrow else 452
+-    out.append(table_card(content_x, table_y, content_w, table_h, rows, narrow))
+-    summary_y = table_y + table_h + 24
+-    if summary_y + 88 <= height - 20:
+-        out.append(summary_cards(content_x, summary_y, content_w, narrow, rows))
+-    else:
+-        out.append(text(content_x, height - 28, "来源：日期入口 · 返回首页恢复原日期与焦点", 12, "subtle"))
+-    out.append("</svg>")
+-    return "".join(out)
+-
++class FormattedAmount(str):
++    def __new__(cls, value, full_amount):
++        result=super().__new__(cls,value);result.full_amount=full_amount;return result
+ 
+ 
+ def fmt(v: float | int | None) -> str:
+     if v is None:
+         return "—"
+-    return f"{v:,.2f}"
++    return FormattedAmount(f"{v / 100000000:.2f} 亿" if abs(v) >= 100000000 else f"{v / 10000:.2f} 万" if abs(v) >= 10000 else f"{v:,.2f}",v)
+ 
+ 
+ def lifo_rounds(exercise: dict) -> dict:
+     inventory = []
+     rounds = []
+     for trade in exercise["trades"]:
+@@ -332,279 +254,334 @@
+     if len(trends["simulation"]) < 5: errors.append("模拟盘趋势有效日期少于5个")
+     symbols = [(x["saved_date"], x["symbol"]) for x in fixture["simulation_exercises"]]
+     if len(symbols) == len(set(symbols)): errors.append("模拟盘缺少同标的同日独立练习")
+     return errors
+ 
+ 
+-def page_switches(x: int, view: str, page: str) -> str:
+-    view_active = 0 if view == "实盘" else 1
+-    page_active = 0 if page == "列表" else 1
+-    return "".join([text(x, 188, "视角", 12, "muted"), rect(x, 196, 182, 36, "raised"), f'<rect x="{x + 4}" y="200" width="82" height="28" rx="6" fill="{COLORS["blue"] if view_active == 0 else COLORS["surface"]}"/>', f'<rect x="{x + 96}" y="200" width="82" height="28" rx="6" fill="{COLORS["blue"] if view_active == 1 else COLORS["surface"]}"/>', text(x + 45, 219, "实盘", 14, "bg" if view_active == 0 else "muted", 600, "middle"), text(x + 137, 219, "模拟盘", 14, "bg" if view_active == 1 else "muted", 600, "middle"), text(x + 206, 188, "页面", 12, "muted"), rect(x + 206, 196, 176, 36, "raised"), f'<rect x="{x + 210}" y="200" width="78" height="28" rx="6" fill="{COLORS["blue"] if page_active == 0 else COLORS["surface"]}"/>', f'<rect x="{x + 292}" y="200" width="78" height="28" rx="6" fill="{COLORS["blue"] if page_active == 1 else COLORS["surface"]}"/>', text(x + 249, 219, "列表", 14, "bg" if page_active == 0 else "muted", 600, "middle"), text(x + 331, 219, "统计", 14, "bg" if page_active == 1 else "muted", 600, "middle")])
+-
+-
+-def common_chrome(width: int, height: int, title: str, subtitle: str, source: str, view: str, page: str, condition: str, return_label: str = "返回首页", sidebar_active: str = "交易库", sidebar_focus: str | None = None) -> list[str]:
+-    content_x = 96
+-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="{title} {width}">', f'<style>text{{font-family:{FONT};font-variant-numeric:tabular-nums}}</style>', f'<rect width="{width}" height="{height}" fill="{COLORS["bg"]}"/>', sidebar(height, sidebar_active, sidebar_focus), header(width, title, source, return_label), text(content_x, 96, "首页 / 交易库", 12, "muted"), text(content_x, 130, title, 24, "text", 600), text(content_x, 154, subtitle, 14, "muted"), text(width - 24, 130, "已应用条件", 12, "blue", 600, "end"), text(width - 24, 154, condition, 12, "muted", 400, "end"), page_switches(content_x, view, page)]
++# A panel owns its measured bottom; no caller guesses heights from row counts.
++from dataclasses import dataclass
++
++@dataclass
++class Panel:
++    svg: str
++    bottom: float
++
++
++def button(x, y, w, label, active=False, disabled=False, focus=False):
++    return (rect(x, y, w, 36, 'raised' if active else 'surface', 'blue' if active or focus else 'border', 6)
++            + text(x+w/2, y+23, label, 14, 'subtle' if disabled else 'blue' if active else 'text', 500, 'middle'))
++
++
++def segments(x,y,labels,active,width=176):
++    cell=width/len(labels)
++    return ''.join(button(x+i*cell,y,cell-2,label,label==active) for i,label in enumerate(labels))
++
++
++def range_label(state):
++    return state['start'] if state['start']==state['end'] else f"{state['start']} 至 {state['end']}"
++
++
++def common_chrome(width,height,title,subtitle,state,view='实盘',page='列表',return_label='返回首页'):
++    out=[text(96,96,'首页 / 交易库',12,'muted'),text(96,130,title,24,'text',600),text(96,154,subtitle,14,'muted'),
++         text(width-24,130,'已应用条件',12,'blue',600,'end'),text(width-24,154,range_label(state)+' · '+state['market']+(' · '+state.get('account','') if view=='实盘' else ''),12,'muted',400,'end'),
++         text(96,188,'视角',12,'muted'),segments(96,196,['实盘','模拟盘'],view,182),text(302,188,'页面',12,'muted'),segments(302,196,['列表','统计'],page)]
+     return out
+ 
+ 
+-def filter_controls(width: int, date_value: str = "2026-10-15", mode: str = "成交日期", include_account: bool = True) -> str:
+-    narrow = width <= 1280
+-    y = 262 if narrow else 268
+-    # 220px is reserved for the search field; long dates remain readable in a 220px date control.
+-    controls = [control(96, y, 220, mode, date_value, "date"), control(344, y, 160, "市场", "全部市场")]
+-    if include_account: controls.append(control(532, y, 176, "账户", "全部账户"))
+-    controls.extend([control(width - 24 - 220 - 28 - 36, y, 220, "交易搜索", "筛选当前列表", "search"), f'<rect x="{width - 24 - 36}" y="{y:g}" width="36" height="36" rx="8" fill="{COLORS["surface"]}" stroke="{COLORS["border"]}"/>', icon_refresh(width - 24 - 36 + 10, y + 10), text(width - 24 - 36 + 18, y + 52, "刷新", 10, "subtle", 400, "middle")])
+-    return "".join(controls)
+-
+-
+-def generic_table(x: int, y: int, w: int, h: int, title: str, subtitle: str, headers: list[tuple[str, int, str]], rows: list[list[tuple[str, str, int, str]]], count_label: str, footer: str = "设计样例", total_count: int | None = None, page_count: int = 1) -> str:
+-    visible = min(len(rows), 6)
+-    needed = 136 + visible * 48 + 56
+-    h = max(h, needed)
+-    out = [rect(x, y, w, h), text(x + 24, y + 34, title, 18, "text", 600), text(x + 24, y + 56, subtitle, 12, "muted"), text(x + w - 24, y + 34, count_label, 14, "muted", 500, "end")]
+-    for label, offset, anchor in headers: out.append(text(x + offset, y + 88, label, 12, "muted", 400, anchor))
+-    out.append(line(x + 24, y + 100, x + w - 24, y + 100, "border"))
+-    row_y = y + 136
+-    for row in rows[:6]:
+-        for i, (value, tone, size, _anchor) in enumerate(row):
+-            offset, anchor = headers[i][1], headers[i][2]
+-            out.append(text(x + offset, row_y, value, size, tone, 400, anchor))
+-        out.append(line(x + 24, row_y + 19, x + w - 24, row_y + 19, "border"))
+-        row_y += 48
+-    total = len(rows) if total_count is None else total_count
+-    suffix = f"第 1/{page_count} 页" if page_count > 1 else "第 1 页"
+-    out.append(text(x + 24, y + h - 24, f"{footer} · 共 {total} 项 · {suffix}", 12, "subtle"))
+-    return "".join(out)
+-
+-
+-def trend_card(x: int, y: int, w: int, h: int, title: str, subtitle: str, values: list[dict], break_on_gap: bool = False, value_key: str = "cumulative", empty_label: str = "—") -> str:
+-    out = [rect(x, y, w, h), text(x + 24, y + 34, title, 18, "text", 600), text(x + 24, y + 57, subtitle, 12, "muted")]
+-    left, right, top, bottom = x + 72, x + w - 32, y + 90, y + h - 42
+-    nums = [v.get(value_key, v.get("net", 0)) for v in values]
++def filter_controls(width,state,view='实盘',review=None):
++    y=268 if width>1280 else 262
++    # Long range dates have their own 300px budget; search retains 220+28+36.
++    out=[control(96,y,300,'保存日期' if view=='模拟盘' else '成交 / 平仓日期',range_label(state),'date'),control(420,y,140,'市场',state['market'])]
++    if view=='实盘':out.append(control(584,y,160,'账户',state['account']))
++    out += [control(width-308,y,220,'交易搜索',state['search'] or '筛选当前列表','search'),button(width-60,y,36,''),icon_refresh(width-50,y+10)]
++    return ''.join(out)
++
++
++def document(width,height,title,body,state=None,view='实盘',return_label='返回首页',active='交易库',focus=None):
++    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="{esc(title)}"><title>{esc(title)} · 设计样例</title>'
++            +f'<style>text{{font-family:{FONT};font-variant-numeric:tabular-nums}}</style>'
++            +f'<rect width="{width}" height="{height}" fill="{COLORS["bg"]}"/>'+sidebar(height,active,focus)
++            +header(width,'交易库','来源：首页' if return_label=='返回首页' else '来源：'+view+'列表',return_label)+''.join(body)+'</svg>')
++
++
++def table(x,y,w,title,subtitle,headers,rows,count=None,page=1,page_size=6,selected=None,focus=None):
++    total=len(rows) if count is None else count
++    pages=max(1,math.ceil(total/page_size)); visible=rows[(page-1)*page_size:page*page_size]
++    # Header 112, row 48, footer 64. Return actual lower edge.
++    h=112+max(1,len(visible))*48+64
++    out=[rect(x,y,w,h),text(x+24,y+34,title,18,'text',600),text(x+24,y+58,subtitle,12,'muted')]
++    for label,offset,anchor in headers:out.append(text(x+offset,y+88,label,12,'muted',400,anchor))
++    out.append(line(x+24,y+102,x+w-24,y+102))
++    for i,row in enumerate(visible):
++        ry=y+112+i*48
++        rid=row['id']; cells=row['cells']
++        if rid==selected or rid==focus:out.append(rect(x+12,ry,w-24,48,'raised','blue' if rid==focus else 'border',4))
++        for (value,tone),(label,offset,anchor) in zip(cells,headers):out.append(text(x+offset,ry+29,value,14,tone,500 if rid==selected else 400,anchor))
++        out.append(line(x+24,ry+48,x+w-24,ry+48))
++    if not visible:out.append(text(x+24,y+141,'没有符合条件的记录',14,'muted'))
++    out.extend([text(x+24,y+h-24,f'{(page-1)*page_size+1 if total else 0}–{min(page*page_size,total)} / {total} 项',12,'subtle'),button(x+w-188,y+h-48,36,'‹',disabled=page==1),text(x+w-112,y+h-25,f'{page} / {pages}',14,'muted',400,'middle'),button(x+w-60,y+h-48,36,'›',disabled=page==pages)])
++    return Panel(''.join(out),y+h)
++
++
++def metric_cards(x,y,w,data):
++    gap=16;cw=(w-gap*(len(data)-1))/len(data);out=[]
++    for i,(label,val) in enumerate(data):
++        xx=x+i*(cw+gap);out += [rect(xx,y,cw,96),text(xx+16,y+28,label,12,'muted'),text(xx+16,y+70,val,28,'text',600)]
++    return ''.join(out)
++
++
++def trend_card(x,y,w,h,title,subtitle,values,value_key='cumulative',grain='day'):
++    out=[rect(x,y,w,h),text(x+24,y+34,title,18,'text',600),text(x+24,y+57,subtitle,12,'muted')]
++    left,right,top,bottom=x+92,x+w-48,y+94,y+h-48
++    nums=[v.get(value_key) for v in values if v.get(value_key) is not None]
+     if not nums:
+-        for yy in (top, (top + bottom) / 2, bottom):
+-            out.extend([line(left, yy, right, yy, "border"), text(left - 10, yy + 5, "—", 12, "subtle", 400, "end")])
+-        out.append(text(x + 24, y + 132, empty_label, 28, "muted", 600))
+-        return "".join(out)
+-    max_v, min_v = max(nums), min(nums)
+-    if max_v == min_v: max_v, min_v = max_v + 1, min_v - 1
+-    pad = (max_v - min_v) * .12
+-    max_v, min_v = max_v + pad, min_v - pad
+-    zero_y = bottom - (0 - min_v) / (max_v - min_v) * (bottom - top)
+-    for tick, yy in ((max_v, top), (0, zero_y), (min_v, bottom)):
+-        out.append(line(left, yy, right, yy, "border" if tick != 0 else "muted", 1, "4 4" if tick == 0 else ""))
+-        out.append(text(left - 10, yy + 5, fmt(tick), 12, "subtle", 400, "end"))
+-    points = []
+-    for i, value in enumerate(values):
+-        xx = left + (right - left) * (i / max(1, len(values) - 1))
+-        vv = value.get(value_key, value.get("net", 0))
+-        yy = bottom - (vv - min_v) / (max_v - min_v) * (bottom - top)
+-        points.append((xx, yy))
+-        out.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="4" fill="{COLORS["positive"] if vv >= 0 else COLORS["negative"]}"/>')
+-        out.append(text(xx, bottom + 22, value["date"][5:], 11, "subtle", 400, "middle"))
+-    for i, (a, b) in enumerate(zip(points, points[1:])):
+-        if break_on_gap and (date.fromisoformat(values[i + 1]["date"]) - date.fromisoformat(values[i]["date"])).days > 1: continue
+-        out.append(line(a[0], a[1], b[0], b[1], "blue" if b[1] <= zero_y else "negative", 2))
+-    out.append(text(right, top - 12, fmt(nums[-1]), 14, "text", 500, "end"))
+-    return "".join(out)
+-
+-
+-def metric_cards(x: int, y: int, w: int, data: list[tuple[str, str]]) -> str:
+-    gap = 16; cardw = (w - gap * (len(data) - 1)) / len(data); out = []
+-    for i, (label, value) in enumerate(data):
+-        xx = x + i * (cardw + gap); out.extend([rect(xx, y, cardw, 96), text(xx + 16, y + 28, label, 12, "muted"), text(xx + 16, y + 70, value, 28, "text", 600)])
+-    return "".join(out)
+-
+-
+-def stats_shell(width: int, height: int, title: str, subtitle: str, source: str, condition: str, view: str, stats: dict, selected: str | None = None, status: str | None = None, mode: str = "金额", points: list[dict] | None = None) -> list[str]:
+-    narrow = width <= 1280; w = width - 120; y = 342 if not narrow else 336
+-    points = stats.get("points", []) if points is None else points
+-    out = common_chrome(width, height, title, subtitle, source, view, "统计", condition)
+-    out.append(filter_controls(width, condition.split(" · ")[0], "统计范围", include_account=view == "实盘"))
+-    if status == "loading": metrics = [("有效回合", "…"), ("累计净盈亏", "…"), ("胜率", "…"), ("平均盈利", "…"), ("平均亏损", "…"), ("闭合费用", "…")]
+-    elif not stats.get("rounds") and status in ("empty",): metrics = [("有效回合", "—"), ("累计净盈亏", "—"), ("胜率", "—"), ("平均盈利", "—"), ("平均亏损", "—"), ("闭合费用", "—")]
+-    else: metrics = [("有效回合", str(stats.get("count", 0))), ("累计净盈亏", fmt(stats.get("net"))), ("胜率", f"{stats['win_rate']:.2f}%" if stats.get("win_rate") is not None else "—"), ("平均盈利", fmt(stats.get("average_profit"))), ("平均亏损", fmt(stats.get("average_loss"))), ("闭合费用", fmt(stats.get("fees")))]
+-    out.append(metric_cards(96, y, w, metrics))
+-    out.append(trend_card(96, y + 120, w, 280, "累计净盈亏趋势", "按保存日期" if view == "模拟盘" else "按回合平仓日期", points, break_on_gap=status == "gap", value_key="cumulative"))
+-    dist = distribution_for(stats.get("rounds", []), mode)
+-    rows = []
+-    for d in dist:
+-        count, rate = d["count"], d["rate"]
+-        tone = "positive" if "盈利" in d["label"] else "negative" if "亏损" in d["label"] else "muted"
+-        if status in ("loading",): count, rate = "…", "…"
+-        elif status == "empty": count, rate = "—", "—"
+-        rows.append([(d["label"], tone, 14, "start"), (str(count), "text", 14, "end"), (f"{rate:.2f}%" if isinstance(rate, (int,float)) else "—" if rate is None else str(rate), "text", 14, "end")])
+-    panel_title = "收益分布 · 已选区间" if selected else "收益分布"
+-    subtitle2 = f"切换：{mode}　·　占比分母 = {stats.get('count', 0)} 个有效回合" if status != "empty" else "当前范围没有有效回合；不生成虚构分布"
+-    out.append(generic_table(96, y + 424, w, 300 if narrow else 320, panel_title, subtitle2, [("区间",24,"start"),("回合数",606,"end"),("占比",760,"end")], rows, f"{len(dist)} 个区间", "设计样例", total_count=len(dist)))
++        out += [line(left,yy,right,yy) for yy in [top,(top+bottom)/2,bottom]]
++        out.append(text((left+right)/2,(top+bottom)/2,'正在加载…' if subtitle=='首次加载' else '没有可绘制的有效数据',14,'muted',400,'middle'))
++        return Panel(''.join(out),y+h)
++    lo,hi=min(0,min(nums)),max(0,max(nums));span=max(1,hi-lo);lo-=span*.12;hi+=span*.12
++    yy=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
++    zero=yy(0)
++    for tick in [hi,0,lo]:out += [line(left,yy(tick),right,yy(tick),'muted' if tick==0 else 'border',1,'4 4' if tick==0 else ''),text(left-12,yy(tick)+4,fmt(tick),12,'subtle',400,'end')]
++    prev=None
++    for i,v in enumerate(values):
++        xx=(left+right)/2 if len(values)==1 else left+(right-left)*i/(len(values)-1)
++        label=v['date'][:4] if grain=='year' else v['date'][:7] if grain=='month' else v['date'][5:]
++        out.append(text(xx,bottom+25,label,12,'subtle',400,'middle'))
++        value=v.get(value_key)
++        if value is None:
++            out += [line(xx,top,xx,bottom,'warning',1,'3 5'),text(xx,top+22,'缺失',12,'warning',400,'middle')];prev=None;continue
++        point=(xx,yy(value));out.append(f'<circle cx="{xx:g}" cy="{point[1]:g}" r="4" fill="{COLORS["blue"]}"><title>{esc(v["date"])} · {value:,.2f} CNY</title></circle>')
++        if prev:out.append(line(*prev,*point,'blue',2))
++        prev=point
++        if v.get('status')=='no_trades':out.append(text(xx,min(bottom-14,point[1]+26),'无成交 · 0.00',12,'muted',400,'end'))
++    return Panel(''.join(out),y+h)
++
++
++def stats_frame(width,minimum,fixture,kind):
++    sim=kind in ['simulation-stats','trend-gap','trend-single']
++    state=dict(fixture['navigation']['simulation' if sim else 'live']);view='模拟盘' if sim else '实盘'
++    rounds=derive_sim_rounds(fixture) if sim else derive_live_rounds(fixture)
++    status=kind if kind in ['loading','empty','error','missing'] else None
++    grain='day';mode='金额' if kind in ['distribution','return-stats','amount-stats'] else '收益率';selected='盈利 > 100' if kind in ['distribution','return-stats'] else None
++    title=f'{view}统计';subtitle='有效已平仓回合 · CNY'
++    if kind=='trend-month':state.update(start='2026-01-01',end='2026-12-31');grain='month'
++    if kind=='trend-year':state.update(start='2020-01-01',end='2026-12-31');grain='year'
++    if kind in ['trend-empty','empty']:state.update(start='2026-10-20',end='2026-10-25');status='empty'
++    if kind=='trend-single':state.update(start='2026-10-15',end='2026-10-15')
++    if kind=='extreme':
++        rounds=[dict(r,date=e['saved_date'],symbol=e['symbol'],round_id=e['id']) for e in fixture['boundary_exercises'] for r in lifo_rounds(e)['rounds']];state.update(start='2026-10-03',end='2026-10-07')
++    stats=stats_for(rounds,state['start'],state['end']);points=stats['points']
++    if grain!='day':
++        groups={}
++        for r in stats['rounds']:
++            key=r['date'][:7] if grain=='month' else r['date'][:4];groups[key]=groups.get(key,0)+r['net']
++        cum=0;points=[]
++        for key,value in sorted(groups.items()):cum+=value;points.append({'date':key,'cumulative':round(cum,2)})
++    if kind=='missing':
++        missing_date=fixture['missing_inputs']['date'];total=stats['count'];stats=stats_for([r for r in stats['rounds'] if r['date']!=missing_date]);points=stats['points']+[{'date':missing_date,'cumulative':None}];subtitle=f"可计算 {stats['count']} / {total} 回合 · {missing_date} 平仓费用缺失 · 全范围净盈亏 —"
++    if kind=='trend-gap':
++        gap=fixture['trend_modes']['gap_scenario'];state.update(start=gap['start'],end=gap['end']);missing={d['date'] for d in gap['dates'] if d['status']=='missing'}
++        stats=stats_for([r for r in rounds if r['date'] not in missing],state['start'],state['end']);known={p['date']:p['cumulative'] for p in stats['points']};cum=0;points=[]
++        for d in gap['dates']:
++            if d['status']=='missing':value=None
++            else: value=known.get(d['date'],cum);cum=value
++            points.append({**d,'cumulative':value})
++        subtitle='10-17、10-18 文件缺失 · 全范围净盈亏 — · 可计算 5 回合'
++    body=common_chrome(width,minimum,title,subtitle,state,view,'统计');body.append(filter_controls(width,state,view));y=342;w=width-120
++    if status=='error':
++        body += [rect(96,y,w,68,'raised'),text(120,y+27,'更新失败 · '+range_label(fixture['navigation']['error_attempt'])+' 未应用',14,'warning',600),text(120,y+50,'当前仍显示 '+range_label(state)+' 的完整结果',12,'muted'),button(width-156,y+16,108,'重试')];y+=92
++    if status=='loading':metrics=[(l,'…') for l in ['有效回合','累计净盈亏','胜率','平均盈利','平均亏损','闭合费用']];points=[]
++    else:metrics=[('有效回合',str(stats['count'])),('可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏',fmt(stats['net'])),('胜率',f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'),('平均盈利',fmt(stats['average_profit'])),('平均亏损',fmt(stats['average_loss'])),('闭合费用',fmt(stats['fees']))]
++    body.append(metric_cards(96,y,w,metrics));y+=120
++    trend=trend_card(96,y,w,280,'可计算累计净盈亏' if kind in ['trend-gap','missing'] else '累计净盈亏趋势','首次加载' if status=='loading' else ('按保存日期' if sim else '按回合平仓日期')+' · '+{'day':'日','month':'月','year':'年'}[grain],points,grain=grain);body.append(trend.svg);y=trend.bottom+24
++    dist=distribution_for(stats['rounds'] if status!='loading' else [],mode)
++    rows=[{'id':d['label'],'cells':[(d['label'],'negative' if '亏损' in d['label'] else 'positive' if '盈利' in d['label'] else 'muted'),('…' if status=='loading' else str(d['count']),'text'),('…' if status=='loading' else f"{d['rate']:.2f}%" if d['rate'] is not None else '—','text')]} for d in dist]
++    table_y=y
++    panel=table(96,y,w,'收益分布','分母等待数据' if status=='loading' else f"当前范围 · {stats['count']} 个有效回合",[('区间',24,'start'),('回合数',606,'end'),('占比',760,'end')],rows,selected=selected)
++    body.append(panel.svg);body.append(segments(width-240,table_y+16,['收益率','金额'],mode,192));y=panel.bottom+24
+     if selected:
+-        chosen = next((d for d in dist if d["label"] == selected), dist[0])
+-        local = [[(r.get("exercise", "实盘"), "text", 14, "start"), (r["symbol"], "text", 14, "start"), (fmt(r["net"]), "positive" if r["net"] >= 0 else "negative", 14, "end"), ("进入复盘", "blue", 14, "start")] for r in chosen["rounds"]]
+-        out.append(generic_table(96, y + 760, w, 220, f"区间明细 · {selected}", "仅展示当前区间回合；顶部范围和分母保持不变。", [("练习/来源",24,"start"),("标的",360,"start"),("净盈亏",606,"end"),("动作",760,"start")], local or [[("—","muted",14,"start"),("没有回合","muted",14,"start"),("—","muted",14,"end"),("—","muted",14,"start")]], f"{len(chosen['rounds'])} 个回合", "设计样例", total_count=len(chosen["rounds"])) )
+-    if status == "error": out.append(text(96, height - 32, "新范围未应用 · 重试将保留原筛选条件", 14, "warning"))
+-    elif status == "missing":
+-        missing_count = stats.get("missing_count", 0); total_count = stats.get("count", 0) + missing_count
+-        fields = "、".join(stats.get("missing_fields", [])) or "必要字段"
+-        out.append(text(96, height - 32, f"可计算样本 {stats.get('count', 0)} / {total_count} · 缺失输入不纳入分布分母（{fields}）", 14, "warning"))
+-    return out
+-
+-
+-def replay_card(x: int, y: int, w: int, h: int, ex: dict, round_data: dict, index: int) -> str:
+-    out = [rect(x, y, w, h), text(x + 24, y + 34, f"{ex['label']} · 回合 {index} 复盘", 18, "text", 600), text(x + 24, y + 58, f"{ex['symbol']} · {ex['code']} · LIFO 配对", 14, "muted"), line(x + 24, y + 82, x + w - 24, y + 82, "border")]
+-    trades = ex["trades"]; left, right = x + 56, x + w - 56; base = y + 254
+-    out.append(line(left, base, right, base, "border", 2))
+-    min_d, max_d = min(t["date"] for t in trades), max(t["date"] for t in trades)
+-    span = max(1, (date.fromisoformat(max_d) - date.fromisoformat(min_d)).days)
+-    for t in trades:
+-        xx = left + (date.fromisoformat(t["date"]) - date.fromisoformat(min_d)).days / span * (right - left)
+-        color = "positive" if t["side"] == "买入" else "negative"
+-        out.append(f'<circle cx="{xx:g}" cy="{base:g}" r="7" fill="{COLORS[color]}"/>')
+-        out.extend([text(xx, base - 28, t["side"], 14, color, 600, "middle"), text(xx, base + 30, t["date"][5:], 12, "subtle", 400, "middle"), text(xx, base + 52, f"{t['quantity']}股 · {t['price']:.2f}", 12, "muted", 400, "middle")])
+-    out.extend([text(x + 24, y + 336, "当前回合", 12, "muted"), text(x + 24, y + 368, f"{round_data['quantity']} 股 · {round_data['open_price']:.2f} → {round_data['close_price']:.2f}", 18, "text", 600), text(x + 420, y + 336, "扣费后净盈亏", 12, "muted"), text(x + 420, y + 368, f"{round_data['net']:.2f} CNY", 18, "positive" if round_data["net"] >= 0 else "negative", 600), text(x + w - 24, y + 368, "返回回合集", 14, "blue", 500, "end")])
+-    return "".join(out)
+-
+-
+-def home_frame(width: int, height: int, fixture: dict, kind: str) -> list[str]:
+-    live = derive_live_rounds(fixture); summary = stats_for(live)
+-    active_source = "来源：首页 · 当前范围" if kind == "entry" else "来源：交易库返回 · 范围已恢复"
+-    return_label = "当前首页" if kind == "entry" else "返回交易库"
+-    subtitle = "当前期间 · 实盘" if kind == "entry" else "原期间、位置和交易库入口焦点已恢复"
+-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="首页交易库入口 {width}">', f'<style>text{{font-family:{FONT};font-variant-numeric:tabular-nums}}</style>', f'<rect width="{width}" height="{height}" fill="{COLORS["bg"]}"/>', sidebar(height, "首页", "交易库"), header(width, "首页", active_source, return_label)]
+-    x, w = 96, width - 120
+-    out.extend([text(x,96,"首页",12,"muted"), text(x,130,"交易概览",24,"text",600), text(x,154,subtitle,14,"muted"), control(x,196,220,"期间","2026-10-03 至 2026-10-15","date"), control(x+248,196,160,"视角","实盘")])
+-    data = [("期间净盈亏(CNY)", fmt(summary["net"])), ("期间已实现(CNY)", fmt(summary["net"])), ("期间浮盈变动(CNY)", "—"), ("当前持仓市值(CNY)", fmt(sum(p["quantity"] * p["price"] for p in derive_live_positions(fixture))))]
+-    gap=16; cardw=(w-gap*3)/4
+-    for i,(label,val) in enumerate(data):
+-        xx=x+i*(cardw+gap); out.extend([rect(xx,260,cardw,104),text(xx+16,288,label,12,"muted"),text(xx+16,330,val,28,"positive" if val.startswith("+") else "text",600)])
+-    points=summary["points"]; out.append(trend_card(x,388,w,250,"累计贡献趋势","当前期间 · 按回合平仓日期",points,value_key="cumulative"))
+-    out.extend([rect(x,666,w,230), text(x+24,700,"持仓预览",18,"text",600), text(x+w-24,700,"查看全部",14,"blue",500,"end")])
+-    positions=derive_live_positions(fixture)
+-    if not positions: positions=[]
+-    for i,pos in enumerate(positions[:3]):
+-        yy=744+i*48; out.extend([line(x+24,yy-20,x+w-24,yy-20,"border"),text(x+24,yy,f"{pos['symbol']} · {pos['code']}",14,"text"),text(x+520,yy,f"{pos['quantity']} 股",14,"text",400,"end"),text(x+w-24,yy,"未平仓",14,"muted",400,"end")])
+-    return out
+-
+-
+-def _rounds_table(width: int, height: int, fixture: dict, live: bool = False) -> list[str]:
+-    ex = fixture["simulation_exercises"][0]; result=lifo_rounds(ex); y=342 if width>1280 else 336; w=width-120
++        chosen=next(d for d in dist if d['label']==selected);rows=[{'id':r['round_id'],'cells':[(r['date'],'text'),(r['symbol'],'text'),(fmt(r['net']),'positive'),('进入复盘 →','blue')]} for r in chosen['rounds']]
++        panel=table(96,y,w,'区间回合 · '+selected,f"{len(rows)} 个回合 / 范围内 {stats['count']} 个回合",[('平仓日期',24,'start'),('标的',280,'start'),('净盈亏(CNY)',606,'end'),('操作',760,'start')],rows,focus=rows[0]['id'] if kind=='return-stats' and rows else None);body.append(panel.svg);y=panel.bottom+24
++    if kind=='extreme':
++        body += [rect(96,y,w,92,'raised'),text(120,y+30,'金额详情 · 平均盈利',14,'text',600),text(120,y+63,f"{stats['average_profit']:,.2f} CNY",18,'positive'),button(width-180,y+28,132,'复制完整金额')];y+=116
++    if kind in ['missing','trend-gap']:
++        body += [rect(96,y,w,68,'raised'),text(120,y+28,'缺失回合未进入统计与分布分母；全范围结果不可计算。',14,'warning'),text(120,y+51,'补充平仓费用后重新计算' if kind=='missing' else '10-17、10-18：文件读取失败；10-20：已确认无成交，日收益 0.00。',12,'muted')];y+=92
++    return document(width,max(minimum,math.ceil(y)),title,body,state,view)
++
++
++def trade_rows(fixture,state,pending=False):
++    trades=sorted([t for t in fixture['live_trades'] if date_between(t['date'],state['start'],state['end']) and (not pending or t['review_status']=='pending')],key=lambda t:(t['date'],t['id']))
++    return [{'id':t['id'],'cells':[(t['date'],'text'),(t['symbol']+' · '+t['code'],'text'),(t['side'],'text'),(str(t['quantity']),'text'),(f"{t['price']:,.2f}",'text'),('待复盘' if t['review_status']=='pending' else '已复盘','warning' if t['review_status']=='pending' else 'muted'),('查看回合 →','blue')]} for t in trades]
++
++
++def list_frame(width,height,fixture,kind):
++    sim=kind in ['simulation-list','view-simulation','simulation-return'];state=dict(fixture['navigation']['simulation' if sim else 'live']);view='模拟盘' if sim else '实盘';pending=kind=='pending'
++    if kind=='date':state.update(start=fixture['source']['date'],end=fixture['source']['date'])
++    if kind=='month-list':state.update(start='2026-10-01',end='2026-10-31')
++    title='模拟盘练习' if sim else '实盘交易';subtitle='按保存日期' if sim else '按成交日期'
++    body=common_chrome(width,height,title,subtitle,state,view);body.append(filter_controls(width,state,view));y=342 if width>1280 else 336
++    body += [control(96,y,176,'复盘状态','待复盘' if pending else '全部'),text(width-24,y+23,state['sort'],14,'muted',400,'end')];y+=60
++    if sim:
++        rows=[]
++        for e in sorted(fixture['simulation_exercises'],key=lambda e:(e['saved_date'],e['id'])):
++            if not date_between(e['saved_date'],state['start'],state['end']):continue
++            r=lifo_rounds(e);rows.append({'id':e['id'],'cells':[(e['saved_date'],'text'),(e['label'],'text'),(e['symbol']+' · '+e['code'],'text'),(str(len(r['rounds'])),'text'),(str(r['open_quantity']),'muted'),('查看回合 →','blue')]})
++        headers=[('保存日期',24,'start'),('练习',180,'start'),('标的',340,'start'),('已平仓回合',720,'end'),('未平仓数量',880,'end'),('操作',960,'start')]
++    else:
++        rows=trade_rows(fixture,state,pending);headers=[('成交日期',24,'start'),('标的',180,'start'),('方向',480,'start'),('数量',600,'end'),('成交价',740,'end'),('复盘状态',800,'start'),('操作',980,'start')]
++    focus=state['focus'] if kind in ['live-return','view-restore','simulation-return'] else None
++    panel=table(96,y,width-120,title,('6 次练习 / 7 个已平仓回合' if sim else '一行一笔成交'),headers,rows,page=state['page'],page_size=state['page_size'],focus=focus)
++    body.append(panel.svg)
++    return document(width,max(height,int(panel.bottom+24)),title,body,state,view)
++
++
++def object_state(fixture,live):
++    state=fixture['navigation']['live' if live else 'simulation']
+     if live:
+-        rows=derive_live_rounds(fixture); symbol_rows=[r for r in rows if r["symbol"]=="贵州茅台"]
+-        out=common_chrome(width,height,"实盘对象 · 回合集","选择标的后查看已闭合回合与未平仓余量。","来源：实盘交易列表 · 贵州茅台","实盘","列表","2026-10-03 至 2026-10-12 · 贵州茅台 · 全部市场")
+-        out.append(filter_controls(width,"2026-10-03 至 2026-10-12","成交日期"))
+-        table_rows=[[(f"回合 {i+1}","text",14,"start"),(f"{r['quantity']} 股 · {r['open_price']:.2f} → {r['close_price']:.2f}","text",14,"start"),(fmt(r['net']),"positive" if r['net']>=0 else "negative",14,"end"),("已平仓","positive",14,"start")] for i,r in enumerate(symbol_rows)]
+-        out.append(generic_table(96,y,w,360,"贵州茅台 · 回合集","实盘回合按平仓日归属；未平仓余量保留在来源列表。",[("回合",24,"start"),("配对",360,"start"),("净盈亏",606,"end"),("状态",760,"start")],table_rows,f"{len(table_rows)} 个回合"))
+-        return out
+-    out=common_chrome(width,height,"练习 A · 回合集","已闭合回合与未平仓余量来自同一练习样例。","来源：模拟盘练习列表 · 练习 A","模拟盘","列表","练习 A · 贵州茅台 · 保存于 2026-10-15")
+-    out.append(filter_controls(width,"2026-10-15","保存日期",include_account=False))
+-    rows=[[(f"回合 {i}","text",14,"start"),(f"LIFO · {r['quantity']} 股","text",14,"start"),(fmt(r['net']),"positive" if r['net']>=0 else "negative",14,"end"),("已平仓","positive",14,"start")] for i,r in enumerate(result["rounds"],1)]
+-    out.append(generic_table(96,y,w,360,"练习 A · 回合","70 股未平仓不纳入闭合统计。",[("回合",24,"start"),("配对",360,"start"),("净盈亏",606,"end"),("状态",760,"start")],rows,"2 个回合"))
+-    out.append(metric_cards(96,y+384,w,[("闭合净盈亏",fmt(sum(r["net"] for r in result["rounds"]))),("闭合费用",fmt(result["closed_fees"])),("未平仓",f"{result['open_quantity']} 股")]))
+-    return out
+-
+-
+-def state_frame(width: int, height: int, kind: str, fixture: dict) -> str:
+-    live_rounds, sim_rounds = derive_live_rounds(fixture), derive_sim_rounds(fixture)
+-    exercises=fixture["simulation_exercises"]; y=342 if width>1280 else 336; w=width-120
+-    if kind == "simulation-list":
+-        out=common_chrome(width,height,"练习列表","每次练习保持独立身份；列表与保存日期范围一致。","来源：模拟盘视角 · 已应用","模拟盘","列表","2026-10-15 至 2026-10-19 · 全部市场")
+-        out.append(filter_controls(width,"2026-10-15 至 2026-10-19","保存日期",False))
+-        rows=[]
+-        for ex in exercises:
+-            result=lifo_rounds(ex); rows.append([(ex["saved_date"],"text",14,"start"),(ex["label"],"text",14,"start"),(f"{ex['symbol']} · {ex['code']}","text",14,"start"),(str(len(result["rounds"])),"text",14,"end"),("已完成" if result["rounds"] else "未完成","positive" if result["rounds"] else "muted",14,"start")])
+-        out.append(generic_table(96,y,w,452,"模拟盘练习","保存日期范围内 6 个独立练习全部可见。",[("保存日期",24,"start"),("练习",156,"start"),("标的",456,"start"),("已平仓回合",606,"end"),("状态",760,"start")],rows,f"{len(rows)} 项练习"))
+-    elif kind in ("rounds-a","live-rounds"):
+-        out = _rounds_table(width,height,fixture,kind=="live-rounds")
+-    elif kind in ("replay-a1","replay-a2","replay-b1","library-replay"):
+-        ex=exercises[0] if kind not in ("replay-b1",) else exercises[1]; idx=1 if kind in ("replay-a1","replay-b1","library-replay") else 2; result=lifo_rounds(ex); rd=result["rounds"][min(idx-1,len(result["rounds"])-1)]
+-        title=f"{ex['label']} · 回合 {idx} 复盘"; out=common_chrome(width,height,title,"回合成交标记、数量和配对结果保持可追踪。","来源：回合集 · 已保留上下文","模拟盘","列表",f"{ex['label']} · {ex['symbol']} · 回合 {idx}")
+-        out.append(filter_controls(width,ex["saved_date"],"保存日期",False)); out.append(replay_card(96,y,w,460,ex,rd,idx))
+-    elif kind in ("live-stats","simulation-stats","distribution","return-stats"):
+-        sim=kind=="simulation-stats"; scope=sim_rounds if sim else live_rounds; start,end=("2026-10-15","2026-10-19") if sim else ("2026-10-03","2026-10-12"); s=stats_for(scope,start,end); title="模拟盘统计" if sim else "实盘统计"; source="来源：模拟盘视角 · 练习保存日期" if sim else "来源：实盘视角 · 回合平仓日期"; condition=f"{start} 至 {end} · 全部市场" + ("" if sim else " · 全部账户")
+-        selected="盈利 > 100" if kind in ("distribution","return-stats") else None; subtitle="返回后恢复同一范围、分布区间与局部回合列表。" if kind=="return-stats" else "只统计有效已平仓回合；累计趋势与分布来自同一回合集。"
+-        out=stats_shell(width,height,title,subtitle,source,condition,"模拟盘" if sim else "实盘",s,selected)
+-    elif kind in ("handoff","library-return"):
+-        out=home_frame(width,height,fixture,"entry" if kind=="handoff" else "return")
+-    elif kind == "view-restore":
+-        out=common_chrome(width,height,"视角往返 · 条件恢复","实盘、模拟盘和再次回到实盘各自保留范围与局部位置。","来源：交易库列表 · 返回实盘","实盘","列表","2026-10-03 至 2026-10-12 · 全部市场 · 全部账户")
+-        out.append(filter_controls(width,"2026-10-03 至 2026-10-12","成交日期"))
+-        live_rows=[[(r["date"],"text",14,"start"),(r["symbol"],"text",14,"start"),(str(r["quantity"]),"text",14,"end"),(fmt(r["price"]),"text",14,"end"),("已记录","muted",14,"start")] for r in fixture["live_trades"][:5]]
+-        out.append(generic_table(96,y,w,380,"返回实盘 · 原列表位置","范围、筛选、页码和触发焦点恢复。",[("成交日期",24,"start"),("标的",360,"start"),("数量",606,"end"),("成交价",700,"end"),("状态",820,"start")],live_rows,"实盘列表"))
+-        out.append(rect(96,y+404,w,126)); out.extend([text(120,y+438,"往返路径",12,"muted"),text(120,y+476,"实盘  →  模拟盘（2026-10-15 至 2026-10-19）  →  实盘",18,"text",600),text(120,y+504,"再次回到实盘：2026-10-03 至 2026-10-12 · 全部账户",14,"muted")])
+-    elif kind in ("pending","pending-1280"):
+-        positions=derive_live_positions(fixture); out=common_chrome(width,height,"待复盘交易","库内显式筛选；未平仓状态由残余数量决定。","来源：交易库内筛选 · 已应用","实盘","列表","2026-10-01 至 2026-10-15 · 待复盘=是 · 全部市场"); out.append(filter_controls(width,"2026-10-01 至 2026-10-15","成交日期")); rows=[[(p["date"],"text",14,"start"),(f"{p['symbol']} · {p['code']}","text",14,"start"),("买入","text",14,"start"),(str(p["quantity"]),"text",14,"end"),("未平仓","warning",14,"start")] for p in positions]; out.append(generic_table(96,y,w,320,"实盘交易 · 待复盘","残余数量大于 0 的开仓成交。",[("成交日期",24,"start"),("标的",156,"start"),("方向",456,"start"),("数量",606,"end"),("状态",760,"start")],rows,f"{len(rows)} 笔交易"))
+-    elif kind == "month-list":
+-        trades=[r for r in fixture["live_trades"] if date_between(r["date"],"2026-10-01","2026-10-15")]; out=common_chrome(width,height,"按月进入 · 实盘交易","普通月份范围；一行对应一笔成交。","来源：日期入口 · 月范围已应用","实盘","列表","2026-10-01 至 2026-10-31 · 全部市场 · 全部账户"); out.append(filter_controls(width,"2026-10-01 至 2026-10-31","成交日期")); rows=[[(t["date"],"text",14,"start"),(f"{t['symbol']} · {t['code']}","text",14,"start"),(t["side"],"positive" if t["side"]=="卖出" else "text",14,"start"),(str(t["quantity"]),"text",14,"end"),(fmt(t["price"]),"text",14,"end")] for t in trades]; out.append(generic_table(96,y,w,500,"月份成交明细","按成交日逐笔展示。",[("成交日期",24,"start"),("标的",300,"start"),("方向",560,"start"),("数量",680,"end"),("成交价",780,"end")],rows,f"{len(trades)} 笔成交",total_count=len(trades),page_count=2))
+-    elif kind in ("trend-month", "trend-year", "trend-gap","trend-single","trend-empty"):
+-        sim=derive_sim_rounds(fixture)
+-        if kind == "trend-month":
+-            base = stats_for(live_rounds); grouped = {}
+-            for p in base["points"]: grouped.setdefault(p["date"][:7], 0.0); grouped[p["date"][:7]] += p["net"]
+-            cumulative = 0.0; points=[]
+-            for month in sorted(grouped): cumulative += grouped[month]; points.append({"date": month + "-01", "net": round(grouped[month], 2), "cumulative": round(cumulative, 2)})
+-            s = {**base, "points": points}; title="趋势 · 月粒度"; cond="2026-01-01 至 2026-12-31 · 实盘"; status=None
+-        elif kind == "trend-year":
+-            base = stats_for(live_rounds); grouped = {}
+-            for p in base["points"]: grouped.setdefault(p["date"][:4], 0.0); grouped[p["date"][:4]] += p["net"]
+-            cumulative = 0.0; points=[]
+-            for year in sorted(grouped): cumulative += grouped[year]; points.append({"date": year + "-01-01", "net": round(grouped[year], 2), "cumulative": round(cumulative, 2)})
+-            s = {**base, "points": points}; title="趋势 · 年粒度"; cond="2020-01-01 至 2026-12-31 · 实盘"; status=None
+-        elif kind=="trend-gap":
+-            s=stats_for(sim); points=[p for p in s["points"] if p["date"] in set(fixture["trend_modes"]["gap_dates"])]; title="趋势 · 日期缺口"; cond="2026-10-15 至 2026-10-19 · 模拟盘"; status="gap"
+-        elif kind=="trend-single":
+-            s=stats_for(sim,"2026-10-15","2026-10-15"); points=s["points"]; title="趋势 · 单点样本"; cond="2026-10-15 · 模拟盘"; status=None
+-        else:
+-            s=stats_for(live_rounds,"2026-10-20","2026-10-25"); points=[]; title="趋势 · 空样本"; cond="2026-10-20 至 2026-10-25 · 实盘"; status=None
+-        out=stats_shell(width,height,title,"缺失日期不补零；单点和空样本范围与图内数据一致。","来源：统计 · 日期口径已保留",cond,"模拟盘" if "模拟盘" in cond else "实盘",s,status=status,points=points)
+-    elif kind in ("loading","empty","error","extreme","missing"):
+-        scope=live_rounds; normal=stats_for(scope,"2026-10-03","2026-10-12")
+-        if kind=="loading": out=stats_shell(width,height,"统计加载中","工具区与绘图区保留最终尺寸；结果正在读取。","来源：统计 · 条件已保留","2026-10-03 至 2026-10-12 · 实盘","实盘",normal,status="loading",points=[])
+-        elif kind=="empty": out=stats_shell(width,height,"没有已平仓回合","当前范围没有有效回合；不生成虚构数据。","来源：统计 · 条件已保留","2026-10-20 至 2026-10-25 · 实盘","实盘",stats_for(scope,"2026-10-20","2026-10-25"),status="empty",points=[])
+-        elif kind=="error": out=stats_shell(width,height,"统计读取失败","新范围未应用；保留上一组有效结果并提供重试。","来源：统计 · 条件已保留","2026-10-03 至 2026-10-12 · 实盘","实盘",normal,status="error")
+-        elif kind=="extreme":
+-            extreme=[]
+-            for exercise in fixture.get("boundary_exercises", []):
+-                result=lifo_rounds(exercise)
+-                for row in result["rounds"]:
+-                    extreme.append({**row, "date": exercise["saved_date"], "exercise": exercise["label"], "symbol": exercise["symbol"], "code": exercise["code"]})
+-            exs=stats_for(extreme,"2026-10-03","2026-10-07"); out=stats_shell(width,height,"极端收益分布","完整金额使用分组和刻度保持可读。","来源：统计 · 极值设计样例","2026-10-03 至 2026-10-07 · 实盘","实盘",exs)
+-        else:
+-            calculable=normal["rounds"][:1]; missing_meta=fixture["missing_inputs"]; missing={**stats_for(calculable),"missing_count":missing_meta["missing_count"],"missing_fields":missing_meta["missing_fields"]}; out=stats_shell(width,height,"统计输入缺失","可计算回合与缺失输入分别表达；缺失不进入分布。","来源：统计 · 输入缺失样例","2026-10-03 至 2026-10-12 · 实盘","实盘",missing,status="missing"); out.append(text(96, height - 56, f"缺失样本 · {missing_meta['missing_count']} 回合 · 净盈亏 — · {missing_meta['date']} 需补充{'、'.join(missing_meta['missing_fields'])}", 14, "warning"))
+-    else: raise ValueError(kind)
+-    if not isinstance(out, list): out=[out]
+-    return "".join(out+["</svg>"])
+-
+-
+-FRAME_KINDS = {
+-    "hcr06-final-sim-ab":"simulation-list", "hcr06-final-rounds-a":"rounds-a", "hcr06-final-replay-a1":"replay-a1", "hcr06-final-replay-a2":"replay-a2", "hcr06-final-replay-b1":"replay-b1", "01-live-normal":"live-stats", "02-simulation-normal":"simulation-stats", "03-distribution-selected":"distribution", "04-return":"return-stats", "handoff":"handoff", "hcr06-final-pending-library":"pending", "hcr06-final-pending-library-1280":"pending-1280", "library-return":"library-return", "hcr06-final-return":"return-stats", "05-loading":"loading", "06-empty":"empty", "07-error":"error", "08-extreme":"extreme", "09-missing-input":"missing", "journeys-date-month":"month-list", "journeys-trend-month":"trend-month", "journeys-trend-year":"trend-year", "journeys-trend-gap":"trend-gap", "journeys-trend-single":"trend-single", "journeys-trend-empty":"trend-empty", "journeys-view-restore":"view-restore", "journeys-library-list":"month-list", "journeys-live-rounds":"live-rounds", "journeys-library-replay":"library-replay", "journeys-live-rounds-return":"live-rounds", "journeys-library-list-return":"month-list",
++        obj={'id':'600519','label':'贵州茅台','symbol':'贵州茅台','code':'600519','trades':[t for t in fixture['live_trades'] if t['code']=='600519']};rounds=[r for r in derive_live_rounds(fixture) if r['code']=='600519'];result=lifo_rounds(obj)
++    else:obj=fixture['simulation_exercises'][0];result=lifo_rounds(obj);rounds=result['rounds']
++    return state,obj,result,rounds
++
++
++def rounds_frame(width,height,fixture,kind):
++    live=kind.startswith('live');state,obj,result,rounds=object_state(fixture,live)
++    if kind=='rounds-b':obj=fixture['simulation_exercises'][1];result=lifo_rounds(obj);rounds=result['rounds']
++    view='实盘' if live else '模拟盘';title=obj['label']+' · 回合集';body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回列表');body.append(filter_controls(width,state,view));y=342
++    rows=[{'id':str(i),'cells':[(f'回合 {i}','text'),(r['open_date']+' → '+r['close_date'],'text'),(str(r['quantity']),'text'),(fmt(r['net']),'positive' if r['net']>=0 else 'negative'),('进入复盘 →','blue')]} for i,r in enumerate(rounds,1)]
++    panel=table(96,y,width-120,title,'已闭合回合',[('回合',24,'start'),('开仓 → 平仓',180,'start'),('配对数量',680,'end'),('净盈亏(CNY)',880,'end'),('操作',980,'start')],rows,focus=('2' if kind=='rounds-a-return' else '1') if kind.endswith('return') else None);body.append(panel.svg);y=panel.bottom+24
++    body.append(metric_cards(96,y,width-120,[('闭合净盈亏',fmt(sum(r['net'] for r in rounds))),('闭合费用',fmt(result['closed_fees'])),('未平仓数量',str(result['open_quantity'])),('留存开仓费用',fmt(result['open_fees']))]));y+=120
++    return document(width,max(height,int(y)),title,body,state,view,'返回列表')
++
++
++def replay_frame(width,height,fixture,kind):
++    live=kind=='library-replay';state,obj,result,rounds=object_state(fixture,live);idx=1
++    if kind=='replay-a2':idx=2
++    if kind=='replay-b1':obj=fixture['simulation_exercises'][1];result=lifo_rounds(obj);rounds=result['rounds']
++    rd=rounds[idx-1];view='实盘' if live else '模拟盘';title=obj['label']+f' · 回合 {idx} 复盘'
++    body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回回合集');body.append(filter_controls(width,state,view))
++    x,y,w=96,342,width-120;h=580
++    body += [rect(x,y,w,h),text(x+24,y+34,title,18,'text',600),segments(x+24,y+54,[f'回合 {i}' for i in range(1,len(rounds)+1)],f'回合 {idx}',max(100,len(rounds)*100)),button(x+w-300,y+54,120,'定位开仓'),button(x+w-156,y+54,132,'定位平仓',True)]
++    left,right,top,bottom=x+84,x+w-92,y+130,y+410
++    bars=fixture['chart_samples'][obj['id']]['bars'];lo=min(b['low'] for b in bars);hi=max(b['high'] for b in bars);pad=(hi-lo)*.15;lo-=pad;hi+=pad
++    sy=lambda p:bottom-(p-lo)/(hi-lo)*(bottom-top)
++    sx=lambda day:left+(right-left)*next(i for i,b in enumerate(bars) if b['date']==day)/max(1,len(bars)-1)
++    for value in [lo,(lo+hi)/2,hi]:body += [line(left,sy(value),right,sy(value)),text(right+12,sy(value)+5,f'{value:,.2f}',12,'subtle')]
++    for i,b in enumerate(bars):
++        xx=left+(right-left)*i/max(1,len(bars)-1);tone='positive' if b['close']>=b['open'] else 'negative';body += [line(xx,sy(b['high']),xx,sy(b['low']),tone),rect(xx-7,min(sy(b['open']),sy(b['close'])),14,max(2,abs(sy(b['open'])-sy(b['close']))),tone,tone,1)]
++        if i in [0,len(bars)//2,len(bars)-1]:body.append(text(xx,bottom+25,b['date'][5:],12,'subtle',400,'middle'))
++    # Selected matched entry/exit are visible; other opening context remains muted.
++    for t in obj['trades']:
++        xx=sx(t['date']);yy=sy(t['price']);active=t['id'] in [rd['open_id'],rd['close_id']];tone='blue' if active else 'subtle';above=t['side']=='卖出'
++        body.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="9" fill="{COLORS["surface"]}" stroke="{COLORS[tone]}" stroke-width="2"/>')
++        label=('卖' if above else '买')+' '+str(t['quantity'])+'股'+('' if active else ' · 上下文')
++        body.append(text(xx,yy-20 if above else yy+30,label,14,tone,600,'middle'))
++        if active and above:body += [line(xx,top,xx,bottom,'blue',1,'4 4')]
++    body += [text(x+24,y+473,f"配对 {rd['quantity']} 股 · {rd['open_price']:,.2f} → {rd['close_price']:,.2f}",18,'text',600),text(x+24,y+504,f"开仓 {rd['open_date']}  /  平仓 {rd['close_date']}  ·  费用 {rd['fees']:.2f} CNY",14,'muted'),text(x+w-24,y+473,'净盈亏 '+fmt(rd['net'])+' CNY',18,'positive' if rd['net']>=0 else 'negative',600,'end'),text(x+24,y+549,'日线 · 设计行情样例 · 成交标记为原始成交数量',12,'muted'),button(x+w-156,y+525,132,'返回回合集')]
++    return document(width,max(height,y+h+24),title,body,state,view,'返回回合集')
++
++
++def home_valuation(fixture):
++    valuation=fixture['valuation'];points=[]
++    for day,quotes in sorted(valuation['quotes_by_date'].items()):
++        partial={**fixture,'live_trades':[t for t in fixture['live_trades'] if t['date']<=day]}
++        positions=derive_live_positions(partial);realized=sum(r['net'] for r in derive_live_rounds(partial))
++        floating=sum(p['quantity']*(quotes[p['code']]-p['price'])-p['fee'] for p in positions)
++        points.append({'date':day,'cumulative':round(realized+floating-valuation['opening_unrealized'],2)})
++    quotes=valuation['quotes_by_date'][fixture['navigation']['home']['end']];positions=derive_live_positions(fixture)
++    for p in positions:
++        p['quote']=quotes[p['code']];p['market_value']=p['quantity']*p['quote'];p['floating']=p['quantity']*(p['quote']-p['price'])-p['fee']
++    market=sum(p['market_value'] for p in positions);floating=sum(p['floating'] for p in positions);realized=stats_for(derive_live_rounds(fixture))['net']
++    return {'positions':positions,'market_value':market,'floating':floating,'realized':realized,'total':realized+floating-valuation['opening_unrealized'],'points':points}
++
++
++def home_frame(fixture,focus=False):
++    # Copy the approved full homepage host through the period controls. Data
++    # modules retain its absolute geometry, hierarchy and complete page length.
++    reference=ROOT.parents[1]/'2026-10-22-homepage-v2.5/source/images/home-1440.svg'
++    source=reference.read_text();prefix=source[:source.index('<rect x="96.0" y="124"')]
++    prefix=re.sub(r'<rect x="48" y="134"[^>]*/><text x="60" y="151"[^>]*>12</text>','',prefix)
++    prefix=prefix.replace('x="246" y="80" width="68" height="36" rx="6" fill="#162233" stroke="#6CA8FF"','x="246" y="80" width="68" height="36" rx="6" fill="#111A26" stroke="#283448"')
++    prefix=prefix.replace('x="322" y="80" width="68" height="36" rx="6" fill="#111A26" stroke="#283448"','x="322" y="80" width="68" height="36" rx="6" fill="#162233" stroke="#6CA8FF"')
++    prefix=prefix.replace('2026-01-01 — 10-15','2026-10-01 — 10-15').replace('16:32 更新','15:00 更新')
++    value=home_valuation(fixture);out=[prefix]
++    if focus:out.append('<rect x="8" y="137" width="56" height="56" rx="8" fill="none" stroke="#6CA8FF" stroke-width="2"/>')
++    metrics=[('期间净盈亏(CNY)',value['total']),('期间已实现(CNY)',value['realized']),('期间浮盈变动(CNY)',value['floating']),('当前持仓市值(CNY)',value['market_value'])]
++    for i,(label,amount) in enumerate(metrics):
++        x=96+i*333;out += [rect(x,124,321,88),text(x+16,149,label,14,'muted'),f'<g><title>{amount:,.2f} CNY</title>'+text(x+16,188,fmt(amount),28,'text' if i==3 else 'positive',600)+'</g>']
++    # Identical plot bounds to the approved homepage chart.
++    out += [rect(96,226,1320,320),text(112,253,'期间净盈亏',18,'text',600),text(1400,253,'CNY',12,'muted',400,'end')]
++    left,right,top,bottom=172,1380,276,496;points=value['points'];lo=min(0,min(p['cumulative'] for p in points));hi=max(p['cumulative'] for p in points);span=hi-lo;lo-=span*.1;hi+=span*.1
++    sy=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
++    for v in [hi,(hi+lo)/2,0,lo]:out += [line(left,sy(v),right,sy(v),'muted' if v==0 else 'border'),text(left-12,sy(v)+4,fmt(v),12,'muted',400,'end')]
++    prev=None
++    for i,p in enumerate(points):
++        xx=left+(right-left)*i/(len(points)-1);yy=sy(p['cumulative'])
++        if prev:out.append(line(*prev,xx,yy,'blue',2))
++        out.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="4" fill="{COLORS["blue"]}"><title>{p["date"]} · {p["cumulative"]:,.2f} CNY</title></circle>');prev=xx,yy
++        if i in [0,2,4,6,8,len(points)-1]:out.append(text(xx,519,p['date'][5:],12,'muted',400,'middle'))
++    out += [rect(96,586,1320,520),text(112,610,'当前持仓',18,'text',600),text(760,610,'市值 '+fmt(value['market_value']),14,'muted',400,'end'),text(950,610,'浮盈 '+fmt(value['floating']),14,'positive',400,'end'),control(1172,592,176,'','搜索持仓','search'),button(1356,592,44,'↗')]
++    cols=[('标的',128,'start'),('持仓天数',521,'end'),('数量',650,'end'),('成本价',792,'end'),('最新价',934,'end'),('市值(CNY)',1127,'end'),('浮盈(CNY)',1307,'end'),('查看',1361,'middle')]
++    for label,x,anchor in cols:out.append(text(x,660,label,12,'muted',400,anchor))
++    for i,p in enumerate(value['positions']):
++        yy=691+48*i;days=(date.fromisoformat(fixture['navigation']['home']['end'])-date.fromisoformat(p['date'])).days
++        cells=[p['symbol'],str(days),str(p['quantity']),f"{p['price']+p['fee']/p['quantity']:,.2f}",f"{p['quote']:,.2f}",fmt(p['market_value']),fmt(p['floating']),'→']
++        for j,(val,(_,x,a)) in enumerate(zip(cells,cols)):out.append(text(x,yy,val,14,'positive' if j==6 else 'blue' if j==7 else 'text',400,a))
++        out += [text(128,yy+16,p['code'],12,'muted'),line(112,yy+23,1400,yy+23)]
++    out += [text(112,1089,'1–2 / 2 项 · 估值 2026-10-15 15:00 · 覆盖 2/2 持仓',12,'muted'),button(1256,1064,36,'‹',disabled=True),text(1328,1087,'1 / 1',14,'muted',400,'middle'),button(1364,1064,36,'›',disabled=True)]
++    # Full historical section, followed by current-period contribution, as in V2.5.
++    x,y,w=96,1130,1320;st=stats_for(derive_live_rounds(fixture))
++    out += [rect(x,y,w,558),text(x+24,y+32,'历史统计',18,'text',600),control(x+998,y+20,282,'','2026年 · 每月净盈亏')]
++    for i,(label,val) in enumerate([('历史净盈亏(CNY)',fmt(st['net'])),('已平仓回合',str(st['count'])),('胜率',f"{st['win_rate']:.2f}%"),('闭合费用(CNY)',fmt(st['fees']))]):
++        xx=x+i*333;out += [rect(xx,y+82,321,88),text(xx+16,y+108,label,14,'muted'),text(xx+16,y+145,val,28,'text',600)]
++    out += [text(x+24,y+218,'历史净盈亏',18,'text',600),text(x+w-24,y+218,'按回合平仓日 · CNY',12,'muted',400,'end')]
++    chart_left,chart_right,chart_top,chart_bottom=x+76,x+w-36,y+290,y+490
++    for v in [1000,500,0,-250]:
++        yy=chart_bottom-(v+250)/1250*(chart_bottom-chart_top);out += [line(chart_left,yy,chart_right,yy),text(chart_left-12,yy+4,fmt(v),12,'muted',400,'end')]
++    yy=chart_bottom-(st['net']+250)/1250*(chart_bottom-chart_top);zero=chart_bottom-250/1250*(chart_bottom-chart_top)
++    for month in range(1,13):
++        xx=chart_left+(chart_right-chart_left)*(month-.5)/12
++        if month==10:out += [rect(xx-20,yy,40,zero-yy,'positive','positive',2),text(xx,yy-10,fmt(st['net']),12,'positive',400,'middle')]
++        out.append(text(xx,y+514,f'{month}月',12,'muted',400,'middle'))
++    x,y,w=96,1712,1320;out += [rect(x,y,w,610),text(x+32,y+36,'当前期间贡献',18,'text',600),text(x+w-32,y+36,'期间净盈亏 '+fmt(value['total'])+' CNY',18,'positive',600,'end'),text(x+32,y+58,'本月 · 当前表现日期 2026-10-01 — 10-15 · 已实现 + 浮盈变动',12,'muted'),segments(x+32,y+70,['当前期间','历史'], '当前期间',200)]
++    out += [text(x+32,y+124,'分类',12,'muted'),segments(x+32,y+130,['做多','做空','打新'],'做多',228),control(x+312,y+130,128,'排序','盈利最高'),text(x+460,y+153,'□ 仅当前持仓',14,'muted'),control(x+712,y+130,160,'市场','全部市场'),text(x+582,y+222,'● 已实现',12,'blue'),text(x+684,y+222,'● 浮盈变动',12,'positive'),text(x+32,y+264,'市场',12,'muted'),text(x+w-32,y+264,'净盈亏(CNY)',12,'muted',400,'end')]
++    for i,label in enumerate(['A股','港股','美股']):
++        yy=y+311+i*72;out += [text(x+32,yy,label,14),text(x+w-32,yy,fmt(value['total'] if i==0 else 0),18,'positive' if i==0 else 'muted',600,'end')]
++        if i==0:
++            totalwidth=700;realw=totalwidth*value['realized']/value['total'];out += [rect(x+180,yy-18,realw,24,'blue','blue',2),rect(x+180+realw,yy-18,totalwidth-realw,24,'positive','positive',2)]
++        else:out.append(line(x+180,yy-6,x+880,yy-6))
++    out += [line(x+32,y+506,x+w-32,y+506),text(x+32,y+548,'合计',18,'text',600),text(x+w-32,y+548,fmt(value['total'])+' CNY',28,'positive',600,'end'),text(x+32,y+574,'已实现 '+fmt(value['realized'])+' + 浮盈变动 '+fmt(value['floating']),12,'muted'),text(x+w-32,y+574,'市场合计与当前表现一致',12,'muted',400,'end'),'</g></svg>']
++    return ''.join(out)
++
++
++FRAMES={
++ '01-live-normal.svg':'live-stats','02-simulation-normal.svg':'simulation-stats','03-distribution-selected.svg':'distribution','04-return.svg':'return-stats',
++ '05-loading.svg':'loading','06-empty.svg':'empty','07-error.svg':'error','08-extreme.svg':'extreme','09-missing-input.svg':'missing',
++ 'journeys-date.svg':'date','journeys-date-1280.svg':'date','journeys-date-month.svg':'month-list',
++ 'hcr06-final-sim-ab.svg':'simulation-list','hcr06-final-rounds-a.svg':'rounds-a','hcr06-final-replay-a1.svg':'replay-a1','hcr06-final-replay-a2.svg':'replay-a2','hcr06-final-replay-b1.svg':'replay-b1',
++ 'journeys-trend-gap.svg':'trend-gap','journeys-trend-single.svg':'trend-single','journeys-trend-empty.svg':'trend-empty','journeys-trend-month.svg':'trend-month','journeys-trend-year.svg':'trend-year',
++ 'handoff.svg':'home','journeys-home-entry.svg':'home','journeys-library-list.svg':'live-list','journeys-live-rounds.svg':'live-rounds','journeys-library-replay.svg':'library-replay','journeys-live-rounds-return.svg':'live-rounds-return','journeys-library-list-return.svg':'live-return','journeys-view-restore.svg':'view-restore',
++ 'hcr06-final-pending-library.svg':'pending','hcr06-final-pending-library-1280.svg':'pending','library-return.svg':'home-return','journeys-library-return.svg':'home-return','hcr06-final-return.svg':'return-stats',
++ 'distribution-amount.svg':'amount-stats','journeys-view-simulation.svg':'view-simulation','journeys-simulation-return.svg':'simulation-return','journeys-rounds-a-return.svg':'rounds-a-return','journeys-rounds-b.svg':'rounds-b',
+ }
+ 
+ 
+-def build_named_frame(stem: str, width: int, height: int, fixture: dict) -> str:
+-    if stem in ("journeys-date", "journeys-date-1280"): return build_date_frame(width, height, fixture)
+-    if stem in FRAME_KINDS: return state_frame(width, height, FRAME_KINDS[stem], fixture)
+-    if stem == "journeys-home-entry": return "".join(home_frame(width, height, fixture, "entry") + ["</svg>"])
+-    if stem == "journeys-library-return": return "".join(home_frame(width, height, fixture, "return") + ["</svg>"])
+-    raise ValueError(f"unknown frame: {stem}")
+-
+-
+-def write_frame(name: str, width: int, height: int, fixture: dict) -> Path:
+-    path = IMAGE_DIR / name; path.write_text(build_named_frame(path.stem, width, height, fixture), encoding="utf-8"); return path
+-
+-
+-def main() -> int:
+-    parser=argparse.ArgumentParser(); choices=["journeys-date","journeys-date-1280","journeys-home-entry","journeys-library-return",*FRAME_KINDS.keys()]; parser.add_argument("--frames",nargs="+",choices=choices,default=["journeys-date","journeys-date-1280"]); args=parser.parse_args(); fixture=json.loads(FIXTURE_PATH.read_text(encoding="utf-8")); errors=validate_fixture(fixture)
+-    if errors: raise SystemExit("fixture validation failed: "+"; ".join(errors))
+-    written=[]
+-    tall = {"01-live-normal", "02-simulation-normal", "03-distribution-selected", "04-return", "hcr06-final-return", "05-loading", "06-empty", "07-error", "08-extreme", "09-missing-input", "journeys-trend-gap", "journeys-trend-single", "journeys-trend-empty"}
+-    for frame in args.frames:
+-        if frame.endswith("-1280"):
+-            written.append(write_frame(f"{frame}.svg", 1280, 800, fixture))
+-        else:
+-            written.append(write_frame(f"{frame}.svg", 1440, 1400 if frame in tall else 1000, fixture))
+-    for path in written:
+-        root=ElementTree.fromstring(path.read_text(encoding="utf-8")); print(f"generated {path.name}: {root.attrib['width']}x{root.attrib['height']}, bytes={path.stat().st_size}")
+-    a=lifo_rounds(next(x for x in fixture["simulation_exercises"] if x["id"].startswith("practice-a"))); trends=derived_trends(fixture); print(f"fixture validation: PASS (A=2 closed rounds, open=70, net={sum(x['net'] for x in a['rounds']):.2f} CNY, open fees={a['open_fees']:.2f} CNY)"); print(f"derived trends: live={len(trends['live'])} valid dates, simulation={len(trends['simulation'])} valid dates; gap/single/empty modes derived")
+-    return 0
+-
+-
+-if __name__ == "__main__": raise SystemExit(main())
++def generate(name,fixture):
++    kind=FRAMES[name];width=1280 if '-1280' in name else 1440;height=800 if width==1280 else 1000
++    if kind.startswith('home'):return home_frame(fixture,kind=='home-return')
++    if kind in ['date','month-list','live-list','live-return','view-restore','pending','simulation-list','view-simulation','simulation-return']:return list_frame(width,height,fixture,kind)
++    if kind in ['live-rounds','live-rounds-return','rounds-a','rounds-a-return','rounds-b']:return rounds_frame(width,height,fixture,kind)
++    if kind in ['library-replay','replay-a1','replay-a2','replay-b1']:return replay_frame(width,height,fixture,kind)
++    return stats_frame(width,height,fixture,kind)
++
++
++def main():
++    parser=argparse.ArgumentParser();parser.add_argument('--frames',nargs='*');parser.add_argument('--all',action='store_true');args=parser.parse_args()
++    fixture=json.loads(FIXTURE_PATH.read_text());errors=validate_fixture(fixture)
++    if errors:raise SystemExit('\n'.join(errors))
++    names=list(FRAMES) if args.all or not args.frames else args.frames
++    for name in names:
++        if name not in FRAMES:raise SystemExit('Unknown frame: '+name)
++        svg=generate(name,fixture);ElementTree.fromstring(svg);(IMAGE_DIR/name).write_text(svg)
++    print(f'Generated {len(names)} frames; fixture invariants passed.')
++
++
++if __name__=='__main__':main()

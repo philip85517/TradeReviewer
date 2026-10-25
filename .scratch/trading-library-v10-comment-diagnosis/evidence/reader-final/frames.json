@@ -1,0 +1,2082 @@
+[
+  {
+    "demo": "state-demo-1",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+      "progress": "第 1 / 3 帧 · 按日期进入",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "journeys-date@state-demo-1-1",
+          "src": "source/images/journeys-date.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg",
+      "title": "按日期进入 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-date.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-1",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+      "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "journeys-date-1280@state-demo-1-2",
+          "src": "source/images/journeys-date-1280.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 802,
+      "hidden": false,
+      "naturalHeight": 800,
+      "naturalWidth": 1280,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-1280.svg",
+      "title": "按日期进入 · 1280px · 原尺寸 100%",
+      "width": 1282
+    },
+    "close": {
+      "focusHref": "source/images/journeys-date-1280.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-1",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+      "progress": "第 3 / 3 帧 · 普通月份范围",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "journeys-date-month@state-demo-1-3",
+          "src": "source/images/journeys-date-month.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-month.svg",
+      "title": "普通月份范围 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-date-month.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 1 / 8 帧 · 练习列表",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+          "src": "source/images/hcr06-final-sim-ab.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-sim-ab.svg",
+      "title": "练习列表 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-sim-ab.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 2 / 8 帧 · 练习回合集",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+          "src": "source/images/hcr06-final-rounds-a.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-rounds-a.svg",
+      "title": "练习回合集 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-rounds-a.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 3 / 8 帧 · 第一个回合",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "hcr06-final-replay-a1@state-demo-2-3",
+          "src": "source/images/hcr06-final-replay-a1.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a1.svg",
+      "title": "第一个回合 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-replay-a1.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 3,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 4 / 8 帧 · 第二个回合",
+      "visible": [
+        {
+          "index": 3,
+          "occurrence": "hcr06-final-replay-a2@state-demo-2-4",
+          "src": "source/images/hcr06-final-replay-a2.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a2.svg",
+      "title": "第二个回合 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-replay-a2.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 4,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 5 / 8 帧 · 返回练习 A 回合集",
+      "visible": [
+        {
+          "index": 4,
+          "occurrence": "journeys-rounds-a-return@state-demo-2-5",
+          "src": "source/images/journeys-rounds-a-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-a-return.svg",
+      "title": "返回练习 A 回合集 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-rounds-a-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 5,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 6 / 8 帧 · 返回模拟盘列表",
+      "visible": [
+        {
+          "index": 5,
+          "occurrence": "journeys-simulation-return@state-demo-2-6",
+          "src": "source/images/journeys-simulation-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-simulation-return.svg",
+      "title": "返回模拟盘列表 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-simulation-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 6,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 7 / 8 帧 · 选择练习 B",
+      "visible": [
+        {
+          "index": 6,
+          "occurrence": "journeys-rounds-b@state-demo-2-7",
+          "src": "source/images/journeys-rounds-b.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-b.svg",
+      "title": "选择练习 B · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-rounds-b.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-2",
+    "index": 7,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "相同标的的多次练习分别保留。",
+      "progress": "第 8 / 8 帧 · 另一练习",
+      "visible": [
+        {
+          "index": 7,
+          "occurrence": "hcr06-final-replay-b1@state-demo-2-8",
+          "src": "source/images/hcr06-final-replay-b1.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-b1.svg",
+      "title": "另一练习 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-replay-b1.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-3",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。",
+      "progress": "第 1 / 1 帧 · 实盘统计 · 回合平仓日",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "01-live-normal@state-demo-3-1",
+          "src": "source/images/01-live-normal.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/01-live-normal.svg",
+      "title": "实盘统计 · 回合平仓日 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/01-live-normal.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-4",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。",
+      "progress": "第 1 / 1 帧 · 模拟盘统计 · 练习保存日",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "02-simulation-normal@state-demo-4-1",
+          "src": "source/images/02-simulation-normal.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg",
+      "title": "模拟盘统计 · 练习保存日 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/02-simulation-normal.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-5",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+      "progress": "第 1 / 3 帧 · 切换金额",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "distribution-amount@state-demo-5-1",
+          "src": "source/images/distribution-amount.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/distribution-amount.svg",
+      "title": "切换金额 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/distribution-amount.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-5",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+      "progress": "第 2 / 3 帧 · 分布下钻",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "03-distribution-selected@state-demo-5-2",
+          "src": "source/images/03-distribution-selected.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1456,
+      "hidden": false,
+      "naturalHeight": 1454,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/03-distribution-selected.svg",
+      "title": "分布下钻 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/03-distribution-selected.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-5",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+      "progress": "第 3 / 3 帧 · 统计视角返回",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "04-return@state-demo-5-3",
+          "src": "source/images/04-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1456,
+      "hidden": false,
+      "naturalHeight": 1454,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/04-return.svg",
+      "title": "统计视角返回 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/04-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-6",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+      "progress": "第 1 / 5 帧 · 缺失与无成交日",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "journeys-trend-gap@state-demo-6-1",
+          "src": "source/images/journeys-trend-gap.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1300,
+      "hidden": false,
+      "naturalHeight": 1298,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-gap.svg",
+      "title": "缺失与无成交日 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-trend-gap.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-6",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+      "progress": "第 2 / 5 帧 · 单点趋势",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "journeys-trend-single@state-demo-6-2",
+          "src": "source/images/journeys-trend-single.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-single.svg",
+      "title": "单点趋势 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-trend-single.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-6",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+      "progress": "第 3 / 5 帧 · 空样本趋势",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "journeys-trend-empty@state-demo-6-3",
+          "src": "source/images/journeys-trend-empty.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-empty.svg",
+      "title": "空样本趋势 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-trend-empty.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-6",
+    "index": 3,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+      "progress": "第 4 / 5 帧 · 月粒度趋势",
+      "visible": [
+        {
+          "index": 3,
+          "occurrence": "journeys-trend-month@state-demo-6-4",
+          "src": "source/images/journeys-trend-month.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-month.svg",
+      "title": "月粒度趋势 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-trend-month.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-6",
+    "index": 4,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+      "progress": "第 5 / 5 帧 · 年粒度趋势",
+      "visible": [
+        {
+          "index": 4,
+          "occurrence": "journeys-trend-year@state-demo-6-5",
+          "src": "source/images/journeys-trend-year.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-year.svg",
+      "title": "年粒度趋势 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-trend-year.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "handoff@state-demo-7-1",
+          "src": "source/images/handoff.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 2348,
+      "hidden": false,
+      "naturalHeight": 2346,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg",
+      "title": "首页到交易库的条件交接 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/handoff.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 2 / 14 帧 · 完整首页交易库入口",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "journeys-home-entry@state-demo-7-2",
+          "src": "source/images/journeys-home-entry.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 2348,
+      "hidden": false,
+      "naturalHeight": 2346,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-home-entry.svg",
+      "title": "完整首页交易库入口 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-home-entry.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 3 / 14 帧 · 普通实盘列表",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "journeys-library-list@state-demo-7-3",
+          "src": "source/images/journeys-library-list.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list.svg",
+      "title": "普通实盘列表 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-library-list.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 3,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 4 / 14 帧 · 实盘对象回合集",
+      "visible": [
+        {
+          "index": 3,
+          "occurrence": "journeys-live-rounds@state-demo-7-4",
+          "src": "source/images/journeys-live-rounds.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds.svg",
+      "title": "实盘对象回合集 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-live-rounds.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 4,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 5 / 14 帧 · 实盘回合复盘",
+      "visible": [
+        {
+          "index": 4,
+          "occurrence": "journeys-library-replay@state-demo-7-5",
+          "src": "source/images/journeys-library-replay.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-replay.svg",
+      "title": "实盘回合复盘 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-library-replay.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 5,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 6 / 14 帧 · 回合集返回",
+      "visible": [
+        {
+          "index": 5,
+          "occurrence": "journeys-live-rounds-return@state-demo-7-6",
+          "src": "source/images/journeys-live-rounds-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds-return.svg",
+      "title": "回合集返回 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-live-rounds-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 6,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 7 / 14 帧 · 列表返回",
+      "visible": [
+        {
+          "index": 6,
+          "occurrence": "journeys-library-list-return@state-demo-7-7",
+          "src": "source/images/journeys-library-list-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list-return.svg",
+      "title": "列表返回 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-library-list-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 7,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 8 / 14 帧 · 切换到模拟盘",
+      "visible": [
+        {
+          "index": 7,
+          "occurrence": "journeys-view-simulation@state-demo-7-8",
+          "src": "source/images/journeys-view-simulation.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-simulation.svg",
+      "title": "切换到模拟盘 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-view-simulation.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 8,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 9 / 14 帧 · 切回实盘",
+      "visible": [
+        {
+          "index": 8,
+          "occurrence": "journeys-view-restore@state-demo-7-9",
+          "src": "source/images/journeys-view-restore.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-restore.svg",
+      "title": "切回实盘 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-view-restore.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 9,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 10 / 14 帧 · 交易库内待复盘筛选",
+      "visible": [
+        {
+          "index": 9,
+          "occurrence": "hcr06-final-pending-library@state-demo-7-10",
+          "src": "source/images/hcr06-final-pending-library.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1002,
+      "hidden": false,
+      "naturalHeight": 1000,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library.svg",
+      "title": "交易库内待复盘筛选 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-pending-library.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 10,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 11 / 14 帧 · 交易库内待复盘筛选 · 1280px",
+      "visible": [
+        {
+          "index": 10,
+          "occurrence": "hcr06-final-pending-library-1280@state-demo-7-11",
+          "src": "source/images/hcr06-final-pending-library-1280.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 802,
+      "hidden": false,
+      "naturalHeight": 800,
+      "naturalWidth": 1280,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library-1280.svg",
+      "title": "交易库内待复盘筛选 · 1280px · 原尺寸 100%",
+      "width": 1282
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-pending-library-1280.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 11,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 12 / 14 帧 · 交易库返回首页",
+      "visible": [
+        {
+          "index": 11,
+          "occurrence": "library-return@state-demo-7-12",
+          "src": "source/images/library-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 2348,
+      "hidden": false,
+      "naturalHeight": 2346,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/library-return.svg",
+      "title": "交易库返回首页 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/library-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 12,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 13 / 14 帧 · 返回同一首页位置",
+      "visible": [
+        {
+          "index": 12,
+          "occurrence": "journeys-library-return@state-demo-7-13",
+          "src": "source/images/journeys-library-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 2348,
+      "hidden": false,
+      "naturalHeight": 2346,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-return.svg",
+      "title": "返回同一首页位置 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/journeys-library-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-7",
+    "index": 13,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "来源条件传入并立即生效，不要求重复应用。",
+      "progress": "第 14 / 14 帧 · 统计视角返回",
+      "visible": [
+        {
+          "index": 13,
+          "occurrence": "hcr06-final-return@state-demo-7-14",
+          "src": "source/images/hcr06-final-return.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1456,
+      "hidden": false,
+      "naturalHeight": 1454,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-return.svg",
+      "title": "统计视角返回 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/hcr06-final-return.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-8",
+    "index": 0,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": true
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+      "progress": "第 1 / 5 帧 · 切换范围时等待",
+      "visible": [
+        {
+          "index": 0,
+          "occurrence": "05-loading@state-demo-8-1",
+          "src": "source/images/05-loading.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/05-loading.svg",
+      "title": "切换范围时等待 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/05-loading.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-8",
+    "index": 1,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+      "progress": "第 2 / 5 帧 · 范围没有已平仓回合",
+      "visible": [
+        {
+          "index": 1,
+          "occurrence": "06-empty@state-demo-8-2",
+          "src": "source/images/06-empty.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1208,
+      "hidden": false,
+      "naturalHeight": 1206,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/06-empty.svg",
+      "title": "范围没有已平仓回合 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/06-empty.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-8",
+    "index": 2,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+      "progress": "第 3 / 5 帧 · 读取失败与重试",
+      "visible": [
+        {
+          "index": 2,
+          "occurrence": "07-error@state-demo-8-3",
+          "src": "source/images/07-error.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1300,
+      "hidden": false,
+      "naturalHeight": 1298,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/07-error.svg",
+      "title": "读取失败与重试 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/07-error.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-8",
+    "index": 3,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": false
+        },
+        {
+          "action": "play",
+          "disabled": false
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+      "progress": "第 4 / 5 帧 · 极端分布",
+      "visible": [
+        {
+          "index": 3,
+          "occurrence": "08-extreme@state-demo-8-4",
+          "src": "source/images/08-extreme.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1324,
+      "hidden": false,
+      "naturalHeight": 1322,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/08-extreme.svg",
+      "title": "极端分布 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/08-extreme.svg",
+      "hidden": true
+    },
+    "pass": true
+  },
+  {
+    "demo": "state-demo-8",
+    "index": 4,
+    "view": {
+      "buttons": [
+        {
+          "action": "prev",
+          "disabled": false
+        },
+        {
+          "action": "next",
+          "disabled": true
+        },
+        {
+          "action": "play",
+          "disabled": true
+        },
+        {
+          "action": "pause",
+          "disabled": true
+        },
+        {
+          "action": "reset",
+          "disabled": false
+        }
+      ],
+      "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+      "progress": "第 5 / 5 帧 · 计算输入缺失",
+      "visible": [
+        {
+          "index": 4,
+          "occurrence": "09-missing-input@state-demo-8-5",
+          "src": "source/images/09-missing-input.svg"
+        }
+      ]
+    },
+    "modal": {
+      "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+      "height": 1300,
+      "hidden": false,
+      "naturalHeight": 1298,
+      "naturalWidth": 1440,
+      "src": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/09-missing-input.svg",
+      "title": "计算输入缺失 · 原尺寸 100%",
+      "width": 1442
+    },
+    "close": {
+      "focusHref": "source/images/09-missing-input.svg",
+      "hidden": true
+    },
+    "pass": true
+  }
+]

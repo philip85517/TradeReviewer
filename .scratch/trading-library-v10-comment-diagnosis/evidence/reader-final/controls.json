@@ -1,0 +1,2156 @@
+{
+  "groups": [
+    {
+      "demo": "state-demo-1",
+      "count": 3,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 3 / 3 帧 · 普通月份范围",
+        "visible": [
+          {
+            "index": 2,
+            "occurrence": "journeys-date-month@state-demo-1-3",
+            "src": "source/images/journeys-date-month.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-date-1280@state-demo-1-2",
+            "src": "source/images/journeys-date-1280.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 1 / 3 帧 · 按日期进入",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "src": "source/images/journeys-date.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-date-1280@state-demo-1-2",
+            "src": "source/images/journeys-date-1280.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 1 / 3 帧 · 按日期进入",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "src": "source/images/journeys-date.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 1 / 3 帧 · 按日期进入",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "src": "source/images/journeys-date.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-date-1280@state-demo-1-2",
+            "src": "source/images/journeys-date-1280.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-date-1280@state-demo-1-2",
+            "src": "source/images/journeys-date-1280.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源日期、市场和账户已生效，列表按成交日筛选。",
+        "progress": "第 2 / 3 帧 · 按日期进入 · 1280px",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-date-1280@state-demo-1-2",
+            "src": "source/images/journeys-date-1280.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-2",
+      "count": 8,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 8 / 8 帧 · 另一练习",
+        "visible": [
+          {
+            "index": 7,
+            "occurrence": "hcr06-final-replay-b1@state-demo-2-8",
+            "src": "source/images/hcr06-final-replay-b1.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 7 / 8 帧 · 选择练习 B",
+        "visible": [
+          {
+            "index": 6,
+            "occurrence": "journeys-rounds-b@state-demo-2-7",
+            "src": "source/images/journeys-rounds-b.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 1 / 8 帧 · 练习列表",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "src": "source/images/hcr06-final-sim-ab.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 2 / 8 帧 · 练习回合集",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+            "src": "source/images/hcr06-final-rounds-a.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 1 / 8 帧 · 练习列表",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "src": "source/images/hcr06-final-sim-ab.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 1 / 8 帧 · 练习列表",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "src": "source/images/hcr06-final-sim-ab.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 2 / 8 帧 · 练习回合集",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+            "src": "source/images/hcr06-final-rounds-a.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 2 / 8 帧 · 练习回合集",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+            "src": "source/images/hcr06-final-rounds-a.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "相同标的的多次练习分别保留。",
+        "progress": "第 2 / 8 帧 · 练习回合集",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+            "src": "source/images/hcr06-final-rounds-a.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-3",
+      "count": 1,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。",
+        "progress": "第 1 / 1 帧 · 实盘统计 · 回合平仓日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "src": "source/images/01-live-normal.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。",
+        "progress": "第 1 / 1 帧 · 实盘统计 · 回合平仓日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "src": "source/images/01-live-normal.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。",
+        "progress": "第 1 / 1 帧 · 实盘统计 · 回合平仓日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "src": "source/images/01-live-normal.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。",
+        "progress": "第 1 / 1 帧 · 实盘统计 · 回合平仓日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "src": "source/images/01-live-normal.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-4",
+      "count": 1,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。",
+        "progress": "第 1 / 1 帧 · 模拟盘统计 · 练习保存日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "src": "source/images/02-simulation-normal.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。",
+        "progress": "第 1 / 1 帧 · 模拟盘统计 · 练习保存日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "src": "source/images/02-simulation-normal.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。",
+        "progress": "第 1 / 1 帧 · 模拟盘统计 · 练习保存日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "src": "source/images/02-simulation-normal.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "默认收益率；7个有效已平仓回合、5个保存日期；同标的同日练习保持独立身份。",
+        "progress": "第 1 / 1 帧 · 模拟盘统计 · 练习保存日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "src": "source/images/02-simulation-normal.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-5",
+      "count": 3,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 3 / 3 帧 · 统计视角返回",
+        "visible": [
+          {
+            "index": 2,
+            "occurrence": "04-return@state-demo-5-3",
+            "src": "source/images/04-return.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 2 / 3 帧 · 分布下钻",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "src": "source/images/03-distribution-selected.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 1 / 3 帧 · 切换金额",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "distribution-amount@state-demo-5-1",
+            "src": "source/images/distribution-amount.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 2 / 3 帧 · 分布下钻",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "src": "source/images/03-distribution-selected.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 1 / 3 帧 · 切换金额",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "distribution-amount@state-demo-5-1",
+            "src": "source/images/distribution-amount.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 1 / 3 帧 · 切换金额",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "distribution-amount@state-demo-5-1",
+            "src": "source/images/distribution-amount.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 2 / 3 帧 · 分布下钻",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "src": "source/images/03-distribution-selected.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 2 / 3 帧 · 分布下钻",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "src": "source/images/03-distribution-selected.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。",
+        "progress": "第 2 / 3 帧 · 分布下钻",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "src": "source/images/03-distribution-selected.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-6",
+      "count": 5,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 5 / 5 帧 · 年粒度趋势",
+        "visible": [
+          {
+            "index": 4,
+            "occurrence": "journeys-trend-year@state-demo-6-5",
+            "src": "source/images/journeys-trend-year.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 4 / 5 帧 · 月粒度趋势",
+        "visible": [
+          {
+            "index": 3,
+            "occurrence": "journeys-trend-month@state-demo-6-4",
+            "src": "source/images/journeys-trend-month.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 1 / 5 帧 · 缺失与无成交日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-trend-gap@state-demo-6-1",
+            "src": "source/images/journeys-trend-gap.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 2 / 5 帧 · 单点趋势",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "src": "source/images/journeys-trend-single.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 1 / 5 帧 · 缺失与无成交日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-trend-gap@state-demo-6-1",
+            "src": "source/images/journeys-trend-gap.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 1 / 5 帧 · 缺失与无成交日",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "journeys-trend-gap@state-demo-6-1",
+            "src": "source/images/journeys-trend-gap.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 2 / 5 帧 · 单点趋势",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "src": "source/images/journeys-trend-single.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 2 / 5 帧 · 单点趋势",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "src": "source/images/journeys-trend-single.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "10-17、10-18练习文件缺失，断线且排除相应回合；全范围净额不可计算，可计算5回合为2454.00。10-20已确认无成交，日收益0，已知累计不变。",
+        "progress": "第 2 / 5 帧 · 单点趋势",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "src": "source/images/journeys-trend-single.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-7",
+      "count": 14,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 14 / 14 帧 · 统计视角返回",
+        "visible": [
+          {
+            "index": 13,
+            "occurrence": "hcr06-final-return@state-demo-7-14",
+            "src": "source/images/hcr06-final-return.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 13 / 14 帧 · 返回同一首页位置",
+        "visible": [
+          {
+            "index": 12,
+            "occurrence": "journeys-library-return@state-demo-7-13",
+            "src": "source/images/journeys-library-return.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "handoff@state-demo-7-1",
+            "src": "source/images/handoff.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 2 / 14 帧 · 完整首页交易库入口",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-home-entry@state-demo-7-2",
+            "src": "source/images/journeys-home-entry.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "handoff@state-demo-7-1",
+            "src": "source/images/handoff.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "handoff@state-demo-7-1",
+            "src": "source/images/handoff.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 2 / 14 帧 · 完整首页交易库入口",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-home-entry@state-demo-7-2",
+            "src": "source/images/journeys-home-entry.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 2 / 14 帧 · 完整首页交易库入口",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-home-entry@state-demo-7-2",
+            "src": "source/images/journeys-home-entry.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "来源条件传入并立即生效，不要求重复应用。",
+        "progress": "第 2 / 14 帧 · 完整首页交易库入口",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "journeys-home-entry@state-demo-7-2",
+            "src": "source/images/journeys-home-entry.svg"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "demo": "state-demo-8",
+      "count": 5,
+      "last": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": true
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 5 / 5 帧 · 计算输入缺失",
+        "visible": [
+          {
+            "index": 4,
+            "occurrence": "09-missing-input@state-demo-8-5",
+            "src": "source/images/09-missing-input.svg"
+          }
+        ]
+      },
+      "prev": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 4 / 5 帧 · 极端分布",
+        "visible": [
+          {
+            "index": 3,
+            "occurrence": "08-extreme@state-demo-8-4",
+            "src": "source/images/08-extreme.svg"
+          }
+        ]
+      },
+      "reset": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 1 / 5 帧 · 切换范围时等待",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "05-loading@state-demo-8-1",
+            "src": "source/images/05-loading.svg"
+          }
+        ]
+      },
+      "keyboardRight": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 2 / 5 帧 · 范围没有已平仓回合",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "06-empty@state-demo-8-2",
+            "src": "source/images/06-empty.svg"
+          }
+        ]
+      },
+      "keyboardLeft": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 1 / 5 帧 · 切换范围时等待",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "05-loading@state-demo-8-1",
+            "src": "source/images/05-loading.svg"
+          }
+        ]
+      },
+      "playStart": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": true
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 1 / 5 帧 · 切换范围时等待",
+        "visible": [
+          {
+            "index": 0,
+            "occurrence": "05-loading@state-demo-8-1",
+            "src": "source/images/05-loading.svg"
+          }
+        ]
+      },
+      "advanced": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": true
+          },
+          {
+            "action": "pause",
+            "disabled": false
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 2 / 5 帧 · 范围没有已平仓回合",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "06-empty@state-demo-8-2",
+            "src": "source/images/06-empty.svg"
+          }
+        ]
+      },
+      "paused": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 2 / 5 帧 · 范围没有已平仓回合",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "06-empty@state-demo-8-2",
+            "src": "source/images/06-empty.svg"
+          }
+        ]
+      },
+      "pauseHeld": {
+        "buttons": [
+          {
+            "action": "prev",
+            "disabled": false
+          },
+          {
+            "action": "next",
+            "disabled": false
+          },
+          {
+            "action": "play",
+            "disabled": false
+          },
+          {
+            "action": "pause",
+            "disabled": true
+          },
+          {
+            "action": "reset",
+            "disabled": false
+          }
+        ],
+        "caption": "首次加载，保留绘图区和控件；指标、分布数量与分母均待返回，不混用旧结果。",
+        "progress": "第 2 / 5 帧 · 范围没有已平仓回合",
+        "visible": [
+          {
+            "index": 1,
+            "occurrence": "06-empty@state-demo-8-2",
+            "src": "source/images/06-empty.svg"
+          }
+        ]
+      },
+      "pass": true
+    }
+  ],
+  "escape": {
+    "buttons": [
+      {
+        "action": "prev",
+        "disabled": true
+      },
+      {
+        "action": "next",
+        "disabled": false
+      },
+      {
+        "action": "play",
+        "disabled": false
+      },
+      {
+        "action": "pause",
+        "disabled": true
+      },
+      {
+        "action": "reset",
+        "disabled": false
+      }
+    ],
+    "caption": "来源条件传入并立即生效，不要求重复应用。",
+    "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+    "visible": [
+      {
+        "index": 0,
+        "occurrence": "handoff@state-demo-7-1",
+        "src": "source/images/handoff.svg"
+      }
+    ]
+  },
+  "escapeHeld": {
+    "buttons": [
+      {
+        "action": "prev",
+        "disabled": true
+      },
+      {
+        "action": "next",
+        "disabled": false
+      },
+      {
+        "action": "play",
+        "disabled": false
+      },
+      {
+        "action": "pause",
+        "disabled": true
+      },
+      {
+        "action": "reset",
+        "disabled": false
+      }
+    ],
+    "caption": "来源条件传入并立即生效，不要求重复应用。",
+    "progress": "第 1 / 14 帧 · 首页到交易库的条件交接",
+    "visible": [
+      {
+        "index": 0,
+        "occurrence": "handoff@state-demo-7-1",
+        "src": "source/images/handoff.svg"
+      }
+    ]
+  }
+}

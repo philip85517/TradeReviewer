@@ -4,204 +4,1668 @@
   "version": "1.0",
   "blocks": [
     {
-      "id": "HOME-DOC-B001",
+      "id": "HOME-TLIB-INTRO",
       "kind": "paragraph",
       "chapter": "DOC",
-      "text": "本方案把冻结的首页交易库业务与分镜独立成可直接交付的页面规范。它覆盖从首页日期、交易库入口到交易列表、练习回合、统计分布、详情复盘和返回来源的完整链路；首页 V2.5 只保留进入交易库的入口与返回恢复帧。原始权威来源为冻结 V2.4.2 视觉规范 HP06、冻结 V2.4.2 交易库补充规范 HP07及其公共控件手册。既有分镜沿用原 SVG；本次统一入口补充 journeys-library-entry.svg，并以 library-return.svg 表达普通交易库来源返回。",
-      "sourceKey": "e30c9fde4b89871710908341",
-      "sourceLine": 3
+      "text": "本方案说明交易库如何组织实盘交易与模拟盘练习，以及用户如何查看统计、进入回合复盘并返回来源页面。正文覆盖页面结构、操作规则和验收要求，供设计与开发共同使用。",
+      "sourceKey": "86f4a775a943baffaa8c2d54",
+      "sourceLine": 4
     },
     {
-      "id": "HOME-DOC-B071",
+      "id": "HOME-TLIB-REFERENCES",
       "kind": "paragraph",
       "chapter": "DOC",
-      "text": "交易库复用 V2.5 的公共契约：共享规范 HP08、视觉基础 HP11、全站原则和控件手册。跨页传参与恢复字段见首页入口状态约定。本页只补充交易库的页面层级、业务条件、列表与回合关系、统计口径、返回上下文和交易库专属边界。",
-      "sourceKey": "081474aefbecfe5c74437f5e",
-      "sourceLine": 5
+      "text": "交易库沿用以下规范；本页补充交易库自身的页面与业务规则。",
+      "sourceKey": "b497373675651dda0150abc1",
+      "sourceLine": 7
     },
     {
-      "id": "HOME-DOC-B070",
-      "kind": "paragraph",
-      "chapter": "BT01",
-      "text": "交易库把首页上的结果阅读接到可核对、可复盘的具体交易。日期检索和普通交易库入口把首页结果接到具体交易；待复盘只作为交易库内部的显式筛选，再从筛选结果进入复盘任务。入口提供的来源日期、标的、市场和账户条件到达后立即生效，未提供的条件保持交易库自身范围；用户无需再次点击应用。条件摘要是只读说明，与按钮分开呈现，不画成待确认的操作。",
-      "sourceKey": "f10564aa7de41cd948e7d2cc",
+      "id": "HOME-DOC-B002",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "用途",
+      "sourceKey": "a3fd9a995df3b999b108f3f1",
       "sourceLine": 9
     },
     {
-      "id": "HOME-DOC-B004",
+      "id": "HOME-DOC-B003",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "权威来源",
+      "sourceKey": "e454759acad0a4292ccbdfe9",
+      "sourceLine": 9
+    },
+    {
+      "id": "HOME-DOC-B020",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "首页日期入口、交易库进入与返回",
+      "sourceKey": "78a94e31a9c3c35ab1b3a97d",
+      "sourceLine": 11
+    },
+    {
+      "id": "HOME-DOC-B023",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "冻结 V2.4.2 视觉规范 HP06",
+      "sourceKey": "ca029bf093baa1f2e7993b94",
+      "sourceLine": 11
+    },
+    {
+      "id": "HOME-DOC-B044",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "交易库布局、条件、练习、统计与分镜",
+      "sourceKey": "32b754e4b9749f503fd7a8f3",
+      "sourceLine": 12
+    },
+    {
+      "id": "HOME-DOC-B046",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "冻结 V2.4.2 交易库补充规范 HP07",
+      "sourceKey": "a5196787b5b1289ffe2a7497",
+      "sourceLine": 12
+    },
+    {
+      "id": "HOME-DOC-B053",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "全站共享结构和控件基础",
+      "sourceKey": "c16fc9e925b6f98c487794d8",
+      "sourceLine": 13
+    },
+    {
+      "id": "HOME-DOC-B069",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "V2.5 共享规范 HP08、视觉基础 HP11、全站原则",
+      "sourceKey": "4d94eba7b4bf416ba5fee21f",
+      "sourceLine": 13
+    },
+    {
+      "id": "HOME-DOC-B078",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "控件外观、状态与命中区",
+      "sourceKey": "dccbf5130f9f5354e13c846f",
+      "sourceLine": 14
+    },
+    {
+      "id": "HOME-DOC-B079",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "V2.5 控件手册",
+      "sourceKey": "e233bf5e0d90fbab105b0693",
+      "sourceLine": 14
+    },
+    {
+      "id": "HOME-DOC-B080",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "跨页参数、范围重建与返回字段",
+      "sourceKey": "bca04929563cb1e616de27ec",
+      "sourceLine": 15
+    },
+    {
+      "id": "HOME-DOC-B081",
+      "kind": "tablecell",
+      "chapter": "DOC",
+      "text": "V2.5 入口状态约定",
+      "sourceKey": "142eb1ba0977e9658cc42a82",
+      "sourceLine": 15
+    },
+    {
+      "id": "HOME-TLIB-GOAL",
       "kind": "paragraph",
       "chapter": "BT01",
-      "text": "页面保持“列表 → 标的或练习 → 回合集 → 回合复盘”的短链路。实盘与模拟盘是互斥视角，复用列表和统计组件，但各自保存条件和导航上下文。模拟盘以一次练习承载一个标的的多个交易回合，同一标的同一天的反复练习仍是独立练习；因此不增加无业务依据的中间页，也不把实盘账户当作模拟盘练习身份。",
-      "sourceKey": "d5297e3b282e730e925f5d91",
-      "sourceLine": 11
+      "text": "交易库帮助用户查找和核对交易、理解交易结果，并进入具体回合完成复盘。为实现这一目标，设计分为以下三个方面。",
+      "sourceKey": "0fcc0c503d54e0f84a889fb7",
+      "sourceLine": 20
+    },
+    {
+      "id": "HOME-DOC-B082",
+      "kind": "paragraph",
+      "chapter": "BT01",
+      "text": "查找和核对交易。 用户从首页日期入口或普通交易库入口进入后，能够看到已经生效的来源条件，并在实盘成交和模拟盘练习中定位需要核对的对象。",
+      "sourceKey": "c346fd5a3f90e98c2a6309ac",
+      "sourceLine": 22
+    },
+    {
+      "id": "HOME-TLIB-ACCURACY",
+      "kind": "paragraph",
+      "chapter": "BT01",
+      "text": "理解交易结果。 用户能够分别阅读实盘与模拟盘的列表和统计，按各自的日期口径理解结果，并区分已平仓回合、未平仓成交和缺失数据。",
+      "sourceKey": "6e26794ff36f270aca5710f2",
+      "sourceLine": 25
+    },
+    {
+      "id": "HOME-DOC-B083",
+      "kind": "paragraph",
+      "chapter": "BT01",
+      "text": "完成回合复盘。 用户能够从标的或练习进入回合集，再进入带有必要开仓上下文的回合复盘，完成后逐层返回并恢复来源位置和状态。",
+      "sourceKey": "0dc73f9fa0c09b63c870a075",
+      "sourceLine": 27
+    },
+    {
+      "id": "HOME-TLIB-TRADEOFF",
+      "kind": "paragraph",
+      "chapter": "BT01",
+      "text": "实盘和模拟盘复用列表、统计与详情的呈现方式，但分别保存条件和导航状态；从列表直接进入标的或练习回合集，保持进入、复盘、返回的短路径。这样可以复用稳定的页面结构，同时保留两种视角各自的业务口径和恢复状态。",
+      "sourceKey": "e95a544f6a23f0cd59b71900",
+      "sourceLine": 32
+    },
+    {
+      "id": "HOME-DOC-B084",
+      "kind": "paragraph",
+      "chapter": "BT01",
+      "text": "V1.0 覆盖交易库的列表、统计、回合集、复盘进入和返回；公共视觉规范由 V2.5 维护。首页入口布局不在本章展开，详情容器不新增双栏，模拟盘不新增账户模型，相关边界在第二、三、八章说明。",
+      "sourceKey": "cf20c390833c387a8540cf24",
+      "sourceLine": 36
+    },
+    {
+      "id": "HOME-DOC-B085",
+      "kind": "paragraph",
+      "chapter": "BT02",
+      "text": "交易库的页面结构服务于条件确认、结果阅读、对象进入和返回恢复。布局沿用 V2.5 的公共表面、颜色、字体、间距、焦点和状态规则，具体区块职责如下。",
+      "sourceKey": "670ed23f5826fd4e3007d948",
+      "sourceLine": 40
+    },
+    {
+      "id": "HOME-DOC-B086",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "区块",
+      "sourceKey": "f4b87e8b374563a608ae2b51",
+      "sourceLine": 42
+    },
+    {
+      "id": "HOME-DOC-B087",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "职责",
+      "sourceKey": "80733a5aa62f767de50dd8b7",
+      "sourceLine": 42
+    },
+    {
+      "id": "HOME-DOC-B088",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "顶栏",
+      "sourceKey": "ddd868870182ffa3a87f6e6b",
+      "sourceLine": 44
+    },
+    {
+      "id": "HOME-DOC-B089",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "显示实盘/模拟盘视角、来源条件和返回来源动作。",
+      "sourceKey": "5aa20cef4c1164249e3203ea",
+      "sourceLine": 44
+    },
+    {
+      "id": "HOME-DOC-B013",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "全局侧栏",
+      "sourceKey": "94341f8818eb408b3e567c05",
+      "sourceLine": 45
+    },
+    {
+      "id": "HOME-DOC-B014",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "72px 固定导航，保留 首页 / 交易库 / 分析 / 数据 / 策略 和当前位置；普通交易库入口不显示历史待复盘徽章。",
+      "sourceKey": "d7133cb0a329db50f837128f",
+      "sourceLine": 45
+    },
+    {
+      "id": "HOME-DOC-B015",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "页头",
+      "sourceKey": "3a3206a1f9d39457e6518d5a",
+      "sourceLine": 46
+    },
+    {
+      "id": "HOME-DOC-B001",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "64px 高；标题左缘与内容区同为96px，来源文案与返回按钮使用独立槽位。页内采用已确认的紧凑 B：模式滑块置于标题上方；标题/副标题左侧与已应用条件、列表/统计下划线页签右侧同排。",
+      "sourceKey": "5def1b9845dbbf322206157e",
+      "sourceLine": 46
+    },
+    {
+      "id": "HOME-DOC-B090",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "条件工具区",
+      "sourceKey": "cd40ec014e9a615e08c478c6",
+      "sourceLine": 47
+    },
+    {
+      "id": "HOME-DOC-B091",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "编辑日期、市场、账户和局部搜索；独立显示已生效条件摘要。",
+      "sourceKey": "318c09a4ed152870fda0125b",
+      "sourceLine": 47
+    },
+    {
+      "id": "HOME-DOC-B092",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "列表或统计主体",
+      "sourceKey": "19c93448ecd58ab1f9667e1f",
+      "sourceLine": 48
+    },
+    {
+      "id": "HOME-DOC-B093",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "列表按交易或练习阅读，统计按回合样本阅读；不把两种日期口径合并。",
+      "sourceKey": "6c2a0ee77fb52b858114a4a9",
+      "sourceLine": 48
+    },
+    {
+      "id": "HOME-DOC-B094",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "详情、回合集与复盘",
+      "sourceKey": "d772cc0995c271f8155db613",
+      "sourceLine": 49
+    },
+    {
+      "id": "HOME-DOC-B095",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "沿用既有容器，逐层携带对象身份和必要的开仓上下文。",
+      "sourceKey": "79729396038c6883a710eb53",
+      "sourceLine": 49
+    },
+    {
+      "id": "HOME-DOC-B096",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "分页与状态反馈",
+      "sourceKey": "53dabb19432fc6933a7364bb",
+      "sourceLine": 50
+    },
+    {
+      "id": "HOME-DOC-B097",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "在加载、空态、失败和重试时保持结果区尺寸与位置。",
+      "sourceKey": "1bf34abb406924b7ea85db29",
+      "sourceLine": 50
+    },
+    {
+      "id": "HOME-DOC-B098",
+      "kind": "paragraph",
+      "chapter": "BT02",
+      "text": "控件与文字采用以下对齐规则。按钮、分段标签、日期快捷项和应用动作在命中盒内水平、垂直居中；输入文字、名称、说明和错误文案左对齐；金额表头和金额数据右对齐。",
+      "sourceKey": "efc0c40ddb2857f38d593f49",
+      "sourceLine": 52
+    },
+    {
+      "id": "HOME-DOC-B099",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "部位",
+      "sourceKey": "46f1733dc986c7bb16b3daab",
+      "sourceLine": 54
+    },
+    {
+      "id": "HOME-DOC-B100",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "尺寸与规则",
+      "sourceKey": "fd5adb889a2e15766eb89362",
+      "sourceLine": 54
+    },
+    {
+      "id": "HOME-DOC-B017",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "内容区",
+      "sourceKey": "0d75197a9e5a21fc7902c861",
+      "sourceLine": 56
+    },
+    {
+      "id": "HOME-DOC-B004",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "左缘96px、右边距24px；比较视口为1440×1000和1280×800，字号与控件不随长页缩小。交易库画布按实际内容自然增长：普通列表/复盘保留至少1000px（窄版至少800px），统计与下钻由指标行、趋势、分布和明细的自然底边决定，异常提示继续向下扩展。首页直接使用V2.5完整1440×2346宿主。超出比较视口的内容纵向滚动，不是裁切。",
+      "sourceKey": "21597c112abc880422711f3e",
+      "sourceLine": 56
+    },
+    {
+      "id": "HOME-DOC-B011",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "字号",
+      "sourceKey": "1df306d32ce8cfd076d70e02",
+      "sourceLine": 57
+    },
+    {
+      "id": "HOME-DOC-B012",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "页面标题24/32、模块标题18/24、正文和控件14/20、说明12/16、指标28/34。",
+      "sourceKey": "b75b3f84ca2087bdeff3cc06",
+      "sourceLine": 57
+    },
+    {
+      "id": "HOME-DOC-B032",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "交易库搜索",
+      "sourceKey": "845ae7d54963de017a41c15c",
+      "sourceLine": 58
+    },
+    {
+      "id": "HOME-DOC-B037",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "宽220px。",
+      "sourceKey": "6660e88c1068df6939fafbce",
+      "sourceLine": 58
+    },
+    {
+      "id": "HOME-DOC-B038",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "刷新动作",
+      "sourceKey": "1b576625af5b3a36159d94f0",
+      "sourceLine": 59
+    },
+    {
+      "id": "HOME-DOC-B039",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "36×36px命中盒；与搜索的间隔为28px。",
+      "sourceKey": "407387b28aace1d8869629f8",
+      "sourceLine": 59
+    },
+    {
+      "id": "HOME-DOC-B045",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "筛选浮层",
+      "sourceKey": "d2485e503f75fdd58d0e8a20",
+      "sourceLine": 60
+    },
+    {
+      "id": "HOME-DOC-B047",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "宽320px，字段高36px。",
+      "sourceKey": "0ad806c3f6b0a85ba95e377e",
+      "sourceLine": 60
+    },
+    {
+      "id": "HOME-DOC-B048",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "图标与动作",
+      "sourceKey": "c921b6a3bb73d40bc5cb8129",
+      "sourceLine": 61
+    },
+    {
+      "id": "HOME-DOC-B049",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "公共图标视觉尺寸16px；页头搜索与筛选图标18px；外层图标和动作按钮保持36px命中盒。",
+      "sourceKey": "4482cb50b5f06a40f2dca8bd",
+      "sourceLine": 61
+    },
+    {
+      "id": "HOME-DOC-B050",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "日期和年份图标",
+      "sourceKey": "eef33e7c224b08818a316a8d",
+      "sourceLine": 62
+    },
+    {
+      "id": "HOME-DOC-B051",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。",
+      "sourceKey": "4178e5317ee92c5273cfbe2b",
+      "sourceLine": 62
+    },
+    {
+      "id": "HOME-DOC-B052",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "表格",
+      "sourceKey": "6356cb97b81126e769aef5b5",
+      "sourceLine": 63
+    },
+    {
+      "id": "HOME-DOC-B055",
+      "kind": "tablecell",
+      "chapter": "BT02",
+      "text": "沿用公共列定义；金额列共用右边界，名称和说明左对齐，表头与结果区不重叠。",
+      "sourceKey": "52ee2a6964fe0ee48ea408b4",
+      "sourceLine": 63
     },
     {
       "id": "HOME-DOC-B005",
       "kind": "paragraph",
-      "chapter": "BT01",
-      "text": "统计和列表使用各自明确的日期口径：实盘列表按每笔成交日期筛选，统计按回合平仓日期归属；未平仓成交仍可在列表查看，却不进入已平仓回合统计。模拟盘按导入文件保存的练习日期归属，不以行情日期代替。页面内搜索只过滤交易库表，不调用全局标的搜索遮罩。",
-      "sourceKey": "8339e2fae6fe5f7335d393ab",
-      "sourceLine": 13
-    },
-    {
-      "id": "HOME-DOC-B006",
-      "kind": "paragraph",
       "chapter": "BT02",
-      "text": "交易库沿用 V2.5 公共表面、颜色、字体、间距、焦点和状态规则。顶栏先显示视角、来源条件和返回来源动作；内容区由条件工具区、列表或统计主体、分页与状态反馈组成。打开详情或回合集时沿用已确认的详情容器，不新增没有合同依据的双栏容器。返回动作在来源语境中恢复原位置与焦点。",
-      "sourceKey": "f80bceea2c0eb879c78e96d0",
-      "sourceLine": 17
-    },
-    {
-      "id": "HOME-DOC-B007",
-      "kind": "paragraph",
-      "chapter": "BT02",
-      "text": "公共尺寸和对齐以 HP08、HP11 与控件手册为准：按钮、分段标签、日期快捷项和应用动作在命中盒内水平垂直居中；输入文本左对齐，金额表头和金额数据右对齐，名称、说明与错误文案左对齐；共享图标视觉尺寸为16px，页头搜索与筛选图标为18px，外层图标和动作按钮保持36px命中盒。价格保留两位小数；金额按绝对值达到1万显示“万”、达到1亿显示“亿”，均保留两位小数，不增加“万亿”，完整值在详情、提示、悬停/聚焦、复制和导出中可查。表格列沿用公共列定义与右对齐规则。",
-      "sourceKey": "ec2b2c62db326b64b14dddf7",
-      "sourceLine": 19
-    },
-    {
-      "id": "HOME-DOC-B008",
-      "kind": "paragraph",
-      "chapter": "BT02",
-      "text": "交易库工具区保持搜索220px、刷新36px、间隔28px和独立条件摘要；表头与结果区不重叠。日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。筛选浮层沿用320px宽、字段高36px的公共规格；交易库内搜索保持页面内 inline filter，不能打开全局全屏搜索遮罩。",
-      "sourceKey": "e243c0eb225d9567462419f8",
-      "sourceLine": 21
-    },
-    {
-      "id": "HOME-DOC-B009",
-      "kind": "paragraph",
-      "chapter": "BT03",
-      "text": "首页入口默认进入“实盘”。来源日期、市场、账户、标的和返回上下文随入口传入，条件到达后立即生效。交易库内修改条件不回写首页；返回首页时恢复原期间、滚动位置和触发焦点。",
-      "sourceKey": "96f4c2827cd6392864848d62",
-      "sourceLine": 25
-    },
-    {
-      "id": "HOME-DOC-B010",
-      "kind": "paragraph",
-      "chapter": "BT03",
-      "text": "日期支持单日、区间、全部以及“本周／本月／本年”快捷范围。业务时区为上海时区：自然本周从周一开始，自然本月从每月1日开始，自然本年从1月1日开始，均截至今天并包含起止日；提交后实际起止日期必须可见。日期或筛选参数不合法时使用明确的默认值并提示，不能静默显示另一个范围。",
-      "sourceKey": "a74221476e05430829db4e85",
-      "sourceLine": 27
-    },
-    {
-      "id": "HOME-DOC-B011",
-      "kind": "paragraph",
-      "chapter": "BT03",
-      "text": "交易库分为互斥的“实盘 / 模拟盘”视角。两个视角分别记忆日期、市场、账户条件、搜索、排序、页码、滚动位置和焦点；列表和统计共享当前视角的日期、市场与账户条件。切换视角不得覆盖另一视角已保存的账户选择，也不得把实盘账户作为模拟盘练习身份。此处只约定条件的保存与恢复，不新增模拟盘账户控件或账户业务模型。",
-      "sourceKey": "c49ae1323e731edfe5f46984",
-      "sourceLine": 29
-    },
-    {
-      "id": "HOME-DOC-B012",
-      "kind": "paragraph",
-      "chapter": "BT03",
-      "text": "搜索是局部 inline filter，只过滤交易库表。清空、无匹配和失败均保留工具区几何，不能以全局搜索遮罩替代。来源范围、日期、市场和账户的只读条件摘要与搜索并列；刷新保留当前条件。搜索无匹配与没有交易是两种不同空态，缺失数据也不能以零代替。",
-      "sourceKey": "d91ce15e0c3d79e81e3fdf8b",
-      "sourceLine": 31
-    },
-    {
-      "id": "HOME-DOC-B013",
-      "kind": "paragraph",
-      "chapter": "BT03",
-      "text": "交易库内部搜索沿用 V2.5 公共规范的 inline filter 规则；本交易库分镜不重复摆放首页搜索图稿。",
-      "sourceKey": "f55984e8e50b8d06766f6dea",
-      "sourceLine": 37
-    },
-    {
-      "id": "HOME-DOC-B014",
-      "kind": "paragraph",
-      "chapter": "BT04",
-      "text": "实盘列表按每笔成交日期筛选，并保留未平仓成交。打开某个标的的交易后，进入已确认的详情容器查看该标的的回合集，不增加中间页面。关闭或返回时恢复来源列表的标的、筛选、排序、页码、滚动位置和触发焦点。",
-      "sourceKey": "92307b7e729f32cbc7b7fcac",
-      "sourceLine": 43
-    },
-    {
-      "id": "HOME-DOC-B015",
-      "kind": "paragraph",
-      "chapter": "BT04",
-      "text": "模拟盘以一次练习为列表入口。一次练习包含一个标的的多个交易回合，同一标的同一天的反复练习保持独立身份。列表分别显示练习记录数与已平仓回合数；点击练习直接进入该练习的回合集，操作与实盘进入某个标的的回合集一致，不增加中间页面。进入回合复盘后返回，恢复原练习、筛选、排序、页码、滚动位置和焦点；同一标的的其他练习不混入当前回合集。",
-      "sourceKey": "1e88b34c41d8dc3f6244adfe",
-      "sourceLine": 47
-    },
-    {
-      "id": "HOME-DOC-B016",
-      "kind": "paragraph",
-      "chapter": "BT04",
-      "text": "中途加减仓按最近开仓优先配对：先买100、再买50、卖80时，先配对50，再配对30。配对不跨练习，每个有效配对算一回合；此例为两回合，余70仍未平仓并排除在已平仓回合统计之外。不要求练习另有开始或结束状态。扣费后收益大于0为盈利、小于0为亏损、等于0为持平；胜率分母包含持平回合，平均盈利和平均亏损不含持平回合。",
-      "sourceKey": "c5b1db383afcff40b62541c0",
-      "sourceLine": 49
-    },
-    {
-      "id": "HOME-DOC-B017",
-      "kind": "paragraph",
-      "chapter": "BT05",
-      "text": "统计页复用趋势与盈亏分布组件，但遵循交易库日期和回合口径。日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。分布默认使用回合收益率，也可切换金额。每个区间显示回合数与占比，占比保留2位小数；窄栏把占比放到回合数下一行。",
-      "sourceKey": "ebb78fce26d0932a119f14b4",
-      "sourceLine": 61
-    },
-    {
-      "id": "HOME-DOC-B018",
-      "kind": "paragraph",
-      "chapter": "BT05",
-      "text": "占比分母固定为当前范围内全部有效回合。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布。点击回合进入复盘，返回后恢复原区间与列表位置。极端金额、负值、集中分布和缺失计算输入分别保持可读刻度、正确正负、稳定布局和明确不可计算状态。",
-      "sourceKey": "55823c32e022bb1f93b1ac16",
-      "sourceLine": 63
-    },
-    {
-      "id": "HOME-DOC-B019",
-      "kind": "paragraph",
-      "chapter": "BT05",
-      "text": "模拟盘统计按练习保存日期归属；一次练习可有多个回合，但同标的同日的再次练习仍保持独立身份。实盘统计按回合平仓日期归属；未完成回合不混入已平仓统计。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。",
-      "sourceKey": "d3df4d304e57c4a9b05ead56",
+      "text": "布局采用候选布局比较中的方案 B（紧凑排列）；模式滑块在标题上方，标题/副标题与已应用条件、列表/统计下划线页签共享紧凑页头。页内不重复放置独立页面切换胶囊或面包屑。",
+      "sourceKey": "f376a0e17a9f85d83f2e3d69",
       "sourceLine": 65
     },
     {
-      "id": "HOME-DOC-B072",
+      "id": "HOME-DOC-B113",
       "kind": "paragraph",
-      "chapter": "BT06",
-      "text": "从首页日期点或普通交易库入口进入时，交易库立即显示入口提供的来源日期、标的、市场和账户；列表按成交日筛选，统计另按回合平仓日期归属。普通入口不预设 queue=pending-review；待复盘列表仅由交易库内的显式筛选到达，筛选结果的来源条件仍保持不变。完成复盘后应能在交易库内核对筛选结果变化。",
-      "sourceKey": "cf09a465fcc553a55853e7e7",
-      "sourceLine": 76
+      "chapter": "BT02",
+      "text": "数字显示遵循公共格式：价格保留两位小数；金额绝对值达到1万显示“万”、达到1亿显示“亿”，均保留两位小数，不增加“万亿”。详情、提示、悬停或聚焦、复制和导出都能查到完整值，缩写不改变原始数据。窄栏的占比另行按第五章换行。",
+      "sourceKey": "5f7e01d10158690db8727528",
+      "sourceLine": 67
     },
     {
-      "id": "HOME-DOC-B021",
+      "id": "HOME-DOC-B114",
       "kind": "paragraph",
-      "chapter": "BT06",
-      "text": "从实盘列表打开某标的的交易，进入已有详情容器中的回合集；从模拟盘列表打开一次练习，直接进入这次练习的回合集；从回合集选择一个回合，进入携带该回合及必要开仓上下文的复盘。范围外的开仓上下文可以用于理解该回合，但不改变列表和统计归属。",
-      "sourceKey": "58c24ebd7aabfb162193ea92",
-      "sourceLine": 78
+      "chapter": "BT03",
+      "text": "首页入口默认进入“实盘”。来源日期、市场、账户、标的和返回上下文随入口传入，条件到达后立即生效，用户不需要再次点击应用。未传入的条件保持交易库自身范围。交易库内修改条件不回写首页，返回首页时恢复原期间、滚动位置和触发焦点。",
+      "sourceKey": "dd952ac21c69e3ae9b46002d",
+      "sourceLine": 73
+    },
+    {
+      "id": "HOME-DOC-B115",
+      "kind": "paragraph",
+      "chapter": "BT03",
+      "text": "入口、刷新和直达都按 URL 重建已生效范围；参数的完整约定见 V2.5 入口状态约定。首页只产生实盘视角，交易库内部待复盘由用户显式筛选。",
+      "sourceKey": "0589bb761ffbd62197f4246a",
+      "sourceLine": 75
+    },
+    {
+      "id": "HOME-DOC-B116",
+      "kind": "paragraph",
+      "chapter": "BT03",
+      "text": "交易库分为互斥的“实盘 / 模拟盘”视角。两个视角分别记忆日期、市场、账户条件、搜索、排序、页码、滚动位置和焦点；列表和统计共享当前视角的日期、市场与账户条件。切换视角不得覆盖另一视角已保存的账户选择，也不得把实盘账户作为模拟盘练习身份。这里仅约定条件的保存与恢复，不新增模拟盘账户控件或账户业务模型。",
+      "sourceKey": "ad081395d8ceb446b215871b",
+      "sourceLine": 79
+    },
+    {
+      "id": "HOME-DOC-B117",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "日期方式",
+      "sourceKey": "6f04c6ff295d82af5d87e287",
+      "sourceLine": 83
+    },
+    {
+      "id": "HOME-DOC-B118",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "规则",
+      "sourceKey": "bce3ce218d13dbeb2f7abb96",
+      "sourceLine": 83
+    },
+    {
+      "id": "HOME-DOC-B119",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "单日",
+      "sourceKey": "580f2dbd310e1b8e60c33b3c",
+      "sourceLine": 85
+    },
+    {
+      "id": "HOME-DOC-B120",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "按该日筛选，包含起止日。",
+      "sourceKey": "81a37eee4c0766bbb24656c3",
+      "sourceLine": 85
+    },
+    {
+      "id": "HOME-DOC-B121",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "区间",
+      "sourceKey": "924cdc8862e74eda5275f740",
+      "sourceLine": 86
+    },
+    {
+      "id": "HOME-DOC-B122",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "按实际起止日期筛选，包含起止日。",
+      "sourceKey": "a2a2a34bc49b1cf42e5f1808",
+      "sourceLine": 86
+    },
+    {
+      "id": "HOME-DOC-B123",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "全部",
+      "sourceKey": "4de62ae2a8a5c62d848e665a",
+      "sourceLine": 87
+    },
+    {
+      "id": "HOME-DOC-B124",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "不限定日期范围。",
+      "sourceKey": "347f8107dc320506c70db8ac",
+      "sourceLine": 87
+    },
+    {
+      "id": "HOME-DOC-B125",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "本周",
+      "sourceKey": "20bc34e229541862330c6209",
+      "sourceLine": 88
+    },
+    {
+      "id": "HOME-DOC-B126",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "上海时区自然周，从周一开始，截至今天，包含起止日。",
+      "sourceKey": "67fef165827c79869ed13c99",
+      "sourceLine": 88
+    },
+    {
+      "id": "HOME-DOC-B127",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "本月",
+      "sourceKey": "71d2db13d7909dd7d3fab9b4",
+      "sourceLine": 89
+    },
+    {
+      "id": "HOME-DOC-B128",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "上海时区自然月，从每月1日开始，截至今天，包含起止日。",
+      "sourceKey": "e2160c79d4164f15ca65d134",
+      "sourceLine": 89
+    },
+    {
+      "id": "HOME-DOC-B129",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "本年",
+      "sourceKey": "33bd000f95f99173e6a3bf75",
+      "sourceLine": 90
+    },
+    {
+      "id": "HOME-DOC-B130",
+      "kind": "tablecell",
+      "chapter": "BT03",
+      "text": "上海时区自然年，从1月1日开始，截至今天，包含起止日。",
+      "sourceKey": "79329579b5d27683a0aa40d2",
+      "sourceLine": 90
+    },
+    {
+      "id": "HOME-DOC-B131",
+      "kind": "paragraph",
+      "chapter": "BT03",
+      "text": "提交后实际起止日期必须可见。日期范围缺失或不合法时显示可修正提示，不静默换成另一个范围。",
+      "sourceKey": "3eb0ea66d66296df45cf08f2",
+      "sourceLine": 92
+    },
+    {
+      "id": "HOME-DOC-B132",
+      "kind": "paragraph",
+      "chapter": "BT03",
+      "text": "交易库内搜索是局部表内筛选，只过滤交易库表，不打开全局全屏搜索遮罩。来源范围、日期、市场和账户的条件摘要与搜索并列；摘要只作只读说明，与按钮分开显示。清空、无匹配和失败都保留工具区尺寸与位置；刷新保留当前有效条件。搜索无匹配与没有交易是两种不同空态，缺失数据不能以零代替。",
+      "sourceKey": "e778f5add1fd41dc99b72c7d",
+      "sourceLine": 96
     },
     {
       "id": "HOME-DOC-B022",
       "kind": "paragraph",
-      "chapter": "BT06",
-      "text": "返回必须逐层恢复来源：回合复盘返回原回合集；回合集返回原标的或原练习；交易库返回首页时恢复原期间、贡献模式、表格状态、滚动位置和触发焦点。首页贡献下钻进入交易库时，还应恢复原市场、证券、日期、账户、筛选、排序、页码、滚动位置和触发焦点；若刷新导致原标的消失，焦点回到来源容器标题并保留仍有效的条件。不能从泛化“进入贡献”按钮直接跳到固定证券详情。",
-      "sourceKey": "974879cb9d972cb2e5d18add",
-      "sourceLine": 80
+      "chapter": "BT03",
+      "text": "普通日期入口和普通月份范围分别表达单日条件与区间条件；图内只显示已应用的来源、范围和数据，入口不默认带待复盘口径。图外 caption 负责说明触发动作、状态变化、保留项和返回位置。",
+      "sourceKey": "3a04497cd8fd0fb30916bb16",
+      "sourceLine": 104
     },
     {
-      "id": "HOME-DOC-B073",
+      "id": "HOME-DOC-B133",
       "kind": "paragraph",
-      "chapter": "BT06",
-      "text": "入口帧和到达帧的职责必须分开：入口帧的导航按钮负责进入普通交易库；到达帧显示已生效条件和交易列表，不再要求重复点击“进入交易库”。待复盘分镜只表达交易库内的显式筛选，不代表首页入口或默认队列。首页 V2.5 只展示普通入口帧，交易库 V1.0 展示完整到达、列表、回合、复盘和返回链路。",
-      "sourceKey": "944b95fc7dd14566746683e0",
-      "sourceLine": 90
+      "chapter": "BT03",
+      "text": "交易库内部搜索沿用 V2.5 公共规范的表内筛选规则；本交易库分镜不重复摆放首页搜索图稿。",
+      "sourceKey": "601207d03579858289d1062b",
+      "sourceLine": 106
+    },
+    {
+      "id": "HOME-DOC-B134",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "成交是交易库中可按条件核对的买卖记录；一次练习对应一个标的，可以包含多个交易回合；回合由开仓与平仓成交按配对规则形成。同一标的同一天的多次练习仍保持独立身份；回合详情可携带范围外必要的开仓上下文，但不改变列表和统计归属。",
+      "sourceKey": "19e6b9f12d10f8f8070f68a2",
+      "sourceLine": 110
+    },
+    {
+      "id": "HOME-DOC-B135",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "实盘列表按每笔成交日期筛选，并保留未平仓成交。打开某个标的的交易后，进入既有详情容器查看该标的的回合集，不增加中间页面。关闭或返回时恢复来源列表的标的、筛选、排序、页码、滚动位置和触发焦点。",
+      "sourceKey": "63623634a2880de54a344f4e",
+      "sourceLine": 114
+    },
+    {
+      "id": "HOME-DOC-B136",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "模拟盘以一次练习为列表入口。列表分别显示练习记录数与已平仓回合数；点击练习直接进入该练习的回合集，操作与实盘进入某个标的的回合集一致，不增加中间页面。进入回合复盘后返回，恢复原练习、筛选、排序、页码、滚动位置和焦点；同一标的的其他练习不混入当前回合集。",
+      "sourceKey": "e5ab4f86afa4c49163c559d0",
+      "sourceLine": 118
+    },
+    {
+      "id": "HOME-DOC-B137",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "中途加减仓按最近开仓优先配对。例子按以下步骤计算：",
+      "sourceKey": "39ab062efbb3db31cd071e30",
+      "sourceLine": 120
+    },
+    {
+      "id": "HOME-DOC-B138",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "步骤",
+      "sourceKey": "e16265697154462e5d68fbc6",
+      "sourceLine": 122
+    },
+    {
+      "id": "HOME-DOC-B139",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "成交",
+      "sourceKey": "824f4131027fb8687171aa2e",
+      "sourceLine": 122
+    },
+    {
+      "id": "HOME-DOC-B140",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "配对结果",
+      "sourceKey": "1840e607a812799c4e78ede9",
+      "sourceLine": 122
+    },
+    {
+      "id": "HOME-DOC-B141",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "1",
+      "sourceKey": "8ad07d5e482e393df77fbb85",
+      "sourceLine": 124
+    },
+    {
+      "id": "HOME-DOC-B142",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "先买100",
+      "sourceKey": "47ad4e0563243dc9b9ef9490",
+      "sourceLine": 124
+    },
+    {
+      "id": "HOME-DOC-B143",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "形成较早的开仓量100。",
+      "sourceKey": "dcf6b27e3f59ab2a612dc665",
+      "sourceLine": 124
+    },
+    {
+      "id": "HOME-DOC-B144",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "2",
+      "sourceKey": "28821c5387a94c188a45804d",
+      "sourceLine": 125
+    },
+    {
+      "id": "HOME-DOC-B145",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "再买50",
+      "sourceKey": "876347f08b19b6efa24e745f",
+      "sourceLine": 125
+    },
+    {
+      "id": "HOME-DOC-B146",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "形成较晚的开仓量50。",
+      "sourceKey": "7cf0f2728999181d29260068",
+      "sourceLine": 125
+    },
+    {
+      "id": "HOME-DOC-B147",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "3",
+      "sourceKey": "8cf0fc2c6b0d9f183bdfcc2d",
+      "sourceLine": 126
+    },
+    {
+      "id": "HOME-DOC-B148",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "卖80",
+      "sourceKey": "b7bc351033fc9335e826af55",
+      "sourceLine": 126
+    },
+    {
+      "id": "HOME-DOC-B149",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "先配对较晚的50，再从较早的100中配对30。",
+      "sourceKey": "4507b4143d2f31e372fdef6f",
+      "sourceLine": 126
+    },
+    {
+      "id": "HOME-DOC-B150",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "4",
+      "sourceKey": "1b4f28af92ded68a73a5cc61",
+      "sourceLine": 127
+    },
+    {
+      "id": "HOME-DOC-B151",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "完成配对",
+      "sourceKey": "0817bcb4f6cedb90a494f3b6",
+      "sourceLine": 127
+    },
+    {
+      "id": "HOME-DOC-B152",
+      "kind": "tablecell",
+      "chapter": "BT04",
+      "text": "形成两回合，剩余70仍未平仓。",
+      "sourceKey": "0a05d2d638a0829e17556ec2",
+      "sourceLine": 127
+    },
+    {
+      "id": "HOME-DOC-B006",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "练习 A 的已平仓费用按配对数量分摊：50 股回合净值 990.00 CNY，30 股回合净值 894.00 CNY，已平仓合计 1884.00 CNY；余下70股对应的7.00 CNY开仓费用留在未平仓，不计入已平仓统计。费用说明固定为“已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。”所有回合、趋势和分布图由 library-design-fixture.json 的成交配对派生。",
+      "sourceKey": "9fafe4c9ff2db63aaa2da247",
+      "sourceLine": 129
+    },
+    {
+      "id": "HOME-DOC-B153",
+      "kind": "paragraph",
+      "chapter": "BT04",
+      "text": "配对不跨练习，每个有效配对算一回合；上述余70排除在已平仓回合统计之外。不要求练习另有开始或结束状态。",
+      "sourceKey": "09dfaf57e529e8b6ea5f92ad",
+      "sourceLine": 131
+    },
+    {
+      "id": "HOME-DOC-B154",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "本章说明统计样本的日期归属、结果指标、趋势粒度和分布下钻，实盘与模拟盘使用各自的数据口径。统计页复用趋势与盈亏分布组件。",
+      "sourceKey": "34f63255e360d8d326b449bb",
+      "sourceLine": 146
+    },
+    {
+      "id": "HOME-DOC-B155",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "范围",
+      "sourceKey": "6cfc5d287a1a0e8e7e5e9bb6",
+      "sourceLine": 150
+    },
+    {
+      "id": "HOME-DOC-B156",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "列表日期",
+      "sourceKey": "5b0d2749fb58ecb5f399e5cf",
+      "sourceLine": 150
+    },
+    {
+      "id": "HOME-DOC-B157",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "统计日期",
+      "sourceKey": "89cde7849f1b5d87d024b898",
+      "sourceLine": 150
+    },
+    {
+      "id": "HOME-DOC-B158",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "实盘",
+      "sourceKey": "0398c07281222572cfa21d9a",
+      "sourceLine": 152
+    },
+    {
+      "id": "HOME-DOC-B159",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "成交日",
+      "sourceKey": "fb2bee577cadc1e737ce7a78",
+      "sourceLine": 152
+    },
+    {
+      "id": "HOME-DOC-B160",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "回合平仓日",
+      "sourceKey": "d930d24866c1dc61b70ac897",
+      "sourceLine": 152
+    },
+    {
+      "id": "HOME-DOC-B161",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "模拟盘",
+      "sourceKey": "730742594f8b86c032127312",
+      "sourceLine": 153
+    },
+    {
+      "id": "HOME-DOC-B016",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "导入文件中保存的练习日期",
+      "sourceKey": "2acdd4d59a53abc38c70ebf2",
+      "sourceLine": 153
+    },
+    {
+      "id": "HOME-DOC-B042",
+      "kind": "tablecell",
+      "chapter": "BT05",
+      "text": "导入文件中保存的练习日期",
+      "sourceKey": "2acdd4d59a53abc38c70ebf2",
+      "sourceLine": 153
+    },
+    {
+      "id": "HOME-DOC-B028",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "统计只纳入有效的已平仓回合，未平仓成交仍保留在实盘列表。模拟盘使用文件中保存的练习日期，不以行情日期替代；普通模拟盘趋势至少覆盖五个保存日期，并保留同一标的同日练习的独立身份。",
+      "sourceKey": "da620d7272b808ffc774b6e3",
+      "sourceLine": 155
+    },
+    {
+      "id": "HOME-DOC-B040",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "扣费后收益大于0为盈利、小于0为亏损、等于0为持平。总体胜率与方向胜率的分母都包含持平回合，平均盈利和平均亏损不含持平回合。方向只取开仓方向明确标记的 long / short；未知方向排除并单独报告，不能把平多的卖出成交推断为做空。当前模拟盘有7个有效回合、5个盈利做多回合，做空显示“— / 无样本”。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。模拟盘统计按两行四卡展示：有效回合、净盈亏、总体胜率、费用（已扣除）；做多胜率、做空胜率、平均盈利、平均亏损。费用卡短标签为“费用（已扣除）”，旁边可见“已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。”",
+      "sourceKey": "d0be8f6760a3c2e1ea711b20",
+      "sourceLine": 159
+    },
+    {
+      "id": "HOME-DOC-B021",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "风险指标显示“最差练习回撤”。",
+      "sourceKey": "65c2b47843c22e11096cefb6",
+      "sourceLine": 161
     },
     {
       "id": "HOME-DOC-B024",
-      "kind": "paragraph",
-      "chapter": "BT07",
-      "text": "首次加载使用标题、工具区、表头和行槽的最终尺寸占位，等待不会造成布局跳动。已有数据后台更新时保留上一组完整有效数据；更新失败或超时保留旧范围和有效值，并说明新范围未应用。没有交易、搜索无匹配、没有已平仓回合、数据缺失和计算输入缺失分别表达，不能将它们合并为零。",
-      "sourceKey": "c05b18fda2fe4af7aea957c6",
-      "sourceLine": 94
+      "kind": "listitem",
+      "chapter": "BT05",
+      "text": "含义与选取范围：每次练习使用当前模拟盘筛选与保存日期独立选取，沿自身完整权益轨迹计算；轨迹含初始资金、开仓后按标记价格计价的浮动盈亏和费用。汇总取所有有效练习的单练习最大回撤中的最大值。短说明为“所选练习中，单次练习权益最大回撤的最大值。”",
+      "sourceKey": "bda1d206b9310674203fef80",
+      "sourceLine": 163
     },
     {
       "id": "HOME-DOC-B025",
+      "kind": "listitem",
+      "chapter": "BT05",
+      "text": "计算方式：初始权益必须为正，权益样本必须完整有序且估值/费用范围一致。peakt=max(E0…Et)，DDt=(peakt−Et)/peakt，单练习 MDD 为 maxt DDt；分母是截至该时点的最高历史权益。",
+      "sourceKey": "cdfd39954960a2a8712ca765",
+      "sourceLine": 164
+    },
+    {
+      "id": "HOME-DOC-B027",
+      "kind": "listitem",
+      "chapter": "BT05",
+      "text": "数据不足如何显示：缺少初始值、路径或估值、存在未调整外部现金流时，该练习不可用。全部有效才显示数值，部分有效显示“— · 可计算 N/M 练习”；空样本显示“— / 无练习”；完整有效且为零显示“0.00%”。当前样例缺少逐时权益，显示“—”并说明“暂不可计算”。不把累计净盈亏曲线冒充权益回撤。",
+      "sourceKey": "96178b1a1a7e8e2a38bf3c2b",
+      "sourceLine": 165
+    },
+    {
+      "id": "HOME-DOC-B029",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "独立算例：权益 100 → 120 → 90 的单次练习回撤为25%；另一练习 100 → 110 → 99 为10%；汇总为25%。若第二条练习缺少路径，则显示“— · 可计算 1/2 练习”。",
+      "sourceKey": "430564f45a94097d4e4ea071",
+      "sourceLine": 167
+    },
+    {
+      "id": "HOME-DOC-B166",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。粒度随当前统计范围确定。",
+      "sourceKey": "af8bebca1aff07d32d260d8e",
+      "sourceLine": 171
+    },
+    {
+      "id": "HOME-DOC-B043",
+      "kind": "paragraph",
+      "chapter": "BT05",
+      "text": "每个区间使用横向条形图表达频数：左侧为区间名称，中间为共享最大回合数尺度的条形，右侧显示回合数和占比，轴标为“回合数”。零样本不绘制最小假条，亏损区间仍使用正向频数宽度。加载显示等待占位，空态没有条形并说明没有有效样本；计算输入缺失时排除无效回合并明确当前分母。收益率/金额切换沿用既有区间边界。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布；点击回合进入复盘，返回后恢复原区间与列表位置。分布面板自身不分页，真实回合明细表仍保留分页。",
+      "sourceKey": "4c764a39691cf276993c161f",
+      "sourceLine": 175
+    },
+    {
+      "id": "HOME-DOC-B168",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "这一章按用户从来源页面进入交易库、打开对象、完成回合复盘并逐层返回的旅程说明页面如何交接条件和恢复位置。",
+      "sourceKey": "cc63788f541e1a7f5e2b1c05",
+      "sourceLine": 209
+    },
+    {
+      "id": "HOME-DOC-B169",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "阶段",
+      "sourceKey": "1d94e4ba27708d78cf6ef529",
+      "sourceLine": 211
+    },
+    {
+      "id": "HOME-DOC-B170",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "用户动作",
+      "sourceKey": "15c2fd5ae7c7f51dbbc5c636",
+      "sourceLine": 211
+    },
+    {
+      "id": "HOME-DOC-B171",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "界面与返回结果",
+      "sourceKey": "75dfc72b5c01a0e437776290",
+      "sourceLine": 211
+    },
+    {
+      "id": "HOME-DOC-B172",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "首页日期点",
+      "sourceKey": "7949753727f3c0e9d815af01",
+      "sourceLine": 213
+    },
+    {
+      "id": "HOME-DOC-B173",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "打开日期详情后点击查看交易",
+      "sourceKey": "668baf61052757c6d6f70e6c",
+      "sourceLine": 213
+    },
+    {
+      "id": "HOME-DOC-B174",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "进入实盘，应用首页传入的范围；来源日期、市场和账户立即生效，无需再次应用。",
+      "sourceKey": "6220399930c703bb96a53594",
+      "sourceLine": 213
+    },
+    {
+      "id": "HOME-DOC-B175",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "普通交易库入口",
+      "sourceKey": "2d7afc174a49e4372fb50f5a",
+      "sourceLine": 214
+    },
+    {
+      "id": "HOME-DOC-B176",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "打开交易库入口",
+      "sourceKey": "b971a3454f09cdc4b85006a2",
+      "sourceLine": 214
+    },
+    {
+      "id": "HOME-DOC-B177",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "进入实盘，应用首页传入的范围；入口不携带待复盘口径。",
+      "sourceKey": "bb238cf5b790a039d5da56d8",
+      "sourceLine": 214
+    },
+    {
+      "id": "HOME-DOC-B187",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "库内待复盘筛选",
+      "sourceKey": "0750bc7a1114d45741a249ec",
+      "sourceLine": 215
+    },
+    {
+      "id": "HOME-DOC-B188",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "在交易库内显式选择待复盘",
+      "sourceKey": "7146db35591ef3ad5451bf57",
+      "sourceLine": 215
+    },
+    {
+      "id": "HOME-DOC-B189",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "保持来源条件；完成复盘后能在交易库内核对筛选结果变化。",
+      "sourceKey": "ddf137cbd8d51fe6247bee3e",
+      "sourceLine": 215
+    },
+    {
+      "id": "HOME-DOC-B178",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "实盘列表",
+      "sourceKey": "973a7d745384750fb745052e",
+      "sourceLine": 216
+    },
+    {
+      "id": "HOME-DOC-B179",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "打开某个标的的交易",
+      "sourceKey": "615b5c55ef400ecefe295a56",
+      "sourceLine": 216
+    },
+    {
+      "id": "HOME-DOC-B180",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "在既有详情容器内查看该标的的回合集，不增加中间页面。",
+      "sourceKey": "0cc770dc15c7b0b579261bde",
+      "sourceLine": 216
+    },
+    {
+      "id": "HOME-DOC-B181",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "模拟盘列表",
+      "sourceKey": "16fec26dcf1ef2186de2674d",
+      "sourceLine": 217
+    },
+    {
+      "id": "HOME-DOC-B182",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "切换到模拟盘并打开一次练习",
+      "sourceKey": "593e91df2cc5c36e68e47bef",
+      "sourceLine": 217
+    },
+    {
+      "id": "HOME-DOC-B183",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "直接显示这次练习的回合集，同标的的其他练习不混入。",
+      "sourceKey": "8bb37699151fcfbc35780a0b",
+      "sourceLine": 217
+    },
+    {
+      "id": "HOME-DOC-B184",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "回合集",
+      "sourceKey": "107b92f0b1f0d7cef8c03a48",
+      "sourceLine": 218
+    },
+    {
+      "id": "HOME-DOC-B185",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "选择一个回合进入复盘",
+      "sourceKey": "78c9dabf73720928697ebfd3",
+      "sourceLine": 218
+    },
+    {
+      "id": "HOME-DOC-B186",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "携带该回合及必要的开仓上下文；范围外上下文不改变统计归属。",
+      "sourceKey": "f409eac34159a2a5ab5e378f",
+      "sourceLine": 218
+    },
+    {
+      "id": "HOME-DOC-B190",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "回合复盘",
+      "sourceKey": "8a5d3738b867f0e628061028",
+      "sourceLine": 219
+    },
+    {
+      "id": "HOME-DOC-B191",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "关闭或返回",
+      "sourceKey": "d9ff2086efc15f950c874e91",
+      "sourceLine": 219
+    },
+    {
+      "id": "HOME-DOC-B192",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "恢复原回合集、标的或练习、筛选、排序、页码、滚动位置和触发焦点。",
+      "sourceKey": "96b50c696e3a9fc839ffa7f4",
+      "sourceLine": 219
+    },
+    {
+      "id": "HOME-DOC-B193",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "回合集返回",
+      "sourceKey": "5365654bd2afed5e43e35d2f",
+      "sourceLine": 220
+    },
+    {
+      "id": "HOME-DOC-B194",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "返回来源列表",
+      "sourceKey": "b64cf28448d0848060fff079",
+      "sourceLine": 220
+    },
+    {
+      "id": "HOME-DOC-B195",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "恢复原标的/练习在来源列表的位置与状态，并保留筛选、排序、页码、滚动位置和触发焦点。",
+      "sourceKey": "15486e531851f7ccfbc6dc4b",
+      "sourceLine": 220
+    },
+    {
+      "id": "HOME-DOC-B196",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "交易库返回首页",
+      "sourceKey": "9c7ea7edcb6ea1c713bac424",
+      "sourceLine": 221
+    },
+    {
+      "id": "HOME-DOC-B197",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "使用返回来源入口",
+      "sourceKey": "f4e7b3abb438b305406cd7d0",
+      "sourceLine": 221
+    },
+    {
+      "id": "HOME-DOC-B198",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "恢复首页原期间、贡献模式、表格状态、滚动位置和触发焦点。",
+      "sourceKey": "c754457e65f9736308e29068",
+      "sourceLine": 221
+    },
+    {
+      "id": "HOME-DOC-B199",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "返回字段按来源保存如下：",
+      "sourceKey": "fd2a88e9711a15b21227600b",
+      "sourceLine": 223
+    },
+    {
+      "id": "HOME-DOC-B056",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "来源",
+      "sourceKey": "26e5ef13460dfcafeddf846e",
+      "sourceLine": 225
+    },
+    {
+      "id": "HOME-DOC-B201",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "恢复字段",
+      "sourceKey": "8f5fd6713b939a1754f770b6",
+      "sourceLine": 225
+    },
+    {
+      "id": "HOME-DOC-B202",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "交易库列表、标的或练习",
+      "sourceKey": "e63559ff71654dee16edcdc7",
+      "sourceLine": 227
+    },
+    {
+      "id": "HOME-DOC-B203",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "标的或练习身份、日期、市场、账户、搜索、筛选、排序、页码、滚动位置和触发焦点。",
+      "sourceKey": "df5c8c7b24ef85dfa58601c6",
+      "sourceLine": 227
+    },
+    {
+      "id": "HOME-DOC-B204",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "首页日期或普通入口",
+      "sourceKey": "cc15fe9534b45e72fa7e122b",
+      "sourceLine": 228
+    },
+    {
+      "id": "HOME-DOC-B205",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "原期间、市场、证券、日期、账户、附加筛选、表格状态、排序、页码、滚动位置和触发焦点。",
+      "sourceKey": "3e40938cc7a710eb3c7d7f32",
+      "sourceLine": 228
+    },
+    {
+      "id": "HOME-DOC-B206",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "首页贡献下钻",
+      "sourceKey": "d6dfc9fa486cafa35aafe084",
+      "sourceLine": 229
+    },
+    {
+      "id": "HOME-DOC-B207",
+      "kind": "tablecell",
+      "chapter": "BT06",
+      "text": "贡献模式，以及当前期间和历史已平仓两种模式各自的分类、排序、下钻、页码；同时恢复市场、证券、日期、账户、筛选、滚动位置和触发焦点。",
+      "sourceKey": "bc0e21559710776a03aa1538",
+      "sourceLine": 229
+    },
+    {
+      "id": "HOME-DOC-B208",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "若刷新导致原标的消失，焦点回到来源容器标题并保留仍有效的条件；不能从泛化“进入贡献”按钮直接跳到固定证券详情。",
+      "sourceKey": "bb694ea7bf5c9c0f5d59244f",
+      "sourceLine": 231
+    },
+    {
+      "id": "HOME-DOC-B007",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "本组分镜的共享来源快照为：首页本月 2026-10-01—2026-10-15、全部市场/账户、贡献模式“当前期间 / 做多 / 盈利最高”、滚动起点0；实盘列表保留该范围，成交日期升序、空搜索、第1页、每页6笔。选择贵州茅台后在回合集与复盘中保持同一来源，返回逐层恢复回合/成交行焦点；首页返回仅给原交易库侧栏入口焦点，不新增返回按钮。模拟盘保存日期范围独立为2026-10-15—2026-10-19，保存日期升序、空搜索、第1页、每页6次练习。两个视角的条件分别存储。",
+      "sourceKey": "dc2b47714490f572035c0f82",
+      "sourceLine": 250
+    },
+    {
+      "id": "HOME-DOC-B008",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "待复盘是显式的成交复盘状态，与是否留仓无关。样例待复盘为茅台买100股、卖40股和宁德时代已平仓卖50股；中芯国际尚有80股持仓但已复盘，因此不在待复盘结果中。",
+      "sourceKey": "fcf723c5175152d23340d7c5",
+      "sourceLine": 252
+    },
+    {
+      "id": "HOME-DOC-B009",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "首页估值使用设计行情样例，时点为2026-10-15 15:00 Asia/Shanghai，人民币原币、汇率1，覆盖全部2个持仓。期初无仓位、浮盈为0；期末茅台60股报价1740、中芯80股报价94，持仓市值111920.00。留存开仓费用计入持仓成本，期末浮盈1831.91；已实现747.14，期间净盈亏为2579.05。主趋势逐日用当日已实现加当日浮盈计算，具体报价输入见library-design-fixture.json；图中万/亿缩写可通过金额标题提示查完整值。复盘K线同属设计行情样例，标记为原始成交数量，配对数量另列于图表下方，不把配对部分当作原成交。",
+      "sourceKey": "d101a3c42db060ace149dfa3",
+      "sourceLine": 254
+    },
+    {
+      "id": "HOME-DOC-B209",
+      "kind": "paragraph",
+      "chapter": "BT06",
+      "text": "入口帧和到达帧的职责分开：入口帧的导航按钮负责进入普通交易库；到达帧显示已生效条件和交易列表，不再要求重复点击“进入交易库”。待复盘分镜只表达交易库内的显式筛选，不代表首页入口或默认队列。首页 V2.5 只展示普通入口帧，交易库 V1.0 展示完整到达、列表、回合、复盘和返回链路。",
+      "sourceKey": "948e4f0ee84ca46163062f0d",
+      "sourceLine": 256
+    },
+    {
+      "id": "HOME-DOC-B210",
       "kind": "paragraph",
       "chapter": "BT07",
-      "text": "读取失败提供可恢复错误和重试，重试保留原筛选条件。请求连续切换时只应用最后一次仍有效的选择；迟到的旧请求不能覆盖新选择。缺失金额显示“—”或“不可计算”，不伪造零值。范围、账户、市场和日期参数非法时使用明确的默认值并提示。",
-      "sourceKey": "04deddcc7963ffae9a809dd9",
-      "sourceLine": 96
+      "text": "异常状态按情况、呈现和保留与恢复区分；没有交易、搜索无匹配、没有已平仓回合、数据缺失和计算输入缺失分别表达，不能将它们合并为零。",
+      "sourceKey": "5110272ccda006fa1cae3df1",
+      "sourceLine": 260
+    },
+    {
+      "id": "HOME-DOC-B211",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "情况",
+      "sourceKey": "aad875dbc174738f36c22ae1",
+      "sourceLine": 262
+    },
+    {
+      "id": "HOME-DOC-B212",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "呈现",
+      "sourceKey": "46a94f735a2af0eac6bf3502",
+      "sourceLine": 262
+    },
+    {
+      "id": "HOME-DOC-B213",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留与恢复",
+      "sourceKey": "505f3cf379d18991008372cc",
+      "sourceLine": 262
+    },
+    {
+      "id": "HOME-DOC-B214",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "首次加载",
+      "sourceKey": "c90051122087d5dda32012bb",
+      "sourceLine": 264
+    },
+    {
+      "id": "HOME-DOC-B215",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "标题、工具区、表头和行槽使用最终尺寸占位。",
+      "sourceKey": "ecbd4b5d616a5f3ba83b6fd1",
+      "sourceLine": 264
+    },
+    {
+      "id": "HOME-DOC-B216",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留工具区、表头和结果区尺寸与位置。",
+      "sourceKey": "d1a41651315867cad5e3ba74",
+      "sourceLine": 264
+    },
+    {
+      "id": "HOME-DOC-B217",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "已有数据后台更新",
+      "sourceKey": "21df22eb04ee256c18dbc876",
+      "sourceLine": 265
+    },
+    {
+      "id": "HOME-DOC-B218",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示上一组完整有效数据，并说明正在更新。",
+      "sourceKey": "45d4528c75749f3350ef920d",
+      "sourceLine": 265
+    },
+    {
+      "id": "HOME-DOC-B219",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留旧范围和有效值。",
+      "sourceKey": "9feaa682080da10d8d6e4bf3",
+      "sourceLine": 265
+    },
+    {
+      "id": "HOME-DOC-B220",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "更新失败或超时",
+      "sourceKey": "1fd640ecd0c1efea55a5d80d",
+      "sourceLine": 266
+    },
+    {
+      "id": "HOME-DOC-B221",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "说明新范围未应用，并提供按原筛选条件重试。",
+      "sourceKey": "cb8186f93d6e3b1583f443ec",
+      "sourceLine": 266
+    },
+    {
+      "id": "HOME-DOC-B222",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留旧范围和上一组有效值。",
+      "sourceKey": "e586d13e9f8f4c1110393ba6",
+      "sourceLine": 266
+    },
+    {
+      "id": "HOME-DOC-B223",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "没有交易",
+      "sourceKey": "046b35f828e1c3007e8515d9",
+      "sourceLine": 267
+    },
+    {
+      "id": "HOME-DOC-B224",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示“没有交易”的独立空态。",
+      "sourceKey": "ffd4b25cc7eda3d834f07e8b",
+      "sourceLine": 267
+    },
+    {
+      "id": "HOME-DOC-B225",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留当前范围和工具区。",
+      "sourceKey": "2ca8ab78c1620894f625be6f",
+      "sourceLine": 267
+    },
+    {
+      "id": "HOME-DOC-B226",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "搜索无匹配",
+      "sourceKey": "e518f17209f67b2debf4cd3f",
+      "sourceLine": 268
+    },
+    {
+      "id": "HOME-DOC-B227",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示“当前搜索无匹配”的独立空态。",
+      "sourceKey": "c033ceb9fa796b7d7b873563",
+      "sourceLine": 268
+    },
+    {
+      "id": "HOME-DOC-B228",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留搜索词、范围和工具区尺寸与位置。",
+      "sourceKey": "8315e09d30994f7398791401",
+      "sourceLine": 268
+    },
+    {
+      "id": "HOME-DOC-B229",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "没有已平仓回合",
+      "sourceKey": "b9226223ef128f7c8b3ca081",
+      "sourceLine": 269
+    },
+    {
+      "id": "HOME-DOC-B230",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示没有已平仓回合的空态，不生成虚构回合。",
+      "sourceKey": "975fc804011d41c5c7d5ad28",
+      "sourceLine": 269
+    },
+    {
+      "id": "HOME-DOC-B231",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留日期、视角和统计结构。",
+      "sourceKey": "21e7dccac0318eeee17610ba",
+      "sourceLine": 269
+    },
+    {
+      "id": "HOME-DOC-B232",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "数据缺失",
+      "sourceKey": "0d62ab1af5d0fe53b1510b11",
+      "sourceLine": 270
+    },
+    {
+      "id": "HOME-DOC-B233",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示“—”或“不可计算”，不伪造零值。",
+      "sourceKey": "0f446277a3b1a30604317636",
+      "sourceLine": 270
+    },
+    {
+      "id": "HOME-DOC-B234",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留可用字段和原范围。",
+      "sourceKey": "a248d4b7467f284ef9d28817",
+      "sourceLine": 270
+    },
+    {
+      "id": "HOME-DOC-B235",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "计算输入缺失",
+      "sourceKey": "3b766c2b307369e17b567685",
+      "sourceLine": 271
+    },
+    {
+      "id": "HOME-DOC-B236",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示“不可计算”或破折号，不纳入完整分布。",
+      "sourceKey": "16a525699f79f5261b415d08",
+      "sourceLine": 271
+    },
+    {
+      "id": "HOME-DOC-B237",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留其他可计算样本。",
+      "sourceKey": "e06aa491de32c8d9b6f780bc",
+      "sourceLine": 271
+    },
+    {
+      "id": "HOME-DOC-B238",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "读取失败",
+      "sourceKey": "baeec6f204f265a06a85b9ea",
+      "sourceLine": 272
+    },
+    {
+      "id": "HOME-DOC-B239",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示可恢复错误和重试动作。",
+      "sourceKey": "6566461cd3bf6b27a5dbe90b",
+      "sourceLine": 272
+    },
+    {
+      "id": "HOME-DOC-B240",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留原筛选条件。",
+      "sourceKey": "d6fe92f1eb0d3099f5d58be7",
+      "sourceLine": 272
+    },
+    {
+      "id": "HOME-DOC-B241",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "连续切换范围",
+      "sourceKey": "3b0bd3c476f1f918209c517e",
+      "sourceLine": 273
+    },
+    {
+      "id": "HOME-DOC-B242",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "只应用最后一次仍有效的选择；迟到旧请求不得覆盖新选择。",
+      "sourceKey": "60e8ed8ede87f3f7eb39be10",
+      "sourceLine": 273
+    },
+    {
+      "id": "HOME-DOC-B243",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留最后一次仍有效选择的范围和结果。",
+      "sourceKey": "5ecea47a0ad8a36fcceb3f46",
+      "sourceLine": 273
+    },
+    {
+      "id": "HOME-DOC-B244",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "非法市场参数",
+      "sourceKey": "2fca890cf23291b6981065a8",
+      "sourceLine": 274
+    },
+    {
+      "id": "HOME-DOC-B245",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示参数提示，市场回到 all。",
+      "sourceKey": "3808cb1c73e6a2a58c7fdecf",
+      "sourceLine": 274
+    },
+    {
+      "id": "HOME-DOC-B246",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "保留可用的其他条件。",
+      "sourceKey": "430dda797b83b86c0171637a",
+      "sourceLine": 274
+    },
+    {
+      "id": "HOME-DOC-B247",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "非法或不完整范围参数",
+      "sourceKey": "058d167871acb62211a2a3c4",
+      "sourceLine": 275
+    },
+    {
+      "id": "HOME-DOC-B248",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示可修正提示，不能静默扩为全部。",
+      "sourceKey": "b0a6b92694c367a03db3c6ec",
+      "sourceLine": 275
+    },
+    {
+      "id": "HOME-DOC-B058",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "具体回退规则待规格明确。",
+      "sourceKey": "3851f266c1a687da5d010be8",
+      "sourceLine": 275
+    },
+    {
+      "id": "HOME-DOC-B250",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "账户等缺少已确认默认值的参数",
+      "sourceKey": "960aa23023bf9775a4637da3",
+      "sourceLine": 276
+    },
+    {
+      "id": "HOME-DOC-B251",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "显示参数错误，不伪造默认值。",
+      "sourceKey": "4521c4cca8d6cb1e3107a74f",
+      "sourceLine": 276
+    },
+    {
+      "id": "HOME-DOC-B059",
+      "kind": "tablecell",
+      "chapter": "BT07",
+      "text": "具体回退规则待规格明确。",
+      "sourceKey": "3851f266c1a687da5d010be8",
+      "sourceLine": 276
+    },
+    {
+      "id": "HOME-DOC-B253",
+      "kind": "paragraph",
+      "chapter": "BT08",
+      "text": "交易库按公共、组合、业务和容器四层使用组件。公共层沿用 V2.5 的外观、状态、命中区、动效和基础视觉；组合层组织交易库页面；业务层承载第三至七章的条件、练习、回合、统计和异常规则；容器层承载详情、回合集、复盘及返回上下文。第二章负责布局和尺寸，本章不重复定义。",
+      "sourceKey": "005f78e0e8dabbfd86c967ad",
+      "sourceLine": 288
     },
     {
       "id": "HOME-DOC-B026",
@@ -209,223 +1673,319 @@
       "chapter": "BT08",
       "text": "层级",
       "sourceKey": "92649db5f110c29dc595ece9",
-      "sourceLine": 108
+      "sourceLine": 290
     },
     {
-      "id": "HOME-DOC-B027",
+      "id": "HOME-DOC-B254",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "使用内容",
-      "sourceKey": "d20a99aa4efaeef6d0ffa692",
-      "sourceLine": 108
+      "text": "职责与边界",
+      "sourceKey": "dc968372b4e3f6be89557203",
+      "sourceLine": 290
     },
     {
-      "id": "HOME-DOC-B028",
+      "id": "HOME-DOC-B255",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "为何需要这一层",
-      "sourceKey": "ce2dcc5cda1240d30102bff3",
-      "sourceLine": 108
+      "text": "公共组件",
+      "sourceKey": "59434b2923af39fd886ec11d",
+      "sourceLine": 292
     },
     {
-      "id": "HOME-DOC-B029",
+      "id": "HOME-DOC-B256",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "不可改动的边界",
-      "sourceKey": "0b77b3544cf56ef395f9f055",
-      "sourceLine": 108
+      "text": "保证交易库与全站控件状态、命中区和视觉基础一致，不另行设计公共外观、尺寸或状态顺序。",
+      "sourceKey": "468da3e5b8e2a663de1494ec",
+      "sourceLine": 292
     },
     {
-      "id": "HOME-DOC-B030",
+      "id": "HOME-DOC-B257",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "公共基础组件",
-      "sourceKey": "b1fe63b51f6b73f873907d92",
-      "sourceLine": 110
+      "text": "组合组件",
+      "sourceKey": "360c17fe7e7767516b4e563b",
+      "sourceLine": 293
     },
     {
-      "id": "HOME-DOC-B031",
+      "id": "HOME-DOC-B258",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "IconButton、SegmentedTabs、Select、Popover、FilterPopover、Token、DataTable、Metric、StatusBadge、ChartTooltip、EmptyState、RetryAction，以及 V2.5 的字体、颜色、间距、焦点、动效和对齐",
-      "sourceKey": "b408b2ad96a557b5f7bec0f2",
-      "sourceLine": 110
+      "text": "把条件工具区、实盘/模拟盘视角、列表、统计、局部表内筛选、练习与回合集入口、分布下钻组合为页面阶段。",
+      "sourceKey": "d0aadf306c4d3ce467759fda",
+      "sourceLine": 293
     },
     {
-      "id": "HOME-DOC-B032",
+      "id": "HOME-DOC-B259",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "保证交易库与全站控件状态、命中区和视觉基础一致",
-      "sourceKey": "e524ec81ad2294ef83448c67",
-      "sourceLine": 110
+      "text": "业务组件",
+      "sourceKey": "12f87145aa93ed22f8b34ad7",
+      "sourceLine": 294
     },
     {
-      "id": "HOME-DOC-B033",
+      "id": "HOME-DOC-B260",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "不另行设计公共组件外观、尺寸、状态顺序或全局搜索行为",
-      "sourceKey": "c4db7f8b3285bc034c86c84a",
-      "sourceLine": 110
+      "text": "表达来源条件立即生效、配对、日期口径、收益分类、显式待复盘筛选和逐层恢复等规则；不增加无依据中间页或模拟盘账户模型。",
+      "sourceKey": "7f26496e106e08593d24e5a1",
+      "sourceLine": 294
     },
     {
-      "id": "HOME-DOC-B034",
+      "id": "HOME-DOC-B261",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "交易库组合",
-      "sourceKey": "0f46cddab5090c4466a95bfe",
-      "sourceLine": 111
+      "text": "容器组件",
+      "sourceKey": "c8fe753667e572b081e7f8a8",
+      "sourceLine": 295
     },
     {
-      "id": "HOME-DOC-B035",
+      "id": "HOME-DOC-B262",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "条件工具区、实盘/模拟盘视角、列表与统计共享条件、局部 inline filter、练习与回合集入口、分布区间下钻",
-      "sourceKey": "ae1fc75594ea3e6bfad9300a",
-      "sourceLine": 111
+      "text": "复用既有交易详情容器、回合集和回合复盘，恢复日期、筛选、标的/练习入口、焦点和滚动位置；不新增双栏容器。",
+      "sourceKey": "5ce2e7fb10dc09c2cb69033d",
+      "sourceLine": 295
     },
     {
-      "id": "HOME-DOC-B036",
+      "id": "HOME-DOC-B263",
+      "kind": "paragraph",
+      "chapter": "BT08",
+      "text": "公共技术名称按类别列出，具体使用位置见第二至七章。",
+      "sourceKey": "7740cd67ab9e242ab42d65a4",
+      "sourceLine": 297
+    },
+    {
+      "id": "HOME-DOC-B264",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "把公共控件组合成交易库可读、可返回的页面阶段",
-      "sourceKey": "593e3ab7ac6f75d45f8c426d",
-      "sourceLine": 111
+      "text": "类别",
+      "sourceKey": "bf31b362eb8633b698e7cfb3",
+      "sourceLine": 299
     },
     {
-      "id": "HOME-DOC-B037",
+      "id": "HOME-DOC-B265",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "搜索保持页面内过滤；视角条件分别记忆；下钻不改顶部条件或分母",
-      "sourceKey": "004f2aa034766c45bef4a8ec",
-      "sourceLine": 111
+      "text": "公共组件名称",
+      "sourceKey": "c8ffe715536cc2e62d26f2e7",
+      "sourceLine": 299
     },
     {
-      "id": "HOME-DOC-B038",
+      "id": "HOME-DOC-B266",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "交易库业务编排",
-      "sourceKey": "1671f6913671d839e54ccf15",
-      "sourceLine": 112
+      "text": "基础操作",
+      "sourceKey": "3d880e596e981d0f454b07d5",
+      "sourceLine": 301
     },
     {
-      "id": "HOME-DOC-B039",
+      "id": "HOME-DOC-B267",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "来源条件立即生效、一次练习单一标的多回合、最近开仓优先且不跨练习配对、日期口径、逐层恢复返回上下文",
-      "sourceKey": "c3d1f4a926c6127e9f6c1728",
-      "sourceLine": 112
+      "text": "IconButton、SegmentedTabs",
+      "sourceKey": "98e9fd5506f09f700f3b60d8",
+      "sourceLine": 301
     },
     {
-      "id": "HOME-DOC-B040",
+      "id": "HOME-DOC-B268",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "这些是交易库的业务状态和上下游合同，无法由单个公共控件表达",
-      "sourceKey": "904ad04a3b83c38d52a70e24",
-      "sourceLine": 112
+      "text": "选择与浮层",
+      "sourceKey": "ebb78fd0a83d8c5ba36faf66",
+      "sourceLine": 302
     },
     {
-      "id": "HOME-DOC-B041",
+      "id": "HOME-DOC-B269",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "不得增加无依据中间页，不把实盘账户当模拟盘身份，不把未平仓混入已平仓统计",
-      "sourceKey": "d940446284d39a5342039bc6",
-      "sourceLine": 112
+      "text": "Select、Popover、FilterPopover",
+      "sourceKey": "f7776a538b29cda059e8c348",
+      "sourceLine": 302
     },
     {
-      "id": "HOME-DOC-B042",
+      "id": "HOME-DOC-B270",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "详情与返回容器",
-      "sourceKey": "b2e5c10718c30f1145ed2094",
-      "sourceLine": 113
+      "text": "状态与标记",
+      "sourceKey": "d885ebe399bbcd0dcaa08450",
+      "sourceLine": 303
     },
     {
-      "id": "HOME-DOC-B043",
+      "id": "HOME-DOC-B271",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "既有交易详情容器、回合集、回合复盘以及来源焦点/滚动恢复",
-      "sourceKey": "a7c9e967212c6ffc6c93e3f1",
-      "sourceLine": 113
+      "text": "Token、StatusBadge",
+      "sourceKey": "ab39374b6563ed276c733516",
+      "sourceLine": 303
     },
     {
-      "id": "HOME-DOC-B074",
+      "id": "HOME-DOC-B272",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "确保日期、交易库筛选、标的和练习入口回到原上下文",
-      "sourceKey": "202597d283502d4bde9582b2",
-      "sourceLine": 113
+      "text": "数据展示",
+      "sourceKey": "fa111a5d23190d30c6bf1c7a",
+      "sourceLine": 304
     },
     {
-      "id": "HOME-DOC-B045",
+      "id": "HOME-DOC-B273",
       "kind": "tablecell",
       "chapter": "BT08",
-      "text": "不得新增没有合同依据的双栏容器或从泛化入口跳到固定详情",
-      "sourceKey": "8fb2743de77e41e4b15bc54d",
-      "sourceLine": 113
+      "text": "DataTable、Metric、ChartTooltip",
+      "sourceKey": "541e8772bc22a31d79b24037",
+      "sourceLine": 304
     },
     {
-      "id": "HOME-DOC-B075",
+      "id": "HOME-DOC-B274",
+      "kind": "tablecell",
+      "chapter": "BT08",
+      "text": "空态与恢复",
+      "sourceKey": "2ce9b6a5e7b6b6089f0f0f80",
+      "sourceLine": 305
+    },
+    {
+      "id": "HOME-DOC-B275",
+      "kind": "tablecell",
+      "chapter": "BT08",
+      "text": "EmptyState、RetryAction",
+      "sourceKey": "221eb2a50e4de38aefa7ade6",
+      "sourceLine": 305
+    },
+    {
+      "id": "HOME-DOC-B276",
       "kind": "paragraph",
       "chapter": "BT09",
-      "text": "本方案是设计合同，静态分镜只说明预期，不证明实现已经完成。实现验收分别检查功能、状态链、持久化和视觉：从首页日期点、普通交易库入口、交易库内待复盘筛选、实盘标的、模拟盘练习、统计区间进入；完成一次回合复盘后返回、刷新、重新打开，确认真实条件、列表、练习、回合、区间、滚动和焦点仍一致。写入验收使用隔离数据库，保留原始交易数据不变。",
-      "sourceKey": "e7a91e3f47619a71a43ba2f8",
-      "sourceLine": 117
+      "text": "静态分镜说明设计预期，不证明产品实现已经完成。功能、状态与持久化、视觉验收分别记录可观察结果，任何一项未验证都不能写成通过。",
+      "sourceKey": "cf004fa8a709fdfd5c8fef70",
+      "sourceLine": 309
     },
     {
-      "id": "HOME-DOC-B047",
-      "kind": "paragraph",
+      "id": "HOME-DOC-B277",
+      "kind": "listitem",
       "chapter": "BT09",
-      "text": "视觉对照使用批准视口、相同导航和相同状态，检查条件工具区、搜索220px、刷新36px、间隔28px、公共表格列对齐、金额精度、占比两位小数、窄栏换行、空态/错误态和返回焦点。功能、数据持久化、真实页面行为与同状态视觉比较分别记录结果；未验证项不能写成通过。",
-      "sourceKey": "9552825544396b80165e112f",
-      "sourceLine": 119
+      "text": "从首页日期点和普通交易库入口进入，确认来源条件立即生效；在库内显式选择待复盘，确认结果只在库内出现。",
+      "sourceKey": "1a770f7d3f0de7fa12f9650a",
+      "sourceLine": 313
     },
     {
-      "id": "HOME-DOC-B048",
-      "kind": "tablecell",
-      "chapter": "BT10",
-      "text": "原章节与范围",
-      "sourceKey": "473fd02b35c677077e1a8302",
-      "sourceLine": 123
+      "id": "HOME-DOC-B278",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "分别进入实盘标的、模拟盘练习、统计区间和回合复盘，确认列表、练习、回合、日期口径、配对、分布下钻和逐层返回符合本方案。",
+      "sourceKey": "e1394f70a3c63fc2f6b6046e",
+      "sourceLine": 314
     },
     {
-      "id": "HOME-DOC-B049",
-      "kind": "tablecell",
-      "chapter": "BT10",
-      "text": "交易库 V1.0 承接位置",
-      "sourceKey": "e907a5fd82d9b67a939f80b3",
-      "sourceLine": 123
+      "id": "HOME-DOC-B279",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "验证搜索只过滤交易库表，清空、无匹配、刷新、失败、重试和非法参数提示都保留正确的工具区与范围语义。",
+      "sourceKey": "934a74c5b3e1d4b92ef26d99",
+      "sourceLine": 315
     },
     {
-      "id": "HOME-DOC-B050",
-      "kind": "tablecell",
-      "chapter": "BT10",
-      "text": "迁移说明",
-      "sourceKey": "c6ebe9f370c5e7b4528c8c64",
-      "sourceLine": 123
+      "id": "HOME-DOC-B280",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "在隔离数据库中完成一次回合复盘，返回、刷新并重新打开，确认日期、视角、账户、列表或练习、回合、区间、排序、页码、滚动位置和焦点仍一致。",
+      "sourceKey": "b479d07b7556bfd4b81e5cfb",
+      "sourceLine": 319
     },
     {
-      "id": "HOME-DOC-B051",
-      "kind": "tablecell",
-      "chapter": "BT10",
-      "text": "HP06 从首页进入、核对与返回",
-      "sourceKey": "aa86bd65046677f5ab32b473",
-      "sourceLine": 125
+      "id": "HOME-DOC-B281",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "检查后台更新、连续请求、迟到结果、空态、缺失和重试；旧有效结果不能被失败请求覆盖，缺失值不能变成零。",
+      "sourceKey": "0e8615fa23bbc0988eede0d5",
+      "sourceLine": 320
     },
     {
-      "id": "HOME-DOC-B052",
-      "kind": "tablecell",
-      "chapter": "BT10",
-      "text": "目标与取舍、范围日期与搜索、详情复盘与返回完整分镜",
-      "sourceKey": "e89bc9388adb0a8ac69f3ce6",
-      "sourceLine": 125
+      "id": "HOME-DOC-B282",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "写入验收不得改变原始交易数据，并记录隔离数据库、请求范围和恢复字段的实际结果。",
+      "sourceKey": "4b4349f9f24969c70a8b36f4",
+      "sourceLine": 321
     },
     {
-      "id": "HOME-DOC-B076",
+      "id": "HOME-DOC-B283",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "使用批准视口和相同导航、数据状态对照真实页面，按第二章检查布局层级、工具区职责、表格列对齐和返回焦点。",
+      "sourceKey": "3e1d4725fd9c016ebd9295da",
+      "sourceLine": 325
+    },
+    {
+      "id": "HOME-DOC-B284",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "检查价格两位小数、金额“万/亿”阈值与完整值可查、占比两位小数、窄栏换行，以及没有交易、无匹配、无已平仓回合、错误、极端和缺失状态的独立呈现。",
+      "sourceKey": "21de84b731928d8bd848ce33",
+      "sourceLine": 326
+    },
+    {
+      "id": "HOME-DOC-B285",
+      "kind": "listitem",
+      "chapter": "BT09",
+      "text": "功能、数据持久化、真实页面行为和同状态视觉比较分别记录结果；静态图、DOM存在或 HTTP 成功不能替代视觉证据。",
+      "sourceKey": "54b40549277c6e332e3a2a84",
+      "sourceLine": 327
+    },
+    {
+      "id": "HOME-DOC-B286",
+      "kind": "paragraph",
+      "chapter": "BT10",
+      "text": "本章集中记录来源迁移、实现引用和历史边界；历史版本与候选方案只用于追溯，当前验收以本正文和分镜为准。",
+      "sourceKey": "f12d159177403c775c8c7cb8",
+      "sourceLine": 331
+    },
+    {
+      "id": "HOME-DOC-B061",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "保留日期入口、普通交易库入口、日期/标的参数、条件立即生效、只读摘要、交易详情及首页返回范围/位置/焦点和 handoff、journeys-date、journeys-library-entry、library-return、hcr06-final- 分镜；历史待复盘入口的数量分镜保留来源文件，但不再作为首页目的地或入口合同。",
-      "sourceKey": "9b6d77df19d1c81e2569704e",
-      "sourceLine": 125
+      "text": "来源",
+      "sourceKey": "26e5ef13460dfcafeddf846e",
+      "sourceLine": 333
+    },
+    {
+      "id": "HOME-DOC-B288",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "当前章节",
+      "sourceKey": "b1c0436ad623694c65181285",
+      "sourceLine": 333
+    },
+    {
+      "id": "HOME-DOC-B289",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "图稿或保留主题",
+      "sourceKey": "4a77b0a3f0b9faff562efe40",
+      "sourceLine": 333
+    },
+    {
+      "id": "HOME-DOC-B290",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "HP06",
+      "sourceKey": "3b4ae7556786e3b3ec625cca",
+      "sourceLine": 335
+    },
+    {
+      "id": "HOME-DOC-B291",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "第一章、第三章、第六章",
+      "sourceKey": "9c1bc5838f926ccca303e747",
+      "sourceLine": 335
+    },
+    {
+      "id": "HOME-DOC-B292",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "日期入口、普通交易库入口、条件立即生效、详情与首页返回；保留 handoff、journeys-date、journeys-library-entry、library-return、hcr06-final-。",
+      "sourceKey": "f3e02945dc3c12772419d20b",
+      "sourceLine": 335
     },
     {
       "id": "HOME-DOC-B054",
@@ -433,23 +1993,23 @@
       "chapter": "BT10",
       "text": "HP07 共享布局与条件",
       "sourceKey": "3caf39742d80422f351815a5",
-      "sourceLine": 126
+      "sourceLine": 336
     },
     {
-      "id": "HOME-DOC-B055",
+      "id": "HOME-DOC-B293",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "布局与公共视觉基础、范围日期与搜索、列表/练习/回合、统计与分布",
-      "sourceKey": "0b76c87b706c997d23da801e",
-      "sourceLine": 126
+      "text": "第二章至第五章",
+      "sourceKey": "5cd831ae461bc2a4c4f477e6",
+      "sourceLine": 336
     },
     {
-      "id": "HOME-DOC-B056",
+      "id": "HOME-DOC-B074",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "完整保留实盘/模拟盘互斥视角、各自条件记忆、自然日期和上海时区、实盘成交日/统计平仓日、模拟练习日期、单标的一次练习、同标的同日独立练习、最近开仓优先配对、收益分类和统计口径。",
-      "sourceKey": "ce954910c6813669f46d15e6",
-      "sourceLine": 126
+      "text": "实盘/模拟盘视角、已采用方案 B 的紧凑页头、条件记忆、自然日期和上海时区、日期口径、练习与回合、收益与统计规则。",
+      "sourceKey": "8dade09d1cb0dd999890971f",
+      "sourceLine": 336
     },
     {
       "id": "HOME-DOC-B057",
@@ -457,23 +2017,23 @@
       "chapter": "BT10",
       "text": "HP07 工具区与搜索",
       "sourceKey": "cd53f092dd1c8cd6fde8f6b5",
-      "sourceLine": 127
+      "sourceLine": 337
     },
     {
-      "id": "HOME-DOC-B058",
+      "id": "HOME-DOC-B295",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "范围、日期与搜索",
-      "sourceKey": "fe6fca7da85d0a9367be5eca",
-      "sourceLine": 127
+      "text": "第二章、第三章",
+      "sourceKey": "d0fbe3835a67a66baf7246ea",
+      "sourceLine": 337
     },
     {
-      "id": "HOME-DOC-B059",
+      "id": "HOME-DOC-B296",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "完整保留局部 inline filter、搜索220px、刷新36px、间隔28px、独立条件摘要、日期/年份图标边界和禁止调用全局搜索遮罩。",
-      "sourceKey": "f2be97bdd21a2350cc043bb8",
-      "sourceLine": 127
+      "text": "局部表内筛选、搜索220px、刷新36×36px、间隔28px、条件摘要、日期/年份图标边界。",
+      "sourceKey": "216d2f7dac7e16ff3e437362",
+      "sourceLine": 337
     },
     {
       "id": "HOME-DOC-B060",
@@ -481,23 +2041,23 @@
       "chapter": "BT10",
       "text": "HP07 从入口到回合再返回",
       "sourceKey": "7287f0afd7abe74c11ad2ef1",
-      "sourceLine": 128
+      "sourceLine": 338
     },
     {
-      "id": "HOME-DOC-B061",
+      "id": "HOME-DOC-B297",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "详情、复盘与返回完整分镜",
-      "sourceKey": "b1ad90988c8f89781a1c11a8",
-      "sourceLine": 128
+      "text": "第六章",
+      "sourceKey": "ee20b60053179a124a983498",
+      "sourceLine": 338
     },
     {
-      "id": "HOME-DOC-B062",
+      "id": "HOME-DOC-B298",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "完整保留日期→实盘、实盘标的→回合集、模拟练习→回合集、回合复盘→返回、交易库→首页的层级与上下文恢复。",
-      "sourceKey": "814b7a9fe515e283c6f21d3d",
-      "sourceLine": 128
+      "text": "日期→实盘、实盘标的→回合集、模拟练习→回合集、回合复盘→返回和上下文恢复。",
+      "sourceKey": "63e447e82f376d1ef78d6d45",
+      "sourceLine": 338
     },
     {
       "id": "HOME-DOC-B063",
@@ -505,23 +2065,23 @@
       "chapter": "BT10",
       "text": "HP07 练习到回合分镜",
       "sourceKey": "a26c98fabc00ba190782b0f5",
-      "sourceLine": 129
+      "sourceLine": 339
     },
     {
-      "id": "HOME-DOC-B064",
+      "id": "HOME-DOC-B299",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "列表、练习与回合",
-      "sourceKey": "bee679d6bffca51e359fb125",
-      "sourceLine": 129
+      "text": "第四章",
+      "sourceKey": "71c5e99cdc22b7bd50275b4c",
+      "sourceLine": 339
     },
     {
-      "id": "HOME-DOC-B065",
+      "id": "HOME-DOC-B033",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "迁移 hcr06-final-sim-ab、hcr06-final-rounds-a、hcr06-final-replay-a1/a2/b1，图稿字节不改。",
-      "sourceKey": "fd7f03deb61c04dbd8b4d29d",
-      "sourceLine": 129
+      "text": "hcr06-final-sim-ab、hcr06-final-rounds-a、hcr06-final-replay-a1/a2/b1，共用整页母版并保留练习、回合和复盘身份。",
+      "sourceKey": "80780014c327b846736801cf",
+      "sourceLine": 339
     },
     {
       "id": "HOME-DOC-B066",
@@ -529,31 +2089,207 @@
       "chapter": "BT10",
       "text": "HP07 统计与分布分镜",
       "sourceKey": "4df5b53ebef7fde4642d2599",
-      "sourceLine": 130
+      "sourceLine": 340
+    },
+    {
+      "id": "HOME-DOC-B301",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "第五章、第七章",
+      "sourceKey": "29255d3e4078d2de970cb1c3",
+      "sourceLine": 340
+    },
+    {
+      "id": "HOME-DOC-B302",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "01-live-normal 至 09-missing-input，包括粒度、收益率/金额、2位小数、固定分母、区间展开、返回位置和异常状态。",
+      "sourceKey": "b2a72d5c43c9a0f92b8cd024",
+      "sourceLine": 340
+    },
+    {
+      "id": "HOME-DOC-B034",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "设计样例边界",
+      "sourceKey": "256922e6b3d671bc08fe38a6",
+      "sourceLine": 341
+    },
+    {
+      "id": "HOME-DOC-B035",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "第三章、第五章",
+      "sourceKey": "05c47b781d230eeeebc12dff",
+      "sourceLine": 341
+    },
+    {
+      "id": "HOME-DOC-B036",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "journeys-date-month、journeys-trend-gap、journeys-trend-single、journeys-trend-empty；有效日期由固定样例派生，缺失不补零。",
+      "sourceKey": "6ba20c007884c8601ba98895",
+      "sourceLine": 341
+    },
+    {
+      "id": "HOME-DOC-B303",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "实现约定",
+      "sourceKey": "6f977ef44d3e36f6c4087225",
+      "sourceLine": 345
+    },
+    {
+      "id": "HOME-DOC-B062",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "依据",
+      "sourceKey": "40acd6de43b85733efee162e",
+      "sourceLine": 345
+    },
+    {
+      "id": "HOME-DOC-B305",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "普通入口不带 queue 或 pending-review；待复盘只由交易库内显式筛选进入。",
+      "sourceKey": "c8c821ed8b87854899948c82",
+      "sourceLine": 347
+    },
+    {
+      "id": "HOME-DOC-B306",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "V2.5 入口状态约定；正文用户旅程见第六章。",
+      "sourceKey": "8dd40f2a59cff48e96d1fe8f",
+      "sourceLine": 347
+    },
+    {
+      "id": "HOME-DOC-B307",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "刷新和直达按 URL 重建范围；非法市场回 all 并提示；非法或不完整范围显示可修正提示，不能静默扩为全部。",
+      "sourceKey": "9bfb29c8911961f959a52618",
+      "sourceLine": 348
+    },
+    {
+      "id": "HOME-DOC-B064",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "V2.5 入口状态约定。",
+      "sourceKey": "884b64c8f8f58d616c867d8a",
+      "sourceLine": 348
+    },
+    {
+      "id": "HOME-DOC-B010",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "账户参数必须显式传递；未定义的账户默认值继续待明确。",
+      "sourceKey": "3f108bf3e2aa619b2cb4e2b0",
+      "sourceLine": 349
+    },
+    {
+      "id": "HOME-DOC-B065",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "V2.5 入口状态约定。",
+      "sourceKey": "884b64c8f8f58d616c867d8a",
+      "sourceLine": 349
+    },
+    {
+      "id": "HOME-DOC-B309",
+      "kind": "listitem",
+      "chapter": "BT10",
+      "text": "2026-10-22 用户确认“首页取消独立待复盘入口，统一进入交易库”。当前正文使用普通交易库入口；原待复盘数量分镜仅作历史来源，并保留交易库内显式待复盘筛选的依据。",
+      "sourceKey": "c53009121d00f32437be02ed",
+      "sourceLine": 353
+    },
+    {
+      "id": "HOME-DOC-B101",
+      "kind": "listitem",
+      "chapter": "BT10",
+      "text": "2026-10-24 用户确认采用方案 B（紧凑排列），以及“最差练习回撤（推荐）”。正文、共享分镜和指标说明均按此决定更新。",
+      "sourceKey": "751a057afa4b16662515a013",
+      "sourceLine": 354
+    },
+    {
+      "id": "HOME-DOC-B311",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "问题",
+      "sourceKey": "512aaefb69e311c0dc364413",
+      "sourceLine": 358
+    },
+    {
+      "id": "HOME-DOC-B312",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "当前处理",
+      "sourceKey": "9e61a7a57594c3ff0ab6b5a7",
+      "sourceLine": 358
     },
     {
       "id": "HOME-DOC-B067",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "统计与分布、异常状态",
-      "sourceKey": "7f98a71526451627e7ce6466",
-      "sourceLine": 130
+      "text": "依据",
+      "sourceKey": "40acd6de43b85733efee162e",
+      "sourceLine": 358
     },
     {
-      "id": "HOME-DOC-B068",
+      "id": "HOME-DOC-B314",
       "kind": "tablecell",
       "chapter": "BT10",
-      "text": "迁移 01-live-normal 至 09-missing-input，包含日/月/年粒度、收益率/金额切换、2位小数、固定分母、区间展开、返回位置和异常状态。",
-      "sourceKey": "b03afff6c5c212215b48559a",
-      "sourceLine": 130
+      "text": "O02 状态徽章使用24px高，还是20px高并采用自适应宽？",
+      "sourceKey": "3ff2fbf83dfc97db63dfdb8e",
+      "sourceLine": 360
     },
     {
-      "id": "HOME-DOC-B077",
+      "id": "HOME-DOC-B315",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "当前沿用24px高；20px高、自适应宽方案继续待确认。",
+      "sourceKey": "85149682d3c5df8612a71cc0",
+      "sourceLine": 360
+    },
+    {
+      "id": "HOME-DOC-B316",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "O02 视觉验收项。",
+      "sourceKey": "7c32af1e75246587c597609f",
+      "sourceLine": 360
+    },
+    {
+      "id": "HOME-DOC-B317",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "日期、账户等未明确默认值是什么？",
+      "sourceKey": "61be5a1eee75e49e2ea7c405",
+      "sourceLine": 361
+    },
+    {
+      "id": "HOME-DOC-B318",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "记录为规格待明确，不自行决定回退值，也不把缺少参数静默解释为全部范围。",
+      "sourceKey": "a1b1c8045c52cde0447b7a88",
+      "sourceLine": 361
+    },
+    {
+      "id": "HOME-DOC-B319",
+      "kind": "tablecell",
+      "chapter": "BT10",
+      "text": "V2.5 入口状态约定与现有业务规则。",
+      "sourceKey": "64e5820bfe750489a15ab831",
+      "sourceLine": 361
+    },
+    {
+      "id": "HOME-DOC-B041",
       "kind": "paragraph",
       "chapter": "BT10",
-      "text": "本拆分不新增设计决定，也不重开交易库已确认的业务口径、字段、图稿或组件边界。公共规范中原有的待确认项（例如状态徽章紧凑方案 O02）继续以冻结 V2.4.2/V2.5 文档为准；交易库不在本方案中作新决定。2026-10-22 用户确认“首页取消独立待复盘入口，统一进入交易库”，因此正文与迁移表将普通交易库入口作为当前合同，原待复盘数量分镜仅归档，并保留为交易库内部待复盘筛选示例的来源依据。冻结评论与迁移依据见 拆分评论记录。",
-      "sourceKey": "512bd14638f60eede202700e",
-      "sourceLine": 134
+      "text": "历史承接自冻结的首页交易库业务与分镜；source/generate-library-frames.py 以固定设计样例生成完整状态图，handoff 与 library-return 均包含首页宿主可见区域，局部 journeys-library-entry.svg 只作为历史参考。冻结评论与迁移依据见拆分评论记录。",
+      "sourceKey": "a805661aa6df8ac1774e7b53",
+      "sourceLine": 363
     }
   ],
   "images": [
@@ -563,7 +2299,23 @@
       "sharedImageId": "journeys-date",
       "src": "source/images/journeys-date.svg",
       "chapter": "BT03",
-      "sourceLine": 33
+      "sourceLine": 98
+    },
+    {
+      "id": "journeys-date-1280",
+      "occurrenceId": "journeys-date-1280@state-demo-1-2",
+      "sharedImageId": "journeys-date-1280",
+      "src": "source/images/journeys-date-1280.svg",
+      "chapter": "BT03",
+      "sourceLine": 98
+    },
+    {
+      "id": "journeys-date-month",
+      "occurrenceId": "journeys-date-month@state-demo-1-3",
+      "sharedImageId": "journeys-date-month",
+      "src": "source/images/journeys-date-month.svg",
+      "chapter": "BT03",
+      "sourceLine": 98
     },
     {
       "id": "hcr06-final-sim-ab",
@@ -571,7 +2323,7 @@
       "sharedImageId": "hcr06-final-sim-ab",
       "src": "source/images/hcr06-final-sim-ab.svg",
       "chapter": "BT04",
-      "sourceLine": 51
+      "sourceLine": 133
     },
     {
       "id": "hcr06-final-rounds-a",
@@ -579,7 +2331,7 @@
       "sharedImageId": "hcr06-final-rounds-a",
       "src": "source/images/hcr06-final-rounds-a.svg",
       "chapter": "BT04",
-      "sourceLine": 51
+      "sourceLine": 133
     },
     {
       "id": "hcr06-final-replay-a1",
@@ -587,7 +2339,7 @@
       "sharedImageId": "hcr06-final-replay-a1",
       "src": "source/images/hcr06-final-replay-a1.svg",
       "chapter": "BT04",
-      "sourceLine": 51
+      "sourceLine": 133
     },
     {
       "id": "hcr06-final-replay-a2",
@@ -595,15 +2347,39 @@
       "sharedImageId": "hcr06-final-replay-a2",
       "src": "source/images/hcr06-final-replay-a2.svg",
       "chapter": "BT04",
-      "sourceLine": 51
+      "sourceLine": 133
+    },
+    {
+      "id": "journeys-rounds-a-return",
+      "occurrenceId": "journeys-rounds-a-return@state-demo-2-5",
+      "sharedImageId": "journeys-rounds-a-return",
+      "src": "source/images/journeys-rounds-a-return.svg",
+      "chapter": "BT04",
+      "sourceLine": 133
+    },
+    {
+      "id": "journeys-simulation-return",
+      "occurrenceId": "journeys-simulation-return@state-demo-2-6",
+      "sharedImageId": "journeys-simulation-return",
+      "src": "source/images/journeys-simulation-return.svg",
+      "chapter": "BT04",
+      "sourceLine": 133
+    },
+    {
+      "id": "journeys-rounds-b",
+      "occurrenceId": "journeys-rounds-b@state-demo-2-7",
+      "sharedImageId": "journeys-rounds-b",
+      "src": "source/images/journeys-rounds-b.svg",
+      "chapter": "BT04",
+      "sourceLine": 133
     },
     {
       "id": "hcr06-final-replay-b1",
-      "occurrenceId": "hcr06-final-replay-b1@state-demo-2-5",
+      "occurrenceId": "hcr06-final-replay-b1@state-demo-2-8",
       "sharedImageId": "hcr06-final-replay-b1",
       "src": "source/images/hcr06-final-replay-b1.svg",
       "chapter": "BT04",
-      "sourceLine": 51
+      "sourceLine": 133
     },
     {
       "id": "01-live-normal",
@@ -611,111 +2387,231 @@
       "sharedImageId": "01-live-normal",
       "src": "source/images/01-live-normal.svg",
       "chapter": "BT05",
-      "sourceLine": 67
+      "sourceLine": 179
     },
     {
       "id": "02-simulation-normal",
-      "occurrenceId": "02-simulation-normal@state-demo-3-2",
+      "occurrenceId": "02-simulation-normal@state-demo-4-1",
       "sharedImageId": "02-simulation-normal",
       "src": "source/images/02-simulation-normal.svg",
       "chapter": "BT05",
-      "sourceLine": 67
+      "sourceLine": 185
+    },
+    {
+      "id": "distribution-amount",
+      "occurrenceId": "distribution-amount@state-demo-5-1",
+      "sharedImageId": "distribution-amount",
+      "src": "source/images/distribution-amount.svg",
+      "chapter": "BT05",
+      "sourceLine": 191
     },
     {
       "id": "03-distribution-selected",
-      "occurrenceId": "03-distribution-selected@state-demo-3-3",
+      "occurrenceId": "03-distribution-selected@state-demo-5-2",
       "sharedImageId": "03-distribution-selected",
       "src": "source/images/03-distribution-selected.svg",
       "chapter": "BT05",
-      "sourceLine": 67
+      "sourceLine": 191
     },
     {
       "id": "04-return",
-      "occurrenceId": "04-return@state-demo-3-4",
+      "occurrenceId": "04-return@state-demo-5-3",
       "sharedImageId": "04-return",
       "src": "source/images/04-return.svg",
       "chapter": "BT05",
-      "sourceLine": 67
+      "sourceLine": 191
+    },
+    {
+      "id": "journeys-trend-gap",
+      "occurrenceId": "journeys-trend-gap@state-demo-6-1",
+      "sharedImageId": "journeys-trend-gap",
+      "src": "source/images/journeys-trend-gap.svg",
+      "chapter": "BT05",
+      "sourceLine": 199
+    },
+    {
+      "id": "journeys-trend-single",
+      "occurrenceId": "journeys-trend-single@state-demo-6-2",
+      "sharedImageId": "journeys-trend-single",
+      "src": "source/images/journeys-trend-single.svg",
+      "chapter": "BT05",
+      "sourceLine": 199
+    },
+    {
+      "id": "journeys-trend-empty",
+      "occurrenceId": "journeys-trend-empty@state-demo-6-3",
+      "sharedImageId": "journeys-trend-empty",
+      "src": "source/images/journeys-trend-empty.svg",
+      "chapter": "BT05",
+      "sourceLine": 199
+    },
+    {
+      "id": "journeys-trend-month",
+      "occurrenceId": "journeys-trend-month@state-demo-6-4",
+      "sharedImageId": "journeys-trend-month",
+      "src": "source/images/journeys-trend-month.svg",
+      "chapter": "BT05",
+      "sourceLine": 199
+    },
+    {
+      "id": "journeys-trend-year",
+      "occurrenceId": "journeys-trend-year@state-demo-6-5",
+      "sharedImageId": "journeys-trend-year",
+      "src": "source/images/journeys-trend-year.svg",
+      "chapter": "BT05",
+      "sourceLine": 199
     },
     {
       "id": "handoff",
-      "occurrenceId": "handoff@state-demo-4-1",
+      "occurrenceId": "handoff@state-demo-7-1",
       "sharedImageId": "handoff",
       "src": "source/images/handoff.svg",
       "chapter": "BT06",
-      "sourceLine": 82
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-home-entry",
+      "occurrenceId": "journeys-home-entry@state-demo-7-2",
+      "sharedImageId": "journeys-home-entry",
+      "src": "source/images/journeys-home-entry.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-library-list",
+      "occurrenceId": "journeys-library-list@state-demo-7-3",
+      "sharedImageId": "journeys-library-list",
+      "src": "source/images/journeys-library-list.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-live-rounds",
+      "occurrenceId": "journeys-live-rounds@state-demo-7-4",
+      "sharedImageId": "journeys-live-rounds",
+      "src": "source/images/journeys-live-rounds.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-library-replay",
+      "occurrenceId": "journeys-library-replay@state-demo-7-5",
+      "sharedImageId": "journeys-library-replay",
+      "src": "source/images/journeys-library-replay.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-live-rounds-return",
+      "occurrenceId": "journeys-live-rounds-return@state-demo-7-6",
+      "sharedImageId": "journeys-live-rounds-return",
+      "src": "source/images/journeys-live-rounds-return.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-library-list-return",
+      "occurrenceId": "journeys-library-list-return@state-demo-7-7",
+      "sharedImageId": "journeys-library-list-return",
+      "src": "source/images/journeys-library-list-return.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-view-simulation",
+      "occurrenceId": "journeys-view-simulation@state-demo-7-8",
+      "sharedImageId": "journeys-view-simulation",
+      "src": "source/images/journeys-view-simulation.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-view-restore",
+      "occurrenceId": "journeys-view-restore@state-demo-7-9",
+      "sharedImageId": "journeys-view-restore",
+      "src": "source/images/journeys-view-restore.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
     },
     {
       "id": "hcr06-final-pending-library",
-      "occurrenceId": "hcr06-final-pending-library@state-demo-4-2",
+      "occurrenceId": "hcr06-final-pending-library@state-demo-7-10",
       "sharedImageId": "hcr06-final-pending-library",
       "src": "source/images/hcr06-final-pending-library.svg",
       "chapter": "BT06",
-      "sourceLine": 82
+      "sourceLine": 233
     },
     {
       "id": "hcr06-final-pending-library-1280",
-      "occurrenceId": "hcr06-final-pending-library-1280@state-demo-4-3",
+      "occurrenceId": "hcr06-final-pending-library-1280@state-demo-7-11",
       "sharedImageId": "hcr06-final-pending-library-1280",
       "src": "source/images/hcr06-final-pending-library-1280.svg",
       "chapter": "BT06",
-      "sourceLine": 82
+      "sourceLine": 233
     },
     {
       "id": "library-return",
-      "occurrenceId": "library-return@state-demo-4-4",
+      "occurrenceId": "library-return@state-demo-7-12",
       "sharedImageId": "library-return",
       "src": "source/images/library-return.svg",
       "chapter": "BT06",
-      "sourceLine": 82
+      "sourceLine": 233
+    },
+    {
+      "id": "journeys-library-return",
+      "occurrenceId": "journeys-library-return@state-demo-7-13",
+      "sharedImageId": "journeys-library-return",
+      "src": "source/images/journeys-library-return.svg",
+      "chapter": "BT06",
+      "sourceLine": 233
     },
     {
       "id": "hcr06-final-return",
-      "occurrenceId": "hcr06-final-return@state-demo-4-5",
+      "occurrenceId": "hcr06-final-return@state-demo-7-14",
       "sharedImageId": "hcr06-final-return",
       "src": "source/images/hcr06-final-return.svg",
       "chapter": "BT06",
-      "sourceLine": 82
+      "sourceLine": 233
     },
     {
       "id": "05-loading",
-      "occurrenceId": "05-loading@state-demo-5-1",
+      "occurrenceId": "05-loading@state-demo-8-1",
       "sharedImageId": "05-loading",
       "src": "source/images/05-loading.svg",
       "chapter": "BT07",
-      "sourceLine": 98
+      "sourceLine": 278
     },
     {
       "id": "06-empty",
-      "occurrenceId": "06-empty@state-demo-5-2",
+      "occurrenceId": "06-empty@state-demo-8-2",
       "sharedImageId": "06-empty",
       "src": "source/images/06-empty.svg",
       "chapter": "BT07",
-      "sourceLine": 98
+      "sourceLine": 278
     },
     {
       "id": "07-error",
-      "occurrenceId": "07-error@state-demo-5-3",
+      "occurrenceId": "07-error@state-demo-8-3",
       "sharedImageId": "07-error",
       "src": "source/images/07-error.svg",
       "chapter": "BT07",
-      "sourceLine": 98
+      "sourceLine": 278
     },
     {
       "id": "08-extreme",
-      "occurrenceId": "08-extreme@state-demo-5-4",
+      "occurrenceId": "08-extreme@state-demo-8-4",
       "sharedImageId": "08-extreme",
       "src": "source/images/08-extreme.svg",
       "chapter": "BT07",
-      "sourceLine": 98
+      "sourceLine": 278
     },
     {
       "id": "09-missing-input",
-      "occurrenceId": "09-missing-input@state-demo-5-5",
+      "occurrenceId": "09-missing-input@state-demo-8-5",
       "sharedImageId": "09-missing-input",
       "src": "source/images/09-missing-input.svg",
       "chapter": "BT07",
-      "sourceLine": 98
+      "sourceLine": 278
     }
   ]
 }

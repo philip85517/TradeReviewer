@@ -1,0 +1,10 @@
+{
+  "content_fingerprint": "2fa1847445578e46b19888a73b9622530a5061dd790c184eaf13b144a9f3122a",
+  "source_fingerprint": "542bc1e677347372dc27b5aba7299c0f19038782bac35bbc34977d10a48b5024",
+  "checked_files": 57,
+  "hash_mismatches": [],
+  "metrics_tests_exit": 0,
+  "metrics_tests": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.002s\n\nOK\n",
+  "homepage_tests": "5 tests, OK independently rerun after final home repair",
+  "viewport_limitation": "nav final requested1440 remained actual1280; root owns final1440 evidence"
+}

@@ -1,0 +1,40 @@
+{
+  "revision": 11,
+  "comment": {
+    "actor": {
+      "name": "Lin Zhou",
+      "role": "commenter"
+    },
+    "anchors": [],
+    "createdAt": "2026-10-24T08:47:00Z",
+    "documentId": "TRADING-LIBRARY-V10",
+    "fingerprint": "b236d66415148decf65eba0075cd9b8d70d91a3916b9f032207274c80dbd9672",
+    "history": [
+      {
+        "action": "create",
+        "actor": {
+          "name": "Lin Zhou",
+          "role": "commenter"
+        },
+        "at": "2026-10-24T08:47:00Z",
+        "status": "pending-review"
+      }
+    ],
+    "id": "comment-fc3d2dc6facf4ecaa9333b9a34cd4865",
+    "image": {
+      "chapter": "BT03",
+      "fingerprint": "50073744ee9414e0358103a3486de71a13b5fc4d4a88d617f5377f6528963268",
+      "id": "journeys-date",
+      "occurrenceId": "journeys-date@state-demo-1-1",
+      "src": "source/images/journeys-date.svg"
+    },
+    "opinion": "这种图中，实盘/模拟盘，以及列表统计的功能布局需要revise，目前包括“实盘交易的Titlte”，按成交日期\n以及顶部的来源：首页 返回首页\n这些元素存在的必要性是什么？\n实盘的开关，以及列表/统计的功能是否能压缩到交易库所在的那一行导航条中？\n中间的文字和路径没有太大意义？\n\n下面的表格，又是特别大的Title，是否有意义？信息是重复的，而且和选择是完全一样的；\n我觉着模拟盘选中之后，可以用一些视觉边框的颜色提醒用户，而不是通过文字，这样能减少信息量\n交互中，点击实盘和模拟盘，“列表或者统计”这两个tab按钮也无法统一focus的地方，需要简化\n\n按照要求调整下视觉布局的方案，供我选择",
+    "quote": "",
+    "replies": [],
+    "revisions": [],
+    "segments": [],
+    "status": "pending-review",
+    "tasks": [],
+    "version": "1.0"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "fixture_sha256": "e8278a8b311e3b0c83ff3308c6ff7074d303f0809a5d4bcdea96cebf2559117b",
+  "daily_home_valuation": [
+    {
+      "date": "2026-10-01",
+      "realized": "0.00",
+      "market_value": "0.00",
+      "unrealized": "0.00",
+      "net": "0.00"
+    },
+    {
+      "date": "2026-10-02",
+      "realized": "0.00",
+      "market_value": "1020.00",
+      "unrealized": "19.00",
+      "net": "19.00"
+    },
+    {
+      "date": "2026-10-03",
+      "realized": "48.00",
+      "market_value": "171500.00",
+      "unrealized": "291.44",
+      "net": "339.44"
+    },
+    {
+      "date": "2026-10-04",
+      "realized": "48.00",
+      "market_value": "171980.00",
+      "unrealized": "-229.56",
+      "net": "-181.56"
+    },
+    {
+      "date": "2026-10-05",
+      "realized": "-4.00",
+      "market_value": "172000.00",
+      "unrealized": "791.44",
+      "net": "787.44"
+    },
+    {
+      "date": "2026-10-07",
+      "realized": "905.64",
+      "market_value": "104100.00",
+      "unrealized": "1374.86",
+      "net": "2280.50"
+    },
+    {
+      "date": "2026-10-08",
+      "realized": "905.64",
+      "market_value": "104820.00",
+      "unrealized": "1093.86",
+      "net": "1999.50"
+    },
+    {
+      "date": "2026-10-09",
+      "realized": "1003.64",
+      "market_value": "114920.00",
+      "unrealized": "1241.57",
+      "net": "2245.21"
+    },
+    {
+      "date": "2026-10-12",
+      "realized": "747.14",
+      "market_value": "104280.00",
+      "unrealized": "1554.86",
+      "net": "2302.00"
+    },
+    {
+      "date": "2026-10-15",
+      "realized": "747.14",
+      "market_value": "111920.00",
+      "unrealized": "1831.91",
+      "net": "2579.05"
+    }
+  ],
+  "pending_review_ids": [
+    "live-01",
+    "live-02",
+    "live-04"
+  ],
+  "counterexamples": [
+    "closed position remains pending: live-04",
+    "open position already reviewed: live-05",
+    "pending original quantity 100, residual position 60: live-01"
+  ],
+  "gap_scenario": {
+    "2026-10-15": {
+      "date": "2026-10-15",
+      "status": "available"
+    },
+    "2026-10-16": {
+      "date": "2026-10-16",
+      "status": "available"
+    },
+    "2026-10-17": {
+      "date": "2026-10-17",
+      "status": "missing",
+      "reason": "练习文件读取失败"
+    },
+    "2026-10-18": {
+      "date": "2026-10-18",
+      "status": "missing",
+      "reason": "练习文件读取失败"
+    },
+    "2026-10-19": {
+      "date": "2026-10-19",
+      "status": "available"
+    },
+    "2026-10-20": {
+      "date": "2026-10-20",
+      "status": "no_trades"
+    }
+  },
+  "scope": "Fixture accounting only; browser evidence must independently reconcile visible values."
+}

@@ -1,0 +1,12 @@
+{
+  "html_sha256": "b2edaa29990315e364012b560bb07d9797c7842e1fb86f19a234a0dbe718213d",
+  "js_syntax_exit": 0,
+  "js_syntax_output": "",
+  "protected_unchanged": {
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html": true,
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html": true,
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md": true,
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py": true,
+    "docs/design-system/reviews/TRADING-LIBRARY-V10.json": true
+  }
+}

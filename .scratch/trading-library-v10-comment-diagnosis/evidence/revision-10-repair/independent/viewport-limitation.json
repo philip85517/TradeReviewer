@@ -1,0 +1,12 @@
+{
+  "requested": {
+    "width": 1440,
+    "height": 900
+  },
+  "observed": {
+    "innerWidth": 1280,
+    "innerHeight": 800,
+    "clientWidth": 1265
+  },
+  "effect": "Final nav files named 1440 were actually captured at 1280. Parent must verify final 1440 separately. Direct SVG full-page screenshots retain intrinsic 1440 width; they are comparable static design captures, not responsive evidence."
+}

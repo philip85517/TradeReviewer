@@ -1,0 +1,44 @@
+{
+  "opened": {
+    "clientHeight": 874,
+    "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+    "open": true,
+    "scrollHeight": 2380,
+    "scrollTop": 0
+  },
+  "tabToScroll": {
+    "clientHeight": 874,
+    "focus": "<div class=\"image-viewer-scroll\" tabindex=\"0\"><img data-image-viewer-image=\"\" alt=\"首页到交易库的条件交接\" src=\"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff",
+    "open": true,
+    "scrollHeight": 2380,
+    "scrollTop": 0
+  },
+  "endScroll": {
+    "clientHeight": 874,
+    "focus": "<div class=\"image-viewer-scroll\" tabindex=\"0\"><img data-image-viewer-image=\"\" alt=\"首页到交易库的条件交接\" src=\"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff",
+    "open": true,
+    "scrollHeight": 2380,
+    "scrollTop": 1506
+  },
+  "trapForward": {
+    "clientHeight": 874,
+    "focus": "<button type=\"button\" data-image-viewer-close=\"\">关闭</button>",
+    "open": true,
+    "scrollHeight": 2380,
+    "scrollTop": 1506
+  },
+  "trapBackward": {
+    "clientHeight": 874,
+    "focus": "<div class=\"image-viewer-scroll\" tabindex=\"0\"><img data-image-viewer-image=\"\" alt=\"首页到交易库的条件交接\" src=\"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff",
+    "open": true,
+    "scrollHeight": 2380,
+    "scrollTop": 1506
+  },
+  "closed": {
+    "clientHeight": 0,
+    "focus": "<a class=\"image-link image-viewer-trigger\" href=\"source/images/handoff.svg\" data-image-viewer=\"true\" aria-label=\"打开首页到交易库的条件交接原尺寸图稿（100%）\"><img data-comment-image=\"handoff\" data-comment-occurrence=\"ha",
+    "open": false,
+    "scrollHeight": 0,
+    "scrollTop": 0
+  }
+}

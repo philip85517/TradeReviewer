@@ -1,0 +1,15 @@
+{
+  "content_fingerprint": "8cc354c2add118c7e6c45b1a2dd037b5803e440fb73f379c512ea90700f1ea33",
+  "checked": 58,
+  "all_hashes_match": true,
+  "preserved": {
+    "source/library-design-fixture.json": true,
+    "source/homepage-template.py": true,
+    "source/images/handoff.svg": true,
+    "source/images/library-return.svg": true,
+    "source/images/journeys-home-entry.svg": true,
+    "source/images/journeys-library-return.svg": true,
+    "opening-and-BT01": true
+  },
+  "all_preserved": true
+}

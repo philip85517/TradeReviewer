@@ -1,0 +1,326 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-10-23T18:55:31.202026+00:00",
+  "source_fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+  "content_fingerprint": "7584f36adeab139fc67a50b5894e7bc9afaf894a73aeb1a10716f6a04f198182",
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "expected": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+      "actual": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/library-design-fixture.json",
+      "expected": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab",
+      "actual": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py",
+      "expected": "c5fdf5be91a9718e7814de1d3d650f11d07a53a17585b876d3cc72f23183a5f3",
+      "actual": "c5fdf5be91a9718e7814de1d3d650f11d07a53a17585b876d3cc72f23183a5f3",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/01-live-normal.svg",
+      "expected": "e9f1b2a37b00700faeac9ce3d6a10a52a08a1399e1a19400d9e44e8270587847",
+      "actual": "e9f1b2a37b00700faeac9ce3d6a10a52a08a1399e1a19400d9e44e8270587847",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg",
+      "expected": "45a33ae73279cf72ab1eaa12f693a5e5ebeb3ab1face08682bb6bfa2840609a4",
+      "actual": "45a33ae73279cf72ab1eaa12f693a5e5ebeb3ab1face08682bb6bfa2840609a4",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/03-distribution-selected.svg",
+      "expected": "4484d1a9282b7295fe131baed24c2559d7a7f31bbdcb171c727670f8a13ac1fb",
+      "actual": "4484d1a9282b7295fe131baed24c2559d7a7f31bbdcb171c727670f8a13ac1fb",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/04-return.svg",
+      "expected": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "actual": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/05-loading.svg",
+      "expected": "f338cf9ef978b2d75676015d27058fa5fc2717b7e6112f53db14c02e1ce25c67",
+      "actual": "f338cf9ef978b2d75676015d27058fa5fc2717b7e6112f53db14c02e1ce25c67",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/06-empty.svg",
+      "expected": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "actual": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/07-error.svg",
+      "expected": "226f8e666a14a04410d2809e3c67c0224487201d54a55b1cf8760d3daf7156dc",
+      "actual": "226f8e666a14a04410d2809e3c67c0224487201d54a55b1cf8760d3daf7156dc",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/08-extreme.svg",
+      "expected": "ae841fc2d68fb47211b57bf05e3e082fd63f3f88f78843233f7d2ab98bc783f0",
+      "actual": "ae841fc2d68fb47211b57bf05e3e082fd63f3f88f78843233f7d2ab98bc783f0",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/09-missing-input.svg",
+      "expected": "b6a0bf6685594fb583f278d69e365a9f587bbbb18f859d2174af89b61e4f9742",
+      "actual": "b6a0bf6685594fb583f278d69e365a9f587bbbb18f859d2174af89b61e4f9742",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/distribution-amount.svg",
+      "expected": "9242283cbdab2a299b1513258a8b244dbfe6c2a5bacab583f076b443c3bda523",
+      "actual": "9242283cbdab2a299b1513258a8b244dbfe6c2a5bacab583f076b443c3bda523",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg",
+      "expected": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "actual": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library-1280.svg",
+      "expected": "ba04dbdd62656999343373c5ff08c1bcf589a56eb8ad6288bc914b711b5babb3",
+      "actual": "ba04dbdd62656999343373c5ff08c1bcf589a56eb8ad6288bc914b711b5babb3",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library.svg",
+      "expected": "10cfd2216559b05c52cfd83903b3d6428ed9d8090845c395bf5d03b10d4a0f7c",
+      "actual": "10cfd2216559b05c52cfd83903b3d6428ed9d8090845c395bf5d03b10d4a0f7c",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a1.svg",
+      "expected": "87e4d1e49f4d3c57610d87d151d52b4486a40d6e7275e50243a57d35d51070ee",
+      "actual": "87e4d1e49f4d3c57610d87d151d52b4486a40d6e7275e50243a57d35d51070ee",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a2.svg",
+      "expected": "62f0a47b99e1362d6c1429d0f394540b493b40456b3cbe3978d491c023b8648c",
+      "actual": "62f0a47b99e1362d6c1429d0f394540b493b40456b3cbe3978d491c023b8648c",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-b1.svg",
+      "expected": "084caccc591db64ff587cbd0858d54ff2a000fe37a52da37e671cbcb114e7409",
+      "actual": "084caccc591db64ff587cbd0858d54ff2a000fe37a52da37e671cbcb114e7409",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-return.svg",
+      "expected": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "actual": "5e8449dfff849e56dc3e43a76e25a169cf910c2e9531b81cdad183ffcdde03f9",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-rounds-a.svg",
+      "expected": "554d53e75782bd3bb97259b710ca424401eaf0d041b819e9a548562c7ac73bb2",
+      "actual": "554d53e75782bd3bb97259b710ca424401eaf0d041b819e9a548562c7ac73bb2",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-sim-ab.svg",
+      "expected": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "actual": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-1280.svg",
+      "expected": "c011cabc5b9221013f7fc34d83aab8e106cf0c8d375192acb0b2c32958341e38",
+      "actual": "c011cabc5b9221013f7fc34d83aab8e106cf0c8d375192acb0b2c32958341e38",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-month.svg",
+      "expected": "b64ff13b06b41d2481abf6cfe9e407f73bde21c7f1ae15a78edb186e3331ae4e",
+      "actual": "b64ff13b06b41d2481abf6cfe9e407f73bde21c7f1ae15a78edb186e3331ae4e",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg",
+      "expected": "48037f11337085bb90ac42c6ea647166a0cd2932831d2e828704eea7f357c8db",
+      "actual": "48037f11337085bb90ac42c6ea647166a0cd2932831d2e828704eea7f357c8db",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-home-entry.svg",
+      "expected": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "actual": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list-return.svg",
+      "expected": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "actual": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list.svg",
+      "expected": "5a2bc154c7300acff34bff74b62cef66e61d977b5f874d47bcd8723b05f51f21",
+      "actual": "5a2bc154c7300acff34bff74b62cef66e61d977b5f874d47bcd8723b05f51f21",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-replay.svg",
+      "expected": "d5467163ffa1c2bce5578c99aecbd65c5f94fb03bfb8486164186ec9f1b18f08",
+      "actual": "d5467163ffa1c2bce5578c99aecbd65c5f94fb03bfb8486164186ec9f1b18f08",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-return.svg",
+      "expected": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "actual": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds-return.svg",
+      "expected": "7879b1c1036938115e07b4b2f21e7c960329f7672814ae4fbffa26f9dbdcc58d",
+      "actual": "7879b1c1036938115e07b4b2f21e7c960329f7672814ae4fbffa26f9dbdcc58d",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds.svg",
+      "expected": "15cdf3278190dabea5706cb6bd417c89c705e0ae7df9a8da479de82cc6514137",
+      "actual": "15cdf3278190dabea5706cb6bd417c89c705e0ae7df9a8da479de82cc6514137",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-a-return.svg",
+      "expected": "15b58e7f9453332cb885795947c02ce04d2b7a7967f347776647e6bba37f73df",
+      "actual": "15b58e7f9453332cb885795947c02ce04d2b7a7967f347776647e6bba37f73df",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-b.svg",
+      "expected": "d1c2a8c79be29488252446d4c027af19d7bb81a360be24584b8131c93e428104",
+      "actual": "d1c2a8c79be29488252446d4c027af19d7bb81a360be24584b8131c93e428104",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-simulation-return.svg",
+      "expected": "ad40bf25c0900fcf90c112e7c2c116636f15f177c594d2bf0246ddf8f1909760",
+      "actual": "ad40bf25c0900fcf90c112e7c2c116636f15f177c594d2bf0246ddf8f1909760",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-empty.svg",
+      "expected": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "actual": "c4c57aeb03801d5e9d65ea28fce896b3b9bb799b662ed31d6cf0d7d3c334f2e3",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-gap.svg",
+      "expected": "7b8b73d73d31920ec118a9e088900478e4c28a11baa41d788f787f9dfb7eae5e",
+      "actual": "7b8b73d73d31920ec118a9e088900478e4c28a11baa41d788f787f9dfb7eae5e",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-month.svg",
+      "expected": "84cd4600c0dc351be8dc0a3d639399da1fb836b25b05786537f763ddcca58f36",
+      "actual": "84cd4600c0dc351be8dc0a3d639399da1fb836b25b05786537f763ddcca58f36",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-single.svg",
+      "expected": "b4278ae178b3e63473205e42eeb9eae1167df922ea9a4234907765d122962cf8",
+      "actual": "b4278ae178b3e63473205e42eeb9eae1167df922ea9a4234907765d122962cf8",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-year.svg",
+      "expected": "51ef92807eca27cde7cfb36d35eef3a938b9590f1f876d71715a4845f923ffd7",
+      "actual": "51ef92807eca27cde7cfb36d35eef3a938b9590f1f876d71715a4845f923ffd7",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-restore.svg",
+      "expected": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "actual": "7b009edaca988090a77565abcdb6e3c6bcb4700199b8153720e4eea81932854c",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-simulation.svg",
+      "expected": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "actual": "a36ac0953a3485a7e6a5ca824316dc036c5d8d4dbf2619dabd1b98f74020b2ef",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/library-return.svg",
+      "expected": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "actual": "7a6de61ad46ae13253f0ff8c9b3af7ba9606381a6abbb3a9e6997730dbdb9521",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html",
+      "expected": "7b9cad9960b082a7f13dd5329691e99481a3930af85c23029c289e3d728f0bcd",
+      "actual": "7b9cad9960b082a7f13dd5329691e99481a3930af85c23029c289e3d728f0bcd",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/document-manifest.json",
+      "expected": "96744644b697a7a97a61ddb26bb57ba62c8f216fb1161510224712abf5625d58",
+      "actual": "96744644b697a7a97a61ddb26bb57ba62c8f216fb1161510224712abf5625d58",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/document-identity.json",
+      "expected": "542fdbf991152d5be103e6dcce5f58e2f237125aacd1e0c24eb3ca43138b2ee7",
+      "actual": "542fdbf991152d5be103e6dcce5f58e2f237125aacd1e0c24eb3ca43138b2ee7",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/comment-migration.json",
+      "expected": "3529b27edb06775298aaf61f6055c6e84f45471eb8795ccd4bc44c01090a8743",
+      "actual": "3529b27edb06775298aaf61f6055c6e84f45471eb8795ccd4bc44c01090a8743",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/comments-snapshot.json",
+      "expected": "fdadf0d73624f923ffcf3e9c471f0fa5ec3d0147409574fe25157918f20a694c",
+      "actual": "fdadf0d73624f923ffcf3e9c471f0fa5ec3d0147409574fe25157918f20a694c",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/reviews/comment-migration.json",
+      "expected": "3529b27edb06775298aaf61f6055c6e84f45471eb8795ccd4bc44c01090a8743",
+      "actual": "3529b27edb06775298aaf61f6055c6e84f45471eb8795ccd4bc44c01090a8743",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/build-visual-spec.py",
+      "expected": "e3ffbd19f05c6b3fe2d729e3d6050c083d12186fc03c4225903aea153faadcfc",
+      "actual": "e3ffbd19f05c6b3fe2d729e3d6050c083d12186fc03c4225903aea153faadcfc",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/review-client.js",
+      "expected": "ceac59dbde3050515fa1ce042ea2dc9d092c7069e24e2abbabd94c8d30060551",
+      "actual": "ceac59dbde3050515fa1ce042ea2dc9d092c7069e24e2abbabd94c8d30060551",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/review-client.css",
+      "expected": "a7f8479ba7d61b74d32c2efe16c78193591d782e7a70d13a3874f0537fe47ab0",
+      "actual": "a7f8479ba7d61b74d32c2efe16c78193591d782e7a70d13a3874f0537fe47ab0",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/start-preview.sh",
+      "expected": "f616e816035897b78781d2cc44147fad82d3c9f5f5588883c140bbeb42caa21e",
+      "actual": "f616e816035897b78781d2cc44147fad82d3c9f5f5588883c140bbeb42caa21e",
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "capturedAt": "2026-10-23T17:15:40.551Z",
+  "browser": "ChatGPT in-app browser",
+  "reviewUrl": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01",
+  "checks": [
+    {
+      "id": "R01",
+      "action": "state-demo-3 下一步",
+      "before": "第 1 / 4 帧 · 实盘统计",
+      "after": "第 2 / 4 帧 · 模拟盘统计",
+      "result": "PASS",
+      "evidence": "reader-simulation-next.jpg"
+    },
+    {
+      "id": "R02",
+      "action": "state-demo-4 下一步",
+      "before": "第 1 / 5 帧 · 首页到交易库的条件交接",
+      "after": "第 2 / 5 帧 · 交易库内待复盘筛选",
+      "result": "PASS for reader control; FAIL for journey continuity",
+      "evidence": "reader-handoff-next.jpg"
+    },
+    {
+      "id": "R03",
+      "action": "点击模拟盘图稿",
+      "after": "模拟盘统计 · 原尺寸 100%",
+      "naturalSize": [
+        1440,
+        1000
+      ],
+      "renderedImageRect": {
+        "x": 41,
+        "y": 130.59375,
+        "width": 1442,
+        "height": 1002
+      },
+      "result": "PASS",
+      "evidence": "reader-original-size.jpg"
+    },
+    {
+      "id": "R04",
+      "action": "关闭原尺寸图稿",
+      "result": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "comments": [
+    {
+      "index": 0,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-ff1644d6fadd433484f0a8040b381b73交易库把首页上的结果阅读接到可核对、可复盘的具体交易。日期检索和普通交易库入口把首页结果接到具体交易；待复盘只作为交易库内部的显式筛选，再从筛选结果进入复盘任务。入口提供的来源日期、标的、市场和账户条件到达后立即生效，未提供的条件保持交易库自身范围；用户无需再次点击应用。条件摘要是只读说明，与按钮分开呈现，不画成待确认的操作。 … 页面保持“列表 → 标的或练习 → 回合集 → 回合复盘”的短链路。实盘与模拟盘是互斥视角，复用列表和统计组件，但各自保存条件和导航上下文。模拟盘以一次练习承载一个标的的多个交易回合，同一标的同一天的反复练习仍是独立练习；因此不增加无业务依据的中间页，也不把实盘账户当作模拟盘练习身份。 … 统计和列表使用各自明确的日期口径：实盘列表按每笔成交日期筛选，统计按回合平仓日期归属；未平仓成交仍可在列表查看，却不进入已平仓回合统计。模拟盘按导入文件保存的练习日期归属，不以行情日期代替。页面内搜索只过滤交易库表，不调用全局标的搜索遮罩。这里的文档描述需要更聚焦和结构化，用总分的写作模式，进行分段论述。\n同时这一段的内容要围绕标题的主题进行展开，比如我们的目标是什么，先用总分的方式说清楚，其次展开为了落地这个目标，我们要拆解几个方面，再细的拆开各个分段内容进行目标的描述和取舍，以及我们思考的边界范围评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/23 00:10 · ",
+      "highlights": [
+        {
+          "block": "HOME-TLIB-GOAL",
+          "bottom": 560.875,
+          "chapter": "BT01",
+          "tag": "P",
+          "text": "交易库帮助用户查找和核对交易、理解交易结果，并进入具体回合完成复盘。为实现这一目标，设计分为以下三个方面。",
+          "top": 503.28125
+        },
+        {
+          "block": "HOME-TLIB-ACCURACY",
+          "bottom": 712.0625,
+          "chapter": "BT01",
+          "tag": "P",
+          "text": "理解交易结果。 用户能够分别阅读实盘与模拟盘的列表和统计，按各自的日期口径理解结果，并区分已平仓回合、未平仓成交和缺失数据。",
+          "top": 654.46875
+        },
+        {
+          "block": "HOME-TLIB-TRADEOFF",
+          "bottom": 944.125,
+          "chapter": "BT01",
+          "tag": "P",
+          "text": "实盘和模拟盘复用列表、统计与详情的呈现方式，但分别保存条件和导航状态；从列表直接进入标的或练习回合集，保持进入、复盘、返回的短路径。这样可以复用稳定的页面结构，同时保留两种视角各自的业务口径和恢复状态。",
+          "top": 857.734375
+        }
+      ],
+      "visibleFrames": [
+        "journeys-date-1280@state-demo-1-2",
+        "hcr06-final-rounds-a@state-demo-2-2",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ]
+    },
+    {
+      "index": 1,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-0f6fbbbb44cc4ed88b05caad3e314891本方案把冻结的首页交易库业务与分镜独立成可直接交付的页面规范。它覆盖从首页日期、交易库入口到交易列表、练习回合、统计分布、详情复盘和返回来源的完整链路；首页 V2.5 只保留进入交易库的入口与返回恢复帧。原始权威来源为冻结 V2.4.2 视觉规范 HP06、冻结 V2.4.2 交易库补充规范 HP07及其公共控件手册。既有分镜沿用原 SVG；本次统一入口补充 journeys-library-entry.svg，并以 library-return.svg 表达普通交易库来源返回。 … 交易库复用 V2.5 的公共契约：共享规范 HP08、视觉基础 HP11、全站原则和控件手册。跨页传参与恢复字段见首页入口状态约定。本页只补充交易库的页面层级、业务条件、列表与回合关系、统计口径、返回上下文和交易库专属边界。首先最重要的位置写了一些不止所云的内容\n其次这些内容的规范的这种引用细节写在这里用正文的方式合适么？还不如用类似的规范表格等形式把引用内容列清楚评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/23 00:12 · ",
+      "highlights": [
+        {
+          "block": "HOME-TLIB-INTRO",
+          "bottom": 249.984375,
+          "chapter": "DOC",
+          "tag": "P",
+          "text": "本方案说明交易库如何组织实盘交易与模拟盘练习，以及用户如何查看统计、进入回合复盘并返回来源页面。正文覆盖页面结构、操作规则和验收要求，供设计与开发共同使用。",
+          "top": 163.59375
+        },
+        {
+          "block": "HOME-TLIB-REFERENCES",
+          "bottom": 296.78125,
+          "chapter": "DOC",
+          "tag": "P",
+          "text": "交易库沿用以下规范；本页补充交易库自身的页面与业务规则。",
+          "top": 267.984375
+        }
+      ],
+      "visibleFrames": [
+        "journeys-date-1280@state-demo-1-2",
+        "hcr06-final-rounds-a@state-demo-2-2",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ]
+    },
+    {
+      "index": 2,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-646fafe57e424f72aa552cdf8e6ddded原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencejourneys-date@state-demo-1-1原版本1.0当前 occurrencejourneys-date@state-demo-1-1原图稿查看原始图稿journeys-date1.左侧功能栏缺失\n2.整个界面的视觉框架缺失\n3.看起来是个片段评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/24 00:59 · ",
+      "highlights": [],
+      "migration": "原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencejourneys-date@state-demo-1-1原版本1.0当前 occurrencejourneys-date@state-demo-1-1原图稿查看原始图稿",
+      "original": "review-records/2026-10-24-comment-repair/originals/journeys-date.svg",
+      "visibleFrames": [
+        "journeys-date@state-demo-1-1",
+        "hcr06-final-rounds-a@state-demo-2-2",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ],
+      "originalOpened": {
+        "svg": "0 0 1440 1000",
+        "text": "\ntext{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;fill:#e6edf7}.m{fill:#a8b6cb}.b{fill:#6ca8ff}.g{fill:#53d7a0}.p{fill:#111a26;stroke:#283448}.l{stroke:#283448}\n查看交易库·实盘列表交易库 · 实盘列表单日 · 2026-10-15 · 全部市场 · 全部账户 · 实盘\n日期：单日 · 2026-10-15市场：全部市场搜索交易\n条件摘要（只读）：单日 · 2026-10-15 · 全部市场",
+        "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/review-records/2026-10-24-comment-repair/originals/journeys-date.svg"
+      },
+      "visibleTarget": {
+        "bottom": 725.0234375,
+        "occurrence": "journeys-date@state-demo-1-1",
+        "top": 275.0234375
+      }
+    },
+    {
+      "index": 3,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-b880c94701b74fa79675e2bb6c7f1ed8原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencehcr06-final-sim-ab@state-demo-2-1原版本1.0当前 occurrencehcr06-final-sim-ab@state-demo-2-1原图稿查看原始图稿hcr06-final-sim-ab1。上方功能栏的视觉规范需要沉淀，目前看没有居中\n2. 通用视觉规范需要参考公共的设计布局规范评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/24 01:00 · ",
+      "highlights": [],
+      "migration": "原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencehcr06-final-sim-ab@state-demo-2-1原版本1.0当前 occurrencehcr06-final-sim-ab@state-demo-2-1原图稿查看原始图稿",
+      "original": "review-records/2026-10-24-comment-repair/originals/hcr06-final-sim-ab.svg",
+      "visibleFrames": [
+        "journeys-date@state-demo-1-1",
+        "hcr06-final-sim-ab@state-demo-2-1",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ],
+      "visibleTarget": {
+        "code": [],
+        "visibleImages": [
+          {
+            "bottom": -1310.9765625,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "top": -1760.9765625
+          },
+          {
+            "bottom": 725.09375,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "top": 275.09375
+          },
+          {
+            "bottom": 2587.8203125,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "top": 2137.8203125
+          },
+          {
+            "bottom": 3465.28125,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "top": 3015.28125
+          },
+          {
+            "bottom": 4342.7421875,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "top": 3892.7421875
+          },
+          {
+            "bottom": 5220.203125,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "top": 4770.203125
+          },
+          {
+            "bottom": 7214.5703125,
+            "occurrence": "handoff@state-demo-7-1",
+            "top": 6764.5703125
+          },
+          {
+            "bottom": 9635.484375,
+            "occurrence": "06-empty@state-demo-8-2",
+            "top": 9185.484375
+          }
+        ]
+      },
+      "originalOpened": {
+        "svg": "0 0 1440 1000",
+        "text": "text{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;fill:#e6edf7}.m{fill:#a8b6cb}.b{fill:#6ca8ff}.g{fill:#53d7a0}.p{fill:#111a26;stroke:#283448}.l{stroke:#283448}选择一次练习交易库 · 模拟盘列表练习日期：2026-10-15 · 同标的同日两次独立练习练习日期：全部市场：全部市场搜索练习练习日期标的 / 练习练习记录有效回合2026-10-15贵州茅台 · 练习 A-20261015-01pr",
+        "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/review-records/2026-10-24-comment-repair/originals/hcr06-final-sim-ab.svg"
+      }
+    },
+    {
+      "index": 4,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-e17d6a68984445b3af9f213a4ad47d6c原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrence01-live-normal@state-demo-3-1原版本1.0当前 occurrence01-live-normal@state-demo-3-1原图稿查看原始图稿01-live-normal这里有实盘的按钮，上方缺没有，全局不统一\n模拟交易趋势的图没看到，我希望看到趋势的真实效果评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/24 01:01 · ",
+      "highlights": [],
+      "migration": "原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrence01-live-normal@state-demo-3-1原版本1.0当前 occurrence01-live-normal@state-demo-3-1原图稿查看原始图稿",
+      "original": "review-records/2026-10-24-comment-repair/originals/01-live-normal.svg",
+      "visibleFrames": [
+        "journeys-date@state-demo-1-1",
+        "hcr06-final-sim-ab@state-demo-2-1",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ],
+      "visibleTarget": {
+        "code": [],
+        "visibleImages": [
+          {
+            "bottom": -3173.9765625,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "top": -3623.9765625
+          },
+          {
+            "bottom": -1137.90625,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "top": -1587.90625
+          },
+          {
+            "bottom": 724.8203125,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "top": 274.8203125
+          },
+          {
+            "bottom": 1602.28125,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "top": 1152.28125
+          },
+          {
+            "bottom": 2479.7421875,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "top": 2029.7421875
+          },
+          {
+            "bottom": 3357.203125,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "top": 2907.203125
+          },
+          {
+            "bottom": 5351.5703125,
+            "occurrence": "handoff@state-demo-7-1",
+            "top": 4901.5703125
+          },
+          {
+            "bottom": 7772.484375,
+            "occurrence": "06-empty@state-demo-8-2",
+            "top": 7322.484375
+          }
+        ]
+      },
+      "originalOpened": {
+        "svg": "0 0 1440 1000",
+        "text": "text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums}交易库 / 统计统计当前条件：2026-10-01—2026-10-15 · 全部市场 · 实盘实盘模拟盘平仓日期2026-10-01—10-15市场：全部排序：日期 ↓实盘交易趋势按平仓日期统计+1.22 万 CNY+9,180 CNY+6,120 CNY+3,060 CNY0 CNY10-1510-15 · +12,240 CNY范围汇总统计口径：分布分母固定为当前范围全部有效回合",
+        "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/review-records/2026-10-24-comment-repair/originals/01-live-normal.svg"
+      }
+    },
+    {
+      "index": 5,
+      "detail": "评论详情 · 待评审定位原文Lin Zhou · 1.0 · comment-9e58c33192e24f54b5d85f5cf8f00d65原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencehandoff@state-demo-4-1原版本1.0当前 occurrencehandoff@state-demo-7-1原图稿查看原始图稿handoff这个界面外围环境不完整，没看懂是在整个界面的哪个位置，有什么作用，怎么出现的，用户动线是什么需要补充评审理由 / 回复保存回复实施任务（可多个，逗号分隔）实施者姓名采纳，待修改待说明暂不采用状态历史创建评论 · 待评审 · Lin Zhou (评论者) · 2026/10/24 01:01 · ",
+      "highlights": [],
+      "migration": "原图评论 · 已关联到本节，图稿已修订当前关联的是整张图，不代表图中具体位置；具体细节请对照原图。原 occurrencehandoff@state-demo-4-1原版本1.0当前 occurrencehandoff@state-demo-7-1原图稿查看原始图稿",
+      "original": "review-records/2026-10-24-comment-repair/originals/handoff.svg",
+      "visibleFrames": [
+        "journeys-date@state-demo-1-1",
+        "hcr06-final-sim-ab@state-demo-2-1",
+        "01-live-normal@state-demo-3-1",
+        "02-simulation-normal@state-demo-4-1",
+        "03-distribution-selected@state-demo-5-2",
+        "journeys-trend-single@state-demo-6-2",
+        "handoff@state-demo-7-1",
+        "06-empty@state-demo-8-2"
+      ],
+      "visibleTarget": {
+        "code": [],
+        "visibleImages": [
+          {
+            "bottom": -7800.4765625,
+            "occurrence": "journeys-date@state-demo-1-1",
+            "top": -8250.4765625
+          },
+          {
+            "bottom": -5764.40625,
+            "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+            "top": -6214.40625
+          },
+          {
+            "bottom": -3901.6796875,
+            "occurrence": "01-live-normal@state-demo-3-1",
+            "top": -4351.6796875
+          },
+          {
+            "bottom": -3024.21875,
+            "occurrence": "02-simulation-normal@state-demo-4-1",
+            "top": -3474.21875
+          },
+          {
+            "bottom": -2146.7578125,
+            "occurrence": "03-distribution-selected@state-demo-5-2",
+            "top": -2596.7578125
+          },
+          {
+            "bottom": -1269.296875,
+            "occurrence": "journeys-trend-single@state-demo-6-2",
+            "top": -1719.296875
+          },
+          {
+            "bottom": 725.0703125,
+            "occurrence": "handoff@state-demo-7-1",
+            "top": 275.0703125
+          },
+          {
+            "bottom": 3145.984375,
+            "occurrence": "06-empty@state-demo-8-2",
+            "top": 2695.984375
+          }
+        ]
+      },
+      "originalOpened": {
+        "svg": "0 0 1440 1000",
+        "text": "text{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;fill:#e6edf7}.m{fill:#a8b6cb}.b{fill:#6ca8ff}.p{fill:#111a26;stroke:#283448}.s{stroke:#526d91;stroke-dasharray:5 5}从首页进入交易库当前期间贡献 · A股2026-10-15 · 全部账户 · 实盘12 笔交易返回：回到首页原来源。进入交易库（实盘）用户动线入口：首页当前期间贡献 · A股点击：选择“进入交易库（实盘）”到达：实盘交易列表 ",
+        "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/review-records/2026-10-24-comment-repair/originals/handoff.svg"
+      }
+    }
+  ],
+  "refresh": {
+    "count": 6
+  },
+  "reopen": {
+    "count": 6
+  },
+  "reload": {
+    "count": 6,
+    "items": [
+      "待评审 · Lin Zhou这里的文档描述需要更聚焦和结构化，用总分的写作模式，进行分段论述。\n同时这一段的内容要围绕标题的主题进行展开，比如我们的目标是什么，先用总分的方式说清楚，其次展开为了落地这个目标，我们要拆解几个方面，再细的拆开各个分段内容进行目标的描述和取舍，以及我们思考的边界范围",
+      "待评审 · Lin Zhou首先最重要的位置写了一些不止所云的内容\n其次这些内容的规范的这种引用细节写在这里用正文的方式合适么？还不如用类似的规范表格等形式把引用内容列清楚",
+      "待评审 · Lin Zhou1.左侧功能栏缺失\n2.整个界面的视觉框架缺失\n3.看起来是个片段",
+      "待评审 · Lin Zhou1。上方功能栏的视觉规范需要沉淀，目前看没有居中\n2. 通用视觉规范需要参考公共的设计布局规范",
+      "待评审 · Lin Zhou这里有实盘的按钮，上方缺没有，全局不统一\n模拟交易趋势的图没看到，我希望看到趋势的真实效果",
+      "待评审 · Lin Zhou这个界面外围环境不完整，没看懂是在整个界面的哪个位置，有什么作用，怎么出现的，用户动线是什么需要补充"
+    ]
+  }
+}

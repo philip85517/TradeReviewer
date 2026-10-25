@@ -1,0 +1,218 @@
+[
+  {
+    "name": "01-live-normal.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/01-live-normal.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "02-simulation-normal.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "03-distribution-selected.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/03-distribution-selected.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "04-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/04-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "05-loading.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/05-loading.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "06-empty.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/06-empty.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "07-error.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/07-error.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "08-extreme.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/08-extreme.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "09-missing-input.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/09-missing-input.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "distribution-amount.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/distribution-amount.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-pending-library-1280.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library-1280.svg",
+    "width": 1280,
+    "height": 800
+  },
+  {
+    "name": "hcr06-final-pending-library.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-replay-a1.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a1.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-replay-a2.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a2.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-replay-b1.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-b1.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-rounds-a.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-rounds-a.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "hcr06-final-sim-ab.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-sim-ab.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-date-1280.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-1280.svg",
+    "width": 1280,
+    "height": 800
+  },
+  {
+    "name": "journeys-date-month.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date-month.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-date.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-library-list-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-library-list.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-list.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-library-replay.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-library-replay.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-live-rounds-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-live-rounds.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-live-rounds.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-rounds-a-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-a-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-rounds-b.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-rounds-b.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-simulation-return.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-simulation-return.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-trend-empty.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-empty.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-trend-gap.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-gap.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-trend-month.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-month.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-trend-single.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-single.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-trend-year.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-trend-year.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-view-restore.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-restore.svg",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "name": "journeys-view-simulation.svg",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-view-simulation.svg",
+    "width": 1440,
+    "height": 900
+  }
+]

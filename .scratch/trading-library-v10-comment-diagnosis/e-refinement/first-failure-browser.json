@@ -1,0 +1,286 @@
+[
+  {
+    "name": "first-live-list",
+    "active": "",
+    "overflow": true,
+    "rects": {
+      "cards": null,
+      "content": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 768.578125,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 825,
+        "x": 96,
+        "y": 118
+      },
+      "main": {
+        "background": "rgb(17, 30, 44)",
+        "border": "rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 511,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 888,
+        "x": 72,
+        "y": 64
+      },
+      "mode": {
+        "background": "rgb(22, 35, 50)",
+        "border": "rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 44,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 198,
+        "x": 96,
+        "y": 48.5
+      },
+      "panel": null,
+      "side": {
+        "background": "rgb(17, 26, 38)",
+        "border": "rgb(237, 243, 255) rgb(64, 86, 109) rgb(237, 243, 255) rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 664,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 72,
+        "x": 0,
+        "y": 0
+      },
+      "subnav": {
+        "background": "rgb(17, 30, 44)",
+        "border": "rgb(237, 243, 255) rgb(237, 243, 255) rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 58,
+        "scrollTop": 0,
+        "shadow": "rgba(111, 151, 190, 0.22) 0px 2px 0px 0px inset",
+        "width": 873,
+        "x": 72,
+        "y": 42
+      },
+      "tools": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(64, 86, 109) rgb(237, 243, 255) rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 92.3984375,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 825,
+        "x": 96,
+        "y": 118
+      },
+      "top": {
+        "background": "rgb(17, 26, 38)",
+        "border": "rgb(237, 243, 255) rgb(237, 243, 255) rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 64,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 888,
+        "x": 72,
+        "y": 0
+      }
+    },
+    "selected": {
+      "mode": "实盘账户",
+      "page": "列表"
+    },
+    "tips": [],
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+    "values": [],
+    "viewport": {
+      "dpr": 2,
+      "height": 679,
+      "width": 319
+    }
+  },
+  {
+    "name": "first-failed-1440",
+    "active": "page-stats",
+    "overflow": false,
+    "rects": {
+      "cards": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 95.546875,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 1305,
+        "x": 96,
+        "y": 210.3984375
+      },
+      "content": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 812.4296875,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 1305,
+        "x": 96,
+        "y": 118
+      },
+      "main": {
+        "background": "rgb(17, 30, 44)",
+        "border": "rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 832,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 1368,
+        "x": 72,
+        "y": 64
+      },
+      "mode": {
+        "background": "rgb(22, 35, 50)",
+        "border": "rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 44,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 198,
+        "x": 96,
+        "y": 48.5
+      },
+      "panel": {
+        "background": "rgb(22, 35, 50)",
+        "border": "rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 285.6015625,
+        "scrollTop": 0,
+        "shadow": "rgba(111, 151, 190, 0.12) 0px 2px 0px 0px inset",
+        "width": 1305,
+        "x": 96,
+        "y": 363.9453125
+      },
+      "side": {
+        "background": "rgb(17, 26, 38)",
+        "border": "rgb(237, 243, 255) rgb(64, 86, 109) rgb(237, 243, 255) rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 1000,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 72,
+        "x": 0,
+        "y": 0
+      },
+      "subnav": {
+        "background": "rgb(17, 30, 44)",
+        "border": "rgb(237, 243, 255) rgb(237, 243, 255) rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 58,
+        "scrollTop": 0,
+        "shadow": "rgba(111, 151, 190, 0.22) 0px 2px 0px 0px inset",
+        "width": 1353,
+        "x": 72,
+        "y": 42
+      },
+      "tools": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(64, 86, 109) rgb(237, 243, 255) rgb(237, 243, 255)",
+        "color": "rgb(237, 243, 255)",
+        "height": 92.3984375,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 1305,
+        "x": 96,
+        "y": 118
+      },
+      "top": {
+        "background": "rgb(17, 26, 38)",
+        "border": "rgb(237, 243, 255) rgb(237, 243, 255) rgb(64, 86, 109)",
+        "color": "rgb(237, 243, 255)",
+        "height": 64,
+        "scrollTop": 0,
+        "shadow": "none",
+        "width": 1368,
+        "x": 72,
+        "y": 0
+      }
+    },
+    "selected": {
+      "mode": "实盘账户",
+      "page": "统计"
+    },
+    "tips": [
+      {
+        "hidden": false,
+        "rect": {
+          "bottom": 450.3203125,
+          "height": 98.375,
+          "left": 96,
+          "right": 366,
+          "top": 351.9453125,
+          "width": 270,
+          "x": 96,
+          "y": 351.9453125
+        },
+        "text": "最差练习回撤\n定义为所选练习中最大的单次权益回撤。当前样例缺少权益路径，因此保留 —，不编造数值。"
+      },
+      {
+        "hidden": false,
+        "rect": {
+          "bottom": 475.3359375,
+          "height": 61.1875,
+          "left": 245.1484375,
+          "right": 515.1484375,
+          "top": 414.1484375,
+          "width": 270,
+          "x": 245.1484375,
+          "y": 414.1484375
+        },
+        "text": "指标说明\n本指标按当前日期范围和当前账户模式计算。"
+      },
+      {
+        "hidden": false,
+        "rect": {
+          "bottom": 782.9375,
+          "height": 61.1875,
+          "left": 335.296875,
+          "right": 605.296875,
+          "top": 721.75,
+          "width": 270,
+          "x": 335.296875,
+          "y": 721.75
+        },
+        "text": "指标说明\n本指标按当前日期范围和当前账户模式计算。"
+      }
+    ],
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+    "values": [
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "有效回合\n5"
+      },
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "累计净盈亏\n747.14"
+      },
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "胜率\n60.00%"
+      },
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "平均盈利\n351.88"
+      },
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "平均亏损\n-154.25"
+      },
+      {
+        "color": "rgb(237, 243, 255)",
+        "text": "费用（已扣除）\n22.86"
+      }
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    }
+  }
+]

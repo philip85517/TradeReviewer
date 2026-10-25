@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-24T01:22:07.044428+08:00",
+  "result": "PASS",
+  "meaning": "Diagnosis report and evidence consistency only; no UI fixes or product acceptance.",
+  "sourceFilesUnchangedSinceSnapshot": true,
+  "changedSourceFiles": [],
+  "commentsRevision": 6,
+  "commentsCount": 6,
+  "commentStatuses": [
+    "pending-review"
+  ],
+  "localMarkdownLinksChecked": 74,
+  "missingLinks": [],
+  "diagnosedOpenIssues": 5,
+  "issueSchemaErrors": {},
+  "gitDiffCheck": {
+    "exitCode": 0,
+    "output": ""
+  },
+  "previewListener": "COMMAND   PID    USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\nPython  72680 zhoulin    4u  IPv4 0xa0ccd5b8963bdebf      0t0  TCP 127.0.0.1:3090 (LISTEN)",
+  "screenshotDimensions": {
+    "reader-simulation-next.jpg": {
+      "format": "JPEG",
+      "width": 319,
+      "height": 694
+    },
+    "journeys-date.jpg": {
+      "format": "JPEG",
+      "width": 1440,
+      "height": 1000
+    },
+    "handoff.jpg": {
+      "format": "JPEG",
+      "width": 1440,
+      "height": 1000
+    },
+    "reference-home-1440.jpg": {
+      "format": "JPEG",
+      "width": 1440,
+      "height": 2346
+    },
+    "simulation-stats.jpg": {
+      "format": "JPEG",
+      "width": 1440,
+      "height": 1000
+    },
+    "sim-list.jpg": {
+      "format": "JPEG",
+      "width": 1440,
+      "height": 1000
+    },
+    "reader-handoff-next.jpg": {
+      "format": "JPEG",
+      "width": 319,
+      "height": 694
+    },
+    "reader-original-size.jpg": {
+      "format": "JPEG",
+      "width": 319,
+      "height": 694
+    }
+  }
+}

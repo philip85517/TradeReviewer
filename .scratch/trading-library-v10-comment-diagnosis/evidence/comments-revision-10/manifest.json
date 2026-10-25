@@ -1,0 +1,15 @@
+{
+  "capturedAt": "2026-10-24T04:26:24.176221+00:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "commentsRevision": 10,
+  "files": {
+    "docs/design-system/reviews/TRADING-LIBRARY-V10.json": "47098f13651ce8c7a2b624a872a3fbd1426f187f46af4b54e27ea3908dba93ae",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py": "c5fdf5be91a9718e7814de1d3d650f11d07a53a17585b876d3cc72f23183a5f3",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/library-design-fixture.json": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg": "45a33ae73279cf72ab1eaa12f693a5e5ebeb3ab1face08682bb6bfa2840609a4",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/distribution-amount.svg": "9242283cbdab2a299b1513258a8b244dbfe6c2a5bacab583f076b443c3bda523",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg": "aa542240b54f27793615c31759c0243f6b5742a8f3b7eaf654cc899b92bfb668"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "revision": 6,
+  "images": [
+    {
+      "commentId": "comment-646fafe57e424f72aa552cdf8e6ddded",
+      "sourceOccurrenceId": "journeys-date@state-demo-1-1",
+      "sha256": "f8858d6cd90774c2bcc786e99a65ad0180daacb40268f7476d1400ff896f7870",
+      "file": "originals/journeys-date.svg"
+    },
+    {
+      "commentId": "comment-b880c94701b74fa79675e2bb6c7f1ed8",
+      "sourceOccurrenceId": "hcr06-final-sim-ab@state-demo-2-1",
+      "sha256": "9dd88e2d26547e9fd5869265df135853ba4a7b3122a4cd58bfcc2253d99afe65",
+      "file": "originals/hcr06-final-sim-ab.svg"
+    },
+    {
+      "commentId": "comment-e17d6a68984445b3af9f213a4ad47d6c",
+      "sourceOccurrenceId": "01-live-normal@state-demo-3-1",
+      "sha256": "b7e359c9461d22fd3d861e3ac4e4516de3d7b854fdeee1007299c1c013bf7f86",
+      "file": "originals/01-live-normal.svg"
+    },
+    {
+      "commentId": "comment-9e58c33192e24f54b5d85f5cf8f00d65",
+      "sourceOccurrenceId": "handoff@state-demo-4-1",
+      "sha256": "b2cb40c7a09bd7acbadcc777016c3e76285dce36f487cd15b1c3c4995aabed19",
+      "file": "originals/handoff.svg"
+    }
+  ]
+}

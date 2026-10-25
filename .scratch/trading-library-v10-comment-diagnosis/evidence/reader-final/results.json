@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "source_fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+  "content_fingerprint": "7584f36adeab139fc67a50b5894e7bc9afaf894a73aeb1a10716f6a04f198182",
+  "toc": 33,
+  "frames_and_original_size_modal": 40,
+  "control_groups": 8,
+  "multi_frame_play_pause": 6,
+  "keyboard_arrow_groups": 8,
+  "escape_playback": 1,
+  "long_image_keyboard_journey": 1,
+  "comments_located": 6,
+  "original_links_opened": 4,
+  "comment_refresh_reopen_reload": true,
+  "manifest_equal_to_served_dom": true,
+  "version_files": 53,
+  "new_console_errors_or_warnings": 0,
+  "scope": "static document and registered reader controls only"
+}

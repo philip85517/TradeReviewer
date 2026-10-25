@@ -1,0 +1,89 @@
+{
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "sha256": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg",
+      "sha256": "f8858d6cd90774c2bcc786e99a65ad0180daacb40268f7476d1400ff896f7870"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-sim-ab.svg",
+      "sha256": "9dd88e2d26547e9fd5869265df135853ba4a7b3122a4cd58bfcc2253d99afe65"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-rounds-a.svg",
+      "sha256": "1669f726874229fe4a2b34d41c06a3057743cf0dae1398a4e4452f1339d062c6"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a1.svg",
+      "sha256": "b382bc2f7c5eb0e2fed40907974e75b8651259fc885696a39c6ed7af81f60b55"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-a2.svg",
+      "sha256": "31fa2d14cc9f97eb83d64b4e2b9b728692526d038aa3b855961e3109772e7bc4"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-replay-b1.svg",
+      "sha256": "58cacca068ce051c12f64979c6c93dd80da5a066b894cfac0d26535d422a6701"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/01-live-normal.svg",
+      "sha256": "b7e359c9461d22fd3d861e3ac4e4516de3d7b854fdeee1007299c1c013bf7f86"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/02-simulation-normal.svg",
+      "sha256": "d0ff21f5eda159801f224d2cb1db26788a95b96372fc501933b149f52ec82b8b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/03-distribution-selected.svg",
+      "sha256": "424a425e194c4ee7ebc47d1cb6f4c924c49991daa8fe5d5205f599dfa3b1f0df"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/04-return.svg",
+      "sha256": "a3c2c491c62210e70878287b0c723235b2fc1fad7403afea8099bc2ed0e585de"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/handoff.svg",
+      "sha256": "b2cb40c7a09bd7acbadcc777016c3e76285dce36f487cd15b1c3c4995aabed19"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library.svg",
+      "sha256": "7f7793c86ebc799533f32a143c261ed74797e1a729bd9d75fa0a5c8c7d69acbd"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-pending-library-1280.svg",
+      "sha256": "e6c7329d4a57d56112e40b71f968dd92e6db178af8e9940fe5519213988a15e2"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/library-return.svg",
+      "sha256": "3c053d7e355ec692977e9090bb4dfd3179920e895ecceb9e0622403debbda55f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/hcr06-final-return.svg",
+      "sha256": "ec40db6ee1f6f8ce415365b3eb09671534d72c984713d9f9b4736745ae9118d8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/05-loading.svg",
+      "sha256": "93c34c40c7b09f3d5d9ecd4e6ca0b688e084806a0187fa8a33e43e334778bb22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/06-empty.svg",
+      "sha256": "48aafbc74c18b50b916e541d56ea47027cffa4ddee4478bdde1f98162ee1c2cb"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/07-error.svg",
+      "sha256": "27220f10b61c5e409fbff495986f77a484cbdb3be7fdef40e18180b882deb573"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/08-extreme.svg",
+      "sha256": "4d3fc069312f89155aa28be768f0eb9a377e4dc08926284bb9dfe1599d6fa367"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/09-missing-input.svg",
+      "sha256": "e8d6424ad85fc3d19aea675a7b163f10e72b1c6a99030a710dadac4f16a954f1"
+    }
+  ],
+  "sharedCommentSha256": "fdadf0d73624f923ffcf3e9c471f0fa5ec3d0147409574fe25157918f20a694c"
+}

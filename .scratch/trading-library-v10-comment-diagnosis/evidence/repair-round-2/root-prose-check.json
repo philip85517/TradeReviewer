@@ -1,0 +1,20 @@
+{
+  "source_fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+  "content_fingerprint": "d4988792a3324265749fdc3eded376ba8d084bf2585b76a4380a2548a5a11703",
+  "opening_and_chapter_1_preserved": true,
+  "first_chapter_sha256": "dcb3f32b90278a237741752d5de55e3ce293af5a9c8115507f424f83b2a83437",
+  "chapters": [
+    "一、目标与取舍 {#chapter-BT01}",
+    "二、布局与视觉规范 {#chapter-BT02}",
+    "三、范围、日期与搜索 {#chapter-BT03}",
+    "四、列表、练习与回合 {#chapter-BT04}",
+    "五、统计与分布 {#chapter-BT05}",
+    "六、查看详情、进入复盘与返回 {#chapter-BT06}",
+    "七、异常状态 {#chapter-BT07}",
+    "八、组件复用与职责 {#chapter-BT08}",
+    "九、实现验收 {#chapter-BT09}",
+    "十、来源映射、历史与未决项 {#chapter-BT10}"
+  ],
+  "demos": 8,
+  "image_refs": 40
+}

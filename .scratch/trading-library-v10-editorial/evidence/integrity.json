@@ -1,0 +1,93 @@
+{
+  "fingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+  "checks": [
+    {
+      "check": "source fingerprint",
+      "result": "PASS",
+      "detail": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147"
+    },
+    {
+      "check": "chapter anchors",
+      "result": "PASS",
+      "detail": "BT01–BT10 retained in order"
+    },
+    {
+      "check": "storyboard blocks unchanged",
+      "result": "PASS",
+      "detail": "All frame paths, captions and order"
+    },
+    {
+      "check": "referenced image identities and bytes",
+      "result": "PASS",
+      "detail": "20 referenced images"
+    },
+    {
+      "check": "live comments preserved",
+      "result": "PASS",
+      "detail": "Original opinions, quotes, status, history and operations byte-identical"
+    },
+    {
+      "check": "offline snapshot current",
+      "result": "PASS",
+      "detail": "revision 2"
+    },
+    {
+      "check": "unique block identities",
+      "result": "PASS",
+      "detail": "263 blocks"
+    },
+    {
+      "check": "mapping fingerprints",
+      "result": "PASS",
+      "detail": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147"
+    },
+    {
+      "check": "comment mapping comment-ff1644d6fadd433484f0a8040b381b73",
+      "result": "PASS",
+      "detail": [
+        "HOME-TLIB-GOAL",
+        "HOME-TLIB-TRADEOFF",
+        "HOME-TLIB-ACCURACY"
+      ]
+    },
+    {
+      "check": "comment mapping comment-0f6fbbbb44cc4ed88b05caad3e314891",
+      "result": "PASS",
+      "detail": [
+        "HOME-TLIB-INTRO",
+        "HOME-TLIB-REFERENCES"
+      ]
+    },
+    {
+      "check": "unique HTML anchors",
+      "result": "PASS",
+      "detail": "43 ids"
+    },
+    {
+      "check": "document links and assets",
+      "result": "PASS",
+      "detail": {
+        "verified": 100,
+        "broken": []
+      }
+    },
+    {
+      "check": "public component names preserved",
+      "result": "PASS",
+      "detail": [
+        "IconButton",
+        "SegmentedTabs",
+        "Select",
+        "Popover",
+        "FilterPopover",
+        "Token",
+        "DataTable",
+        "Metric",
+        "StatusBadge",
+        "ChartTooltip",
+        "EmptyState",
+        "RetryAction"
+      ]
+    }
+  ]
+}

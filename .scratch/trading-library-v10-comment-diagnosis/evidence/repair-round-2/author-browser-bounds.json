@@ -1,0 +1,242 @@
+[
+  {
+    "name": "01-live-normal.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "02-simulation-normal.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "03-distribution-selected.svg",
+    "height": "1454",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "04-return.svg",
+    "height": "1454",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "05-loading.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "06-empty.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "07-error.svg",
+    "height": "1298",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "08-extreme.svg",
+    "height": "1322",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "09-missing-input.svg",
+    "height": "1298",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-date.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-date-1280.svg",
+    "height": "800",
+    "outside": [],
+    "width": "1280"
+  },
+  {
+    "name": "journeys-date-month.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-sim-ab.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-rounds-a.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-replay-a1.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-replay-a2.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-replay-b1.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-trend-gap.svg",
+    "height": "1298",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-trend-single.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-trend-empty.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-trend-month.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-trend-year.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "handoff.svg",
+    "height": "2346",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-home-entry.svg",
+    "height": "2346",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-library-list.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-live-rounds.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-library-replay.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-live-rounds-return.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-library-list-return.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-view-restore.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-pending-library.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-pending-library-1280.svg",
+    "height": "800",
+    "outside": [],
+    "width": "1280"
+  },
+  {
+    "name": "library-return.svg",
+    "height": "2346",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-library-return.svg",
+    "height": "2346",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "hcr06-final-return.svg",
+    "height": "1454",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "distribution-amount.svg",
+    "height": "1206",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-view-simulation.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-simulation-return.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-rounds-a-return.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  },
+  {
+    "name": "journeys-rounds-b.svg",
+    "height": "1000",
+    "outside": [],
+    "width": "1440"
+  }
+]

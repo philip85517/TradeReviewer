@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-10-24T14:26:22.200991+00:00",
+  "revision": 5,
+  "documentFingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+  "files": [
+    {
+      "path": "docs/design-system/reviews/TRADING-LIBRARY-V11.json",
+      "sha256": "f9864ea20cf4f630b70cc6ea2de526f66bd8799af098a838353392dae7bda78c"
+    },
+    {
+      "path": "CONTEXT.md",
+      "sha256": "c152e98381382bd5f072b271ab83d37d426f1831989625d2064355d1f5de2f51"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/visual-design.candidate.md",
+      "sha256": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/navigation-e-prototype.html",
+      "sha256": "3b1068e9d156aa27af5a00cbaf676451dc492c38c0f47426b57a6cd3037c6025"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/images/approved-e-sim-stats-1440.jpg",
+      "sha256": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/images/journeys-date.svg",
+      "sha256": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/images/hcr06-final-rounds-a.svg",
+      "sha256": "c24a02bf53fac4a5d08cdc2979372a1e702618f16a23e19d795d5b4c7f1f27e7"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/images/02-simulation-normal.svg",
+      "sha256": "df942ed6cf7734afb2a2ad3591f208c08da5bb244ba89f84675c88f1c501ff84"
+    }
+  ]
+}

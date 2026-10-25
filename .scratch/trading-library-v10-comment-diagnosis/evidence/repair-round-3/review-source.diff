@@ -1,0 +1,136 @@
+--- before/source/generate-library-frames.py
++++ current/source/generate-library-frames.py
+@@ -490,12 +490,22 @@
+     for p in positions:
+         p['quote']=quotes[p['code']];p['market_value']=p['quantity']*p['quote'];p['floating']=p['quantity']*(p['quote']-p['price'])-p['fee']
+     market=sum(p['market_value'] for p in positions);floating=sum(p['floating'] for p in positions);realized=stats_for(derive_live_rounds(fixture))['net']
+     return {'positions':positions,'market_value':market,'floating':floating,'realized':realized,'total':realized+floating-valuation['opening_unrealized'],'points':points}
+ 
+ 
++def home_reference_text(svg, x, y, value):
++    """Replace a datum while preserving the approved host text geometry/style."""
++    pattern=rf'(<text x="{re.escape(str(x))}" y="{re.escape(str(y))}"[^>]*>).*?(</text>)'
++    full=getattr(value,'full_amount',None)
++    body=(f'<title>{full} CNY</title>' if full is not None else '')+esc(value)
++    updated,count=re.subn(pattern,lambda m:m[1]+body+m[2],svg,count=1)
++    if count!=1:raise ValueError(f'Homepage reference text missing: {x}, {y}')
++    return updated
++
++
+ def home_frame(fixture,focus=False):
+     # Copy the approved full homepage host through the period controls. Data
+     # modules retain its absolute geometry, hierarchy and complete page length.
+     reference=ROOT.parents[1]/'2026-10-22-homepage-v2.5/source/images/home-1440.svg'
+     source=reference.read_text();prefix=source[:source.index('<rect x="96.0" y="124"')]
+     prefix=re.sub(r'<rect x="48" y="134"[^>]*/><text x="60" y="151"[^>]*>12</text>','',prefix)
+@@ -505,53 +515,82 @@
+     value=home_valuation(fixture);out=[prefix]
+     if focus:out.append('<rect x="8" y="137" width="56" height="56" rx="8" fill="none" stroke="#6CA8FF" stroke-width="2"/>')
+     metrics=[('期间净盈亏(CNY)',value['total']),('期间已实现(CNY)',value['realized']),('期间浮盈变动(CNY)',value['floating']),('当前持仓市值(CNY)',value['market_value'])]
+     for i,(label,amount) in enumerate(metrics):
+         x=96+i*333;out += [rect(x,124,321,88),text(x+16,149,label,14,'muted'),f'<g><title>{amount:,.2f} CNY</title>'+text(x+16,188,fmt(amount),28,'text' if i==3 else 'positive',600)+'</g>']
+     # Identical plot bounds to the approved homepage chart.
+-    out += [rect(96,226,1320,320),text(112,253,'期间净盈亏',18,'text',600),text(1400,253,'CNY',12,'muted',400,'end')]
++    out += [rect(96,226,1320,320),text(112,253,'期间净盈亏',16,'text',600),text(1400,253,'CNY',12,'muted',400,'end')]
+     left,right,top,bottom=172,1380,276,496;points=value['points'];lo=min(0,min(p['cumulative'] for p in points));hi=max(p['cumulative'] for p in points);span=hi-lo;lo-=span*.1;hi+=span*.1
+     sy=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
+     for v in [hi,(hi+lo)/2,0,lo]:out += [line(left,sy(v),right,sy(v),'muted' if v==0 else 'border'),text(left-12,sy(v)+4,fmt(v),12,'muted',400,'end')]
+     prev=None
+     for i,p in enumerate(points):
+         xx=left+(right-left)*i/(len(points)-1);yy=sy(p['cumulative'])
+         if prev:out.append(line(*prev,xx,yy,'blue',2))
+         out.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="4" fill="{COLORS["blue"]}"><title>{p["date"]} · {p["cumulative"]:,.2f} CNY</title></circle>');prev=xx,yy
+         if i in [0,2,4,6,8,len(points)-1]:out.append(text(xx,519,p['date'][5:],12,'muted',400,'middle'))
+-    out += [rect(96,586,1320,520),text(112,610,'当前持仓',18,'text',600),text(760,610,'市值 '+fmt(value['market_value']),14,'muted',400,'end'),text(950,610,'浮盈 '+fmt(value['floating']),14,'positive',400,'end'),control(1172,592,176,'','搜索持仓','search'),button(1356,592,44,'↗')]
+-    cols=[('标的',128,'start'),('持仓天数',521,'end'),('数量',650,'end'),('成本价',792,'end'),('最新价',934,'end'),('市值(CNY)',1127,'end'),('浮盈(CNY)',1307,'end'),('查看',1361,'middle')]
+-    for label,x,anchor in cols:out.append(text(x,660,label,12,'muted',400,anchor))
++    # Reuse the public host's holdings toolbar and column headers verbatim.
++    holdings=source[source.index('<rect x="96" y="586"'):source.index('<path d="M112 714')]
++    holdings=home_reference_text(holdings,761,610,fmt(value['market_value']))
++    holdings=home_reference_text(holdings,950,610,fmt(value['floating']))
++    out.append(holdings)
++    # Reuse each public row's geometry and detail icon; only the fixture cells change.
++    row_template=source[source.index('<path d="M112 714'):source.index('<path d="M112 762')]
+     for i,p in enumerate(value['positions']):
+-        yy=691+48*i;days=(date.fromisoformat(fixture['navigation']['home']['end'])-date.fromisoformat(p['date'])).days
+-        cells=[p['symbol'],str(days),str(p['quantity']),f"{p['price']+p['fee']/p['quantity']:,.2f}",f"{p['quote']:,.2f}",fmt(p['market_value']),fmt(p['floating']),'→']
+-        for j,(val,(_,x,a)) in enumerate(zip(cells,cols)):out.append(text(x,yy,val,14,'positive' if j==6 else 'blue' if j==7 else 'text',400,a))
+-        out += [text(128,yy+16,p['code'],12,'muted'),line(112,yy+23,1400,yy+23)]
++        row=row_template
++        days=(date.fromisoformat(fixture['navigation']['home']['end'])-date.fromisoformat(p['date'])).days
++        for xx,yy,val in [(128,706,p['code']),(128,691,p['symbol']),('521.04',691,str(days)+' 天'),('649.8399999999999',691,str(p['quantity'])),('791.52',691,f"{p['price']+p['fee']/p['quantity']:,.2f}"),('933.2',691,f"{p['quote']:,.2f}"),('1126.4',691,fmt(p['market_value'])),('1306.72',691,fmt(p['floating']))]:
++            row=home_reference_text(row,xx,yy,val)
++        out.append(f'<g transform="translate(0 {i*48})">{row}</g>')
+     out += [text(112,1089,'1–2 / 2 项 · 估值 2026-10-15 15:00 · 覆盖 2/2 持仓',12,'muted'),button(1256,1064,36,'‹',disabled=True),text(1328,1087,'1 / 1',14,'muted',400,'middle'),button(1364,1064,36,'›',disabled=True)]
+-    # Full historical section, followed by current-period contribution, as in V2.5.
+-    x,y,w=96,1130,1320;st=stats_for(derive_live_rounds(fixture))
+-    out += [rect(x,y,w,558),text(x+24,y+32,'历史统计',18,'text',600),control(x+998,y+20,282,'','2026年 · 每月净盈亏')]
+-    for i,(label,val) in enumerate([('历史净盈亏(CNY)',fmt(st['net'])),('已平仓回合',str(st['count'])),('胜率',f"{st['win_rate']:.2f}%"),('闭合费用(CNY)',fmt(st['fees']))]):
+-        xx=x+i*333;out += [rect(xx,y+82,321,88),text(xx+16,y+108,label,14,'muted'),text(xx+16,y+145,val,28,'text',600)]
+-    out += [text(x+24,y+218,'历史净盈亏',18,'text',600),text(x+w-24,y+218,'按回合平仓日 · CNY',12,'muted',400,'end')]
+-    chart_left,chart_right,chart_top,chart_bottom=x+76,x+w-36,y+290,y+490
+-    for v in [1000,500,0,-250]:
+-        yy=chart_bottom-(v+250)/1250*(chart_bottom-chart_top);out += [line(chart_left,yy,chart_right,yy),text(chart_left-12,yy+4,fmt(v),12,'muted',400,'end')]
+-    yy=chart_bottom-(st['net']+250)/1250*(chart_bottom-chart_top);zero=chart_bottom-250/1250*(chart_bottom-chart_top)
+-    for month in range(1,13):
+-        xx=chart_left+(chart_right-chart_left)*(month-.5)/12
+-        if month==10:out += [rect(xx-20,yy,40,zero-yy,'positive','positive',2),text(xx,yy-10,fmt(st['net']),12,'positive',400,'middle')]
+-        out.append(text(xx,y+514,f'{month}月',12,'muted',400,'middle'))
+-    x,y,w=96,1712,1320;out += [rect(x,y,w,610),text(x+32,y+36,'当前期间贡献',18,'text',600),text(x+w-32,y+36,'期间净盈亏 '+fmt(value['total'])+' CNY',18,'positive',600,'end'),text(x+32,y+58,'本月 · 当前表现日期 2026-10-01 — 10-15 · 已实现 + 浮盈变动',12,'muted'),segments(x+32,y+70,['当前期间','历史'], '当前期间',200)]
+-    out += [text(x+32,y+124,'分类',12,'muted'),segments(x+32,y+130,['做多','做空','打新'],'做多',228),control(x+312,y+130,128,'排序','盈利最高'),text(x+460,y+153,'□ 仅当前持仓',14,'muted'),control(x+712,y+130,160,'市场','全部市场'),text(x+582,y+222,'● 已实现',12,'blue'),text(x+684,y+222,'● 浮盈变动',12,'positive'),text(x+32,y+264,'市场',12,'muted'),text(x+w-32,y+264,'净盈亏(CNY)',12,'muted',400,'end')]
++    # Preserve the reference history title, independent year/metric selectors,
++    # card hierarchy and chart bounds. The fixture has a single effective month.
++    st=stats_for(derive_live_rounds(fixture))
++    hstart=source.index('<svg x="96" y="1130"')
++    history=source[hstart:source.index('<rect x="0" y="214"',hstart)]
++    history=re.sub(r'<desc id="history-desc">.*?</desc>',f'<desc id="history-desc">历史统计，截至 2026-10-15；历史净盈亏 {st["net"]:.2f}，5 回合，胜率 60.0%，费用 {st["fees"]:.2f}</desc>',history)
++    for xx,yy,val in [(16,145,fmt(st['net'])),(349,145,str(st['count'])),(682,145,f"{st['win_rate']:.1f}%"),(971,145,f"{st['wins']} / {st['count']} 盈利回合"),(1015,145,fmt(st['fees']))]:
++        history=home_reference_text(history,xx,yy,val)
++    out += [history,'<rect x="0" y="214" width="1320" height="320" rx="8" fill="#111A26" stroke="#283448"/>']
++    # Same period-state surfaces as V2.5; no trades and future months are not zeros.
++    chart_left,chart_right,chart_top,chart_bottom=106,1296,280,490
++    step=(chart_right-chart_left)/11
++    for month in range(1,10):
++        start=chart_left if month==1 else chart_left+(month-1.5)*step
++        end=chart_left+(month-.5)*step
++        out.append(f'<rect x="{start:g}" y="280" width="{end-start:g}" height="210" fill="#30291E" opacity="0.65" data-state="empty"><title>{month}月：该期间无已关闭回合</title></rect>')
++    future=chart_left+9.5*step
++    out += [f'<rect x="{future:g}" y="280" width="{chart_right-future:g}" height="210" fill="#1D2B40" opacity="0.85" data-state="future-zone"><title>11–12月：尚未到达</title></rect>',f'<line x1="{future:g}" y1="280" x2="{future:g}" y2="490" stroke="#71829B" stroke-dasharray="4 4" data-state="future-boundary"/>',text(24,246,'每月净盈亏',16,'text',600),text(1276,246,'CNY',12,'muted',400,'end')]
++    sy=lambda v:490-(v+100)/1000*200
++    for val in [900,650,400,150,-100]:
++        yy=sy(val);out += [line(106,yy,1296,yy),text(94,yy+4,fmt(val),12,'muted',400,'end')]
++    out.append(f'<line x1="106" y1="{sy(0):g}" x2="1296" y2="{sy(0):g}" stroke="#A8B6CB" data-state="zero-line"/>')
++    xx=chart_left+9*step;yy=sy(st['net'])
++    out.append(f'<g data-series="monthly-net"><polyline points="{xx:g},{yy:g}" fill="none" stroke="#6CA8FF" stroke-width="2"/><circle cx="{xx:g}" cy="{yy:g}" r="3" fill="#6CA8FF"><title>2026年10月 · {st["net"]:.2f} CNY · 5 回合</title></circle></g>')
++    for month in range(1,13):out.append(text(chart_left+(month-1)*step,514,f'{month}月',12,'muted',400,'middle'))
++    out.append('</svg>')
++    # Reuse the entire public contribution control surface, legend and zero line.
++    cstart=source.index('<svg x="96" y="1712.0"')
++    contribution=source[cstart:source.index('<text x="32" y="311"',cstart)]
++    contribution=home_reference_text(contribution,1288,36,fmt(value['total'])+' CNY')
++    contribution=home_reference_text(contribution,32,58,'本月 · 当前表现日期 2026-10-01 — 2026-10-15 · 已实现 + 浮盈变化')
++    out.append(contribution)
+     for i,label in enumerate(['A股','港股','美股']):
+-        yy=y+311+i*72;out += [text(x+32,yy,label,14),text(x+w-32,yy,fmt(value['total'] if i==0 else 0),18,'positive' if i==0 else 'muted',600,'end')]
++        yy=311+i*72
++        out.append(text(32,yy,label,14))
+         if i==0:
+-            totalwidth=700;realw=totalwidth*value['realized']/value['total'];out += [rect(x+180,yy-18,realw,24,'blue','blue',2),rect(x+180+realw,yy-18,totalwidth-realw,24,'positive','positive',2)]
+-        else:out.append(line(x+180,yy-6,x+880,yy-6))
+-    out += [line(x+32,y+506,x+w-32,y+506),text(x+32,y+548,'合计',18,'text',600),text(x+w-32,y+548,fmt(value['total'])+' CNY',28,'positive',600,'end'),text(x+32,y+574,'已实现 '+fmt(value['realized'])+' + 浮盈变动 '+fmt(value['floating']),12,'muted'),text(x+w-32,y+574,'市场合计与当前表现一致',12,'muted',400,'end'),'</g></svg>']
++            # Solid and hollow segments have the same 14px visible height.
++            # The hollow stroke is inset one pixel on each side.
++            realw=396*value['realized']/value['total'];floatw=396-realw
++            out += [f'<rect x="686" y="{yy-18}" width="{realw:g}" height="14" rx="1" fill="#53D7A0"><title>已实现 {value["realized"]:.2f} CNY</title></rect>',f'<rect x="{687+realw:g}" y="{yy-17}" width="{floatw-2:g}" height="12" rx="0" fill="none" stroke="#53D7A0" stroke-width="2"><title>浮盈变化 {value["floating"]:.2f} CNY</title></rect>']
++        out.append(text(1288,yy,fmt(value['total'] if i==0 else 0),14,'positive' if i==0 else 'muted',700,'end'))
++    footer=source[source.index('<text x="32" y="548"',cstart):source.index('</svg>',source.index('<text x="32" y="548"',cstart))+6]
++    footer=home_reference_text(footer,1288,548,fmt(value['total'])+' CNY')
++    footer=home_reference_text(footer,32,574,'已实现 '+fmt(value['realized'])+' · 浮盈变化 '+fmt(value['floating']))
++    footer=home_reference_text(footer,1288,574,'市场合计')
++    out += [footer,'</g></svg>']
+     return ''.join(out)
+ 
+ 
+ FRAMES={
+  '01-live-normal.svg':'live-stats','02-simulation-normal.svg':'simulation-stats','03-distribution-selected.svg':'distribution','04-return.svg':'return-stats',
+  '05-loading.svg':'loading','06-empty.svg':'empty','07-error.svg':'error','08-extreme.svg':'extreme','09-missing-input.svg':'missing',

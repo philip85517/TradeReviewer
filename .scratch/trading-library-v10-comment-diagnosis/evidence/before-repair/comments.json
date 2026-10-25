@@ -1,0 +1,252 @@
+{
+  "revision": 6,
+  "comments": [
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-22T16:10:30Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-22T16:10:30Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-ff1644d6fadd433484f0a8040b381b73",
+      "image": null,
+      "opinion": "这里的文档描述需要更聚焦和结构化，用总分的写作模式，进行分段论述。\n同时这一段的内容要围绕标题的主题进行展开，比如我们的目标是什么，先用总分的方式说清楚，其次展开为了落地这个目标，我们要拆解几个方面，再细的拆开各个分段内容进行目标的描述和取舍，以及我们思考的边界范围",
+      "quote": "交易库把首页上的结果阅读接到可核对、可复盘的具体交易。日期检索和普通交易库入口把首页结果接到具体交易；待复盘只作为交易库内部的显式筛选，再从筛选结果进入复盘任务。入口提供的来源日期、标的、市场和账户条件到达后立即生效，未提供的条件保持交易库自身范围；用户无需再次点击应用。条件摘要是只读说明，与按钮分开呈现，不画成待确认的操作。\n页面保持“列表 → 标的或练习 → 回合集 → 回合复盘”的短链路。实盘与模拟盘是互斥视角，复用列表和统计组件，但各自保存条件和导航上下文。模拟盘以一次练习承载一个标的的多个交易回合，同一标的同一天的反复练习仍是独立练习；因此不增加无业务依据的中间页，也不把实盘账户当作模拟盘练习身份。\n统计和列表使用各自明确的日期口径：实盘列表按每笔成交日期筛选，统计按回合平仓日期归属；未平仓成交仍可在列表查看，却不进入已平仓回合统计。模拟盘按导入文件保存的练习日期归属，不以行情日期代替。页面内搜索只过滤交易库表，不调用全局标的搜索遮罩。",
+      "replies": [],
+      "revisions": [],
+      "segments": [
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B070",
+          "chapter": "BT01",
+          "quote": "交易库把首页上的结果阅读接到可核对、可复盘的具体交易。日期检索和普通交易库入口把首页结果接到具体交易；待复盘只作为交易库内部的显式筛选，再从筛选结果进入复盘任务。入口提供的来源日期、标的、市场和账户条件到达后立即生效，未提供的条件保持交易库自身范围；用户无需再次点击应用。条件摘要是只读说明，与按钮分开呈现，不画成待确认的操作。"
+        },
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B004",
+          "chapter": "BT01",
+          "quote": "页面保持“列表 → 标的或练习 → 回合集 → 回合复盘”的短链路。实盘与模拟盘是互斥视角，复用列表和统计组件，但各自保存条件和导航上下文。模拟盘以一次练习承载一个标的的多个交易回合，同一标的同一天的反复练习仍是独立练习；因此不增加无业务依据的中间页，也不把实盘账户当作模拟盘练习身份。"
+        },
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B005",
+          "chapter": "BT01",
+          "quote": "统计和列表使用各自明确的日期口径：实盘列表按每笔成交日期筛选，统计按回合平仓日期归属；未平仓成交仍可在列表查看，却不进入已平仓回合统计。模拟盘按导入文件保存的练习日期归属，不以行情日期代替。页面内搜索只过滤交易库表，不调用全局标的搜索遮罩。"
+        }
+      ],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-22T16:12:02Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-22T16:12:02Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-0f6fbbbb44cc4ed88b05caad3e314891",
+      "image": null,
+      "opinion": "首先最重要的位置写了一些不止所云的内容\n其次这些内容的规范的这种引用细节写在这里用正文的方式合适么？还不如用类似的规范表格等形式把引用内容列清楚",
+      "quote": "本方案把冻结的首页交易库业务与分镜独立成可直接交付的页面规范。它覆盖从首页日期、交易库入口到交易列表、练习回合、统计分布、详情复盘和返回来源的完整链路；首页 V2.5 只保留进入交易库的入口与返回恢复帧。原始权威来源为冻结 V2.4.2 视觉规范 HP06、冻结 V2.4.2 交易库补充规范 HP07及其公共控件手册。既有分镜沿用原 SVG；本次统一入口补充 journeys-library-entry.svg，并以 library-return.svg 表达普通交易库来源返回。\n交易库复用 V2.5 的公共契约：共享规范 HP08、视觉基础 HP11、全站原则和控件手册。跨页传参与恢复字段见首页入口状态约定。本页只补充交易库的页面层级、业务条件、列表与回合关系、统计口径、返回上下文和交易库专属边界。",
+      "replies": [],
+      "revisions": [],
+      "segments": [
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B001",
+          "chapter": "DOC",
+          "quote": "本方案把冻结的首页交易库业务与分镜独立成可直接交付的页面规范。它覆盖从首页日期、交易库入口到交易列表、练习回合、统计分布、详情复盘和返回来源的完整链路；首页 V2.5 只保留进入交易库的入口与返回恢复帧。原始权威来源为冻结 V2.4.2 视觉规范 HP06、冻结 V2.4.2 交易库补充规范 HP07及其公共控件手册。既有分镜沿用原 SVG；本次统一入口补充 journeys-library-entry.svg，并以 library-return.svg 表达普通交易库来源返回。"
+        },
+        {
+          "after": "",
+          "before": "",
+          "blockId": "HOME-DOC-B071",
+          "chapter": "DOC",
+          "quote": "交易库复用 V2.5 的公共契约：共享规范 HP08、视觉基础 HP11、全站原则和控件手册。跨页传参与恢复字段见首页入口状态约定。本页只补充交易库的页面层级、业务条件、列表与回合关系、统计口径、返回上下文和交易库专属边界。"
+        }
+      ],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T16:59:13Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T16:59:13Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-646fafe57e424f72aa552cdf8e6ddded",
+      "image": {
+        "chapter": "BT03",
+        "fingerprint": "f8858d6cd90774c2bcc786e99a65ad0180daacb40268f7476d1400ff896f7870",
+        "id": "journeys-date",
+        "occurrenceId": "journeys-date@state-demo-1-1",
+        "src": "source/images/journeys-date.svg"
+      },
+      "opinion": "1.左侧功能栏缺失\n2.整个界面的视觉框架缺失\n3.看起来是个片段",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T17:00:07Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T17:00:07Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-b880c94701b74fa79675e2bb6c7f1ed8",
+      "image": {
+        "chapter": "BT04",
+        "fingerprint": "9dd88e2d26547e9fd5869265df135853ba4a7b3122a4cd58bfcc2253d99afe65",
+        "id": "hcr06-final-sim-ab",
+        "occurrenceId": "hcr06-final-sim-ab@state-demo-2-1",
+        "src": "source/images/hcr06-final-sim-ab.svg"
+      },
+      "opinion": "1。上方功能栏的视觉规范需要沉淀，目前看没有居中\n2. 通用视觉规范需要参考公共的设计布局规范",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T17:01:10Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T17:01:10Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-e17d6a68984445b3af9f213a4ad47d6c",
+      "image": {
+        "chapter": "BT05",
+        "fingerprint": "b7e359c9461d22fd3d861e3ac4e4516de3d7b854fdeee1007299c1c013bf7f86",
+        "id": "01-live-normal",
+        "occurrenceId": "01-live-normal@state-demo-3-1",
+        "src": "source/images/01-live-normal.svg"
+      },
+      "opinion": "这里有实盘的按钮，上方缺没有，全局不统一\n模拟交易趋势的图没看到，我希望看到趋势的真实效果",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-23T17:01:53Z",
+      "documentId": "TRADING-LIBRARY-V10",
+      "fingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-23T17:01:53Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-9e58c33192e24f54b5d85f5cf8f00d65",
+      "image": {
+        "chapter": "BT06",
+        "fingerprint": "b2cb40c7a09bd7acbadcc777016c3e76285dce36f487cd15b1c3c4995aabed19",
+        "id": "handoff",
+        "occurrenceId": "handoff@state-demo-4-1",
+        "src": "source/images/handoff.svg"
+      },
+      "opinion": "这个界面外围环境不完整，没看懂是在整个界面的哪个位置，有什么作用，怎么出现的，用户动线是什么需要补充",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    }
+  ]
+}

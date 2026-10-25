@@ -1,0 +1,27 @@
+[
+  {
+    "command": [
+      "python3",
+      "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/test-homepage-template.py"
+    ],
+    "exit": 0,
+    "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.353s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/test-library-metrics.py"
+    ],
+    "exit": 0,
+    "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.002s\n\nOK\n"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "output": ""
+  }
+]

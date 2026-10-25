@@ -1,0 +1,122 @@
+{
+  "states": [],
+  "checks": [
+    {
+      "name": "live-date-restored-long",
+      "date": "long",
+      "dockTop": 715.5,
+      "focus": "mode-live",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "实盘",
+      "page": "统计",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 D"
+    },
+    {
+      "name": "sim-date-long-focus-selected",
+      "date": "long",
+      "dockTop": 715.5,
+      "focus": "mode-simulation",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "模拟盘",
+      "page": "统计",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 D"
+    },
+    {
+      "name": "direct-no-return",
+      "date": "long",
+      "dockTop": 715.5,
+      "focus": "",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "模拟盘",
+      "page": "列表",
+      "preview": "empty",
+      "returnShown": false,
+      "variant": "方案 D"
+    },
+    {
+      "name": "return-demo",
+      "date": "long",
+      "dockTop": 715.5,
+      "focus": "return-btn",
+      "mainBottom": 696,
+      "message": "演示反馈：返回动作仅用于比较入口语义，不会离开样例页面。",
+      "mode": "模拟盘",
+      "page": "列表",
+      "preview": "empty",
+      "returnShown": true,
+      "variant": "方案 D"
+    },
+    {
+      "name": "variant-keeps-state",
+      "date": "long",
+      "dockTop": 715.5,
+      "focus": "next-variant",
+      "mainBottom": 696,
+      "message": "演示反馈：返回动作仅用于比较入口语义，不会离开样例页面。",
+      "mode": "模拟盘",
+      "page": "列表",
+      "preview": "empty",
+      "returnShown": true,
+      "variant": "方案 E"
+    },
+    {
+      "name": "reload-keeps-E-resets-demo",
+      "date": "fixture",
+      "dockTop": 715.5,
+      "focus": "",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "实盘",
+      "page": "列表",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 E"
+    },
+    {
+      "name": "shortcuts-2-s",
+      "date": "fixture",
+      "dockTop": 715.5,
+      "focus": "prev-variant",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "模拟盘",
+      "page": "统计",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 E"
+    },
+    {
+      "name": "shortcuts-1-l-left",
+      "date": "fixture",
+      "dockTop": 715.5,
+      "focus": "prev-variant",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "实盘",
+      "page": "列表",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 D"
+    },
+    {
+      "name": "reload-keeps-D",
+      "date": "fixture",
+      "dockTop": 715.5,
+      "focus": "",
+      "mainBottom": 696,
+      "message": "",
+      "mode": "实盘",
+      "page": "列表",
+      "preview": "normal",
+      "returnShown": true,
+      "variant": "方案 D"
+    }
+  ]
+}

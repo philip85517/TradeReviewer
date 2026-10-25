@@ -6,8 +6,10 @@
 
 ## 启动预览
 
+从当前仓库根目录运行：
+
 ```sh
-"/Users/zhoulin/.codex/worktrees/12f2/TradeReview/docs/design-system/start-design-preview.sh"
+./docs/design-system/baselines/2026-10-22-trading-library-v1.0/start-preview.sh
 ```
 
 地址：http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html
@@ -29,3 +31,33 @@
 ## 首页入口修订（2026-10-22）
 
 按用户确认，V2.5 首页统一使用普通“交易库”入口，取消独立“待复盘”入口及数量徽章。待复盘保留为交易库内部显式筛选；日期、标的交接与返回上下文保持。历史图稿与评论不删除。详见[修订与验收记录](../../iterations/2026-10-22-homepage-library-entry/README.md)。
+
+## 行文修订（2026-10-23）
+
+依据当前两条评论，开篇先说明文档用途，再用表格列出规范引用；第一章按总目标、三个分目标、设计取舍和范围边界展开。其余章节按各自主题拆分说明，将参数、日期口径、返回字段和异常状态整理为查阅表，历史与未决项集中到第十章。
+
+原有设计规则与分镜保留。`comment-migration.json` 将两条评论关联到修订后的对应段落，原引用、意见、状态和历史保持；`comments-snapshot.json` 同步当前评论服务的第2版数据。
+
+## 当前：B 布局与最差练习回撤已采用
+
+用户已确认 B 紧凑排列及最差练习回撤。正式正文、共享图稿和原型已同步，独立Agent验收PASS：37张变动图逐帧视觉通过，10项测试通过；原10条评论及历史保持。06/07/08任务关闭。
+
+回撤按每个练习完整权益路径独立计算后取最大值。缺数据继续显示“—”，部分覆盖和空练习分别说明。本轮为静态设计与演示原型，不表示生产业务计算或数据库流程已实现。
+
+[原型](navigation-options.html) · [最终验收](../../../../.scratch/trading-library-v10-comment-diagnosis/FINAL-ACCEPTANCE.md) · [独立报告](../../../../.scratch/trading-library-v10-comment-diagnosis/evidence/revision-10-final-decisions/INDEPENDENT-ACCEPTANCE.md)
+
+## 历史：revision 10 候选修复验收通过
+
+三套导航布局可在[比较原型](navigation-options.html)中操作；模拟盘多空指标、费用说明、横向收益分布及首页模板复用已完成当前阶段修复。独立Agent复核真实浏览器和最终图稿通过，协调者完成表格、候选入口、评论定位与1280首页嵌入检查。原10条评论及历史图稿保持。
+
+最终布局和最大回撤定义仍待用户选择；06/07/08任务继续open，05首页一致性已验收关闭。本轮为静态设计与演示原型，不表示产品业务流程已实现。
+
+[本轮计划](../../../../.scratch/trading-library-v10-comment-diagnosis/REVISION-10-PLAN.md) · [最终阶段验收](../../../../.scratch/trading-library-v10-comment-diagnosis/FINAL-ACCEPTANCE.md) · [独立报告](../../../../.scratch/trading-library-v10-comment-diagnosis/evidence/revision-10-repair/INDEPENDENT-ACCEPTANCE.md)
+
+## 历史：revision 6 评论驱动的静态设计修复（2026-10-24）
+
+依据新增4条图稿评论，补齐全局宿主与公共工具栏、统一实盘/模拟盘切换、建立一致的成交/费用/统计样例，并补全首页、列表、回合集、复盘和逐层返回。当前正文引用40张图、8组分镜；两种普通统计入口分别可发现。开篇与第一章的既有行文修订保留。
+
+独立Agent静态设计复验通过；协调者实测33目录、40分镜与原尺寸图、8组播放/键盘操作、6评论定位及4原图链接，通过后关闭5项诊断问题。[最终验收](../../../../.scratch/trading-library-v10-comment-diagnosis/FINAL-ACCEPTANCE.md)与[独立报告](../../../../.scratch/trading-library-v10-comment-diagnosis/evidence/independent-round-3/REVIEW.md)保存版本和截图。当前source `8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58`，content `7584f36adeab139fc67a50b5894e7bc9afaf894a73aeb1a10716f6a04f198182`。
+
+共享评论及离线快照为revision 6；原6条意见、状态和历史保持，修订图使用显式整图关联并提供历史原图，不自动解决评论。历史原图保存在 `review-records/2026-10-24-comment-repair/originals/`。本次为静态设计文档修复，不表示业务产品或数据库流程已经实现；未提交、推送或合并。

@@ -1,0 +1,21 @@
+{
+  "results": {
+    "staged": {
+      "exit": 0,
+      "output": ""
+    },
+    "branch": {
+      "exit": 0,
+      "output": ""
+    }
+  },
+  "exclusions": [
+    "*.diff",
+    "*.patch",
+    ".scratch/trading-library-v10-editorial/evidence/final-preview-ax.txt",
+    ".scratch/trading-library-v20-spec-sync/reviews/luna-a-v20-final.md",
+    ".scratch/trading-library-v20-spec-sync/reviews/luna-a-v20-visual-addendum.md",
+    ".scratch/trading-library-v20-spec-sync/reviews/luna-b-oracle.md"
+  ],
+  "policy": "Preserve raw diff/AX evidence and intentional Markdown hard breaks; blank-at-eof is cosmetic and disabled to preserve frozen source hashes."
+}

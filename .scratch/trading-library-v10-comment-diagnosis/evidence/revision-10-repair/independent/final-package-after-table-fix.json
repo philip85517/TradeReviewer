@@ -1,0 +1,15 @@
+{
+  "content_fingerprint": "ce8873acaca197ac0cec3eda7f43221ce56c786066e6537fb073508f8e11b35d",
+  "source_fingerprint": "40d4cfc9cb9d443270f41ff96c5a5b6902276e7f628d8c0c242ccbc6f53dbd63",
+  "checked_files": 57,
+  "hash_mismatches": [],
+  "changed_since_pre_table_fix": [
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/document-manifest.json",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/document-identity.json",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/comment-migration.json",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/reviews/comment-migration.json"
+  ],
+  "reverse_move_reproduces_prior_source": true
+}

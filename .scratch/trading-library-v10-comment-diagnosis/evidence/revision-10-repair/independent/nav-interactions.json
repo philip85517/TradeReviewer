@@ -1,0 +1,32 @@
+[
+  {
+    "state": "loading",
+    "ax": "Browser tab: 1, Title: \"C07 · 交易库导航布局比较\", URL: \"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 73-106\n~\t\t\t12 pop up button (collapsed, settable) Description: 预览状态, Value: 加载中, ID: preview-select, Secondary Actions: Expand\n~\t\t\t\t\t14 正常\n~\t\t\t\t\t15 (selected) 加载中\n~\t\t\t72 container 加载中\nThe focused UI element is 0 AXWebArea C07 · 交易库导航布局比较, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html"
+  },
+  {
+    "state": "empty",
+    "ax": "Browser tab: 1, Title: \"C07 · 交易库导航布局比较\", URL: \"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t12 pop up button (collapsed, settable) Description: 预览状态, Value: 空结果, ID: preview-select, Secondary Actions: Expand\n~\t\t\t\t\t15 加载中\n~\t\t\t\t\t16 (selected) 空结果\n~\t\t\t72 container\n+\t\t\t\t73 text 暂无模拟盘结果 2026-10-01 至 2026-10-31 · 扩展范围 · 全部市场下没有可显示的已平仓回合。胜率、平均盈利和平均亏损显示“— / 无样本”，不会显示虚假的 0%。\nThe focused UI element is 0 AXWebArea C07 · 交易库导航布局比较, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html"
+  },
+  {
+    "state": "error",
+    "ax": "Browser tab: 1, Title: \"C07 · 交易库导航布局比较\", URL: \"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t12 pop up button (collapsed, settable) Description: 预览状态, Value: 错误, ID: preview-select, Secondary Actions: Expand\n~\t\t\t\t\t16 空结果\n~\t\t\t\t\t17 (selected) 错误\n~\t\t\t\t73 text 无法加载模拟盘样例 已保留条件：2026-10-01 至 2026-10-31 · 扩展范围 · 全部市场 · 模拟练习不绑定实盘账户。当前没有结果可应用，请调整范围后重试。\nThe focused UI element is 0 AXWebArea C07 · 交易库导航布局比较, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html"
+  },
+  {
+    "state": "normal",
+    "ax": "Browser tab: 1, Title: \"C07 · 交易库导航布局比较\", URL: \"http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t12 pop up button (collapsed, settable) Description: 预览状态, Value: 正常, ID: preview-select, Secondary Actions: Expand\n~\t\t\t\t\t14 (selected) 正常\n~\t\t\t\t\t17 错误\n~\t\t\t72 container Description: 统计摘要, ID: c07-stats-summary\n~\t\t\t\t73 container\n+\t\t\t\t\t74 text 有效回合 7\n+\t\t\t\t75 container\n+\t\t\t\t\t76 text 累计净盈亏 2,272.00\n+\t\t\t\t77 container\n+\t\t\t\t\t78 text 总体胜率 71.43%\n+\t\t\t\t79 container\n+\t\t\t\t\t80 text 费用（已扣除） 33.00\n+\t\t\t\t81 container\n+\t\t\t\t\t82 text 做多胜率 · 5/7 样本 71.43%\n+\t\t\t\t83 container\n+\t\t\t\t\t84 text 做空胜率 · 无样本 —\n+\t\t\t\t85 container\n+\t\t\t\t\t86 text 平均盈利 490.80\n+\t\t\t\t87 container\n+\t\t\t\t\t88 text 平均亏损 -91.00\n+\t\t\t89 container\n+\t\t\t\t90 text 风险说明 最大回撤 — · 当前样例缺少逐时权益，回撤口径待确认。\n+\t\t\t\t91 text 费用（已扣除） 已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。\n+\t\t\t92 container c07-trend-panel\n+\t\t\t\t93 heading 累计净盈亏趋势, Value: 3\n+\t\t\t\t\t94 text 累计净盈亏趋势\n+\t\t\t\t95 text 保存日期 · 日\n+\t\t\t\t96 container 累计净盈亏折线图\n+\t\t\t\t97 container\n+\t\t\t\t\t98 text 10-15 10-16 10-17 10-18 10-19\n+\t\t\t99 container c07-distribution-panel\n+\t\t\t\t100 heading 收益分布, Value: 3\n+\t\t\t\t\t101 text 收益分布\n+\t\t\t\t102 text 当前范围 · 7 个有效回合 · 条长表示回合数\n+\t\t\t\t103 container 分布单位\n+\t\t\t\t\t104 checkbox 收益率, Value: 0, ID: c07-measure-rate\n+\t\t\t\t\t105 checkbox 金额, Value: 1, ID: c07-measure-amount\n+\t\t\t\t106 text 区间 频数 回合数 占比 亏损 > 100 1 14.29% 亏损 0–100 1 14.29% 持平 0 0.00% 盈利 0–100 1 14.29% 盈利 > 100 4 57.14%\nThe focused UI element is 0 AXWebArea C07 · 交易库导航布局比较, URL: 127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html"
+  },
+  {
+    "keyboard": "mode-left",
+    "state": {
+      "focus": "c07-mode-live",
+      "mode": "live"
+    }
+  },
+  {
+    "keyboard": "tab-home",
+    "state": {
+      "focus": "c07-tab-list",
+      "tab": "list"
+    }
+  }
+]

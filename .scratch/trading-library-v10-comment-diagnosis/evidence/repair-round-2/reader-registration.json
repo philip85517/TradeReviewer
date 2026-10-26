@@ -1,0 +1,593 @@
+{
+  "status": "REGISTERED_NOT_EXECUTED",
+  "content_fingerprint": "d4988792a3324265749fdc3eded376ba8d084bf2585b76a4380a2548a5a11703",
+  "source_fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+  "source": "Built HTML inventory; must cross-check with live DOM/AX before execution",
+  "toc": [
+    {
+      "target": "交易库视觉设计方案-v10",
+      "href": "#交易库视觉设计方案-v10"
+    },
+    {
+      "target": "chapter-BT01",
+      "href": "#chapter-BT01"
+    },
+    {
+      "target": "设计取舍",
+      "href": "#设计取舍"
+    },
+    {
+      "target": "范围与边界",
+      "href": "#范围与边界"
+    },
+    {
+      "target": "chapter-BT02",
+      "href": "#chapter-BT02"
+    },
+    {
+      "target": "chapter-BT03",
+      "href": "#chapter-BT03"
+    },
+    {
+      "target": "进入与默认",
+      "href": "#进入与默认"
+    },
+    {
+      "target": "切换视角与保存",
+      "href": "#切换视角与保存"
+    },
+    {
+      "target": "日期规则",
+      "href": "#日期规则"
+    },
+    {
+      "target": "搜索与刷新",
+      "href": "#搜索与刷新"
+    },
+    {
+      "target": "chapter-BT04",
+      "href": "#chapter-BT04"
+    },
+    {
+      "target": "实盘列表",
+      "href": "#实盘列表"
+    },
+    {
+      "target": "模拟盘练习列表",
+      "href": "#模拟盘练习列表"
+    },
+    {
+      "target": "chapter-BT05",
+      "href": "#chapter-BT05"
+    },
+    {
+      "target": "样本与日期",
+      "href": "#样本与日期"
+    },
+    {
+      "target": "指标与结果口径",
+      "href": "#指标与结果口径"
+    },
+    {
+      "target": "趋势粒度",
+      "href": "#趋势粒度"
+    },
+    {
+      "target": "分布与下钻",
+      "href": "#分布与下钻"
+    },
+    {
+      "target": "实盘普通统计",
+      "href": "#实盘普通统计"
+    },
+    {
+      "target": "模拟盘普通统计",
+      "href": "#模拟盘普通统计"
+    },
+    {
+      "target": "金额切换下钻与返回",
+      "href": "#金额切换下钻与返回"
+    },
+    {
+      "target": "趋势边界与粒度",
+      "href": "#趋势边界与粒度"
+    },
+    {
+      "target": "chapter-BT06",
+      "href": "#chapter-BT06"
+    },
+    {
+      "target": "chapter-BT07",
+      "href": "#chapter-BT07"
+    },
+    {
+      "target": "chapter-BT08",
+      "href": "#chapter-BT08"
+    },
+    {
+      "target": "chapter-BT09",
+      "href": "#chapter-BT09"
+    },
+    {
+      "target": "功能验收",
+      "href": "#功能验收"
+    },
+    {
+      "target": "状态与持久化验收",
+      "href": "#状态与持久化验收"
+    },
+    {
+      "target": "视觉验收",
+      "href": "#视觉验收"
+    },
+    {
+      "target": "chapter-BT10",
+      "href": "#chapter-BT10"
+    },
+    {
+      "target": "实现约定",
+      "href": "#实现约定"
+    },
+    {
+      "target": "已确认决定",
+      "href": "#已确认决定"
+    },
+    {
+      "target": "待确认项",
+      "href": "#待确认项"
+    }
+  ],
+  "demos": [
+    {
+      "id": "state-demo-1",
+      "frames": [
+        {
+          "occurrence": "journeys-date@state-demo-1-1",
+          "src": "source/images/journeys-date.svg",
+          "alt": "按日期进入"
+        },
+        {
+          "occurrence": "journeys-date-1280@state-demo-1-2",
+          "src": "source/images/journeys-date-1280.svg",
+          "alt": "按日期进入 · 1280px"
+        },
+        {
+          "occurrence": "journeys-date-month@state-demo-1-3",
+          "src": "source/images/journeys-date-month.svg",
+          "alt": "普通月份范围"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-2",
+      "frames": [
+        {
+          "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+          "src": "source/images/hcr06-final-sim-ab.svg",
+          "alt": "练习列表"
+        },
+        {
+          "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+          "src": "source/images/hcr06-final-rounds-a.svg",
+          "alt": "练习回合集"
+        },
+        {
+          "occurrence": "hcr06-final-replay-a1@state-demo-2-3",
+          "src": "source/images/hcr06-final-replay-a1.svg",
+          "alt": "第一个回合"
+        },
+        {
+          "occurrence": "hcr06-final-replay-a2@state-demo-2-4",
+          "src": "source/images/hcr06-final-replay-a2.svg",
+          "alt": "第二个回合"
+        },
+        {
+          "occurrence": "journeys-rounds-a-return@state-demo-2-5",
+          "src": "source/images/journeys-rounds-a-return.svg",
+          "alt": "返回练习 A 回合集"
+        },
+        {
+          "occurrence": "journeys-simulation-return@state-demo-2-6",
+          "src": "source/images/journeys-simulation-return.svg",
+          "alt": "返回模拟盘列表"
+        },
+        {
+          "occurrence": "journeys-rounds-b@state-demo-2-7",
+          "src": "source/images/journeys-rounds-b.svg",
+          "alt": "选择练习 B"
+        },
+        {
+          "occurrence": "hcr06-final-replay-b1@state-demo-2-8",
+          "src": "source/images/hcr06-final-replay-b1.svg",
+          "alt": "另一练习"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-3",
+      "frames": [
+        {
+          "occurrence": "01-live-normal@state-demo-3-1",
+          "src": "source/images/01-live-normal.svg",
+          "alt": "实盘统计 · 回合平仓日"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-4",
+      "frames": [
+        {
+          "occurrence": "02-simulation-normal@state-demo-4-1",
+          "src": "source/images/02-simulation-normal.svg",
+          "alt": "模拟盘统计 · 练习保存日"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-5",
+      "frames": [
+        {
+          "occurrence": "distribution-amount@state-demo-5-1",
+          "src": "source/images/distribution-amount.svg",
+          "alt": "切换金额"
+        },
+        {
+          "occurrence": "03-distribution-selected@state-demo-5-2",
+          "src": "source/images/03-distribution-selected.svg",
+          "alt": "分布下钻"
+        },
+        {
+          "occurrence": "04-return@state-demo-5-3",
+          "src": "source/images/04-return.svg",
+          "alt": "统计视角返回"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-6",
+      "frames": [
+        {
+          "occurrence": "journeys-trend-gap@state-demo-6-1",
+          "src": "source/images/journeys-trend-gap.svg",
+          "alt": "缺失与无成交日"
+        },
+        {
+          "occurrence": "journeys-trend-single@state-demo-6-2",
+          "src": "source/images/journeys-trend-single.svg",
+          "alt": "单点趋势"
+        },
+        {
+          "occurrence": "journeys-trend-empty@state-demo-6-3",
+          "src": "source/images/journeys-trend-empty.svg",
+          "alt": "空样本趋势"
+        },
+        {
+          "occurrence": "journeys-trend-month@state-demo-6-4",
+          "src": "source/images/journeys-trend-month.svg",
+          "alt": "月粒度趋势"
+        },
+        {
+          "occurrence": "journeys-trend-year@state-demo-6-5",
+          "src": "source/images/journeys-trend-year.svg",
+          "alt": "年粒度趋势"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-7",
+      "frames": [
+        {
+          "occurrence": "handoff@state-demo-7-1",
+          "src": "source/images/handoff.svg",
+          "alt": "首页到交易库的条件交接"
+        },
+        {
+          "occurrence": "journeys-home-entry@state-demo-7-2",
+          "src": "source/images/journeys-home-entry.svg",
+          "alt": "完整首页交易库入口"
+        },
+        {
+          "occurrence": "journeys-library-list@state-demo-7-3",
+          "src": "source/images/journeys-library-list.svg",
+          "alt": "普通实盘列表"
+        },
+        {
+          "occurrence": "journeys-live-rounds@state-demo-7-4",
+          "src": "source/images/journeys-live-rounds.svg",
+          "alt": "实盘对象回合集"
+        },
+        {
+          "occurrence": "journeys-library-replay@state-demo-7-5",
+          "src": "source/images/journeys-library-replay.svg",
+          "alt": "实盘回合复盘"
+        },
+        {
+          "occurrence": "journeys-live-rounds-return@state-demo-7-6",
+          "src": "source/images/journeys-live-rounds-return.svg",
+          "alt": "回合集返回"
+        },
+        {
+          "occurrence": "journeys-library-list-return@state-demo-7-7",
+          "src": "source/images/journeys-library-list-return.svg",
+          "alt": "列表返回"
+        },
+        {
+          "occurrence": "journeys-view-simulation@state-demo-7-8",
+          "src": "source/images/journeys-view-simulation.svg",
+          "alt": "切换到模拟盘"
+        },
+        {
+          "occurrence": "journeys-view-restore@state-demo-7-9",
+          "src": "source/images/journeys-view-restore.svg",
+          "alt": "切回实盘"
+        },
+        {
+          "occurrence": "hcr06-final-pending-library@state-demo-7-10",
+          "src": "source/images/hcr06-final-pending-library.svg",
+          "alt": "交易库内待复盘筛选"
+        },
+        {
+          "occurrence": "hcr06-final-pending-library-1280@state-demo-7-11",
+          "src": "source/images/hcr06-final-pending-library-1280.svg",
+          "alt": "交易库内待复盘筛选 · 1280px"
+        },
+        {
+          "occurrence": "library-return@state-demo-7-12",
+          "src": "source/images/library-return.svg",
+          "alt": "交易库返回首页"
+        },
+        {
+          "occurrence": "journeys-library-return@state-demo-7-13",
+          "src": "source/images/journeys-library-return.svg",
+          "alt": "返回同一首页位置"
+        },
+        {
+          "occurrence": "hcr06-final-return@state-demo-7-14",
+          "src": "source/images/hcr06-final-return.svg",
+          "alt": "统计视角返回"
+        }
+      ]
+    },
+    {
+      "id": "state-demo-8",
+      "frames": [
+        {
+          "occurrence": "05-loading@state-demo-8-1",
+          "src": "source/images/05-loading.svg",
+          "alt": "切换范围时等待"
+        },
+        {
+          "occurrence": "06-empty@state-demo-8-2",
+          "src": "source/images/06-empty.svg",
+          "alt": "范围没有已平仓回合"
+        },
+        {
+          "occurrence": "07-error@state-demo-8-3",
+          "src": "source/images/07-error.svg",
+          "alt": "读取失败与重试"
+        },
+        {
+          "occurrence": "08-extreme@state-demo-8-4",
+          "src": "source/images/08-extreme.svg",
+          "alt": "极端分布"
+        },
+        {
+          "occurrence": "09-missing-input@state-demo-8-5",
+          "src": "source/images/09-missing-input.svg",
+          "alt": "计算输入缺失"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "occurrence": "journeys-date@state-demo-1-1",
+      "src": "source/images/journeys-date.svg",
+      "alt": "按日期进入"
+    },
+    {
+      "occurrence": "journeys-date-1280@state-demo-1-2",
+      "src": "source/images/journeys-date-1280.svg",
+      "alt": "按日期进入 · 1280px"
+    },
+    {
+      "occurrence": "journeys-date-month@state-demo-1-3",
+      "src": "source/images/journeys-date-month.svg",
+      "alt": "普通月份范围"
+    },
+    {
+      "occurrence": "hcr06-final-sim-ab@state-demo-2-1",
+      "src": "source/images/hcr06-final-sim-ab.svg",
+      "alt": "练习列表"
+    },
+    {
+      "occurrence": "hcr06-final-rounds-a@state-demo-2-2",
+      "src": "source/images/hcr06-final-rounds-a.svg",
+      "alt": "练习回合集"
+    },
+    {
+      "occurrence": "hcr06-final-replay-a1@state-demo-2-3",
+      "src": "source/images/hcr06-final-replay-a1.svg",
+      "alt": "第一个回合"
+    },
+    {
+      "occurrence": "hcr06-final-replay-a2@state-demo-2-4",
+      "src": "source/images/hcr06-final-replay-a2.svg",
+      "alt": "第二个回合"
+    },
+    {
+      "occurrence": "journeys-rounds-a-return@state-demo-2-5",
+      "src": "source/images/journeys-rounds-a-return.svg",
+      "alt": "返回练习 A 回合集"
+    },
+    {
+      "occurrence": "journeys-simulation-return@state-demo-2-6",
+      "src": "source/images/journeys-simulation-return.svg",
+      "alt": "返回模拟盘列表"
+    },
+    {
+      "occurrence": "journeys-rounds-b@state-demo-2-7",
+      "src": "source/images/journeys-rounds-b.svg",
+      "alt": "选择练习 B"
+    },
+    {
+      "occurrence": "hcr06-final-replay-b1@state-demo-2-8",
+      "src": "source/images/hcr06-final-replay-b1.svg",
+      "alt": "另一练习"
+    },
+    {
+      "occurrence": "01-live-normal@state-demo-3-1",
+      "src": "source/images/01-live-normal.svg",
+      "alt": "实盘统计 · 回合平仓日"
+    },
+    {
+      "occurrence": "02-simulation-normal@state-demo-4-1",
+      "src": "source/images/02-simulation-normal.svg",
+      "alt": "模拟盘统计 · 练习保存日"
+    },
+    {
+      "occurrence": "distribution-amount@state-demo-5-1",
+      "src": "source/images/distribution-amount.svg",
+      "alt": "切换金额"
+    },
+    {
+      "occurrence": "03-distribution-selected@state-demo-5-2",
+      "src": "source/images/03-distribution-selected.svg",
+      "alt": "分布下钻"
+    },
+    {
+      "occurrence": "04-return@state-demo-5-3",
+      "src": "source/images/04-return.svg",
+      "alt": "统计视角返回"
+    },
+    {
+      "occurrence": "journeys-trend-gap@state-demo-6-1",
+      "src": "source/images/journeys-trend-gap.svg",
+      "alt": "缺失与无成交日"
+    },
+    {
+      "occurrence": "journeys-trend-single@state-demo-6-2",
+      "src": "source/images/journeys-trend-single.svg",
+      "alt": "单点趋势"
+    },
+    {
+      "occurrence": "journeys-trend-empty@state-demo-6-3",
+      "src": "source/images/journeys-trend-empty.svg",
+      "alt": "空样本趋势"
+    },
+    {
+      "occurrence": "journeys-trend-month@state-demo-6-4",
+      "src": "source/images/journeys-trend-month.svg",
+      "alt": "月粒度趋势"
+    },
+    {
+      "occurrence": "journeys-trend-year@state-demo-6-5",
+      "src": "source/images/journeys-trend-year.svg",
+      "alt": "年粒度趋势"
+    },
+    {
+      "occurrence": "handoff@state-demo-7-1",
+      "src": "source/images/handoff.svg",
+      "alt": "首页到交易库的条件交接"
+    },
+    {
+      "occurrence": "journeys-home-entry@state-demo-7-2",
+      "src": "source/images/journeys-home-entry.svg",
+      "alt": "完整首页交易库入口"
+    },
+    {
+      "occurrence": "journeys-library-list@state-demo-7-3",
+      "src": "source/images/journeys-library-list.svg",
+      "alt": "普通实盘列表"
+    },
+    {
+      "occurrence": "journeys-live-rounds@state-demo-7-4",
+      "src": "source/images/journeys-live-rounds.svg",
+      "alt": "实盘对象回合集"
+    },
+    {
+      "occurrence": "journeys-library-replay@state-demo-7-5",
+      "src": "source/images/journeys-library-replay.svg",
+      "alt": "实盘回合复盘"
+    },
+    {
+      "occurrence": "journeys-live-rounds-return@state-demo-7-6",
+      "src": "source/images/journeys-live-rounds-return.svg",
+      "alt": "回合集返回"
+    },
+    {
+      "occurrence": "journeys-library-list-return@state-demo-7-7",
+      "src": "source/images/journeys-library-list-return.svg",
+      "alt": "列表返回"
+    },
+    {
+      "occurrence": "journeys-view-simulation@state-demo-7-8",
+      "src": "source/images/journeys-view-simulation.svg",
+      "alt": "切换到模拟盘"
+    },
+    {
+      "occurrence": "journeys-view-restore@state-demo-7-9",
+      "src": "source/images/journeys-view-restore.svg",
+      "alt": "切回实盘"
+    },
+    {
+      "occurrence": "hcr06-final-pending-library@state-demo-7-10",
+      "src": "source/images/hcr06-final-pending-library.svg",
+      "alt": "交易库内待复盘筛选"
+    },
+    {
+      "occurrence": "hcr06-final-pending-library-1280@state-demo-7-11",
+      "src": "source/images/hcr06-final-pending-library-1280.svg",
+      "alt": "交易库内待复盘筛选 · 1280px"
+    },
+    {
+      "occurrence": "library-return@state-demo-7-12",
+      "src": "source/images/library-return.svg",
+      "alt": "交易库返回首页"
+    },
+    {
+      "occurrence": "journeys-library-return@state-demo-7-13",
+      "src": "source/images/journeys-library-return.svg",
+      "alt": "返回同一首页位置"
+    },
+    {
+      "occurrence": "hcr06-final-return@state-demo-7-14",
+      "src": "source/images/hcr06-final-return.svg",
+      "alt": "统计视角返回"
+    },
+    {
+      "occurrence": "05-loading@state-demo-8-1",
+      "src": "source/images/05-loading.svg",
+      "alt": "切换范围时等待"
+    },
+    {
+      "occurrence": "06-empty@state-demo-8-2",
+      "src": "source/images/06-empty.svg",
+      "alt": "范围没有已平仓回合"
+    },
+    {
+      "occurrence": "07-error@state-demo-8-3",
+      "src": "source/images/07-error.svg",
+      "alt": "读取失败与重试"
+    },
+    {
+      "occurrence": "08-extreme@state-demo-8-4",
+      "src": "source/images/08-extreme.svg",
+      "alt": "极端分布"
+    },
+    {
+      "occurrence": "09-missing-input@state-demo-8-5",
+      "src": "source/images/09-missing-input.svg",
+      "alt": "计算输入缺失"
+    }
+  ],
+  "comments": [
+    "comment-ff1644d6fadd433484f0a8040b381b73",
+    "comment-0f6fbbbb44cc4ed88b05caad3e314891",
+    "comment-646fafe57e424f72aa552cdf8e6ddded",
+    "comment-b880c94701b74fa79675e2bb6c7f1ed8",
+    "comment-e17d6a68984445b3af9f213a4ad47d6c",
+    "comment-9e58c33192e24f54b5d85f5cf8f00d65"
+  ],
+  "scope_plan": "/Users/zhoulin/.codex/worktrees/cf84/TradeReview/.scratch/trading-library-v10-comment-diagnosis/READER-ACCEPTANCE-PLAN.md"
+}

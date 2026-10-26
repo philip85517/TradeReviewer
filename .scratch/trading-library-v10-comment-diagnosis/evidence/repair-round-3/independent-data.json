@@ -1,0 +1,172 @@
+{
+  "fixture_sha256": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab",
+  "scope": "Static design fixture only; no business database accessed",
+  "live": {
+    "rounds": 5,
+    "wins": 3,
+    "losses": 2,
+    "zero": 0,
+    "net": "747.14",
+    "fees": "22.86",
+    "win_rate": "60.00",
+    "average_profit": "351.88",
+    "average_loss": "-154.25",
+    "daily": {
+      "2026-10-03": "48.00",
+      "2026-10-05": "-52.00",
+      "2026-10-07": "909.64",
+      "2026-10-09": "98.00",
+      "2026-10-12": "-256.50"
+    }
+  },
+  "simulation": {
+    "rounds": 7,
+    "wins": 5,
+    "losses": 2,
+    "zero": 0,
+    "net": "2272.00",
+    "fees": "33.00",
+    "win_rate": "71.43",
+    "average_profit": "490.80",
+    "average_loss": "-91.00",
+    "daily": {
+      "2026-10-15": "1982.00",
+      "2026-10-16": "354.00",
+      "2026-10-17": "-78.00",
+      "2026-10-18": "-104.00",
+      "2026-10-19": "118.00"
+    }
+  },
+  "exercises": [
+    {
+      "id": "practice-a-20261015-01",
+      "date": "2026-10-15",
+      "closed": 2,
+      "open_quantity": 70,
+      "open_fees": "7.00",
+      "net": "1884.00",
+      "rounds": [
+        {
+          "open": "a-buy-50",
+          "close": "a-sell-80",
+          "date": "2026-10-15",
+          "quantity": 50,
+          "gross": "1000.00",
+          "fees": "10.00",
+          "net": "990.00",
+          "basis": "5500.00"
+        },
+        {
+          "open": "a-buy-100",
+          "close": "a-sell-80",
+          "date": "2026-10-15",
+          "quantity": 30,
+          "gross": "900.00",
+          "fees": "6.00",
+          "net": "894.00",
+          "basis": "3000.00"
+        }
+      ]
+    },
+    {
+      "id": "practice-b-20261018-01",
+      "date": "2026-10-18",
+      "closed": 1,
+      "open_quantity": 0,
+      "open_fees": "0.00",
+      "net": "-104.00",
+      "rounds": [
+        {
+          "open": "b-buy-20",
+          "close": "b-sell-20",
+          "date": "2026-10-18",
+          "quantity": 20,
+          "gross": "-100.00",
+          "fees": "4.00",
+          "net": "-104.00",
+          "basis": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "practice-c-20261016-01",
+      "date": "2026-10-16",
+      "closed": 1,
+      "open_quantity": 0,
+      "open_fees": "0.00",
+      "net": "354.00",
+      "rounds": [
+        {
+          "open": "c-buy-30",
+          "close": "c-sell-30",
+          "date": "2026-10-16",
+          "quantity": 30,
+          "gross": "360.00",
+          "fees": "6.00",
+          "net": "354.00",
+          "basis": "3000.00"
+        }
+      ]
+    },
+    {
+      "id": "practice-d-20261017-01",
+      "date": "2026-10-17",
+      "closed": 1,
+      "open_quantity": 0,
+      "open_fees": "0.00",
+      "net": "-78.00",
+      "rounds": [
+        {
+          "open": "d-buy-15",
+          "close": "d-sell-15",
+          "date": "2026-10-17",
+          "quantity": 15,
+          "gross": "-75.00",
+          "fees": "3.00",
+          "net": "-78.00",
+          "basis": "2250.00"
+        }
+      ]
+    },
+    {
+      "id": "practice-e-20261015-02",
+      "date": "2026-10-15",
+      "closed": 1,
+      "open_quantity": 0,
+      "open_fees": "0.00",
+      "net": "98.00",
+      "rounds": [
+        {
+          "open": "e-buy-10",
+          "close": "e-sell-10",
+          "date": "2026-10-15",
+          "quantity": 10,
+          "gross": "100.00",
+          "fees": "2.00",
+          "net": "98.00",
+          "basis": "2000.00"
+        }
+      ]
+    },
+    {
+      "id": "practice-f-20261019-01",
+      "date": "2026-10-19",
+      "closed": 1,
+      "open_quantity": 0,
+      "open_fees": "0.00",
+      "net": "118.00",
+      "rounds": [
+        {
+          "open": "f-buy-12",
+          "close": "f-sell-12",
+          "date": "2026-10-19",
+          "quantity": 12,
+          "gross": "120.00",
+          "fees": "2.00",
+          "net": "118.00",
+          "basis": "960.00"
+        }
+      ]
+    }
+  ]
+}

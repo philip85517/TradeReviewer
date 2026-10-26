@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>交易库设计规范</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+.image-viewer-modal[hidden] { display: none; }
+.image-viewer-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgba(3, 8, 16, .86); }
+.image-viewer-dialog { position: relative; display: flex; flex-direction: column; width: min(1100px, 100%); max-height: calc(100vh - 48px); overflow: hidden; border: 1px solid #45678f; border-radius: 10px; background: #0b1220; box-shadow: 0 16px 60px rgba(0,0,0,.55); outline: none; }
+.image-viewer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; color: #e7edf6; background: #101c2f; }
+.image-viewer-head button { min-height: 36px; padding: 5px 12px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; }
+.image-viewer-scroll { overflow: auto; padding: 16px; overscroll-behavior: contain; }
+.image-viewer-scroll img { width: auto; max-width: none; height: auto; margin: 0 auto; border-color: #45678f; }
+body.image-viewer-open { overflow: hidden; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+.review-image-target { outline: 3px solid #66b5ff; outline-offset: 6px; border-radius: 6px; box-shadow: 0 0 0 8px rgba(55, 151, 255, .22), 0 0 24px rgba(102, 181, 255, .72); }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body data-source-sha256="99c5c0930395e649a500a105e265e169a88636c7932949aa78bf8659ee39a3a3"><div class="layout"><nav aria-label="规范目录"><strong>交易库设计规范</strong><p class="nav-meta">业务逻辑与统一术语</p><a class="toc-level-1" href="#交易库设计规范">交易库设计规范</a><a class="toc-level-2" href="#模拟盘以文件为一次练习的边界">模拟盘：以文件为一次练习的边界</a><a class="toc-level-3" href="#模拟账户与练习">模拟账户与练习</a><a class="toc-level-3" href="#练习名称与重复导入">练习名称与重复导入</a><a class="toc-level-3" href="#更新练习优先保护人工成果">更新练习：优先保护人工成果</a><a class="toc-level-3" href="#练习的三种时间">练习的三种时间</a><a class="toc-level-2" href="#实盘一次主动平仓形成一个回合">实盘：一次主动平仓形成一个回合</a><a class="toc-level-2" href="#模拟盘统计汇总看练习详情看内部配对">模拟盘统计：汇总看练习，详情看内部配对</a><a class="toc-level-3" href="#练习整体收益">练习整体收益</a><a class="toc-level-3" href="#练习胜率与样本数量">练习胜率与样本数量</a><a class="toc-level-3" href="#练习收益率">练习收益率</a><a class="toc-level-2" href="#全项目统一用词">全项目统一用词</a><a class="toc-level-2" href="#仍需确定的规则">仍需确定的规则</a><a class="toc-level-2" href="#确认来源">确认来源</a></nav><main class="rule-details"><header class="reader-header"><p class="document-status">业务规范 · 以 Markdown 源文件为准</p><a href="baselines/2026-10-26-trading-library-v2.0/visual-spec.html">交易库视觉设计 V2.0</a> · <a href="trading-library-design-spec.md">规范源文件</a></header><h1 id="交易库设计规范">交易库设计规范</h1>
+<p>本规范适用于全项目的设计文档、页面文案、统计说明与复盘交互。领域词汇用于明确业务对象的含义；同一个名称在不同页面必须指向同一个对象。简明词条统一维护在<span title="仓库来源：../../CONTEXT.md">项目领域词汇（仓库来源）</span>，本规范统一交易库的业务对象、导入规则、统计口径和设计用词；视觉方案应引用本规范，并据此组织页面与交互。</p>
+<p>2026-10-24 已确认的练习与回合定义适用于后续设计修订。既有冻结设计中不同的描述属于待同步内容，不能继续作为新设计的术语依据；本次新增规范不代表既有页面和算法已全部修订。</p>
+<h2 id="模拟盘以文件为一次练习的边界">模拟盘：以文件为一次练习的边界</h2>
+<p><strong>一次模拟练习</strong>是同一个导入文件中的全部模拟交易记录。文件内有多少次开仓、平仓或配对，都不改变它是一次练习；仍有未配对记录或未清仓持仓，也不影响这一定义。</p>
+<p><strong>一次完整交易</strong>在模拟盘中是“一次完整练习”的称呼，指向同一个业务对象，不是练习内另一层由开平仓组成的对象。设计使用“完整交易”时，应在首次出现或口径说明中明确它以练习文件计数。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">同一文件中的记录</th>
+<th scope="col">练习数／本语境的完整交易数</th>
+</tr></thead><tbody>
+<tr>
+<td>买入100股、买入50股、卖出80股，剩余70股</td>
+<td>1</td>
+</tr>
+<tr>
+<td>在上述记录之后，再卖出剩余70股</td>
+<td>1</td>
+</tr>
+<tr>
+<td>文件内包含多次开仓、清仓过程</td>
+<td>1</td>
+</tr>
+</tbody></table></div>
+<p>“完整”描述练习的归属单位，不表示已经清仓、配对完整、收益确定或复盘完成。文件是否属于同一练习与账户归属是不同问题，不能把一份文件直接命名为一个模拟账户。</p>
+<h3 id="模拟账户与练习">模拟账户与练习</h3>
+<p>一个模拟账户可以包含多次练习，每个导入文件仍独立构成一次练习。账户下拉用于筛选所属练习，不改变练习的计数、内部配对或统计样本单位。</p>
+<p>同一账户下的独立练习不拼接成连续账户权益曲线。“最差练习回撤”取所选练习中最大的单次练习权益回撤，不能用拼接曲线的回撤替代。</p>
+<h3 id="练习名称与重复导入">练习名称与重复导入</h3>
+<p>练习名称使用“标的名 · 练习日期”，例如“贵州茅台 · 2026-09-26”；同标的同日的多份独立练习使用稳定序号 #01／#02 区分，排序不改变编号。日期必须在导入完成前补齐并通过校验，“日期待确认”只用于导入过程。证券代码作为辅助信息，原始文件名保留在详情中供追溯。序号不代表内部复盘回合数。</p>
+<p>导入时先比较是否与已有文件完全一致，再决定是否新增练习及分配编号。重复导入同一个文件不新增练习、成交或统计样本，沿用原练习及复盘归属。文件名和显示名称不能作为唯一身份依据；同名不一定同内容，改名也不意味着一次新练习。</p>
+<p>同一账户、标的与练习日期下，全部交易内容相同，仅导出格式或行顺序变化，也视为重复练习。提示“该练习已导入”，提供打开原练习的入口；不新增编号、不重复统计、不改写已有复盘成果。比较必须包含未配对记录并保留实际记录次数，不能仅凭部分记录相同或收益合计相同判重。</p>
+<p>文件内容有变化时，先展示与候选原练习的差异，由用户选择“更新原练习”或“新建练习”。更新沿用原练习的身份与编号；新建产生独立练习并按命名规则编号。用户作出选择前，不改写原练习或统计。</p>
+<p>多个候选原练习的选择、候选日期冲突的具体提示，以及其他影响练习结果的数据差异展示仍需明确；日期缺失的处理遵循下文的导入前补齐规则。当前已有成交级重导逻辑，不代表练习层面的完整流程或内容等价判断已实现。</p>
+<h3 id="更新练习优先保护人工成果">更新练习：优先保护人工成果</h3>
+<p>更新以保护人工工作为首要原则，保留历史信息，能够合并的尽量合并。笔记、截图、批注及其原始交易依据应保留并可查阅；有明确对应关系且无冲突的内容合并沿用，未受影响的复盘内容和完成状态不重置。</p>
+<p>交易、配对或统计依据变化时，保留已有人工内容，仅将受影响部分标为“待核对”，由用户检查后重新确认。无法明确对应、存在冲突或旧交易不在新文件中时，也不能静默删除人工成果或强行转移到其他交易。</p>
+<p>历史版本不额外计作新练习，当前统计不能叠加新旧版本的成交。具体匹配依据、冲突处理界面及历史查看入口留待后续设计；保留与合并原则不表示所有变化均可自动合并。</p>
+<h3 id="练习的三种时间">练习的三种时间</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">字段</th>
+<th scope="col">含义</th>
+<th scope="col">设计用途</th>
+</tr></thead><tbody>
+<tr>
+<td>练习日期</td>
+<td>用户实际进行本次练习的日期</td>
+<td>练习标题、模拟盘日期筛选、排序和统计归属</td>
+</tr>
+<tr>
+<td>历史交易区间</td>
+<td>练习文件内最早至最晚交易日期</td>
+<td>说明覆盖的历史时间范围</td>
+</tr>
+<tr>
+<td>导入时间</td>
+<td>文件进入本项目的时间</td>
+<td>来源追溯</td>
+</tr>
+</tbody></table></div>
+<p>练习日期优先识别文件名中的无歧义日期；无法识别、无效或有歧义时，在导入环节提醒用户补填或确认，完整有效后才能完成导入。不以导入时间或历史成交日代替。例如2026-09-26进行的练习可以覆盖2022-01-01至2023-12-12的历史交易，练习仍归属2026-09-26。</p>
+<p>导入确认页允许补填或更正练习日期，详情页也提供修改入口。记录日期来源，区分文件名识别与人工补填/更正；后续重导不能自动覆盖人工确认的日期。标题及日期筛选、排序和统计归属使用当前确认值；更正练习日期不改变历史成交时间，也不产生一次新练习。</p>
+<p>日期待确认只作为导入中的临时状态。正式列表不增加未知日期计数提示、日期排序置底或相关统计分支；详情更正也不能保存为空或无效日期。日期完整不要求交易全部配对或持仓清零，不改变缺少收益输入时暂不可计算的规则。</p>
+<p>候选日期冲突的具体提示、跨日练习归属、改日期后的同日名称编号冲突及历史区间异常展示仍需设计。上述定义不代表当前解析器已支持日期提取和完整性校验；既有设计样例中的 saved_date 不能直接当作真实数据来源。存量数据完整性尚未核查，本次不代表已完成历史补齐。</p>
+<h2 id="实盘一次主动平仓形成一个回合">实盘：一次主动平仓形成一个回合</h2>
+<p><strong>实盘复盘回合</strong>围绕人的一次主动平仓行为组织，关联它对应的开仓决策。一次卖出即使匹配多笔开仓，仍只形成一个回合；券商或交易系统将同一次操作拆成多条成交明细，也不增加回合。</p>
+<p><strong>已完成回合</strong>指“已完成的单次交易”：包含开仓与本次平仓，二者已经完成配对。这是一次完整交易的业务含义，不只是技术上的配对处理状态，也不要求该证券剩余持仓清零。后续再次主动平仓会形成新的回合，不能把已经形成的回合合并成一个从建仓到清仓的回合。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">阶段</th>
+<th scope="col">回合内的配对</th>
+<th scope="col">累计已完成回合</th>
+<th scope="col">剩余持仓</th>
+</tr></thead><tbody>
+<tr>
+<td>主动买入100股，再主动买入50股</td>
+<td>尚无平仓配对</td>
+<td>0</td>
+<td>150股</td>
+</tr>
+<tr>
+<td>第一次主动卖出80股</td>
+<td>最近开仓50股＋较早开仓30股，共同归于第一回合</td>
+<td>1</td>
+<td>70股</td>
+</tr>
+<tr>
+<td>第二次主动卖出剩余70股</td>
+<td>较早开仓的余下70股，归于第二回合</td>
+<td>2</td>
+<td>0股</td>
+</tr>
+</tbody></table></div>
+<p>两个已完成回合中共有三份配对分配；配对份数、实际成交条数与回合数分别统计。剩余持仓不提前计为已完成回合，配对分配不能复制成交或重复计算费用。</p>
+<p>“回合已完成”描述单次交易已完成，开平仓配对是其依据；“已完成复盘”描述用户的复盘成果状态。前者不会自动满足后者的快照与人工确认要求；状态标签和聚合方式由复盘状态设计继续明确。旧词条中的“已清仓”不能据此解释为必须把证券的全部持仓清零。</p>
+<p>以上规则依据<span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-completed-action-rounds-confirmation.md">一次主动平仓形成一个已完成配对回合的确认（仓库来源）</span>，取代此前“两份开平仓配对即两个回合”的解释。如何识别多条成交属于同一人的操作仍需后续规则，不能只按时间或价格接近自行合并。</p>
+<h2 id="模拟盘统计汇总看练习详情看内部配对">模拟盘统计：汇总看练习，详情看内部配对</h2>
+<p>模拟盘汇总页的总体胜率、收益分布以每次练习为样本单位，每份练习结果对应一个样本。不能把练习内的多个配对直接混入练习层面的样本数，也不能用内部配对胜率的平均值代替练习胜率。</p>
+<p>练习详情页展示该文件内部的配对统计。练习列表可以增加一列内部统计预览，让用户在进入详情前快速了解该练习；预览列必须标明内部统计口径，并与详情使用相同范围。具体列名和预览指标在表格设计中确定。</p>
+<p>例如，两次结果可明确判定的练习，一次整体盈利、一次整体亏损，即使前者包含20份配对而后者只有2份配对，练习胜率仍为50%。练习内部胜率分别呈现在详情或列表预览中，不改变两次练习的样本权重。</p>
+<h3 id="练习整体收益">练习整体收益</h3>
+<p>练习整体净盈亏按练习结束时点计算：<strong>未扣费已实现盈亏＋未扣费剩余持仓浮动盈亏－练习费用</strong>。费用只计一次；来源数据已经扣费时，按等价净额处理，不再次扣除。</p>
+<p>有剩余持仓但缺少结束时点价格时，整体收益显示“暂不可计算”，不能当作零收益，也不能用当前行情替代历史结束时点价格。完全平仓的练习没有剩余持仓估值需求。能否计算收益不改变它仍是一份完整练习。</p>
+<p>例如，已实现盈利100、结束时点浮亏30、费用10，练习净盈亏为60；缺少剩余持仓估值时则不能用已实现部分冒充整体收益。</p>
+<h3 id="练习胜率与样本数量">练习胜率与样本数量</h3>
+<p><strong>练习胜率＝净盈亏大于零的练习数÷净盈亏可计算的练习数。</strong> 持平练习计入分母，不计入盈利数。暂不可计算的练习不进入分母，单独显示数量，不能当作持平。</p>
+<p>总练习数仍包括暂不可计算的练习。例如，2次盈利、1次亏损、1次持平、1次暂不可计算：共5次练习，可计算4次，暂不可计算1次，胜率为50%（2/4）。可计算样本为零时显示“—”，不显示0%。</p>
+<h3 id="练习收益率">练习收益率</h3>
+<p><strong>练习收益率＝练习净盈亏÷该次练习初始资金×100%。</strong> 初始资金必须已知且大于零；缺失、为零或为负时，收益率显示“暂不可计算”，仍展示能够计算的盈亏金额。</p>
+<p>例如，净盈亏60、初始资金1000，收益率为6%。初始资金缺失但净盈亏已知为60时，金额仍展示60，仍可判为盈利并计入练习胜率；收益率单独显示暂不可计算。金额与收益率的可计算样本数可能不同，应按当前指标分别说明。</p>
+<p>初始资金指该次练习的资金，不能直接套用账户历史暂定本金。初始资金、练习结束时点与估值价格的实际数据来源仍需核查。</p>
+<h2 id="全项目统一用词">全项目统一用词</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">词汇</th>
+<th scope="col">设计中指向的对象</th>
+<th scope="col">不能混用为</th>
+</tr></thead><tbody>
+<tr>
+<td>模拟练习</td>
+<td>一个导入文件归属的全部模拟交易</td>
+<td>一次开平仓配对或一个账户</td>
+</tr>
+<tr>
+<td>完整交易（模拟盘）</td>
+<td>一次完整练习，与模拟练习同义</td>
+<td>已全部清仓、已完成复盘</td>
+</tr>
+<tr>
+<td>复盘回合（实盘）</td>
+<td>人的一次主动平仓及其对应开仓决策</td>
+<td>技术拆单条数、计算配对份数或整份导入文件</td>
+</tr>
+<tr>
+<td>已完成回合（实盘）</td>
+<td>开仓与本次平仓已配对，构成已完成的单次交易</td>
+<td>证券全部持仓已清零、用户已完成复盘</td>
+</tr>
+<tr>
+<td>成交明细</td>
+<td>实际发生的一次成交记录</td>
+<td>拆分后的每个配对回合</td>
+</tr>
+<tr>
+<td>模拟账户</td>
+<td>组织模拟成交、持仓和业绩的账户</td>
+<td>导入文件或练习批次</td>
+</tr>
+<tr>
+<td>已完成复盘</td>
+<td>复盘成果的完成状态</td>
+<td>练习文件完整或成交已经配对</td>
+</tr>
+</tbody></table></div>
+<p>“完整交易”在实盘回合讨论中指开平仓已配对的单次交易；在此前已确认的模拟盘用语中指整份练习。两种语境不能共用未注明口径的计数。页面应标明当前实盘／模拟盘语境，并给计数列明确的单位。设计评审需要核对页面标题、列表行、详情入口、数量指标与说明是否使用相同定义；原始成交、配对分配和练习不能共用一个含糊的“交易数”。</p>
+<h2 id="仍需确定的规则">仍需确定的规则</h2>
+<p>以上规则已明确回合计数与剩余持仓的关系；行为识别依据与跨账户/证券的边界仍需明确，不能据此自动推定所有统计算法和复盘完成条件。模拟盘练习初始资金、估值时点及价格的实际来源，以及实盘配对回合如何适用既有复盘完成条件，仍在<span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/issues/00-map.md">设计决策地图（仓库来源）</span>中讨论。</p>
+<p>重复文件沿用原练习、内容变化由用户选择更新或新建的原则已经确定。现有“同文档重导”的实现如何承接练习身份、内容比较与人工成果合并仍需核查，不能仅用文件名作为唯一身份。</p>
+<h2 id="确认来源">确认来源</h2>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-26-required-date-at-import.md">用户要求在导入时完成日期校验，取消未知日期筛选分支（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-practice-date-edit-confirmation.md">用户对练习日期补填、更正与重导保护的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-preserve-manual-work-confirmation.md">用户对保留历史、合并更新及保护人工成果的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-changed-file-confirmation.md">用户对内容变化时选择更新或新建的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-equivalent-duplicate-confirmation.md">用户对仅格式或行顺序变化仍为重复练习的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-naming-dedup-confirmation.md">用户对练习命名与重复导入比较的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-25-date-confirmation.md">用户对练习日期、历史交易区间与导入时间的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-24-practice-and-round-clarification.md">用户对一次练习与实盘复盘回合的澄清（仓库来源）</span></li>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-24-pair-rounds-confirmation.md">用户对两个复盘回合及项目统一术语的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-24-statistics-levels-confirmation.md">用户对汇总与内部统计层级的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-exercise-valuation-confirmation.md">用户对练习整体收益计价的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-win-rate-denominator-confirmation.md">用户对练习胜率分母的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-exercise-return-confirmation.md">用户对练习收益率本金口径的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-simulation-account-confirmation.md">用户对模拟账户与练习关系的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-human-action-confirmation.md">用户对人的行为与技术拆单的澄清（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-completed-action-rounds-confirmation.md">用户对主动平仓与已完成回合计数的确认（仓库来源）</span></li>
+</ul>
+<ul>
+<li><span title="仓库来源：../../.scratch/trading-library-v11-design-decisions/comments/TL11-D01/2026-10-25-completed-trade-meaning.md">用户对已完成单次交易含义的补充（仓库来源）</span></li>
+</ul></main></div></body></html>

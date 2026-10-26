@@ -1,0 +1,143 @@
+{
+  "label": "设计样例 · 交易库 V1.0",
+  "currency": "CNY",
+  "source": {
+    "date": "2026-10-15",
+    "market": "全部市场",
+    "account": "全部账户"
+  },
+  "live_trades": [
+    {"id": "live-00a", "date": "2026-10-02", "symbol": "招商银行", "code": "600036", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+    {"id": "live-00b", "date": "2026-10-03", "symbol": "招商银行", "code": "600036", "side": "卖出", "quantity": 10, "price": 105.00, "fee": 1.00},
+    {"id": "live-00c", "date": "2026-10-04", "symbol": "平安银行", "code": "000001", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+    {"id": "live-00d", "date": "2026-10-05", "symbol": "平安银行", "code": "000001", "side": "卖出", "quantity": 10, "price": 95.00, "fee": 1.00},
+    {"id": "live-01", "date": "2026-10-03", "symbol": "贵州茅台", "code": "600519", "side": "买入", "quantity": 100, "price": 1712.00, "fee": 8.56},
+    {"id": "live-02", "date": "2026-10-07", "symbol": "贵州茅台", "code": "600519", "side": "卖出", "quantity": 40, "price": 1735.00, "fee": 6.94},
+    {"id": "live-00e", "date": "2026-10-08", "symbol": "立讯精密", "code": "002475", "side": "买入", "quantity": 10, "price": 100.00, "fee": 1.00},
+    {"id": "live-00f", "date": "2026-10-09", "symbol": "立讯精密", "code": "002475", "side": "卖出", "quantity": 10, "price": 110.00, "fee": 1.00},
+    {"id": "live-03", "date": "2026-10-09", "symbol": "宁德时代", "code": "300750", "side": "买入", "quantity": 50, "price": 219.00, "fee": 3.29},
+    {"id": "live-04", "date": "2026-10-12", "symbol": "宁德时代", "code": "300750", "side": "卖出", "quantity": 50, "price": 214.00, "fee": 3.21},
+    {"id": "live-05", "date": "2026-10-15", "symbol": "中芯国际", "code": "688981", "side": "买入", "quantity": 80, "price": 92.00, "fee": 2.95}
+  ],
+  "simulation_exercises": [
+    {
+      "id": "practice-a-20261015-01",
+      "label": "练习 A",
+      "symbol": "贵州茅台",
+      "code": "600519",
+      "saved_date": "2026-10-15",
+      "trades": [
+        {"id": "a-buy-100", "date": "2026-10-01", "side": "买入", "quantity": 100, "price": 100.00, "fee": 10.00},
+        {"id": "a-buy-50", "date": "2026-10-05", "side": "买入", "quantity": 50, "price": 110.00, "fee": 5.00},
+        {"id": "a-sell-80", "date": "2026-10-15", "side": "卖出", "quantity": 80, "price": 130.00, "fee": 8.00}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 2,
+      "expected_open_quantity": 70
+    },
+    {
+      "id": "practice-b-20261018-01",
+      "label": "练习 B",
+      "symbol": "贵州茅台",
+      "code": "600519",
+      "saved_date": "2026-10-18",
+      "trades": [
+        {"id": "b-buy-20", "date": "2026-10-16", "side": "买入", "quantity": 20, "price": 120.00, "fee": 2.00},
+        {"id": "b-sell-20", "date": "2026-10-18", "side": "卖出", "quantity": 20, "price": 115.00, "fee": 2.00}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 1,
+      "expected_open_quantity": 0
+    },
+    {
+      "id": "practice-c-20261016-01",
+      "label": "练习 C",
+      "symbol": "平安银行",
+      "code": "000001",
+      "saved_date": "2026-10-16",
+      "trades": [
+        {"id": "c-buy-30", "date": "2026-10-14", "side": "买入", "quantity": 30, "price": 100.00, "fee": 3.00},
+        {"id": "c-sell-30", "date": "2026-10-16", "side": "卖出", "quantity": 30, "price": 112.00, "fee": 3.00}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 1,
+      "expected_open_quantity": 0
+    },
+    {
+      "id": "practice-d-20261017-01",
+      "label": "练习 D",
+      "symbol": "宁德时代",
+      "code": "300750",
+      "saved_date": "2026-10-17",
+      "trades": [
+        {"id": "d-buy-15", "date": "2026-10-15", "side": "买入", "quantity": 15, "price": 150.00, "fee": 1.50},
+        {"id": "d-sell-15", "date": "2026-10-17", "side": "卖出", "quantity": 15, "price": 145.00, "fee": 1.50}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 1,
+      "expected_open_quantity": 0
+    },
+    {
+      "id": "practice-e-20261015-02",
+      "label": "练习 E",
+      "symbol": "贵州茅台",
+      "code": "600519",
+      "saved_date": "2026-10-15",
+      "trades": [
+        {"id": "e-buy-10", "date": "2026-10-14", "side": "买入", "quantity": 10, "price": 200.00, "fee": 1.00},
+        {"id": "e-sell-10", "date": "2026-10-15", "side": "卖出", "quantity": 10, "price": 210.00, "fee": 1.00}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 1,
+      "expected_open_quantity": 0
+    },
+    {
+      "id": "practice-f-20261019-01",
+      "label": "练习 F",
+      "symbol": "招商银行",
+      "code": "600036",
+      "saved_date": "2026-10-19",
+      "trades": [
+        {"id": "f-buy-12", "date": "2026-10-18", "side": "买入", "quantity": 12, "price": 80.00, "fee": 1.00},
+        {"id": "f-sell-12", "date": "2026-10-19", "side": "卖出", "quantity": 12, "price": 90.00, "fee": 1.00}
+      ],
+      "matching": "LIFO",
+      "expected_closed_rounds": 1,
+      "expected_open_quantity": 0
+    }
+  ],
+  "boundary_exercises": [
+    {
+      "id": "boundary-profit",
+      "label": "极值盈利",
+      "symbol": "极值样例",
+      "code": "EDGE+",
+      "saved_date": "2026-10-03",
+      "trades": [
+        {"id": "edge-profit-buy", "date": "2026-10-01", "side": "买入", "quantity": 10000, "price": 100.00, "fee": 100.00},
+        {"id": "edge-profit-sell", "date": "2026-10-03", "side": "卖出", "quantity": 10000, "price": 225.00, "fee": 100.00}
+      ]
+    },
+    {
+      "id": "boundary-loss",
+      "label": "极值亏损",
+      "symbol": "极值样例",
+      "code": "EDGE-",
+      "saved_date": "2026-10-07",
+      "trades": [
+        {"id": "edge-loss-buy", "date": "2026-10-05", "side": "买入", "quantity": 10000, "price": 100.00, "fee": 100.00},
+        {"id": "edge-loss-sell", "date": "2026-10-07", "side": "卖出", "quantity": 10000, "price": 2.00, "fee": 100.00}
+      ]
+    }
+  ],
+  "missing_inputs": {
+    "date": "2026-10-12",
+    "missing_count": 1,
+    "missing_fields": ["平仓费用"]
+  },
+  "trend_modes": {
+    "gap_dates": ["2026-10-15", "2026-10-16", "2026-10-19"],
+    "single_date": "2026-10-15",
+    "empty_dates": []
+  }
+}

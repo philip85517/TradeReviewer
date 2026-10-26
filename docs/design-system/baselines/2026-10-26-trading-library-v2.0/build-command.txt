@@ -1,0 +1,4 @@
+python3 source/generate-library-frames.py --all
+python3 source/test-library-metrics.py
+python3 source/test-homepage-template.py
+python3 build-visual-spec.py --source source/visual-design.candidate.md --version 2.0 --output-dir .

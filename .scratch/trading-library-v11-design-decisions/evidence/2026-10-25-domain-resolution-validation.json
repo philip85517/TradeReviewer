@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-25",
+  "scope": "domain decision resolution and next date proposal; documentation only",
+  "local_links": "PASS",
+  "dependency_graph": "PASS via frontier.py --all",
+  "accepted_ticket": "TL11-D01",
+  "open_followup": "TL11-D07",
+  "current_discussion": "TL11-D02; proposal not confirmed",
+  "ui_acceptance": "NOT APPLICABLE: documentation only",
+  "source_files": {
+    "CONTEXT.md": "b39c1210d12cab11bb9fac1ea415ea7261a5a1c6d52a291ed32b92b7e39af990",
+    "docs/design-system/domain-language.md": "3f0c2e83458be2958b67841d366b20c149646a29ee9218815dac2ed913396e4c",
+    "app/lib/import/tradingview-simulation.ts": "c9bd4ae73d72d90157cbf780f3938f8800e676de44fd6e513d397c8300f32fb9",
+    "app/lib/import/tradingview-reimport.ts": "d269075a940607bf51380e2e766864f9efbbe2e7f52bc7bf3778f78adcb0be8e",
+    "app/lib/trades/episodes.ts": "f0c9fbc8b928ba81bb7b357e3fc6293a0d739df3691238788ff516dbe652a1c3",
+    "app/lib/recall/decisions.ts": "4e8d0f7218046cf0864c29816c50756bb0b3b1fdf2d0b93233636580b8fb749e",
+    "app/lib/recall/document.ts": "3d0aadf339c7ab02df35f7a89cd4a6c44fe3861d0ead72a1ac7af69f5395019f",
+    "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/visual-design.candidate.md": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+    "docs/design-system/baselines/2026-10-24-trading-library-v1.1/source/library-design-fixture.json": "a4f244af153c8102b6b3b293208798fb99df156f2a5100ca274428febf6723ab"
+  }
+}

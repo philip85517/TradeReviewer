@@ -1,0 +1,70 @@
+{
+  "documentId": "TRADING-LIBRARY-V10",
+  "version": "1.0",
+  "entries": [
+    {
+      "commentId": "comment-ff1644d6fadd433484f0a8040b381b73",
+      "kind": "paragraph",
+      "sourceFingerprint": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "targetBlockId": "HOME-TLIB-GOAL",
+      "targetBlockIdBySource": {
+        "HOME-DOC-B070": "HOME-TLIB-GOAL",
+        "HOME-DOC-B004": "HOME-TLIB-TRADEOFF",
+        "HOME-DOC-B005": "HOME-TLIB-ACCURACY"
+      },
+      "reason": "按用户批准的行文修订方案关联到新段落。原引用保持修改前全文；此映射表示同一论题的修订位置，不表示旧句子仍存在，也不改变评论状态。第一章的具体规则已归入第三至六章。"
+    },
+    {
+      "commentId": "comment-0f6fbbbb44cc4ed88b05caad3e314891",
+      "kind": "paragraph",
+      "sourceFingerprint": "377f37b2ead444326dcca760628e8aa51ebb9507537ebe5604e78581ef7564fa",
+      "targetBlockId": "HOME-TLIB-INTRO",
+      "targetBlockIdBySource": {
+        "HOME-DOC-B001": "HOME-TLIB-INTRO",
+        "HOME-DOC-B071": "HOME-TLIB-REFERENCES"
+      },
+      "reason": "按用户批准的行文修订方案关联到新段落。原引用保持修改前全文；此映射表示同一论题的修订位置，不表示旧句子仍存在，也不改变评论状态。第一章的具体规则已归入第三至六章。"
+    },
+    {
+      "commentId": "comment-646fafe57e424f72aa552cdf8e6ddded",
+      "kind": "image",
+      "sourceFingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "sourceOccurrenceId": "journeys-date@state-demo-1-1",
+      "sourceImageFingerprint": "f8858d6cd90774c2bcc786e99a65ad0180daacb40268f7476d1400ff896f7870",
+      "sourceUrl": "review-records/2026-10-24-comment-repair/originals/journeys-date.svg",
+      "targetOccurrenceId": "journeys-date@state-demo-1-1",
+      "reason": "按已批准的图稿修复方案关联到同章节的修订整图。原图留存并可对照；此关联不声称原图具体坐标在新图中不变，也不修改评论的意见、状态或历史。"
+    },
+    {
+      "commentId": "comment-b880c94701b74fa79675e2bb6c7f1ed8",
+      "kind": "image",
+      "sourceFingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "sourceOccurrenceId": "hcr06-final-sim-ab@state-demo-2-1",
+      "sourceImageFingerprint": "9dd88e2d26547e9fd5869265df135853ba4a7b3122a4cd58bfcc2253d99afe65",
+      "sourceUrl": "review-records/2026-10-24-comment-repair/originals/hcr06-final-sim-ab.svg",
+      "targetOccurrenceId": "hcr06-final-sim-ab@state-demo-2-1",
+      "reason": "按已批准的图稿修复方案关联到同章节的修订整图。原图留存并可对照；此关联不声称原图具体坐标在新图中不变，也不修改评论的意见、状态或历史。"
+    },
+    {
+      "commentId": "comment-e17d6a68984445b3af9f213a4ad47d6c",
+      "kind": "image",
+      "sourceFingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "sourceOccurrenceId": "01-live-normal@state-demo-3-1",
+      "sourceImageFingerprint": "b7e359c9461d22fd3d861e3ac4e4516de3d7b854fdeee1007299c1c013bf7f86",
+      "sourceUrl": "review-records/2026-10-24-comment-repair/originals/01-live-normal.svg",
+      "targetOccurrenceId": "01-live-normal@state-demo-3-1",
+      "reason": "按已批准的图稿修复方案关联到同章节的修订整图。原图留存并可对照；此关联不声称原图具体坐标在新图中不变，也不修改评论的意见、状态或历史。"
+    },
+    {
+      "commentId": "comment-9e58c33192e24f54b5d85f5cf8f00d65",
+      "kind": "image",
+      "sourceFingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+      "sourceOccurrenceId": "handoff@state-demo-4-1",
+      "sourceImageFingerprint": "b2cb40c7a09bd7acbadcc777016c3e76285dce36f487cd15b1c3c4995aabed19",
+      "sourceUrl": "review-records/2026-10-24-comment-repair/originals/handoff.svg",
+      "targetOccurrenceId": "handoff@state-demo-7-1",
+      "reason": "按已批准的图稿修复方案关联到同章节的修订整图。原图留存并可对照；此关联不声称原图具体坐标在新图中不变，也不修改评论的意见、状态或历史。"
+    }
+  ],
+  "fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58"
+}

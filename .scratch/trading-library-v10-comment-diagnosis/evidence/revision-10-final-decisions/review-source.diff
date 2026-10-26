@@ -1,0 +1,321 @@
+--- before/navigation-options.html
++++ current/navigation-options.html
+@@ -212,13 +212,13 @@
+           distributionAmount: [['亏损 > 100',1,'loss','14.29%'],['亏损 0–100',1,'loss','14.29%'],['持平',0,'','0.00%'],['盈利 0–100',1,'win','14.29%'],['盈利 > 100',4,'win','57.14%']],
+           exercises: [
+             ['2026-10-15','练习 A','贵州茅台','600519','3','2','70'],['2026-10-15','练习 E','贵州茅台','600519','2','1','0'],['2026-10-16','练习 C','平安银行','000001','2','1','0'],['2026-10-17','练习 D','宁德时代','300750','2','1','0'],['2026-10-18','练习 B','贵州茅台','600519','2','1','0'],['2026-10-19','练习 F','招商银行','600036','2','1','0']
+           ]
+         }
+       };
+-      const state = { scheme: 'A', mode: 'live', preview: 'normal', measure: 'rate', tabByMode: { live: 'list', simulation: 'stats' }, rangeByMode: { live: 'fixture', simulation: 'fixture' } };
++      const state = { scheme: 'B', mode: 'live', preview: 'normal', measure: 'rate', tabByMode: { live: 'list', simulation: 'stats' }, rangeByMode: { live: 'fixture', simulation: 'fixture' } };
+       const candidateBar = document.querySelector('.candidate-bar');
+       const product = document.getElementById('product');
+       const root = document.getElementById('page-root');
+       const schemePicker = document.getElementById('scheme-picker');
+       const previewSelect = document.getElementById('preview-select');
+       const candidateStatus = document.getElementById('candidate-status');
+@@ -277,13 +277,13 @@
+         const target = document.getElementById(id);
+         if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
+       }
+       function renderPreviewState() {
+         const range = escapeHtml(rangeText());
+         if (state.preview === 'loading') return `<section class="state-message" aria-live="polite"><div class="loading-stack" aria-label="加载中"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div></section>`;
+-        if (state.preview === 'empty') return `<section class="state-message" aria-live="polite"><div><strong>暂无${current().name}结果</strong><p>${range} · 全部市场下没有可显示的已平仓回合。胜率、平均盈利和平均亏损显示“— / 无样本”，不会显示虚假的 0%。</p></div></section>`;
++        if (state.preview === 'empty') return `<section class="state-message" aria-live="polite"><div><strong>暂无${current().name}结果</strong><p>${range} · 全部市场下没有可显示的已平仓回合。胜率、平均盈利和平均亏损显示“— / 无样本”，不会显示虚假的 0%。</p>${state.mode === 'simulation' ? '<p>最差练习回撤显示“— / 无练习”。</p>' : ''}</div></section>`;
+         return `<section class="state-message" role="alert"><div><strong>无法加载${current().name}样例</strong><p>已保留条件：${range} · 全部市场 · ${escapeHtml(accountText())}。当前没有结果可应用，请调整范围后重试。</p></div></section>`;
+       }
+       function renderList() {
+         if (state.mode === 'live') {
+           return `<section class="panel"><div class="panel-head"><div><h3>成交列表</h3><p class="panel-subtitle">按成交日期 · ${current().rows.length} 笔样例成交；未平仓成交仍保留</p></div><span class="tag">${current().rows.length} 笔样例成交</span></div><div class="table-wrap"><table class="trade-table"><thead><tr><th>成交日期</th><th>标的</th><th>代码</th><th>方向</th><th class="numeric">数量</th><th class="numeric">价格</th><th class="numeric">费用</th><th>状态</th></tr></thead><tbody>${current().rows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td class="numeric">${row[4]}</td><td class="numeric">${row[5]}</td><td class="numeric">${row[6]}</td><td><span class="tag ${row[7] === '已复盘' ? 'reviewed' : 'pending'}">${row[7]}</span></td></tr>`).join('')}</tbody></table></div></section>`;
+         }
+@@ -301,23 +301,23 @@
+         const zeroY = 10 + (trendMax - 0) / trendSpan * 112;
+         const trend = `<div class="trend-chart-wrap"><svg class="trend-chart" width="100%" height="174" viewBox="0 0 100 140" preserveAspectRatio="none" role="img" aria-label="累计净盈亏折线图"><line class="trend-zero" x1="8" y1="${zeroY}" x2="92" y2="${zeroY}"></line><polyline class="trend-line" points="${trendPolyline}"></polyline>${trendDots}</svg><div class="trend-labels">${trendPoints.map((point) => `<span style="left:${point.x}%">${point.label}</span>`).join('')}</div></div>`;
+         const distribution = state.measure === 'amount' ? current().distributionAmount : current().distribution;
+         const distributionMax = Math.max(1, ...distribution.map((item) => item[1]));
+         const rows = distribution.map((row) => `<div class="dist-row"><span class="dist-label ${row[2]}">${row[0]}</span><span class="dist-bar-track"><span class="dist-bar ${row[2]}" style="width:${row[1] / distributionMax * 100}%"></span></span><span class="align-right">${row[1]}</span><span class="align-right">${row[3]}</span></div>`).join('');
+         const statsClass = state.mode === 'simulation' ? 'cards simulation-cards' : 'cards';
+-        const statsNotes = state.mode === 'simulation' ? '<p class="stats-note"><strong>风险说明</strong><span>最大回撤 — · 当前样例缺少逐时权益，回撤口径待确认。</span><br><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>' : '<p class="stats-note"><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>';
++        const statsNotes = state.mode === 'simulation' ? '<p class="stats-note"><strong>最差练习回撤</strong><span>—</span><br><span>定义：所选练习中，单次练习权益最大回撤的最大值。</span><br><span>计算：全部选中练习须有正初始权益和完整逐时权益路径（含持仓按市值计价与费用）；各练习独立计算，不拼接。</span><br><span>覆盖：部分缺失显示“—”，并注明可计算 N/M 练习；无练习显示“— / 无练习”。</span><br><span>当前样例缺少上述权益路径，暂不可计算。</span><br><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>' : '<p class="stats-note"><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>';
+         return `<section id="c07-stats-summary" class="${statsClass}" aria-label="统计摘要">${values}</section>${statsNotes}<section id="c07-trend-panel" class="panel"><div class="panel-head"><div><h3>累计净盈亏趋势</h3><p class="panel-subtitle">${current().dateLabel} · 日</p></div></div><div class="trend">${trend}</div></section><section id="c07-distribution-panel" class="panel distribution" data-measure="${state.measure}"><div class="panel-head"><div><h3>收益分布</h3><p class="panel-subtitle">当前范围 · ${current().metrics[0][1]} 个有效回合 · 条长表示回合数</p></div><div class="measure-toggle" role="group" aria-label="分布单位"><button id="c07-measure-rate" type="button" aria-pressed="${state.measure === 'rate'}" data-measure="rate">收益率</button><button id="c07-measure-amount" type="button" aria-pressed="${state.measure === 'amount'}" data-measure="amount">金额</button></div></div><div class="dist-head"><span>区间</span><span>频数</span><span class="align-right">回合数</span><span class="align-right">占比</span></div>${rows}</section>`;
+       }
+       function render() {
+         const focusId = document.activeElement && document.activeElement.id;
+         const preservedModeBlock = root.querySelector('.mode-block');
+         product.className = `product-shell scheme-${state.scheme.toLowerCase()}`;
+         product.dataset.scheme = state.scheme.toLowerCase();
+         renderSchemePicker();
+         previewSelect.value = state.preview;
+-        candidateStatus.textContent = `${state.scheme} · ${schemeMeta[state.scheme]} · ${current().name} / ${state.tabByMode[state.mode] === 'list' ? '列表' : '统计'}`;
++        candidateStatus.textContent = `已采用 B · A/C 仅对照 · 当前 ${state.scheme} · ${schemeMeta[state.scheme]} · ${current().name} / ${state.tabByMode[state.mode] === 'list' ? '列表' : '统计'}`;
+         root.dataset.mode = state.mode;
+         root.dataset.tab = state.tabByMode[state.mode];
+         root.dataset.preview = state.preview;
+         root.innerHTML = `${renderHeader()}${renderTools()}${state.preview === 'normal' ? (state.tabByMode[state.mode] === 'list' ? renderList() : renderStats()) : renderPreviewState()}`;
+         const generatedModeBlock = root.querySelector('.mode-block');
+         if (preservedModeBlock && generatedModeBlock) generatedModeBlock.replaceWith(preservedModeBlock);
+--- before/source/test-library-metrics.py
++++ current/source/test-library-metrics.py
+@@ -18,12 +18,20 @@
+ spec.loader.exec_module(module)
+ 
+ FIXTURE = json.loads((SOURCE.parent / "library-design-fixture.json").read_text())
+ 
+ 
+ class MetricsContractTest(unittest.TestCase):
++    def test_compact_option_b_header_and_drawdown_copy_are_present(self):
++        svg = module.stats_frame(1440, 1000, FIXTURE, "simulation-stats")
++        ElementTree.fromstring(svg)
++        self.assertIn('y="86"', svg)
++        self.assertIn('最差练习回撤', svg)
++        self.assertIn('暂不可计算', svg)
++        self.assertNotIn('回撤口径待确认', svg)
++
+     def test_fixture_totals_and_directional_rates(self):
+         simulation = module.derive_sim_rounds(FIXTURE)
+         live = module.derive_live_rounds(FIXTURE)
+         self.assertEqual(len(simulation), 7)
+         self.assertEqual(round(sum(row["net"] for row in simulation), 2), 2272.0)
+         self.assertEqual(round(sum(row["fees"] for row in simulation), 2), 33.0)
+--- before/source/visual-design.candidate.md
++++ current/source/visual-design.candidate.md
+@@ -40,13 +40,13 @@
+ 交易库的页面结构服务于条件确认、结果阅读、对象进入和返回恢复。布局沿用 V2.5 的公共表面、颜色、字体、间距、焦点和状态规则，具体区块职责如下。
+ 
+ |区块|职责|
+ |---|---|
+ |顶栏|显示实盘/模拟盘视角、来源条件和返回来源动作。|
+ |全局侧栏|72px 固定导航，保留 `首页 / 交易库 / 分析 / 数据 / 策略` 和当前位置；普通交易库入口不显示历史待复盘徽章。|
+-|页头|64px 高；标题左缘与内容区同为96px，来源文案与返回按钮使用独立槽位。|
++|页头|64px 高；标题左缘与内容区同为96px，来源文案与返回按钮使用独立槽位。页内采用已确认的紧凑 B：模式滑块置于标题上方；标题/副标题左侧与已应用条件、列表/统计下划线页签右侧同排。|
+ |条件工具区|编辑日期、市场、账户和局部搜索；独立显示已生效条件摘要。|
+ |列表或统计主体|列表按交易或练习阅读，统计按回合样本阅读；不把两种日期口径合并。|
+ |详情、回合集与复盘|沿用既有容器，逐层携带对象身份和必要的开仓上下文。|
+ |分页与状态反馈|在加载、空态、失败和重试时保持结果区尺寸与位置。|
+ 
+ 控件与文字采用以下对齐规则。按钮、分段标签、日期快捷项和应用动作在命中盒内水平、垂直居中；输入文字、名称、说明和错误文案左对齐；金额表头和金额数据右对齐。
+@@ -59,13 +59,13 @@
+ |刷新动作|36×36px命中盒；与搜索的间隔为28px。|
+ |筛选浮层|宽320px，字段高36px。|
+ |图标与动作|公共图标视觉尺寸16px；页头搜索与筛选图标18px；外层图标和动作按钮保持36px命中盒。|
+ |日期和年份图标|日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。|
+ |表格|沿用公共列定义；金额列共用右边界，名称和说明左对齐，表头与结果区不重叠。|
+ 
+-布局候选仍等待选择，完整比较见[候选布局比较](../navigation-options.html)。
++布局采用[候选布局比较](../navigation-options.html)中的方案 B（紧凑排列）；模式滑块在标题上方，标题/副标题与已应用条件、列表/统计下划线页签共享紧凑页头。页内不重复放置独立页面切换胶囊或面包屑。
+ 
+ 数字显示遵循公共格式：价格保留两位小数；金额绝对值达到1万显示“万”、达到1亿显示“亿”，均保留两位小数，不增加“万亿”。详情、提示、悬停或聚焦、复制和导出都能查到完整值，缩写不改变原始数据。窄栏的占比另行按第五章换行。
+ 
+ ## 三、范围、日期与搜索 {#chapter-BT03}
+ 
+ ### 进入与默认
+@@ -155,13 +155,19 @@
+ 统计只纳入有效的已平仓回合，未平仓成交仍保留在实盘列表。模拟盘使用文件中保存的练习日期，不以行情日期替代；普通模拟盘趋势至少覆盖五个保存日期，并保留同一标的同日练习的独立身份。
+ 
+ ### 指标与结果口径
+ 
+ 扣费后收益大于0为盈利、小于0为亏损、等于0为持平。总体胜率与方向胜率的分母都包含持平回合，平均盈利和平均亏损不含持平回合。方向只取开仓方向明确标记的 `long` / `short`；未知方向排除并单独报告，不能把平多的卖出成交推断为做空。当前模拟盘有7个有效回合、5个盈利做多回合，做空显示“— / 无样本”。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。模拟盘统计按两行四卡展示：有效回合、净盈亏、总体胜率、费用（已扣除）；做多胜率、做空胜率、平均盈利、平均亏损。费用卡短标签为“费用（已扣除）”，旁边可见“已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。”
+ 
+-最大回撤暂显示“最大回撤 —”；当前样例缺少逐时权益，回撤口径待确认。该占位保留待确认语义，不把累计净盈亏曲线冒充权益回撤。
++风险指标显示“最差练习回撤”。
++
++- **含义与选取范围**：每次练习使用当前模拟盘筛选与保存日期独立选取，沿自身完整权益轨迹计算；轨迹含初始资金、开仓后按标记价格计价的浮动盈亏和费用。汇总取所有有效练习的单练习最大回撤中的最大值。短说明为“所选练习中，单次练习权益最大回撤的最大值。”
++- **计算方式**：初始权益必须为正，权益样本必须完整有序且估值/费用范围一致。`peak_t=max(E_0…E_t)`，`DD_t=(peak_t−E_t)/peak_t`，单练习 MDD 为 `max_t DD_t`；分母是截至该时点的最高历史权益。
++- **数据不足如何显示**：缺少初始值、路径或估值、存在未调整外部现金流时，该练习不可用。全部有效才显示数值，部分有效显示“— · 可计算 N/M 练习”；空样本显示“— / 无练习”；完整有效且为零显示“0.00%”。当前样例缺少逐时权益，显示“—”并说明“暂不可计算”。不把累计净盈亏曲线冒充权益回撤。
++
++独立算例：权益 `100 → 120 → 90` 的单次练习回撤为25%；另一练习 `100 → 110 → 99` 为10%；汇总为25%。若第二条练习缺少路径，则显示“— · 可计算 1/2 练习”。
+ 
+ ### 趋势粒度
+ 
+ 日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。粒度随当前统计范围确定。
+ 
+ ### 分布与下钻
+@@ -324,13 +330,13 @@
+ 
+ 本章集中记录来源迁移、实现引用和历史边界；历史版本与候选方案只用于追溯，当前验收以本正文和分镜为准。
+ 
+ |来源|当前章节|图稿或保留主题|
+ |---|---|---|
+ |[HP06](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP06)|[第一章](#chapter-BT01)、[第三章](#chapter-BT03)、[第六章](#chapter-BT06)|日期入口、普通交易库入口、条件立即生效、详情与首页返回；保留 `handoff`、`journeys-date`、`journeys-library-entry`、`library-return`、`hcr06-final-*`。|
+-|[HP07 共享布局与条件](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第二章](#chapter-BT02)至[第五章](#chapter-BT05)|实盘/模拟盘视角、条件记忆、自然日期和上海时区、日期口径、练习与回合、收益与统计规则。|
++|[HP07 共享布局与条件](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第二章](#chapter-BT02)至[第五章](#chapter-BT05)|实盘/模拟盘视角、已采用方案 B 的紧凑页头、条件记忆、自然日期和上海时区、日期口径、练习与回合、收益与统计规则。|
+ |[HP07 工具区与搜索](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第二章](#chapter-BT02)、[第三章](#chapter-BT03)|局部表内筛选、搜索220px、刷新36×36px、间隔28px、条件摘要、日期/年份图标边界。|
+ |[HP07 从入口到回合再返回](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第六章](#chapter-BT06)|日期→实盘、实盘标的→回合集、模拟练习→回合集、回合复盘→返回和上下文恢复。|
+ |[HP07 练习到回合分镜](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第四章](#chapter-BT04)|`hcr06-final-sim-ab`、`hcr06-final-rounds-a`、`hcr06-final-replay-a1/a2/b1`，共用整页母版并保留练习、回合和复盘身份。|
+ |[HP07 统计与分布分镜](../../2026-10-22-homepage-v2.4.2/visual-spec.html#chapter-HP07)|[第五章](#chapter-BT05)、[第七章](#chapter-BT07)|`01-live-normal` 至 `09-missing-input`，包括粒度、收益率/金额、2位小数、固定分母、区间展开、返回位置和异常状态。|
+ |设计样例边界|[第三章](#chapter-BT03)、[第五章](#chapter-BT05)|`journeys-date-month`、`journeys-trend-gap`、`journeys-trend-single`、`journeys-trend-empty`；有效日期由固定样例派生，缺失不补零。|
+ 
+@@ -342,12 +348,13 @@
+ |刷新和直达按 URL 重建范围；非法市场回 `all` 并提示；非法或不完整范围显示可修正提示，不能静默扩为全部。|[V2.5 入口状态约定](../../2026-10-22-homepage-v2.5/visual-spec.html#entry-contract)。|
+ |账户参数必须显式传递；未定义的账户默认值继续待明确。|[V2.5 入口状态约定](../../2026-10-22-homepage-v2.5/visual-spec.html#entry-contract)。|
+ 
+ ### 已确认决定
+ 
+ - 2026-10-22 用户确认“首页取消独立待复盘入口，统一进入交易库”。当前正文使用普通交易库入口；原待复盘数量分镜仅作历史来源，并保留交易库内显式待复盘筛选的依据。
++- 2026-10-24 用户确认采用方案 B（紧凑排列），以及“最差练习回撤（推荐）”。正文、共享分镜和指标说明均按此决定更新。
+ 
+ ### 待确认项
+ 
+ |问题|当前处理|依据|
+ |---|---|---|
+ |O02 状态徽章使用24px高，还是20px高并采用自适应宽？|当前沿用24px高；20px高、自适应宽方案继续待确认。|O02 视觉验收项。|
+--- before/source/generate-library-frames.py
++++ current/source/generate-library-frames.py
+@@ -309,20 +309,34 @@
+ 
+ def range_label(state):
+     return state['start'] if state['start']==state['end'] else f"{state['start']} 至 {state['end']}"
+ 
+ 
+ def common_chrome(width,height,title,subtitle,state,view='实盘',page='列表',return_label='返回首页'):
+-    out=[text(96,96,'首页 / 交易库',12,'muted'),text(96,130,title,24,'text',600),text(96,154,subtitle,14,'muted'),
+-         text(width-24,130,'已应用条件',12,'blue',600,'end'),text(width-24,154,range_label(state)+' · '+state['market']+(' · '+state.get('account','') if view=='实盘' else ''),12,'muted',400,'end'),
+-         text(96,188,'视角',12,'muted'),segments(96,196,['实盘','模拟盘'],view,182),text(302,188,'页面',12,'muted'),segments(302,196,['列表','统计'],page)]
++    # Adopted option B: mode sits above a compact heading. The breadcrumb,
++    # title/subtitle, applied summary, and tabs share the same tight header;
++    # tabs do not consume a separate row.
++    summary = range_label(state)+' · '+state['market']+(' · '+state.get('account','') if view=='实盘' else '')
++    # Reserve independent horizontal slots for label, summary, and tabs. The
++    # right cluster expands leftward at both comparison widths so the summary
++    # keeps its natural 12px text width and never gets squeezed into tabs.
++    summary_svg = text(width-590,174,summary,12,'muted',400)
++    out=[segments(96,86,['实盘','模拟盘'],view,182),
++         text(96,150,'首页 / 交易库',12,'muted'),
++         text(96,174,title,24,'text',600),text(96,198,subtitle,14,'muted'),
++         text(width-665,174,'已应用条件',12,'blue',600),
++         summary_svg,
++         text(width-190,174,'列表',14,'blue' if page=='列表' else 'muted',600,'middle'),
++         text(width-86,174,'统计',14,'blue' if page=='统计' else 'muted',600,'middle'),
++         line(width-242,188,width-138,188,'blue' if page=='列表' else 'border',2),
++         line(width-138,188,width-34,188,'blue' if page=='统计' else 'border',2)]
+     return out
+ 
+ 
+ def filter_controls(width,state,view='实盘',review=None):
+-    y=268 if width>1280 else 262
++    y=250 if width>1280 else 244
+     # Long range dates have their own 300px budget; search retains 220+28+36.
+     out=[control(96,y,300,'保存日期' if view=='模拟盘' else '成交 / 平仓日期',range_label(state),'date'),control(420,y,140,'市场',state['market'])]
+     if view=='实盘':out.append(control(584,y,160,'账户',state['account']))
+     out += [control(width-308,y,220,'交易搜索',state['search'] or '筛选当前列表','search'),button(width-60,y,36,''),icon_refresh(width-50,y+10)]
+     return ''.join(out)
+ 
+@@ -410,16 +424,17 @@
+     if status == 'empty' or (not denominator and status != 'loading'):
+         out.append(text(bar_x + bar_w / 2, top + len(distribution) * row_h / 2, '没有有效回合，无法绘制分布', 14, 'muted', 400, 'middle'))
+     return Panel(''.join(out), y + panel_h)
+ 
+ 
+ def risk_band(x, y, w):
+-    return (rect(x, y, w, 68, 'raised')
++    return (rect(x, y, w, 86, 'raised')
+             + text(x + 24, y + 27, '风险说明', 14, 'text', 600)
+-            + text(x + 24, y + 49, '最大回撤 —', 14, 'warning', 500)
+-            + text(x + 180, y + 49, '当前样例缺少逐时权益，回撤口径待确认。', 12, 'muted'))
++            + text(x + 24, y + 49, '最差练习回撤 —', 14, 'warning', 500)
++            + text(x + 180, y + 49, '当前样例缺少逐时权益，暂不可计算。', 12, 'muted')
++            + text(x + 24, y + 72, '所选练习中，单次练习权益最大回撤的最大值。', 12, 'muted'))
+ 
+ 
+ def fee_band(x, y, w):
+     return (rect(x, y, w, 56, 'raised')
+             + text(x + 24, y + 23, '费用（已扣除）', 12, 'muted', 600)
+             + text(x + 24, y + 43, '已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。', 12, 'muted'))
+@@ -481,13 +496,13 @@
+             if d['status']=='missing':value=None
+             else: value=known.get(d['date'],cum);cum=value
+             points.append({**d,'cumulative':value})
+         subtitle='10-17、10-18 文件缺失 · 全范围净盈亏 — · 可计算 5 回合'
+     # Directional cards must follow all range/missing-input filtering above.
+     directions=direction_stats(stats['rounds'])
+-    body=common_chrome(width,minimum,title,subtitle,state,view,'统计');body.append(filter_controls(width,state,view));y=342;w=width-120
++    body=common_chrome(width,minimum,title,subtitle,state,view,'统计');body.append(filter_controls(width,state,view));y=324 if width>1280 else 318;w=width-120
+     if status=='error':
+         body += [rect(96,y,w,68,'raised'),text(120,y+27,'更新失败 · '+range_label(fixture['navigation']['error_attempt'])+' 未应用',14,'warning',600),text(120,y+50,'当前仍显示 '+range_label(state)+' 的完整结果',12,'muted'),button(width-156,y+16,108,'重试')];y+=92
+     if status=='loading':
+         metrics=[(l,'…') for l in ['有效回合','累计净盈亏','胜率','平均盈利','平均亏损','费用（已扣除）']]
+     else:
+         metrics=[('有效回合',str(stats['count'])),('可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏',fmt(stats['net'])),('胜率',f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'),('平均盈利',fmt(stats['average_profit'])),('平均亏损',fmt(stats['average_loss'])),('费用（已扣除）',fmt(stats['fees']))]
+@@ -501,17 +516,20 @@
+             short_label = f"做空胜率 · {short['wins']}/{short['count']} 样本" if short['count'] else '做空胜率 · 无样本'
+             net_label = '可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏'
+             sim_first = [("有效回合", str(stats['count'])), (net_label, fmt(stats['net'])), ("总体胜率", f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'), ("费用（已扣除）", fmt(stats['fees']))]
+             sim_second = [(long_label, f"{long['rate']:.2f}%" if long['rate'] is not None else '—'), (short_label, f"{short['rate']:.2f}%" if short['rate'] is not None else '—'), ("平均盈利", fmt(stats['average_profit'])), ("平均亏损", fmt(stats['average_loss']))]
+         body.append(metric_cards(96,y,w,sim_first));y+=112
+         body.append(metric_cards(96,y,w,sim_second));y+=112
+-        body.append(risk_band(96,y,w));y+=92
++        body.append(risk_band(96,y,w));y+=110
+     else:
+         body.append(metric_cards(96,y,w,metrics));y+=120
+     body.append(fee_band(96,y,w));y+=80
+-    trend=trend_card(96,y,w,280,'可计算累计净盈亏' if kind in ['trend-gap','missing'] else '累计净盈亏趋势','首次加载' if status=='loading' else ('按保存日期' if sim else '按回合平仓日期')+' · '+{'day':'日','month':'月','year':'年'}[grain],points,grain=grain);body.append(trend.svg);y=trend.bottom+24
++    # First-load state must not leak the fixture's real trend points while
++    # metric cards and distribution are still loading.
++    trend_points = [] if status == 'loading' else points
++    trend=trend_card(96,y,w,280,'可计算累计净盈亏' if kind in ['trend-gap','missing'] else '累计净盈亏趋势','首次加载' if status=='loading' else ('按保存日期' if sim else '按回合平仓日期')+' · '+{'day':'日','month':'月','year':'年'}[grain],trend_points,grain=grain);body.append(trend.svg);y=trend.bottom+24
+     dist=distribution_for(stats['rounds'] if status!='loading' else [],mode)
+     rows=[{'id':d['label'],'cells':[(d['label'],'negative' if '亏损' in d['label'] else 'positive' if '盈利' in d['label'] else 'muted'),('…' if status=='loading' else str(d['count']),'text'),('…' if status=='loading' else f"{d['rate']:.2f}%" if d['rate'] is not None else '—','text')]} for d in dist]
+     table_y=y
+     panel=distribution_panel(96,y,w,dist,selected=selected,denominator=stats['count'],status=status)
+     body.append(panel.svg);body.append(segments(width-240,table_y+16,['收益率','金额'],mode,192));y=panel.bottom+24
+     if selected:
+@@ -531,13 +549,13 @@
+ 
+ def list_frame(width,height,fixture,kind):
+     sim=kind in ['simulation-list','view-simulation','simulation-return'];state=dict(fixture['navigation']['simulation' if sim else 'live']);view='模拟盘' if sim else '实盘';pending=kind=='pending'
+     if kind=='date':state.update(start=fixture['source']['date'],end=fixture['source']['date'])
+     if kind=='month-list':state.update(start='2026-10-01',end='2026-10-31')
+     title='模拟盘练习' if sim else '实盘交易';subtitle='按保存日期' if sim else '按成交日期'
+-    body=common_chrome(width,height,title,subtitle,state,view);body.append(filter_controls(width,state,view));y=342 if width>1280 else 336
++    body=common_chrome(width,height,title,subtitle,state,view);body.append(filter_controls(width,state,view));y=324 if width>1280 else 318
+     body += [control(96,y,176,'复盘状态','待复盘' if pending else '全部'),text(width-24,y+23,state['sort'],14,'muted',400,'end')];y+=60
+     if sim:
+         rows=[]
+         for e in sorted(fixture['simulation_exercises'],key=lambda e:(e['saved_date'],e['id'])):
+             if not date_between(e['saved_date'],state['start'],state['end']):continue
+             r=lifo_rounds(e);rows.append({'id':e['id'],'cells':[(e['saved_date'],'text'),(e['label'],'text'),(e['symbol']+' · '+e['code'],'text'),(str(len(r['rounds'])),'text'),(str(r['open_quantity']),'muted'),('查看回合 →','blue')]})
+@@ -558,26 +576,26 @@
+     return state,obj,result,rounds
+ 
+ 
+ def rounds_frame(width,height,fixture,kind):
+     live=kind.startswith('live');state,obj,result,rounds=object_state(fixture,live)
+     if kind=='rounds-b':obj=fixture['simulation_exercises'][1];result=lifo_rounds(obj);rounds=result['rounds']
+-    view='实盘' if live else '模拟盘';title=obj['label']+' · 回合集';body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回列表');body.append(filter_controls(width,state,view));y=342
++    view='实盘' if live else '模拟盘';title=obj['label']+' · 回合集';body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回列表');body.append(filter_controls(width,state,view));y=324
+     rows=[{'id':str(i),'cells':[(f'回合 {i}','text'),(r['open_date']+' → '+r['close_date'],'text'),(str(r['quantity']),'text'),(fmt(r['net']),'positive' if r['net']>=0 else 'negative'),('进入复盘 →','blue')]} for i,r in enumerate(rounds,1)]
+     panel=table(96,y,width-120,title,'已闭合回合',[('回合',24,'start'),('开仓 → 平仓',180,'start'),('配对数量',680,'end'),('净盈亏(CNY)',880,'end'),('操作',980,'start')],rows,focus=('2' if kind=='rounds-a-return' else '1') if kind.endswith('return') else None);body.append(panel.svg);y=panel.bottom+24
+     body.append(metric_cards(96,y,width-120,[('闭合净盈亏',fmt(sum(r['net'] for r in rounds))),('已平仓费用',fmt(result['closed_fees'])),('未平仓数量',str(result['open_quantity'])),('留存开仓费用',fmt(result['open_fees']))]));y+=120
+     return document(width,max(height,int(y)),title,body,state,view,'返回列表')
+ 
+ 
+ def replay_frame(width,height,fixture,kind):
+     live=kind=='library-replay';state,obj,result,rounds=object_state(fixture,live);idx=1
+     if kind=='replay-a2':idx=2
+     if kind=='replay-b1':obj=fixture['simulation_exercises'][1];result=lifo_rounds(obj);rounds=result['rounds']
+     rd=rounds[idx-1];view='实盘' if live else '模拟盘';title=obj['label']+f' · 回合 {idx} 复盘'
+     body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回回合集');body.append(filter_controls(width,state,view))
+-    x,y,w=96,342,width-120;h=580
++    x,y,w=96,324,width-120;h=580
+     body += [rect(x,y,w,h),text(x+24,y+34,title,18,'text',600),segments(x+24,y+54,[f'回合 {i}' for i in range(1,len(rounds)+1)],f'回合 {idx}',max(100,len(rounds)*100)),button(x+w-300,y+54,120,'定位开仓'),button(x+w-156,y+54,132,'定位平仓',True)]
+     left,right,top,bottom=x+84,x+w-92,y+130,y+410
+     bars=fixture['chart_samples'][obj['id']]['bars'];lo=min(b['low'] for b in bars);hi=max(b['high'] for b in bars);pad=(hi-lo)*.15;lo-=pad;hi+=pad
+     sy=lambda p:bottom-(p-lo)/(hi-lo)*(bottom-top)
+     sx=lambda day:left+(right-left)*next(i for i,b in enumerate(bars) if b['date']==day)/max(1,len(bars)-1)
+     for value in [lo,(lo+hi)/2,hi]:body += [line(left,sy(value),right,sy(value)),text(right+12,sy(value)+5,f'{value:,.2f}',12,'subtle')]
+@@ -645,12 +663,13 @@
+  '01-live-normal.svg':'live-stats','02-simulation-normal.svg':'simulation-stats','03-distribution-selected.svg':'distribution','04-return.svg':'return-stats',
+  '05-loading.svg':'loading','06-empty.svg':'empty','07-error.svg':'error','08-extreme.svg':'extreme','09-missing-input.svg':'missing',
+  'journeys-date.svg':'date','journeys-date-1280.svg':'date','journeys-date-month.svg':'month-list',
+  'hcr06-final-sim-ab.svg':'simulation-list','hcr06-final-rounds-a.svg':'rounds-a','hcr06-final-replay-a1.svg':'replay-a1','hcr06-final-replay-a2.svg':'replay-a2','hcr06-final-replay-b1.svg':'replay-b1',
+  'journeys-trend-gap.svg':'trend-gap','journeys-trend-single.svg':'trend-single','journeys-trend-empty.svg':'trend-empty','journeys-trend-month.svg':'trend-month','journeys-trend-year.svg':'trend-year',
+  'handoff.svg':'home','journeys-home-entry.svg':'home','journeys-library-list.svg':'live-list','journeys-live-rounds.svg':'live-rounds','journeys-library-replay.svg':'library-replay','journeys-live-rounds-return.svg':'live-rounds-return','journeys-library-list-return.svg':'live-return','journeys-view-restore.svg':'view-restore',
++ 'journeys-library-list-return-1280.svg':'live-return',
+  'hcr06-final-pending-library.svg':'pending','hcr06-final-pending-library-1280.svg':'pending','library-return.svg':'home-return','journeys-library-return.svg':'home-return','hcr06-final-return.svg':'return-stats',
+  'distribution-amount.svg':'amount-stats','journeys-view-simulation.svg':'view-simulation','journeys-simulation-return.svg':'simulation-return','journeys-rounds-a-return.svg':'rounds-a-return','journeys-rounds-b.svg':'rounds-b',
+ }
+ 
+ 
+ def generate(name,fixture):

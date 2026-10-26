@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-24T14:28:05.447685+00:00",
+  "commentRevision": 5,
+  "comments": 5,
+  "mappedRequirements": 17,
+  "openUnclaimedDecisions": 6,
+  "dependencyGraph": "PASS: acyclic, valid parents and dependency links",
+  "frontierTitles": [
+    "账户、练习与完整交易的边界",
+    "统一滑动切换与柔和模式底色"
+  ],
+  "markdownLinks": "PASS: 71 local targets exist",
+  "sourcePreservation": "PASS: all initial source hashes unchanged; live comments equal snapshot",
+  "decisionResolution": "NONE: charting only",
+  "uiAcceptance": "NOT VERIFIED: planning only, no browser interaction or rendered comparison",
+  "databaseAcceptance": "NOT APPLICABLE: documentation-only scope"
+}

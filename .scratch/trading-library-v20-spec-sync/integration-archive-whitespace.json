@@ -1,0 +1,13 @@
+{
+  "rawArchiveDiffCheckExit": 2,
+  "filesWithPreservedWhitespace": [
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/repair-round-2/review-source.diff",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/repair-round-3/review-source.diff",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/repair/review-source.diff",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/revision-10-final-decisions/review-source.diff",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/revision-10-repair/review-source.diff",
+    ".scratch/trading-library-v10-editorial/README.md",
+    ".scratch/trading-library-v10-editorial/evidence/final-preview-ax.txt"
+  ],
+  "reason": "Historical raw review diff/AX evidence retains captured bytes; excluded from editorial whitespace gate."
+}

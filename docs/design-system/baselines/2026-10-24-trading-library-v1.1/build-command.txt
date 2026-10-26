@@ -1,0 +1,2 @@
+python3 source/generate-library-frames.py --all
+python3 build-visual-spec.py --source source/visual-design.candidate.md --version 1.1 --output-dir .

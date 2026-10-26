@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-26T01:54:52.602115+08:00",
+  "checks": {
+    "generation": "PASS: 41 SVG",
+    "metrics": "PASS: 8 tests",
+    "homepageTemplate": "PASS: 5 tests",
+    "oracle": "PASS: independently authored Luna B oracle",
+    "package": "PASS: 130 refs, 89 frozen V1.1 files, 1 comment store",
+    "indexLinks": "PASS: 28 links",
+    "gitDiffCheck": "PASS",
+    "browser": "PASS: fresh V2 load, chapter anchor, original-size modal open/close, canonical spec link and return; console errors/warnings empty",
+    "generatorCounterexamples": "PASS: Luna B direct generator oracle; independently rerun by root",
+    "independentRenderedVisual": "PASS: Luna A viewed 9 final rendered states at 1440/1280 and compared 4 approved E references; root additionally inspected rounds and replay renders"
+  },
+  "sha256": {
+    "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/visual-design.candidate.md": "dd25c5dab416ff1c24b1abd02fdd8212b79ae90eb5456846a7c3e59f751aca43",
+    "docs/design-system/baselines/2026-10-26-trading-library-v2.0/visual-spec.html": "335fe8cb787f7f13602012238bff33bb702acf7980a1a82b000de2d9ddea8e4c",
+    "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/generate-library-frames.py": "d3ad5ffd6a31fb7fa0f9b8bd9573e649d2998c97c9c16fdbd1a50cece8923d09",
+    "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/library-design-fixture.json": "d3a9639acb518a95a94924c568d9b957831679838c8f43c8eb897e967e72951e",
+    "docs/design-system/trading-library-design-spec.md": "99c5c0930395e649a500a105e265e169a88636c7932949aa78bf8659ee39a3a3",
+    "docs/design-system/trading-library-design-spec.html": "eadf2bd624e4955bc3e6275167065150e7a3c45cf38e9d5f5c1ebeb2bf783115"
+  },
+  "screenshots": [
+    "root-evidence/v20-final-reader.png",
+    "root-evidence/v20-final-figure.png",
+    "root-evidence/design-spec-final.png"
+  ],
+  "scope": "Static design documents and reader only; no product implementation or business database writes.",
+  "finalAcceptance": "ACCEPTED: static design documentation only; see FINAL-ACCEPTANCE.md"
+}

@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-24T12:52:40.500Z",
+  "tabId": "17",
+  "states": [
+    {
+      "metrics": 0,
+      "mode": "live",
+      "page": "列表",
+      "rows": 11
+    },
+    {
+      "metrics": 6,
+      "mode": "live",
+      "page": "统计",
+      "rows": 0
+    },
+    {
+      "metrics": 0,
+      "mode": "simulation",
+      "page": "列表",
+      "rows": 6
+    },
+    {
+      "metrics": 8,
+      "mode": "simulation",
+      "page": "统计",
+      "rows": 0
+    }
+  ],
+  "logs": []
+}

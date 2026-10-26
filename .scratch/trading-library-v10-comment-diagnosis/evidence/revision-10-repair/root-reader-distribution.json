@@ -1,0 +1,14 @@
+[
+  {
+    "frame": "切换金额文档演示在同一实盘范围选择金额；分段控件选中金额，五区间按同一5个回合重新分组。评论这张图",
+    "src": "source/images/distribution-amount.svg"
+  },
+  {
+    "frame": "分布下钻文档演示选择盈利大于100区间；高亮该行并在下方展示1个回合，分母仍为5，条件不变。评论这张图",
+    "src": "source/images/03-distribution-selected.svg"
+  },
+  {
+    "frame": "统计视角返回文档演示从该回合复盘返回；金额区间保持选中，局部贵州茅台回合显示触发行焦点。评论这张图",
+    "src": "source/images/04-return.svg"
+  }
+]

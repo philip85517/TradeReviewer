@@ -1,0 +1,47 @@
+{
+  "scope": "V1.1静态设计包与阅读器，非产品实现",
+  "reader": {
+    "title": "交易库视觉设计方案 V1.1",
+    "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-24-trading-library-v1.1/visual-spec.html",
+    "actualDOMViewport": [
+      1280,
+      720
+    ],
+    "checks": [
+      "目录跳转E定型参考",
+      "第1帧→下一步第2帧",
+      "评论抽屉打开关闭",
+      "服务已连接/暂无评论",
+      "冻结图naturalWidth1440且加载完成",
+      "warn/error日志为空"
+    ],
+    "finalReload": "title V1.1, E reference anchor and loaded image confirmed after final generation"
+  },
+  "prototype": {
+    "unchanged": true,
+    "checks": [
+      "实盘列表",
+      "实盘统计",
+      "模拟盘列表",
+      "模拟盘统计"
+    ],
+    "evidence": "screenshots/prototype-*",
+    "limitation": "viewport覆盖的输出像素尺寸与新标签DOM viewport不一致；不以截图像素推定响应式布局已验收"
+  },
+  "frames": {
+    "capture": "真实浏览器SVG 100%自然画布fullPage",
+    "evidence": "screenshots/final-*.jpg",
+    "widths": [
+      1440,
+      1280
+    ],
+    "limitation": "静态分镜对照，不证明产品控制流或自适应实现",
+    "finalPaginationEvidence": "screenshots/accepted-paged-{live-list-1440,return-1280,date-1280}.jpg"
+  },
+  "api": {
+    "documents": 200,
+    "review": 200,
+    "comments": 0,
+    "writes": false
+  }
+}

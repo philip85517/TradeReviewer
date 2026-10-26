@@ -1,0 +1,23 @@
+{
+  "capturedAt": "2026-10-24T01:22:07.044428+08:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "documentFingerprint": "b1d77501a23a272611d85485378cfabaa2cc421d08b0759125fdd38da7f1c147",
+  "files": {
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/review-records/2026-10-22-comment-repair/repair-library-svg.mjs": "54fd8e36a9a8ed0e9a050fe7c209e68b57c356ff37198e6b4a6dddd0e49b16fe",
+    ".scratch/trading-library-v10-editorial/FINAL-ACCEPTANCE.md": "d63cbd883dfb50ac66f899b2f0c6ce38f4b799228efc43abadc84fee426f203c",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/reader-simulation-next.jpg": "a7f9b9b492107d75fbd87ed0a725de8116c5c7025b882f00bfed56181b8344bb",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/journeys-date.jpg": "7a0b81459ac7527a2b560bfc128ca668dde25fbdb40cad2b1da10f861621eaae",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/handoff.jpg": "61e3d5a48ceb4f73a466e1ab7aea22ab960b1b224740150bd3832147732ac4d7",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/reference-home-1440.jpg": "c3079e620d2bf4d0d3ce360f1360d610ec06ddc06dcc8a84e33d8f0b506b32f1",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/simulation-stats.jpg": "f45970cf9aaa8da04589b03acd8e3bfa962af2cd837c1ad49c6ef1bb547ca179",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/sim-list.jpg": "baace1c896e1839f6a5326aa3cad0a62a888877807118d5f575a7f87e389265a",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/reader-handoff-next.jpg": "653b6c26c973ea5610143273647b02e77951e5d5ede308b25ee34f34ed33b596",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/reader-original-size.jpg": "bb91ee3d2a180bac7c00b3668ee7f53ec9a52b45039b4719bbe52a0cf087dc15",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/reader-frame-geometry.json": "c1f9c9a0a91b377a22d026098ef80bccabd4ba9f0d93e78464caa2b0019ce0fb",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/sim-toolbar-geometry.json": "63d37cb09bcf2a583928052117b2eb76654756814c235aeece45736dda48979e",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/browser-checks.json": "4a5d129309a3ee707850549d8ee4a12b15e9558a043e5946ea52cdeaf0dbc833",
+    ".scratch/trading-library-v10-comment-diagnosis/evidence/comments-revision-6.json": "e457079a6cdc207c10dd2f295ba86199648c9b8ffa61a8ed2c380a4ec7756858"
+  }
+}

@@ -1,0 +1,809 @@
+{
+  "comments": [
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-24T13:48:56Z",
+      "documentId": "TRADING-LIBRARY-V11",
+      "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-24T13:48:56Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+      "image": {
+        "chapter": "BT02",
+        "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+        "id": "approved-e-sim-stats-1440",
+        "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+        "src": "source/images/approved-e-sim-stats-1440.jpg"
+      },
+      "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.1"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-24T13:53:47Z",
+      "documentId": "TRADING-LIBRARY-V11",
+      "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-24T13:53:47Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-feff887300194312b9bdc1d89a8caba0",
+      "image": {
+        "chapter": "BT03",
+        "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+        "id": "journeys-date",
+        "occurrenceId": "journeys-date@state-demo-2-1",
+        "src": "source/images/journeys-date.svg"
+      },
+      "opinion": "图表中的，需要能按照“成交日期” 进行降序/生序排序；\n\n筛选时包含有“已复盘，未复盘”的概念\n\n记录可以有一个很浅的底色，能够将已复盘和未复盘的区分开来；\n\n买入/卖出需要有类似状态的颜色\n\n表格的间距不合理，需要有规范来进行约束，并合理视觉布局；\n\n这里的标的样例没有使用美股，建议也只显示美股的缩写，悬浮之后能显示股票的全称\n\n实盘/模拟盘的按钮，最好是类似正负开关的方式，类似iphone的划开效果",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.1"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-24T13:54:27Z",
+      "documentId": "TRADING-LIBRARY-V11",
+      "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-24T13:54:27Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-78729b543f764799b5cf2aef6b238611",
+      "image": {
+        "chapter": "BT03",
+        "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+        "id": "journeys-date",
+        "occurrenceId": "journeys-date@state-demo-2-1",
+        "src": "source/images/journeys-date.svg"
+      },
+      "opinion": "整体的区分底色，看下是否有其他方案，比如更柔和切换的底色；边缘的渐变色提示等等",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.1"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-24T14:20:42Z",
+      "documentId": "TRADING-LIBRARY-V11",
+      "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-24T14:20:42Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-d1dfdc86adc743c29bd056038ee0ef99",
+      "image": {
+        "chapter": "BT04",
+        "fingerprint": "c24a02bf53fac4a5d08cdc2979372a1e702618f16a23e19d795d5b4c7f1f27e7",
+        "id": "hcr06-final-rounds-a",
+        "occurrenceId": "hcr06-final-rounds-a@state-demo-3-2",
+        "src": "source/images/hcr06-final-rounds-a.svg"
+      },
+      "opinion": "1）这里的回合1，回合2，应该是“标的名+练习日“，练习日一般包含在文件名中，标的id号也包含在文件名中\n比如20260926练习了这个回合\n2） 这里的开仓-》平仓，应当是”练习交易区间，是个时间段，在交易记录里有”，例如练习的是 2022年1月1日到2023年12月12日\n3）配对数量我们就说完整交易量（完整交易量我们认为是开仓之后，到完整平仓的集合）\n\n其中的表单头部的标题间隔也需要有标准规范，不然离开的太远了",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.1"
+    },
+    {
+      "actor": {
+        "name": "Lin Zhou",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-24T14:21:29Z",
+      "documentId": "TRADING-LIBRARY-V11",
+      "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "Lin Zhou",
+            "role": "commenter"
+          },
+          "at": "2026-10-24T14:21:29Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-f369091e0dc04e11a992e2dc6359e163",
+      "image": {
+        "chapter": "BT05",
+        "fingerprint": "df942ed6cf7734afb2a2ad3591f208c08da5bb244ba89f84675c88f1c501ff84",
+        "id": "02-simulation-normal",
+        "occurrenceId": "02-simulation-normal@state-demo-5-1",
+        "src": "source/images/02-simulation-normal.svg"
+      },
+      "opinion": "收益分布这边的标题单词与右侧的间隔规范需要规范\n\n收益率和金额我也想用统一的较小一些的切换滑动按钮",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.1"
+    }
+  ],
+  "documentId": "TRADING-LIBRARY-V11",
+  "operations": {
+    "112e56b1-91ce-4166-9680-14d52eed8645": {
+      "commentId": "comment-d1dfdc86adc743c29bd056038ee0ef99",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:48:56Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:48:56Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+            "image": {
+              "chapter": "BT02",
+              "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+              "id": "approved-e-sim-stats-1440",
+              "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+              "src": "source/images/approved-e-sim-stats-1440.jpg"
+            },
+            "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:53:47Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:53:47Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-feff887300194312b9bdc1d89a8caba0",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "图表中的，需要能按照“成交日期” 进行降序/生序排序；\n\n筛选时包含有“已复盘，未复盘”的概念\n\n记录可以有一个很浅的底色，能够将已复盘和未复盘的区分开来；\n\n买入/卖出需要有类似状态的颜色\n\n表格的间距不合理，需要有规范来进行约束，并合理视觉布局；\n\n这里的标的样例没有使用美股，建议也只显示美股的缩写，悬浮之后能显示股票的全称\n\n实盘/模拟盘的按钮，最好是类似正负开关的方式，类似iphone的划开效果",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:54:27Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:54:27Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-78729b543f764799b5cf2aef6b238611",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "整体的区分底色，看下是否有其他方案，比如更柔和切换的底色；边缘的渐变色提示等等",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T14:20:42Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T14:20:42Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1dfdc86adc743c29bd056038ee0ef99",
+            "image": {
+              "chapter": "BT04",
+              "fingerprint": "c24a02bf53fac4a5d08cdc2979372a1e702618f16a23e19d795d5b4c7f1f27e7",
+              "id": "hcr06-final-rounds-a",
+              "occurrenceId": "hcr06-final-rounds-a@state-demo-3-2",
+              "src": "source/images/hcr06-final-rounds-a.svg"
+            },
+            "opinion": "1）这里的回合1，回合2，应该是“标的名+练习日“，练习日一般包含在文件名中，标的id号也包含在文件名中\n比如20260926练习了这个回合\n2） 这里的开仓-》平仓，应当是”练习交易区间，是个时间段，在交易记录里有”，例如练习的是 2022年1月1日到2023年12月12日\n3）配对数量我们就说完整交易量（完整交易量我们认为是开仓之后，到完整平仓的集合）\n\n其中的表单头部的标题间隔也需要有标准规范，不然离开的太远了",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          }
+        ],
+        "revision": 4,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 4
+    },
+    "1a62793c-aed9-4d42-bb24-946f92e8dd85": {
+      "commentId": "comment-78729b543f764799b5cf2aef6b238611",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:48:56Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:48:56Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+            "image": {
+              "chapter": "BT02",
+              "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+              "id": "approved-e-sim-stats-1440",
+              "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+              "src": "source/images/approved-e-sim-stats-1440.jpg"
+            },
+            "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:53:47Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:53:47Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-feff887300194312b9bdc1d89a8caba0",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "图表中的，需要能按照“成交日期” 进行降序/生序排序；\n\n筛选时包含有“已复盘，未复盘”的概念\n\n记录可以有一个很浅的底色，能够将已复盘和未复盘的区分开来；\n\n买入/卖出需要有类似状态的颜色\n\n表格的间距不合理，需要有规范来进行约束，并合理视觉布局；\n\n这里的标的样例没有使用美股，建议也只显示美股的缩写，悬浮之后能显示股票的全称\n\n实盘/模拟盘的按钮，最好是类似正负开关的方式，类似iphone的划开效果",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:54:27Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:54:27Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-78729b543f764799b5cf2aef6b238611",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "整体的区分底色，看下是否有其他方案，比如更柔和切换的底色；边缘的渐变色提示等等",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          }
+        ],
+        "revision": 3,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 3
+    },
+    "27fae4c6-2efc-4fad-ae41-21aff22ac868": {
+      "commentId": "comment-f369091e0dc04e11a992e2dc6359e163",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:48:56Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:48:56Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+            "image": {
+              "chapter": "BT02",
+              "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+              "id": "approved-e-sim-stats-1440",
+              "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+              "src": "source/images/approved-e-sim-stats-1440.jpg"
+            },
+            "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:53:47Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:53:47Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-feff887300194312b9bdc1d89a8caba0",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "图表中的，需要能按照“成交日期” 进行降序/生序排序；\n\n筛选时包含有“已复盘，未复盘”的概念\n\n记录可以有一个很浅的底色，能够将已复盘和未复盘的区分开来；\n\n买入/卖出需要有类似状态的颜色\n\n表格的间距不合理，需要有规范来进行约束，并合理视觉布局；\n\n这里的标的样例没有使用美股，建议也只显示美股的缩写，悬浮之后能显示股票的全称\n\n实盘/模拟盘的按钮，最好是类似正负开关的方式，类似iphone的划开效果",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:54:27Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:54:27Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-78729b543f764799b5cf2aef6b238611",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "整体的区分底色，看下是否有其他方案，比如更柔和切换的底色；边缘的渐变色提示等等",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T14:20:42Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T14:20:42Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1dfdc86adc743c29bd056038ee0ef99",
+            "image": {
+              "chapter": "BT04",
+              "fingerprint": "c24a02bf53fac4a5d08cdc2979372a1e702618f16a23e19d795d5b4c7f1f27e7",
+              "id": "hcr06-final-rounds-a",
+              "occurrenceId": "hcr06-final-rounds-a@state-demo-3-2",
+              "src": "source/images/hcr06-final-rounds-a.svg"
+            },
+            "opinion": "1）这里的回合1，回合2，应该是“标的名+练习日“，练习日一般包含在文件名中，标的id号也包含在文件名中\n比如20260926练习了这个回合\n2） 这里的开仓-》平仓，应当是”练习交易区间，是个时间段，在交易记录里有”，例如练习的是 2022年1月1日到2023年12月12日\n3）配对数量我们就说完整交易量（完整交易量我们认为是开仓之后，到完整平仓的集合）\n\n其中的表单头部的标题间隔也需要有标准规范，不然离开的太远了",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T14:21:29Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T14:21:29Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-f369091e0dc04e11a992e2dc6359e163",
+            "image": {
+              "chapter": "BT05",
+              "fingerprint": "df942ed6cf7734afb2a2ad3591f208c08da5bb244ba89f84675c88f1c501ff84",
+              "id": "02-simulation-normal",
+              "occurrenceId": "02-simulation-normal@state-demo-5-1",
+              "src": "source/images/02-simulation-normal.svg"
+            },
+            "opinion": "收益分布这边的标题单词与右侧的间隔规范需要规范\n\n收益率和金额我也想用统一的较小一些的切换滑动按钮",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          }
+        ],
+        "revision": 5,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 5
+    },
+    "398c677b-c857-417d-a371-2cdc1734665a": {
+      "commentId": "comment-feff887300194312b9bdc1d89a8caba0",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:48:56Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:48:56Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+            "image": {
+              "chapter": "BT02",
+              "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+              "id": "approved-e-sim-stats-1440",
+              "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+              "src": "source/images/approved-e-sim-stats-1440.jpg"
+            },
+            "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          },
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:53:47Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:53:47Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-feff887300194312b9bdc1d89a8caba0",
+            "image": {
+              "chapter": "BT03",
+              "fingerprint": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+              "id": "journeys-date",
+              "occurrenceId": "journeys-date@state-demo-2-1",
+              "src": "source/images/journeys-date.svg"
+            },
+            "opinion": "图表中的，需要能按照“成交日期” 进行降序/生序排序；\n\n筛选时包含有“已复盘，未复盘”的概念\n\n记录可以有一个很浅的底色，能够将已复盘和未复盘的区分开来；\n\n买入/卖出需要有类似状态的颜色\n\n表格的间距不合理，需要有规范来进行约束，并合理视觉布局；\n\n这里的标的样例没有使用美股，建议也只显示美股的缩写，悬浮之后能显示股票的全称\n\n实盘/模拟盘的按钮，最好是类似正负开关的方式，类似iphone的划开效果",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          }
+        ],
+        "revision": 2,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 2
+    },
+    "a557dc29-aee3-4104-8e40-809240fe357b": {
+      "commentId": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "Lin Zhou",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-24T13:48:56Z",
+            "documentId": "TRADING-LIBRARY-V11",
+            "fingerprint": "8044415e3d830de333abd8d3cd334803a9d7c87b92e12ddb1f87b09b10e2f982",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "Lin Zhou",
+                  "role": "commenter"
+                },
+                "at": "2026-10-24T13:48:56Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-d1f625046bf84bffa4d2d8105a230e6f",
+            "image": {
+              "chapter": "BT02",
+              "fingerprint": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+              "id": "approved-e-sim-stats-1440",
+              "occurrenceId": "approved-e-sim-stats-1440@state-demo-1-4",
+              "src": "source/images/approved-e-sim-stats-1440.jpg"
+            },
+            "opinion": "1）模拟练习身份*不显示实盘账户\n这里的描述可以统一为模拟盘账户\n\n2）市场选项中，需要确保全部/A股/港股/美股均可选，需要有类似下拉框的组件效果\n\n3）账户/身份中也需要有下拉效果，下拉略缩的规范可以参考V2.5中相关组件",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.1"
+          }
+        ],
+        "revision": 1,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 1
+    }
+  },
+  "revision": 5,
+  "storeVersion": 1
+}

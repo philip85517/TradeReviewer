@@ -1,0 +1,1587 @@
+--- before/navigation-options.html
++++ current/navigation-options.html
+@@ -0,0 +1,348 @@
++<!doctype html>
++<html lang="zh-CN">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <title>C07 · 交易库导航布局比较</title>
++  <style>
++    :root {
++      color-scheme: dark;
++      --candidate-bar-height: 72px;
++      --bg: #0b1019;
++      --surface: #111a26;
++      --surface-2: #162233;
++      --surface-3: #1b2b41;
++      --border: #283448;
++      --border-strong: #466b9b;
++      --text: #e6edf7;
++      --muted: #a8b6cb;
++      --quiet: #71829b;
++      --blue: #6ca8ff;
++      --blue-strong: #8cbcff;
++      --green: #53d7a0;
++      --red: #ff8592;
++      --candidate: #caa7ff;
++      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
++      font-variant-numeric: tabular-nums;
++    }
++    * { box-sizing: border-box; }
++    html { background: var(--bg); }
++    body { margin: 0; min-width: 1120px; color: var(--text); background: var(--bg); font-size: 14px; line-height: 1.45; }
++    button, select { font: inherit; }
++    button:focus-visible, select:focus-visible { outline: 2px solid var(--blue-strong); outline-offset: 2px; }
++    .candidate-bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; flex-wrap: nowrap; gap: 18px; height: 72px; min-height: 72px; padding: 10px 24px; color: var(--text); background: #171327; border-bottom: 1px solid #443561; box-shadow: 0 8px 24px rgba(0,0,0,.22); }
++    .candidate-brand { flex: 0 0 178px; min-width: 178px; }
++    .candidate-eyebrow { margin: 0 0 2px; color: var(--candidate); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
++    .candidate-title { margin: 0; font-size: 16px; font-weight: 650; }
++    .candidate-note { flex: 1 1 auto; min-width: 0; margin: 0 auto 0 0; max-width: 400px; color: #bdb1d2; font-size: 12px; }
++    .candidate-field { display: grid; flex: 0 0 148px; gap: 3px; min-width: 148px; color: #cbbde0; font-size: 11px; }
++    .candidate-field.scheme-field { flex-basis: 220px; min-width: 220px; }
++    .candidate-field select { min-height: 36px; padding: 5px 10px; color: var(--text); background: #211b34; border: 1px solid #5c487f; border-radius: 7px; }
++    .scheme-picker { display: inline-flex; gap: 4px; padding: 3px; background: #211b34; border: 1px solid #5c487f; border-radius: 8px; }
++    .scheme-picker button { flex: 0 0 68px; width: 68px; min-height: 30px; min-width: 0; padding: 3px 6px; color: #cbbde0; background: transparent; border: 0; border-radius: 5px; cursor: pointer; white-space: nowrap; }
++    .scheme-picker button[aria-checked="true"] { color: #1c1530; background: var(--candidate); font-weight: 700; }
++    .candidate-status { flex: 0 1 auto; min-width: 0; margin-left: auto; overflow: hidden; color: var(--candidate); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
++    .product-shell { min-height: calc(100vh - var(--candidate-bar-height, 72px)); }
++    .global-nav { position: fixed; inset: var(--candidate-bar-height, 72px) auto 0 0; z-index: 10; display: flex; width: 72px; flex-direction: column; align-items: center; padding: 16px 8px; background: #111a26; border-right: 1px solid var(--border); }
++    .brand { margin: 0 0 28px; color: var(--blue); font-size: 20px; font-weight: 750; letter-spacing: -.04em; }
++    .nav-list { display: grid; gap: 8px; width: 100%; margin: 0; padding: 0; list-style: none; }
++    .nav-item { display: grid; min-height: 56px; place-items: center; padding: 6px 2px; color: var(--muted); border-radius: 8px; font-size: 11px; text-decoration: none; }
++    .nav-item span:first-child { display: grid; width: 26px; height: 26px; place-items: center; margin-bottom: 2px; color: currentColor; font-size: 17px; }
++    .nav-item.active { color: var(--blue); background: var(--surface-2); }
++    .nav-footer { margin-top: auto; width: 40px; padding-top: 12px; color: var(--quiet); border-top: 1px solid var(--border); text-align: center; font-size: 10px; }
++    .topbar { height: 64px; margin-left: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
++    .topbar h1 { margin: 0; font-size: 24px; line-height: 1; font-weight: 650; }
++    .topbar-right { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 12px; }
++    .topbar-link { padding: 8px 20px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; }
++    .page { width: min(calc(100% - 72px), 1368px); margin-left: 72px; padding: 22px 24px 64px; }
++    .page-header { display: grid; gap: 4px; margin-bottom: 18px; }
++    .crumb { color: var(--muted); font-size: 12px; }
++    .heading-line { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
++    .heading h2 { margin: 0; font-size: 24px; line-height: 1.3; font-weight: 650; }
++    .heading p { margin: 2px 0 0; color: var(--muted); }
++    .condition-summary { max-width: 430px; padding-top: 4px; color: var(--muted); font-size: 12px; text-align: right; }
++    .condition-summary strong { display: block; margin-bottom: 2px; color: var(--blue); font-weight: 650; }
++    .mode-block { margin-bottom: 16px; }
++    .mode-label { margin: 0 0 6px; color: var(--muted); font-size: 12px; }
++    .mode-slider { position: relative; display: inline-grid; grid-template-columns: repeat(2, minmax(96px, 1fr)); min-width: 210px; padding: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
++    .mode-slider::before { position: absolute; inset: 3px auto 3px 3px; width: calc(50% - 3px); content: ""; background: var(--surface-3); border: 1px solid var(--blue); border-radius: 6px; transition: transform .18s ease; }
++    .mode-slider[data-mode="simulation"]::before { transform: translateX(100%); }
++    .mode-slider button { position: relative; z-index: 1; width: 100%; min-height: 36px; padding: 5px 16px; color: var(--text); background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: center; }
++    .mode-slider button[aria-checked="true"] { color: var(--blue-strong); font-weight: 650; }
++    .page-tabs { display: inline-flex; gap: 22px; min-height: 36px; border-bottom: 1px solid var(--border); }
++    .page-tabs button { position: relative; min-width: 62px; min-height: 36px; padding: 4px 4px 8px; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
++    .page-tabs button::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; content: ""; background: transparent; }
++    .page-tabs button[aria-selected="true"] { color: var(--blue-strong); font-weight: 650; }
++    .page-tabs button[aria-selected="true"]::after { background: var(--blue); }
++    .condition-tools { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 18px 0 20px; }
++    .condition-tools-left { display: flex; align-items: end; flex-wrap: wrap; gap: 14px 22px; }
++    .field { display: grid; gap: 5px; }
++    .field > span { color: var(--muted); font-size: 12px; }
++    .field select, .field-value { min-width: 150px; min-height: 36px; padding: 6px 10px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
++    .field select { cursor: pointer; }
++    .field.date select { min-width: 302px; }
++    .account-note { color: var(--quiet); font-size: 12px; }
++    .state-message { display: grid; min-height: 460px; place-items: center; padding: 48px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 9px; text-align: center; }
++    .state-message strong { display: block; margin-bottom: 8px; color: var(--text); font-size: 18px; }
++    .state-message p { max-width: 500px; margin: 0; }
++    .loading-stack { display: grid; gap: 14px; width: 100%; }
++    .skeleton { height: 64px; border-radius: 8px; background: linear-gradient(90deg, var(--surface-2), #1b2a3e, var(--surface-2)); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
++    @keyframes shimmer { to { background-position: -200% 0; } }
++    .cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
++    .simulation-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
++    .metric-card { min-height: 96px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
++    .metric-card .label { display: block; color: var(--muted); font-size: 12px; }
++    .metric-card .value { display: block; margin-top: 10px; color: var(--text); font-size: 28px; line-height: 1; font-weight: 650; }
++    .panel { margin-top: 18px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
++    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
++    .panel h3 { margin: 0; font-size: 18px; line-height: 1.3; }
++    .panel-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
++    .trend { height: 222px; margin-top: 18px; padding: 8px 8px 0; }
++    .trend-chart-wrap { height: 204px; }
++    .trend-chart { display: block; width: 100%; height: 174px; overflow: visible; }
++    .trend-chart .trend-line { fill: none; stroke: var(--blue); stroke-width: 1.7; vector-effect: non-scaling-stroke; }
++    .trend-chart .trend-zero { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; vector-effect: non-scaling-stroke; }
++    .trend-chart .trend-dot { stroke: var(--blue-strong); stroke-width: 4.4; stroke-linecap: round; vector-effect: non-scaling-stroke; }
++    .trend-labels { position: relative; height: 17px; margin-top: 3px; color: var(--quiet); font-size: 11px; text-align: center; }
++    .trend-labels span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
++    .stats-note { margin: -6px 0 18px; padding: 14px 18px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; }
++    .stats-note strong { margin-right: 10px; color: var(--text); }
++    .distribution { margin-top: 18px; }
++    .measure-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 7px; }
++    .measure-toggle button { min-height: 30px; padding: 3px 14px; color: var(--muted); background: transparent; border: 0; border-radius: 5px; cursor: pointer; }
++    .measure-toggle button[aria-pressed="true"] { color: var(--blue-strong); background: #1e3552; font-weight: 650; }
++    .dist-head, .dist-row { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(160px, 3fr) 72px 80px; align-items: center; gap: 16px; }
++    .dist-head { margin-top: 18px; padding-bottom: 10px; color: var(--muted); border-bottom: 1px solid var(--border); font-size: 12px; }
++    .dist-row { min-height: 52px; border-bottom: 1px solid rgba(40,52,72,.8); }
++    .dist-label.loss { color: var(--red); }
++    .dist-label.win { color: var(--green); }
++    .dist-bar-track { height: 8px; overflow: hidden; background: #202c3e; border-radius: 5px; }
++    .dist-bar { display: block; height: 100%; border-radius: 5px; background: var(--blue); }
++    .dist-bar.loss { background: var(--red); }
++    .dist-bar.win { background: var(--green); }
++    .align-right { text-align: right; }
++    .table-wrap { overflow-x: auto; }
++    .trade-table { width: 100%; border-collapse: collapse; }
++    .trade-table th, .trade-table td { padding: 13px 12px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
++    .trade-table th { color: var(--muted); font-size: 12px; font-weight: 500; }
++    .trade-table td { color: var(--text); }
++    .trade-table td.numeric, .trade-table th.numeric { text-align: right; }
++    .tag { display: inline-flex; min-height: 24px; align-items: center; padding: 2px 8px; border-radius: 99px; color: var(--muted); background: var(--surface-2); font-size: 12px; }
++    .tag.reviewed { color: var(--green); }
++    .tag.pending { color: #e7bd75; }
++    .scheme-a .page-header { margin-bottom: 16px; }
++    .scheme-a .mode-block { order: 0; }
++    .scheme-a .heading-line { margin-bottom: 13px; }
++    .scheme-a .page-tabs { margin-top: 0; }
++    .scheme-b .heading-line { align-items: center; }
++    .scheme-b .heading-line .condition-summary { display: flex; align-items: center; gap: 16px; max-width: none; text-align: right; }
++    .scheme-b .condition-summary strong { margin: 0; }
++    .scheme-b .page-header { margin-bottom: 15px; }
++    .scheme-b .heading-line::after { content: ""; order: 2; }
++    .scheme-b .heading-line .heading { flex: 1; }
++    .scheme-b .heading-line .condition-summary { flex: 0 0 auto; }
++    .scheme-b .mode-block { margin-bottom: 12px; }
++    .scheme-b .mode-label { display: none; }
++    .scheme-b .page-tabs { align-self: end; margin-left: 14px; }
++    .scheme-c .mode-block { margin: 0 -24px 22px; padding: 14px 24px 16px; background: #101d2e; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
++    .scheme-c .mode-slider { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
++    .scheme-c .heading-line { align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
++    .scheme-c .condition-summary { max-width: 520px; padding-top: 0; }
++    .scheme-c .page-tabs { margin-top: 17px; }
++    .scheme-c .page-header { margin-bottom: 15px; }
++    @media (max-width: 1240px) {
++      body { min-width: 960px; }
++      .page { padding-left: 24px; padding-right: 24px; }
++      .cards, .simulation-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
++      .candidate-note { display: none; }
++      .dist-head, .dist-row { grid-template-columns: minmax(160px, 1fr) minmax(130px, 2fr) 66px 76px; }
++    }
++    @media (prefers-reduced-motion: reduce) {
++      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
++    }
++  </style>
++</head>
++<body>
++  <aside class="candidate-bar" aria-label="C07 比较稿控制台">
++    <div class="candidate-brand"><p class="candidate-eyebrow">C07 · candidate</p><p class="candidate-title">交易库导航布局比较</p></div>
++    <p class="candidate-note">仅用于比较信息层级；下方内容是同一份交易库样例的三种排布。</p>
++    <div class="candidate-field scheme-field"><span>方案</span><div id="scheme-picker" class="scheme-picker" role="radiogroup" aria-label="选择布局方案"></div></div>
++    <label class="candidate-field">预览状态<select id="preview-select" aria-label="预览状态"><option value="normal">正常</option><option value="loading">加载中</option><option value="empty">空结果</option><option value="error">错误</option></select></label>
++    <span id="candidate-status" class="candidate-status" aria-live="polite"></span>
++  </aside>
++
++  <div id="product" class="product-shell scheme-a">
++    <nav class="global-nav" aria-label="应用导航">
++      <div class="brand">TR</div>
++      <ul class="nav-list">
++        <li><span class="nav-item"><span>⌂</span><span>首页</span></span></li>
++        <li><span class="nav-item active"><span>▤</span><span>交易库</span></span></li>
++        <li><span class="nav-item"><span>⌁</span><span>分析</span></span></li>
++        <li><span class="nav-item"><span>◫</span><span>数据</span></span></li>
++        <li><span class="nav-item"><span>↳</span><span>策略</span></span></li>
++      </ul>
++      <div class="nav-footer">账户</div>
++    </nav>
++    <header class="topbar"><h1>交易库</h1><div class="topbar-right"><span>来源 · 首页</span><span class="topbar-link">返回首页</span></div></header>
++    <main class="page" id="page-root"></main>
++  </div>
++
++  <script>
++    (() => {
++      const data = {
++        live: {
++          name: '实盘', title: '实盘交易', subtitle: '有效已平仓回合 · CNY', account: '全部账户', dateLabel: '平仓日期', fixture: '2026-10-01 至 2026-10-15', longRange: '2026-10-01 至 2026-10-31 · 扩展范围',
++          metrics: [['有效回合','5'],['累计净盈亏','747.14'],['胜率','60.00%'],['平均盈利','351.88'],['平均亏损','-154.25'],['费用（已扣除）','22.86']],
++          trend: [['10-03',48],['10-05',-4],['10-07',905.64],['10-09',1003.64],['10-12',747.14]],
++          distribution: [['亏损 > 5%',1,'loss','20.00%'],['亏损 0–5%',1,'loss','20.00%'],['持平',0,'','0.00%'],['盈利 0–5%',2,'win','40.00%'],['盈利 > 5%',1,'win','20.00%']],
++          distributionAmount: [['亏损 > 100',1,'loss','20.00%'],['亏损 0–100',1,'loss','20.00%'],['持平',0,'','0.00%'],['盈利 0–100',2,'win','40.00%'],['盈利 > 100',1,'win','20.00%']],
++          rows: [
++            ['2026-10-02','招商银行','600036','买入','10','100.00','1.00','已复盘'],['2026-10-03','招商银行','600036','卖出','10','105.00','1.00','已复盘'],
++            ['2026-10-03','贵州茅台','600519','买入','100','1712.00','8.56','待复盘'],['2026-10-04','平安银行','000001','买入','10','100.00','1.00','已复盘'],
++            ['2026-10-05','平安银行','000001','卖出','10','95.00','1.00','已复盘'],['2026-10-07','贵州茅台','600519','卖出','40','1735.00','6.94','待复盘'],
++            ['2026-10-08','立讯精密','002475','买入','10','100.00','1.00','已复盘'],['2026-10-09','立讯精密','002475','卖出','10','110.00','1.00','已复盘'],
++            ['2026-10-09','宁德时代','300750','买入','50','219.00','3.29','已复盘'],['2026-10-12','宁德时代','300750','卖出','50','214.00','3.21','待复盘'],['2026-10-15','中芯国际','688981','买入','80','92.00','2.95','已复盘']
++          ]
++        },
++        simulation: {
++          name: '模拟盘', title: '模拟盘练习', subtitle: '有效已平仓回合 · CNY', account: '模拟练习身份 · 不显示实盘账户', dateLabel: '保存日期', fixture: '2026-10-15 至 2026-10-19', longRange: '2026-10-01 至 2026-10-31 · 扩展范围',
++          metrics: [['有效回合','7'],['累计净盈亏','2,272.00'],['总体胜率','71.43%'],['费用（已扣除）','33.00'],['做多胜率 · 5/7 样本','71.43%'],['做空胜率 · 无样本','—'],['平均盈利','490.80'],['平均亏损','-91.00']],
++          trend: [['10-15',1982],['10-16',2336],['10-17',2258],['10-18',2154],['10-19',2272]],
++          distribution: [['亏损 > 5%',0,'loss','0.00%'],['亏损 0–5%',2,'loss','28.57%'],['持平',0,'','0.00%'],['盈利 0–5%',1,'win','14.29%'],['盈利 > 5%',4,'win','57.14%']],
++          distributionAmount: [['亏损 > 100',1,'loss','14.29%'],['亏损 0–100',1,'loss','14.29%'],['持平',0,'','0.00%'],['盈利 0–100',1,'win','14.29%'],['盈利 > 100',4,'win','57.14%']],
++          exercises: [
++            ['2026-10-15','练习 A','贵州茅台','600519','3','2','70'],['2026-10-15','练习 E','贵州茅台','600519','2','1','0'],['2026-10-16','练习 C','平安银行','000001','2','1','0'],['2026-10-17','练习 D','宁德时代','300750','2','1','0'],['2026-10-18','练习 B','贵州茅台','600519','2','1','0'],['2026-10-19','练习 F','招商银行','600036','2','1','0']
++          ]
++        }
++      };
++      const state = { scheme: 'A', mode: 'live', preview: 'normal', measure: 'rate', tabByMode: { live: 'list', simulation: 'stats' }, rangeByMode: { live: 'fixture', simulation: 'fixture' } };
++      const candidateBar = document.querySelector('.candidate-bar');
++      const product = document.getElementById('product');
++      const root = document.getElementById('page-root');
++      const schemePicker = document.getElementById('scheme-picker');
++      const previewSelect = document.getElementById('preview-select');
++      const candidateStatus = document.getElementById('candidate-status');
++
++      const schemeMeta = { A: '纵向分层 · 模式 → 标题摘要 → Tab → 条件', B: '紧凑两层 · 模式 → 标题/摘要/Tab', C: '通栏模式带 · 模式 → 标题摘要分列 → Tab' };
++      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
++      const syncCandidateBarHeight = () => {
++        if (candidateBar) document.documentElement.style.setProperty('--candidate-bar-height', `${candidateBar.getBoundingClientRect().height}px`);
++      };
++      syncCandidateBarHeight();
++      if (candidateBar && typeof ResizeObserver !== 'undefined') new ResizeObserver(syncCandidateBarHeight).observe(candidateBar);
++      const current = () => data[state.mode];
++      const rangeText = () => current()[state.rangeByMode[state.mode] === 'long' ? 'longRange' : 'fixture'];
++      const accountText = () => state.mode === 'live' ? current().account : '模拟练习不绑定实盘账户';
++      const viewTitle = () => state.tabByMode[state.mode] === 'stats' ? (state.mode === 'simulation' ? '模拟盘统计' : '实盘统计') : current().title;
++      const viewDateLabel = () => state.tabByMode[state.mode] === 'list' ? (state.mode === 'live' ? '成交日期' : '保存日期') : current().dateLabel;
++      const viewSubtitle = () => state.tabByMode[state.mode] === 'list' ? (state.mode === 'live' ? '成交记录 · CNY' : '练习记录 · CNY') : current().subtitle;
++      const conditionSummary = () => `${rangeText()} · 全部市场${state.mode === 'live' ? ` · ${accountText()}` : ''}`;
++
++      function renderSchemePicker() {
++        schemePicker.innerHTML = Object.keys(schemeMeta).map((scheme) => `<button id="c07-scheme-${scheme.toLowerCase()}" type="button" role="radio" aria-checked="${scheme === state.scheme}" data-scheme="${scheme}" title="${schemeMeta[scheme]}">方案 ${scheme}</button>`).join('');
++      }
++      function renderModeSlider() {
++        return `<div class="mode-block"><p class="mode-label">视角</p><div id="c07-mode-slider" class="mode-slider" data-mode="${state.mode}" role="radiogroup" aria-label="交易库视角"><button id="c07-mode-live" type="button" role="radio" aria-checked="${state.mode === 'live'}" data-mode="live">实盘</button><button id="c07-mode-simulation" type="button" role="radio" aria-checked="${state.mode === 'simulation'}" data-mode="simulation">模拟盘</button></div></div>`;
++      }
++      function renderTabs() {
++        const tab = state.tabByMode[state.mode];
++        return `<div id="c07-page-tabs" class="page-tabs" role="tablist" aria-label="交易库页面"><button id="c07-tab-list" type="button" role="tab" aria-selected="${tab === 'list'}" data-tab="list">列表</button><button id="c07-tab-stats" type="button" role="tab" aria-selected="${tab === 'stats'}" data-tab="stats">统计</button></div>`;
++      }
++      function renderHeader() {
++        const tab = state.tabByMode[state.mode];
++        const tabs = renderTabs();
++        const mode = renderModeSlider();
++        if (state.scheme === 'B') {
++          return `${mode}<div class="page-header"><div class="heading-line"><div class="heading"><div class="crumb">首页 / 交易库</div><h2>${viewTitle()}</h2><p>${viewSubtitle()}</p></div><div class="condition-summary"><strong>已应用条件</strong><span>${conditionSummary()}</span>${tabs}</div></div></div>`;
++        }
++        if (state.scheme === 'C') {
++          return `${mode}<div class="page-header"><div class="heading-line"><div class="heading"><div class="crumb">首页 / 交易库</div><h2>${viewTitle()}</h2><p>${viewSubtitle()}</p></div><div class="condition-summary"><strong>已应用条件</strong><span>${conditionSummary()}</span></div></div>${tabs}</div>`;
++        }
++        return `${mode}<div class="page-header"><div class="heading-line"><div class="heading"><div class="crumb">首页 / 交易库</div><h2>${viewTitle()}</h2><p>${viewSubtitle()}</p></div><div class="condition-summary"><strong>已应用条件</strong><span>${conditionSummary()}</span></div></div>${tabs}</div>`;
++      }
++      function renderTools() {
++        const range = state.rangeByMode[state.mode];
++        return `<section id="c07-condition-tools" class="condition-tools" aria-label="当前条件"><div class="condition-tools-left"><label class="field date"><span>${viewDateLabel()}</span><select id="c07-date-range" aria-label="${viewDateLabel()}"><option value="fixture" ${range === 'fixture' ? 'selected' : ''}>${current().fixture}</option><option value="long" ${range === 'long' ? 'selected' : ''}>${current().longRange}</option></select></label><div class="field"><span>市场</span><div class="field-value">全部市场</div></div>${state.mode === 'live' ? `<div id="c07-account-live" class="field"><span>账户</span><div class="field-value">全部账户</div></div>` : `<p id="c07-account-simulation-note" class="account-note">模拟盘：按练习身份统计，账户条件不适用</p>`}</div><div class="account-note">范围切换仅为比较稿演示 · 重新加载会重置</div></section>`;
++      }
++      function updateModeControl(modeBlock) {
++        const slider = modeBlock && modeBlock.querySelector('#c07-mode-slider');
++        if (!slider) return;
++        slider.dataset.mode = state.mode;
++        slider.querySelectorAll('[data-mode]').forEach((button) => {
++          button.setAttribute('aria-checked', String(button.dataset.mode === state.mode));
++        });
++      }
++      function restoreFocus(id) {
++        if (!id) return;
++        const target = document.getElementById(id);
++        if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
++      }
++      function renderPreviewState() {
++        const range = escapeHtml(rangeText());
++        if (state.preview === 'loading') return `<section class="state-message" aria-live="polite"><div class="loading-stack" aria-label="加载中"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div></section>`;
++        if (state.preview === 'empty') return `<section class="state-message" aria-live="polite"><div><strong>暂无${current().name}结果</strong><p>${range} · 全部市场下没有可显示的已平仓回合。胜率、平均盈利和平均亏损显示“— / 无样本”，不会显示虚假的 0%。</p></div></section>`;
++        return `<section class="state-message" role="alert"><div><strong>无法加载${current().name}样例</strong><p>已保留条件：${range} · 全部市场 · ${escapeHtml(accountText())}。当前没有结果可应用，请调整范围后重试。</p></div></section>`;
++      }
++      function renderList() {
++        if (state.mode === 'live') {
++          return `<section class="panel"><div class="panel-head"><div><h3>成交列表</h3><p class="panel-subtitle">按成交日期 · ${current().rows.length} 笔样例成交；未平仓成交仍保留</p></div><span class="tag">${current().rows.length} 笔样例成交</span></div><div class="table-wrap"><table class="trade-table"><thead><tr><th>成交日期</th><th>标的</th><th>代码</th><th>方向</th><th class="numeric">数量</th><th class="numeric">价格</th><th class="numeric">费用</th><th>状态</th></tr></thead><tbody>${current().rows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td class="numeric">${row[4]}</td><td class="numeric">${row[5]}</td><td class="numeric">${row[6]}</td><td><span class="tag ${row[7] === '已复盘' ? 'reviewed' : 'pending'}">${row[7]}</span></td></tr>`).join('')}</tbody></table></div></section>`;
++        }
++        return `<section class="panel"><div class="panel-head"><div><h3>练习列表</h3><p class="panel-subtitle">按练习保存日期 · 记录数与已平仓回合分别统计</p></div><span class="tag">${current().exercises.length} 次练习</span></div><div class="table-wrap"><table class="trade-table"><thead><tr><th>保存日期</th><th>练习</th><th>标的</th><th>代码</th><th class="numeric">成交笔数</th><th class="numeric">已平仓回合</th><th class="numeric">未平仓数量</th></tr></thead><tbody>${current().exercises.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td class="numeric">${row[4]}</td><td class="numeric">${row[5]}</td><td class="numeric">${row[6]}</td></tr>`).join('')}</tbody></table></div></section>`;
++      }
++      function renderStats() {
++        const values = current().metrics.map((metric) => `<article class="metric-card"><span class="label">${metric[0]}</span><span class="value">${metric[1]}</span></article>`).join('');
++        const trendValues = current().trend;
++        const trendMin = Math.min(0, ...trendValues.map((point) => point[1]));
++        const trendMax = Math.max(0, ...trendValues.map((point) => point[1]));
++        const trendSpan = trendMax - trendMin || 1;
++        const trendPoints = trendValues.map((point, index) => ({ x: trendValues.length === 1 ? 50 : 8 + index * 84 / (trendValues.length - 1), y: 10 + (trendMax - point[1]) / trendSpan * 112, label: point[0], value: point[1] }));
++        const trendPolyline = trendPoints.map((point) => `${point.x},${point.y}`).join(' ');
++        const trendDots = trendPoints.map((point) => `<line class="trend-dot" x1="${point.x}" y1="${point.y}" x2="${point.x}" y2="${point.y}"><title>${point.label} · ${point.value.toFixed(2)} CNY</title></line>`).join('');
++        const zeroY = 10 + (trendMax - 0) / trendSpan * 112;
++        const trend = `<div class="trend-chart-wrap"><svg class="trend-chart" width="100%" height="174" viewBox="0 0 100 140" preserveAspectRatio="none" role="img" aria-label="累计净盈亏折线图"><line class="trend-zero" x1="8" y1="${zeroY}" x2="92" y2="${zeroY}"></line><polyline class="trend-line" points="${trendPolyline}"></polyline>${trendDots}</svg><div class="trend-labels">${trendPoints.map((point) => `<span style="left:${point.x}%">${point.label}</span>`).join('')}</div></div>`;
++        const distribution = state.measure === 'amount' ? current().distributionAmount : current().distribution;
++        const distributionMax = Math.max(1, ...distribution.map((item) => item[1]));
++        const rows = distribution.map((row) => `<div class="dist-row"><span class="dist-label ${row[2]}">${row[0]}</span><span class="dist-bar-track"><span class="dist-bar ${row[2]}" style="width:${row[1] / distributionMax * 100}%"></span></span><span class="align-right">${row[1]}</span><span class="align-right">${row[3]}</span></div>`).join('');
++        const statsClass = state.mode === 'simulation' ? 'cards simulation-cards' : 'cards';
++        const statsNotes = state.mode === 'simulation' ? '<p class="stats-note"><strong>风险说明</strong><span>最大回撤 — · 当前样例缺少逐时权益，回撤口径待确认。</span><br><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>' : '<p class="stats-note"><strong>费用（已扣除）</strong><span>已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。</span></p>';
++        return `<section id="c07-stats-summary" class="${statsClass}" aria-label="统计摘要">${values}</section>${statsNotes}<section id="c07-trend-panel" class="panel"><div class="panel-head"><div><h3>累计净盈亏趋势</h3><p class="panel-subtitle">${current().dateLabel} · 日</p></div></div><div class="trend">${trend}</div></section><section id="c07-distribution-panel" class="panel distribution" data-measure="${state.measure}"><div class="panel-head"><div><h3>收益分布</h3><p class="panel-subtitle">当前范围 · ${current().metrics[0][1]} 个有效回合 · 条长表示回合数</p></div><div class="measure-toggle" role="group" aria-label="分布单位"><button id="c07-measure-rate" type="button" aria-pressed="${state.measure === 'rate'}" data-measure="rate">收益率</button><button id="c07-measure-amount" type="button" aria-pressed="${state.measure === 'amount'}" data-measure="amount">金额</button></div></div><div class="dist-head"><span>区间</span><span>频数</span><span class="align-right">回合数</span><span class="align-right">占比</span></div>${rows}</section>`;
++      }
++      function render() {
++        const focusId = document.activeElement && document.activeElement.id;
++        const preservedModeBlock = root.querySelector('.mode-block');
++        product.className = `product-shell scheme-${state.scheme.toLowerCase()}`;
++        product.dataset.scheme = state.scheme.toLowerCase();
++        renderSchemePicker();
++        previewSelect.value = state.preview;
++        candidateStatus.textContent = `${state.scheme} · ${schemeMeta[state.scheme]} · ${current().name} / ${state.tabByMode[state.mode] === 'list' ? '列表' : '统计'}`;
++        root.dataset.mode = state.mode;
++        root.dataset.tab = state.tabByMode[state.mode];
++        root.dataset.preview = state.preview;
++        root.innerHTML = `${renderHeader()}${renderTools()}${state.preview === 'normal' ? (state.tabByMode[state.mode] === 'list' ? renderList() : renderStats()) : renderPreviewState()}`;
++        const generatedModeBlock = root.querySelector('.mode-block');
++        if (preservedModeBlock && generatedModeBlock) generatedModeBlock.replaceWith(preservedModeBlock);
++        updateModeControl(root.querySelector('.mode-block'));
++        restoreFocus(focusId);
++      }
++      schemePicker.addEventListener('click', (event) => { const button = event.target.closest('[data-scheme]'); if (!button) return; state.scheme = button.dataset.scheme; render(); });
++      previewSelect.addEventListener('change', () => { state.preview = previewSelect.value; render(); });
++      root.addEventListener('click', (event) => {
++        const modeButton = event.target.closest('button[data-mode]');
++        if (modeButton) { state.mode = modeButton.dataset.mode; render(); return; }
++        const tabButton = event.target.closest('button[data-tab]');
++        if (tabButton) { state.tabByMode[state.mode] = tabButton.dataset.tab; render(); return; }
++        const measureButton = event.target.closest('button[data-measure]');
++        if (measureButton) { state.measure = measureButton.dataset.measure; render(); }
++      });
++      root.addEventListener('change', (event) => { if (event.target.id === 'c07-date-range') { state.rangeByMode[state.mode] = event.target.value; render(); } });
++      root.addEventListener('keydown', (event) => {
++        const group = event.target.closest('[role="radiogroup"], [role="tablist"]');
++        if (!group || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
++        const items = [...group.querySelectorAll('button')]; const currentIndex = items.indexOf(event.target); if (currentIndex < 0) return;
++        event.preventDefault(); const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + items.length) % items.length; items[next].focus(); items[next].click();
++      });
++      render();
++    })();
++  </script>
++</body>
++</html>
+--- before/source/homepage-template.py
++++ current/source/homepage-template.py
+@@ -0,0 +1,497 @@
++"""Render the C10 homepage by binding data into the approved SVG template."""
++
++from __future__ import annotations
++
++from copy import deepcopy
++from datetime import date
++from pathlib import Path
++import math
++import re
++from xml.etree import ElementTree as ET
++
++
++SVG_NS = "http://www.w3.org/2000/svg"
++ET.register_namespace("", SVG_NS)
++
++
++def _tag(name: str) -> str:
++    return f"{{{SVG_NS}}}{name}"
++
++
++def _local(node: ET.Element) -> str:
++    return node.tag.rsplit("}", 1)[-1]
++
++
++def _number(value: str | None) -> float | None:
++    try:
++        return float(value) if value is not None else None
++    except ValueError:
++        return None
++
++
++def _same_number(actual: str | None, expected: float) -> bool:
++    value = _number(actual)
++    return value is not None and math.isclose(value, expected, abs_tol=0.001)
++
++
++def _children_with_parents(root: ET.Element):
++    for parent in root.iter():
++        for child in list(parent):
++            yield parent, child
++
++
++def _require(predicate, root: ET.Element, description: str) -> ET.Element:
++    matches = [node for node in root.iter() if predicate(node)]
++    if len(matches) != 1:
++        raise ValueError(f"Homepage reference node missing or ambiguous: {description} (found {len(matches)})")
++    return matches[0]
++
++
++def _text_at(root: ET.Element, x: float, y: float) -> ET.Element:
++    return _require(
++        lambda node: _local(node) == "text" and _same_number(node.get("x"), x) and _same_number(node.get("y"), y),
++        root,
++        f"text x={x} y={y}",
++    )
++
++
++def _children(root: ET.Element, name: str) -> list[ET.Element]:
++    return [node for node in root if _local(node) == name]
++
++
++def _title(node: ET.Element, value: str) -> None:
++    for child in list(node):
++        if _local(child) == "title":
++            node.remove(child)
++    title = ET.Element(_tag("title"))
++    title.text = value
++    node.insert(0, title)
++
++
++def _set_text(node: ET.Element, value: object, title: str | None = None) -> None:
++    for child in list(node):
++        node.remove(child)
++    node.text = str(value)
++    if title is not None:
++        _title(node, title)
++
++
++def _format_amount(value: float | int | None, *, signed: bool = False, compact: bool = False, unit_space: bool = True) -> str:
++    if value is None:
++        return "—"
++    amount = float(value)
++    sign = "+" if signed and amount > 0 else "−" if signed and amount < 0 else ""
++    absolute = abs(amount)
++    if compact and absolute >= 100000000:
++        return f"{sign}{absolute / 100000000:.2f}{' ' if unit_space else ''}亿"
++    if compact and absolute >= 10000:
++        return f"{sign}{absolute / 10000:.2f}{' ' if unit_space else ''}万"
++    return f"{sign}{absolute:,.2f}"
++
++
++def _full_amount(value: float | int | None) -> str:
++    return "—" if value is None else f"{float(value):,.2f} CNY"
++
++
++def _as_of_time(valuation: dict, fixture: dict | None = None) -> str:
++    value = str(valuation.get("as_of", ""))
++    if not value and fixture is not None:
++        value = str(fixture.get("valuation", {}).get("as_of", ""))
++    match = re.search(r"\b(\d{2}:\d{2})", value)
++    if not match:
++        raise ValueError("Homepage valuation.as_of must include an HH:MM time")
++    return match.group(1)
++
++
++def _period(fixture: dict) -> tuple[str, str]:
++    try:
++        home = fixture["navigation"]["home"]
++        return str(home["start"]), str(home["end"])
++    except (KeyError, TypeError) as exc:
++        raise ValueError("Homepage fixture must provide navigation.home.start/end") from exc
++
++
++def _date_label(value: str) -> str:
++    return value[5:] if len(value) >= 10 else value
++
++
++def _axis_ticks(values: list[float], minimum_step: float = 250.0) -> list[float]:
++    if not values:
++        raise ValueError("Homepage chart requires at least one data point")
++    low = min(0.0, min(values))
++    high = max(0.0, max(values))
++    span = max(high - low, minimum_step)
++    padding = span * 0.1
++    low = math.floor((low - padding) / minimum_step) * minimum_step
++    high = math.ceil((high + padding) / minimum_step) * minimum_step
++    if math.isclose(low, high):
++        high = low + minimum_step * 4
++    step = (high - low) / 4
++    return [high - step * i for i in range(5)]
++
++
++def _axis_label(value: float) -> str:
++    if math.isclose(value, round(value)):
++        return f"{int(round(value)):,}"
++    return f"{value:,.2f}"
++
++
++def _remove_old_badge(root: ET.Element) -> None:
++    rect = _require(lambda n: _local(n) == "rect" and _same_number(n.get("x"), 48) and _same_number(n.get("y"), 134), root, "superseded pending badge background")
++    label = _require(lambda n: _local(n) == "text" and _same_number(n.get("x"), 60) and _same_number(n.get("y"), 151), root, "superseded pending badge label")
++    for parent, child in list(_children_with_parents(root)):
++        if child is rect or child is label:
++            parent.remove(child)
++
++
++def _set_period_controls(root: ET.Element, period: str) -> None:
++    year_rect = _require(lambda n: _local(n) == "rect" and _same_number(n.get("x"), 246) and _same_number(n.get("y"), 80), root, "year period control")
++    month_rect = _require(lambda n: _local(n) == "rect" and _same_number(n.get("x"), 322) and _same_number(n.get("y"), 80), root, "month period control")
++    year_text = _text_at(root, 280, 103)
++    month_text = _text_at(root, 356, 103)
++    year_active = period == "本年"
++    active, inactive = (year_rect, month_rect) if year_active else (month_rect, year_rect)
++    active.set("fill", "#162233")
++    active.set("stroke", "#6CA8FF")
++    inactive.set("fill", "#111A26")
++    inactive.set("stroke", "#283448")
++    year_text.set("fill", "#E6EDF7" if year_active else "#A8B6CB")
++    month_text.set("fill", "#E6EDF7" if not year_active else "#A8B6CB")
++
++
++def _bind_top(root: ET.Element, fixture: dict, valuation: dict) -> None:
++    start, end = _period(fixture)
++    _require(
++        lambda node: _local(node) == "text" and (node.text or "").strip() == "当前表现",
++        root,
++        "current performance heading",
++    )
++    _set_period_controls(root, str(fixture.get("navigation", {}).get("home", {}).get("period", "本月")))
++    _set_text(_text_at(root, 1416, 39), f"{_as_of_time(valuation, fixture)} 更新")
++    _set_text(_text_at(root, 1220, 103), f"{start} — {_date_label(end)}")
++    metrics = [
++        (112, 188, valuation["total"], True, False),
++        (445, 188, valuation["realized"], True, False),
++        (778, 188, valuation["floating"], True, False),
++        (1111, 188, valuation["market_value"], False, True),
++    ]
++    for x, y, value, signed, market_value in metrics:
++        node = _text_at(root, x, y)
++        display = _format_amount(value, signed=signed, compact=market_value)
++        _set_text(node, display, _full_amount(value))
++
++
++def _parent_of(root: ET.Element, target: ET.Element) -> ET.Element:
++    for parent, child in _children_with_parents(root):
++        if child is target:
++            return parent
++    raise ValueError("Homepage reference parent missing")
++
++
++def _bind_trend(root: ET.Element, valuation: dict) -> None:
++    points = list(valuation.get("points", []))
++    if not points:
++        raise ValueError("Homepage valuation.points must contain at least one point")
++    values = [float(point["cumulative"]) for point in points]
++    ticks = _axis_ticks(values)
++    y_positions = [276.0, 331.0, 386.0, 441.0, 496.0]
++    horizontal = [
++        node for node in root.iter() if _local(node) == "path" and node.get("d", "").startswith("M172 ") and " L1380 " in node.get("d", "")
++    ]
++    if len(horizontal) != 5:
++        raise ValueError(f"Homepage trend grid requires 5 canonical horizontal paths (found {len(horizontal)})")
++    for y, tick in zip(y_positions, ticks):
++        _set_text(_text_at(root, 160, y + 4), _axis_label(tick))
++    top, bottom = y_positions[0], y_positions[-1]
++    high, low = ticks[0], ticks[-1]
++    span = max(high - low, 1.0)
++    scale = lambda value: bottom - (float(value) - low) / span * (bottom - top)
++    zero_y = scale(0.0)
++    for index, path in enumerate(horizontal):
++        if path.get("stroke") == "#A8B6CB":
++            path.set("d", f"M172 {zero_y:g} L1380 {zero_y:g}")
++    try:
++        dates = [date.fromisoformat(str(point["date"])) for point in points]
++    except (KeyError, TypeError, ValueError) as exc:
++        raise ValueError("Homepage trend points must provide ISO dates") from exc
++    elapsed = max((dates[-1] - dates[0]).days, 1)
++    x_for_date = lambda value: 172 + (1380 - 172) * ((value - dates[0]).days / elapsed)
++    selected_indices = [round(i * (len(points) - 1) / 5) for i in range(6)]
++    selected = [(index, points[index], dates[index]) for index in selected_indices]
++    vertical_labels = [_text_at(root, x, 519) for x in (172.0, 413.6, 655.2, 896.8, 1138.4, 1380.0)]
++    vertical_lines = [
++        node for node in root.iter()
++        if _local(node) == "path" and re.fullmatch(r"M[-+0-9.e]+ 276(?:\.0)? L[-+0-9.e]+ 496", node.get("d", ""))
++    ]
++    if len(vertical_lines) != 6:
++        raise ValueError(f"Homepage trend grid requires 6 canonical vertical paths (found {len(vertical_lines)})")
++    for label, line, (_, point, point_date) in zip(vertical_labels, vertical_lines, selected):
++        x = x_for_date(point_date)
++        label.set("x", f"{x:g}")
++        _set_text(label, _date_label(str(point["date"])))
++        line.set("d", f"M{x:g} 276 L{x:g} 496")
++    polyline = next((node for node in root.iter() if _local(node) == "polyline" and node.get("points", "").startswith("172.0")), None)
++    if polyline is None:
++        polyline = _require(lambda n: _local(n) == "polyline", root, "homepage trend line")
++    polyline.set("points", " ".join(f"{x_for_date(point_date):.2f},{scale(value):.2f}" for point_date, value in zip(dates, values)))
++    parent = _parent_of(root, polyline)
++    circles = [node for node in list(parent) if _local(node) == "circle"]
++    if not circles:
++        raise ValueError("Homepage trend requires canonical point circles")
++    template = deepcopy(circles[0])
++    for node in circles:
++        parent.remove(node)
++    for i, (point, value) in enumerate(zip(points, values)):
++        circle = deepcopy(template)
++        circle.set("cx", f"{x_for_date(dates[i]):.2f}")
++        circle.set("cy", f"{scale(value):.2f}")
++        _title(circle, f"{point['date']} · {value:,.2f} CNY")
++        parent.append(circle)
++
++
++def _market_code(code: str) -> str:
++    return code
++
++
++def _bind_holdings(root: ET.Element, fixture: dict, valuation: dict) -> None:
++    positions = list(valuation.get("positions", []))
++    if not positions:
++        raise ValueError("Homepage valuation.positions must contain the current open positions")
++    end = _period(fixture)[1]
++    summary_value = _text_at(root, 761, 610)
++    summary_float = _text_at(root, 950, 610)
++    _set_text(summary_value, _format_amount(valuation["market_value"], compact=True), _full_amount(valuation["market_value"]))
++    _set_text(summary_float, _format_amount(valuation["floating"], signed=True, compact=True), _full_amount(valuation["floating"]))
++    row_ys = [691 + 48 * i for i in range(8)]
++    for index, y in enumerate(row_ys):
++        cells = [
++            _text_at(root, 128, y + 15),
++            _text_at(root, 128, y),
++            _text_at(root, 521.04, y),
++            _text_at(root, 649.84, y),
++            _text_at(root, 791.52, y),
++            _text_at(root, 933.2, y),
++            _text_at(root, 1126.4, y),
++            _text_at(root, 1306.72, y),
++        ]
++        if index < len(positions):
++            position = positions[index]
++            days = (date.fromisoformat(end) - date.fromisoformat(str(position["date"]))).days
++            cost = float(position["price"]) + float(position.get("fee", 0.0)) / float(position["quantity"])
++            _set_text(cells[0], _market_code(str(position["code"])))
++            _set_text(cells[1], str(position["symbol"]))
++            _set_text(cells[2], f"{days} 天")
++            _set_text(cells[3], str(position["quantity"]))
++            _set_text(cells[4], f"{cost:,.2f}")
++            _set_text(cells[5], f"{float(position['quote']):,.2f}")
++            _set_text(cells[6], _format_amount(position["market_value"], compact=True), _full_amount(position["market_value"]))
++            cells[6].set("fill", "#E6EDF7")
++            floating = float(position["floating"])
++            _set_text(cells[7], _format_amount(floating, signed=True), _full_amount(floating)) if len(cells) > 7 else None
++        else:
++            if index == len(positions):
++                _set_text(cells[0], f"当前样例共{len(positions)}个持仓")
++                cells[0].set("fill", "#71829B")
++            else:
++                _set_text(cells[0], "")
++            for cell in cells[1:]:
++                _set_text(cell, "")
++            # Preserve the row dividers and host geometry while making empty
++            # rows visibly empty rather than implying a loading skeleton.
++            row_y = 680 + index * 48
++            for parent, child in _children_with_parents(root):
++                if child.get("y") is not None and _same_number(child.get("y"), row_y):
++                    child.set("opacity", "0")
++            # The host row includes a document icon and its hit area for every
++            # sample row. Empty rows must not expose a view action or an
++            # apparent accessible entry; keep the row divider and fixed table
++            # geometry while removing only this unused action pair.
++            action_rect_y = 680 + index * 48
++            action_icon_y = 682 + index * 48
++            for parent, child in list(_children_with_parents(root)):
++                if _local(child) == "rect" and _same_number(child.get("x"), 1343.36) and _same_number(child.get("y"), action_rect_y):
++                    parent.remove(child)
++                elif _local(child) == "svg" and _same_number(child.get("x"), 1353.36) and _same_number(child.get("y"), action_icon_y):
++                    parent.remove(child)
++    # The floating cell is at y=691 etc and was intentionally not included in
++    # the first seven-cell list so its source fill can be switched by value.
++    for index, position in enumerate(positions):
++        y = 691 + 48 * index
++        cell = _text_at(root, 1306.72, y)
++        floating = float(position["floating"])
++        cell.set("fill", "#53D7A0" if floating >= 0 else "#FF8592")
++        _set_text(cell, _format_amount(floating, signed=True), _full_amount(floating))
++    as_of = _as_of_time(valuation, fixture)
++    summary = _text_at(root, 112, 1089)
++    _set_text(summary, f"1–{len(positions)} / {len(positions)} 项 · 估值 {end} {as_of} · 覆盖 {len(positions)}/{len(positions)} 持仓")
++
++
++def _month_axis(history: ET.Element, stats: dict) -> None:
++    rounds = list(stats.get("rounds", []))
++    monthly: dict[int, float] = {}
++    for row in rounds:
++        month = int(str(row["date"])[5:7])
++        monthly[month] = monthly.get(month, 0.0) + float(row["net"])
++    values = list(monthly.values()) or [0.0]
++    ticks = _axis_ticks(values)
++    y_positions = [290.0, 340.0, 390.0, 440.0, 490.0]
++    grid = [node for node in history.iter() if _local(node) == "line" and node.get("x1") == "106" and node.get("x2") == "1296" and node.get("data-state") != "zero-line"]
++    if len(grid) != 5:
++        raise ValueError(f"Homepage history chart requires 5 canonical horizontal grid lines (found {len(grid)})")
++    for y, tick in zip(y_positions, ticks):
++        _set_text(next(node for node in history.iter() if _local(node) == "text" and _same_number(node.get("x"), 94) and _same_number(node.get("y"), y + 4)), _axis_label(tick))
++    zero_line = _require(lambda node: _local(node) == "line" and node.get("data-state") == "zero-line", history, "history zero-line")
++    low, high = ticks[-1], ticks[0]
++    zero_y = y_positions[-1] - (0.0 - low) / max(high - low, 1.0) * (y_positions[-1] - y_positions[0])
++    zero_line.set("y1", f"{zero_y:g}")
++    zero_line.set("y2", f"{zero_y:g}")
++    plot_group = next((node for node in history.iter() if _local(node) == "g" and any(_local(child) == "polyline" for child in node)), None)
++    if plot_group is None:
++        raise ValueError("Homepage history chart requires canonical plot group")
++    polyline = next(child for child in plot_group if _local(child) == "polyline")
++    template_circles = [child for child in list(plot_group) if _local(child) == "circle"]
++    if not template_circles:
++        raise ValueError("Homepage history chart requires canonical point circles")
++    template = deepcopy(template_circles[0])
++    for circle in template_circles:
++        plot_group.remove(circle)
++    points = sorted((int(str(row["date"])[5:7]), float(row["net"])) for row in rounds)
++    cumulative = 0.0
++    month_points = []
++    for month, _ in points:
++        cumulative += monthly[month] if not month_points or month != month_points[-1][0] else 0.0
++        if not month_points or month != month_points[-1][0]:
++            month_points.append((month, cumulative))
++    scale = lambda value: y_positions[-1] - (value - low) / max(high - low, 1.0) * (y_positions[-1] - y_positions[0])
++    polyline.set("points", " ".join(f"{(106 + (month - 1) * (1190 / 11)) - 106:.2f},{scale(value) - 280:.2f}" for month, value in month_points))
++    for month, value in month_points:
++        circle = deepcopy(template)
++        absolute_x = 106 + (month - 1) * (1190 / 11)
++        circle.set("cx", f"{absolute_x - 106:.2f}")
++        circle.set("cy", f"{scale(value) - 280:.2f}")
++        _title(circle, f"2026-{month:02d} · {value:,.2f} CNY")
++        plot_group.append(circle)
++    empty = [node for node in history.iter() if node.get("data-state") == "empty"]
++    if not empty:
++        raise ValueError("Homepage history chart requires canonical empty-period zones")
++    source_empty = deepcopy(empty[0])
++    while len(empty) < 9:
++        clone = deepcopy(source_empty)
++        history.insert(list(history).index(empty[-1]) + 1, clone)
++        empty.append(clone)
++    step = 1190 / 11
++    for month, zone in enumerate(empty[:9], 1):
++        start = 106 if month == 1 else 106 + (month - 1.5) * step
++        end = min(1296, 106 + (month - 0.5) * step)
++        zone.set("x", f"{start:g}")
++        zone.set("width", f"{max(0.0, end - start):g}")
++        zone.set("y", "280")
++        zone.set("height", "210")
++    future = _require(lambda node: node.get("data-state") == "future-zone", history, "history future-period zone")
++    future_x = round(min(1296, 106 + 9.5 * step), 6)
++    future_width = round(max(0.0, 1296 - future_x), 6)
++    future.set("x", f"{future_x:.6f}")
++    future.set("width", f"{future_width:.6f}")
++    boundary = _require(lambda node: node.get("data-state") == "future-boundary", history, "history future-period boundary")
++    boundary.set("x1", f"{future_x:.6f}")
++    boundary.set("x2", f"{future_x:.6f}")
++    for month, x in enumerate([106 + i * step for i in range(12)], 1):
++        label = next(node for node in history.iter() if _local(node) == "text" and _same_number(node.get("x"), x) and _same_number(node.get("y"), 514))
++        _set_text(label, f"{month}月")
++
++
++def _bind_history(root: ET.Element, fixture: dict, stats: dict) -> None:
++    history = _require(lambda node: _local(node) == "svg" and _same_number(node.get("x"), 96) and _same_number(node.get("y"), 1130), root, "canonical history panel")
++    start, end = _period(fixture)
++    desc = _require(lambda node: _local(node) == "desc" and node.get("id") == "history-desc", history, "history accessible description")
++    desc.text = f"历史统计，截至 {end}；历史净盈亏 {float(stats['net']):,.2f}，{stats['count']} 回合，胜率 {float(stats['win_rate']):.1f}%，费用 {float(stats['fees']):,.2f}"
++    control = _require(lambda node: node.get("data-control") == "history-controls", history, "history controls")
++    control.set("aria-label", "范围：2026；展示方式：每月净盈亏")
++    control_title = _require(lambda node: _local(node) == "title" and node.text and node.text.startswith("范围："), control, "history controls title")
++    control_title.text = "范围：2026；展示方式：每月净盈亏"
++    values = [
++        (16, 145, _format_amount(stats["net"], signed=True, compact=True, unit_space=False), _full_amount(stats["net"])),
++        (349, 145, stats["count"], str(stats["count"])),
++        (682, 145, f"{float(stats['win_rate']):.1f}%" if stats.get("win_rate") is not None else "—", f"{float(stats['win_rate']):.1f}%" if stats.get("win_rate") is not None else "—"),
++        (971, 145, f"{stats['wins']} / {stats['count']} 盈利回合", f"{stats['wins']} / {stats['count']} 盈利回合"),
++        (1015, 145, _format_amount(stats["fees"], compact=True, unit_space=False), _format_amount(stats["fees"])),
++    ]
++    for x, y, value, title in values:
++        _set_text(_text_at(history, x, y), value, title)
++    _month_axis(history, stats)
++
++
++def _bind_contribution(root: ET.Element, fixture: dict, valuation: dict) -> None:
++    contribution = _require(lambda node: _local(node) == "svg" and _same_number(node.get("x"), 96) and _same_number(node.get("y"), 1712), root, "canonical contribution panel")
++    start, end = _period(fixture)
++    total = float(valuation["total"])
++    realized = float(valuation["realized"])
++    floating = float(valuation["floating"])
++    _set_text(_text_at(contribution, 1288, 36), _format_amount(total, signed=True, compact=True, unit_space=False) + " CNY", _full_amount(total))
++    _set_text(_text_at(contribution, 32, 58), f"本月 · 当前表现日期 {start} — {end} · 已实现 + 浮盈变化")
++    total_texts = [
++        (311, total, True),
++        (383, 0.0, False),
++        (455, 0.0, False),
++    ]
++    for y, value, signed in total_texts:
++        node = _text_at(contribution, 1288, y)
++        _set_text(node, _format_amount(value, signed=signed, compact=True, unit_space=False) if value else "0.00", _full_amount(value))
++        node.set("fill", "#53D7A0" if value > 0 else "#71829B")
++    _set_text(_text_at(contribution, 1288, 548), _format_amount(total, signed=True, compact=True) + " CNY", _full_amount(total))
++    _set_text(_text_at(contribution, 32, 574), f"已实现 {_format_amount(realized, signed=True)} · 浮盈变化 {_format_amount(floating, signed=True)}")
++    _set_text(_text_at(contribution, 1288, 574), _format_amount(total, compact=True) + " CNY", _full_amount(total))
++    bars = [node for node in contribution.iter() if _local(node) == "rect" and node.get("y") in {"293", "294", "365", "366", "437", "438"}]
++    if len(bars) != 6:
++        raise ValueError(f"Homepage contribution chart requires 6 canonical bars (found {len(bars)})")
++    real_width = 396 * realized / total if total else 0.0
++    floating_width = max(0.0, 396 - real_width)
++    bars[0].set("x", "686")
++    bars[0].set("width", f"{max(0.0, real_width):g}")
++    _title(bars[0], f"已实现 {realized:,.2f} CNY")
++    bars[1].set("x", f"{686 + real_width:g}")
++    bars[1].set("width", f"{max(0.0, floating_width - 2):g}")
++    _title(bars[1], f"浮盈变化 {floating:,.2f} CNY")
++    for bar in bars[2:]:
++        bar.set("x", "686")
++        bar.set("width", "0")
++        for child in list(bar):
++            if _local(child) == "title":
++                bar.remove(child)
++
++
++def render_home(reference_path, fixture, valuation, stats, focus: bool = False) -> str:
++    """Read and render the complete canonical homepage SVG for one data state."""
++    path = Path(reference_path)
++    source = path.read_bytes()
++    root = ET.fromstring(source)
++    if _local(root) != "svg" or root.get("xmlns") is not None:
++        # ElementTree strips the default xmlns while parsing; namespace is
++        # still required on every parsed element and restored on serialization.
++        if _local(root) != "svg":
++            raise ValueError("Homepage reference root must be an SVG element")
++    if root.get("role") != "img":
++        raise ValueError("Homepage reference must preserve role=img")
++    _require(lambda n: _local(n) == "title" and n is next(iter(root)), root, "root SVG title")
++    _period(fixture)
++    for key in ("positions", "market_value", "floating", "realized", "total", "points"):
++        if key not in valuation:
++            raise ValueError(f"Homepage valuation missing {key}")
++    for key in ("rounds", "count", "wins", "net", "fees", "win_rate"):
++        if key not in stats:
++            raise ValueError(f"Homepage stats missing {key}")
++    _remove_old_badge(root)
++    if focus:
++        home_background = _require(lambda n: _local(n) == "rect" and _same_number(n.get("x"), 8) and _same_number(n.get("y"), 73), root, "home navigation focus")
++        parent = _parent_of(root, home_background)
++        focus_ring = ET.Element(_tag("rect"), {
++            "x": "8", "y": "137", "width": "56", "height": "56", "rx": "8",
++            "fill": "none", "stroke": "#6CA8FF", "stroke-width": "2",
++        })
++        parent.insert(list(parent).index(home_background) + 1, focus_ring)
++    _bind_top(root, fixture, valuation)
++    _bind_trend(root, valuation)
++    _bind_holdings(root, fixture, valuation)
++    _bind_history(root, fixture, stats)
++    _bind_contribution(root, fixture, valuation)
++    return ET.tostring(root, encoding="unicode")
+--- before/source/test-homepage-template.py
++++ current/source/test-homepage-template.py
+@@ -0,0 +1,228 @@
++from __future__ import annotations
++
++import hashlib
++import importlib.util
++import json
++import shutil
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++from xml.etree import ElementTree as ET
++
++
++HERE = Path(__file__).resolve().parent
++REFERENCE = HERE.parents[1] / "2026-10-22-homepage-v2.5/source/images/home-1440.svg"
++FIXTURE_PATH = HERE / "library-design-fixture.json"
++
++
++def load_renderer():
++    spec = importlib.util.spec_from_file_location("homepage_template", HERE / "homepage-template.py")
++    module = importlib.util.module_from_spec(spec)
++    assert spec and spec.loader
++    spec.loader.exec_module(module)
++    return module
++
++
++def load_generator():
++    path = HERE / "generate-library-frames.py"
++    spec = importlib.util.spec_from_file_location("library_frame_generator_for_home_test", path)
++    module = importlib.util.module_from_spec(spec)
++    assert spec and spec.loader
++    sys.modules[spec.name] = module
++    spec.loader.exec_module(module)
++    return module
++
++
++def sample_fixture() -> dict:
++    fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++    fixture["live_trades"] = [
++        {"id": "open-600519", "date": "2026-10-03", "symbol": "贵州茅台", "code": "600519", "side": "买入", "quantity": 100, "price": 1712.0, "fee": 8.56},
++        {"id": "close-600519", "date": "2026-10-07", "symbol": "贵州茅台", "code": "600519", "side": "卖出", "quantity": 40, "price": 1735.0, "fee": 6.94},
++        {"id": "open-688981", "date": "2026-10-15", "symbol": "中芯国际", "code": "688981", "side": "买入", "quantity": 80, "price": 92.0, "fee": 2.95},
++    ]
++    fixture["navigation"]["home"].update(start="2026-10-01", end="2026-10-15", period="本月")
++    return fixture
++
++
++def sample_valuation() -> dict:
++    return {
++        "as_of": "2026-10-15 15:00 Asia/Shanghai",
++        "currency": "CNY",
++        "positions": [
++            {"date": "2026-10-03", "symbol": "贵州茅台", "code": "600519", "quantity": 60, "price": 1712.0, "fee": 5.14, "quote": 1740.0, "market_value": 104400.0, "floating": 1674.86},
++            {"date": "2026-10-15", "symbol": "中芯国际", "code": "688981", "quantity": 80, "price": 92.0, "fee": 2.95, "quote": 94.0, "market_value": 7520.0, "floating": 157.05},
++        ],
++        "market_value": 111920.0,
++        "floating": 1831.91,
++        "realized": 747.14,
++        "total": 2579.05,
++        "points": [
++            {"date": "2026-10-01", "cumulative": 0.0},
++            {"date": "2026-10-02", "cumulative": 0.0},
++            {"date": "2026-10-03", "cumulative": 297.14},
++            {"date": "2026-10-04", "cumulative": -157.86},
++            {"date": "2026-10-05", "cumulative": 847.14},
++            {"date": "2026-10-07", "cumulative": 2547.14},
++            {"date": "2026-10-08", "cumulative": 2347.14},
++            {"date": "2026-10-09", "cumulative": 2457.14},
++            {"date": "2026-10-12", "cumulative": 2479.05},
++            {"date": "2026-10-15", "cumulative": 2579.05},
++        ],
++    }
++
++
++def sample_stats() -> dict:
++    rounds = [
++        {"date": "2026-10-03", "net": 48.0, "fees": 2.0},
++        {"date": "2026-10-05", "net": -52.0, "fees": 2.0},
++        {"date": "2026-10-08", "net": 98.0, "fees": 4.0},
++        {"date": "2026-10-12", "net": -7.0, "fees": 3.0},
++        {"date": "2026-10-15", "net": 660.14, "fees": 11.86},
++    ]
++    return {
++        "rounds": rounds,
++        "points": [{"date": r["date"], "net": r["net"], "cumulative": sum(x["net"] for x in rounds[: i + 1])} for i, r in enumerate(rounds)],
++        "count": 5,
++        "wins": 3,
++        "losses": 2,
++        "net": 747.14,
++        "fees": 22.86,
++        "win_rate": 60.0,
++        "average_profit": 268.71,
++        "average_loss": -29.5,
++    }
++
++
++class HomepageTemplateTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.renderer = load_renderer()
++        cls.fixture = sample_fixture()
++        cls.valuation = sample_valuation()
++        cls.stats = sample_stats()
++        cls.source_hash = hashlib.sha256(REFERENCE.read_bytes()).hexdigest()
++
++    def render(self, **kwargs):
++        return self.renderer.render_home(REFERENCE, self.fixture, self.valuation, self.stats, **kwargs)
++
++    def test_canonical_controls_geometry_and_titles_survive(self):
++        source = ET.fromstring(REFERENCE.read_bytes())
++        output = ET.fromstring(self.render())
++        self.assertEqual(output.attrib["viewBox"], source.attrib["viewBox"])
++        self.assertEqual(output.attrib["role"], "img")
++        self.assertEqual(output.find("{http://www.w3.org/2000/svg}title").text, "首页全貌：当前表现、持仓、历史统计与底部贡献")
++        source_controls = sorted((n.attrib.get("data-control") or "", n.attrib.get("role") or "") for n in source.iter() if n.attrib.get("data-control"))
++        output_controls = sorted((n.attrib.get("data-control") or "", n.attrib.get("role") or "") for n in output.iter() if n.attrib.get("data-control"))
++        self.assertEqual(output_controls, source_controls)
++        self.assertEqual(len(list(source.iter("{http://www.w3.org/2000/svg}polyline"))), len(list(output.iter("{http://www.w3.org/2000/svg}polyline"))))
++        self.assertEqual(len(list(source.iter("{http://www.w3.org/2000/svg}line"))), len(list(output.iter("{http://www.w3.org/2000/svg}line"))))
++        self.assertIn('stroke="#283448"', self.render())
++        self.assertNotIn('>12</text>', self.render())
++
++    def test_fixture_data_is_bound_without_inventing_positions(self):
++        rendered = self.render()
++        self.assertIn("2,579.05", rendered)
++        self.assertIn("747.14", rendered)
++        self.assertIn("1,831.91", rendered)
++        self.assertIn("11.19 万", rendered)
++        self.assertIn("贵州茅台", rendered)
++        self.assertIn("中芯国际", rendered)
++        self.assertIn("当前样例共2个持仓", rendered)
++        self.assertIn("1–2 / 2 项 · 估值 2026-10-15 15:00 · 覆盖 2/2 持仓", rendered)
++        for stale in ("Cerebras Systems", "宁德时代", "恒生科技ETF", "Tesla, Inc.", "微软", "中证500ETF"):
++            self.assertNotIn(stale, rendered)
++        self.assertIn("5", rendered)
++        self.assertIn("3 / 5 盈利回合", rendered)
++        self.assertIn("22.86", rendered)
++        out = ET.fromstring(rendered)
++        chart_groups = [n for n in out.iter() if n.tag.endswith("g") and any(c.tag.endswith("polyline") for c in n)]
++        self.assertTrue(chart_groups)
++        self.assertEqual(len([n for n in chart_groups[0] if n.tag.endswith("circle")]), len(self.valuation["points"]))
++        zero_paths = [n for n in out.iter() if n.tag.endswith("path") and n.attrib.get("stroke") == "#A8B6CB" and "M172" in n.attrib.get("d", "")]
++        self.assertEqual(len(zero_paths), 1)
++        zero_y = float(zero_paths[0].attrib["d"].split()[1])
++        self.assertGreater(zero_y, 276.0)
++        self.assertLess(zero_y, 496.0)
++        future = next(n for n in out.iter() if n.attrib.get("data-state") == "future-zone")
++        self.assertLessEqual(float(future.attrib["x"]) + float(future.attrib["width"]), 1296.0)
++
++        action_rects = [
++            node for node in out.iter()
++            if node.tag.endswith("rect") and abs(float(node.attrib.get("x", "nan")) - 1343.36) < 0.01
++        ]
++        action_icons = [
++            node for node in out.iter()
++            if node.tag.endswith("svg") and abs(float(node.attrib.get("x", "nan")) - 1353.36) < 0.01
++        ]
++        self.assertEqual(len(action_rects), 2, "only the two real holdings may expose view hit areas")
++        self.assertEqual(len(action_icons), 2, "empty holding rows must not expose document icons")
++
++        trend_points = next(
++            node for node in out.iter()
++            if node.tag.endswith("polyline") and node.attrib.get("stroke") == "#6CA8FF"
++        ).attrib["points"].split()
++        expected_x = 172 + (1380 - 172) * (6 / 14)
++        dated_circle = next(
++            node for node in out.iter()
++            if node.tag.endswith("circle") and any(
++                child.tag.endswith("title") and "2026-10-07" in (child.text or "")
++                for child in node
++            )
++        )
++        self.assertAlmostEqual(float(dated_circle.attrib["cx"]), expected_x, places=2)
++        self.assertAlmostEqual(float(trend_points[5].split(",")[0]), expected_x, places=2)
++        dated_label = next(node for node in out.iter() if node.tag.endswith("text") and (node.text or "") == "10-07")
++        self.assertAlmostEqual(float(dated_label.attrib["x"]), expected_x, places=2)
++        dated_grid = next(
++            node for node in out.iter()
++            if node.tag.endswith("path") and abs(float(node.attrib.get("d", "").split()[0][1:]) - expected_x) < 0.01
++        )
++        self.assertAlmostEqual(float(dated_grid.attrib["d"].split()[0][1:]), expected_x, places=2)
++        final_circle = next(
++            node for node in out.iter()
++            if node.tag.endswith("circle") and any(
++                child.tag.endswith("title") and "2026-10-15" in (child.text or "")
++                for child in node
++            )
++        )
++        self.assertAlmostEqual(float(final_circle.attrib["cx"]), 1380.0, places=2)
++
++    def test_source_dependent_style_and_geometry_are_consumed(self):
++        with tempfile.TemporaryDirectory() as directory:
++            copy = Path(directory) / "reference.svg"
++            text = REFERENCE.read_text(encoding="utf-8")
++            text = text.replace('M172 276.0 L1380 276.0" fill="none" stroke="#283448"', 'M172 276.0 L1380 276.0" fill="none" stroke="#FF00AA"', 1)
++            copy.write_text(text, encoding="utf-8")
++            rendered = self.renderer.render_home(copy, self.fixture, self.valuation, self.stats)
++            self.assertIn("#FF00AA", rendered)
++            self.assertIn('M172 276.0 L1380 276.0', rendered)
++
++    def test_real_generator_shapes_bind_without_test_only_timestamp(self):
++        generator = load_generator()
++        fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++        valuation = generator.home_valuation(fixture)
++        stats = generator.stats_for(generator.derive_live_rounds(fixture))
++        rendered = self.renderer.render_home(REFERENCE, fixture, valuation, stats)
++        self.assertIn("11.19 万", rendered)
++        self.assertIn("2026-10-15 15:00", rendered)
++        self.assertIn("5 回合", rendered)
++        self.assertIn("2/2 持仓", rendered)
++
++    def test_missing_expected_node_fails_loudly_and_focus_is_only_focus_difference(self):
++        with tempfile.TemporaryDirectory() as directory:
++            copy = Path(directory) / "missing.svg"
++            copy.write_text(REFERENCE.read_text(encoding="utf-8").replace(">当前表现</text>", ">当前表现缺失</text>", 1), encoding="utf-8")
++            with self.assertRaises(ValueError):
++                self.renderer.render_home(copy, self.fixture, self.valuation, self.stats)
++        normal = self.render()
++        focused = self.render(focus=True)
++        self.assertNotEqual(normal, focused)
++        self.assertIn('x="8" y="137"', focused)
++        self.assertIn('stroke="#6CA8FF"', focused)
++        self.assertIn('x="8" y="73" width="56" height="56" rx="8" fill="#162233"', focused)
++        self.assertEqual(hashlib.sha256(REFERENCE.read_bytes()).hexdigest(), self.source_hash)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- before/source/test-library-metrics.py
++++ current/source/test-library-metrics.py
+@@ -0,0 +1,90 @@
++#!/usr/bin/env python3
++"""Focused contracts for the C08/C09 static metrics and distribution design."""
++from __future__ import annotations
++
++import importlib.util
++import json
++import sys
++import unittest
++from pathlib import Path
++from xml.etree import ElementTree
++
++
++SOURCE = Path(__file__).with_name("generate-library-frames.py")
++spec = importlib.util.spec_from_file_location("library_frames", SOURCE)
++module = importlib.util.module_from_spec(spec)
++sys.modules[spec.name] = module
++assert spec.loader is not None
++spec.loader.exec_module(module)
++
++FIXTURE = json.loads((SOURCE.parent / "library-design-fixture.json").read_text())
++
++
++class MetricsContractTest(unittest.TestCase):
++    def test_fixture_totals_and_directional_rates(self):
++        simulation = module.derive_sim_rounds(FIXTURE)
++        live = module.derive_live_rounds(FIXTURE)
++        self.assertEqual(len(simulation), 7)
++        self.assertEqual(round(sum(row["net"] for row in simulation), 2), 2272.0)
++        self.assertEqual(round(sum(row["fees"] for row in simulation), 2), 33.0)
++        self.assertEqual(module.stats_for(simulation)["win_rate"], 71.43)
++        self.assertEqual(len(live), 5)
++        self.assertEqual(round(sum(row["net"] for row in live), 2), 747.14)
++        self.assertEqual(round(sum(row["fees"] for row in live), 2), 22.86)
++        self.assertEqual(module.stats_for(live)["win_rate"], 60.0)
++        self.assertEqual(module.direction_stats(simulation)["long"]["wins"], 5)
++        self.assertEqual(module.direction_stats(simulation)["long"]["rate"], 71.43)
++        self.assertIsNone(module.direction_stats(simulation)["short"]["rate"])
++
++    def test_direction_denominator_includes_flat_and_unknown_is_reported(self):
++        rows = [
++            {"direction": "long", "net": 4},
++            {"direction": "long", "net": -2},
++            {"direction": "long", "net": 0},
++            {"direction": "short", "net": 5},
++            {"direction": "short", "net": -1},
++            {"direction": "short", "net": 0},
++            {"direction": "mystery", "net": 100},
++        ]
++        result = module.direction_stats(rows)
++        self.assertEqual((result["long"]["wins"], result["long"]["count"]), (1, 3))
++        self.assertEqual((result["short"]["wins"], result["short"]["count"]), (1, 3))
++        self.assertEqual(result["long"]["rate"], 33.33)
++        self.assertEqual(result["short"]["rate"], 33.33)
++        self.assertEqual(result["unknown_count"], 1)
++        self.assertIsNone(module.direction_stats([])["long"]["rate"])
++
++    def test_distribution_membership_and_bar_geometry(self):
++        rows = [{"net": -10, "rate": -1}, {"net": 20, "rate": 2}, {"net": 200, "rate": 20}]
++        distribution = module.distribution_for(rows, "金额")
++        self.assertEqual(sum(item["count"] for item in distribution), 3)
++        self.assertEqual(module.distribution_max_count(distribution), 1)
++        panel = module.distribution_panel(96, 100, 1080, distribution, selected="盈利 0–100")
++        root = ElementTree.fromstring(f'<svg xmlns="http://www.w3.org/2000/svg">{panel.svg}</svg>')
++        bars = root.findall(".//{http://www.w3.org/2000/svg}rect[@data-bar='distribution']")
++        self.assertEqual(len(bars), 5)
++        widths = [float(bar.attrib["width"]) for bar in bars]
++        self.assertEqual(widths[2], 0.0)
++        self.assertGreater(widths[1], 0.0)
++        self.assertEqual(widths[1], widths[3])
++        self.assertEqual(widths[1], widths[4])
++        self.assertIn("回合数", panel.svg)
++        self.assertIn("3 个有效回合", panel.svg)
++
++    def test_trend_gap_direction_cards_use_filtered_denominator(self):
++        rounds = module.derive_sim_rounds(FIXTURE)
++        gap = FIXTURE["trend_modes"]["gap_scenario"]
++        missing = {item["date"] for item in gap["dates"] if item["status"] == "missing"}
++        selected = module.stats_for(
++            [row for row in rounds if row["date"] not in missing], gap["start"], gap["end"]
++        )
++        self.assertEqual(selected["count"], 5)
++        self.assertEqual(module.direction_stats(selected["rounds"])["long"]["count"], 5)
++        svg = module.stats_frame(1440, 1000, FIXTURE, "trend-gap")
++        self.assertIn(">可计算净盈亏<", svg)
++        self.assertIn("做多胜率 · 5/5 样本", svg)
++        self.assertNotIn("做多胜率 · 5/7 样本", svg)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- before/source/visual-design.candidate.md
++++ current/source/visual-design.candidate.md
+@@ -50,21 +50,23 @@
+ |分页与状态反馈|在加载、空态、失败和重试时保持结果区尺寸与位置。|
+ 
+ 控件与文字采用以下对齐规则。按钮、分段标签、日期快捷项和应用动作在命中盒内水平、垂直居中；输入文字、名称、说明和错误文案左对齐；金额表头和金额数据右对齐。
+ 
+ |部位|尺寸与规则|
+ |---|---|
+-|内容区|左缘96px、右边距24px；比较视口为1440×1000和1280×800，字号与控件不随长页缩小。交易库自然画布由内容向下增长：普通列表/复盘最低1000px，窄版最低800px；统计1206px，下钻1454px，异常态按提示继续增长。首页直接使用V2.5完整1440×2346宿主。超出比较视口的内容纵向滚动，不是裁切。|
++|内容区|左缘96px、右边距24px；比较视口为1440×1000和1280×800，字号与控件不随长页缩小。交易库画布按实际内容自然增长：普通列表/复盘保留至少1000px（窄版至少800px），统计与下钻由指标行、趋势、分布和明细的自然底边决定，异常提示继续向下扩展。首页直接使用V2.5完整1440×2346宿主。超出比较视口的内容纵向滚动，不是裁切。|
+ |字号|页面标题24/32、模块标题18/24、正文和控件14/20、说明12/16、指标28/34。|
+ |交易库搜索|宽220px。|
+ |刷新动作|36×36px命中盒；与搜索的间隔为28px。|
+ |筛选浮层|宽320px，字段高36px。|
+ |图标与动作|公共图标视觉尺寸16px；页头搜索与筛选图标18px；外层图标和动作按钮保持36px命中盒。|
+ |日期和年份图标|日期筛选使用日历图标，年份选择使用下拉箭头，静态日期不添加图标。|
+ |表格|沿用公共列定义；金额列共用右边界，名称和说明左对齐，表头与结果区不重叠。|
+ 
++布局候选仍等待选择，完整比较见[候选布局比较](../navigation-options.html)。
++
+ 数字显示遵循公共格式：价格保留两位小数；金额绝对值达到1万显示“万”、达到1亿显示“亿”，均保留两位小数，不增加“万亿”。详情、提示、悬停或聚焦、复制和导出都能查到完整值，缩写不改变原始数据。窄栏的占比另行按第五章换行。
+ 
+ ## 三、范围、日期与搜索 {#chapter-BT03}
+ 
+ ### 进入与默认
+ 
+@@ -121,13 +123,13 @@
+ |---|---|---|
+ |1|先买100|形成较早的开仓量100。|
+ |2|再买50|形成较晚的开仓量50。|
+ |3|卖80|先配对较晚的50，再从较早的100中配对30。|
+ |4|完成配对|形成两回合，剩余70仍未平仓。|
+ 
+-练习 A 的闭合费用按配对数量分摊：50 股回合净值 990.00 CNY，30 股回合净值 894.00 CNY，闭合合计 1884.00 CNY；余下70股对应的7.00 CNY开仓费用留在未平仓，不计入闭合统计。所有回合、趋势和分布图由 `library-design-fixture.json` 的成交配对派生。
++练习 A 的已平仓费用按配对数量分摊：50 股回合净值 990.00 CNY，30 股回合净值 894.00 CNY，已平仓合计 1884.00 CNY；余下70股对应的7.00 CNY开仓费用留在未平仓，不计入已平仓统计。费用说明固定为“已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。”所有回合、趋势和分布图由 `library-design-fixture.json` 的成交配对派生。
+ 
+ 配对不跨练习，每个有效配对算一回合；上述余70排除在已平仓回合统计之外。不要求练习另有开始或结束状态。
+ 
+ :::state-demo
+ images/hcr06-final-sim-ab.svg|练习列表|相同标的的多次练习分别保留。
+ images/hcr06-final-rounds-a.svg|练习回合集|点击练习后直接到达，不增加中间层。
+@@ -151,21 +153,23 @@
+ |模拟盘|导入文件中保存的练习日期|导入文件中保存的练习日期|
+ 
+ 统计只纳入有效的已平仓回合，未平仓成交仍保留在实盘列表。模拟盘使用文件中保存的练习日期，不以行情日期替代；普通模拟盘趋势至少覆盖五个保存日期，并保留同一标的同日练习的独立身份。
+ 
+ ### 指标与结果口径
+ 
+-扣费后收益大于0为盈利、小于0为亏损、等于0为持平。胜率分母包含持平回合，平均盈利和平均亏损不含持平回合。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。分布默认使用回合收益率，也可切换金额；极端金额、负值和集中分布保持可读刻度、正确正负和稳定布局。
++扣费后收益大于0为盈利、小于0为亏损、等于0为持平。总体胜率与方向胜率的分母都包含持平回合，平均盈利和平均亏损不含持平回合。方向只取开仓方向明确标记的 `long` / `short`；未知方向排除并单独报告，不能把平多的卖出成交推断为做空。当前模拟盘有7个有效回合、5个盈利做多回合，做空显示“— / 无样本”。缺失值显示破折号并明确不可计算，不把缺失混入完整分布。模拟盘统计按两行四卡展示：有效回合、净盈亏、总体胜率、费用（已扣除）；做多胜率、做空胜率、平均盈利、平均亏损。费用卡短标签为“费用（已扣除）”，旁边可见“已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。”
++
++最大回撤暂显示“最大回撤 —”；当前样例缺少逐时权益，回撤口径待确认。该占位保留待确认语义，不把累计净盈亏曲线冒充权益回撤。
+ 
+ ### 趋势粒度
+ 
+ 日期跨度不超过31天按日展示，超过31天且不超过两年按月展示，超过两年按年展示。粒度随当前统计范围确定。
+ 
+ ### 分布与下钻
+ 
+-每个区间显示回合数与占比，占比保留2位小数；窄栏把占比放到回合数下一行。占比分母固定为当前范围内全部有效回合。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布；点击回合进入复盘，返回后恢复原区间与列表位置。
++每个区间使用横向条形图表达频数：左侧为区间名称，中间为共享最大回合数尺度的条形，右侧显示回合数和占比，轴标为“回合数”。零样本不绘制最小假条，亏损区间仍使用正向频数宽度。加载显示等待占位，空态没有条形并说明没有有效样本；计算输入缺失时排除无效回合并明确当前分母。收益率/金额切换沿用既有区间边界。展开区间明细只展示该区间回合，不改变分母、不改变顶部条件，也不重算原分布；点击回合进入复盘，返回后恢复原区间与列表位置。分布面板自身不分页，真实回合明细表仍保留分页。
+ 
+ ### 实盘普通统计
+ 
+ :::state-demo
+ images/01-live-normal.svg|实盘统计 · 回合平仓日|默认收益率；5个有效已平仓回合、747.14 CNY累计净盈亏，五个平仓日期与趋势终点一致。
+ :::
+--- before/source/generate-library-frames.py
++++ current/source/generate-library-frames.py
+@@ -147,12 +147,16 @@
+             closing_fee = remaining_exit_fee * quantity / remaining_exit_quantity
+             gross = (trade["price"] - opening["price"]) * quantity
+             cost = opening["price"] * quantity + opening_fee
+             rounds.append({
+                 "open_id": opening["id"], "close_id": trade.get("id"),
+                 "open_date": opening.get("date"), "close_date": trade.get("date"),
++                # The matcher currently models buy-then-sell pairs only. Keep
++                # that fact explicit so direction metrics never infer short
++                # from the closing sell.
++                "direction": "long",
+                 "quantity": quantity, "open_price": opening["price"], "close_price": trade["price"],
+                 "gross": round(gross, 2), "opening_fee": round(opening_fee, 2),
+                 "closing_fee": round(closing_fee, 2), "fees": round(opening_fee + closing_fee, 2),
+                 "cost": round(cost, 2), "net": round(gross - opening_fee - closing_fee, 2),
+             })
+             rounds[-1]["rate"] = round(rounds[-1]["net"] / cost * 100, 4) if cost else 0
+@@ -222,12 +226,35 @@
+         points.append({"date": day, "net": round(daily[day], 2), "cumulative": round(cumulative, 2)})
+     wins = [r["net"] for r in selected if r["net"] > 0]
+     losses = [r["net"] for r in selected if r["net"] < 0]
+     return {"rounds": selected, "points": points, "count": len(selected), "wins": len(wins), "losses": len(losses), "net": round(sum(r["net"] for r in selected), 2), "fees": round(sum(r["fees"] for r in selected), 2), "win_rate": round(len(wins) / len(selected) * 100, 2) if selected else None, "average_profit": round(sum(wins) / len(wins), 2) if wins else None, "average_loss": round(sum(losses) / len(losses), 2) if losses else None}
+ 
+ 
++def direction_stats(rounds: list[dict]) -> dict:
++    """Summarize explicit long/short samples without guessing direction.
++
++    A breakeven row remains in its direction's denominator, while only a
++    strictly positive net is a win. Rows with any other direction are kept in
++    an explicit unknown count and do not affect either rate.
++    """
++    result = {}
++    unknown_count = 0
++    for direction in ("long", "short"):
++        selected = [row for row in rounds if row.get("direction") == direction]
++        wins = sum(1 for row in selected if row.get("net", 0) > 0)
++        result[direction] = {
++            "count": len(selected),
++            "wins": wins,
++            "rate": round(wins / len(selected) * 100, 2) if selected else None,
++        }
++    unknown_count = sum(1 for row in rounds if row.get("direction") not in ("long", "short"))
++    result["unknown_count"] = unknown_count
++    result["eligible_count"] = result["long"]["count"] + result["short"]["count"]
++    return result
++
++
+ def derived_trends(fixture: dict) -> dict:
+     live = derive_live_rounds(fixture)
+     sim = derive_sim_rounds(fixture)
+     return {"live": [{"date": p["date"], "net": p["net"]} for p in stats_for(live)["points"]], "simulation": [{"date": p["date"], "net": p["net"]} for p in stats_for(sim)["points"]]}
+ 
+ 
+@@ -235,12 +262,16 @@
+     if mode == "收益率":
+         rules = [("亏损 > 5%", lambda r: r["rate"] < -5), ("亏损 0–5%", lambda r: -5 <= r["rate"] < 0), ("持平", lambda r: r["rate"] == 0), ("盈利 0–5%", lambda r: 0 < r["rate"] <= 5), ("盈利 > 5%", lambda r: r["rate"] > 5)]
+     else:
+         rules = [("亏损 > 100", lambda r: r["net"] < -100), ("亏损 0–100", lambda r: -100 <= r["net"] < 0), ("持平", lambda r: r["net"] == 0), ("盈利 0–100", lambda r: 0 < r["net"] <= 100), ("盈利 > 100", lambda r: r["net"] > 100)]
+     denominator = len(rounds)
+     return [{"label": label, "rounds": [r for r in rounds if predicate(r)], "count": sum(1 for r in rounds if predicate(r)), "rate": round(sum(1 for r in rounds if predicate(r)) / denominator * 100, 2) if denominator else None} for label, predicate in rules]
++
++
++def distribution_max_count(distribution: list[dict]) -> int:
++    return max((item["count"] for item in distribution), default=0)
+ 
+ 
+ def validate_fixture(fixture: dict) -> list[str]:
+     errors = []
+     a = next(x for x in fixture["simulation_exercises"] if x["id"].startswith("practice-a"))
+     result = lifo_rounds(a)
+@@ -324,12 +355,77 @@
+ 
+ def metric_cards(x,y,w,data):
+     gap=16;cw=(w-gap*(len(data)-1))/len(data);out=[]
+     for i,(label,val) in enumerate(data):
+         xx=x+i*(cw+gap);out += [rect(xx,y,cw,96),text(xx+16,y+28,label,12,'muted'),text(xx+16,y+70,val,28,'text',600)]
+     return ''.join(out)
++
++
++def distribution_panel(x, y, w, distribution, selected=None, denominator=None,
++                       status=None):
++    """Render the five boundary-preserving bins as one horizontal bar panel."""
++    denominator = sum(item["count"] for item in distribution) if denominator is None else denominator
++    max_count = distribution_max_count(distribution)
++    row_h = 50
++    top = y + 98
++    bottom = top + len(distribution) * row_h
++    panel_h = bottom - y + 34
++    label_x = x + 24
++    bar_x = x + 270
++    bar_w = max(220, w - 540)
++    count_x = x + w - 176
++    percent_x = x + w - 24
++    out = [rect(x, y, w, panel_h), text(label_x, y + 34, '收益分布', 18, 'text', 600)]
++    if status == 'loading':
++        subtitle = '正在加载… · 区间和分母等待数据'
++    elif denominator:
++        subtitle = f'当前范围 · {denominator} 个有效回合 · 点击区间查看下方回合'
++    else:
++        subtitle = '当前范围没有有效已平仓回合'
++    out.append(text(label_x, y + 58, subtitle, 12, 'muted'))
++    # Center the axis title on its own line above the baseline so it cannot
++    # collide with the left 0 tick at narrow widths.
++    out += [text(bar_x + bar_w / 2, y + 72, '回合数', 12, 'subtle', 400, 'middle'), line(bar_x, y + 94, bar_x + bar_w, y + 94)]
++    if max_count:
++        out += [text(bar_x, y + 90, '0', 11, 'subtle', 400, 'start'),
++                text(bar_x + bar_w, y + 90, str(max_count), 11, 'subtle', 400, 'end')]
++    for index, item in enumerate(distribution):
++        ry = top + index * row_h
++        if item['label'] == selected:
++            out.append(rect(x + 12, ry - 6, w - 24, row_h, 'raised', 'blue', 5))
++        tone = 'negative' if '亏损' in item['label'] else 'positive' if '盈利' in item['label'] else 'muted'
++        out.append(text(label_x, ry + 22, item['label'], 14, tone, 500 if item['label'] == selected else 400))
++        width = bar_w * item['count'] / max_count if max_count else 0
++        # A zero count deliberately has zero width: no minimum-width hint bar.
++        out.append(f'<rect x="{bar_x:g}" y="{ry+7:g}" width="{width:g}" height="18" rx="4" fill="{COLORS[tone]}" data-bar="distribution" data-count="{item["count"]}" data-bar-width="{width:g}"/>')
++        if status == 'loading':
++            out.append(rect(bar_x, ry + 7, bar_w * .3, 18, 'raised', 'border', 4))
++            count_label, rate_label = '…', '…'
++        elif denominator:
++            count_label = str(item['count'])
++            rate_label = f'{item["rate"]:.2f}%'
++        else:
++            count_label, rate_label = '0', '—'
++        out += [text(count_x, ry + 22, count_label, 14, 'text', 500, 'end'),
++                text(percent_x, ry + 22, rate_label, 14, 'muted', 400, 'end')]
++    if status == 'empty' or (not denominator and status != 'loading'):
++        out.append(text(bar_x + bar_w / 2, top + len(distribution) * row_h / 2, '没有有效回合，无法绘制分布', 14, 'muted', 400, 'middle'))
++    return Panel(''.join(out), y + panel_h)
++
++
++def risk_band(x, y, w):
++    return (rect(x, y, w, 68, 'raised')
++            + text(x + 24, y + 27, '风险说明', 14, 'text', 600)
++            + text(x + 24, y + 49, '最大回撤 —', 14, 'warning', 500)
++            + text(x + 180, y + 49, '当前样例缺少逐时权益，回撤口径待确认。', 12, 'muted'))
++
++
++def fee_band(x, y, w):
++    return (rect(x, y, w, 56, 'raised')
++            + text(x + 24, y + 23, '费用（已扣除）', 12, 'muted', 600)
++            + text(x + 24, y + 43, '已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。', 12, 'muted'))
+ 
+ 
+ def trend_card(x,y,w,h,title,subtitle,values,value_key='cumulative',grain='day'):
+     out=[rect(x,y,w,h),text(x+24,y+34,title,18,'text',600),text(x+24,y+57,subtitle,12,'muted')]
+     left,right,top,bottom=x+92,x+w-48,y+94,y+h-48
+     nums=[v.get(value_key) for v in values if v.get(value_key) is not None]
+@@ -383,23 +479,43 @@
+         stats=stats_for([r for r in rounds if r['date'] not in missing],state['start'],state['end']);known={p['date']:p['cumulative'] for p in stats['points']};cum=0;points=[]
+         for d in gap['dates']:
+             if d['status']=='missing':value=None
+             else: value=known.get(d['date'],cum);cum=value
+             points.append({**d,'cumulative':value})
+         subtitle='10-17、10-18 文件缺失 · 全范围净盈亏 — · 可计算 5 回合'
++    # Directional cards must follow all range/missing-input filtering above.
++    directions=direction_stats(stats['rounds'])
+     body=common_chrome(width,minimum,title,subtitle,state,view,'统计');body.append(filter_controls(width,state,view));y=342;w=width-120
+     if status=='error':
+         body += [rect(96,y,w,68,'raised'),text(120,y+27,'更新失败 · '+range_label(fixture['navigation']['error_attempt'])+' 未应用',14,'warning',600),text(120,y+50,'当前仍显示 '+range_label(state)+' 的完整结果',12,'muted'),button(width-156,y+16,108,'重试')];y+=92
+-    if status=='loading':metrics=[(l,'…') for l in ['有效回合','累计净盈亏','胜率','平均盈利','平均亏损','闭合费用']];points=[]
+-    else:metrics=[('有效回合',str(stats['count'])),('可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏',fmt(stats['net'])),('胜率',f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'),('平均盈利',fmt(stats['average_profit'])),('平均亏损',fmt(stats['average_loss'])),('闭合费用',fmt(stats['fees']))]
+-    body.append(metric_cards(96,y,w,metrics));y+=120
++    if status=='loading':
++        metrics=[(l,'…') for l in ['有效回合','累计净盈亏','胜率','平均盈利','平均亏损','费用（已扣除）']]
++    else:
++        metrics=[('有效回合',str(stats['count'])),('可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏',fmt(stats['net'])),('胜率',f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'),('平均盈利',fmt(stats['average_profit'])),('平均亏损',fmt(stats['average_loss'])),('费用（已扣除）',fmt(stats['fees']))]
++    if sim:
++        if status == 'loading':
++            sim_first = [("有效回合", '…'), ("累计净盈亏", '…'), ("总体胜率", '…'), ("费用（已扣除）", '…')]
++            sim_second = [("做多胜率 · 等待样本", '…'), ("做空胜率 · 等待样本", '…'), ("平均盈利", '…'), ("平均亏损", '…')]
++        else:
++            long = directions['long']; short = directions['short']
++            long_label = f"做多胜率 · {long['wins']}/{long['count']} 样本" if long['count'] else '做多胜率 · 无样本'
++            short_label = f"做空胜率 · {short['wins']}/{short['count']} 样本" if short['count'] else '做空胜率 · 无样本'
++            net_label = '可计算净盈亏' if kind in ['missing','trend-gap'] else '累计净盈亏'
++            sim_first = [("有效回合", str(stats['count'])), (net_label, fmt(stats['net'])), ("总体胜率", f"{stats['win_rate']:.2f}%" if stats['win_rate'] is not None else '—'), ("费用（已扣除）", fmt(stats['fees']))]
++            sim_second = [(long_label, f"{long['rate']:.2f}%" if long['rate'] is not None else '—'), (short_label, f"{short['rate']:.2f}%" if short['rate'] is not None else '—'), ("平均盈利", fmt(stats['average_profit'])), ("平均亏损", fmt(stats['average_loss']))]
++        body.append(metric_cards(96,y,w,sim_first));y+=112
++        body.append(metric_cards(96,y,w,sim_second));y+=112
++        body.append(risk_band(96,y,w));y+=92
++    else:
++        body.append(metric_cards(96,y,w,metrics));y+=120
++    body.append(fee_band(96,y,w));y+=80
+     trend=trend_card(96,y,w,280,'可计算累计净盈亏' if kind in ['trend-gap','missing'] else '累计净盈亏趋势','首次加载' if status=='loading' else ('按保存日期' if sim else '按回合平仓日期')+' · '+{'day':'日','month':'月','year':'年'}[grain],points,grain=grain);body.append(trend.svg);y=trend.bottom+24
+     dist=distribution_for(stats['rounds'] if status!='loading' else [],mode)
+     rows=[{'id':d['label'],'cells':[(d['label'],'negative' if '亏损' in d['label'] else 'positive' if '盈利' in d['label'] else 'muted'),('…' if status=='loading' else str(d['count']),'text'),('…' if status=='loading' else f"{d['rate']:.2f}%" if d['rate'] is not None else '—','text')]} for d in dist]
+     table_y=y
+-    panel=table(96,y,w,'收益分布','分母等待数据' if status=='loading' else f"当前范围 · {stats['count']} 个有效回合",[('区间',24,'start'),('回合数',606,'end'),('占比',760,'end')],rows,selected=selected)
++    panel=distribution_panel(96,y,w,dist,selected=selected,denominator=stats['count'],status=status)
+     body.append(panel.svg);body.append(segments(width-240,table_y+16,['收益率','金额'],mode,192));y=panel.bottom+24
+     if selected:
+         chosen=next(d for d in dist if d['label']==selected);rows=[{'id':r['round_id'],'cells':[(r['date'],'text'),(r['symbol'],'text'),(fmt(r['net']),'positive'),('进入复盘 →','blue')]} for r in chosen['rounds']]
+         panel=table(96,y,w,'区间回合 · '+selected,f"{len(rows)} 个回合 / 范围内 {stats['count']} 个回合",[('平仓日期',24,'start'),('标的',280,'start'),('净盈亏(CNY)',606,'end'),('操作',760,'start')],rows,focus=rows[0]['id'] if kind=='return-stats' and rows else None);body.append(panel.svg);y=panel.bottom+24
+     if kind=='extreme':
+         body += [rect(96,y,w,92,'raised'),text(120,y+30,'金额详情 · 平均盈利',14,'text',600),text(120,y+63,f"{stats['average_profit']:,.2f} CNY",18,'positive'),button(width-180,y+28,132,'复制完整金额')];y+=116
+@@ -445,13 +561,13 @@
+ def rounds_frame(width,height,fixture,kind):
+     live=kind.startswith('live');state,obj,result,rounds=object_state(fixture,live)
+     if kind=='rounds-b':obj=fixture['simulation_exercises'][1];result=lifo_rounds(obj);rounds=result['rounds']
+     view='实盘' if live else '模拟盘';title=obj['label']+' · 回合集';body=common_chrome(width,height,title,obj['symbol']+' · '+obj['code'],state,view,return_label='返回列表');body.append(filter_controls(width,state,view));y=342
+     rows=[{'id':str(i),'cells':[(f'回合 {i}','text'),(r['open_date']+' → '+r['close_date'],'text'),(str(r['quantity']),'text'),(fmt(r['net']),'positive' if r['net']>=0 else 'negative'),('进入复盘 →','blue')]} for i,r in enumerate(rounds,1)]
+     panel=table(96,y,width-120,title,'已闭合回合',[('回合',24,'start'),('开仓 → 平仓',180,'start'),('配对数量',680,'end'),('净盈亏(CNY)',880,'end'),('操作',980,'start')],rows,focus=('2' if kind=='rounds-a-return' else '1') if kind.endswith('return') else None);body.append(panel.svg);y=panel.bottom+24
+-    body.append(metric_cards(96,y,width-120,[('闭合净盈亏',fmt(sum(r['net'] for r in rounds))),('闭合费用',fmt(result['closed_fees'])),('未平仓数量',str(result['open_quantity'])),('留存开仓费用',fmt(result['open_fees']))]));y+=120
++    body.append(metric_cards(96,y,width-120,[('闭合净盈亏',fmt(sum(r['net'] for r in rounds))),('已平仓费用',fmt(result['closed_fees'])),('未平仓数量',str(result['open_quantity'])),('留存开仓费用',fmt(result['open_fees']))]));y+=120
+     return document(width,max(height,int(y)),title,body,state,view,'返回列表')
+ 
+ 
+ def replay_frame(width,height,fixture,kind):
+     live=kind=='library-replay';state,obj,result,rounds=object_state(fixture,live);idx=1
+     if kind=='replay-a2':idx=2
+@@ -472,13 +588,13 @@
+     for t in obj['trades']:
+         xx=sx(t['date']);yy=sy(t['price']);active=t['id'] in [rd['open_id'],rd['close_id']];tone='blue' if active else 'subtle';above=t['side']=='卖出'
+         body.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="9" fill="{COLORS["surface"]}" stroke="{COLORS[tone]}" stroke-width="2"/>')
+         label=('卖' if above else '买')+' '+str(t['quantity'])+'股'+('' if active else ' · 上下文')
+         body.append(text(xx,yy-20 if above else yy+30,label,14,tone,600,'middle'))
+         if active and above:body += [line(xx,top,xx,bottom,'blue',1,'4 4')]
+-    body += [text(x+24,y+473,f"配对 {rd['quantity']} 股 · {rd['open_price']:,.2f} → {rd['close_price']:,.2f}",18,'text',600),text(x+24,y+504,f"开仓 {rd['open_date']}  /  平仓 {rd['close_date']}  ·  费用 {rd['fees']:.2f} CNY",14,'muted'),text(x+w-24,y+473,'净盈亏 '+fmt(rd['net'])+' CNY',18,'positive' if rd['net']>=0 else 'negative',600,'end'),text(x+24,y+549,'日线 · 设计行情样例 · 成交标记为原始成交数量',12,'muted'),button(x+w-156,y+525,132,'返回回合集')]
++    body += [text(x+24,y+473,f"配对 {rd['quantity']} 股 · {rd['open_price']:,.2f} → {rd['close_price']:,.2f}",18,'text',600),text(x+24,y+504,f"开仓 {rd['open_date']}  /  平仓 {rd['close_date']}  ·  已平仓费用 {rd['fees']:.2f} CNY",14,'muted'),text(x+w-24,y+473,'净盈亏 '+fmt(rd['net'])+' CNY',18,'positive' if rd['net']>=0 else 'negative',600,'end'),text(x+24,y+549,'日线 · 设计行情样例 · 成交标记为原始成交数量',12,'muted'),button(x+w-156,y+525,132,'返回回合集')]
+     return document(width,max(height,y+h+24),title,body,state,view,'返回回合集')
+ 
+ 
+ def home_valuation(fixture):
+     valuation=fixture['valuation'];points=[]
+     for day,quotes in sorted(valuation['quotes_by_date'].items()):
+@@ -501,97 +617,31 @@
+     updated,count=re.subn(pattern,lambda m:m[1]+body+m[2],svg,count=1)
+     if count!=1:raise ValueError(f'Homepage reference text missing: {x}, {y}')
+     return updated
+ 
+ 
+ def home_frame(fixture,focus=False):
+-    # Copy the approved full homepage host through the period controls. Data
+-    # modules retain its absolute geometry, hierarchy and complete page length.
++    import importlib.util
++
++    renderer=getattr(home_frame,'_renderer',None)
++    if renderer is None:
++        module_path=ROOT/'homepage-template.py'
++        spec=importlib.util.spec_from_file_location('trading_library_homepage_template',module_path)
++        if spec is None or spec.loader is None:
++            raise RuntimeError(f'Unable to load homepage renderer: {module_path}')
++        renderer=importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(renderer)
++        home_frame._renderer=renderer
+     reference=ROOT.parents[1]/'2026-10-22-homepage-v2.5/source/images/home-1440.svg'
+-    source=reference.read_text();prefix=source[:source.index('<rect x="96.0" y="124"')]
+-    prefix=re.sub(r'<rect x="48" y="134"[^>]*/><text x="60" y="151"[^>]*>12</text>','',prefix)
+-    prefix=prefix.replace('x="246" y="80" width="68" height="36" rx="6" fill="#162233" stroke="#6CA8FF"','x="246" y="80" width="68" height="36" rx="6" fill="#111A26" stroke="#283448"')
+-    prefix=prefix.replace('x="322" y="80" width="68" height="36" rx="6" fill="#111A26" stroke="#283448"','x="322" y="80" width="68" height="36" rx="6" fill="#162233" stroke="#6CA8FF"')
+-    prefix=prefix.replace('2026-01-01 — 10-15','2026-10-01 — 10-15').replace('16:32 更新','15:00 更新')
+-    value=home_valuation(fixture);out=[prefix]
+-    if focus:out.append('<rect x="8" y="137" width="56" height="56" rx="8" fill="none" stroke="#6CA8FF" stroke-width="2"/>')
+-    metrics=[('期间净盈亏(CNY)',value['total']),('期间已实现(CNY)',value['realized']),('期间浮盈变动(CNY)',value['floating']),('当前持仓市值(CNY)',value['market_value'])]
+-    for i,(label,amount) in enumerate(metrics):
+-        x=96+i*333;out += [rect(x,124,321,88),text(x+16,149,label,14,'muted'),f'<g><title>{amount:,.2f} CNY</title>'+text(x+16,188,fmt(amount),28,'text' if i==3 else 'positive',600)+'</g>']
+-    # Identical plot bounds to the approved homepage chart.
+-    out += [rect(96,226,1320,320),text(112,253,'期间净盈亏',16,'text',600),text(1400,253,'CNY',12,'muted',400,'end')]
+-    left,right,top,bottom=172,1380,276,496;points=value['points'];lo=min(0,min(p['cumulative'] for p in points));hi=max(p['cumulative'] for p in points);span=hi-lo;lo-=span*.1;hi+=span*.1
+-    sy=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
+-    for v in [hi,(hi+lo)/2,0,lo]:out += [line(left,sy(v),right,sy(v),'muted' if v==0 else 'border'),text(left-12,sy(v)+4,fmt(v),12,'muted',400,'end')]
+-    prev=None
+-    for i,p in enumerate(points):
+-        xx=left+(right-left)*i/(len(points)-1);yy=sy(p['cumulative'])
+-        if prev:out.append(line(*prev,xx,yy,'blue',2))
+-        out.append(f'<circle cx="{xx:g}" cy="{yy:g}" r="4" fill="{COLORS["blue"]}"><title>{p["date"]} · {p["cumulative"]:,.2f} CNY</title></circle>');prev=xx,yy
+-        if i in [0,2,4,6,8,len(points)-1]:out.append(text(xx,519,p['date'][5:],12,'muted',400,'middle'))
+-    # Reuse the public host's holdings toolbar and column headers verbatim.
+-    holdings=source[source.index('<rect x="96" y="586"'):source.index('<path d="M112 714')]
+-    holdings=home_reference_text(holdings,761,610,fmt(value['market_value']))
+-    holdings=home_reference_text(holdings,950,610,fmt(value['floating']))
+-    out.append(holdings)
+-    # Reuse each public row's geometry and detail icon; only the fixture cells change.
+-    row_template=source[source.index('<path d="M112 714'):source.index('<path d="M112 762')]
+-    for i,p in enumerate(value['positions']):
+-        row=row_template
+-        days=(date.fromisoformat(fixture['navigation']['home']['end'])-date.fromisoformat(p['date'])).days
+-        for xx,yy,val in [(128,706,p['code']),(128,691,p['symbol']),('521.04',691,str(days)+' 天'),('649.8399999999999',691,str(p['quantity'])),('791.52',691,f"{p['price']+p['fee']/p['quantity']:,.2f}"),('933.2',691,f"{p['quote']:,.2f}"),('1126.4',691,fmt(p['market_value'])),('1306.72',691,fmt(p['floating']))]:
+-            row=home_reference_text(row,xx,yy,val)
+-        out.append(f'<g transform="translate(0 {i*48})">{row}</g>')
+-    out += [text(112,1089,'1–2 / 2 项 · 估值 2026-10-15 15:00 · 覆盖 2/2 持仓',12,'muted'),button(1256,1064,36,'‹',disabled=True),text(1328,1087,'1 / 1',14,'muted',400,'middle'),button(1364,1064,36,'›',disabled=True)]
+-    # Preserve the reference history title, independent year/metric selectors,
+-    # card hierarchy and chart bounds. The fixture has a single effective month.
+-    st=stats_for(derive_live_rounds(fixture))
+-    hstart=source.index('<svg x="96" y="1130"')
+-    history=source[hstart:source.index('<rect x="0" y="214"',hstart)]
+-    history=re.sub(r'<desc id="history-desc">.*?</desc>',f'<desc id="history-desc">历史统计，截至 2026-10-15；历史净盈亏 {st["net"]:.2f}，5 回合，胜率 60.0%，费用 {st["fees"]:.2f}</desc>',history)
+-    for xx,yy,val in [(16,145,fmt(st['net'])),(349,145,str(st['count'])),(682,145,f"{st['win_rate']:.1f}%"),(971,145,f"{st['wins']} / {st['count']} 盈利回合"),(1015,145,fmt(st['fees']))]:
+-        history=home_reference_text(history,xx,yy,val)
+-    out += [history,'<rect x="0" y="214" width="1320" height="320" rx="8" fill="#111A26" stroke="#283448"/>']
+-    # Same period-state surfaces as V2.5; no trades and future months are not zeros.
+-    chart_left,chart_right,chart_top,chart_bottom=106,1296,280,490
+-    step=(chart_right-chart_left)/11
+-    for month in range(1,10):
+-        start=chart_left if month==1 else chart_left+(month-1.5)*step
+-        end=chart_left+(month-.5)*step
+-        out.append(f'<rect x="{start:g}" y="280" width="{end-start:g}" height="210" fill="#30291E" opacity="0.65" data-state="empty"><title>{month}月：该期间无已关闭回合</title></rect>')
+-    future=chart_left+9.5*step
+-    out += [f'<rect x="{future:g}" y="280" width="{chart_right-future:g}" height="210" fill="#1D2B40" opacity="0.85" data-state="future-zone"><title>11–12月：尚未到达</title></rect>',f'<line x1="{future:g}" y1="280" x2="{future:g}" y2="490" stroke="#71829B" stroke-dasharray="4 4" data-state="future-boundary"/>',text(24,246,'每月净盈亏',16,'text',600),text(1276,246,'CNY',12,'muted',400,'end')]
+-    sy=lambda v:490-(v+100)/1000*200
+-    for val in [900,650,400,150,-100]:
+-        yy=sy(val);out += [line(106,yy,1296,yy),text(94,yy+4,fmt(val),12,'muted',400,'end')]
+-    out.append(f'<line x1="106" y1="{sy(0):g}" x2="1296" y2="{sy(0):g}" stroke="#A8B6CB" data-state="zero-line"/>')
+-    xx=chart_left+9*step;yy=sy(st['net'])
+-    out.append(f'<g data-series="monthly-net"><polyline points="{xx:g},{yy:g}" fill="none" stroke="#6CA8FF" stroke-width="2"/><circle cx="{xx:g}" cy="{yy:g}" r="3" fill="#6CA8FF"><title>2026年10月 · {st["net"]:.2f} CNY · 5 回合</title></circle></g>')
+-    for month in range(1,13):out.append(text(chart_left+(month-1)*step,514,f'{month}月',12,'muted',400,'middle'))
+-    out.append('</svg>')
+-    # Reuse the entire public contribution control surface, legend and zero line.
+-    cstart=source.index('<svg x="96" y="1712.0"')
+-    contribution=source[cstart:source.index('<text x="32" y="311"',cstart)]
+-    contribution=home_reference_text(contribution,1288,36,fmt(value['total'])+' CNY')
+-    contribution=home_reference_text(contribution,32,58,'本月 · 当前表现日期 2026-10-01 — 2026-10-15 · 已实现 + 浮盈变化')
+-    out.append(contribution)
+-    for i,label in enumerate(['A股','港股','美股']):
+-        yy=311+i*72
+-        out.append(text(32,yy,label,14))
+-        if i==0:
+-            # Solid and hollow segments have the same 14px visible height.
+-            # The hollow stroke is inset one pixel on each side.
+-            realw=396*value['realized']/value['total'];floatw=396-realw
+-            out += [f'<rect x="686" y="{yy-18}" width="{realw:g}" height="14" rx="1" fill="#53D7A0"><title>已实现 {value["realized"]:.2f} CNY</title></rect>',f'<rect x="{687+realw:g}" y="{yy-17}" width="{floatw-2:g}" height="12" rx="0" fill="none" stroke="#53D7A0" stroke-width="2"><title>浮盈变化 {value["floating"]:.2f} CNY</title></rect>']
+-        out.append(text(1288,yy,fmt(value['total'] if i==0 else 0),14,'positive' if i==0 else 'muted',700,'end'))
+-    footer=source[source.index('<text x="32" y="548"',cstart):source.index('</svg>',source.index('<text x="32" y="548"',cstart))+6]
+-    footer=home_reference_text(footer,1288,548,fmt(value['total'])+' CNY')
+-    footer=home_reference_text(footer,32,574,'已实现 '+fmt(value['realized'])+' · 浮盈变化 '+fmt(value['floating']))
+-    footer=home_reference_text(footer,1288,574,'市场合计')
+-    out += [footer,'</g></svg>']
+-    return ''.join(out)
++    return renderer.render_home(
++        reference,
++        fixture,
++        home_valuation(fixture),
++        stats_for(derive_live_rounds(fixture)),
++        focus,
++    )
+ 
+ 
+ FRAMES={
+  '01-live-normal.svg':'live-stats','02-simulation-normal.svg':'simulation-stats','03-distribution-selected.svg':'distribution','04-return.svg':'return-stats',
+  '05-loading.svg':'loading','06-empty.svg':'empty','07-error.svg':'error','08-extreme.svg':'extreme','09-missing-input.svg':'missing',
+  'journeys-date.svg':'date','journeys-date-1280.svg':'date','journeys-date-month.svg':'month-list',

@@ -1,0 +1,398 @@
+[
+  {
+    "target": "交易库视觉设计方案-v10",
+    "text": "交易库视觉设计方案 V1.0",
+    "observed": {
+      "bottom": 105.59375,
+      "heading": "交易库视觉设计方案 V1.0",
+      "top": 64,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E4%BA%A4%E6%98%93%E5%BA%93%E8%A7%86%E8%A7%89%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88-v10",
+      "hash": "交易库视觉设计方案-v10"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT01",
+    "text": "一、目标与取舍",
+    "observed": {
+      "bottom": 106.984375,
+      "heading": "一、目标与取舍",
+      "top": 63.984375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT01",
+      "hash": "chapter-BT01"
+    },
+    "pass": true
+  },
+  {
+    "target": "设计取舍",
+    "text": "设计取舍",
+    "observed": {
+      "bottom": 91.84375,
+      "heading": "设计取舍",
+      "top": 63.765625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%AE%BE%E8%AE%A1%E5%8F%96%E8%88%8D",
+      "hash": "设计取舍"
+    },
+    "pass": true
+  },
+  {
+    "target": "范围与边界",
+    "text": "范围与边界",
+    "observed": {
+      "bottom": 92.015625,
+      "heading": "范围与边界",
+      "top": 63.9375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%8C%83%E5%9B%B4%E4%B8%8E%E8%BE%B9%E7%95%8C",
+      "hash": "范围与边界"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT02",
+    "text": "二、布局与视觉规范",
+    "observed": {
+      "bottom": 107.109375,
+      "heading": "二、布局与视觉规范",
+      "top": 64.109375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT02",
+      "hash": "chapter-BT02"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT03",
+    "text": "三、范围、日期与搜索",
+    "observed": {
+      "bottom": 106.890625,
+      "heading": "三、范围、日期与搜索",
+      "top": 63.890625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT03",
+      "hash": "chapter-BT03"
+    },
+    "pass": true
+  },
+  {
+    "target": "进入与默认",
+    "text": "进入与默认",
+    "observed": {
+      "bottom": 91.96875,
+      "heading": "进入与默认",
+      "top": 63.890625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%BF%9B%E5%85%A5%E4%B8%8E%E9%BB%98%E8%AE%A4",
+      "hash": "进入与默认"
+    },
+    "pass": true
+  },
+  {
+    "target": "切换视角与保存",
+    "text": "切换视角与保存",
+    "observed": {
+      "bottom": 92.234375,
+      "heading": "切换视角与保存",
+      "top": 64.15625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%88%87%E6%8D%A2%E8%A7%86%E8%A7%92%E4%B8%8E%E4%BF%9D%E5%AD%98",
+      "hash": "切换视角与保存"
+    },
+    "pass": true
+  },
+  {
+    "target": "日期规则",
+    "text": "日期规则",
+    "observed": {
+      "bottom": 92.203125,
+      "heading": "日期规则",
+      "top": 64.125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%97%A5%E6%9C%9F%E8%A7%84%E5%88%99",
+      "hash": "日期规则"
+    },
+    "pass": true
+  },
+  {
+    "target": "搜索与刷新",
+    "text": "搜索与刷新",
+    "observed": {
+      "bottom": 92.078125,
+      "heading": "搜索与刷新",
+      "top": 64,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%88%B7%E6%96%B0",
+      "hash": "搜索与刷新"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT04",
+    "text": "四、列表、练习与回合",
+    "observed": {
+      "bottom": 106.84375,
+      "heading": "四、列表、练习与回合",
+      "top": 63.84375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT04",
+      "hash": "chapter-BT04"
+    },
+    "pass": true
+  },
+  {
+    "target": "实盘列表",
+    "text": "实盘列表",
+    "observed": {
+      "bottom": 92.015625,
+      "heading": "实盘列表",
+      "top": 63.9375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%AE%9E%E7%9B%98%E5%88%97%E8%A1%A8",
+      "hash": "实盘列表"
+    },
+    "pass": true
+  },
+  {
+    "target": "模拟盘练习列表",
+    "text": "模拟盘练习列表",
+    "observed": {
+      "bottom": 92.1875,
+      "heading": "模拟盘练习列表",
+      "top": 64.109375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%A8%A1%E6%8B%9F%E7%9B%98%E7%BB%83%E4%B9%A0%E5%88%97%E8%A1%A8",
+      "hash": "模拟盘练习列表"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT05",
+    "text": "五、统计与分布",
+    "observed": {
+      "bottom": 107.046875,
+      "heading": "五、统计与分布",
+      "top": 64.046875,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT05",
+      "hash": "chapter-BT05"
+    },
+    "pass": true
+  },
+  {
+    "target": "样本与日期",
+    "text": "样本与日期",
+    "observed": {
+      "bottom": 92.21875,
+      "heading": "样本与日期",
+      "top": 64.140625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%A0%B7%E6%9C%AC%E4%B8%8E%E6%97%A5%E6%9C%9F",
+      "hash": "样本与日期"
+    },
+    "pass": true
+  },
+  {
+    "target": "指标与结果口径",
+    "text": "指标与结果口径",
+    "observed": {
+      "bottom": 91.890625,
+      "heading": "指标与结果口径",
+      "top": 63.8125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%8C%87%E6%A0%87%E4%B8%8E%E7%BB%93%E6%9E%9C%E5%8F%A3%E5%BE%84",
+      "hash": "指标与结果口径"
+    },
+    "pass": true
+  },
+  {
+    "target": "趋势粒度",
+    "text": "趋势粒度",
+    "observed": {
+      "bottom": 91.859375,
+      "heading": "趋势粒度",
+      "top": 63.78125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%B6%8B%E5%8A%BF%E7%B2%92%E5%BA%A6",
+      "hash": "趋势粒度"
+    },
+    "pass": true
+  },
+  {
+    "target": "分布与下钻",
+    "text": "分布与下钻",
+    "observed": {
+      "bottom": 92.234375,
+      "heading": "分布与下钻",
+      "top": 64.15625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%88%86%E5%B8%83%E4%B8%8E%E4%B8%8B%E9%92%BB",
+      "hash": "分布与下钻"
+    },
+    "pass": true
+  },
+  {
+    "target": "实盘普通统计",
+    "text": "实盘普通统计",
+    "observed": {
+      "bottom": 91.90625,
+      "heading": "实盘普通统计",
+      "top": 63.828125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%AE%9E%E7%9B%98%E6%99%AE%E9%80%9A%E7%BB%9F%E8%AE%A1",
+      "hash": "实盘普通统计"
+    },
+    "pass": true
+  },
+  {
+    "target": "模拟盘普通统计",
+    "text": "模拟盘普通统计",
+    "observed": {
+      "bottom": 91.96875,
+      "heading": "模拟盘普通统计",
+      "top": 63.890625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E6%A8%A1%E6%8B%9F%E7%9B%98%E6%99%AE%E9%80%9A%E7%BB%9F%E8%AE%A1",
+      "hash": "模拟盘普通统计"
+    },
+    "pass": true
+  },
+  {
+    "target": "金额切换下钻与返回",
+    "text": "金额切换、下钻与返回",
+    "observed": {
+      "bottom": 92.03125,
+      "heading": "金额切换、下钻与返回",
+      "top": 63.953125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E9%87%91%E9%A2%9D%E5%88%87%E6%8D%A2%E4%B8%8B%E9%92%BB%E4%B8%8E%E8%BF%94%E5%9B%9E",
+      "hash": "金额切换下钻与返回"
+    },
+    "pass": true
+  },
+  {
+    "target": "趋势边界与粒度",
+    "text": "趋势边界与粒度",
+    "observed": {
+      "bottom": 92.09375,
+      "heading": "趋势边界与粒度",
+      "top": 64.015625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%B6%8B%E5%8A%BF%E8%BE%B9%E7%95%8C%E4%B8%8E%E7%B2%92%E5%BA%A6",
+      "hash": "趋势边界与粒度"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT06",
+    "text": "六、查看详情、进入复盘与返回",
+    "observed": {
+      "bottom": 107.078125,
+      "heading": "六、查看详情、进入复盘与返回",
+      "top": 64.078125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT06",
+      "hash": "chapter-BT06"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT07",
+    "text": "七、异常状态",
+    "observed": {
+      "bottom": 107.109375,
+      "heading": "七、异常状态",
+      "top": 64.109375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT07",
+      "hash": "chapter-BT07"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT08",
+    "text": "八、组件复用与职责",
+    "observed": {
+      "bottom": 107.1875,
+      "heading": "八、组件复用与职责",
+      "top": 64.1875,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT08",
+      "hash": "chapter-BT08"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT09",
+    "text": "九、实现验收",
+    "observed": {
+      "bottom": 106.875,
+      "heading": "九、实现验收",
+      "top": 63.875,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT09",
+      "hash": "chapter-BT09"
+    },
+    "pass": true
+  },
+  {
+    "target": "功能验收",
+    "text": "功能验收",
+    "observed": {
+      "bottom": 92.046875,
+      "heading": "功能验收",
+      "top": 63.96875,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%8A%9F%E8%83%BD%E9%AA%8C%E6%94%B6",
+      "hash": "功能验收"
+    },
+    "pass": true
+  },
+  {
+    "target": "状态与持久化验收",
+    "text": "状态与持久化验收",
+    "observed": {
+      "bottom": 92.3125,
+      "heading": "状态与持久化验收",
+      "top": 64.234375,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E7%8A%B6%E6%80%81%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96%E9%AA%8C%E6%94%B6",
+      "hash": "状态与持久化验收"
+    },
+    "pass": true
+  },
+  {
+    "target": "视觉验收",
+    "text": "视觉验收",
+    "observed": {
+      "bottom": 92.078125,
+      "heading": "视觉验收",
+      "top": 64,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E8%A7%86%E8%A7%89%E9%AA%8C%E6%94%B6",
+      "hash": "视觉验收"
+    },
+    "pass": true
+  },
+  {
+    "target": "chapter-BT10",
+    "text": "十、来源映射、历史与未决项",
+    "observed": {
+      "bottom": 106.765625,
+      "heading": "十、来源映射、历史与未决项",
+      "top": 63.765625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT10",
+      "hash": "chapter-BT10"
+    },
+    "pass": true
+  },
+  {
+    "target": "实现约定",
+    "text": "实现约定",
+    "observed": {
+      "bottom": 193.640625,
+      "heading": "实现约定",
+      "top": 165.5625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%AE%9E%E7%8E%B0%E7%BA%A6%E5%AE%9A",
+      "hash": "实现约定"
+    },
+    "pass": true
+  },
+  {
+    "target": "已确认决定",
+    "text": "已确认决定",
+    "observed": {
+      "bottom": 474.71875,
+      "heading": "已确认决定",
+      "top": 446.640625,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%B7%B2%E7%A1%AE%E8%AE%A4%E5%86%B3%E5%AE%9A",
+      "hash": "已确认决定"
+    },
+    "pass": true
+  },
+  {
+    "target": "待确认项",
+    "text": "待确认项",
+    "observed": {
+      "bottom": 602.390625,
+      "heading": "待确认项",
+      "top": 574.3125,
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html#%E5%BE%85%E7%A1%AE%E8%AE%A4%E9%A1%B9",
+      "hash": "待确认项"
+    },
+    "pass": true
+  }
+]

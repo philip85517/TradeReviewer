@@ -1,0 +1,269 @@
+{
+  "fingerprint": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58",
+  "checks": [
+    {
+      "check": "source fingerprint",
+      "result": "PASS",
+      "detail": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58"
+    },
+    {
+      "check": "chapter anchors",
+      "result": "PASS",
+      "detail": "BT01–BT10 retained in order"
+    },
+    {
+      "check": "all referenced image fingerprints",
+      "result": "PASS",
+      "detail": [
+        {
+          "id": "journeys-date@state-demo-1-1",
+          "ok": true
+        },
+        {
+          "id": "journeys-date-1280@state-demo-1-2",
+          "ok": true
+        },
+        {
+          "id": "journeys-date-month@state-demo-1-3",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-sim-ab@state-demo-2-1",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-rounds-a@state-demo-2-2",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-replay-a1@state-demo-2-3",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-replay-a2@state-demo-2-4",
+          "ok": true
+        },
+        {
+          "id": "journeys-rounds-a-return@state-demo-2-5",
+          "ok": true
+        },
+        {
+          "id": "journeys-simulation-return@state-demo-2-6",
+          "ok": true
+        },
+        {
+          "id": "journeys-rounds-b@state-demo-2-7",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-replay-b1@state-demo-2-8",
+          "ok": true
+        },
+        {
+          "id": "01-live-normal@state-demo-3-1",
+          "ok": true
+        },
+        {
+          "id": "02-simulation-normal@state-demo-4-1",
+          "ok": true
+        },
+        {
+          "id": "distribution-amount@state-demo-5-1",
+          "ok": true
+        },
+        {
+          "id": "03-distribution-selected@state-demo-5-2",
+          "ok": true
+        },
+        {
+          "id": "04-return@state-demo-5-3",
+          "ok": true
+        },
+        {
+          "id": "journeys-trend-gap@state-demo-6-1",
+          "ok": true
+        },
+        {
+          "id": "journeys-trend-single@state-demo-6-2",
+          "ok": true
+        },
+        {
+          "id": "journeys-trend-empty@state-demo-6-3",
+          "ok": true
+        },
+        {
+          "id": "journeys-trend-month@state-demo-6-4",
+          "ok": true
+        },
+        {
+          "id": "journeys-trend-year@state-demo-6-5",
+          "ok": true
+        },
+        {
+          "id": "handoff@state-demo-7-1",
+          "ok": true
+        },
+        {
+          "id": "journeys-home-entry@state-demo-7-2",
+          "ok": true
+        },
+        {
+          "id": "journeys-library-list@state-demo-7-3",
+          "ok": true
+        },
+        {
+          "id": "journeys-live-rounds@state-demo-7-4",
+          "ok": true
+        },
+        {
+          "id": "journeys-library-replay@state-demo-7-5",
+          "ok": true
+        },
+        {
+          "id": "journeys-live-rounds-return@state-demo-7-6",
+          "ok": true
+        },
+        {
+          "id": "journeys-library-list-return@state-demo-7-7",
+          "ok": true
+        },
+        {
+          "id": "journeys-view-simulation@state-demo-7-8",
+          "ok": true
+        },
+        {
+          "id": "journeys-view-restore@state-demo-7-9",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-pending-library@state-demo-7-10",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-pending-library-1280@state-demo-7-11",
+          "ok": true
+        },
+        {
+          "id": "library-return@state-demo-7-12",
+          "ok": true
+        },
+        {
+          "id": "journeys-library-return@state-demo-7-13",
+          "ok": true
+        },
+        {
+          "id": "hcr06-final-return@state-demo-7-14",
+          "ok": true
+        },
+        {
+          "id": "05-loading@state-demo-8-1",
+          "ok": true
+        },
+        {
+          "id": "06-empty@state-demo-8-2",
+          "ok": true
+        },
+        {
+          "id": "07-error@state-demo-8-3",
+          "ok": true
+        },
+        {
+          "id": "08-extreme@state-demo-8-4",
+          "ok": true
+        },
+        {
+          "id": "09-missing-input@state-demo-8-5",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "check": "live comments preserved",
+      "result": "PASS",
+      "detail": "Original opinions, quotes, status, history and operations byte-identical"
+    },
+    {
+      "check": "offline snapshot current",
+      "result": "PASS",
+      "detail": "revision 6"
+    },
+    {
+      "check": "unique block identities",
+      "result": "PASS",
+      "detail": "279 blocks"
+    },
+    {
+      "check": "mapping fingerprints",
+      "result": "PASS",
+      "detail": "8aca7949a1b05d56d27a7472115d45b9c25a07013fe3961a03883a2dd3bd1c58"
+    },
+    {
+      "check": "comment paragraph mapping comment-ff1644d6fadd433484f0a8040b381b73",
+      "result": "PASS",
+      "detail": [
+        "HOME-TLIB-GOAL",
+        "HOME-TLIB-TRADEOFF",
+        "HOME-TLIB-ACCURACY"
+      ]
+    },
+    {
+      "check": "comment paragraph mapping comment-0f6fbbbb44cc4ed88b05caad3e314891",
+      "result": "PASS",
+      "detail": [
+        "HOME-TLIB-INTRO",
+        "HOME-TLIB-REFERENCES"
+      ]
+    },
+    {
+      "check": "comment image mapping comment-646fafe57e424f72aa552cdf8e6ddded",
+      "result": "PASS",
+      "detail": "journeys-date@state-demo-1-1"
+    },
+    {
+      "check": "comment image mapping comment-b880c94701b74fa79675e2bb6c7f1ed8",
+      "result": "PASS",
+      "detail": "hcr06-final-sim-ab@state-demo-2-1"
+    },
+    {
+      "check": "comment image mapping comment-e17d6a68984445b3af9f213a4ad47d6c",
+      "result": "PASS",
+      "detail": "01-live-normal@state-demo-3-1"
+    },
+    {
+      "check": "comment image mapping comment-9e58c33192e24f54b5d85f5cf8f00d65",
+      "result": "PASS",
+      "detail": "handoff@state-demo-7-1"
+    },
+    {
+      "check": "unique HTML anchors",
+      "result": "PASS",
+      "detail": "53 ids"
+    },
+    {
+      "check": "document links and assets",
+      "result": "PASS",
+      "detail": {
+        "verified": 146,
+        "broken": []
+      }
+    },
+    {
+      "check": "public component names preserved",
+      "result": "PASS",
+      "detail": [
+        "IconButton",
+        "SegmentedTabs",
+        "Select",
+        "Popover",
+        "FilterPopover",
+        "Token",
+        "DataTable",
+        "Metric",
+        "StatusBadge",
+        "ChartTooltip",
+        "EmptyState",
+        "RetryAction"
+      ]
+    }
+  ]
+}

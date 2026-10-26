@@ -1,0 +1,167 @@
+[
+  {
+    "current": "交易库视觉设计方案-v10",
+    "target": "交易库视觉设计方案-v10",
+    "top": 64
+  },
+  {
+    "current": "chapter-BT01",
+    "target": "chapter-BT01",
+    "top": 63.984375
+  },
+  {
+    "current": "设计取舍",
+    "target": "设计取舍",
+    "top": 63.765625
+  },
+  {
+    "current": "范围与边界",
+    "target": "范围与边界",
+    "top": 63.9375
+  },
+  {
+    "current": "chapter-BT02",
+    "target": "chapter-BT02",
+    "top": 64.109375
+  },
+  {
+    "current": "chapter-BT03",
+    "target": "chapter-BT03",
+    "top": 63.890625
+  },
+  {
+    "current": "进入与默认",
+    "target": "进入与默认",
+    "top": 63.890625
+  },
+  {
+    "current": "切换视角与保存",
+    "target": "切换视角与保存",
+    "top": 64.15625
+  },
+  {
+    "current": "日期规则",
+    "target": "日期规则",
+    "top": 64.125
+  },
+  {
+    "current": "搜索与刷新",
+    "target": "搜索与刷新",
+    "top": 64
+  },
+  {
+    "current": "chapter-BT04",
+    "target": "chapter-BT04",
+    "top": 63.84375
+  },
+  {
+    "current": "实盘列表",
+    "target": "实盘列表",
+    "top": 63.9375
+  },
+  {
+    "current": "模拟盘练习列表",
+    "target": "模拟盘练习列表",
+    "top": 64.109375
+  },
+  {
+    "current": "chapter-BT05",
+    "target": "chapter-BT05",
+    "top": 64.046875
+  },
+  {
+    "current": "样本与日期",
+    "target": "样本与日期",
+    "top": 64.140625
+  },
+  {
+    "current": "指标与结果口径",
+    "target": "指标与结果口径",
+    "top": 63.8125
+  },
+  {
+    "current": "趋势粒度",
+    "target": "趋势粒度",
+    "top": 63.78125
+  },
+  {
+    "current": "分布与下钻",
+    "target": "分布与下钻",
+    "top": 64.15625
+  },
+  {
+    "current": "实盘普通统计",
+    "target": "实盘普通统计",
+    "top": 63.828125
+  },
+  {
+    "current": "模拟盘普通统计",
+    "target": "模拟盘普通统计",
+    "top": 63.890625
+  },
+  {
+    "current": "金额切换下钻与返回",
+    "target": "金额切换下钻与返回",
+    "top": 63.953125
+  },
+  {
+    "current": "趋势边界与粒度",
+    "target": "趋势边界与粒度",
+    "top": 64.015625
+  },
+  {
+    "current": "chapter-BT06",
+    "target": "chapter-BT06",
+    "top": 64.078125
+  },
+  {
+    "current": "chapter-BT07",
+    "target": "chapter-BT07",
+    "top": 64.109375
+  },
+  {
+    "current": "chapter-BT08",
+    "target": "chapter-BT08",
+    "top": 64.1875
+  },
+  {
+    "current": "chapter-BT09",
+    "target": "chapter-BT09",
+    "top": 63.875
+  },
+  {
+    "current": "功能验收",
+    "target": "功能验收",
+    "top": 63.96875
+  },
+  {
+    "current": "状态与持久化验收",
+    "target": "状态与持久化验收",
+    "top": 64.234375
+  },
+  {
+    "current": "视觉验收",
+    "target": "视觉验收",
+    "top": 64
+  },
+  {
+    "current": "chapter-BT10",
+    "target": "chapter-BT10",
+    "top": 63.765625
+  },
+  {
+    "current": "chapter-BT10",
+    "target": "实现约定",
+    "top": 165.5625
+  },
+  {
+    "current": "chapter-BT10",
+    "target": "已确认决定",
+    "top": 446.640625
+  },
+  {
+    "current": "chapter-BT10",
+    "target": "待确认项",
+    "top": 574.3125
+  }
+]

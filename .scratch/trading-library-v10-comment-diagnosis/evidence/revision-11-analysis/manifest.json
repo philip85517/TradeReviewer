@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-24T16:52:34.805370+08:00",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "scope": "Read-only diagnosis; no design or product edits",
+  "files": {
+    "docs/design-system/reviews/TRADING-LIBRARY-V10.json": "e731172c47d544551c22214a0fddd6bf8c3197663a52c4a183616f088d07c3a7",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md": "b236d66415148decf65eba0075cd9b8d70d91a3916b9f032207274c80dbd9672",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/images/journeys-date.svg": "50073744ee9414e0358103a3486de71a13b5fc4d4a88d617f5377f6528963268",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/source/generate-library-frames.py": "585fa9946411fd5244397a14437b911374e9191434999275c508d58c35065ce7",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-options.html": "7d7043235db9e58082cae4090245f611c03a2b04208403e73087268b9beb04de",
+    "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html": "b64f4ed9528a20e9961523a034eb5cff6ba5439d901543151e4f0593ae4a5a7d"
+  }
+}

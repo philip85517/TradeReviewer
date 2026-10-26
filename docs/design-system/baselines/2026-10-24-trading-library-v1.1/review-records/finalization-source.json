@@ -1,0 +1,19 @@
+{
+  "version": "1.1",
+  "documentId": "TRADING-LIBRARY-V11",
+  "finalizedAt": "2026-10-24",
+  "authorization": "用户：将当前的原型定型到交易库设计方案V1.1中",
+  "prototype": {
+    "source": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+    "frozen": "docs/design-system/baselines/2026-10-24-trading-library-v1.1/navigation-e-prototype.html",
+    "sha256": "3b1068e9d156aa27af5a00cbaf676451dc492c38c0f47426b57a6cd3037c6025"
+  },
+  "previousVersion": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html",
+  "previousComments": {
+    "path": "docs/design-system/reviews/TRADING-LIBRARY-V10.json",
+    "revision": 11,
+    "count": 11,
+    "policy": "保留原评论原状态；不自动迁移、关闭或改写。V1.1使用独立评论身份。"
+  },
+  "scope": "设计文档与静态图稿定型；非产品实现验收"
+}

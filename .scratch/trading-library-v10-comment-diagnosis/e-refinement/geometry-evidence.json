@@ -1,0 +1,1701 @@
+{
+  "capturedAt": "2026-10-24T12:53:33.819Z",
+  "views": [
+    {
+      "name": "live-list-verified-1440",
+      "active": "page-list",
+      "overflow": false,
+      "rects": {
+        "cards": null,
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 719.5,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 872,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": null,
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 1000,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1353,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "列表"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [],
+      "viewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "name": "live-stats-verified-1440",
+      "active": "page-stats",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 104,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 757,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 872,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 337
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 1000,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1353,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n5"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n747.14"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "胜率\n60.00%"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n351.88"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-154.25"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n22.86"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "name": "sim-list-verified-1440",
+      "active": "page-list",
+      "overflow": false,
+      "rects": {
+        "cards": null,
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 479.5,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 872,
+          "scrollTop": 0,
+          "shadow": "rgb(64, 86, 109) 0px 0px 0px 1px inset",
+          "width": 1368,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": null,
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 1000,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "rgb(96, 124, 150) 0px 2px 0px 0px inset",
+          "width": 1353,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "模拟盘",
+        "page": "列表"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [],
+      "viewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "name": "sim-stats-verified-1440",
+      "active": "page-stats",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 220,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 915,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 872,
+          "scrollTop": 0,
+          "shadow": "rgb(64, 86, 109) 0px 0px 0px 1px inset",
+          "width": 1368,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(22, 35, 50)",
+          "border": "rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 495
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 1000,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "rgb(96, 124, 150) 0px 2px 0px 0px inset",
+          "width": 1353,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1305,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1368,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "模拟盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "取所选练习中最大的单次练习权益回撤，不把不同练习拼成一个账户。当前样例缺少权益路径，暂不可计算。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n7"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n2,272.00"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "总体胜率\n71.43%"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n33.00"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "做多胜率 · 5/7 样本\n71.43%"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "做空胜率 · 无样本\n—"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n490.80"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-91.00"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "name": "live-list-verified-1280",
+      "active": "page-list",
+      "overflow": false,
+      "rects": {
+        "cards": null,
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 719.5,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": null,
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1193,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "列表"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      }
+    },
+    {
+      "name": "live-stats-verified-1280",
+      "active": "page-stats",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 104,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 757,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 337
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1193,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n5"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n747.14"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "胜率\n60.00%"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n351.88"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-154.25"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n22.86"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      }
+    },
+    {
+      "name": "sim-list-verified-1280",
+      "active": "page-list",
+      "overflow": false,
+      "rects": {
+        "cards": null,
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 479.5,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "rgb(64, 86, 109) 0px 0px 0px 1px inset",
+          "width": 1208,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": null,
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "rgb(96, 124, 150) 0px 2px 0px 0px inset",
+          "width": 1193,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "模拟盘",
+        "page": "列表"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      }
+    },
+    {
+      "name": "sim-stats-verified-1280",
+      "active": "page-stats",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 220,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 915,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "rgb(64, 86, 109) 0px 0px 0px 1px inset",
+          "width": 1208,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(22, 35, 50)",
+          "border": "rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 495
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(17, 30, 44)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(64, 86, 109)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "rgb(96, 124, 150) 0px 2px 0px 0px inset",
+          "width": 1193,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1145,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1208,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "模拟盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "取所选练习中最大的单次练习权益回撤，不把不同练习拼成一个账户。当前样例缺少权益路径，暂不可计算。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n7"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n2,272.00"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "总体胜率\n71.43%"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n33.00"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "做多胜率 · 5/7 样本\n71.43%"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "做空胜率 · 无样本\n—"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n490.80"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-91.00"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      }
+    },
+    {
+      "name": "live-breakpoint-1239",
+      "active": "mode-live",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 220,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1104,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 873,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1104,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1167,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1104,
+          "x": 96,
+          "y": 453
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1152,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1104,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1167,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n5"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n747.14"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "胜率\n60.00%"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n351.88"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-154.25"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n22.86"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1239
+      }
+    },
+    {
+      "name": "live-breakpoint-1241",
+      "active": "mode-live",
+      "overflow": false,
+      "rects": {
+        "cards": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 104,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1106,
+          "x": 96,
+          "y": 215
+        },
+        "content": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 757,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1106,
+          "x": 96,
+          "y": 140
+        },
+        "main": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 672,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1169,
+          "x": 72,
+          "y": 64
+        },
+        "mode": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 44,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 184,
+          "x": 96,
+          "y": 70.5
+        },
+        "panel": {
+          "background": "rgb(17, 26, 38)",
+          "border": "rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 290,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1106,
+          "x": 96,
+          "y": 337
+        },
+        "side": {
+          "background": "rgb(14, 22, 34)",
+          "border": "rgb(230, 237, 247) rgb(40, 52, 72) rgb(230, 237, 247) rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 800,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 72,
+          "x": 0,
+          "y": 0
+        },
+        "subnav": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 58,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1154,
+          "x": 72,
+          "y": 64
+        },
+        "tools": {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgb(230, 237, 247)",
+          "color": "rgb(230, 237, 247)",
+          "height": 75,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1106,
+          "x": 96,
+          "y": 140
+        },
+        "top": {
+          "background": "rgb(11, 16, 25)",
+          "border": "rgb(230, 237, 247) rgb(230, 237, 247) rgb(40, 52, 72)",
+          "color": "rgb(230, 237, 247)",
+          "height": 64,
+          "scrollTop": 0,
+          "shadow": "none",
+          "width": 1169,
+          "x": 72,
+          "y": 0
+        }
+      },
+      "selected": {
+        "mode": "实盘",
+        "page": "统计"
+      },
+      "tips": [
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "已平仓回合的开仓分摊费与平仓费；已计入净盈亏，不含未平仓费用。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "按日期累计已平仓有效回合的净盈亏，费用已扣除；模拟盘汇总各练习结果，不代表一个连续账户的权益曲线。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "每个已平仓有效回合计入一个区间，条长表示回合数，占比以有效回合总数为分母。切换收益率或金额只改变分布分组。"
+        },
+        {
+          "hidden": true,
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "本页使用固定样例数据。扩展日期范围仍包含同一组记录；“预览”可查看加载和空结果。刷新后恢复实盘列表、默认日期和收益率分布。"
+        }
+      ],
+      "url": "http://127.0.0.1:3090/design-system/baselines/2026-10-22-trading-library-v1.0/navigation-e-prototype.html",
+      "values": [
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "有效回合\n5"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "累计净盈亏\n747.14"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "胜率\n60.00%"
+        },
+        {
+          "color": "rgb(83, 215, 160)",
+          "text": "平均盈利\n351.88"
+        },
+        {
+          "color": "rgb(255, 133, 146)",
+          "text": "平均亏损\n-154.25"
+        },
+        {
+          "color": "rgb(230, 237, 247)",
+          "text": "费用（已扣除）\n22.86"
+        }
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1241
+      }
+    }
+  ]
+}

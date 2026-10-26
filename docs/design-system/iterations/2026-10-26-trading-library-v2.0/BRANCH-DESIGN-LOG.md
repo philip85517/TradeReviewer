@@ -91,3 +91,5 @@
 仓库根目录启动 `./docs/design-system/start-design-preview.sh`。当前阅读入口为 `http://127.0.0.1:3090/design-system/baselines/2026-10-26-trading-library-v2.0/visual-spec.html`。
 
 本次远端交接的提交范围、重新校验结果、PR、合并状态和本地基线同步结果记录在[集成日志](../../../../.scratch/trading-library-v20-spec-sync/INTEGRATION-LOG.md)。本日志描述已确认设计及证据；远端操作结果以该日志与 GitHub PR 状态为准。
+
+远端设计交付已通过 [PR #41](https://github.com/philip85517/TradeReviewer/pull/41) 合并，合并提交 `ed34ad1b8bd3341705f61aa58634d541d024682d`；本地 master 安全快进，原有 26 项未跟踪文件原样保留。后续日志归档提交继续使用功能分支和 PR；各次实际结果见集成日志和 PR 时间线。

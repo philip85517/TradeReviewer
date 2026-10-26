@@ -20,3 +20,5 @@ Status: accepted
 最终验收：[验收记录](FINAL-ACCEPTANCE.md)。全部适用门槛通过；产品实现不在本次范围。
 
 2026-10-26 追加用户授权：[03 分支设计归档与远端集成](issues/03-integration.md)。静态文档验收保持有效，远端交接过程见 [集成日志](INTEGRATION-LOG.md)。
+
+远端设计交付：[PR #41](https://github.com/philip85517/TradeReviewer/pull/41) 已合并，`ed34ad1b`；本地 master 已安全快进且原有 26 项未跟踪文件路径及哈希不变。03 集成任务已接受，详见集成日志。

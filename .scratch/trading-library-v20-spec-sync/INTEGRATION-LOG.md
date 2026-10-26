@@ -32,4 +32,11 @@ V2.0 统计 8 项、模板 5 项全部通过；独立 oracle 与生成器直接�
 
 ## 远端结果
 
-待提交、推送、PR、检查、合并及本地基线同步。这里只记录实际结果，不预填成功状态。
+- 功能提交：`b24eb5ea99e14f594832bc10f3bf25a8b37c5a3d`，消息 `docs(trading-library): publish design specification and visual V2.0`；连同既有快照 `c46c7784`，已先推送 `origin/codex/trading-library-design-v2.0`，然后创建 [PR #41](https://github.com/philip85517/TradeReviewer/pull/41)，目标 `master`，并附至本次聊天。
+- 合并前 GitHub 返回：准确头 `b24eb5ea`、`MERGEABLE / CLEAN`、审查列表为空、检查列表为空；没有将本地独立复核表述为 GitHub reviewer approval。适用检查见上文，共 34 项测试及独立反例、资源与冻结文件检查通过。
+- 使用 `gh pr merge --merge --match-head-commit b24eb5ea99e14f594832bc10f3bf25a8b37c5a3d` 合并。GitHub 确认 `MERGED`，时间 `2026-10-26T06:39:50Z`（北京时间 14:39:50）；合并提交 `ed34ad1b8bd3341705f61aa58634d541d024682d`。
+- 后续 Git HTTPS 拉取再次超时。通过可用的 GitHub Git Data API 获取唯一缺失的、GitHub 已验证签名的合并提交；重建原始 commit 后 SHA 精确等于 `ed34ad1b`，树精确等于已推送的设计提交，两个父提交都在本地，并经对象连通性检查。仅在全部核对成功后更新 `origin/master`，没有凭 API 文本伪造本地合并，也没有跳过对象校验。
+- `/Users/zhoulin/Documents/TradeReview` 执行 `merge --ff-only origin/master` 成功，从 `5a94ee3f` 快进到 `ed34ad1b`。已跟踪文件干净；原有 26 项未跟踪路径及文件 SHA-256/符号链接目标逐项相同。证据：[主仓库同步核验](integration-master-verification.json)。
+- 当前设计交付与本地基线同步已完成。本次追加归档只记录上述已发生事实，不修改规范、视觉资产或数据库。日志补充提交继续通过同一远端功能分支和单独 PR 进入 master；该记录提交自身的最终合并与同步结果以 GitHub PR 时间线及本次聊天最终核验为准，避免文档自引用尚未生成的合并 SHA。
+
+未执行强推、硬重置、清理未跟踪文件、直接推送 master 或删除分支。

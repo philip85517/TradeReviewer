@@ -21,6 +21,9 @@ import {
 import type { SupplementChangeSummary } from "./scoped-supplement";
 
 export type ImportPreview = {
+  completionEvidence?: import("./import-completion").ImportCompletionEvidence;
+  fileContent?: import("./file-fingerprint").FileContentIdentity;
+  tradingViewEvidence?: import("./contracts").TradingViewDecodedEvidence;
   monthly?: StatementParseResult["monthly"];
   diagnostics?: StatementParseResult["diagnostics"];
   id: string;
@@ -196,6 +199,7 @@ export function createImportPreview(
 
   return {
     id: `import:${fingerprint}`,
+    completionEvidence: { broker: enriched.broker, blocked: Boolean("blocked" in result && result.blocked), unresolvedInstrumentCount: enriched.unresolved.length, exclusions: enriched.exclusions.map(item => ({ ...item })), ...(result.monthly ? { monthly: result.monthly } : {}) },
     monthly: result.monthly,
     diagnostics: result.diagnostics,
     fileName,
@@ -210,6 +214,8 @@ export function createImportPreview(
           ? "TradingView · 模拟盘"
           : STATEMENT_FORMATS[enriched.broker].label,
     sourceKind,
+    ...(result.fileContent ? { fileContent: result.fileContent } : {}),
+    ...(result.tradingViewEvidence ? { tradingViewEvidence: result.tradingViewEvidence } : {}),
     ...(source?.tradeNature || enriched.tradeNature
       ? { tradeNature: source?.tradeNature ?? enriched.tradeNature }
       : {}),

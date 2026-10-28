@@ -1,0 +1,28 @@
+{
+  "id": "dbb-ui-audit-E0",
+  "instrument": {
+    "id": "US:NVDA",
+    "symbol": "NVDA",
+    "name": "验收保留记录",
+    "market": "US",
+    "currency": "USD"
+  },
+  "accountId": "AUDIT-E0",
+  "accountLabel": "隔离验收账户",
+  "source": {
+    "platform": "broker",
+    "fileName": "synthetic-unrelated.csv",
+    "row": 1,
+    "statementRowFingerprint": "dbb-ui-audit-E0-fingerprint",
+    "timePrecision": "date-only",
+    "sourceTimeKind": "date",
+    "feeStatus": "unknown",
+    "sourceOrder": 1,
+    "tradeNature": "live"
+  },
+  "side": "buy",
+  "executedAt": "2025-03-12",
+  "quantity": "1.000000000000000001",
+  "price": "123.450000000000000001",
+  "fee": "0"
+}

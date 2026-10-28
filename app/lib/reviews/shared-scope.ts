@@ -2,7 +2,8 @@ import type { TradeLibraryEntry } from "../trades/library";
 import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 import { isCanonicalTradingViewAccountExecution } from "../trades/tradingview-account-identity";
 import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
-import type { TradeEpisode, TradeExecution } from "../trades/types";
+import { tradeScopeKey, type TradeEpisode, type TradeExecution } from "../trades/types";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import Decimal from "decimal.js";
 
 export type SharedTradeNature = "live" | "simulation" | "unknown";
@@ -23,10 +24,8 @@ export const DEFAULT_SHARED_SCOPE: SharedScope = {
   simulationRunId: null,
 };
 
-function entryEpisodeNature(entry: TradeLibraryEntry, episode: TradeLibraryEntry["episodes"][number]["episode"]): SharedTradeNature {
-  const episodeNature = episode.tradeNature;
-  if (episodeNature && episodeNature !== "unknown") return episodeNature;
-  return entry.tradeNature ?? "unknown";
+function entryEpisodeNature(episode: TradeLibraryEntry["episodes"][number]["episode"]): SharedTradeNature {
+  return resolvedEpisodeTradeNatureOf(episode);
 }
 
 /**
@@ -39,7 +38,7 @@ export function sharedScopeMatchesEpisode(
   episode: TradeEpisode,
   scope: SharedScope,
 ): boolean {
-  if (entryEpisodeNature(entry, episode) !== scope.nature) return false;
+  if (entryEpisodeNature(episode) !== scope.nature) return false;
   if (scope.accountIds.length > 0 && !scope.accountIds.includes(episode.accountId)) return false;
   if (scope.nature !== "simulation") return true;
 
@@ -132,12 +131,11 @@ export function filterExecutionHistoryForEpisode(
   }
   const first = episode.executions[0];
   if (!first) return [];
-  const nature = episode.tradeNature ?? first.source.tradeNature ?? (first.source.tradingNature === "simulated" ? "simulation" : first.source.tradingNature) ?? "unknown";
-  const episodeRun = episode.simulationRunId ?? first.source.simulationRunId ?? null;
+  // History membership follows the declared scope that created the episode.
+  // Resolved business metadata may classify a legacy unknown scope as live.
+  const identityScope = tradeScopeKey(first);
   return executions.filter((execution) => {
-    const executionNature = execution.source.tradeNature ?? (execution.source.tradingNature === "simulated" ? "simulation" : execution.source.tradingNature) ?? "unknown";
     return execution.accountId === episode.accountId &&
-      executionNature === nature &&
-      (nature !== "simulation" || execution.source.simulationRunId === episodeRun);
+      tradeScopeKey(execution) === identityScope;
   });
 }

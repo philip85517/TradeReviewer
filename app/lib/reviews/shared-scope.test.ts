@@ -50,10 +50,11 @@ describe("shared scope", () => {
     expect(projected.accountCount).toBe(1);
   });
 
-  it("uses the canonical entry nature for legacy unknown episodes", () => {
+  it("does not promote unknown episode metadata from an entry label without fills", () => {
     const original = entry("legacy", "live");
     const legacy = { ...original, episodes: [{ ...original.episodes[0], episode: { ...original.episodes[0].episode, tradeNature: "unknown" as const } }] };
-    expect(filterEntriesBySharedScope([legacy], normalizeSharedScope({ nature: "live" })).map(item => item.episodes.length)).toEqual([1]);
+    expect(filterEntriesBySharedScope([legacy], normalizeSharedScope({ nature: "live" }))).toEqual([]);
+    expect(filterEntriesBySharedScope([legacy], normalizeSharedScope({ nature: "unknown" })).map(item => item.episodes.length)).toEqual([1]);
   });
 
   it("keeps every TradingView source run in canonical episode history while retaining legacy run isolation", () => {

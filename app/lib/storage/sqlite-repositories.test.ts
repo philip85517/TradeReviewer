@@ -27,6 +27,12 @@ const client = (overrides: Partial<SqliteHttpClient> = {}) => ({
 }) as unknown as SqliteHttpClient;
 
 describe("SQLite API repository adapters", () => {
+  it("fails closed when a narrow metadata writer is unavailable", async () => {
+    const api = client({ getBootstrap: vi.fn().mockResolvedValue({ instruments: [] }) });
+    await expect(new ApiInstrumentMetadataRepository(api).put({ market: "US", symbol: "AAPL", name: "Apple Inc.", assetType: "stock", source: "nasdaq", confidence: "official", resolvedAt: "2025-02-01T00:00:00.000Z" })).rejects.toMatchObject({ code: "metadata-write-unavailable" });
+    expect(api.getBootstrap).not.toHaveBeenCalled();
+    expect(api.mergeExecutions).not.toHaveBeenCalled();
+  });
   it("maps daily and interval sync operations to distinct market-data writes", async () => {
     const putMarketData = vi.fn().mockResolvedValue({ ok: true });
     const repository = new ApiMarketDataRepository(client({ putMarketData }));

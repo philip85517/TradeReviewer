@@ -4,9 +4,9 @@ import type { FxSnapshot } from "../fx/contracts";
 import type { RoomFxSnapshot, RoomTargetCurrency } from "./trading-room-scope";
 import {
   hasSettlementCurrencyMismatch,
-  tradeNatureOf as executionTradeNatureOf,
   type TradeNature,
 } from "../trades/types";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 import type { ReviewQueueItem } from "./review-queue";
 
@@ -226,12 +226,7 @@ function parseDecimal(value: string | null | undefined): Decimal | null {
 }
 
 function tradeNatureOf(row: ReviewQueueItem): TradeNature {
-  return row.entry.tradeNature ??
-    row.item.episode.tradeNature ??
-    (row.item.episode.executions[0]
-      ? executionTradeNatureOf(row.item.episode.executions[0])
-      : undefined) ??
-    "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 function simulationRunIdOf(row: ReviewQueueItem): string | null {

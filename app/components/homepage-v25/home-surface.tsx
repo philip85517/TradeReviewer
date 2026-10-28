@@ -4,11 +4,17 @@ import Decimal from "decimal.js";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, ChevronLeft, ChevronRight, Download, Eye, Search, SlidersHorizontal, X } from "lucide-react";
-import { type HomepageAttachments, type HomepageScope, type HomepageState, type HomepageUiPatch } from "../../lib/reviews/homepage-v25-state";
+import { type HomepagePeriod, type HomepageAttachments, type HomepageScope, type HomepageState, type HomepageUiPatch } from "../../lib/reviews/homepage-v25-state";
 import { filterHomepageHoldings, holdingsCsv, type buildHomepageHoldings, type HomepageHolding } from "./holdings-model";
-import { searchHomepageCatalog, type HomepageCatalog, type HomepageCatalogItem } from "./catalog-model";
+import { resolveHomepageCatalogInstrument, searchHomepageCatalog, type HomepageCatalog, type HomepageCatalogItem } from "./catalog-model";
 import { AttachmentFilterPopover } from "./attachment-filter";
+import type { HomepagePeriodView } from "./financial-view-model";
+import { PeriodSurface } from "./period-surface";
 import "./home-surface.css";
+
+export type HomepageRecoveryPresentation =
+  | Readonly<{ state: "quiet" }>
+  | Readonly<{ state: "busy" | "actionable" | "unavailable" | "recovered"; message: string }>;
 
 type Props = {
   ui: HomepageState;
@@ -24,8 +30,11 @@ type Props = {
   onScope: (scope: HomepageScope) => void;
   onTrades: (row: HomepageHolding | null) => void;
   onSymbolTrades?: (identity: string) => Promise<boolean>;
-  onReload: () => void;
-  onRepair: () => void;
+  view: HomepagePeriodView | null;
+  onApply: (period: HomepagePeriod) => boolean;
+  recovery: HomepageRecoveryPresentation;
+  onRecover: () => void;
+  onCatalogRetry: () => void;
   onImport: () => void;
   attachmentActions?: {
     onDraft: (attachments: HomepageAttachments) => void;
@@ -73,8 +82,9 @@ function Value({ value, kind, signed, reason, unknown = "—", label = "数值" 
   }}>{value === null ? unknown : number(value, kind, signed)}</span>{mode !== "closed" && createPortal(<div ref={explanation} className="hp-value-explanation" id={id} role="tooltip" style={position}><strong>{label}</strong><span>{fullValue}</span></div>, document.body)}</>;
 }
 
-export function HomeSurface({ ui, holdings, ready, active = true, catalog = { items: [], identities: {} }, restoreKey = 0, error, accountStatus, accounts, onUi, onScope, onTrades, onSymbolTrades, onReload, onRepair, onImport, attachmentActions }: Props) {
+export function HomeSurface({ ui, holdings, ready, active = true, catalog = { items: [], identities: {} }, restoreKey = 0, error, accountStatus, accounts, onUi, onScope, onTrades, onSymbolTrades, view, onApply, recovery, onRecover, onCatalogRetry, onImport, attachmentActions }: Props) {
   const { snapshot } = ui;
+  const statusId = useId();
   const [accountOpen, setAccountOpen] = useState(false);
   const [attachmentOpen, setAttachmentOpen] = useState(false);
   const attachmentTrigger = useRef<HTMLButtonElement>(null);
@@ -114,7 +124,12 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
   const matchingHoldings = selectedItem ? holdings.rows.filter(row => selectedItem.instrumentIds.includes(row.instrumentId)) : [];
   const detailHolding = detailOrigin === "holdings" ? holdings.rows.find(row => row.id === detailId) : matchingHoldings.length === 1 ? matchingHoldings[0] : undefined;
   const noHoldingReason = matchingHoldings.length > 1 ? "该标的包含多个账户或回合，请从持仓行查看账户明细" : "当前范围暂无该标的持仓";
-  const detail = detailOrigin === "holdings" ? detailHolding ?? null : selectedItem ? detailHolding ? {
+  const holdingIdentity = detailHolding ? resolveHomepageCatalogInstrument(catalog, detailHolding.instrumentId) : null;
+  const detail = detailOrigin === "holdings" ? detailHolding ? {
+    ...detailHolding, identity: holdingIdentity?.identity ?? null,
+    identityReason: holdingIdentity?.reason ?? (holdingIdentity ? null : "原始证券尚未匹配可知目录，身份待解析"),
+    assetType: holdingIdentity?.assetType ?? "unknown",
+  } : null : selectedItem ? detailHolding ? {
     ...detailHolding, identity: selectedItem.identity, identityReason: selectedItem.reason, assetType: selectedItem.assetType,
   } : {
     instrumentName: selectedItem.name, symbol: selectedItem.symbol, marketLabel: selectedItem.market,
@@ -137,7 +152,7 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
   const changeScope = (scope: HomepageScope) => { setAttachmentOpen(false); setAttachmentSubmitted(null); onScope(scope); };
   const closeAttachments = () => { setAttachmentOpen(false); setAttachmentSubmitted(null); attachmentActions?.onCancel(); };
   const catalogLoading = !ready || pending;
-  const catalogFailed = Boolean(ui.errors.global) || accountStatus === "error";
+  const catalogFailed = Boolean(error || ui.errors.global) || accountStatus === "error";
   const catalogCanSelect = !catalogLoading && !catalogFailed;
   const selectedAccounts = snapshot.scope.accounts;
   const accountLabel = selectedAccounts.includes("*") ? "全部账户" : selectedAccounts.length === 1 ? accounts.find(account => account.id === selectedAccounts[0])?.label ?? "账户已不可用" : `${selectedAccounts.length} 个账户`;
@@ -246,7 +261,7 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
   const exportCsv = () => {
     const blob = new Blob(["\uFEFF", holdingsCsv(rows)], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob); const link = document.createElement("a");
-    link.href = url; link.download = `当前持仓-${holdings.asOf.slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(url);
+    link.href = url; link.download = `当前持仓-${holdings.asOf?.slice(0, 10) ?? "未知日期"}.csv`; link.click(); URL.revokeObjectURL(url);
   };
   const accountKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape") { event.preventDefault(); setAccountOpen(false); accountRef.current?.querySelector<HTMLButtonElement>(".hp-account-trigger")?.focus(); }
@@ -273,7 +288,7 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
         <div className="hp-account" ref={accountRef} onKeyDown={accountKeyDown}>
           <button className="hp-account-trigger" type="button" title={accountLabel} aria-haspopup="listbox" aria-expanded={accountOpen} disabled={accountStatus === "loading"} onClick={() => setAccountOpen(value => !value)}><span>{accountStatus === "loading" ? "账户读取中…" : accountLabel}</span><ChevronDown size={16} /></button>
           {accountOpen && <div className="hp-account-options" role={accountStatus === "ready" && accounts.length > 0 ? "listbox" : undefined} aria-label="账户">
-            {accountStatus === "error" ? <div role="alert">账户读取失败<button type="button" onClick={onReload}>重试</button></div> : accounts.length === 0 ? <div className="hp-account-empty"><p>暂无实盘账户</p><button type="button" onClick={() => { setAccountOpen(false); onImport(); }}>导入账户</button></div> : [{ id: "*", label: "全部账户" }, ...accounts].map(account => <button type="button" role="option" aria-selected={selectedAccounts.includes(account.id)} title={account.label} key={account.id} onClick={event => selectAccount(account.id, event.currentTarget)}><span>{account.label}</span><span aria-hidden="true">{selectedAccounts.includes(account.id) ? "✓" : ""}</span></button>)}
+            {accountStatus === "error" ? <div role="alert">账户读取失败，请通过页头一键修复恢复。</div> : accounts.length === 0 ? <div className="hp-account-empty"><p>暂无实盘账户</p><button type="button" onClick={() => { setAccountOpen(false); onImport(); }}>导入账户</button></div> : [{ id: "*", label: "全部账户" }, ...accounts].map(account => <button type="button" role="option" aria-selected={selectedAccounts.includes(account.id)} title={account.label} key={account.id} onClick={event => selectAccount(account.id, event.currentTarget)}><span>{account.label}</span><span aria-hidden="true">{selectedAccounts.includes(account.id) ? "✓" : ""}</span></button>)}
           </div>}
         </div>
         <button id="hp-symbol-search" className="hp-icon-button" type="button" aria-label="搜索标的" aria-haspopup="dialog" aria-expanded={snapshot.search.open} onClick={() => { setAccountOpen(false); onUi({ search: { ...snapshot.search, open: true, triggerFocusId: "hp-symbol-search" } }); }}><Search size={18} /></button>
@@ -281,16 +296,15 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
           <button ref={attachmentTrigger} className="hp-icon-button hp-attachment-trigger" type="button" disabled={!attachmentActions || !ready} aria-label={attachmentCount ? `附加筛选，${attachmentCount} 个已生效条件` : "附加筛选"} aria-haspopup="dialog" aria-expanded={attachmentVisible} onClick={() => { setAccountOpen(false); if (attachmentVisible) closeAttachments(); else { setAttachmentSubmitted(null); setAttachmentOpen(true); } }}><SlidersHorizontal size={18} />{attachmentCount > 0 && <span className="hp-attachment-count" aria-hidden="true">{attachmentCount}</span>}</button>
           {attachmentActions && <AttachmentFilterPopover open={attachmentVisible} draft={ui.draft.attachments} pending={pending} error={ui.errors.global} triggerRef={attachmentTrigger} onDraft={attachmentActions.onDraft} onApply={() => { setAttachmentSubmitted(ui.requestCounter + 1); attachmentActions.onApply(); }} onClear={attachmentActions.onClear} onReset={attachmentActions.onReset} onCancel={closeAttachments} />}
         </div>
-        <span className="hp-updated">{pending ? "正在读取新范围…" : `截至 ${holdings.asOf}`}</span>
+        <div className="hp-updated" aria-live="polite" data-recovery={recovery.state === "busy" && !view ? "loading" : recovery.state}>
+          <span id={statusId} role={ui.errors.global || ui.errors.period || accountStatus === "error" ? "alert" : undefined} title={recovery.state === "quiet" ? undefined : recovery.message}>{recovery.state === "quiet" ? view ? `截至 ${view.stamp.asOf}` : "数据尚未就绪" : recovery.message}</span>
+          {(recovery.state === "actionable" || recovery.state === "busy") && <button type="button" className="hp-recovery-action" disabled={recovery.state === "busy"} onClick={onRecover}><span>{recovery.state === "busy" ? "修复中…" : "一键修复"}</span></button>}
+        </div>
       </header>
       {attachmentTokens.length > 0 && <div className="hp-attachment-tokens" aria-label="已生效附加条件">{attachmentTokens.map(token => <button type="button" key={token.key} aria-label={`移除${token.label}条件`} disabled={pending || !attachmentActions} onClick={() => attachmentActions?.onRemove(token.next)}><span>{token.label}</span><X size={12} /></button>)}</div>}
       <div className="hp-home-scroll" ref={scrollRef} onScroll={event => onUi({ scrollTop: event.currentTarget.scrollTop })}>
         <div className="hp-home-content">
-          {(error || ui.errors.global) && <div className="hp-inline-error" role="alert">{error ?? (ui.timeouts.global ? "读取已超时，新范围未应用。" : "新范围读取失败，仍显示原范围。") }<button type="button" disabled={pending} onClick={onReload}>重试</button></div>}
-          <section className="hp-current-reservation" aria-label="当前表现，尚未接入">
-            <h2>当前表现</h2><p className="hp-deferred">期间表现尚未接入</p>
-            <div className="hp-current-reserved-chart"><span>当前期间统计与曲线将在后续阶段接入</span></div>
-          </section>
+          <PeriodSurface view={view} ui={ui} ready={ready && (recovery.state !== "busy" || Boolean(ui.requests.period))} active={active} statusId={statusId} onApply={onApply} />
           <section className="hp-holdings" aria-labelledby="hp-holdings-title" aria-busy={!ready || pending}>
             <div className="hp-holdings-toolbar">
               <h2 id="hp-holdings-title" tabIndex={-1}>当前持仓（最新）</h2>
@@ -344,7 +358,7 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
     }}><header><h2 id="hp-search-results-title" tabIndex={-1}>找到标的</h2><button type="button" aria-label="关闭标的搜索" onClick={closeSearch}>关闭</button></header>
       <div className="hp-catalog-input"><input ref={catalogSearchRef} type="search" aria-label="搜索标的" placeholder="输入名称或代码" value={catalogQuery} onChange={event => setCatalogInput({ source: snapshot.search.query, value: event.target.value })} onCompositionStart={() => setCatalogComposing(true)} onCompositionEnd={() => setCatalogComposing(false)} onKeyDown={event => { if (event.key === "Enter" && catalogCanSelect && !catalogComposing && catalogQuery === snapshot.search.query && catalogResults[0]) { event.preventDefault(); openSearchDetail(catalogResults[0]); } }} /><button type="button" aria-label="清除标的搜索" disabled={!catalogQuery} onClick={() => { setCatalogInput({ source: "", value: "" }); onUi({ search: { ...snapshot.search, query: "", selectedSymbol: null, resultsScrollTop: 0 } }); catalogSearchRef.current?.focus(); }}><X size={18} /></button></div>
       <div ref={resultsRef} className="hp-catalog-results" role="region" aria-labelledby="hp-search-results-title" aria-busy={catalogLoading} onScroll={event => onUi({ search: { ...snapshot.search, resultsScrollTop: event.currentTarget.scrollTop } })}>
-        {catalogLoading ? <p role="status">正在读取已知证券目录…</p> : catalogFailed ? <div className="hp-catalog-error" role="alert"><p>证券目录读取失败，原查询仍保留。</p><button className="hp-catalog-retry" type="button" onClick={onReload}>重试</button></div> : !snapshot.search.query.trim() ? <p className="hp-catalog-message">输入名称或代码查找标的</p> : catalogResults.length === 0 ? <p className="hp-catalog-message">{catalog.items.length === 0 ? "尚无可知证券，请先导入交易或证券资料。" : "没有匹配的标的"}</p> : catalogResults.map(item => <button id={searchResultTriggerId(item.key)} className="hp-catalog-result" type="button" key={item.key} aria-current={snapshot.search.selectedSymbol === item.identity && item.identity !== null ? "true" : undefined} onClick={() => openSearchDetail(item)}><strong>{item.name}</strong><span>{item.exchange ?? "交易所待解析"}:{item.symbol} · {item.currency || "币种未知"} · {item.assetType === "stock" ? "股票" : item.assetType === "etf" ? "ETF" : "类别未知"}</span>{item.reason && <small>{item.reason}</small>}</button>)}
+        {catalogLoading ? <p role="status">正在读取已知证券目录…</p> : catalogFailed ? <div className="hp-catalog-error" role="alert"><p>证券目录读取失败，原查询仍保留。</p><button className="hp-catalog-retry" type="button" onClick={onCatalogRetry}>重试</button></div> : !snapshot.search.query.trim() ? <p className="hp-catalog-message">输入名称或代码查找标的</p> : catalogResults.length === 0 ? <p className="hp-catalog-message">{catalog.items.length === 0 ? "尚无可知证券，请先导入交易或证券资料。" : "没有匹配的标的"}</p> : catalogResults.map(item => <button id={searchResultTriggerId(item.key)} className="hp-catalog-result" type="button" key={item.key} aria-current={snapshot.search.selectedSymbol === item.identity && item.identity !== null ? "true" : undefined} onClick={() => openSearchDetail(item)}><strong>{item.name}</strong><span>{item.exchange ?? "交易所待解析"}:{item.symbol} · {item.currency || "币种未知"} · {item.assetType === "stock" ? "股票" : item.assetType === "etf" ? "ETF" : "类别未知"}</span>{item.reason && <small>{item.reason}</small>}</button>)}
         {detailNotice && detailOrigin === "search" && <p role="status">{detailNotice}</p>}
       </div><footer><p>目录来自已导入交易与已存证券资料，未覆盖全市场。</p><p>输入框内 × 清空查询 · ↑ ↓ 选择 · Enter 查看 · Esc 关闭</p></footer>
     </div></div>}
@@ -360,7 +374,7 @@ export function HomeSurface({ ui, holdings, ready, active = true, catalog = { it
       <div><dt>最新价({detail.settlementCurrency ?? "—"})</dt><dd><Value value={detail.quoteStatus === "available" ? detail.quote?.price ?? null : null} label="最新价" kind="price" unknown="待更新" reason={detail.statusReason ?? "行情待更新"} /></dd></div>
       <div><dt>账户</dt><dd>{detail.accountLabel}</dd></div>
       <div><dt>持仓天数</dt><dd title={detail.daysReason ?? undefined}>{detail.days === null ? "—" : `${detail.days}天`}</dd></div>
-    </dl><p className="hp-detail-evidence">{detail.financialEvidence}</p>{(detail.statusReason || detail.conversionReason || detail.daysReason || detail.identityReason) && <div className="hp-detail-reasons">{[...new Set([detail.statusReason, detail.conversionReason, detail.daysReason, detail.identityReason].filter(Boolean))].map(reason => <p key={reason}>{reason}</p>)}<button type="button" disabled={pending} onClick={onRepair}>更新数据</button></div>}<footer>
+    </dl><p className="hp-detail-evidence">{detail.financialEvidence}</p>{(detail.statusReason || detail.conversionReason || detail.daysReason || detail.identityReason) && <div className="hp-detail-reasons">{[...new Set([detail.statusReason, detail.conversionReason, detail.daysReason, detail.identityReason].filter(Boolean))].map(reason => <p key={reason}>{reason}</p>)}</div>}<footer>
       <button className="hp-detail-trades" type="button" disabled={!detail.identity || pending || navigating} title={detail.identityReason ?? undefined} onClick={() => { void forwardDetail(); }}>查看交易</button>
       <button className="hp-detail-return" type="button" onClick={closeDetail}>{detailOrigin === "search" ? "返回原搜索结果 · 恢复原滚动位置" : `返回原持仓行第 ${page} 页 · 恢复原滚动位置`}</button>
     </footer></div></div>}

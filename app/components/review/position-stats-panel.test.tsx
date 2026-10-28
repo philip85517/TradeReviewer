@@ -140,3 +140,16 @@ describe("PositionStatsPanel", () => {
     expect(screen.getAllByText("—").length).toBeGreaterThan(3);
   });
 });
+
+
+it("F07 presents known gross cost separately from unknown fee and net values", () => {
+  const value = metrics();
+  value.current = { ...value.current, quantity: "1", averageCost: "100", realizedPnl: "20", unrealizedPnl: "10", fees: null, netPnl: null, returnPercent: null, accuracy: { pnl: "unavailable", reasons: ["fees-invalid"] } };
+  render(<PositionStatsPanel instrumentLabel="X" currency="USD" plan={undefined} metrics={value} />);
+  expect(screen.getByText("US$100.00")).toBeInTheDocument();
+  expect(screen.getByText("+US$20.00")).toBeInTheDocument();
+  expect(screen.getByText("+US$10.00")).toBeInTheDocument();
+  expect(screen.getByText("累计费用").parentElement).toHaveTextContent("—");
+  expect(screen.getByText("当前净盈亏").parentElement).toHaveTextContent("—");
+  expect(screen.queryByText("+$0.00")).not.toBeInTheDocument();
+});

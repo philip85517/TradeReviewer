@@ -17,18 +17,18 @@ const LEGACY_STORAGE_KEY = "tradereview:homepage-v25:source-ui:v2";
 type Page = "home" | "trades";
 export type HomepageHostReadContext = { destination: Page; request: HomepageRequest; readTarget: HomepageDraft; ranges: { period: HomepagePeriod; historyRange: HomepageHistoryRange } };
 export type HomepageHostDomainSource<T> = { data: T; applied: Pick<HomepageApplied, "live" | "market" | "accounts" | "symbolIdentity" | "attachments"> };
-export type HomepageHostPeriodReadContext<T> = { domain: "period"; destination: "home"; request: HomepageRequest<HomepagePeriod, "period">; source: HomepageHostDomainSource<T> };
-export type HomepageHostHistoryReadContext<T> = { domain: "history"; destination: "home"; request: HomepageRequest<HomepageHistoryRange, "history">; source: HomepageHostDomainSource<T> };
+export type HomepageHostPeriodReadContext<T, TP = unknown> = { domain: "period"; destination: "home"; request: HomepageRequest<HomepagePeriod, "period">; source: HomepageHostDomainSource<T>; previous: TP };
+export type HomepageHostHistoryReadContext<T, TH = unknown> = { domain: "history"; destination: "home"; request: HomepageRequest<HomepageHistoryRange, "history">; source: HomepageHostDomainSource<T>; previous: TH };
 export type HomepageHostPeriodReadResult<TP> = { request: HomepageRequest<HomepagePeriod, "period">; data: TP };
 export type HomepageHostHistoryReadResult<TH> = { request: HomepageRequest<HomepageHistoryRange, "history">; data: TH };
 export type HomepageHostDomainAccepted<T, TP, TH> =
-  | { domain: "period"; data: TP; context: HomepageHostPeriodReadContext<T> }
-  | { domain: "history"; data: TH; context: HomepageHostHistoryReadContext<T> };
+  | { domain: "period"; data: TP; context: HomepageHostPeriodReadContext<T, TP> }
+  | { domain: "history"; data: TH; context: HomepageHostHistoryReadContext<T, TH> };
 export type HomepageHostDomains<T, TP, TH> = {
   seed: HomepageDomainData<TP, TH>;
   fromGlobal: (data: T, context: HomepageHostReadContext, accepted: HomepageSnapshot) => HomepageDomainData<TP, TH>;
-  reloadPeriod: (context: HomepageHostPeriodReadContext<T>) => Promise<HomepageHostPeriodReadResult<TP>>;
-  reloadHistory: (context: HomepageHostHistoryReadContext<T>) => Promise<HomepageHostHistoryReadResult<TH>>;
+  reloadPeriod: (context: HomepageHostPeriodReadContext<T, TP>) => Promise<HomepageHostPeriodReadResult<TP>>;
+  reloadHistory: (context: HomepageHostHistoryReadContext<T, TH>) => Promise<HomepageHostHistoryReadResult<TH>>;
   onReadAccepted?: (event: HomepageHostDomainAccepted<T, TP, TH>) => void;
 };
 export type HomepageHostDomainActions = {
@@ -42,6 +42,7 @@ export type HomepageHostOptions<T, TP = never, TH = never> = {
   identities: Readonly<Record<string, string | readonly string[]>>;
   catalogFor?: (data: T) => { accounts: readonly { id: string; label: string }[]; identities: Readonly<Record<string, string | readonly string[]>> };
   reload: (requestId: number, context?: HomepageHostReadContext) => Promise<{ requestId: number; data: T; kind?: "collection" }>;
+  fromCollection?: (data: T, context: HomepageHostReadContext, acceptedTarget: HomepageDraft) => T;
   onReadAccepted?: (data: T) => void;
   guard: (page: Page) => Promise<boolean>;
   domains?: HomepageHostDomains<T, TP, TH>;
@@ -168,8 +169,23 @@ export function useHomepageHost<T, TP = never, TH = never>(options: HomepageHost
       const previous = sessionRef.current;
       const domains = configured ? latest.current.domains : undefined;
       const retainedDomains = previous.domainData;
-      const completed = completeHomepageGlobalRead(previous, token, result.data, { sourceBytes: acceptedBytes,
+      const target = { ...readTarget, ...(fallbackAccounts ? { accounts: fallbackAccounts } : {}) };
+      const acceptedData = result.kind === "collection" ? latest.current.fromCollection?.(result.data, context, target) ?? result.data : result.data;
+      const completed = completeHomepageGlobalRead(previous, token, acceptedData, { sourceBytes: acceptedBytes,
         domainData: result.kind === "collection" && retainedDomains ? () => retainedDomains : domains ? snapshot => domains.fromGlobal(result.data, context, snapshot) : undefined });
+      // Catalog validation and domain extraction can cross the deadline while
+      // blocking the timer. Check again before publishing any completed bundle.
+      if (configured) {
+        const timed = markHomepageRequestTimedOut(sessionRef.current.ui);
+        if (timed !== sessionRef.current.ui) {
+          pending.current = null; update({ ...sessionRef.current, ui: timed });
+          if (initializingRead.current || destination === "trades") {
+            if (destination === "trades") setAddressRoute({ ...routeRef.current, error: "目标交易集合读取超时，请重试。" });
+            initializingRead.current = false; setInitialized(true);
+          }
+          return;
+        }
+      }
       pending.current = null;
       if (completed.accepted) {
         const next = result.kind === "collection" ? { ...completed.session, data: previous.data } : completed.session;
@@ -186,11 +202,10 @@ export function useHomepageHost<T, TP = never, TH = never>(options: HomepageHost
           // Qualify complete owned sources only after fresh catalog fallback.
           // Compatibility was checked against the original target, before its
           // deleted accounts could be replaced by the explicit fallback.
-          const target = { ...readTarget, ...(fallbackAccounts ? { accounts: fallbackAccounts } : {}) };
-          setCollection({ routeKey: routeRef.current.key, data: result.data, target });
+          setCollection({ routeKey: routeRef.current.key, data: acceptedData, target });
         }
         if (initializingRead.current) { initializingRead.current = false; setInitialized(true); }
-        try { latest.current.onReadAccepted?.(result.data); } catch { setNotice("数据已应用，更新通知失败。"); }
+        try { latest.current.onReadAccepted?.(acceptedData); } catch { setNotice("数据已应用，更新通知失败。"); }
       } else {
         update(completed.session);
         if (configured && (initializingRead.current || destination === "trades")) {
@@ -297,10 +312,10 @@ export function useHomepageHost<T, TP = never, TH = never>(options: HomepageHost
   const canReadDomain = useCallback(() => configured && mounted.current && latest.current.enabled && latest.current.ready &&
     initializedRef.current && !initializingRead.current && routeRef.current.page === "home" && !routeRef.current.error &&
     !pending.current && !sessionRef.current.ui.requests.global && !sourceRecovery.current && Boolean(latest.current.domains), [configured]);
-  const domainSource = useCallback((): HomepageHostDomainSource<T> => {
-    const { live, market, accounts, symbolIdentity } = sessionRef.current.ui.snapshot.scope;
-    return { data: sessionRef.current.data, applied: { live, market, accounts: [...accounts], ...(symbolIdentity === undefined ? {} : { symbolIdentity }),
-      attachments: { ...sessionRef.current.ui.snapshot.attachments, categories: [...sessionRef.current.ui.snapshot.attachments.categories], pendingReview: [...sessionRef.current.ui.snapshot.attachments.pendingReview] } } };
+  const domainSource = useCallback((committed: typeof session): HomepageHostDomainSource<T> => {
+    const { live, market, accounts, symbolIdentity } = committed.ui.snapshot.scope;
+    return { data: committed.data, applied: { live, market, accounts: [...accounts], ...(symbolIdentity === undefined ? {} : { symbolIdentity }),
+      attachments: { ...committed.ui.snapshot.attachments, categories: [...committed.ui.snapshot.attachments.categories], pendingReview: [...committed.ui.snapshot.attachments.pendingReview] } } };
   }, []);
   const expireLocal = useCallback((domain: "period" | "history") => {
     const ui = markHomepageRequestTimedOut(sessionRef.current.ui, Date.now(), 15_000, domain);
@@ -325,11 +340,12 @@ export function useHomepageHost<T, TP = never, TH = never>(options: HomepageHost
   const readPeriod = useCallback((period: HomepagePeriod | "retry"): boolean => {
     if (!canReadDomain()) return false;
     const domains = latest.current.domains;
-    if (!domains) return false;
+    const committed = sessionRef.current;
+    if (!domains || !committed.domainData) return false;
     const ui = period === "retry" ? retryHomepageRequest(sessionRef.current.ui, "period") : beginHomepagePeriodApply(sessionRef.current.ui, period);
     const token = ui.requests.period;
     if (!token) return false;
-    const context: HomepageHostPeriodReadContext<T> = { domain: "period", destination: "home", request: token, source: domainSource() };
+    const context: HomepageHostPeriodReadContext<T, TP> = { domain: "period", destination: "home", request: token, source: domainSource(committed), previous: committed.domainData.period };
     localPending.current.period = token; update({ ...sessionRef.current, ui });
     const fail = (error: unknown) => {
       if (!activeLocal(token)) return;
@@ -351,11 +367,12 @@ export function useHomepageHost<T, TP = never, TH = never>(options: HomepageHost
   const readHistory = useCallback((range: HomepageHistoryRange | "retry"): boolean => {
     if (!canReadDomain()) return false;
     const domains = latest.current.domains;
-    if (!domains) return false;
+    const committed = sessionRef.current;
+    if (!domains || !committed.domainData) return false;
     const ui = range === "retry" ? retryHomepageRequest(sessionRef.current.ui, "history") : beginHomepageHistoryApply(sessionRef.current.ui, range);
     const token = ui.requests.history;
     if (!token) return false;
-    const context: HomepageHostHistoryReadContext<T> = { domain: "history", destination: "home", request: token, source: domainSource() };
+    const context: HomepageHostHistoryReadContext<T, TH> = { domain: "history", destination: "home", request: token, source: domainSource(committed), previous: committed.domainData.history };
     localPending.current.history = token; update({ ...sessionRef.current, ui });
     const fail = (error: unknown) => {
       if (!activeLocal(token)) return;

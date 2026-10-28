@@ -52,9 +52,14 @@ export type ImportExclusion = {
   label: string;
   count: number;
   instrumentSymbol?: string;
+  /** Only a recognized parser rule may close an intentionally unsupported row. */
+  disposition?: "ignored" | "pending";
+  ruleId?: string;
 };
 
 export type StatementParseResult = {
+  fileContent?: import("./file-fingerprint").FileContentIdentity;
+  tradingViewEvidence?: TradingViewDecodedEvidence;
   broker: StatementBroker;
   records: TradeExecution[];
   candidates: ParsedInstrumentCandidate[];
@@ -72,3 +77,28 @@ export type BrokerStatementParser = {
 };
 
 export type { TradeTimePrecision };
+/** Earliest XLSX-decoded values, not CSV bytes or physical line numbers. */
+export type DecodedCell =
+  | { kind: "string"; value: string }
+  | { kind: "number"; value: number; negativeZero: boolean }
+  | { kind: "boolean"; value: boolean } | { kind: "null" } | { kind: "undefined" }
+  | { kind: "non-finite"; value: "NaN" | "+Infinity" | "-Infinity" }
+  | { kind: "bigint"; decimal: string }
+  | { kind: "error"; code: string | null; message: string | null }
+  | { kind: "unsupported"; jsType: "object" | "function" | "symbol"; diagnosticId: string };
+export type TradingViewDecodedEvidence = {
+  kind: "tradingview-xlsx-records-v1";
+  fidelity: "xlsx-decoded-records-raw-false";
+  parserVersion: "tradingview-simulation-v2";
+  fileFingerprint: string;
+  sheet: { ordinal: 0; name: string };
+  headers: DecodedCell[];
+  rows: { logicalRow: number; entries: { key: string; cell: DecodedCell }[];
+    outcome: "accepted" | "invalid" | "duplicate-role" | "unpaired" | "ambiguous";
+    candidateIds: string[]; diagnosticCodes: string[] }[];
+  cellDiagnostics: { id: string; sheet: string; logicalRow: number; column: string }[];
+  derived: { accountId: string; accountOrigin: "parser-canonical-constant";
+    tradeNature: "simulation"; natureOrigin: "parser-format-contract";
+    sourceRun: string; runOrigin: "parser-fingerprint-market-symbol";
+    market: string; symbol: string; currency: string };
+};

@@ -1,0 +1,219 @@
+{
+  "httpStatus": 200,
+  "totalBytes": 34332057,
+  "elapsedMs": 7376,
+  "bootstrap": {
+    "schemaVersion": {
+      "bytes": 2
+    },
+    "migration": {
+      "bytes": 225
+    },
+    "executions": {
+      "bytes": 3235135,
+      "count": 1867
+    },
+    "importHistory": {
+      "bytes": 257466,
+      "count": 214
+    },
+    "instruments": {
+      "bytes": 112302,
+      "count": 236
+    },
+    "reviews": {
+      "bytes": 626,
+      "count": 1
+    },
+    "reviewStates": {
+      "bytes": 35993,
+      "count": 138
+    },
+    "tagSuggestions": {
+      "bytes": 2,
+      "count": 0
+    },
+    "marketDataJobs": {
+      "bytes": 2684312,
+      "count": 236
+    },
+    "settings": {
+      "bytes": 487
+    }
+  },
+  "pages": [
+    {
+      "snapshot": {
+        "bookVersion": {
+          "bytes": 109
+        },
+        "facts": {
+          "bytes": 3721898,
+          "count": 1000
+        },
+        "displayExecutionIds": {
+          "bytes": 31037,
+          "count": 1000
+        },
+        "dependencyExecutionIds": {
+          "bytes": 2,
+          "count": 0
+        },
+        "withdrawnFacts": {
+          "bytes": 2,
+          "count": 0
+        },
+        "materials": {
+          "bytes": 4342981,
+          "count": 214
+        },
+        "dependencyMaterials": {
+          "bytes": 2,
+          "count": 0
+        },
+        "materialHistory": {
+          "bytes": 4370106,
+          "count": 214
+        },
+        "diagnostics": {
+          "bytes": 105157,
+          "count": 666
+        },
+        "dependencyDiagnostics": {
+          "bytes": 2,
+          "count": 0
+        },
+        "scope": {
+          "bytes": 185
+        },
+        "nextCursor": {
+          "bytes": 354
+        },
+        "receipt": {
+          "bytes": 396
+        }
+      },
+      "display": {
+        "executions": {
+          "bytes": 1869600,
+          "count": 1000
+        },
+        "instruments": {
+          "bytes": 112302,
+          "count": 236
+        },
+        "importHistory": {
+          "bytes": 257466,
+          "count": 214
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "bookVersion": {
+          "bytes": 109
+        },
+        "facts": {
+          "bytes": 2607136,
+          "count": 867
+        },
+        "displayExecutionIds": {
+          "bytes": 29718,
+          "count": 867
+        },
+        "dependencyExecutionIds": {
+          "bytes": 2,
+          "count": 0
+        },
+        "withdrawnFacts": {
+          "bytes": 2,
+          "count": 0
+        },
+        "materials": {
+          "bytes": 4342981,
+          "count": 214
+        },
+        "dependencyMaterials": {
+          "bytes": 2,
+          "count": 0
+        },
+        "materialHistory": {
+          "bytes": 4370106,
+          "count": 214
+        },
+        "diagnostics": {
+          "bytes": 105157,
+          "count": 666
+        },
+        "dependencyDiagnostics": {
+          "bytes": 2,
+          "count": 0
+        },
+        "scope": {
+          "bytes": 185
+        },
+        "nextCursor": {
+          "bytes": 4
+        },
+        "receipt": {
+          "bytes": 398
+        }
+      },
+      "display": {
+        "executions": {
+          "bytes": 1365536,
+          "count": 867
+        },
+        "instruments": {
+          "bytes": 112302,
+          "count": 236
+        },
+        "importHistory": {
+          "bytes": 257466,
+          "count": 214
+        }
+      }
+    }
+  ],
+  "factCount": 1867,
+  "factFieldValueBytes": {
+    "id": 58886,
+    "instrumentId": 18306,
+    "accountId": 42947,
+    "side": 10187,
+    "executedAt": 44720,
+    "quantity": 9305,
+    "price": 13359,
+    "fee": 10759,
+    "currency": 9335,
+    "tradeNature": 8124,
+    "simulationRunId": 9682,
+    "importBatchId": 49083,
+    "rawEvidenceJson": 2931860,
+    "evidence": 2549898,
+    "instrument": 198516
+  },
+  "repeated": {
+    "materials": {
+      "same": true,
+      "bytesPerPage": [
+        4342981,
+        4342981
+      ]
+    },
+    "materialHistory": {
+      "same": true,
+      "bytesPerPage": [
+        4370106,
+        4370106
+      ]
+    },
+    "diagnostics": {
+      "same": true,
+      "bytesPerPage": [
+        105157,
+        105157
+      ]
+    }
+  }
+}

@@ -1651,7 +1651,13 @@ input:focus-visible {
 
 .import-confirm-dialog .modal-footer {
   flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   margin-top: 0;
+}
+
+.import-confirm-dialog .modal-footer button {
+  white-space: nowrap;
 }
 
 .history-dialog {
@@ -1838,6 +1844,95 @@ input:focus-visible {
   border-radius: 9px;
 }
 
+.trade-plan-review .trade-plan-item {
+  min-width: 0;
+  margin: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.trade-plan-review .trade-plan-item legend {
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+.trade-plan-review .trade-plan-fact-group,
+.trade-plan-review .trade-plan-evidence {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.trade-plan-review .trade-plan-fact-group + .trade-plan-fact-group {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.trade-plan-review .trade-plan-group-title,
+.trade-plan-review .trade-plan-fact,
+.trade-plan-review .trade-plan-evidence p {
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.trade-plan-review .trade-plan-group-title {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.trade-plan-review .trade-plan-evidence {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.trade-plan-review .trade-plan-control {
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.trade-plan-review .trade-plan-control select,
+.trade-plan-review .trade-plan-control input {
+  min-width: 0;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.trade-plan-review .trade-plan-change-list {
+  margin: 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.trade-plan-review .trade-plan-change-list > li {
+  min-width: 0;
+  padding-top: 10px;
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.trade-plan-review .trade-plan-change-fact {
+  min-width: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
 .exclusion-groups {
   padding: 10px 12px;
   display: flex;
@@ -1980,19 +2075,18 @@ input:focus-visible {
   }
 
   .import-confirm-dialog .modal-footer {
-    flex-wrap: wrap;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding: 12px 16px 16px;
   }
 
   .import-confirm-dialog .modal-footer p {
-    flex: 1 0 100%;
+    grid-column: 1 / -1;
   }
 
   .import-confirm-dialog .modal-footer button {
     min-width: 0;
     min-height: 44px;
-    flex: 1 1 0;
     padding-right: 8px;
     padding-left: 8px;
     line-height: 1.35;

@@ -36,7 +36,7 @@ const replayChartHarness = vi.hoisted(() => {
     viewport,
     deferReady: false,
     pendingReady: null as (() => void) | null,
-    lastProps: null as { averageCost?: number; settings?: { showAverageCost?: boolean }; onPlanPriceChange?: (id: string, price: string) => void; planLinesEditable?: boolean } | null,
+    lastProps: null as { executions?: Array<{ id: string }>; averageCost?: number; settings?: { showAverageCost?: boolean }; onPlanPriceChange?: (id: string, price: string) => void; planLinesEditable?: boolean } | null,
     handle: {
       capture: vi.fn().mockResolvedValue({ imageDataUrl: "data:image/png;base64,AA==", viewport }),
       flush: vi.fn().mockResolvedValue(undefined),
@@ -95,7 +95,7 @@ vi.mock("../chart/replay-chart", () => ({
       onReady?.(replayChartHarness.handle);
       return () => onReady?.(null);
     }, [onReady]);
-    replayChartHarness.lastProps = { averageCost, settings, onPlanPriceChange, planLinesEditable };
+    replayChartHarness.lastProps = { executions, averageCost, settings, onPlanPriceChange, planLinesEditable };
     return <>
       <div data-testid="mock-replay-chart" data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} data-revealed-candles={candles?.map((candle) => candle.time).join(",")} />
       <button type="button" onClick={() => onCommand({ type: "add", drawing: replayDrawing })}>add drawing</button>
@@ -1123,6 +1123,61 @@ describe("RecallWorkspace autosave reconciliation", () => {
 });
 
 describe("RecallWorkspace accounting safeguards", () => {
+  it.each(["invalid", "-1"])("preserves known cost while fee %s closes net display, then restores the known prefix on rewind", async (invalidFee) => {
+    const feeEpisode: TradeEpisode = {
+      ...episode,
+      id: `fee-boundary-${invalidFee}`,
+      status: "open",
+      endedAt: undefined,
+      openingQuantity: "2",
+      remainingQuantity: "1",
+      executions: [
+        { ...episode.executions[0], quantity: "2", price: "100", fee: "1" },
+        { ...episode.executions[0], id: "bad-fee-exit", side: "sell", quantity: "1", price: "120", fee: invalidFee, executedAt: "2025-01-02T10:16:00.000Z" },
+      ],
+    };
+    const rawBefore = structuredClone(feeEpisode);
+    const feeCandles = replayCandles.map((bar, index) => ({ ...bar, open: 100, high: 125, low: 90, close: [100, 110, 115][index] }));
+    const initial = createRecallDocument(feeEpisode, "2025-01-02T10:15:00.000Z");
+    initial.working.cursor = "2025-01-02T10:15:00.000Z";
+    initial.working.phase = "holding";
+    renderRecall(feeEpisode, initial, undefined, undefined, { "15m": feeCandles, "1D": feeCandles, "1W": feeCandles });
+
+    await screen.findByTestId("mock-replay-chart");
+    fireEvent.click(screen.getByRole("button", { name: "统计" }));
+    const stats = screen.getByRole("complementary", { name: "当前统计" });
+    expect(stats).toHaveTextContent("累计费用US$1.00");
+    expect(stats).toHaveTextContent("净盈亏-US$1.00");
+    expect(replayChartHarness.lastProps).toMatchObject({ averageCost: 100, settings: { showAverageCost: true } });
+
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "bad-fee-exit");
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", feeCandles.slice(0, 2).map(bar => bar.time).join(","));
+    expect(stats).toHaveTextContent("持仓数量1");
+    expect(stats).toHaveTextContent("平均成本100.00");
+    expect(stats).toHaveTextContent("净盈亏费用待核对");
+    expect(stats).toHaveTextContent("累计费用待核对");
+    expect(within(stats).getByText("费用待核对", { exact: true })).not.toHaveClass("positive");
+    expect(within(stats).getByText("费用待核对", { exact: true })).not.toHaveClass("negative");
+    openMoreRecords();
+    expect(document.querySelector(".recall-position-stats")).toHaveTextContent("均价 100.00");
+    const detailNet = document.querySelector(".recall-position-stats")?.querySelector("span:last-child");
+    expect(detailNet).not.toHaveClass("positive");
+    expect(detailNet).not.toHaveClass("negative");
+    expect(replayChartHarness.lastProps).toMatchObject({ averageCost: 100, settings: { showAverageCost: true } });
+    expect(screen.getByText("费用待核对，净盈亏暂不可用。")).toBeInTheDocument();
+    expect(screen.queryByText(/盈亏及成本线暂不展示/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "上一根 K 线" }));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", feeEpisode.executions[0].id);
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", feeCandles[0].time);
+    expect(stats).toHaveTextContent("净盈亏-US$1.00");
+    expect(stats).toHaveTextContent("累计费用US$1.00");
+    expect(within(stats).getByText("-US$1.00", { exact: true })).toHaveClass("negative");
+    expect(replayChartHarness.lastProps).toMatchObject({ averageCost: 100, settings: { showAverageCost: true } });
+    expect(feeEpisode).toEqual(rawBefore);
+  });
+
   it("hides cost and PnL when a revealed HK Connect fill has a mismatched settlement currency", async () => {
     const hkConnectEpisode: TradeEpisode = {
       ...episode,
@@ -2233,7 +2288,7 @@ it.each(["pre-entry", "holding"] as const)("renders a retained post-review metri
   initial.working.phase = phase;
   initial.snapshots = [{...retainedSnapshot(episode), phase: "post-review"}];
   initial = freezeRecallSnapshotBundle(initial, "snapshot-1", {bundleId: "post-review-bundle", retainedAt: "2025-01-02T10:30:00.000Z", episode});
-  const frozen = calculateRecallActualMetrics({episode, decisions: initial.decisions, planVersions: [], riskBaselines: [], context: {phase: "post-review", cursor: initial.snapshots[0].cursor, executionCursor: initial.snapshots[0].executionCursor}, source: {documentRevision: 1, evidenceDigest: "frozen", computedAt: "2025-01-02T10:30:00.000Z"}});
+  const frozen = calculateRecallActualMetrics({episode, decisions: initial.decisions, planVersions: [], riskBaselines: [], context: {phase: "post-review", cursor: initial.snapshots[0].cursor, executionCursor: initial.snapshots[0].executionCursor}, source: {bundleId: initial.retainedBundles![0].id, documentRevision: initial.retainedBundles![0].documentRevision, evidenceDigest: initial.retainedBundles![0].executionEvidence.digest, computedAt: "2025-01-02T10:30:00.000Z"}});
   frozen.metrics.netPnl = {...frozen.metrics.netPnl, value: "777", reason: null};
   initial.retainedBundles![0].actualMetrics = frozen;
   renderRecall(episode, initial);
@@ -2309,4 +2364,88 @@ it("accepts the synchronous Text commit performed before the chart freezes its s
   expect(saved.snapshots[0].drawings).toHaveLength(1);
   expect(saved.snapshots[0].drawings[0]).toMatchObject({tool: "text", text: "新 Text"});
   expect(saved.snapshots[0].imageDataUrl).toBe("data:image/png;base64,committed");
+});
+
+function retainedAuthorityFixture() {
+  const original: TradeEpisode = { ...episode, status: "open", endedAt: undefined, openingQuantity: "2", remainingQuantity: "1", executions: [
+    { ...episode.executions[0], quantity: "2", price: "100", fee: "1" },
+    { ...episode.executions[0], id: "fill-2", side: "sell", quantity: "1", price: "120", fee: "invalid", executedAt: "2025-01-02T10:16:00.000Z" },
+  ] };
+  const bars = replayCandles.map(bar => ({ ...bar, open: 100, high: 120, low: 90, close: 110 }));
+  let initial = createRecallDocument(original, "2025-01-02T10:30:00.000Z");
+  initial.working = { ...initial.working, phase: "holding", cursor: bars[1].knowledgeAt!, executionCursor: "fill-2", selectedDecisionId: "fill-2" };
+  initial.snapshots = [{ ...retainedSnapshot(original, "fill-2"), phase: "holding", priceBasis: "raw", cursor: bars[1].knowledgeAt!, executionCursor: "fill-2", candles: bars.slice(0, 2) }];
+  initial = freezeRecallSnapshotBundle(initial, "snapshot-1", { bundleId: "old-authority", retainedAt: "2025-01-02T10:30:00.000Z", episode: original });
+  confirmRecallRetainedState(undefined, initial, original, 6);
+  retainRecallActualMetrics(undefined, initial);
+  initial.revision = 6;
+  return { original, initial, bars };
+}
+
+it("RS01/02 renders the old unknown financial authority and restores current full net without changing the bundle", async () => {
+  const { original, initial, bars } = retainedAuthorityFixture();
+  const current = structuredClone(original); current.executions[1].fee = "2";
+  const bytes = JSON.stringify(initial.retainedBundles);
+  renderRecall(current, initial, undefined, undefined, { "15m": bars, "1D": bars, "1W": bars });
+  await screen.findByRole("button", { name: "统计" });
+  openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 2快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "统计" }));
+  const stats = screen.getByRole("complementary", { name: "当前统计" });
+  expect(stats).toHaveTextContent("持仓数量1平均成本100.00");
+  expect(stats).toHaveTextContent("净盈亏费用待核对累计费用待核对");
+  expect(screen.getByText("已实现净盈亏").parentElement).toHaveTextContent("费用待补齐");
+  expect(replayChartHarness.lastProps?.averageCost).toBe(100);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+  expect(stats).toHaveTextContent("净盈亏+US$27.00累计费用US$3.00");
+  expect(JSON.stringify(initial.retainedBundles)).toBe(bytes);
+});
+
+it("RS03 keeps old marker quantity, price, time, selected label and cutoff after same-ID raw correction", async () => {
+  const { original, initial, bars } = retainedAuthorityFixture();
+  const current = structuredClone(original);
+  Object.assign(current.executions[1], { quantity: "0.5", price: "999", fee: "2", executedAt: "2025-01-02T10:29:00.000Z" });
+  renderRecall(current, initial, undefined, undefined, { "15m": bars, "1D": bars, "1W": bars });
+  await screen.findByRole("button", { name: "统计" }); openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 2快照" }));
+  expect(replayChartHarness.lastProps?.executions?.[1]).toMatchObject({ quantity: "1", price: "120", executedAt: "2025-01-02T10:16:00.000Z", fee: "invalid" });
+  const selected = document.querySelector(".recall-selected-fill");
+  expect(selected).toHaveTextContent("120");
+  expect(selected).not.toHaveTextContent("999");
+  expect(document.querySelector(".recall-replay-bar")).not.toHaveTextContent("05:29");
+});
+
+it("RS05 keeps legacy image/Text but never certifies current zero or known finances", async () => {
+  const { original, initial, bars } = retainedAuthorityFixture();
+  delete initial.snapshots[0].retainedBundleId; initial.retainedBundles = [];
+  renderRecall(original, initial, undefined, undefined, { "15m": bars, "1D": bars, "1W": bars });
+  await screen.findByRole("button", { name: "统计" }); openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 2快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "统计" }));
+  const stats = screen.getByRole("complementary", { name: "当前统计" });
+  expect(stats).toHaveTextContent("持仓数量待核对");
+  expect(stats).toHaveTextContent("累计费用待核对");
+  expect(replayChartHarness.lastProps?.executions).toEqual([]);
+  expect(replayChartHarness.lastProps?.settings?.showAverageCost).toBe(false);
+  fireEvent.click(screen.getByRole("button", { name: "add Text" }));
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  expect(await screen.findByText("成交或决策已变更，请返回工作图重新留存")).toBeInTheDocument();
+  expect(replayChartHarness.handle.capture).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+});
+
+it.each(["fee", "decisions"] as const)("RS06 rejects stale %s before capture and preserves local Text", async change => {
+  const { original, initial, bars } = retainedAuthorityFixture();
+  const current = structuredClone(original);
+  if (change === "fee") current.executions[1].fee = "2";
+  else initial.decisions.reverse();
+  renderRecall(current, initial, undefined, undefined, { "15m": bars, "1D": bars, "1W": bars });
+  await screen.findByRole("button", { name: "统计" }); openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: `编辑决策 ${change === "fee" ? 2 : 1}快照` }));
+  fireEvent.click(screen.getByRole("button", { name: "add Text" }));
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  expect(await screen.findByText("成交或决策已变更，请返回工作图重新留存")).toBeInTheDocument();
+  expect(replayChartHarness.handle.capture).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "撤销绘图" })).toBeEnabled();
 });

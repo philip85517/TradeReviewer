@@ -59,7 +59,7 @@ function fill(overrides: FillOverrides = {}): TradeExecution {
 }
 
 describe("execution reconciliation", () => {
-  it("does not retain an unknown duplicate alongside two conflicting reported fees", () => {
+  it("retains independent incoming versions when fee values do not prove identity", () => {
     const unknown = fill({ fingerprint: "unknown", fee: "0" });
     const first = fill({ fingerprint: "first", fee: "1" });
     const second = fill({ fingerprint: "second", fee: "5" });
@@ -68,8 +68,8 @@ describe("execution reconciliation", () => {
     second.source.feeStatus = "reported";
 
     const result = reconcileExecutions([], [unknown, first, second]);
-    expect(result.acceptedIncoming).toEqual([first, second]);
-    expect(result.duplicates).toMatchObject([{ skipped: unknown }]);
+    expect(result.acceptedIncoming).toEqual([unknown, first, second]);
+    expect(result.duplicates).toEqual([]);
   });
 
   it.each(["keep-existing", "use-incoming", "keep-both"] as const)("honors %s for reported-fee conflicts through a subsequent merge", decision => {
@@ -84,16 +84,16 @@ describe("execution reconciliation", () => {
   });
 
   it("deduplicates numerically equal reported fees", () => {
-    const existing = fill({ fingerprint: "old", fee: "1.00" });
-    const incoming = fill({ fingerprint: "new", fee: "1" });
+    const existing = fill({ fingerprint: "same-version", row: 1, fee: "1.00" });
+    const incoming = fill({ fingerprint: "same-version", row: 1, fee: "1" });
     existing.source.feeStatus = "reported";
     incoming.source.feeStatus = "reported";
     expect(reconcileExecutions([existing], [incoming])).toMatchObject({ conflicts: [], acceptedIncoming: [], duplicates: [{ kept: existing, skipped: incoming }] });
   });
 
   it.each([undefined, "allocated"] as const)("preserves legacy deduplication for a %s fee against a reported fee", status => {
-    const existing = fill({ fingerprint: "old", fee: "1" });
-    const incoming = fill({ fingerprint: "new", fee: "5" });
+    const existing = fill({ fingerprint: "same-version", row: 1, fee: "1" });
+    const incoming = fill({ fingerprint: "same-version", row: 1, fee: "5" });
     existing.source.feeStatus = status;
     incoming.source.feeStatus = "reported";
     expect(reconcileExecutions([existing], [incoming])).toMatchObject({ conflicts: [], acceptedIncoming: [], duplicates: [{ kept: existing, skipped: incoming }] });
@@ -107,8 +107,8 @@ describe("execution reconciliation", () => {
     expect(reconcileExecutions([], [first, second])).toMatchObject({ acceptedIncoming: [first, second], duplicates: [], conflicts: [] });
   });
   it.each(["0", "2.05"])("enriches an explicitly unknown fee with reported %s without a conflict", fee => {
-    const unknown = fill({ fingerprint: "old", fee: "0" });
-    const reported = fill({ fingerprint: "new", fee });
+    const unknown = fill({ fingerprint: "same-version", row: 1, fee: "0" });
+    const reported = fill({ fingerprint: "same-version", row: 1, fee });
     unknown.source.feeStatus = "unknown";
     reported.source.feeStatus = "reported";
 
@@ -135,15 +135,15 @@ describe("execution reconciliation", () => {
       expect(result.automaticReplacementIds).toEqual([]);
     },
   );
-  it("isolates monthly statement fills by account but matches same-account legacy evidence", () => {
+  it("isolates monthly fills by account and requires review of unproven same-account overlaps", () => {
     const legacy = fill({ fingerprint: "excel", accountId: "account-a" });
     const monthly = fill({ fingerprint: "pdf", accountId: "account-b" });
     monthly.source.statementMonth = "2026-07";
     expect(reconcileExecutions([legacy], [monthly]).acceptedIncoming).toEqual([monthly]);
     monthly.accountId = "account-a";
-    expect(reconcileExecutions([legacy], [monthly]).duplicates).toHaveLength(1);
+    expect(reconcileExecutions([legacy], [monthly]).conflicts).toMatchObject([{ existing: [legacy], incoming: [monthly] }]);
   });
-  it("auto-deduplicates across sources when symbol, second, side, quantity, and price match", () => {
+  it("retains different accounts even when symbol, second, side, quantity, and price match", () => {
     const existing = fill({
       fingerprint: "xlsx-a",
       accountId: "account-a",
@@ -157,11 +157,9 @@ describe("execution reconciliation", () => {
 
     const result = reconcileExecutions([existing], [screenshot]);
 
-    expect(result.acceptedIncoming).toEqual([]);
+    expect(result.acceptedIncoming).toEqual([screenshot]);
     expect(result.automaticReplacementIds).toEqual([]);
-    expect(result.duplicates).toEqual([
-      { kept: existing, skipped: screenshot },
-    ]);
+    expect(result.duplicates).toEqual([]);
     expect(result.conflicts).toEqual([]);
   });
 
@@ -190,7 +188,7 @@ describe("execution reconciliation", () => {
     expect(result.conflicts).toEqual([]);
   });
 
-  it("retains the larger source multiplicity when current has two identical fills", () => {
+  it("associates an incoming overlap with only one of two existing fills for review", () => {
     const current = [
       fill({ fingerprint: "source-a", row: 1 }),
       fill({ fingerprint: "source-a", row: 2 }),
@@ -200,11 +198,12 @@ describe("execution reconciliation", () => {
     const result = reconcileExecutions(current, [incoming]);
 
     expect(result.acceptedIncoming).toEqual([]);
-    expect(result.duplicates).toHaveLength(1);
+    expect(result.duplicates).toEqual([]);
+    expect(result.conflicts).toMatchObject([{ existing: [current[0]], incoming: [incoming] }]);
     expect(current).toHaveLength(2);
   });
 
-  it("retains the larger incoming source as the equal-evidence representative set", () => {
+  it("preserves an unmatched incoming row while reviewing its paired overlap", () => {
     const current = fill({ fingerprint: "source-a", row: 1 });
     const incoming = [
       fill({ fingerprint: "source-b", row: 1 }),
@@ -213,14 +212,16 @@ describe("execution reconciliation", () => {
 
     const result = reconcileExecutions([current], incoming);
 
-    expect(result.acceptedIncoming).toEqual(incoming);
-    expect(result.automaticReplacementIds).toEqual([current.id]);
-    expect(result.duplicates).toEqual([
-      { kept: incoming[0], skipped: current },
-    ]);
+    expect(result.acceptedIncoming).toEqual([incoming[1]]);
+    expect(result.automaticReplacementIds).toEqual([]);
+    expect(result.duplicates).toEqual([]);
+    expect(result.conflicts).toMatchObject([{ existing: [current], incoming: [incoming[0]] }]);
+    const resolved = applyReconciliationDecisions([current], result, new Map([[result.conflicts[0].id, "use-incoming"]]));
+    expect(resolved.currentAfterReplacements).toEqual([]);
+    expect(resolved.incomingToMerge).toEqual(incoming);
   });
 
-  it("uses an incoming statement when it has richer account, fee, and name evidence", () => {
+  it("does not infer an account mapping from richer fee and name evidence", () => {
     const screenshot = fill({
       fingerprint: "image-a",
       inputKind: "screenshot",
@@ -241,10 +242,8 @@ describe("execution reconciliation", () => {
     const result = reconcileExecutions([screenshot], [statement]);
 
     expect(result.acceptedIncoming).toEqual([statement]);
-    expect(result.automaticReplacementIds).toEqual([screenshot.id]);
-    expect(result.duplicates).toEqual([
-      { kept: statement, skipped: screenshot },
-    ]);
+    expect(result.automaticReplacementIds).toEqual([]);
+    expect(result.duplicates).toEqual([]);
     expect(result.conflicts).toEqual([]);
   });
 
@@ -253,11 +252,13 @@ describe("execution reconciliation", () => {
       fingerprint: "source-a",
       symbol: "06969",
       market: "HK",
+      row: 1,
     });
     const incoming = fill({
-      fingerprint: "source-b",
+      fingerprint: "source-a",
       symbol: "6969",
       market: "HK",
+      row: 1,
     });
 
     expect(reconcileExecutions([existing], [incoming]).duplicates).toEqual([
@@ -269,10 +270,12 @@ describe("execution reconciliation", () => {
     const existing = fill({
       fingerprint: "source-a",
       executedAt: "2026-07-31T01:02:03.123Z",
+      row: 1,
     });
     const sameInstant = fill({
-      fingerprint: "source-b",
+      fingerprint: "source-a",
       executedAt: "2026-07-30T21:02:03.123-04:00",
+      row: 1,
     });
     const differentMillisecond = fill({
       fingerprint: "source-c",
@@ -321,7 +324,7 @@ describe("execution reconciliation", () => {
       row: 2,
     });
     const exactIncoming = fill({
-      fingerprint: "source-b",
+      fingerprint: "source-a",
       side: "buy",
       row: 1,
     });
@@ -352,11 +355,13 @@ describe("execution reconciliation", () => {
       fingerprint: "source-a",
       quantity: "10.00",
       price: "100.0",
+      row: 1,
     });
     const incoming = fill({
-      fingerprint: "source-b",
+      fingerprint: "source-a",
       quantity: "10",
       price: "100.000",
+      row: 1,
     });
 
     expect(reconcileExecutions([existing], [incoming]).duplicates).toEqual([
@@ -371,10 +376,9 @@ describe("execution reconciliation", () => {
     ["quantity", "-1"],
     ["price", "not-a-decimal"],
     ["price", "NaN"],
-    ["price", "0"],
     ["price", "-1"],
   ] as const)(
-    "does not auto-match executions with non-positive or invalid %s %s",
+    "does not auto-match executions with invalid %s %s",
     (field, value) => {
       const existing = fill({ fingerprint: "source-a", [field]: value });
       const incoming = fill({ fingerprint: "source-b", [field]: value });
@@ -444,7 +448,7 @@ describe("execution reconciliation", () => {
     expect(result.conflicts).toEqual([]);
   });
 
-  it("replaces a current record when the same-ID incoming record is richer", () => {
+  it("requires review when a richer same-ID record changes the account", () => {
     const current = fill({
       id: "same-id",
       fingerprint: "same-source",
@@ -468,10 +472,10 @@ describe("execution reconciliation", () => {
 
     const result = reconcileExecutions([current], [incoming]);
 
-    expect(result.acceptedIncoming).toEqual([incoming]);
-    expect(result.automaticReplacementIds).toEqual([current.id]);
-    expect(result.duplicates).toEqual([{ kept: incoming, skipped: current }]);
-    expect(result.conflicts).toEqual([]);
+    expect(result.acceptedIncoming).toEqual([]);
+    expect(result.automaticReplacementIds).toEqual([]);
+    expect(result.duplicates).toEqual([]);
+    expect(result.conflicts).toMatchObject([{ existing: [current], incoming: [incoming] }]);
   });
 
   it("does not auto-match a legacy execution without verified source evidence", () => {
@@ -484,10 +488,10 @@ describe("execution reconciliation", () => {
 
     const result = reconcileExecutions([legacy], [screenshot]);
 
-    expect(result.acceptedIncoming).toEqual([screenshot]);
+    expect(result.acceptedIncoming).toEqual([]);
     expect(result.automaticReplacementIds).toEqual([]);
     expect(result.duplicates).toEqual([]);
-    expect(result.conflicts).toEqual([]);
+    expect(result.conflicts).toMatchObject([{ existing: [legacy], incoming: [screenshot] }]);
   });
 
   it("does not collapse either of two legacy fills when a screenshot overlaps", () => {
@@ -502,10 +506,11 @@ describe("execution reconciliation", () => {
     });
 
     const reconciliation = reconcileExecutions(legacy, [screenshot]);
+    expect(() => applyReconciliationDecisions(legacy, reconciliation, new Map())).toThrow(/decision.*required/i);
     const applied = applyReconciliationDecisions(
       legacy,
       reconciliation,
-      new Map(),
+      new Map([[reconciliation.conflicts[0].id, "keep-both"]]),
     );
 
     expect(applied.currentAfterReplacements).toEqual(legacy);
@@ -586,7 +591,7 @@ describe("execution reconciliation", () => {
     });
   });
 
-  it("applies automatic richer-source replacements without a decision", () => {
+  it("keeps the unknown-account record when applying an independent known-account addition", () => {
     const screenshot = fill({
       fingerprint: "image",
       inputKind: "screenshot",
@@ -612,7 +617,7 @@ describe("execution reconciliation", () => {
         new Map(),
       ),
     ).toEqual({
-      currentAfterReplacements: [],
+      currentAfterReplacements: [screenshot],
       incomingToMerge: [statement],
     });
   });

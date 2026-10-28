@@ -253,3 +253,12 @@ describe("calculatePositionPathMetrics", () => {
     ).toEqual({ amount: "20", percent: "20" });
   });
 });
+
+
+it("F07 distinguishes unknown fees from missing cost in net path metrics", () => {
+  const metrics = calculatePositionPathMetrics({ candles: [candle("2025-01-02T15:00:00Z", 100, 120, 90, 110)], executions: [fill("buy", "2025-01-02T14:30:00Z", "1", "100", "invalid")], cursor: "2025-01-02T15:00:00Z", episodeStartedAt: "2025-01-02T14:30:00Z" });
+  expect(metrics.current).toMatchObject({ quantity: "1", averageCost: "100", unrealizedPnl: "10", fees: null, netPnl: null });
+  expect(metrics.unavailableReason).toContain("费用");
+  expect(metrics.mfe).toBeNull();
+  expect(metrics.rMultiple).toBeNull();
+});

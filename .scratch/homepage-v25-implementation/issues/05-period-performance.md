@@ -1,13 +1,17 @@
+2026-10-24 root更新：财务seam第3/3轮及原九样本性能正式PASS，见 [root接受](../evidence/P4/seam/ROOT-ACCEPTANCE-3.md)。历史失败保留；P2页面/producer/完整旅程仍未接受。
+
 # 05 — 切换期间并读取真实每日表现
 
 ID: P2
 State: open
 Status: in-progress
-Assignee: /root/integration_g61
+Assignee: /root
 实现模型: gpt-6.1-sol / ultra
 数据准备与领域接口候选负责人: /root/financial_g61
 整页视觉、完整数据流与独立接受负责人: /root
 验收: 0/3；内部数据切片不重置本票轮数。P2-A纯领域切片已于02:29依有限门授权；页面仍blocked。
+
+2026-10-24 当前检查点：原始真实数据已读取，但期间模块仍是占位。新增 [S1 来源所有权接口](08-source-ownership.md) 由 /root/homepage_flow_scan24 单独负责，root 已冻结 [数据合同](../evidence/P4/ROOT-DATA-CONTRACT.md)；只授权纯模块，不授权把未通过的新财务候选接入页面。财务 seam 2/3 FAIL；Metrics 2/3 FAIL，第三候选待独立接受；期间图/选择器局部结果不等于本票通过。整票仍 0/3，真实数据、完整旅程、持久化与视觉门槛未关闭。
 
 ## Scope / What to build
 

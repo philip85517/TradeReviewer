@@ -1270,21 +1270,40 @@ it("filters simulation groups and opens the selected run in the shared workbench
 it("derives browse rows from shared nature and account scope across rerenders", () => {
   const initial = setup();
   cleanup();
-  const simulationEntries = initial.entries.map(entry => ({
-    ...entry,
-    tradeNature: "simulation" as const,
-    simulationRunId: "run-a",
-    episodes: entry.episodes.map(item => ({
-      ...item,
-      episode: {
-        ...item.episode,
+  const liveEntries = initial.entries.flatMap(entry => buildTradeLibraryEntries(
+    buildInstrumentTradeSummaries(entry.executions.map(execution => ({
+      ...execution,
+      source: { ...execution.source, tradeNature: "live" as const },
+    }))),
+    {},
+    {},
+  ));
+  const simulationEntries = initial.entries.flatMap(entry => buildTradeLibraryEntries(
+    buildInstrumentTradeSummaries(entry.executions.map(execution => ({
+      ...execution,
+      source: {
+        ...execution.source,
         tradeNature: "simulation" as const,
+        tradingNature: "simulated" as const,
         simulationRunId: "run-a",
       },
-    })),
-  }));
+    }))),
+    {},
+    {},
+  ));
+  const excludedExecutions: TradeExecution[] = [
+    {
+      ...fill({ ...xpev, id: "US:UNKNOWN", symbol: "UNKNOWN", name: "未知性质证券" }, "buy", "2025-01-02T14:30:00Z", "unknown"),
+      source: { platform: "fixture", row: 1, tradeNature: "unknown" },
+    },
+    {
+      ...fill({ ...xpev, id: "US:CONFLICT", symbol: "CONFLICT", name: "矛盾性质证券" }, "buy", "2025-01-02T14:30:00Z", "contradiction"),
+      source: { platform: "fixture", row: 1, tradeNature: "live", tradingNature: "simulated" },
+    },
+  ];
+  const excludedEntries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(excludedExecutions), {}, {});
   const props = {
-    entries: initial.entries,
+    entries: [...liveEntries, ...excludedEntries],
     candlesByInstrument: {},
     marketDataStatuses: {},
     timeframe: "1D" as const,
@@ -1298,10 +1317,10 @@ it("derives browse rows from shared nature and account scope across rerenders", 
   const view = render(<TradeLibrary {...props} />);
   expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(1);
 
-  view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", simulationRunId: "run-a" }} />);
+  view.rerender(<TradeLibrary {...props} entries={[...simulationEntries, ...excludedEntries]} sharedScope={{ ...props.sharedScope, nature: "simulation", simulationRunId: "run-a" }} />);
   expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(1);
 
-  view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", accountIds: [], simulationRunId: null }} />);
+  view.rerender(<TradeLibrary {...props} entries={[...simulationEntries, ...excludedEntries]} sharedScope={{ ...props.sharedScope, nature: "simulation", accountIds: [], simulationRunId: null }} />);
   expect(screen.queryAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(0);
   expect(screen.getByText(/请选择模拟运行后查看交易库/)).toBeInTheDocument();
 });
@@ -1349,4 +1368,28 @@ it("treats canonical source runs as one sortable account in the library caller",
   await user.selectOptions(sort, "net-profit");
   expect(sort).toHaveValue("net-profit");
   expect(screen.queryByText(/绩效排序不可用/)).not.toBeInTheDocument();
+});
+
+it("keeps a raw malformed-fee round selectable, neutral and explicit through the chart handoff", async () => {
+  const user = userEvent.setup();
+  const raw = [
+    { ...fill(xpev, "buy", "2025-01-02T14:30:00Z", "bad-open"), fee: "invalid" },
+    fill(xpev, "sell", "2025-01-03T14:30:00Z", "good-close"),
+  ];
+  const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(raw), {}, {});
+  const episodeId = entries[0].episodes[0].episode.id;
+  const onOpenInReview = vi.fn();
+  const { container } = render(<TradeLibrary entries={entries} candlesByInstrument={{}} marketDataStatuses={{}}
+    timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={onOpenInReview} onSaveReview={() => {}}
+    reviewsHydrated target={{ requestId: 1, instrumentId: xpev.id, episodeId }} />);
+  expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeVisible();
+  const feeMetric = container.querySelector<HTMLElement>(".library-metric-grid")!;
+  expect(within(feeMetric).getByText("费用").parentElement).toHaveTextContent("待核对");
+  expect(container.querySelector(".library-metric-grid .positive, .library-metric-grid .negative")).toBeNull();
+  expect(container.querySelector(".library-episode-rail .positive, .library-episode-rail .negative")).toBeNull();
+  expect(screen.queryByText("invalid USD")).not.toBeInTheDocument();
+  expect(screen.queryByText("null USD")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开统一工作台" }));
+  expect(onOpenInReview).toHaveBeenCalledWith(xpev.id, episodeId, expect.any(Array));
+  expect(raw[0].fee).toBe("invalid");
 });

@@ -1,4 +1,3 @@
-import { canonicalInstrumentId } from "../instruments/display-name";
 import type { ResolvedInstrument } from "../instruments/metadata-contracts";
 import type {
   CoverageSegment,
@@ -29,11 +28,7 @@ import {
   type TagSuggestionRepository,
 } from "./tag-suggestion-repository";
 
-function marketCurrency(market: string): string {
-  if (market === "HK") return "HKD";
-  if (market === "CN-SH" || market === "CN-SZ") return "CNY";
-  return "USD";
-}
+
 
 function readMarketData(
   client: SqliteHttpClient,
@@ -195,32 +190,6 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
       await this.client.putInstrumentMetadata(record);
       return;
     }
-    const existing = (await this.client.getBootstrap()).instruments.find(
-      (instrument) => instrument.id === canonicalInstrumentId(record.symbol, record.market),
-    );
-    const effectiveLocalizedName =
-      record.localizedName ??
-      existing?.localizedName ??
-      existing?.metadata?.localizedName;
-    await this.client.mergeExecutions({
-      instruments: [{
-        ...existing,
-        id: canonicalInstrumentId(record.symbol, record.market),
-        market: record.market,
-        symbol: record.symbol,
-        name: existing?.name ?? record.name,
-        currency: existing?.currency ?? marketCurrency(record.market),
-        ...(effectiveLocalizedName
-          ? { localizedName: effectiveLocalizedName }
-          : {}),
-        metadata: {
-          ...record,
-          ...(effectiveLocalizedName
-            ? { localizedName: effectiveLocalizedName }
-            : {}),
-        },
-      }],
-      executions: [],
-    });
+    throw new StorageHttpError(503, "metadata-write-unavailable", "证券资料暂不能保存，请重试。", "storage-unavailable", undefined, true);
   }
 }

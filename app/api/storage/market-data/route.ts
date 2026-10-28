@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   if (!validId(instrumentId) || (start && end && start > end)) return invalid();
   try {
     const store = getSqliteStore(openSqliteDatabase());
-    if (!store.getInstruments().some((item) => item.id === instrumentId)) {
+    if (!store.hasInstrument(instrumentId!)) {
       return response({ error: { code: "not-found", message: "not found" } }, 404);
     }
     if (provider !== null) {
@@ -36,9 +36,7 @@ export async function GET(request: Request) {
     if (!interval || !intervals.has(interval) || (dailyOnly !== null && dailyOnly !== "true")) return invalid();
     const from = start ?? "0000-01-01T00:00:00.000Z";
     const to = end ?? "9999-12-31T23:59:59.999Z";
-    const intervalCoverage = store.getIntervalCoverage().filter(
-      (item) => item.instrumentId === instrumentId && item.interval === interval,
-    );
+    const intervalCoverage = store.getIntervalCoverage(instrumentId!, interval as MarketCandleRecord["interval"]);
     if (dailyOnly === "true") {
       if (interval !== "1D") return invalid();
       return response({

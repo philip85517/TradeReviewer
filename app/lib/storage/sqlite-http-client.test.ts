@@ -13,6 +13,17 @@ const json = (body: unknown, status = 200) =>
   });
 
 describe("createSqliteHttpClient", () => {
+  it("rejects successful-looking malformed plans, receipts and name acknowledgements", async () => {
+    const client = createSqliteHttpClient(async () => json({}));
+    await expect(client.prepareTradeChanges({ kind: "import", candidates: [] })).rejects.toMatchObject({ code: "invalid-response" });
+    await expect(client.commitTradeChanges({ requestId: "request", planId: "plan", choices: {} })).rejects.toMatchObject({ code: "invalid-response" });
+    await expect(client.getTradeCommit("request")).rejects.toMatchObject({ code: "invalid-response" });
+    await expect(client.putInstrumentName({ instrumentId: "US:AAPL", name: "Apple" })).rejects.toMatchObject({ code: "invalid-response" });
+  });
+  it("exposes the separately validated homepage source read", () => {
+    expect(createSqliteHttpClient()).toHaveProperty("getHomepageSource", expect.any(Function));
+  });
+
   it("uses same-origin no-store GET requests and parses storage status", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       json({ schemaVersion: 7, migration: null, counts: { executions: 2 } }),

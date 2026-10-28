@@ -79,7 +79,7 @@ describe("import execution library", () => {
     expect(loadImportedExecutions()).toEqual([]);
   });
 
-  it("drops the same economic fill from overlapping exports", () => {
+  it("retains equal-valued observations from separate export materials", () => {
     const buy = execution(
       "statement-a:2",
       "buy",
@@ -92,7 +92,10 @@ describe("import execution library", () => {
         [fromFile(buy, "file-a", "file-a:2")],
         [fromFile(buy, "file-b", "file-b:18")],
       ),
-    ).toHaveLength(1);
+    ).toEqual([
+      fromFile(buy, "file-a", "file-a:2"),
+      fromFile(buy, "file-b", "file-b:18"),
+    ]);
   });
 
   it("preserves identical fills on separate rows in one export", () => {
@@ -111,7 +114,7 @@ describe("import execution library", () => {
     ).toHaveLength(2);
   });
 
-  it("keeps the maximum duplicate count regardless of import order", () => {
+  it("retains all three observations with distinct stable rows in either import order", () => {
     const buy = execution(
       "statement-a:2",
       "buy",
@@ -123,12 +126,17 @@ describe("import execution library", () => {
       fromFile(buy, "file-b", "file-b:2"),
       fromFile(buy, "file-b", "file-b:3"),
     ];
+    twoFills[1].source.row = 3;
 
-    expect(mergeExecutions(oneFill, twoFills)).toHaveLength(2);
-    expect(mergeExecutions(twoFills, oneFill)).toHaveLength(2);
+    expect(mergeExecutions(oneFill, twoFills)).toEqual([
+      oneFill[0], twoFills[0], twoFills[1],
+    ]);
+    expect(mergeExecutions(twoFills, oneFill)).toEqual([
+      oneFill[0], twoFills[0], twoFills[1],
+    ]);
   });
 
-  it("keeps equal-evidence occurrences from the newly imported larger source", () => {
+  it("retains the old observation alongside both rows from a larger new material", () => {
     const buy = execution(
       "statement-a:2",
       "buy",
@@ -136,6 +144,7 @@ describe("import execution library", () => {
       "20",
     );
     const existing = fromFile(buy, "old-file", "old-file:1");
+    existing.source.row = 1;
     existing.source.sourceOrder = 1;
     const incoming = [7, 8].map((sourceOrder) => {
       const next = fromFile(
@@ -143,13 +152,17 @@ describe("import execution library", () => {
         "new-file",
         `new-file:${sourceOrder}`,
       );
+      next.source.row = sourceOrder;
       next.source.sourceOrder = sourceOrder;
       return next;
     });
 
     expect(
       mergeExecutions([existing], incoming).map(({ id }) => id),
-    ).toEqual(["new-file:7", "new-file:8"]);
+    ).toEqual(["old-file:1", "new-file:7", "new-file:8"]);
+    expect(mergeExecutions([existing], incoming)).toEqual([
+      existing, incoming[0], incoming[1],
+    ]);
   });
 
   it("round-trips the representative set chosen for a larger fill multiplicity", () => {
@@ -171,7 +184,7 @@ describe("import execution library", () => {
     expect(loadImportedExecutions()).toEqual(merged);
   });
 
-  it("enriches an existing duplicate with a newly supplied stock name", () => {
+  it("enriches a stable execution name while retaining separate material observations", () => {
     const buy = execution(
       "statement-a:2",
       "buy",
@@ -180,15 +193,21 @@ describe("import execution library", () => {
     );
     const unresolved = fromFile(buy, "file-a", "file-a:2");
     unresolved.instrument.name = "名称待行情源补充";
-    const resolved = fromFile(buy, "file-b", "file-b:2");
+    const resolved = fromFile(buy, "file-a", "file-a:2");
     resolved.instrument.name = "阿里巴巴";
 
     expect(mergeExecutions([unresolved], [resolved])[0].instrument.name).toBe(
       "阿里巴巴",
     );
+    expect(mergeExecutions([unresolved], [resolved])).toEqual([resolved]);
+
+    const independent = fromFile(resolved, "file-b", "file-b:2");
+    expect(mergeExecutions([unresolved], [independent])).toEqual([
+      unresolved, independent,
+    ]);
   });
 
-  it("ignores account and fee differences in the economic signature", () => {
+  it("retains separate accounts and their original fee evidence", () => {
     const buy = execution(
       "statement-a:2",
       "buy",
@@ -206,10 +225,12 @@ describe("import execution library", () => {
     screenshot.fee = "0";
     screenshot.source.inputKind = "screenshot";
 
-    expect(mergeExecutions([statement], [screenshot])).toEqual([statement]);
+    expect(mergeExecutions([statement], [screenshot])).toEqual([
+      screenshot, statement,
+    ]);
   });
 
-  it("preserves richer statement metadata for an automatic duplicate", () => {
+  it("retains an unknown-account observation beside richer statement metadata", () => {
     const buy = execution(
       "base",
       "buy",
@@ -229,8 +250,12 @@ describe("import execution library", () => {
     statement.instrument.name = "阿里巴巴";
     statement.source.inputKind = "statement";
 
-    expect(mergeExecutions([screenshot], [statement])).toEqual([statement]);
-    expect(mergeExecutions([statement], [screenshot])).toEqual([statement]);
+    expect(mergeExecutions([screenshot], [statement])).toEqual([
+      screenshot, statement,
+    ]);
+    expect(mergeExecutions([statement], [screenshot])).toEqual([
+      screenshot, statement,
+    ]);
   });
 
   it("keeps different-core records at the same candidate instant", () => {
@@ -300,7 +325,7 @@ describe("import execution library", () => {
     expect(mergeExecutions([legacy], [repeated])).toEqual([legacy]);
   });
 
-  it("uses platform and filename as a source identity only when both exist", () => {
+  it("retains observations without treating platform and filename as verified identity", () => {
     const buy = execution(
       "base",
       "buy",
@@ -324,7 +349,9 @@ describe("import execution library", () => {
     };
 
     expect(mergeExecutions([], [first, second])).toEqual([first, second]);
-    expect(mergeExecutions([first], [overlapping])).toHaveLength(1);
+    expect(mergeExecutions([first], [overlapping])).toEqual([
+      overlapping, first,
+    ]);
   });
 
   it("loads all different-core conflict records from storage", () => {

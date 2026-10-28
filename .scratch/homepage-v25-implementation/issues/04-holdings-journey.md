@@ -3,10 +3,19 @@
 ID: P1
 State: open
 Status: acceptance-failed
-Assignee: /root/integration_g61
-候选实现负责人: /root/integration_g61（gpt-6.1-sol / ultra）
+Assignee: /root
+候选实现负责人: /root/astra_source（gpt-6-astra / ultra，catalog 与读取链）；/root/astra_finance（gpt-6-astra / ultra，F07 与 ledger）；/root/astra_integration_design（gpt-6-astra / ultra，存储与编辑会话）；当前实现全部冻结，历史 integration_g61 记录保留
 集成、完整数据流与整页视觉独立接受负责人: /root
-验收: 2/3，第1、2轮FAIL；第三轮仍FAIL或必需NOT VERIFIED则暂停同票，禁止改名重置。
+验收: 3/3 FAIL；最后候选独立验收失败。按用户要求暂停同票，禁止改名重置。
+Iteration: paused — 3/3 exhausted
+
+## 2026-10-24 — 当前最终判定
+
+[第3轮独立验收](../evidence/resume-2026-10-24/ROOT-ACCEPTANCE-3.md)为本票权威当前状态。财务原48例及9性能样本、来源38项、编辑会话80项和有限真实保存重开通过；完整项目strict仍8错，实际首页15秒超时、终态仍显示加载、必需持久化/全控件/视觉未闭合。因此整票FAIL，暂停产品与测试修改，未执行第四次候选。
+
+问题分条登记为[strict错误](14-p1-strict-finding.md)、[终态传播](15-p1-terminal-state-finding.md)、[首页超时](16-p1-homepage-timeout-finding.md)。这些是同一P1下的发现记录，不是新的实现任务或轮数。M08/RS07及历史证据继续OPEN。根因和统一下一候选设计已保存；恢复耗尽任务须用户明确授权。
+
+以下派发、轮数和接受描述为历史版本；原验收清单仍适用，不因有限PASS自动勾选。
 
 2026-10-23 05:34 CST：root 读完 11 项只读诊断后裁定普通集合不依赖首页全 daily/FX 就绪，交唯一 Workspace/host owner 先 RED 修复等待链；见 `../evidence/continue-2026-10-23/ROOT-WORKSPACE-FIX-DISPATCH.md`。88 PASS/11 FAIL 保留；#10/#11 未实现的附件/期间恢复不靠标签/skip消除。此为同票第三候选准备，非正式第三轮接受。
 
@@ -94,3 +103,12 @@ root 独立对当前 Surface84897ee2… / CSSb7160f10… / host3218407b… 执�
 P1正式2/3 FAIL、第三轮未启动；P3正式0/3，不因有限checkpoint增加或重置正式轮数。P2三市场冷约2.97秒/重复约3秒且完整图超过64MiB，性能FAIL保持；原始实现及两项授权性能候选均未达完整目标后，按已调用systematic-debugging的“Discuss with your human partner before attempting more fixes”要求等待架构讨论（既有异步问题未回复），四产品文件冻结，未增加新修复候选。建议讨论保持64MiB并验证不可变对象共享；仍只是待选择方案，未实施。P2页面/P4产品/完整附件依赖未解除。
 
 request-body实际消费者OPEN，生产调用图只定位到app handler首次clone之前，未定位原始非GET请求消费者；旧探针预算/首页GET漏记局限及全部原失败保留，无新探针激活或猜测性框架修复。完整当前Workspace回归、整页视觉/控件/响应式/触控仍NOT VERIFIED，已知未实现功能保持FAIL。所有恢复代理实际gpt-6.1-sol / ultra，当前候选已冻结；无提交、推送、合并或发布。
+
+2026-10-24 root bounded candidate checkpoint: 231 regression + 4 literal checks PASS; actual Tencent holding detail -> ordinary collection shows 0 records (FAIL). Evidence `../evidence/resume-2026-10-24/root-workspace/ROOT-CHECKPOINT.md`. Source owner diagnoses exact catalog/qualified lineage; no direct patch authorized yet. P1 retains 2/3 FAIL and existing third-candidate preparation; this checkpoint does not accept the minimal journey or reset the cap.
+
+2026-10-24 root补充：Workspace冻结13文件 strict/lint exit0、after hash13/13匹配；231+4测试局部PASS保留。腾讯空集合已确认canonical显示与raw carrier映射缺失，授权catalog+Surface+Workspace六文件统一候选；P1仍2/3FAIL最后候选准备。冻结后真实重试再次15s超时/0行，独立于此前HMR污染，分段诊断OPEN；详见 evidence/resume-2026-10-24/root-workspace/ROOT-CHECKPOINT.md。
+
+
+## 2026-10-24 — root real-response / catalog checkpoint
+
+Root's actual-response Node diagnostic completed in 11.718s at unchanged 15s deadline, with 845-file pre/post digest identical and 289/289 actual response bodies. This excludes React publication and is not browser acceptance. Root browser Retry still reached timeout/zero holdings; no blind retry or deadline increase. Root catalog 159+4 tests PASS and six hashes match, but Tencent → ordinary collection → return is still NOT VERIFIED. [Evidence](../evidence/resume-2026-10-24/source/astra/workspace-design/real-response-cpu-probe-localhost-permission/ROOT-CHECKPOINT.md). Actual agents are gpt-6-astra / ultra; finance F07+chronology implementation resumed, source does read-only performance diagnosis, integration designs pending gates. P1 2/3 FAIL, representation 1/3 FAIL, Bars 3/3 FAIL paused; whole homepage is not delivered.

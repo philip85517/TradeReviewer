@@ -118,8 +118,7 @@ export function calculatePositionPathMetrics(
     cursor: input.cursor,
     markPrice: String(usableCandles.at(-1)!.close),
   });
-  if (current.accuracy) {
-    return {
+  const unavailableNet = (): PositionPathMetrics => ({
       current,
       holdingMilliseconds: null,
       mfe: null,
@@ -127,9 +126,11 @@ export function calculatePositionPathMetrics(
       maximumDrawdown: null,
       profitGiveback: null,
       rMultiple: null,
-      unavailableReason: "持仓历史或成本不完整，暂不计算收益及路径风险。",
-    };
-  }
+      unavailableReason: current.accuracy?.reasons.every(reason => reason === "fees-invalid") || current.fees === null
+        ? "费用待核对，暂不计算净收益及路径风险。"
+        : "持仓历史或成本不完整，暂不计算收益及路径风险。",
+    });
+  if (current.accuracy || current.netPnl === null) return unavailableNet();
   let mfe: Decimal | undefined;
   let mae: Decimal | undefined;
   let maximumDrawdown = new Decimal(0);
@@ -147,6 +148,7 @@ export function calculatePositionPathMetrics(
       cursor: candleKnowledgeAt(candle),
       markPrice: String(candle.close),
     });
+    if (closePosition.netPnl === null) return unavailableNet();
     const quantity = new Decimal(closePosition.quantity);
     const closeNetPnl = new Decimal(closePosition.netPnl);
     const grossCapitalDeployed = new Decimal(
@@ -176,20 +178,18 @@ export function calculatePositionPathMetrics(
 
     const favorablePrice = quantity.isPositive() ? candle.high : candle.low;
     const adversePrice = quantity.isPositive() ? candle.low : candle.high;
-    const favorablePnl = new Decimal(
-      replayPositionAtPrice({
+    const favorable = replayPositionAtPrice({
         executions: input.executions,
         cursor: candleKnowledgeAt(candle),
         markPrice: String(favorablePrice),
-      }).netPnl,
-    );
-    const adversePnl = new Decimal(
-      replayPositionAtPrice({
+      }).netPnl;
+    const adverse = replayPositionAtPrice({
         executions: input.executions,
         cursor: candleKnowledgeAt(candle),
         markPrice: String(adversePrice),
-      }).netPnl,
-    );
+      }).netPnl;
+    if (favorable === null || adverse === null) return unavailableNet();
+    const favorablePnl = new Decimal(favorable), adversePnl = new Decimal(adverse);
     mfe = Decimal.max(mfe ?? favorablePnl, favorablePnl);
     mae = Decimal.min(mae ?? adversePnl, adversePnl);
   }

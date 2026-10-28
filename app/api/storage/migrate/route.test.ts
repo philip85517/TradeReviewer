@@ -11,6 +11,7 @@ vi.mock("../../../lib/storage/sqlite-store", () => ({
 vi.mock("../../../../db/sqlite", () => ({ openSqliteDatabase }));
 
 import { POST } from "./route";
+import { BookVersionUnavailableError } from "../../../lib/storage/trade-book-version";
 
 const payload = {
   version: 1, sourceClientId: "browser-1", sourceFingerprint: "fingerprint-1",
@@ -53,11 +54,11 @@ describe("POST /api/storage/migrate", () => {
   });
 
   it("returns 503 when the database cannot be opened", async () => {
-    openSqliteDatabase.mockImplementation(() => { throw new Error("unavailable"); });
+    openSqliteDatabase.mockImplementation(() => { throw new BookVersionUnavailableError(); });
 
     const response = await POST(request(payload));
 
     expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ error: { code: "database-unavailable" } });
+    expect(await response.json()).toMatchObject({ error: { code: "BOOK_VERSION_UNAVAILABLE" } });
   });
 });

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createHomepageState, updateHomepageUi } from "../../lib/reviews/homepage-v25-state";
 import type { StoredInstrument } from "../../lib/storage/sqlite-contracts";
 import { buildHomepageCatalog } from "./catalog-model";
-import { buildHomepageHoldings } from "./holdings-model";
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 import { HomeSurface } from "./home-surface";
 
 const scope = { live: true as const, market: "a" as const, accounts: ["one"], rangeMode: "date" as const, date: "2026-10-22" };
@@ -17,7 +17,7 @@ const holdings = buildHomepageHoldings([], { scope, asOf: "2026-10-23" });
 function Harness({ navigate = async () => false }: { navigate?: (identity: string) => Promise<boolean> }) {
   const [ui, setUi] = useState(() => createHomepageState(scope));
   const [target, setTarget] = useState("");
-  return <><HomeSurface ui={ui} holdings={holdings} catalog={catalog} ready accountStatus="ready" accounts={[{ id: "one", label: "实盘一" }]} onUi={patch => setUi(current => updateHomepageUi(current, patch))} onScope={vi.fn()} onTrades={vi.fn()} onSymbolTrades={async identity => { const accepted = await navigate(identity); if (accepted) setTarget(identity); return accepted; }} onReload={vi.fn()} onRepair={vi.fn()} onImport={vi.fn()} /><output aria-label="当前范围">{JSON.stringify(ui.snapshot.scope)}</output><output aria-label="交易目标">{target}</output></>;
+  return <><HomeSurface ui={ui} holdings={holdings} catalog={catalog} ready accountStatus="ready" accounts={[{ id: "one", label: "实盘一" }]} onUi={patch => setUi(current => updateHomepageUi(current, patch))} onScope={vi.fn()} onTrades={vi.fn()} onSymbolTrades={async identity => { const accepted = await navigate(identity); if (accepted) setTarget(identity); return accepted; }} view={holdings.view} onApply={vi.fn(() => true)} recovery={{ state: "quiet" }} onRecover={vi.fn()} onCatalogRetry={vi.fn()} onImport={vi.fn()} /><output aria-label="当前范围">{JSON.stringify(ui.snapshot.scope)}</output><output aria-label="交易目标">{target}</output></>;
 }
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 async function query(value: string) {

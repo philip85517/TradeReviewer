@@ -567,6 +567,7 @@ function walkReferenceValue(
   allMappings: readonly IdentityMapping[],
   blockers: TradingViewMigrationBlocker[],
   owner: string | undefined,
+  preservedExecutionIds: ReadonlySet<string>,
 ): ReferenceWalkResult {
   const normalizedKey = keyName(key);
   if (isPreservedSubtree(key)) return { value: cloneValue(value), changed: false, preserved: true };
@@ -584,7 +585,7 @@ function walkReferenceValue(
     let changed = false;
     let preserved = false;
     const next = value.map((child, index) => {
-      const result = walkReferenceValue(child, key, `${path}[${index}]`, accountMappings, episodeMappings, allMappings, blockers, owner);
+      const result = walkReferenceValue(child, key, `${path}[${index}]`, accountMappings, episodeMappings, allMappings, blockers, owner, preservedExecutionIds);
       changed ||= result.changed;
       preserved ||= result.preserved;
       return result.value;
@@ -605,7 +606,7 @@ function walkReferenceValue(
           owner: owner ?? "unassigned",
         });
       }
-      const result = walkReferenceValue(child, childKey, `${path}.${childKey}`, accountMappings, episodeMappings, allMappings, blockers, owner);
+      const result = walkReferenceValue(child, childKey, `${path}.${childKey}`, accountMappings, episodeMappings, allMappings, blockers, owner, preservedExecutionIds);
       changed ||= result.changed;
       preserved ||= result.preserved;
       next[childKey] = result.value;
@@ -614,6 +615,10 @@ function walkReferenceValue(
   }
   if (typeof value !== "string") return { value, changed: false, preserved: false };
   if (RUN_KEYS.has(normalizedKey)) return { value, changed: false, preserved: true };
+  // Revision images retain execution identity even when its prefix is a legacy account ID.
+  if (/^\$\.revision\.changes\[\d+\]\.(before|after)\.id$/.test(path) && preservedExecutionIds.has(value)) {
+    return { value, changed: false, preserved: true };
+  }
 
   if (recognized) {
     if (mappings.length === 0) return { value, changed: false, preserved: false };
@@ -648,10 +653,11 @@ function mapReference(
   accountMappings: readonly IdentityMapping[],
   episodeMappings: readonly IdentityMapping[],
   blockers: TradingViewMigrationBlocker[],
+  executionIds: ReadonlySet<string>,
 ): TradingViewReferenceMigrationPlanRow {
   const rowBlockerCount = blockers.length;
   const allMappings = [...accountMappings, ...episodeMappings];
-  const walked = walkReferenceValue(row.fields, "", "$", accountMappings, episodeMappings, allMappings, blockers, row.owner);
+  const walked = walkReferenceValue(row.fields, "", "$", accountMappings, episodeMappings, allMappings, blockers, row.owner, row.table === "trade_revisions" ? executionIds : new Set());
   const blocked = blockers.length > rowBlockerCount;
   for (const blocker of blockers.slice(rowBlockerCount)) {
     blocker.table ??= row.table;
@@ -853,7 +859,8 @@ export function buildTradingViewAccountMigrationPlan(snapshot: TradingViewAccoun
 
   const accountMappings: IdentityMapping[] = oldAccounts.map((accountId) => ({ kind: "account", before: accountId, after: TRADINGVIEW_CANONICAL_ACCOUNT_ID }));
   const episodeMappings: IdentityMapping[] = [...episodeIdMap.entries()].map(([before, after]) => ({ kind: "episode", before, after }));
-  const referencePlans = sorted(snapshot.references ?? [], (item) => `${item.table}\u0000${item.primaryKey}`).map((row) => mapReference(row, accountMappings, episodeMappings, blockers));
+  const preservedExecutionIds = new Set(snapshot.executions.map(execution => execution.id));
+  const referencePlans = sorted(snapshot.references ?? [], (item) => `${item.table}\u0000${item.primaryKey}`).map((row) => mapReference(row, accountMappings, episodeMappings, blockers, preservedExecutionIds));
   const isBrowser = (row: TradingViewReferenceMigrationPlanRow) => /^(browser|localstorage|indexeddb|reviewkey)/i.test(row.table.replace(/[^a-z]/gi, "").toLowerCase());
   const referencePlan = referencePlans.filter((row) => !isBrowser(row));
   const browserStatePlan = referencePlans.filter(isBrowser);

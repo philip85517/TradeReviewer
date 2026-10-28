@@ -1,10 +1,10 @@
 import type { TradeRevision, TradeRevisionRequest, TradeRevisionResult } from "./trade-revisions";
+import { errorFromResponse, StorageHttpError } from "./sqlite-http-client";
 async function read<T>(response: Response): Promise<T> {
-  const body = await response.json();
-  if (!response.ok) {
-    const failure = body as { error?: { message?: string } } | null;
-    throw new Error(typeof failure?.error?.message === "string" ? failure.error.message : "数据修订请求失败");
-  }
+  let body: unknown;
+  try { body = await response.json(); }
+  catch { throw new StorageHttpError(response.status, response.ok ? "invalid-response" : "storage-request-failed", "数据修订响应无效"); }
+  if (!response.ok) throw errorFromResponse(response.status, body);
   return body as T;
 }
 export const tradeRepairClient = {

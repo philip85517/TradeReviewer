@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 
 import {
   hasTrustedClosedMetrics,
@@ -64,7 +65,7 @@ export type ReviewQueueSummary = {
 };
 
 function tradeNature(row: ReviewQueueItem): ReviewQueueSummaryScope["tradeNature"] {
-  return row.entry.tradeNature ?? row.item.episode.tradeNature ?? "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 function scopeFor(row: ReviewQueueItem): ReviewQueueSummaryScope {

@@ -26,6 +26,10 @@ describe.skipIf(!sampleDirectory)('local TradingView reference exports',()=>{
     expect(episodes.every(e=>e.status==='closed')).toBe(true);
     expect(result.records.reduce((sum,r)=>sum.plus(r.fee),new Decimal(0)).toString()).toBe(sample.fees);
     expect(result.records.reduce((sum,r)=>sum.plus(r.source.sourceReport?.netPnl ?? '0'),new Decimal(0)).toString()).toBe(sample.net);
-    expect(episodes.reduce((sum,e)=>sum.plus(replayPositionAtPrice({executions:e.executions,markPrice:e.executions.at(-1)!.price}).netPnl),new Decimal(0)).toString()).toBe(sample.net);
+    expect(episodes.reduce((sum,e)=>{
+      const netPnl = replayPositionAtPrice({executions:e.executions,markPrice:e.executions.at(-1)!.price}).netPnl;
+      if (netPnl === null) throw new Error('Expected known net PnL for the valid TradingView sample');
+      return sum.plus(netPnl);
+    },new Decimal(0)).toString()).toBe(sample.net);
   });
 });

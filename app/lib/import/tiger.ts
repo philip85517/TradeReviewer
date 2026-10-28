@@ -288,10 +288,10 @@ function isExecutionAnchor(
   columns: readonly HeaderColumn[],
 ): boolean {
   const cells = rowCells(row, columns);
-  if (/^(?:合计|合計|总计|總計|小计|小計|total)/i.test(compact(cells.code))) return false;
-  const numeric = (value: string | undefined) => /^[+-]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)$/.test(compact(value));
+  // Candidate collection preserves raw financial cells; parsing their values is
+  // the validator's job, including legacy rows without a direction label.
   return Boolean(
-      (numeric(cells.quantity) || numeric(cells.price)) &&
+      (compact(cells.quantity) || compact(cells.price)) &&
       (compact(cells.market) ||
         compact(cells.code) ||
         compact(cells.currency)),
@@ -311,9 +311,26 @@ function logicalRowsForSegment(
   const segmentItems = items.filter(
     (item) => item.y > headerY + 2 && item.y < usableEnd,
   );
-  const anchors = groupItemsIntoRows(segmentItems, 2)
-    .filter((row) => isExecutionAnchor(row, columns))
-    .map((row) => row.y);
+  const bodyRows = groupItemsIntoRows(segmentItems, 2);
+  const context = bodyRows.map(row => {
+    const cells = rowCells(row, columns);
+    // Totals remain outside every execution-candidate branch, including rows
+    // carrying an ordinary side or date label.
+    if (/^(?:合计|合計|总计|總計|小计|小計|total)/i.test(compact(cells.code))) {
+      return { row, dateIdentity: false, primary: false };
+    }
+    const direction = compact(cells.direction);
+    const hasDirection = Object.keys(SIDE_BY_LABEL).some(label => direction.includes(label)) || /^(?:開倉|开仓|平倉|平仓)$/.test(direction);
+    const hasDate = /^\d{4}[-/]\d{2}[-/]\d{2}/.test(compact(cells.executedAt));
+    const identified = Boolean(compact(cells.code) || compact(cells.market) || compact(cells.currency));
+    return { row, dateIdentity: Boolean(compact(cells.code) && hasDate),
+      primary: isExecutionAnchor(row, columns) || identified && hasDirection };
+  });
+  const primaryAnchors = context.filter(item => item.primary).map(item => item.row.y);
+  // Split identity/date baselines belong to a nearby execution. Preserve an
+  // isolated identified row when all numeric fields are missing or unreadable.
+  const anchors = context.filter(item => item.primary || item.dateIdentity && !primaryAnchors.some(y => Math.abs(y - item.row.y) <= 14))
+    .map(item => item.row.y);
 
   return anchors.map((anchorY, index) => {
     const lower =
@@ -1068,15 +1085,16 @@ function addExclusion(
   category: ImportExclusion["category"],
   label: string,
   instrumentSymbol?: string,
+  ruleId?: string,
 ) {
   const existing = exclusions.find(
     (item) =>
       item.category === category &&
       item.label === label &&
-      item.instrumentSymbol === instrumentSymbol,
+      item.instrumentSymbol === instrumentSymbol && item.ruleId === ruleId,
   );
   if (existing) existing.count += 1;
-  else exclusions.push({ category, label, count: 1, instrumentSymbol });
+  else exclusions.push({ category, label, count: 1, instrumentSymbol, disposition: ruleId ? "ignored" : "pending", ...(ruleId ? { ruleId } : {}) });
 }
 
 function duplicateLayoutKey(
@@ -1205,6 +1223,7 @@ export function parseTigerPages(
         "fund",
         cells.name?.trim() || "基金交易",
         cells.code?.trim(),
+        "tiger/pdf/fund-section@1",
       );
       previous = undefined;
       continue;

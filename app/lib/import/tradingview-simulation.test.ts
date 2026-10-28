@@ -1,6 +1,8 @@
-import { describe, expect, it } from "vitest";
+import * as XLSX from "xlsx";
+import { describe, expect, it, vi } from "vitest";
 
 import {
+  tagTradingViewDecodedCell,
   detectTradingViewSimulationCsv,
   parseTradingViewSimulationCsv,
 } from "./tradingview-simulation";
@@ -64,6 +66,59 @@ const sampleRows = [
 ];
 
 describe("TradingView simulation CSV", () => {
+  it.each([
+    { name: "an invalid source row", extra: ["9", "多头进场", "not-a-date", ...sampleRows[1].slice(3)], code: "invalid-tradingview-row" },
+    { name: "a duplicate entry or exit", extra: [...sampleRows[0]], code: "duplicate-tradingview-role" },
+  ])("keeps $name pending while retaining an otherwise complete pair", ({ extra, code }) => {
+    const result = parseTradingViewSimulationCsv(new TextEncoder().encode(csv([...sampleRows.slice(0, 2), extra])), {
+      fileName: "回放交易_SSE_600330.csv", sourceFileId: "partial",
+    });
+
+    expect(result.records).toHaveLength(2);
+    expect(result.blocked).toBe(false);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code, row: 4 }));
+    expect(result.exclusions).toEqual([expect.objectContaining({ category: "invalid-row", count: 1, disposition: "pending" })]);
+  });
+
+  it("captures decoded headers and all logical record entries before financial normalization", () => {
+    const input = csv([...sampleRows.slice(0, 2), [...sampleRows[0]], ["9", "多头进场", "not-a-date", ...sampleRows[1].slice(3)]]).replace("持续时间（K线）", "持续时间（K线）,额外来源列").split("\n").map((line, i) => i ? `${line},  原值 ${i}  ` : line).join("\n");
+    const result = parseTradingViewSimulationCsv(new TextEncoder().encode(input), { fileName: "回放交易_SSE_600330_2026-09-03.csv", sourceFileId: "observed" });
+    const evidence = result.tradingViewEvidence!;
+    expect(evidence).toMatchObject({ fidelity: "xlsx-decoded-records-raw-false", fileFingerprint: "observed", derived: { accountOrigin: "parser-canonical-constant", natureOrigin: "parser-format-contract", runOrigin: "parser-fingerprint-market-symbol" } });
+    expect(evidence.headers).toContainEqual({ kind: "string", value: "额外来源列" });
+    expect(evidence.rows.map(row => row.logicalRow)).toEqual([2, 3, 4, 5]);
+    expect(evidence.rows.every(row => row.entries.some(e => e.key === "额外来源列" && e.cell.kind === "string"))).toBe(true);
+    expect(evidence.rows.find(row => row.logicalRow === 4)?.outcome).toBe("duplicate-role");
+    expect(evidence.rows.find(row => row.logicalRow === 5)?.outcome).toBe("invalid");
+    expect(evidence.rows.flatMap(row => row.candidateIds).sort()).toEqual(result.records.map(row => row.id).sort());
+    expect(evidence.rows[0].entries.find(e => e.key === "价格 CNY")?.cell).toEqual({ kind: "string", value: "8.75" });
+    expect(result.records[0].price).toBe("9.55");
+  });
+  it("tags every decoded cell domain and retains unsupported values as located diagnostics", () => {
+    const values = [" raw ", 1.25, -0, true, null, undefined, new Error("decoded failure"), NaN, Infinity, -Infinity, BigInt("9007199254740993"), {}, Symbol("cell"), () => undefined];
+    expect(values.map((v, i) => tagTradingViewDecodedCell(v, `d:${i}`).kind)).toEqual(["string", "number", "number", "boolean", "null", "undefined", "error", "non-finite", "non-finite", "non-finite", "bigint", "unsupported", "unsupported", "unsupported"]);
+    expect(tagTradingViewDecodedCell(-0, "negative-zero")).toEqual({ kind: "number", value: 0, negativeZero: true });
+    const original = XLSX.utils.sheet_to_json;
+    const spy = vi.spyOn(XLSX.utils, "sheet_to_json").mockImplementation(function decoded<T>(sheet: XLSX.WorkSheet, options?: XLSX.Sheet2JSONOpts): T[] {
+      const rows = original<T>(sheet, options);
+      if (options?.header !== 1) for (const row of rows) Object.assign(row as object, { objectExtra: {}, symbolExtra: Symbol("raw"), functionExtra: () => 1 });
+      return rows;
+    });
+    try {
+      const result = parseTradingViewSimulationCsv(new TextEncoder().encode(csv(sampleRows.slice(0, 2))), { fileName: "回放交易_SSE_600330_2026-09-03.csv", sourceFileId: "tagged" });
+      expect(result.records).toHaveLength(2);
+      const evidence = result.tradingViewEvidence!;
+      expect(evidence.rows).toHaveLength(2);
+      expect(evidence.cellDiagnostics).toHaveLength(6);
+      for (const row of evidence.rows) for (const column of ["objectExtra", "symbolExtra", "functionExtra"]) {
+        const entry = row.entries.find(e => e.key === column)!;
+        expect(entry.cell).toMatchObject({ kind: "unsupported", diagnosticId: `decoded:${row.logicalRow}:${column}` });
+        expect(evidence.cellDiagnostics).toContainEqual({ id: `decoded:${row.logicalRow}:${column}`, sheet: evidence.sheet.name, logicalRow: row.logicalRow, column });
+      }
+      expect(() => JSON.stringify(evidence)).not.toThrow();
+    } finally { spy.mockRestore(); }
+  });
+
   it("detects the supported Chinese export headers", () => {
     const input = new TextEncoder().encode(csv(sampleRows));
 

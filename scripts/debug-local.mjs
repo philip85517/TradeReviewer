@@ -3,6 +3,7 @@ import { execFileSync, spawn } from "node:child_process";
 import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, realpathSync, renameSync, rmSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { activateDatabaseCandidate } from "./activate-database-candidate.mjs";
 
 export const DEBUG_HOSTNAME = "127.0.0.1";
 export const DEBUG_PORT = 3333;
@@ -140,6 +141,9 @@ export async function prepareDebugDatabase(paths, options = {}) {
       if (result !== "ok") fail(`SQLite quick_check failed: ${result ?? "unknown result"}`);
     } finally { checked.close(); }
     if (options.signal?.aborted) fail("startup cancelled");
+    // Migrate/check/rotate the unpublished copy; never initialize the source.
+    activateDatabaseCandidate(temporary, paths.source);
+    if (options.signal?.aborted) fail("startup cancelled");
     assertDebugPreflight(paths, options);
     const quarantined = [];
     let published = false;
@@ -161,7 +165,7 @@ export async function prepareDebugDatabase(paths, options = {}) {
     }
     return lock;
   } catch (error) {
-    try { rmSync(temporary, { force: true }); } catch {}
+    for (const path of [temporary, ...sidecarPaths(temporary)]) { try { rmSync(path, { force: true }); } catch {} }
     lock.release();
     throw error;
   }

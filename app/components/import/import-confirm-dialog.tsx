@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   AlertTriangle,
   CalendarRange,
@@ -25,6 +25,7 @@ import { executionFeeCurrency } from "../../lib/trades/types";
 
 type Props = {
   preview: ImportPreview;
+  fileImportBlock?: "file" | "trades" | null;
   scopeNotice?: string;
   onCancel: () => void;
   onConfirm: () => void;
@@ -35,6 +36,10 @@ type Props = {
   onConflictDecision?: (id: string, decision: ReconciliationDecision) => void;
   saveError?: string | null;
   saving?: boolean;
+  reviewPlanContent?: ReactNode;
+  confirmDisabled?: boolean;
+  dismissDisabled?: boolean;
+  confirmLabel?: string;
 };
 
 const SOURCE_LABELS: Record<
@@ -90,6 +95,7 @@ function attemptSummaries(
 
 export function ImportConfirmDialog({
   preview,
+  fileImportBlock = null,
   scopeNotice,
   onCancel,
   onConfirm,
@@ -100,8 +106,12 @@ export function ImportConfirmDialog({
   onConflictDecision,
   saveError,
   saving = false,
+  reviewPlanContent,
+  confirmDisabled = false,
+  dismissDisabled = false,
+  confirmLabel,
 }: Props) {
-  const dialogRef = useModalFocus(() => { if (!saving) onCancel(); });
+  const dialogRef = useModalFocus(() => { if (!saving && !dismissDisabled) onCancel(); });
   const unresolvedIds = preview.unresolved.map((failure) =>
     canonicalInstrumentId(failure.symbol, failure.market),
   );
@@ -131,9 +141,9 @@ export function ImportConfirmDialog({
           </div>
           <button
             className="icon-button"
-            disabled={saving}
+            disabled={saving || dismissDisabled}
             aria-label="关闭导入确认"
-            onClick={() => { if (!saving) onCancel(); }}
+            onClick={() => { if (!saving && !dismissDisabled) onCancel(); }}
           >
             <X size={18} />
           </button>
@@ -147,7 +157,8 @@ export function ImportConfirmDialog({
               <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
             </div>
           </div>
-          <p className="import-confirm-explanation">确认前请核对账户范围、原币种与交易日期精度。{isScopedSupplement ? "本次来源重复不会新增成交；已有成交仍可能修订证据。" : "重复成交会按批次指纹跳过。"}费用未知会保留为未知，不会静默当作 0。</p>
+          <p className="import-confirm-explanation">确认前请核对账户范围、原币种与交易日期精度。{isScopedSupplement ? "本次来源重复不会新增成交；已有成交仍可能修订证据。" : "重复与冲突以服务器审核计划为准，确认前不会保存成交。"}费用未知会保留为未知，不会静默当作 0。</p>
+          {reviewPlanContent}
           {preview.supplementChangeSummary && <section className="import-category-panel" aria-label="补充导入实际变更">
             <strong>本次范围实际变更</strong>
             <p>
@@ -194,10 +205,10 @@ export function ImportConfirmDialog({
               <span>股票 / ETF</span>
               <strong>{preview.instrumentCount} 个标的</strong>
             </div>
-            <div className={preview.duplicateTradeCount > 0 ? "warning" : ""}>
+            <div className={fileImportBlock || preview.duplicateTradeCount > 0 ? "warning" : ""}>
               <CopyCheck size={17} />
-              <span>{isScopedSupplement ? "来源重复" : "重复成交"}</span>
-              <strong>{isScopedSupplement ? `${preview.duplicateTradeCount} 笔来源重复（未新增成交）` : `${preview.duplicateTradeCount} 笔已跳过`}</strong>
+              <span>{fileImportBlock ? "导入核对结果" : isScopedSupplement ? "来源重复" : "导入前重复预估"}</span>
+              <strong>{fileImportBlock === "file" ? "已导入，不可重复导入" : fileImportBlock === "trades" ? "全部成交已存在，无新增" : isScopedSupplement ? `${preview.duplicateTradeCount} 笔来源重复（未新增成交）` : `${preview.duplicateTradeCount} 笔（原始预估）`}</strong>
             </div>
             {preview.sourceKind === "screenshot" && (
               <div className={(preview.conflictTradeCount ?? 0) > 0 ? "warning" : ""}>
@@ -271,7 +282,7 @@ export function ImportConfirmDialog({
                 <button
                   className="secondary-button retry-unresolved"
                   disabled={
-                    retryingUnresolved ||
+                    saving || dismissDisabled || retryingUnresolved ||
                     selectedUnresolvedIds.length === 0
                   }
                   onClick={() =>
@@ -299,6 +310,7 @@ export function ImportConfirmDialog({
                   >
                     <input
                       type="checkbox"
+                      disabled={saving || dismissDisabled || retryingUnresolved}
                       aria-label={`选择重新查询 ${failure.symbol}`}
                       checked={!deselectedUnresolvedIds.has(instrumentId)}
                       onChange={(event) =>
@@ -348,15 +360,15 @@ export function ImportConfirmDialog({
         </div>
         <footer className="modal-footer">
           <p>{preview.monthly ? "成交和月结单证据保存到本机；无成交月份也保留账期与持仓证据。" : "仅完整成交会保存到此设备，并为新增股票启动行情更新。"}</p>
-          <button className="secondary-button" disabled={saving} onClick={onCancel}>
+          <button className="secondary-button" disabled={saving || dismissDisabled} onClick={onCancel}>
             取消
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id)) || saving}
+            disabled={confirmDisabled || preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id)) || saving}
             onClick={() => { if (!saving) onConfirm(); }}
           >
-            {saving ? "正在保存…" : scopeNotice ? "确认补充当前股票成交" : "确认导入并开始更新行情"}
+            {saving ? "正在保存…" : confirmLabel ?? (scopeNotice ? "确认补充当前股票成交" : "确认导入并开始更新行情")}
           </button>
         </footer>
       </section>

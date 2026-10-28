@@ -11,7 +11,7 @@ import {
   type TradeExecution,
   type TradeNature,
 } from "../trades/types";
-import { displayTradeNature } from "../trades/trading-nature";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 
 /**
@@ -362,10 +362,7 @@ export function dashboardMarketFilterOptions(entries: TradeLibraryEntry[]): Dash
 export const marketFilterOptions = dashboardMarketFilterOptions;
 
 function tradeNatureForRow(row: DashboardRow): TradeNature {
-  if (row.entry.tradeNature) return row.entry.tradeNature;
-  if (row.item.episode.tradeNature) return row.item.episode.tradeNature;
-  const execution = row.item.episode.executions[0] ?? row.entry.executions[0];
-  return execution ? displayTradeNature(execution) : "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 function simulationRunForRow(row: DashboardRow): string | null {

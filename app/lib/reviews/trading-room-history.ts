@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { parseNonNegativeFee } from "../trades/execution-fee";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { StatementEvent, StatementPosition } from "../import/monthly-statement";
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
@@ -689,7 +690,7 @@ function computeHoldingAt(ledger: Ledger, date: string): HistoricalHolding | nul
   const quote = markFor(ledger, date);
   if (!verified)
     reasons.push("持仓数量或负仓方向证据不足");
-  const costKnown = verified && position?.costKnown !== false && !position?.accuracy && Boolean(settlementCurrency);
+  const costKnown = verified && position?.costKnown !== false && !position?.accuracy?.reasons.some(reason => reason !== "fees-invalid") && Boolean(settlementCurrency);
   if (!costKnown)
     reasons.push("可用成本待核对", ...(position?.accuracy?.reasons ?? []));
   const price = decimal(quote?.close);
@@ -784,7 +785,7 @@ function dailyContribution(ledger: Ledger, date: string): DailyContribution | nu
   for (const trade of trades) {
     const size = decimal(trade.quantity)?.abs();
     const gross = trade.source.settlement ? decimal(trade.source.settlement.grossAmount)?.abs() : size?.mul(decimal(trade.price) ?? "NaN");
-    const fee = decimal(trade.fee);
+    const fee = parseNonNegativeFee(trade.fee);
     if (!size || !gross?.isFinite() || !fee || trade.source.feeStatus === "unknown" || trade.source.historyIncomplete?.length) {
       reasons.push("当日成交金额、费用或数量证据缺失");
       buySpendAvailable = false;

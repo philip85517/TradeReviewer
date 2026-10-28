@@ -1,3 +1,4 @@
+import { resolvedTradeNatureOf } from "../trades/nature-resolution";
 import Decimal from "decimal.js";
 
 import { marketTradingDate } from "../market/trading-date";
@@ -12,7 +13,7 @@ import {
   isCanonicalTradingViewAccountExecution,
   TRADINGVIEW_CANONICAL_ACCOUNT_ID,
 } from "../trades/tradingview-account-identity";
-import { tradeNatureOf, type TradeExecution, type TradeNature } from "../trades/types";
+import { type TradeExecution, type TradeNature } from "../trades/types";
 
 export const CASH_SCHEMA_VERSION = 1 as const;
 export const CASH_SETTINGS_KEY = "trading-room.cash.v1" as const;
@@ -625,7 +626,7 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
     return relationForExecution(execution, baseline) === "before" ? baseline : undefined;
   };
   for (const execution of uniqueExecutions) {
-    const rawNature = tradeNatureOf(execution);
+    const rawNature = resolvedTradeNatureOf(execution);
     if (rawNature !== "unknown" && rawNature !== input.scope.nature) continue;
     if (selectedAccounts.size > 0 && !selectedAccounts.has(execution.accountId)) continue;
     const executionScope = cashScopeFromExecution(execution);
@@ -781,7 +782,7 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
 }
 
 export function cashScopeFromExecution(execution: TradeExecution): CashScope | null {
-  const nature: TradeNature = tradeNatureOf(execution);
+  const nature: TradeNature = resolvedTradeNatureOf(execution);
   if (nature === "live") return { nature: "live", simulationRunId: null };
   // Canonical TradingView rows are one business simulation account.  Their
   // source run remains available on the execution for provenance, but must

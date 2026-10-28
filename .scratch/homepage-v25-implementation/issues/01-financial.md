@@ -1,12 +1,16 @@
+2026-10-24 root更新：财务seam第3/3轮及原九样本性能正式PASS，见 [root接受](../evidence/P4/seam/ROOT-ACCEPTANCE-3.md)。历史失败保留；P2页面/producer/完整旅程仍未接受。
+
 # 期间财务投影与证据
 
 ID: homepage-v25-financial
-State: closed
-Status: accepted (pure contract, including completed exchange sessions)
-Assignee: /root/financial_g61
+State: open
+Status: acceptance-failed
+Assignee: /root/finance_resume24
 Model: gpt-6.1-sol / ultra
 集成负责人: /root
-Acceptance rounds: historical 3/3 FAIL preserved; resumed 3/3 PASS
+Acceptance rounds: historical 3/3 FAIL and resumed 3/3 PASS preserved; current finite seam repair 2/3 FAIL
+
+2026-10-24 当前裁定：旧纯合同与完成时段接受记录保留其版本效力；当前 seam 候选2的三个上海业务日/UTC 混合精度反例失败，且正式性能未达标，不能作为已接受的新接口供页面发布。权威记录为 [seam 第2轮](../evidence/P4/seam/ROOT-ACCEPTANCE-2.md)。ISR01–04 本轮 root 重新运行通过；ISR05 三例失败。重复成交的 canonical authority 不改，消费者须检查 group.quantityCoverage。固定12样本诊断中 baseline 2/6、candidate 3/6 冷启动失败；四次 profile 仅诊断，不能作为性能接受或重置轮数。最后候选须在根因分析后统一修复，第三轮失败则暂停。
 
 Current finite supplement: quote-session regression independently accepted in resumed 3/3; prior FAIL/PASS evidence preserved. See ../evidence/resume-2026-10-23/F-fix/acceptance-3.md.
 

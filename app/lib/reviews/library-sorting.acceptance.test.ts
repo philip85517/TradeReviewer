@@ -164,18 +164,62 @@ function builtLegacyAndUnknownRows(): ReviewQueueItem[] {
 }
 
 describe("library sorting acceptance boundaries", () => {
-  it("uses entry-first nature for a real legacy row and rejects a mixed unknown scope", () => {
-    const rows = builtLegacyAndUnknownRows();
+  it("requires supported legacy statement evidence for live sorting and rejects mixed unknown members", () => {
+    const brokerOnlyRows = builtLegacyAndUnknownRows();
+    const brokerOnly = brokerOnlyRows.find(row => row.entry.instrument.symbol === "LEGACY-SORT")!;
+    expect(brokerOnly.entry.tradeNature).toBe("unknown");
+    expect(brokerOnly.item.episode.tradeNature).toBe("unknown");
+    const rowsWithSources = (sourceFor: (fill: TradeExecution) => TradeExecution["source"]): ReviewQueueItem[] =>
+      buildTradeLibraryEntries(buildInstrumentTradeSummaries(brokerOnlyRows.flatMap(row =>
+        row.item.episode.executions.map(fill => ({ ...fill, source: sourceFor(fill) })),
+      )), {}, {}).flatMap(entry => entry.episodes.map(item => ({ entry, item })));
+    const rows = rowsWithSources(fill => fill.instrument.symbol === "LEGACY-SORT"
+      ? { ...fill.source, formatRuleId: "futu/xlsx/trades-v1", fileFingerprint: "fixture-legacy-sorting-statement" }
+      : { ...fill.source, tradeNature: "unknown" });
     const legacy = rows.find((row) => row.entry.instrument.symbol === "LEGACY-SORT");
     const unknown = rows.find((row) => row.entry.instrument.symbol === "UNKNOWN-SORT");
 
     expect(legacy?.entry.tradeNature).toBe("live");
-    expect(legacy?.item.episode.tradeNature).toBe("unknown");
+    expect(legacy?.item.episode.tradeNature).toBe("live");
     expect(canSortLibraryPerformance([legacy!], "all")).toEqual({ allowed: true, reason: null });
     expect(canSortLibraryPerformance([legacy!, unknown!], "all")).toEqual({
       allowed: false,
       reason: "当前范围包含多个交易性质或模拟运行",
     });
+
+    const legacySource = legacy!.item.episode.executions[0].source;
+    const unknownSources: TradeExecution["source"][] = [
+      { ...legacySource, tradeNature: "unknown" },
+      { ...legacySource, tradeNature: "live", tradingNature: "simulated" },
+      { ...legacySource, platform: "fixture" },
+      { ...legacySource, formatRuleId: "futu/xlsx/unsupported" },
+      { ...legacySource, formatRuleId: "tiger/pdf/monthly-v1" },
+      { ...legacySource, fileFingerprint: undefined },
+      { ...legacySource, fileFingerprint: "   " },
+      { ...legacySource, tradeNature: "live", simulationRunId: "run-conflict" },
+    ];
+    for (const source of unknownSources) {
+      const invalid = rowsWithSources(fill => ({ ...source, row: fill.source.row }))
+        .find(row => row.entry.instrument.symbol === "LEGACY-SORT")!;
+      expect(invalid.entry.tradeNature).toBe("unknown");
+      expect(invalid.item.episode.tradeNature).toBe("unknown");
+      for (const outerNature of ["live", "simulation"] as const) {
+        invalid.entry.tradeNature = outerNature;
+        invalid.item.episode.tradeNature = outerNature;
+        expect(canSortLibraryPerformance([legacy!, invalid], "all")).toEqual({
+          allowed: false,
+          reason: "当前范围包含多个交易性质或模拟运行",
+        });
+      }
+    }
+    for (const outerNature of ["live", "simulation"] as const) {
+      unknown!.entry.tradeNature = outerNature;
+      unknown!.item.episode.tradeNature = outerNature;
+      expect(canSortLibraryPerformance([legacy!, unknown!], "all")).toEqual({
+        allowed: false,
+        reason: "当前范围包含多个交易性质或模拟运行",
+      });
+    }
   });
 
   it("uses the same precise FX snapshot for net and weighted-return ordering", () => {

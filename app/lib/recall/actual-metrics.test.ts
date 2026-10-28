@@ -268,3 +268,20 @@ describe('actual metrics', () => {
         expect(r.metrics.actualR).toMatchObject({ value: null, reason: 'episode-open' });
     });
 });
+
+
+describe('F07 Recall gross authority without raw fee placeholders', () => {
+    it.each(['invalid', '-1', '', 'NaN'])('preserves actual gross but rejects entry fee %j', fee => {
+        const f = fixture();
+        f.episode.executions[0].fee = fee;
+        const before = structuredClone(f);
+        const r = calculateRecallActualMetrics(f);
+        expect(r.metrics.realizedGross.value).toBe('6800');
+        expect(r.metrics.realizedNet.value).toBeNull();
+        expect(r.metrics.totalFees.value).toBeNull();
+        expect(r.metrics.remainingEntryFee.value).toBeNull();
+        expect(r.metrics.actualR.value).toBeNull();
+        expect(r.exitAllocations.map(x => [x.entryFee.value, x.exitFee.value, x.netPnl.value])).toEqual([[null, '12', null], [null, '8', null]]);
+        expect(f).toEqual(before);
+    });
+});

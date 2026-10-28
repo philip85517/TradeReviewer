@@ -381,6 +381,7 @@ function derivePosition(
           reasons: [...new Set([...(explicit.accuracy?.reasons ?? []), ...replayed.accuracy.reasons])],
         },
       } : {}),
+      ...(replayed?.fees === null ? { fees: null, netPnl: null, returnPercent: null } : {}),
       ...(replayed?.quantityKnown === false ? { quantityKnown: false as const } : {}),
       ...(replayed?.warnings ? { warnings: replayed.warnings } : {}),
     }, episode);
@@ -389,18 +390,22 @@ function derivePosition(
   return replayed ? refreshPositionAtQuote(replayed, quote) : replayed;
 }
 
+function costAccuracyUnavailable(position: PositionLedgerSnapshot): boolean {
+  return Boolean(position.accuracy?.reasons.some(reason => reason !== "fees-invalid"));
+}
+
 function refreshPositionAtQuote(position: PositionLedgerSnapshot, quote: TradingRoomQuote | null): PositionLedgerSnapshot {
-  if (!quote?.price || position.quantityKnown === false || position.costKnown === false || position.accuracy) return position;
+  if (!quote?.price || position.quantityKnown === false || position.costKnown === false || costAccuracyUnavailable(position)) return position;
   try {
     const quantity = new Decimal(position.quantity);
     const averageCost = new Decimal(position.averageCost);
     const price = new Decimal(quote.price);
     const unrealizedPnl = quantity.mul(price.minus(averageCost));
-    const netPnl = new Decimal(position.realizedPnl).plus(unrealizedPnl).minus(new Decimal(position.fees));
+    const netPnl = position.fees === null ? null : new Decimal(position.realizedPnl).plus(unrealizedPnl).minus(new Decimal(position.fees));
     return {
       ...position,
       unrealizedPnl: unrealizedPnl.toDecimalPlaces(8).toString(),
-      netPnl: netPnl.toDecimalPlaces(8).toString(),
+      netPnl: netPnl?.toDecimalPlaces(8).toString() ?? null,
     };
   } catch {
     return position;
@@ -490,7 +495,7 @@ function preserveEpisodeAccuracy(
   return {
     ...position,
     ...(reasons.size ? {
-      costKnown: false as const,
+      ...([...reasons].some(reason => reason !== "fees-invalid") ? { costKnown: false as const } : {}),
       accuracy: { pnl: "unavailable" as const, reasons: [...reasons] },
     } : {}),
     ...(quantityKnown === false ? { quantityKnown } : {}),
@@ -608,7 +613,7 @@ function reasonFor(
   if (positionEvidence.status === "unverified-negative") return positionEvidence.summary;
   if (!position) return "持仓证据不足，数量与成本待核对";
   if (position.quantityKnown === false) return "持仓数量待核对";
-  if (position.costKnown === false || position.accuracy) return "可用成本待核对";
+  if (position.costKnown === false || costAccuracyUnavailable(position)) return "可用成本待核对";
   if (settlementCurrency === null) return "结算币种不明确，成本与浮盈亏待核对";
   if (marketDataReason) return marketDataReason;
   if (quoteReason) return quoteReason;
@@ -648,7 +653,7 @@ function diagnosticFor(
   marketDataDiagnostic: TradingRoomMarketDataDiagnostic | null,
 ): TradingRoomHoldingDiagnostic {
   if (positionEvidence.status === "unverified-negative" || positionEvidence.status === "unavailable") return "position-evidence";
-  if (!position || position.quantityKnown === false || position.costKnown === false || position.accuracy || settlementCurrency === null) return "position-evidence";
+  if (!position || position.quantityKnown === false || position.costKnown === false || costAccuracyUnavailable(position) || settlementCurrency === null) return "position-evidence";
   if (marketDataDiagnostic?.sourceUnsupported) return "source-unsupported";
   if (marketDataDiagnostic?.reason === "行情更新进行中") return "market-data-pending";
   if (marketDataDiagnostic?.reason.startsWith("行情状态读取失败")) return "market-data-storage-error";
@@ -720,7 +725,7 @@ export function buildTradingRoomHoldings(
     const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id], asOfDate);
     const positionEvidence = positionEvidenceFor(row, position, asOfDate);
     const quantityUnavailable = !position || position.quantityKnown === false;
-    const costUnavailable = !position || position.costKnown === false || Boolean(position.accuracy) || settlementCurrency === null || positionEvidence.status === "unverified-negative";
+    const costUnavailable = !position || position.costKnown === false || costAccuracyUnavailable(position) || settlementCurrency === null || positionEvidence.status === "unverified-negative";
     const pnlUnavailable = quantityUnavailable || costUnavailable || quoteStatus !== "available";
     const pnlStatus: TradingRoomHoldingValueStatus = pnlUnavailable
       ? !position || quantityUnavailable || costUnavailable || quoteStatus === "unavailable" ? "unavailable" : quoteStatus

@@ -1,5 +1,6 @@
 import type { RecallReviewSummary } from "../recall/summary";
-import { displayTradeNature, tradingNatureLabel } from "./trading-nature";
+import { tradeNatureLabel } from "./trading-nature";
+import { resolvedTradeNatureOfExecutions } from "./nature-resolution";
 import Decimal from "decimal.js";
 
 import type { DailyCandleRecord } from "../market/contracts";
@@ -22,6 +23,7 @@ import { buildTradeEpisodes } from "./episodes";
 import type { InstrumentTradeSummary } from "./instruments";
 import {
   tradeScopeKey,
+  tradeNatureOf,
   type Instrument,
   type TradeEpisode,
   type TradeExecution,
@@ -250,15 +252,13 @@ export function buildTradeLibraryEntries(
               )
               .toString();
 
-        const scopeNature = scopeEpisodes[0]?.tradeNature ?? "unknown";
-        const nature = scopedExecutions[0]
-          ? displayTradeNature(scopedExecutions[0])
-          : scopeNature;
+        const scopeNature = scopedExecutions[0] ? tradeNatureOf(scopedExecutions[0]) : "unknown";
+        const nature = resolvedTradeNatureOfExecutions(scopedExecutions);
         return {
           ...(scopeNature !== "unknown" ? { scopeKey } : {}),
           tradeNature: nature,
           groupId: `${summary.instrument.id}|${scopeKey}`,
-          tradingLabel: tradingNatureLabel(scopedExecutions[0]),
+          tradingLabel: tradeNatureLabel(nature),
           ...(scopeEpisodes[0]?.simulationRunId
             ? { simulationRunId: scopeEpisodes[0].simulationRunId }
             : {}),

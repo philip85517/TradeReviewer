@@ -377,17 +377,17 @@ function deferred<T>() {
 }
 function domainHarness() {
   const globals: Array<{ id: number; context: HomepageHostReadContext; reply: ReturnType<typeof deferred<{ requestId: number; data: CurrentPackage; kind?: "collection" }>> }> = [];
-  const periods: Array<{ context: HomepageHostPeriodReadContext<CurrentPackage>; reply: ReturnType<typeof deferred<HomepageHostPeriodReadResult<PeriodPackage>>> }> = [];
-  const histories: Array<{ context: HomepageHostHistoryReadContext<CurrentPackage>; reply: ReturnType<typeof deferred<HomepageHostHistoryReadResult<HistoryPackage>>> }> = [];
+  const periods: Array<{ context: HomepageHostPeriodReadContext<CurrentPackage, PeriodPackage>; reply: ReturnType<typeof deferred<HomepageHostPeriodReadResult<PeriodPackage>>> }> = [];
+  const histories: Array<{ context: HomepageHostHistoryReadContext<CurrentPackage, HistoryPackage>; reply: ReturnType<typeof deferred<HomepageHostHistoryReadResult<HistoryPackage>>> }> = [];
   const data = currentPackage("old-global"); const seed = { period: periodPackage("old-period"), history: historyPackage("old-history") };
   const reload = vi.fn((id: number, context?: HomepageHostReadContext) => {
     if (!context) throw new Error("missing read context");
     const reply = deferred<{ requestId: number; data: CurrentPackage; kind?: "collection" }>(); globals.push({ id, context, reply }); return reply.promise;
   });
-  const reloadPeriod = vi.fn((context: HomepageHostPeriodReadContext<CurrentPackage>) => {
+  const reloadPeriod = vi.fn((context: HomepageHostPeriodReadContext<CurrentPackage, PeriodPackage>) => {
     const reply = deferred<HomepageHostPeriodReadResult<PeriodPackage>>(); periods.push({ context, reply }); return reply.promise;
   });
-  const reloadHistory = vi.fn((context: HomepageHostHistoryReadContext<CurrentPackage>) => {
+  const reloadHistory = vi.fn((context: HomepageHostHistoryReadContext<CurrentPackage, HistoryPackage>) => {
     const reply = deferred<HomepageHostHistoryReadResult<HistoryPackage>>(); histories.push({ context, reply }); return reply.promise;
   });
   const fromGlobal = vi.fn((fresh: CurrentPackage, context: HomepageHostReadContext, accepted: HomepageSnapshot) => {
@@ -627,5 +627,55 @@ describe("configured homepage domain host", () => {
       result.current.cancelPeriodRead(); result.current.cancelHistoryRead();
     });
     expect(result.current.domainData).toBeNull(); expect(h.reload).not.toHaveBeenCalled(); expect(h.reloadPeriod).not.toHaveBeenCalled(); expect(h.reloadHistory).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("committed source composition seams", () => {
+  it("captures each local previous domain from committed data despite ambient seed changes", async () => {
+    const h = domainHarness();
+    const { result, rerender } = renderHook(({ seed }) => useHomepageHost({ ...h.options, domains: { ...h.options.domains, seed } }), { initialProps: { seed: h.seed } });
+    await waitFor(() => expect(result.current.initialized).toBe(true));
+    rerender({ seed: { period: periodPackage("ambient"), history: historyPackage("ambient") } });
+    act(() => result.current.applyPeriod(selectedPeriod));
+    act(() => result.current.applyHistory(selectedHistory));
+    expect(h.periods[0].context.previous).toBe(h.seed.period);
+    expect(h.histories[0].context.previous).toBe(h.seed.history);
+    await act(async () => h.periods[0].reply.resolve({ request: h.periods[0].context.request, data: periodPackage("accepted-local") }));
+    act(() => result.current.applyPeriod({ preset: "custom", from: "2026-09-01", to: "2026-09-30" }));
+    expect(h.periods[1].context.previous).toBe(result.current.domainData?.period);
+    expect(h.periods[1].context.previous.revision).toBe("accepted-local");
+    expect(h.histories[0].context.previous).toBe(h.seed.history);
+  });
+
+  it("extracts collection selection after fresh account fallback without publishing homepage finance", async () => {
+    const old = createHomepageState({ live: true, market: "all", accounts: ["one"], rangeMode: "all" }).snapshot;
+    old.attachments = { categories: ["stock"], openOnly: true, pendingReview: [] };
+    sessionStorage.setItem("tradereview:homepage-v25:source-ui:v3", encodeHomepageSnapshot(old));
+    history.replaceState(null, "", "/trades?scope=live&market=all&accounts=one&rangeMode=all");
+    const h = domainHarness();
+    const fromCollection = vi.fn((data: CurrentPackage, _context: HomepageHostReadContext, target: { accounts: string[] }) => ({ ...data, holdings: target.accounts.map(id => `selected:${id}`) }));
+    const { result } = renderHook(() => useHomepageHost({ ...h.options, readOnInitialize: true, readCollections: true,
+      catalogFor: () => ({ accounts: [{ id: "two", label: "two" }], identities: {} }), fromCollection }));
+    await waitFor(() => expect(h.globals).toHaveLength(1));
+    await act(async () => h.globals[0].reply.resolve({ requestId: h.globals[0].id, data: currentPackage("collection"), kind: "collection" }));
+    expect(result.current.collectionData?.holdings).toEqual(["selected:*"]);
+    expect(fromCollection.mock.calls[0][2]).toMatchObject({ accounts: ["*"], attachments: old.attachments });
+    expect(result.current.domainData?.period).toBe(h.seed.period);
+    expect(result.current.data).toBe(h.data);
+    expect(h.globalAccepted.mock.calls[0][0]).toBe(result.current.collectionData);
+  });
+
+  it("rejects failed collection extraction before any data or acceptance notification", async () => {
+    history.replaceState(null, "", "/trades");
+    const h = domainHarness();
+    const { result } = renderHook(() => useHomepageHost({ ...h.options, readOnInitialize: true, readCollections: true,
+      fromCollection: () => { throw new Error("selection-source-invalid"); } }));
+    await waitFor(() => expect(h.globals).toHaveLength(1));
+    await act(async () => h.globals[0].reply.resolve({ requestId: h.globals[0].id, data: currentPackage("rejected"), kind: "collection" }));
+    expect(result.current.route.error).toBe("selection-source-invalid");
+    expect(result.current.collectionData).toBeNull();
+    expect(result.current.data).toBe(h.data); expect(result.current.domainData).toBe(h.seed);
+    expect(h.globalAccepted).not.toHaveBeenCalled();
   });
 });

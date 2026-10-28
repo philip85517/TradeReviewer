@@ -114,9 +114,9 @@ const options = {
 };
 describe("historical holdings", () => {
   it("includes now closed episodes, deduplicates ledger, and ignores final accuracy", () => {
-    const entry = openEntry(instrument(), "2026-09-17");
+    const entry = liveOpenEntry(instrument(), "2026-09-17");
     const buy = entry.executions[0];
-    const sell = execution(instrument(), "sell", "2026-09-21");
+    const sell = liveExecution(instrument(), "sell", "2026-09-21");
     entry.executions.push(sell);
     entry.episodes[0].episode = {
       ...entry.episodes[0].episode,
@@ -133,13 +133,13 @@ describe("historical holdings", () => {
     expect(result.points.at(-1)?.holdings).toHaveLength(0);
   });
   it("carries a Friday mark over weekend but leaves missing trading days unavailable", () => {
-    const result = buildHoldingsHistory([openEntry(instrument(), "2026-09-17")], { ...options, candlesByInstrument: { "US:TEST": [candle("2026-09-18")] } });
+    const result = buildHoldingsHistory([liveOpenEntry(instrument(), "2026-09-17")], { ...options, candlesByInstrument: { "US:TEST": [candle("2026-09-18")] } });
     expect(result.points[0].marketValueAvailable).toBe(false);
     expect(result.points[2].marketValueAvailable).toBe(true);
     expect(result.points.at(-1)?.marketValueAvailable).toBe(false);
   });
   it("replays period-start holdings from earlier trades and isolates simulation runs", () => {
-    const entry = openEntry(instrument(), "2026-09-10");
+    const entry = liveOpenEntry(instrument(), "2026-09-10");
     expect(buildHoldingsHistory([entry], options).points[0].holdings[0].quantity).toBe("2");
     expect(buildHoldingsHistory([entry], { ...options, scope: {
         ...scope,
@@ -148,17 +148,17 @@ describe("historical holdings", () => {
       } }).points[0].holdings).toEqual([]);
   });
   it("does not treat unverified sell-only inventory as a short value", () => {
-    const entry = openEntry(instrument(), "2026-09-17");
+    const entry = liveOpenEntry(instrument(), "2026-09-17");
     entry.executions[0].side = "sell";
     const point = buildHoldingsHistory([entry], options).points[0];
     expect(point.marketValueAvailable).toBe(false);
     expect(point.holdings[0].quantity).toBeNull();
   });
   it("retains exact intraday execution ordering even when input is shuffled", () => {
-    const entry = openEntry(instrument(), "2026-09-16T14:00:00Z");
-    const sell = { ...execution(instrument(), "sell", "2026-09-17T14:00:00Z"), quantity: "1" };
+    const entry = liveOpenEntry(instrument(), "2026-09-16T14:00:00Z");
+    const sell = { ...liveExecution(instrument(), "sell", "2026-09-17T14:00:00Z"), quantity: "1" };
     const buy = {
-      ...execution(instrument(), "buy", "2026-09-17T15:00:00Z"),
+      ...liveExecution(instrument(), "buy", "2026-09-17T15:00:00Z"),
       quantity: "1",
       price: "20"
     };
@@ -178,15 +178,15 @@ describe("historical holdings", () => {
     expect(buildHoldingsHistory([entry], options).points[0].marketValueAvailable).toBe(false);
   });
   it("keeps known closed cashless inventory zero in its original currency and never invents empty-scope totals", () => {
-    const entry = openEntry(instrument(), "2026-09-16");
-    entry.episodes[0].episode.executions.push(execution(instrument(), "sell", "2026-09-17"));
+    const entry = liveOpenEntry(instrument(), "2026-09-16");
+    entry.episodes[0].episode.executions.push(liveExecution(instrument(), "sell", "2026-09-17"));
     expect(buildHoldingsHistory([entry], options).points[0].marketValue.originalByCurrency).toEqual({ USD: "0" });
     const empty = buildHoldingsHistory([], options).points[0];
     expect(empty.marketValue.originalByCurrency).toEqual({});
     expect(empty.marketValueAvailable).toBe(false);
   });
   it("separates quantity and market value from unavailable cost, without importing future evidence", () => {
-    const entry = openEntry(instrument(), "2026-09-17");
+    const entry = liveOpenEntry(instrument(), "2026-09-17");
     entry.episodes[0].episode.initialPosition = {
       accountId: "account-1",
       market: "US",
@@ -205,7 +205,7 @@ describe("historical holdings", () => {
     });
     expect(point.marketValueAvailable).toBe(true);
     expect(point.costAvailable).toBe(false);
-    const clean = openEntry(instrument(), "2026-09-17");
+    const clean = liveOpenEntry(instrument(), "2026-09-17");
     clean.executions[0].source.statementPositions = [{
         accountId: "account-1",
         market: "US",
@@ -218,7 +218,7 @@ describe("historical holdings", () => {
     expect(buildHoldingsHistory([clean], options).points[0].holdings[0]).toMatchObject({ quantity: "2", cost: "20" });
   });
   it("combines account holdings in one original currency and only converts with complete FX", () => {
-    const entries = [openEntry(instrument(), "2026-09-17"), openEntry(instrument(), "2026-09-17", "account-2")];
+    const entries = [liveOpenEntry(instrument(), "2026-09-17"), liveOpenEntry(instrument(), "2026-09-17", "account-2")];
     const original = buildHoldingsHistory(entries, options).points[0];
     expect(original.marketValue.originalByCurrency).toEqual({ USD: "48" });
     expect(original.marketValue.convertedCny).toBeNull();
@@ -237,7 +237,7 @@ describe("historical holdings", () => {
     expect(buildHoldingsHistory(entries, { ...options, fxSnapshot: { ...fxSnapshot, status: "partial" } }).points[0].available).toBe(false);
   });
   it("uses the target HKD conversion for historical points", () => {
-    const entries = [openEntry(instrument(), "2026-09-17"), openEntry(instrument(), "2026-09-17", "account-2")];
+    const entries = [liveOpenEntry(instrument(), "2026-09-17"), liveOpenEntry(instrument(), "2026-09-17", "account-2")];
     const fxSnapshot = {
       id: "fx-hkd",
       baseCurrency: "CNY" as const,
@@ -251,11 +251,11 @@ describe("historical holdings", () => {
     expect(point.unrealizedPnl).toMatchObject({ targetCurrency: "HKD", converted: "64" });
   });
   it("uses exchange dates when a US execution falls on the following UTC day", () => {
-    const entry = openEntry(instrument(), "2026-09-18T00:30:00Z");
+    const entry = liveOpenEntry(instrument(), "2026-09-18T00:30:00Z");
     expect(buildHoldingsHistory([entry], options).points[0].holdings[0].quantity).toBe("2");
   });
   it("blocks raw-price valuation after unsupported corporate-action evidence becomes visible", () => {
-    const entry = openEntry(instrument(), "2026-09-17");
+    const entry = liveOpenEntry(instrument(), "2026-09-17");
     entry.executions[0].source.positionEvents = [{
         id: "split",
         accountId: "account-1",
@@ -334,7 +334,7 @@ describe("historical holdings", () => {
     expect(point.marketValueAvailable).toBe(false);
   });
   it("reveals month-only allocation at month end, before its later first fill", () => {
-    const entry = openEntry(instrument(), "2026-09-03");
+    const entry = liveOpenEntry(instrument(), "2026-09-03");
     entry.executions[0].source.positionEvents = [{
         id: "allocation",
         accountId: "account-1",
@@ -366,7 +366,7 @@ describe("historical holdings", () => {
     expect(model.points[4].holdings[0].quantity).toBe("5");
   });
   it("uses the Shanghai as-of calendar date and valid source trading date precedence", () => {
-    const entry = openEntry(instrument(), "2026-09-18T00:30:00Z");
+    const entry = liveOpenEntry(instrument(), "2026-09-18T00:30:00Z");
     entry.executions[0].source.tradingDate = "2026-09-17";
     entry.executions[0].source.marketCalendarDate = "2026-09-18";
     expect(buildHoldingsHistory([entry], { ...options, asOf: "2026-09-20T17:00:00Z" }).end).toBe("2026-09-21");
@@ -618,3 +618,33 @@ describe("historical holdings", () => {
     }
   });
 });
+
+
+describe("F07 historical net fee boundary", () => {
+  it.each(["invalid", "-1"])("does not treat fee %j as zero or a rebate while preserving gross cost", fee => {
+    const entry = openEntry(instrument(), "2026-09-18T14:30:00Z");
+    Object.assign(entry.executions[0], { quantity: "1", price: "100", fee });
+    const result = buildHoldingsHistory([entry], { ...options, candlesByInstrument: { "US:TEST": [candle("2026-09-17", "100"), candle("2026-09-18", "110"), candle("2026-09-21", "110")] } });
+    const point = result.points.find(p => p.date === "2026-09-18")!;
+    expect(point.holdings[0]).toMatchObject({ quantity: "1", marketValue: "110", cost: "100", unrealizedPnl: "10" });
+    expect(point.dailyPnlAvailable).toBe(false);
+    expect(point.dailyPnlPercent).toBeNull();
+  });
+});
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveOpenEntry(...args: Parameters<typeof openEntry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(openEntry(...args));
+}
+
+function liveExecution(...args: Parameters<typeof execution>): TradeExecution {
+  const value = execution(...args);
+  return { ...value, source: { ...value.source, tradeNature: "live" } };
+}

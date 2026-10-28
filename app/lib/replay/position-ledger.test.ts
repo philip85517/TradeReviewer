@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TradeExecution } from "../trades/types";
 import type { StatementEvent, StatementPosition } from "../import/monthly-statement";
-import { replayPositionAtPrice } from "./position-ledger";
+import { preparePositionLedger, readPreparedPositionFacts, replayPositionAtPrice } from "./position-ledger";
 
 const fixtureInstrument = { id: "HK:fixture-02050", symbol: "02050", name: "Fixture IPO", market: "HK", currency: "HKD" };
 
@@ -1094,5 +1094,40 @@ describe("P4 canonical fact seam exception compatibility", () => {
     expect(preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-01-10" }]).results[0].terminal.quantity.value).toBe("1");
     expect(() => replayPositionAtPrice({ executions: [buy], cursor: "2026-02-12", markPrice: "0" })).toThrow("DecimalError");
     expect(() => preparedCanonical.readPreparedPositionFacts(source, [{ cursor: "2026-02-12" }])).toThrow("DecimalError");
+  });
+});
+
+
+describe("F07 inventory chronology certification", () => {
+  const asOf = "2026-10-23T12:00:03Z";
+  const badDays = ["invalid-date", "", "2026-02-30", "2026-02-29", "2026-13-01", "2026-10", "2026-10-01T00:00:00Z"];
+  it.each(badDays)("does not certify raw position date %j even after a later anchor", date => {
+    const execution = fill("buy", "2026-10-01T01:00:00Z", "1", "100", "0");
+    const position: StatementPosition = { accountId: execution.accountId, market: "US", symbol: "TEST", phase: "opening", date, quantity: "5", cost: "20", source: [{ page: 1, row: 1 }] };
+    execution.source.statementPositions = [position, { ...position, phase: "closing", date: "2026-10-20" }];
+    const snapshot = replayPositionAtPrice({ executions: [execution], markPrice: "110", cursor: asOf });
+    expect(snapshot).toMatchObject({ quantityKnown: false, costKnown: false });
+    const facts = readPreparedPositionFacts(preparePositionLedger({ executions: [execution] }), [{ cursor: asOf }]).results[0];
+    expect(facts.terminal.quantity).toMatchObject({ value: null, available: false });
+    expect(facts.coverage.chronology.available).toBe(false);
+    expect(facts.facts.find(f => f.time.sourceDate === date)?.effect).toBe("unresolved");
+  });
+  it.each(["2026-02-30", "2026-02-29", "2026-13-01", "2026-00", "2026-13"])("rejects normalized transfer date %j before future exclusion", date => {
+    const execution = fill("buy", "2026-10-01T01:00:00Z", "1", "100", "0");
+    execution.source.positionEvents = [fixtureEvent({ id: "bad-time", kind: "transfer-in", description: "transfer", date, quantity: "5", market: "US", symbol: "TEST" })];
+    expect(replayPositionAtPrice({ executions: [execution], markPrice: "110", cursor: asOf }).quantityKnown).toBe(false);
+  });
+  it.each(["invalid-date", "", "2026-02-30"])("does not treat session-open IPO %j as an instant", date => {
+    const execution = fill("buy", "2026-10-01T01:00:00Z", "1", "100", "0");
+    execution.source.positionEvents = [fixtureEvent({ id: "bad-ipo", kind: "ipo", description: "allocation", date, quantity: "5", market: "US", symbol: "TEST", displayTimePolicy: "session-open" })];
+    expect(replayPositionAtPrice({ executions: [execution], markPrice: "110", cursor: asOf }).quantityKnown).toBe(false);
+  });
+  it("preserves quantity-known cost-unknown evidence and valid future exclusion", () => {
+    const execution = fill("buy", "2026-10-01T01:00:00Z", "1", "100", "0");
+    const position: StatementPosition = { accountId: execution.accountId, market: "US", symbol: "TEST", phase: "closing", date: "2026-10-02", quantity: "5", cost: "20", source: [{ page: 1, row: 1 }] };
+    const current = replayPositionAtPrice({ executions: [{ ...execution, source: { ...execution.source, statementPositions: [position] } }], markPrice: "110", cursor: asOf });
+    expect(current).toMatchObject({ quantity: "5", costKnown: false });
+    expect(current.quantityKnown).not.toBe(false);
+    expect(replayPositionAtPrice({ executions: [{ ...execution, source: { ...execution.source, statementPositions: [{ ...position, date: "2026-10-24" }] } }], markPrice: "110", cursor: asOf })).toMatchObject({ quantity: "1", averageCost: "100", unrealizedPnl: "10" });
   });
 });

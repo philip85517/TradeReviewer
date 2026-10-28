@@ -1,8 +1,11 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { confirmRecallRetainedState, freezeRecallSnapshotBundle } from "../../lib/recall/retained-bundles";
+import { RecallRepositoryError } from "../../lib/recall/repository";
+import { retainRecallActualMetrics } from "../../lib/recall/metric-retention";
 
-import { completeRecallDocument, createRecallDocument, validateRecallDocument } from "../../lib/recall/document";
+import { completeRecallDocument, createRecallDocument, mergeRecallDecisions, validateRecallDocument } from "../../lib/recall/document";
 import type { RecallDocument, RecallSnapshot } from "../../lib/recall/types";
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import type { Candle } from "../../lib/market/types";
@@ -28,6 +31,7 @@ const chartHarness = vi.hoisted(() => {
     viewport,
     onCommand: undefined as ((command: unknown) => void) | undefined,
     onExecutionSelect: undefined as ((executionId: string) => void) | undefined,
+    onReady: undefined as ((handle: RecallChartHandle | null) => void) | undefined,
     nextDrawing: undefined as NormalizedDrawing | undefined,
     pending: undefined as { cursor?: string; executionCursor?: string; drawings: NormalizedDrawing[] } | undefined,
     rendered: undefined as { cursor?: string; executionCursor?: string; drawings: NormalizedDrawing[] } | undefined,
@@ -61,6 +65,7 @@ vi.mock("../chart/replay-chart", () => ({
     onExecutionSelect?: (executionId: string) => void;
     onReady?: (handle: RecallChartHandle | null) => void;
   }) => {
+    chartHarness.onReady = onReady;
     chartHarness.onCommand = onCommand;
     chartHarness.onExecutionSelect = onExecutionSelect;
     chartHarness.pending = {
@@ -294,6 +299,7 @@ function openAllSnapshotRecords() {
 }
 
 beforeEach(() => {
+  chartHarness.onReady = undefined;
   chartHarness.onCommand = undefined;
   chartHarness.onExecutionSelect = undefined;
   chartHarness.nextDrawing = undefined;
@@ -748,7 +754,11 @@ describe("independent Recall integration review", () => {
 
   it("waits for an explicit pending snapshot update before leaving the snapshot editor", async () => {
     vi.useFakeTimers();
-    const initial = documentWithDecisionSnapshots(episode);
+    let initial = documentWithDecisionSnapshots(episode);
+    initial = freezeRecallSnapshotBundle(initial, initial.snapshots[0].id, { episode, bundleId: "pending-update-source", retainedAt: "2026-01-20T11:00:00Z" });
+    confirmRecallRetainedState(undefined, initial, episode, 6);
+    retainRecallActualMetrics(undefined, initial);
+    initial.revision = 6;
     const repository = repositoryFor(initial);
     let resolveCapture!: (value: { imageDataUrl: string; viewport: typeof chartHarness.viewport }) => void;
     chartHarness.handle.capture.mockImplementationOnce(() => new Promise((resolve) => {
@@ -1145,7 +1155,9 @@ it("uses the clicked execution boundary while retaining that decision's Text dra
 });
 
 it("ignores chart execution selection while editing a retained snapshot", async () => {
-  const initial = documentWithDecisionSnapshots(episode);
+  let initial = documentWithDecisionSnapshots(episode);
+  initial = freezeRecallSnapshotBundle(initial, initial.snapshots[1].id, { episode, bundleId: "marker-selection", retainedAt: "2026-01-20T11:00:00Z" });
+  confirmRecallRetainedState(undefined, initial, episode, 6);
   renderRecall(episode, initial, repositoryFor(initial));
   await settleLoad();
 
@@ -1176,8 +1188,10 @@ it("leaves explicit full history when a chart execution is selected", async () =
 
 it("marks future exposure when an early view opens a later holding snapshot", async () => {
   const episode = episodeWithExecutions("holding-exposure");
-  const initial = createRecallDocument(episode);
+  let initial = createRecallDocument(episode);
   initial.snapshots = [{ ...snapshot("holding-later", initial.decisions[1].id), phase: "holding", hasSeenFuture: false, executionCursor: "fill-2", cursor: secondCandle.knowledgeAt! }];
+  initial = freezeRecallSnapshotBundle(initial, "holding-later", { episode, bundleId: "later-holding", retainedAt: "2026-01-20T11:00:00Z" });
+  confirmRecallRetainedState(undefined, initial, episode, 6);
   const repository = repositoryFor(initial);
   renderRecall(episode, initial, repository);
   await settleLoad();
@@ -1343,4 +1357,500 @@ it("requires explicit reassignment of orphan phase evidence before resolving imp
   await waitFor(() => expect(repository.save).toHaveBeenCalled(), { timeout: 2000 });
   const saved = repository.save.mock.calls.at(-1)![0];
   expect(saved.working.phaseContexts?.holding).toMatchObject({ mode: "global", decisionId: "global", drawings: [{ id: "orphan-note", text: "保留我的判断", recallOwnerId: "global" }] });
+});
+
+function sourceBoundSnapshot(original = episodeWithExecutions("bound-authority"), sourceCandles = [candle], executionCursor = "fill-1") {
+  let initial = documentWithDecisionSnapshots(original);
+  initial.snapshots[0].phase = "holding";
+  initial.snapshots[0].priceBasis = "raw";
+  initial.snapshots[0].candles = sourceCandles;
+  initial.snapshots[0].cursor = sourceCandles.at(-1)!.knowledgeAt!;
+  initial.snapshots[0].executionCursor = executionCursor;
+  initial.working = { ...initial.working, phase: "holding", cursor: initial.snapshots[0].cursor, executionCursor };
+  initial = freezeRecallSnapshotBundle(initial, initial.snapshots[0].id, { episode: original, bundleId: "bound-old", retainedAt: "2026-01-20T11:00:00Z" });
+  confirmRecallRetainedState(undefined, initial, original, 6);
+  retainRecallActualMetrics(undefined, initial);
+  initial.revision = 6;
+  return { original, initial };
+}
+
+it("RS06 allows a same-source Text recapture, saves a new bundle and preserves accepted old bytes", async () => {
+  const { original, initial } = sourceBoundSnapshot();
+  const oldBytes = JSON.stringify(initial.retainedBundles![0]);
+  let persisted = structuredClone(initial);
+  const repository = repositoryFor(initial, async document => {
+    const next = structuredClone(document);
+    confirmRecallRetainedState(persisted, next, original, persisted.revision + 1);
+    retainRecallActualMetrics(persisted, next);
+    next.revision = persisted.revision + 1;
+    persisted = next;
+    return next;
+  });
+  renderRecall(original, initial, repository);
+  await settleLoad(); openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 1快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  await waitFor(() => expect(persisted.retainedBundles).toHaveLength(2), { timeout: 2500 });
+  expect(JSON.stringify(persisted.retainedBundles![0])).toBe(oldBytes);
+  expect(persisted.snapshots[0].retainedBundleId).not.toBe("bound-old");
+  expect(persisted.snapshots[0].drawings.some(item => item.text === "普通编辑")).toBe(true);
+  expect(persisted.retainedBundles![1].executionEvidence).toEqual(initial.retainedBundles![0].executionEvidence);
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  cleanup(); renderRecall(original, persisted, repositoryFor(persisted)); await settleLoad(); openAllSnapshotRecords();
+  expect(screen.getByText(/1 段文字/)).toBeInTheDocument();
+});
+
+it.each(["fee", "decisions"] as const)("RS06 rechecks %s authority after capture awaits and retains the pending Text", async change => {
+  const sourceCandles = [candle, secondCandle].map(bar => ({ ...bar, open: 100, high: 120, low: 90, close: 110 }));
+  const financialEpisode = episodeWithExecutions("financial-authority");
+  financialEpisode.status = "open"; delete financialEpisode.endedAt;
+  financialEpisode.openingQuantity = "2"; financialEpisode.remainingQuantity = "1";
+  Object.assign(financialEpisode.executions[0], { quantity: "2", price: "100", fee: "1" });
+  Object.assign(financialEpisode.executions[1], { quantity: "1", price: "120", fee: "invalid" });
+  const { original, initial } = sourceBoundSnapshot(financialEpisode, sourceCandles, "fill-2");
+  const oldBytes = JSON.stringify(initial.retainedBundles);
+  const repository = repositoryFor(initial);
+  const sourceTimeframes = { "15m": sourceCandles, "1D": sourceCandles, "1W": sourceCandles };
+  const view = (selected: TradeEpisode) => <RecallWorkspace episode={selected} episodes={[selected]} instrument={selected.instrument} instruments={[selected.instrument]} timeframeAvailability={availability} importedTimelineCandles={sourceCandles} candlesByTimeframe={sourceTimeframes} settings={settings} repository={repository} onEpisodeChange={vi.fn()} onInstrumentChange={vi.fn()} onSettingsChange={vi.fn()} />;
+  const rendered = render(view(original)); await settleLoad(); openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 1快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  let release!: (result: { imageDataUrl: string; viewport: typeof chartHarness.viewport }) => void;
+  chartHarness.handle.capture.mockImplementationOnce(() => new Promise(resolve => { release = resolve; }));
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  expect(chartHarness.handle.capture).toHaveBeenCalledTimes(1);
+  const corrected = structuredClone(original);
+  if (change === "fee") corrected.executions[1].fee = "2";
+  else corrected.executions.push({ ...corrected.executions[1], id: "new-decision", executedAt: "2026-01-20T11:00:00.000Z" });
+  rendered.rerender(view(corrected)); await settleLoad();
+  await act(async () => release({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }));
+  expect(await screen.findByText("成交或决策已变更，请返回工作图重新留存")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(chartHarness.pending?.drawings.some(item => item.text === "普通编辑")).toBe(true);
+  expect(repository.save.mock.calls.every(([saved]) => saved.snapshots[0].retainedBundleId === "bound-old")).toBe(true);
+  expect(JSON.stringify(initial.retainedBundles)).toBe(oldBytes);
+  fireEvent.click(screen.getByRole("button", { name: "统计" }));
+  expect(screen.getByRole("complementary", { name: "当前统计" })).toHaveTextContent("净盈亏费用待核对累计费用待核对");
+  const discard = vi.spyOn(window, "confirm").mockReturnValue(false);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+  if (change === "fee") expect(screen.getByRole("complementary", { name: "当前统计" })).toHaveTextContent("净盈亏+¥27.00累计费用¥3.00");
+  discard.mockRestore();
+});
+
+it.each(["episode", "reload"] as const)("RS06 clears the snapshot editor backup on an explicit %s boundary", async boundary => {
+  vi.useFakeTimers();
+  const { original, initial } = sourceBoundSnapshot();
+  const other = { ...original, id: "another-episode" };
+  const otherDocument = createRecallDocument(other);
+  const repository: RecallRepository = {
+    load: vi.fn(async (id: string) => id === other.id ? otherDocument : initial),
+    fetch: vi.fn(),
+    save: vi.fn().mockRejectedValue(new RecallRepositoryError(409, "revision-conflict", "External revision")),
+  };
+  const sourceCandles = [candle, secondCandle];
+  const sourceTimeframes = { "15m": sourceCandles, "1D": sourceCandles, "1W": sourceCandles };
+  const view = (selected: TradeEpisode) => <RecallWorkspace episode={selected} episodes={[original, other]} instrument={selected.instrument} instruments={[selected.instrument]} timeframeAvailability={availability} importedTimelineCandles={sourceCandles} candlesByTimeframe={sourceTimeframes} settings={settings} repository={repository} onEpisodeChange={vi.fn()} onInstrumentChange={vi.fn()} onSettingsChange={vi.fn()} />;
+  const rendered = render(view(original)); await settleLoad();
+  fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(screen.getByRole("button", { name: "重新载入" })).toBeInTheDocument();
+  openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: "编辑决策 1快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  expect(chartHarness.pending?.drawings.some(item => item.text === "普通编辑")).toBe(true);
+  if (boundary === "episode") rendered.rerender(view(other));
+  else fireEvent.click(screen.getByRole("button", { name: "重新载入" }));
+  await settleLoad();
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  expect(chartHarness.pending?.drawings).toEqual([]);
+  // A following same-episode refresh must not resurrect the previous editor.
+  rendered.rerender(view(structuredClone(boundary === "episode" ? other : original)));
+  await settleLoad();
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  expect(chartHarness.pending?.drawings).toEqual([]);
+});
+
+// Retained edit sessions: these literal scenes share financial evidence but
+// have independent working/retained cutoffs and Text. Never derive W from A.
+function editSessionFixture(merged = false) {
+  const buy = { ...execution("buy", "2025-01-02T02:00:00.000Z"), quantity: "2", price: "100", instrument: { id: "HK:TEST", symbol: "TEST", name: "Session instrument", market: "HK", currency: "HKD" } };
+  const sell = { ...buy, id: "sell", side: "sell" as const, executedAt: "2025-01-03T02:00:00.000Z", quantity: "1", price: "120", fee: "2" };
+  const current: TradeEpisode = { ...episode, id: "session-episode", instrument: buy.instrument, status: "open", startedAt: buy.executedAt, endedAt: undefined, openingQuantity: "2", remainingQuantity: "1", executions: [buy, sell] };
+  const bars = ["02", "03", "06"].map((day, index) => ({ ...candle, time: `2025-01-${day}T08:00:00.000Z`, knowledgeAt: `2025-01-${day}T08:00:00.000Z`, open: 100, low: 90, high: 130, close: [100, 120, 115][index] }));
+  const text = (id: string, label: string, owner = "global") => ({ ...drawing(id, label), episodeId: current.id, recallOwnerId: owner, recallPhase: "holding" as const, anchors: [{ time: bars[0].time, price: 100 }], createdAtCursor: bars[0].time });
+  const wViewport = { ...chartHarness.viewport, logicalRange: { from: 0, to: 4 } };
+  let initial = createRecallDocument(current, "2025-01-06T09:00:00.000Z");
+  const [d1, d2] = initial.decisions.map(item => item.id);
+  if (merged) initial = mergeRecallDecisions(initial, [d1, d2]);
+  initial.working = { ...initial.working, phase: "holding", selectedDecisionId: "global", timeframe: "1D", cursor: bars[2].time, executionCursor: "sell", drawings: [text("w", "WORKING-W")] };
+  initial.snapshots = [d1, merged ? d1 : d2].map((owner, index) => ({ ...snapshot(index ? "B" : "A", owner), phase: "holding", priceBasis: "raw", cursor: bars[index].time, executionCursor: index ? "sell" : "buy", candles: bars.slice(0, index + 1), drawings: [text(index ? "b" : "a", index ? "RETAINED-B" : "RETAINED-A", owner)], viewport: { ...chartHarness.viewport, logicalRange: { from: index, to: index + 1 } } }));
+  for (const item of initial.snapshots) initial = freezeRecallSnapshotBundle(initial, item.id, { episode: current, bundleId: `original-${item.id}`, retainedAt: "2025-01-06T09:00:00.000Z" });
+  confirmRecallRetainedState(undefined, initial, current, 6);
+  retainRecallActualMetrics(undefined, initial);
+  initial.revision = 6;
+  const frames = { "15m": bars, "1D": bars, "1W": bars };
+  const view = (repository: RecallRepository, overrides: Partial<RecallWorkspaceProps> = {}) => <RecallWorkspace episode={current} episodes={[current]} instrument={current.instrument} instruments={[current.instrument]} timeframeAvailability={availability} importedTimelineCandles={bars} candlesByTimeframe={frames} settings={settings} repository={repository} onEpisodeChange={vi.fn()} onInstrumentChange={vi.fn()} onSettingsChange={vi.fn()} {...overrides} />;
+  return { current, initial, bars, text, wViewport, d1, d2, view };
+}
+function deferredCapture() {
+  let resolve!: (value: { imageDataUrl: string; viewport: typeof chartHarness.viewport; warnings?: string[] }) => void;
+  let reject!: (error: Error) => void;
+  const promise = new Promise<{ imageDataUrl: string; viewport: typeof chartHarness.viewport; warnings?: string[] }>((yes, no) => { resolve = yes; reject = no; });
+  chartHarness.handle.capture.mockReturnValueOnce(promise);
+  return { resolve, reject };
+}
+function openSessionSnapshot(number: number) {
+  openAllSnapshotRecords();
+  fireEvent.click(screen.getByRole("button", { name: `编辑决策 ${number}快照` }));
+}
+function expectWorkingSession() {
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  expect(screen.getByTestId("review-chart")).toHaveAttribute("data-cursor", "2025-01-06T08:00:00.000Z");
+  expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "sell");
+  expect(screen.getByTestId("review-chart").getAttribute("data-drawings")).toContain("WORKING-W");
+  expect(screen.getByTestId("review-chart").getAttribute("data-drawings")).not.toContain("RETAINED-A");
+  expect(document.querySelector(".recall-position-stats")).toHaveTextContent("持仓 1");
+}
+
+it("S01 preserves the first W return point across clean A to B", async () => {
+  const f = editSessionFixture(); const repository = repositoryFor(f.initial);
+  render(f.view(repository)); await settleLoad();
+  chartHarness.handle.getViewport.mockReturnValue(f.wViewport);
+  openSessionSnapshot(1); openSessionSnapshot(2);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+  expectWorkingSession();
+  await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenLastCalledWith(f.wViewport));
+});
+
+it("S02 left global navigation persists W rather than retained A", async () => {
+  vi.useFakeTimers();
+  const f = editSessionFixture(); const repository = repositoryFor(f.initial);
+  render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  fireEvent.click(screen.getByRole("button", { name: /全局总结尚未留存/ }));
+  expectWorkingSession();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(repository.save).toHaveBeenCalled();
+  const saved = repository.save.mock.calls.at(-1)![0];
+  expect(saved.working.drawings.map(item => item.text)).toEqual(["WORKING-W"]);
+  expect(saved.working.cursor).toBe(f.bars[2].time);
+  cleanup(); render(f.view(repositoryFor(saved))); await settleLoad(); expectWorkingSession();
+});
+
+it.each(["resolve", "reject"] as const)("S07 obsolete A capture cannot %s into the same-source B session", async outcome => {
+  const f = editSessionFixture(); const repository = repositoryFor(f.initial);
+  render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("unsaved-a", "UNSAVED-A", f.d1);
+  fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const pending = deferredCapture();
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  vi.spyOn(window, "confirm").mockReturnValue(false);
+  openSessionSnapshot(2);
+  await act(async () => { if (outcome === "resolve") pending.resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); else pending.reject(new Error("obsolete capture error")); });
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(screen.getByTestId("review-chart").getAttribute("data-drawings")).toContain("RETAINED-B");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(chartHarness.handle.capture).toHaveBeenCalledTimes(1);
+});
+
+it("S03 retained left navigation saves the outgoing decision W, not A", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture();
+  const graph = { mode: "decision" as const, decisionId: f.d1, timeframe: "1D" as const, cursor: f.bars[2].time, executionCursor: "sell", drawings: [f.text("dw", "DECISION-W", f.d1)] };
+  f.initial.working.selectedDecisionId = f.d1;
+  f.initial.working.editingContext = graph;
+  f.initial.working.decisionDrafts = [graph];
+  const repository = repositoryFor(f.initial); render(f.view(repository)); await settleLoad();
+  openSessionSnapshot(1); fireEvent.click(decisionButton(2));
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  const saved = repository.save.mock.calls.at(-1)![0];
+  expect(saved.working.decisionDrafts?.find(item => item.decisionId === f.d1)?.drawings.map(item => item.text)).toEqual(["DECISION-W"]);
+  expect(saved.working.editingContext?.decisionId).toBe(f.d2);
+});
+
+it("S04 same A is a no-op and explicit discard to B preserves original bundles", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(); const bytes = JSON.stringify(f.initial.retainedBundles);
+  const repository = repositoryFor(f.initial); render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("unsaved", "UNSAVED-A", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  openSessionSnapshot(1); expect(confirm).not.toHaveBeenCalled();
+  expect(chartHarness.pending?.drawings.some(item => item.text === "UNSAVED-A")).toBe(true);
+  openSessionSnapshot(2); expect(confirm).toHaveBeenCalledTimes(1);
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toEqual(["RETAINED-B"]);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" })); expectWorkingSession();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(chartHarness.handle.capture).not.toHaveBeenCalled();
+  expect(JSON.stringify(f.initial.retainedBundles)).toBe(bytes);
+  for (const [saved] of repository.save.mock.calls) expect(JSON.stringify(saved.retainedBundles)).toBe(bytes);
+});
+
+it("S05 update A then open B retains one new bundle and survives save and reload", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(); const bytes = f.initial.retainedBundles!.map(item => JSON.stringify(item));
+  let persisted = structuredClone(f.initial);
+  const repository = repositoryFor(f.initial, async candidate => {
+    const next = structuredClone(candidate); confirmRecallRetainedState(persisted, next, f.current, persisted.revision + 1); retainRecallActualMetrics(persisted, next); next.revision = ++persisted.revision; persisted = next; return next;
+  });
+  render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("new-a", "UPDATED-A", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  vi.spyOn(window, "confirm").mockReturnValue(true); openSessionSnapshot(2); await settleLoad();
+  expect(chartHarness.handle.capture).toHaveBeenCalledTimes(1);
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toEqual(["RETAINED-B"]);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" })); expectWorkingSession();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(persisted.retainedBundles).toHaveLength(3);
+  expect(persisted.retainedBundles!.slice(0, 2).map(item => JSON.stringify(item))).toEqual(bytes);
+  expect(persisted.snapshots[0].drawings.map(item => item.text)).toEqual(["RETAINED-A", "UPDATED-A"]);
+  cleanup(); render(f.view(repositoryFor(persisted))); await settleLoad(); expectWorkingSession();
+});
+
+it.each(["authority", "capture", "warning"] as const)("S06 %s failure preserves A input and blocks B", async failure => {
+  const f = editSessionFixture(); const repository = repositoryFor(f.initial);
+  const changed = { ...f.current, executions: f.current.executions.map(item => ({ ...item, fee: "3" })) };
+  render(f.view(repository, failure === "authority" ? { episode: changed } : {})); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("unsaved", "UNSAVED-A", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const confirm = vi.spyOn(window, "confirm").mockReturnValueOnce(true).mockReturnValue(false);
+  if (failure === "capture") chartHarness.handle.capture.mockRejectedValueOnce(new Error("capture refused"));
+  if (failure === "warning") chartHarness.handle.capture.mockResolvedValueOnce({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport, warnings: ["clipped"] });
+  openSessionSnapshot(2); await settleLoad();
+  expect(confirm).toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("UNSAVED-A");
+  expect(chartHarness.pending?.drawings.map(item => item.text)).not.toContain("RETAINED-B");
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  expect(chartHarness.handle.capture).toHaveBeenCalledTimes(failure === "authority" ? 0 : 1);
+});
+
+it.each(["reload", "reload-failed", "episode", "unmount"] as const)("S08 pending A loses its lease at %s", async boundary => {
+  vi.useFakeTimers(); const f = editSessionFixture();
+  const other = { ...f.current, id: "other-session" };
+  const repository = repositoryFor(f.initial, async () => { throw new RecallRepositoryError(409, "revision-conflict", "conflict"); });
+  const rendered = render(f.view(repository)); await settleLoad();
+  chartHarness.nextDrawing = f.text("working-edit", "W-EDIT"); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  openSessionSnapshot(1); chartHarness.nextDrawing = f.text("a-edit", "A-INPUT", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const pending = deferredCapture(); fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  if (boundary === "unmount") rendered.unmount();
+  else if (boundary === "episode") {
+    repository.load.mockResolvedValueOnce(createRecallDocument(other));
+    rendered.rerender(f.view(repository, { episode: other, episodes: [other] }));
+  } else {
+    if (boundary === "reload-failed") repository.load.mockRejectedValueOnce(new Error("reload refused"));
+    fireEvent.click(screen.getByRole("button", { name: "重新载入" }));
+  }
+  await settleLoad();
+  await act(async () => { pending.resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); });
+  if (boundary === "reload-failed") {
+    expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("A-INPUT");
+    expect(screen.getByRole("alert")).toHaveTextContent("reload refused");
+  } else expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  expect(repository.save.mock.calls.every(([candidate]) => candidate.retainedBundles?.length === 2)).toBe(true);
+});
+
+it("S09 same-episode hydration and own save ack preserve the original W and dirty A", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(); const repository = repositoryFor(f.initial);
+  const rendered = render(f.view(repository)); await settleLoad();
+  chartHarness.nextDrawing = f.text("w-edit", "W-EDIT"); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  openSessionSnapshot(1); chartHarness.nextDrawing = f.text("a-edit", "A-INPUT", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  rendered.rerender(f.view(repository, { episode: structuredClone(f.current) })); await settleLoad();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("A-INPUT");
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false); openSessionSnapshot(2);
+  expect(confirm).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" })); expectWorkingSession();
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("W-EDIT");
+});
+
+it.each(["capture", "save"] as const)("S10 leave guard rejects %s failure without losing local edits", async failure => {
+  const f = editSessionFixture(); let guard: (() => Promise<boolean>) | null = null;
+  const repository = repositoryFor(f.initial, async () => { throw new RecallRepositoryError(409, "revision-conflict", "conflict"); });
+  render(f.view(repository, { onLeaveGuardChange: value => { guard = value; } })); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("a-edit", "A-INPUT", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  vi.spyOn(window, "confirm").mockReturnValue(true);
+  if (failure === "capture") chartHarness.handle.capture.mockRejectedValueOnce(new Error("capture refused"));
+  let result: boolean | undefined; await act(async () => { result = await guard!(); });
+  expect(result).toBe(false);
+  if (failure === "capture") {
+    expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+    expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("A-INPUT");
+    expect(repository.save).not.toHaveBeenCalled();
+  } else {
+    expect(repository.save.mock.calls.at(-1)![0].snapshots[0].drawings.map(item => item.text)).toContain("A-INPUT");
+    expect(screen.getByRole("button", { name: "重新载入" })).toBeInTheDocument();
+    openSessionSnapshot(1); expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("A-INPUT");
+  }
+});
+
+it("S11 deleting active pending A invalidates capture; undo restores a record, not an editor", async () => {
+  const f = editSessionFixture(); const repository = repositoryFor(f.initial); render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  const pending = deferredCapture(); fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "删除决策 1快照" })); expectWorkingSession();
+  fireEvent.click(screen.getByRole("button", { name: "撤销" }));
+  await act(async () => { pending.resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); });
+  expectWorkingSession(); expect(screen.getByRole("button", { name: "编辑决策 1快照" })).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+it("S11 deleting B and reordering records keep active A and its dirty Text", async () => {
+  const f = editSessionFixture(); render(f.view(repositoryFor(f.initial))); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("a-edit", "A-INPUT", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const rows = document.querySelectorAll(".recall-snapshot-list li");
+  fireEvent.drop(rows[1], { dataTransfer: { getData: () => "A" } });
+  fireEvent.click(screen.getByRole("button", { name: "删除决策 2快照" }));
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("A-INPUT");
+});
+
+it.each(["pre-entry", "holding", "post-review", "history"] as const)("S12 returns the %s working phase, mode and dual cutoffs", async mode => {
+  const f = editSessionFixture();
+  if (mode === "pre-entry") { f.initial.working.phase = mode; f.initial.working.cursor = "2025-01-02T01:59:59.999Z"; f.initial.working.executionCursor = NO_REVEALED_EXECUTIONS; f.initial.working.drawings = []; }
+  if (mode === "post-review") f.initial.working.phase = mode;
+  render(f.view(repositoryFor(f.initial))); await settleLoad();
+  if (mode === "history") { openMoreRecords(); fireEvent.click(screen.getByRole("button", { name: "完整历史" })); }
+  openSessionSnapshot(1); openSessionSnapshot(2); fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+  const phaseName = mode === "pre-entry" ? "买入前判断" : mode === "post-review" ? "事后复盘" : "持仓过程";
+  expect(screen.getByRole("button", { name: phaseName })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: "播放" })).toHaveAttribute("aria-pressed", "false");
+  if (mode === "pre-entry") {
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-cursor", "2025-01-02T01:59:59.999Z");
+    expect(screen.getByTestId("review-chart")).not.toHaveAttribute("data-execution-cursor");
+    expect(screen.getAllByText(/成交尚未揭示/).length).toBeGreaterThan(0);
+  } else { expectWorkingSession(); if (mode === "history") expect(screen.getAllByRole("button", { name: "返回回放" }).length).toBeGreaterThan(0); }
+});
+
+it("S13 synchronous focused Text belongs to capture and duplicate update reuses it", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(); const repository = repositoryFor(f.initial); render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  let resolve!: (value: { imageDataUrl: string; viewport: typeof chartHarness.viewport }) => void;
+  chartHarness.handle.capture.mockImplementationOnce(() => {
+    chartHarness.onCommand!({ type: "add", drawing: f.text("focused", "FOCUSED-TEXT", f.d1) });
+    return new Promise(yes => { resolve = yes; });
+  });
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  vi.spyOn(window, "confirm").mockReturnValue(true); openSessionSnapshot(2);
+  await act(async () => { resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); });
+  expect(chartHarness.handle.capture).toHaveBeenCalledTimes(1);
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toEqual(["RETAINED-B"]);
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(repository.save.mock.calls.at(-1)![0].snapshots[0].drawings.map(item => item.text)).toContain("FOCUSED-TEXT");
+});
+
+it.each(["text", "timeframe"] as const)("S13 later %s edit rejects capture while preserving A", async edit => {
+  const f = editSessionFixture(); render(f.view(repositoryFor(f.initial))); await settleLoad(); openSessionSnapshot(1);
+  const pending = deferredCapture(); fireEvent.click(screen.getByRole("button", { name: "更新此快照" }));
+  if (edit === "text") { chartHarness.nextDrawing = f.text("later", "LATER-TEXT", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" })); }
+  else fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
+  await act(async () => { pending.resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); });
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(screen.getByRole("alert")).toHaveTextContent("截图期间内容已修改");
+  if (edit === "text") expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("LATER-TEXT");
+});
+
+it("S14 obsolete viewport RAF callbacks cannot move B or overwrite W", async () => {
+  const f = editSessionFixture(); const callbacks: FrameRequestCallback[] = [];
+  vi.spyOn(window, "requestAnimationFrame").mockImplementation(callback => { callbacks.push(callback); return callbacks.length; });
+  vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => undefined);
+  render(f.view(repositoryFor(f.initial))); await settleLoad();
+  chartHarness.handle.getViewport.mockReturnValue(f.wViewport);
+  openSessionSnapshot(1); fireEvent.click(screen.getByRole("button", { name: "返回工作图" })); openSessionSnapshot(2);
+  chartHarness.handle.restoreViewport.mockClear(); act(() => { callbacks.splice(0).forEach(callback => callback(0)); });
+  expect(chartHarness.handle.restoreViewport.mock.calls).toEqual([[f.initial.snapshots[1].viewport]]);
+});
+
+it.each(["resolve", "reject"] as const)("S15 working retain %s after entering A cannot commit or report in A", async outcome => {
+  const f = editSessionFixture(); render(f.view(repositoryFor(f.initial))); await settleLoad();
+  const pending = deferredCapture(); fireEvent.click(screen.getByRole("button", { name: "留存当前快照" })); openSessionSnapshot(1);
+  await act(async () => { if (outcome === "resolve") pending.resolve({ imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport }); else pending.reject(new Error("old working capture")); });
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toEqual(["RETAINED-A"]);
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByText(/全部记录与快照（2）/)).toBeInTheDocument();
+});
+
+it("S16 phase flush started in W cannot change A after awaiting", async () => {
+  const f = editSessionFixture(); render(f.view(repositoryFor(f.initial))); await settleLoad();
+  let resolve!: () => void; chartHarness.handle.flush.mockImplementationOnce(() => new Promise<void>(yes => { resolve = yes; }));
+  fireEvent.click(screen.getByRole("button", { name: "买入前判断" })); openSessionSnapshot(1);
+  await act(async () => { resolve(); });
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toEqual(["RETAINED-A"]);
+  expect(screen.getByTestId("review-chart")).toHaveAttribute("data-cursor", f.bars[0].time);
+  expect(screen.getByRole("button", { name: "持仓过程" })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("button", { name: "返回工作图" })); expectWorkingSession();
+});
+
+it("S14 a newly ready retained handle cannot seed the empty working viewport", async () => {
+  const f = editSessionFixture(); chartHarness.handle.getViewport.mockReturnValue(undefined as unknown as typeof chartHarness.viewport);
+  render(f.view(repositoryFor(f.initial))); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.handle.getViewport.mockReturnValue({ ...chartHarness.viewport, logicalRange: { from: 40, to: 50 } });
+  act(() => { chartHarness.onReady?.(chartHarness.handle as unknown as RecallChartHandle); });
+  fireEvent.click(screen.getByRole("button", { name: /全局总结尚未留存/ }));
+  chartHarness.handle.restoreViewport.mockClear(); await act(async () => { await new Promise(resolve => window.requestAnimationFrame(resolve)); });
+  expect(chartHarness.handle.restoreViewport.mock.calls.some(([value]) => value.logicalRange?.from === 40)).toBe(false);
+  expectWorkingSession();
+});
+
+it("S15 retained merge uses explicit decision intent after the discard boundary", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(); const repository = repositoryFor(f.initial); render(f.view(repository)); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("dirty", "DO-NOT-PROPAGATE", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  vi.spyOn(window, "confirm").mockReturnValue(false);
+  fireEvent.click(screen.getByRole("checkbox", { name: "选择决策 1 进行合并" }));
+  fireEvent.click(screen.getByRole("checkbox", { name: "选择决策 2 进行合并" }));
+  fireEvent.click(screen.getByRole("button", { name: "合并所选决策" }));
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  const saved = repository.save.mock.calls.at(-1)![0];
+  expect(saved.decisions).toHaveLength(1);
+  expect(saved.decisions[0].executionIds).toEqual(["buy", "sell"]);
+  expect(saved.working.drawings.map(item => item.text)).toEqual(["WORKING-W"]);
+  expect(saved.snapshots.some(item => item.drawings.some(item => item.text === "DO-NOT-PROPAGATE"))).toBe(false);
+});
+
+it("S15 retained split uses explicit groups after the discard boundary", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture(true); const repository = repositoryFor(f.initial);
+  render(f.view(repository)); await settleLoad();
+  openAllSnapshotRecords(); fireEvent.click(screen.getAllByRole("button", { name: "编辑决策 1快照" })[0]);
+  chartHarness.nextDrawing = f.text("dirty", "DO-NOT-PROPAGATE", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  vi.spyOn(window, "confirm").mockReturnValue(false);
+  fireEvent.click(screen.getByRole("button", { name: "拆分当前决策" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "第 1 组成交 ID" }), { target: { value: "buy" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "第 2 组决策编号" }), { target: { value: "split-sell" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "第 2 组成交 ID" }), { target: { value: "sell" } });
+  fireEvent.click(screen.getByRole("button", { name: "确认拆分" }));
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(repository.save.mock.calls.at(-1)![0].decisions.map(item => item.executionIds)).toEqual([["buy"], ["sell"]]);
+  expect(repository.save.mock.calls.at(-1)![0].working.drawings.map(item => item.text)).toEqual(["WORKING-W"]);
+});
+
+it("S15 invalid split stays in the active editor with its input", async () => {
+  const f = editSessionFixture(true);
+  render(f.view(repositoryFor(f.initial))); await settleLoad(); openAllSnapshotRecords();
+  fireEvent.click(screen.getAllByRole("button", { name: "编辑决策 1快照" })[0]);
+  fireEvent.click(screen.getByRole("button", { name: "拆分当前决策" }));
+  fireEvent.click(screen.getByRole("button", { name: "确认拆分" }));
+  expect(screen.getByRole("button", { name: "更新此快照" })).toBeInTheDocument();
+  expect(chartHarness.pending?.drawings.map(item => item.text)).toContain("RETAINED-A");
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+});
+
+it("S15 orphan snapshot, phase and reconciliation actions cross the same retained boundary", async () => {
+  vi.useFakeTimers(); const f = editSessionFixture();
+  f.initial.working.phaseContexts = { "pre-entry": { mode: "decision", decisionId: f.d2, timeframe: "1D", cursor: f.bars[0].time, executionCursor: "buy", drawings: [f.text("orphan", "ORPHAN-W", f.d2)] } };
+  const changed = { ...f.current, remainingQuantity: "2", executions: [f.current.executions[0]] };
+  const repository = repositoryFor(f.initial); render(f.view(repository, { episode: changed })); await settleLoad(); openSessionSnapshot(1);
+  chartHarness.nextDrawing = f.text("dirty", "A-DIRTY", f.d1); fireEvent.click(screen.getByRole("button", { name: "add text" }));
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  fireEvent.change(screen.getByRole("combobox", { name: "重新关联快照 B" }), { target: { value: f.d1 } });
+  expect(confirm).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  openAllSnapshotRecords(); fireEvent.click(screen.getAllByRole("button", { name: "编辑决策 1快照" })[0]);
+  fireEvent.change(screen.getByRole("combobox", { name: "重新关联买入前判断草稿" }), { target: { value: "global" } });
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  openAllSnapshotRecords(); fireEvent.click(screen.getAllByRole("button", { name: "编辑决策 1快照" })[0]);
+  fireEvent.click(screen.getByRole("button", { name: "确认已处理行情变更" }));
+  expect(screen.queryByRole("button", { name: "更新此快照" })).not.toBeInTheDocument();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  const saved = repository.save.mock.calls.at(-1)![0];
+  expect(saved.working.drawings.map(item => item.text)).toEqual(["WORKING-W"]);
+  expect(saved.working.phaseContexts?.["pre-entry"]?.decisionId).toBe("global");
+  expect(saved.reconciliation?.stale).not.toBe(true);
 });

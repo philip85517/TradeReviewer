@@ -73,3 +73,7 @@ root 独立对当前 Surface84897ee2… / CSSb7160f10… / host3218407b… 执�
 P1正式2/3 FAIL、第三轮未启动；P3正式0/3，不因有限checkpoint增加或重置正式轮数。P2三市场冷约2.97秒/重复约3秒且完整图超过64MiB，性能FAIL保持；原始实现及两项授权性能候选均未达完整目标后，按已调用systematic-debugging的“Discuss with your human partner before attempting more fixes”要求等待架构讨论（既有异步问题未回复），四产品文件冻结，未增加新修复候选。建议讨论保持64MiB并验证不可变对象共享；仍只是待选择方案，未实施。P2页面/P4产品/完整附件依赖未解除。
 
 request-body实际消费者OPEN，生产调用图只定位到app handler首次clone之前，未定位原始非GET请求消费者；旧探针预算/首页GET漏记局限及全部原失败保留，无新探针激活或猜测性框架修复。完整当前Workspace回归、整页视觉/控件/响应式/触控仍NOT VERIFIED，已知未实现功能保持FAIL。所有恢复代理实际gpt-6.1-sol / ultra，当前候选已冻结；无提交、推送、合并或发布。
+
+## 2026-10-28 非财务组件回归
+
+协调者独立复跑筛选与附件 host 两个现有组件测试：15/15 PASS，仅证明内存模拟边界；[命令、局限及输入指纹](../evidence/continuation-2026-10-28/p3-isolated/REPORT.md)。未修改产品代码，P3 正式验收仍 0/3、整票未接受。真实完整数据旅程及视觉仍 NOT VERIFIED，P1/F07 与 Bars 保持暂停。

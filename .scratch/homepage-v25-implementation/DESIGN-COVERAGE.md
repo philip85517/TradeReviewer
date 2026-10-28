@@ -1,3 +1,50 @@
+## 2026-10-24 — 最后候选的独立覆盖结论
+
+**P1/F07 3/3 FAIL暂停；整页未交付。** 以下当前覆盖与[最终接受](evidence/resume-2026-10-24/ROOT-ACCEPTANCE-3.md)同步。原55项需求、96状态及准确原稿引用均保留，不缩减分母或改变批准范围。三位实际实现者为Astra Ultra；root拥有整页视觉一致性、完整数据/持久化流程与独立接受。旧记录中的“2/3”只对应历史版本。
+
+|要求/元素与原参考|本轮责任及用户旅程|独立证据与结论|
+|---|---|---|
+|HV25-14/15/16、47–51；HOME-HP02-B001、HP09-B001/B028/B031；原稿467–480/544–546，loading.svg/error.svg及原矩阵准确图；期间设计§§7–9|astra_source负责来源恢复；astra_finance负责指标子模块；root负责整页状态。读取→取消/恢复/拒收/超时|来源38项PASS；实际非法scope零IO拒收与真实超时仍显示期间加载，FAIL。见[拒收根因](evidence/resume-2026-10-24/period-ui-final-design/implementation/recovery-identity/final-publication/hard-invalid-diagnosis/DIAGNOSIS.md)、[最终页面](evidence/resume-2026-10-24/period-ui-final-design/implementation/recovery-identity/final-publication/root-independent/final-home-preview.png)。原稿缺少该非法URL的专门画稿，不能把它冒充精确视觉参考；终态契约明确适用。|
+|HV25-44..46/53必要库接线与既有复盘；[编辑会话设计](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/retained-summary-diagnosis/session-design/DESIGN.md)的E01/E02/E04/E07/E08/E14/E15/E19/E20/E22、D38及原02/04/05 PNG|astra_integration_design负责编辑会话；root独立实际图表、返回与持久化。工作图→A→B→返回；更新→保存→返回→reload→重开|[独立检查点](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/retained-summary-diagnosis/session-design/root-independent/ROOT-CHECKPOINT.md)：80运行测试与所列真实鼠标路径有限PASS；strict 8错FAIL；完整dirty/失败/冲突/键盘/触摸/响应式视觉NOT VERIFIED。|
+|HV25-14..20/38..43财务子合同，沿原矩阵和冻结合同的逐ID参考|astra_finance负责财务；root按原金额、时序、性能独立检查|[48+9原样本](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/final-preparation/ROOT-RESULT.json)PASS，仅核心；不能代替真实首页超时门。|
+|HV25-32..43历史及贡献，准确HP05参考保持|历史数据扩展依赖最小真实period E2E；root独立接受|真实页面明确尚未接入，NOT VERIFIED；ContributionBars 3/3空间FAIL暂停。没有以组件测试代替真实接线。|
+
+本轮实际浏览器状态证据为1280×720/DPR2首页和1440×900复盘，已在各检查点如实记录；它们不代替原1440×1000/1280×800整页参考比较。所有授权偏差均为空；未验证的尺寸、信息层级和控件保持原合同。新发现登记在原P1下：[类型错误](issues/14-p1-strict-finding.md)、[终态加载](issues/15-p1-terminal-state-finding.md)、[首页超时](issues/16-p1-homepage-timeout-finding.md)，均无独立新轮数或第四修复授权。
+
+以下为历史覆盖与派发记录。
+
+## 2026-10-24 — 原子存储输入与同源 Workspace 接线
+
+root批准 storage方案B与Workspace方案A/C1；分别归 /root/astra_integration_design 和 /root/astra_source（gpt-6-astra / ultra）。[存储票12](issues/12-stored-source-snapshot.md)明确只证明已存资料枚举；[Workspace派发](evidence/resume-2026-10-24/source/astra/workspace-design/ROOT-DISPATCH.md)及同目录DESIGN第10表逐一映射 HV25-06..31/32..43/44..53/03..05/54 至精确原规格、元素、参考图、用户旅程与独立证据。原55项/96状态不减，P1仍2/3FAIL，Metrics最后候选3待root，Bars3/3暂停。root继续拥有整页视觉及全数据流。存储/同源接线/表示覆盖/历史起点分别验收，成功读取不推导金融全集完整；history实施仍等最小真实period E2E。
+
+## 2026-10-24 — Metrics 同票最后候选接线调整
+
+HV25-14/15/16、HOME-HP02-B001，HP02正文191–221及HP09正文467–515；参考 home-1440.svg / home-1280.svg / atom-metric.svg、component-manual.html611–698。`astra_finance` 在 root 解除性能静默后仅改 metric-cards.tsx / test，直接消费窄 PeriodView；current 与完整 stamp 为唯一权威，all起点未知不抹已知current。整页视觉/完整数据流/独立接受owner root。原Metrics仍 **2/3 FAIL**，这是同一最后候选3；CSS不改、旧26项及新8组字面量、真实鼠标键盘/焦点/动效/断点视觉独立验收，详见 [派发](evidence/P2/metrics/astra-current/ROOT-DISPATCH.md)。不重置或放宽门槛。
+
+## 2026-10-24 — Astra 三个新模块切片
+
+旧F seam第3/3轮与S1第1/3轮纯模块PASS保留。下列均为先前计划中的新增能力，0/3起；不用于重置旧FAIL或已暂停叶子。root为整页视觉、完整数据流和独立接受owner。
+
+|切片/owner/写面|精确规范、元素及参考|用户旅程/独立证据|
+|---|---|---|
+|Historical FX / astra_finance；仅F及同名test|HV25-32..43，HP05正文349–431 HOME-HP05-B001/B027/B034；逐ID图像见 [冻结合同](evidence/P4/historical-fx/CONTRACT.md)|闭合回合三原币槽→同关闭日截止转换→未来history/贡献；同日缺币隔离、Decimal乘后除、缺未来冲突、冻结；UI仍NV|
+|Acquisition / astra_source；仅新financial-acquisition.ts及test|HV25-06..13 HP03、14..22 HP02、32..43 HP05、47..51 HP09；沿 [S1准确引用](evidence/P4/ROOT-DATA-CONTRACT.md) 与 [原始映射](evidence/resume-2026-10-24/source/astra/RAW-SOURCE-MAPPING.md)，全量55行原refs不变|同请求raw/metadata/candles/FX响应→真实observedAt/completedAt收据→S1；future clocks、detached FX receipt、raw由S1唯一复制、deterministic revision、unknown范围；IO/页面后续NV|
+|PeriodView / astra_integration_design；仅新financial-view-model.ts及test|HV25-14..22/47..53，HOME-HP02-B001/B020/B024、HP09/HP10，正文193–252/467–515/550–568；home-1440.svg、home-1280.svg、period.svg、chart-gap.svg、loading--stale-data.svg、error--update-failure.svg；[冻结设计](evidence/resume-2026-10-24/astra-integration/PERIOD-VIEW-DESIGN.md)|已接受source+最终acceptedSnapshot或local token→series与独立current；P01–P13字面金额/unknown/身份/引用冻结；随后最小真实E2E接受才扩大history|
+
+本轮同步组装后deadline已由root111测试及真实15.203秒截止/重试有限接受，见 [接受证据](evidence/resume-2026-10-24/astra-integration/deadline/ROOT-ACCEPTANCE.md)。不替代全页功能、持久化、视觉或全控件门。
+
+## Astra 下一切片 — 全局同步组装后的截止检查
+
+2026-10-24：root批准 `evidence/resume-2026-10-24/astra-integration/UNIFIED-DESIGN.md` 第5.1节。精确 refs/元素/旅程沿该文第6表的 HV25-47..51 / HOME-HP09-B001/B028/B031 及 HP08-B001；原图 loading.svg、loading--stale-data.svg、error.svg、error--update-failure.svg，原稿467–549行。owner `/root/astra_integration_design`，仅 use-homepage-host.ts / navigation-deadline.test.tsx；root独立接受。14999ms同步计算跨15000/15001后不得发布新data/两域/范围/币种或调用onReadAccepted，保留旧包并可手动重试；首次home/collection正确收敛。原domain-host1/3纯协议PASS保留，相邻回归重开；P1原2/3不重置。UI全页/持久化/视觉后续仍独立门。
+
+## 2026-10-24 — 新派发版本与覆盖 owner
+
+总55项及旧证据/FAIL保持。准确 S1 逐项ID→原spec/图片→owner→数据旅程→接受证据见 [冻结合同](evidence/P4/ROOT-DATA-CONTRACT.md)；S1仅source纯模块，不冒充UI覆盖。owner `/root/homepage_flow_scan24`，新四文件独占，root独立接受；seam/性能前置未关闭前不发布页面金融数据。
+
+HistoryChart同叶formal1/3 FAIL及candidate2限定范围见 [root接受](evidence/P4/history-chart/ROOT-ACCEPTANCE-1.md)，owner `/root/ui_acceptance_scan24` 独占原三个chart文件，HV25-33/34/35/47–51，准确原refs/空态metadata/150ms及reduced/三视口和临界旅程沿原ROOT-DISPATCH。root负责整页视觉与数据流，非实现者直接视觉比较仍须保留。Bars3/3暂停；Metrics2/3、Stats1/3不重置。
+
+财务seam第2/3 FAIL，root独立反例与性能诊断见 [第2轮](evidence/P4/seam/ROOT-ACCEPTANCE-2.md)；owner `/root/finance_resume24` 目前仅准备固定profile工具，未授权产品第3候选。各纯模块UI/DB写NA有范围依据；整页所有适用功能/持久化/视觉门仍未接受。
+
 ## 2026-10-23 — 新三域host有限接受；seam与相邻性能回归重开
 
 root独立364/364定向回归及源码/hash复核完成。新configured domain-host纯协议第1/3轮PASS，见[evidence/P2/domain-host/ROOT-ACCEPTANCE-1.md](evidence/P2/domain-host/ROOT-ACCEPTANCE-1.md)，P1旧2/3 FAIL与页面接线NV不变。
@@ -248,3 +295,66 @@ HP05:349–432 / HV25-32..46 / HOME-HP05-B001/B002及HP02/HP09财务共性 → S
 |HV25-33..43；HP05:349–432|HOME-HP05-B001|source/images/journeys-year.svg、history-stats-error.svg|history pending/error/accepted；同owner|H三部分一组换且保留贡献mode，取消/超时不动旧包；独立deadline|同上；NV|
 |HV25-44..49/53/55；HP06:434–465、HP09:467–515|HOME-HP06-B018/B016、HOME-HP09-B001/B028|source/images/library-return.svg、loading--stale-data.svg|global source/collection compatibility；同owner，root集成|global使旧域失效；owned-only callback、UI-only来源恢复、普通库不继承附加范围|同上；NV，旧P1失败不变|
 
+## 2026-10-24 Astra 续推 owner 变更
+
+用户授权新 Astra 并行设计/修复及必要重构。所有需求/元素/原图/旅程仍按下文原矩阵与 `evidence/P4/ROOT-DATA-CONTRACT.md`；仅 owner 移交为 astra_finance（seam最后候选）、astra_source（S1首候选）、astra_integration_design（只读整合设计）。确切写面/证据/原轮次见 [ASTRA-CONTINUE-2026-10-24.md](ASTRA-CONTINUE-2026-10-24.md)。root独立接受，不改变暂停项或视觉预算。
+
+
+## 2026-10-24 S1 qualification regression
+
+HV25-06..22/47..51, HP02/HP03/HP09 and original S1 reference set remain; astra_finance owns the bounded qualifier repair, root owns data flow and acceptance. Exact write set, journey, F01–F08 counterexamples and initial-assembly exclusion: [dispatch](evidence/resume-2026-10-24/source/qualifier-repair/ROOT-DISPATCH.md). S1 reopened after 1/3 PASS; next formal round 2/3, old evidence retained. No numeric authority or design deviation.
+
+### 2026-10-24 stored representation implementation
+HV25-06..31/47..51/53 and exact HOME anchors/reference images/journeys are mapped in evidence/resume-2026-10-24/representation-design/DESIGN.md section9, read before dispatch. Owner astra_integration_design, Astra ultra; root integrated data/visual/acceptance. Four-file stage A approved in ROOT-DISPATCH.md; R01–R15 required; 0/3. No UI deviation or financial authority replacement; history only dependency, Bars3/3 remains paused. UI/DB write NA for pure module only; full page gates remain.
+
+## 2026-10-24 canonical catalog repair dispatch
+
+Owner `/root/astra_source` (Astra ultra), root独立集成、全页视觉与完整数据流。设计/根因 `evidence/resume-2026-10-24/source/astra/workspace-design/catalog-diagnosis/ROOT-CAUSE-AND-WRITESET.md` 方案B，精确6文件 catalog-model / home-surface / trade-review-workspace 各源码与测试。HV25-10 / HOME-HP03-B019 对应正文130–160及search.svg/search-detail.svg；HV25-45 / HOME-HP06-B018 对应434–464及detail.svg/library-return.svg/hcr06-final-return.svg。旅程：raw00700→summary700→目录完整可导航身份→搜索/持仓详情共同目标→普通库准确原成交→返回原状态/焦点。保留raw IDs/类别未知，隔离交易所/类别/币种冲突，不改财务/DB/CSS。先literal RED，最终冻结后root真实UI、准确fill与隔离库返回/reload、匹配视口视觉；当前FAIL/NV，不增加P1轮次预算。
+
+## 2026-10-24 F07 and inventory chronology dispatch
+
+HV25-14..22/47..51, HP02/HP03/HP09 and necessary HP06 flow map to original exact refs in F07-UNIFIED-DESIGN.md §8.1 / UI01–11; phase/cutoff/viewport §8.2 unchanged. Owner astra_finance (Astra ultra), root complete data/persistence flow, whole-page consistency and independent acceptance. [Exact authorized manifest and gates](evidence/resume-2026-10-24/source/qualifier-repair/F07-ROOT-IMPLEMENTATION-DISPATCH.md). R15/48-case chronology evidence is financial unknown propagation, not new UI design. Required journeys raw→library→real chart→Recall→explicit fee revision→return/reload; initial minimal real-chart gate before dependent expansion. F07 original P1 2/3 FAIL, representation1/3 FAIL; all UI/persistence/visual gates NOT VERIFIED until fresh root evidence. Bars3/3 paused.
+
+
+## 2026-10-24 — Period UI final design decision, implementation still gated
+
+Root accepted bounded PeriodSurface + existing header status slot, including the explicit ≤900 meaningful asOf/status row adaptation; [decision](evidence/resume-2026-10-24/period-ui-final-design/ROOT-DESIGN-DECISION.md). Exact HV25/element/reference/control/owner mappings and the12-file manifest are [DESIGN §§7–9](evidence/resume-2026-10-24/period-ui-final-design/DESIGN.md). `/root/astra_source` is the sole future Workspace/UI implementer; root owns whole-page visual consistency and persistence acceptance. Disabled-trigger closure focuses the stable period heading. No product release before representation/ledger acceptance; no round reset, no Bars fourth attempt, no UI PASS inferred from this design.
+
+### F07 actual-route dependency correction (2026-10-24)
+
+Root verified persisted instruments route to RecallWorkspace, not legacy demo ReviewChartWorkspace. The minimal first real slice now includes already-designed P13 display-only nullable/gross-cost adapters; controller/phase/cutoff/viewport unchanged. P14 remains gated. Evidence: `evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/ROOT-ACTUAL-ROUTE-DECISION.md`. UI03–07 remain NOT VERIFIED; no round reset.
+
+
+## 2026-10-24 — representation stage A independently accepted 2/3
+
+Root fresh 135/135 representation and 48/48 chronology controls PASS; strict/lint exit0 and four frozen file hashes match. Additional bounded finance regression 619 PASS / 4 external sample tests SKIPPED, 29 stage hashes unchanged. Prior R15 FAIL preserved. [Root acceptance](evidence/resume-2026-10-24/root-representation/ROOT-ACCEPTANCE-2.md). Stage B may proceed after the temporary browser probe is restored and ownership released. F07 real-chart, editor persistence, browser performance, final page integration and fidelity remain open; P1 2/3 FAIL and ContributionBars 3/3 FAIL paused are unchanged. Existing legacy statement-only chronology prefilter risk A01 remains separately OPEN; it is not the current homepage projection.
+
+### 2026-10-24 bounded parallel implementation release
+
+Exact probe restoration is verified; browser stage timing NV. [Root release](evidence/resume-2026-10-24/ROOT-PARALLEL-RELEASE.md) assigns Stage B's two Workspace files to astra_integration_design and A1's two S1 files to astra_source, both existing Astra ultra agents. All original HV25/element/reference/journey mappings above and representation-design §9 remain authoritative. Root owns whole-page consistency and end-to-end persistence. Source's later Period UI ownership is gated on Stage B freeze. S1 next 3/3, P1 next 3/3; no resets, no Bars fourth patch. Required browser, financial and visual gates remain open.
+
+
+## 2026-10-24 — scoped real-chart gate and parallel release
+
+Root independently verified known fee1/cumulative net−1 → unknown on actual sell reveal → known on rewind; plan/Text/snapshot return and explicit reload/reopen evidence09–23 is retained. Stage B323/323 checkpoint accepted. [Exact root release](evidence/resume-2026-10-24/ROOT-DEPENDENCY-RELEASE.md) releases Period UI to astra_source and original P14 two-file editor to astra_finance, both actual Astra ultra. Root owns integrated visual/persistence gates; existing reference/element inventories remain authoritative. No formal counter reset or full UI acceptance. Old JSON failure OPEN; F07/P1 last candidate, Bars3/3 paused. Final financial/performance/real-edit/fidelity gates remain open.
+
+
+## 2026-10-24 — 旧留存来源统一修复
+
+HV25-55 邻接 F07 UI06/07/08/10/11、E04/E07/E09/E14/E15/E19/E20/E22 的 RS01–06/08 逐项原规格/图/owner/旅程/证据映射见 [派发](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/retained-summary-diagnosis/ROOT-DISPATCH.md)。astra_finance仅五文件，root全数据流及视觉独立接受；实际44同屏混源FAIL保留。原F07/P1 **2/3 FAIL**，最后候选不重置。兼容Markdown旧缺口独立OPEN，不声称全部导出通过。
+
+
+### Recovery ownership unified implementation (2026-10-24)
+
+Existing Period/header recovery rows retain their original specs, owners and evidence gates. Root approved the independently reviewed two-file ownership correction: [dispatch](evidence/resume-2026-10-24/period-ui-final-design/independent-review/ROOT-RECOVERY-DISPATCH.md). Actual request identity replaces predicted UI version arithmetic; user journey and visual design remain unchanged. Browser global timeout remains FAIL; full Period journey NOT VERIFIED. No acceptance budget resets.
+
+## 2026-10-24 — 摘要编码候选与保留编辑会话复开
+
+|范围 / 原合同|元素 / 参考|owner / 实际模型|旅程与接受证据|状态|
+|---|---|---|---|---|
+|首页真实原子来源完整性、原R14/S1/F/sourceId与金额合同；post-sample-design/DESIGN.md D01–10|无新增UI；沿用既定V2.5首页画板与全局恢复/期间/持仓入口|astra_finance，gpt-6-astra ultra；root独立接受|同步编码与完整字符串UTF-8等价；原golden/全部消费者、48+9与原阈值；最终真实首页不得超时；只改摘要引擎与两处私有grammar消费，不改ownership/金额/IO|设计待批准；真实首页FAIL保留|
+|RS03/04/06；2026-09-19-review-workspace.md81/89–90/99；2026-09-25-chart-first-review-ui.md116–120/182/184–186/200/224|E02/E04/E07/E08/E14/E15/E19/E20/E22，D38；02-chart-workspace/04-holding-stage/05-final-review|astra_integration_design，gpt-6-astra ultra；root整页视觉及持久化接受|W Oct22→A→B→返回必须恢复W双截止/视野/Text；当前53–56实际返回Oct21FAIL。导航/dirty/异步capture须统一会话处理|来源子集PASS；会话FAIL /设计中|
+
+## 2026-10-24 — bounded final-candidate dispatch
+
+[Root exact dispatch](evidence/resume-2026-10-24/ROOT-BOUNDED-SESSION-AND-RECOVERY.md) authorizes the existing recovery two-file and retained-session two-file designs to separate Astra ultra owners, retaining every original spec/reference/element/journey mapping above and in the approved designs. Root owns complete flow/visual acceptance. Each gets one coherent implementation and one selected run; failure freezes, no counter reset. P1/F07 final third candidate; Bars3/3 paused. Finance is diagnostic-only pending CPU attribution, with no shared-digest implementation release. All affected UI gates remain FAIL/NOT VERIFIED pending independent evidence.

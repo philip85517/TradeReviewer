@@ -2,8 +2,11 @@ import { chmod, cp, mkdtemp, mkdir, readdir, readFile, readlink, rm, stat, symli
 import { realpathSync } from "node:fs";
 import { createServer } from "node:http";
 import { hostname, tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
+import { DatabaseSync } from "node:sqlite";
+import { initializeSqlite } from "../db/sqlite-initialization.ts";
 import { describe, expect, test } from "vitest";
 import {
   buildAndStartRelease,
@@ -55,7 +58,7 @@ async function createOperationalSandbox() {
 
 async function runOperationalScript(scriptPath, args, binDir, environment = {}) {
   return runProcess(scriptPath, args, {
-    env: { PATH: `${binDir}:${process.env.PATH}`, LC_ALL: "C", LANG: "C", ...environment },
+    env: { PATH: `${binDir}:${dirname(process.execPath)}:${process.env.PATH}`, LC_ALL: "C", LANG: "C", ...environment },
   });
 }
 
@@ -78,8 +81,13 @@ async function runProcess(command, args, options = {}) {
   });
 }
 
+function expectOnlyLiveSqliteFiles(entries) {
+  expect(entries).toContain("tradereview.sqlite");
+  expect(entries.filter((name) => !/^tradereview\.sqlite(?:-wal|-shm)?$/.test(name))).toEqual([]);
+}
+
 const fakeDockerSource = `#!/usr/bin/env node
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -92,7 +100,7 @@ const operation = args[operationIndex];
 const envFileIndex = args.indexOf("--env-file");
 const envText = envFileIndex >= 0 ? readFileSync(args[envFileIndex + 1], "utf8") : "";
 const configuredSqlite = envText.match(/^\\s*SQLITE_HOST_DIR\\s*=\\s*(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, "");
-const mappings = [[configuredSqlite || join(deployRoot, "data", "sqlite"), "/var/lib/tradereview"]];
+const mappings = [[${JSON.stringify(root)}, "/app"], [configuredSqlite || join(deployRoot, "data", "sqlite"), "/var/lib/tradereview"]];
 
 for (let index = 0; index < args.length; index += 1) {
   if (args[index] !== "--volume") continue;
@@ -108,11 +116,22 @@ function translate(value) {
   return translated;
 }
 
+appendFileSync(join(deployRoot, ".fake-operations"), JSON.stringify({ operation, args: args.slice(operationIndex + 1) }) + "\\n");
+
 if (operation === "run") {
+  const nodeIndex = args.indexOf("node", operationIndex);
+  if (nodeIndex >= 0) {
+    if (process.env.FAKE_ACTIVATE_FAILURE === "1") { process.stderr.write("synthetic epoch failure\\n"); process.exit(44); }
+    const result = spawnSync(process.execPath, args.slice(nodeIndex + 1).map(translate), { encoding: "utf8" });
+    process.stdout.write(result.stdout || ""); process.stderr.write(result.stderr || ""); process.exit(result.status ?? 1);
+  }
   const sqliteIndex = args.indexOf("sqlite3", operationIndex);
   const databasePath = translate(args[sqliteIndex + 1]);
   const sqliteCommand = translate(args[sqliteIndex + 2]);
   const backupMatch = sqliteCommand.match(/^\\.backup '([^']+)'$/);
+  if (process.env.FAKE_BACKUP_FAILURE === "1" && backupMatch) {
+    process.stderr.write("synthetic backup failure\\n"); process.exit(45);
+  }
   if (process.env.FAKE_CORRUPT_BACKUP === "1" && backupMatch) {
     mkdirSync(dirname(backupMatch[1]), { recursive: true });
     writeFileSync(backupMatch[1], "corrupt sqlite sentinel");
@@ -127,7 +146,8 @@ if (operation === "run") {
     process.stderr.write("synthetic restore failure\\n");
     process.exit(43);
   }
-  const result = spawnSync("/usr/bin/sqlite3", [databasePath, sqliteCommand], { encoding: "utf8" });
+  // Preserve a crashed writer's real WAL for rename-fault recovery fixtures.
+  const result = spawnSync("/usr/bin/sqlite3", [...(backupMatch && process.env.FAKE_PRESERVE_ORIGINAL_WAL === "1" ? ["-readonly"] : []), databasePath, sqliteCommand], { encoding: "utf8" });
   process.stdout.write(result.stdout || "");
   process.stderr.write(result.stderr || "");
   process.exit(result.status ?? 1);
@@ -152,6 +172,13 @@ if (operation === "logs") {
 
 if (operation === "stop") {
   writeFileSync(join(deployRoot, ".fake-compose-state"), "stopped\\n");
+  const callCountPath = join(deployRoot, ".fake-compose-stop-call-count");
+  const callCount = (existsSync(callCountPath) ? Number(readFileSync(callCountPath, "utf8")) : 0) + 1;
+  writeFileSync(callCountPath, String(callCount));
+  if (Number(process.env.FAKE_STOP_FAIL_ON_CALL) === callCount) { process.stderr.write("synthetic recovery stop failure\\n"); process.exit(47); }
+  const failureCountPath = join(deployRoot, ".fake-compose-stop-failure-count");
+  const failureCount = existsSync(failureCountPath) ? Number(readFileSync(failureCountPath, "utf8")) : 0;
+  if (failureCount > 0) { writeFileSync(failureCountPath, String(failureCount - 1)); process.stderr.write("synthetic partial stop failure\\n"); process.exit(46); }
   process.exit(0);
 }
 
@@ -218,6 +245,96 @@ async function startHealthServer() {
     port: address.port,
     close: () => new Promise((resolveClose, rejectClose) => server.close((error) => (error ? rejectClose(error) : resolveClose()))),
   };
+}
+
+async function leaveUncheckpointedWal(fixture) {
+  const writer = spawn(process.execPath, ["-e", `
+    const { DatabaseSync } = require("node:sqlite");
+    const database = new DatabaseSync(process.argv[1]);
+    database.exec("PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; PRAGMA wal_checkpoint(TRUNCATE); INSERT INTO state VALUES('uncheckpointed');");
+    process.stdout.write("ready"); setInterval(() => {}, 1000);
+  `, fixture.databasePath], { stdio: ["ignore", "pipe", "pipe"] });
+  try {
+    await new Promise((resolveReady, rejectReady) => {
+      writer.stdout.once("data", resolveReady); writer.once("error", rejectReady);
+      writer.once("exit", () => rejectReady(new Error("WAL fixture writer exited before ready")));
+    });
+  } finally {
+    const exited = new Promise((resolveExit) => writer.once("close", resolveExit));
+    writer.kill("SIGKILL"); await exited;
+  }
+  const paths = [fixture.databasePath, `${fixture.databasePath}-wal`, `${fixture.databasePath}-shm`];
+  const bytes = await Promise.all(paths.map((path) => readFile(path)));
+  // A standalone main-file copy must lack the row: the test depends on the real WAL.
+  const mainOnlyPath = join(fixture.sandbox, "original-main-only.sqlite");
+  await writeFile(mainOnlyPath, bytes[0]);
+  const mainOnly = new DatabaseSync(mainOnlyPath, { readOnly: true });
+  try { expect(mainOnly.prepare("SELECT value FROM state").all().map((row) => row.value)).toEqual(["before"]); }
+  finally { mainOnly.close(); }
+  return { paths, bytes };
+}
+
+async function installRestoreFaults(fixture) {
+  await writeFile(join(fixture.binDir, "restore-holder.mjs"), `
+import { openSync, writeFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
+const [path, ready, kind] = process.argv.slice(2);
+let database;
+if (kind === "sqlite") {
+  database = new DatabaseSync(path);
+  database.exec("PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; INSERT INTO state VALUES('external-writer');");
+} else openSync(path, "r+");
+writeFileSync(ready, String(process.pid));
+setInterval(() => {}, 1000);
+`);
+  await writeFile(join(fixture.binDir, "mv"), `#!/usr/bin/env node
+import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { basename, join, dirname } from "node:path";
+import { createHash } from "node:crypto";
+const args = process.argv.slice(2), source = args.at(-2), destination = args.at(-1);
+const live = join(realpathSync(dirname(process.env.RESTORE_FAULT_LIVE)), basename(process.env.RESTORE_FAULT_LIVE)), home = process.env.RESTORE_FAULT_HOME;
+function hold(path, kind) {
+  const ready = join(home, ".external-holder-pid");
+  const child = spawn(process.execPath, [join(dirname(process.argv[1]), "restore-holder.mjs"), path, ready, kind], { detached: true, stdio: "ignore" }); child.unref();
+  const deadline = Date.now() + 5000;
+  while (!existsSync(ready) && Date.now() < deadline) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10);
+  if (!existsSync(ready)) throw new Error("External SQLite holder did not become ready");
+}
+const isMainQuarantine = source === live && /\\.tradereview-pre-restore-\\d+\\.sqlite$/.test(destination);
+const point = process.env.RESTORE_HOLD_POINT;
+if (isMainQuarantine) {
+  const snapshot = Object.fromEntries([live, live + "-wal", live + "-shm"].filter(existsSync).map((path) => [path, createHash("sha256").update(readFileSync(path)).digest("hex")]));
+  writeFileSync(join(home, ".isolation-path-snapshot.json"), JSON.stringify(snapshot));
+}
+if (isMainQuarantine && point?.startsWith("original-")) {
+  const suffix = point.slice("original-".length);
+  hold(live + (suffix === "main" ? "" : "-" + suffix), "file");
+}
+const wanted = process.env.RESTORE_FAULT_SUFFIX;
+if (wanted && source === live + (wanted === "main" ? "" : wanted) && /\\.tradereview-pre-restore-/.test(destination)) {
+  writeFileSync(join(home, ".rename-fault-seen"), wanted);
+  if (process.env.RESTORE_FAULT_MODE === "fail-before") { process.stderr.write("injected sidecar rename failure\\n"); process.exit(49); }
+  if (process.env.RESTORE_FAULT_MODE === "term-before") { process.kill(process.ppid, "SIGTERM"); process.exit(0); }
+}
+const result = spawnSync("/bin/mv", args, { stdio: "inherit" });
+if (result.status !== 0) process.exit(result.status ?? 1);
+if (wanted && source === live + (wanted === "main" ? "" : wanted) && /\\.tradereview-pre-restore-/.test(destination) && process.env.RESTORE_FAULT_MODE === "term-after") {
+  process.kill(process.ppid, "SIGTERM"); process.exit(0);
+}
+if (destination === live && /\\.sqlite\\.partial$/.test(source)) {
+  if (point === "candidate-main") hold(live, "sqlite");
+  const names = [live, live + "-wal", live + "-shm", ...["", "-wal", "-shm"].map((suffix) => join(dirname(live), ".tradereview-pre-restore-" + process.ppid + ".sqlite" + suffix))];
+  const snapshot = Object.fromEntries(names.filter(existsSync).map((path) => [path, { inode: statSync(path).ino, digest: createHash("sha256").update(readFileSync(path)).digest("hex") }]));
+  writeFileSync(join(home, ".rollback-path-snapshot.json"), JSON.stringify(snapshot));
+}
+`);
+  await chmod(join(fixture.binDir, "mv"), 0o755);
+}
+
+async function stopExternalRestoreHolder(fixture) {
+  try { process.kill(Number(await readFile(join(fixture.sandbox, ".external-holder-pid"), "utf8")), "SIGKILL"); }
+  catch (error) { if (!["ENOENT", "ESRCH"].includes(error.code)) throw error; }
 }
 
 async function runDeploymentCli(args) {
@@ -545,8 +662,10 @@ describe("SQLite operations", () => {
   test("failed restore keeps the original database and returns the app to health", async () => {
     const fixture = await createSqliteOperationalSandbox();
     const restorePath = join(fixture.sandbox, "restore.sqlite");
+    const healthServer = await startHealthServer();
 
     try {
+      await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
       const initialized = await runProcess("/usr/bin/sqlite3", [
         restorePath,
         "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('after');",
@@ -567,6 +686,7 @@ describe("SQLite operations", () => {
       await expect(readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).resolves.toBe("running\n");
       expect(await readdir(join(fixture.targetDir, "data", "sqlite"))).toEqual(["tradereview.sqlite"]);
     } finally {
+      await healthServer.close();
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
   }, 15_000);
@@ -587,6 +707,9 @@ describe("SQLite operations", () => {
       ]);
       expect(initialized.exitCode).toBe(0);
 
+      const candidate = new DatabaseSync(restorePath); initializeSqlite(candidate);
+      candidate.exec("UPDATE trade_book_state SET epoch='restored-old-epoch',sequence=7"); candidate.close();
+      const sourceBytes = await readFile(restorePath);
       const result = await runOperationalScript(
         join(fixture.targetDir, "ops", "restore-db.sh"),
         [restorePath],
@@ -594,10 +717,23 @@ describe("SQLite operations", () => {
       );
       const liveValue = await runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"]);
 
-      expect(result).toMatchObject({ exitCode: 0 });
+      expect(result.exitCode, result.stderr).toBe(0);
+      expect(await readFile(restorePath)).toEqual(sourceBytes);
+      const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+      const stopIndex = operations.findIndex((op) => op.operation === "stop");
+      const backupIndex = operations.findIndex((op) => op.args.some((arg) => arg.startsWith(".backup")));
+      const restoreIndex = operations.findIndex((op) => op.args.some((arg) => arg.startsWith(".restore")));
+      const activateIndex = operations.findIndex((op) => op.args.some((arg) => arg.endsWith("activate-database-candidate.mjs")));
+      const startIndex = operations.findIndex((op) => op.operation === "up");
+      expect(stopIndex).toBeLessThan(backupIndex); expect(backupIndex).toBeLessThan(restoreIndex);
+      expect(restoreIndex).toBeLessThan(activateIndex); expect(activateIndex).toBeLessThan(startIndex);
       expect(liveValue).toMatchObject({ exitCode: 0, stdout: "after\n" });
+      const activeEpoch = await runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT epoch FROM trade_book_state;"]);
+      expect(activeEpoch.exitCode).toBe(0);
+      expect(activeEpoch.stdout.trim()).not.toBe("restored-old-epoch");
+      expect(activeEpoch.stdout.trim()).not.toBe("");
       await expect(readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).resolves.toBe("running\n");
-      expect(await readdir(join(fixture.targetDir, "data", "sqlite"))).toEqual(["tradereview.sqlite"]);
+      expectOnlyLiveSqliteFiles(await readdir(join(fixture.targetDir, "data", "sqlite")));
     } finally {
       await healthServer.close();
       await rm(fixture.sandbox, { recursive: true, force: true });
@@ -640,6 +776,175 @@ describe("SQLite operations", () => {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
   }, 30_000);
+
+  test.each(["epoch", "future", "state"])("%s activation failure never starts the candidate and restarts the intact original", async (failure) => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "rejected-restore.sqlite");
+    const healthServer = await startHealthServer();
+    try {
+      await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
+      const original = new DatabaseSync(fixture.databasePath); initializeSqlite(original);
+      const originalVersion = original.prepare("SELECT database_id,epoch,sequence FROM trade_book_state").get(); original.close();
+      const input = new DatabaseSync(restorePath); initializeSqlite(input);
+      input.exec("CREATE TABLE state(value TEXT); INSERT INTO state VALUES('must-not-start')");
+      if (failure === "future") input.exec("INSERT INTO schema_migrations(version,name,checksum) VALUES(9999,'future','future')");
+      if (failure === "state") input.exec("DELETE FROM trade_book_state"); input.close();
+      const sourceBytes = await readFile(restorePath);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, failure === "epoch" ? { FAKE_ACTIVATE_FAILURE: "1" } : {});
+      expect(result.exitCode).not.toBe(0); expect(result.stderr).toMatch(/epoch failure|unsupported|version state/);
+      const live = new DatabaseSync(fixture.databasePath, { readOnly: true });
+      expect(live.prepare("SELECT value FROM state").get().value).toBe("before");
+      expect(live.prepare("SELECT database_id,epoch,sequence FROM trade_book_state").get()).toEqual(originalVersion); live.close();
+      expect(await readFile(restorePath)).toEqual(sourceBytes);
+      const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+      expect(operations.filter((operation) => operation.operation === "up")).toHaveLength(1);
+      expectOnlyLiveSqliteFiles(await readdir(join(fixture.targetDir, "data", "sqlite")));
+      expect(await readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).toBe("running\n");
+    } finally { await healthServer.close(); await rm(fixture.sandbox, { recursive: true, force: true }); }
+  }, 30_000);
+
+  test("a held restore maintenance lock blocks stopping or touching the live database", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-locked.sqlite");
+    try {
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT); INSERT INTO state VALUES('candidate')"]);
+      const lockPath = join(dirname(fixture.databasePath), ".tradereview-restore.lock"); await mkdir(lockPath);
+      const before = await readFile(fixture.databasePath);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      expect(result.exitCode).not.toBe(0); expect(result.stderr).toMatch(/maintenance lock/);
+      expect(await readFile(fixture.databasePath)).toEqual(before);
+      expect((await readFile(join(fixture.targetDir, ".fake-operations"), "utf8"))).not.toContain('"operation":"stop"');
+      expect((await stat(lockPath)).isDirectory()).toBe(true);
+    } finally { await rm(fixture.sandbox, { recursive: true, force: true }); }
+  }, 15_000);
+
+  test.each(["stop", "backup"])("%s failure after maintenance begins recovers the original and releases the lock", async (failure) => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-early-failure.sqlite"); const healthServer = await startHealthServer();
+    try {
+      await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT); INSERT INTO state VALUES('candidate')"]);
+      if (failure === "stop") await writeFile(join(fixture.targetDir, ".fake-compose-stop-failure-count"), "1");
+      const original = await readFile(fixture.databasePath);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, failure === "backup" ? { FAKE_BACKUP_FAILURE: "1" } : {});
+      expect(result.exitCode).not.toBe(0); expect(result.stderr).toContain(`synthetic ${failure === "stop" ? "partial stop" : "backup"} failure`);
+      expect(await readFile(fixture.databasePath)).toEqual(original);
+      expect(await readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).toBe("running\n");
+      expect(await readdir(dirname(fixture.databasePath))).toEqual(["tradereview.sqlite"]);
+      const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+      expect(operations.filter((operation) => operation.operation === "up")).toHaveLength(1);
+      expect(operations.some((operation) => operation.args.some((argument) => argument.endsWith("activate-database-candidate.mjs")))).toBe(false);
+    } finally { await healthServer.close(); await rm(fixture.sandbox, { recursive: true, force: true }); }
+  }, 30_000);
+
+  test("failed recovery stop preserves both files and the lock without replacing a possibly open candidate", async () => {
+    const fixture = await createSqliteOperationalSandbox(); const healthServer = await startHealthServer();
+    const restorePath = join(fixture.sandbox, "restore-recovery-stop.sqlite");
+    try {
+      await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT); INSERT INTO state VALUES('candidate')"]);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, { FAKE_UP_FAIL: "1", FAKE_STOP_FAIL_ON_CALL: "2" });
+      expect(result.exitCode).toBe(70); expect(result.stderr).toContain("recovery was incomplete");
+      expect((await runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state"])).stdout).toBe("candidate\n");
+      const entries = await readdir(dirname(fixture.databasePath));
+      const original = entries.find((entry) => /^\.tradereview-pre-restore-\d+\.sqlite$/.test(entry)); expect(original).toBeDefined();
+      expect((await runProcess("/usr/bin/sqlite3", [join(dirname(fixture.databasePath), original), "SELECT value FROM state"])).stdout).toBe("before\n");
+      expect(entries).toContain(".tradereview-restore.lock");
+      const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+      expect(operations.filter((operation) => operation.operation === "up")).toHaveLength(1);
+    } finally { await healthServer.close(); await rm(fixture.sandbox, { recursive: true, force: true }); }
+  }, 30_000);
+
+  test.each([
+    ["-wal", "fail-before"], ["-wal", "term-before"], ["-wal", "term-after"],
+    ["-shm", "fail-before"], ["-shm", "term-before"], ["-shm", "term-after"],
+    ["main", "term-before"], ["main", "term-after"],
+  ])("original uncheckpointed WAL survives %s isolation %s", async (suffix, mode) => {
+    const fixture = await createSqliteOperationalSandbox(); const healthServer = await startHealthServer();
+    const restorePath = join(fixture.sandbox, "restore-sidecar-fault.sqlite");
+    try {
+      await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT); INSERT INTO state VALUES('candidate')"]);
+      const original = await leaveUncheckpointedWal(fixture); await installRestoreFaults(fixture);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, {
+        FAKE_PRESERVE_ORIGINAL_WAL: "1", RESTORE_FAULT_LIVE: fixture.databasePath, RESTORE_FAULT_HOME: fixture.sandbox,
+        RESTORE_FAULT_SUFFIX: suffix, RESTORE_FAULT_MODE: mode,
+      });
+      expect(await readFile(join(fixture.sandbox, ".rename-fault-seen"), "utf8")).toBe(suffix);
+      expect(result.exitCode, result.stderr).toBe(mode === "fail-before" ? 49 : 143);
+      const isolation = JSON.parse(await readFile(join(fixture.sandbox, ".isolation-path-snapshot.json"), "utf8"));
+      for (let index = 0; index < original.paths.length; index += 1) {
+        const bytes = await readFile(original.paths[index]);
+        // Backup readers may rebuild SHM; preserve the exact bytes present at isolation.
+        if (index < 2) expect(bytes, original.paths[index]).toEqual(original.bytes[index]);
+        const physical = join(realpathSync(dirname(original.paths[index])), basename(original.paths[index]));
+        expect(createHash("sha256").update(bytes).digest("hex"), original.paths[index]).toBe(isolation[physical]);
+      }
+      const database = new DatabaseSync(fixture.databasePath, { readOnly: true });
+      try { expect(database.prepare("SELECT value FROM state").all().map((row) => row.value)).toEqual(["before", "uncheckpointed"]); }
+      finally { database.close(); }
+      expectOnlyLiveSqliteFiles(await readdir(dirname(fixture.databasePath)));
+      const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+      expect(operations.filter((operation) => operation.operation === "up")).toHaveLength(1);
+      expect(await readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).toBe("running\n");
+    } finally { await healthServer.close(); await rm(fixture.sandbox, { recursive: true, force: true }); }
+  }, 30_000);
+
+  test.each(["original-main", "original-wal", "original-shm", "candidate-main", "checker-error", "checker-warning", "cleanup-error"])(
+    "rollback preserves every inode and lock when %s prevents proving consumers stopped", async (point) => {
+      const fixture = await createSqliteOperationalSandbox(); const healthServer = await startHealthServer();
+      const restorePath = join(fixture.sandbox, "restore-held-rollback.sqlite");
+      try {
+        await writeFile(join(fixture.targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nBACKUP_RETENTION_DAYS=30\n`);
+        if (point !== "cleanup-error") await writeFile(join(fixture.targetDir, ".fake-compose-unhealthy-count"), "1");
+        await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT); INSERT INTO state VALUES('candidate')"]);
+        await leaveUncheckpointedWal(fixture); await installRestoreFaults(fixture);
+        if (point === "cleanup-error") {
+          await writeFile(join(fixture.binDir, "rm"), `#!/usr/bin/env node
+import { existsSync, writeFileSync } from "node:fs"; import { spawnSync } from "node:child_process";
+const args = process.argv.slice(2), marker = ${JSON.stringify(join(fixture.sandbox, ".cleanup-fault-seen"))};
+if (!existsSync(marker) && args.some((arg) => /\\.tradereview-pre-restore-\\d+\\.sqlite$/.test(arg))) {
+  writeFileSync(marker, "cleanup"); process.stderr.write("injected original cleanup failure\\n"); process.exit(49);
+}
+const result = spawnSync("/bin/rm", args, { stdio: "inherit" }); process.exit(result.status ?? 1);
+`);
+          await chmod(join(fixture.binDir, "rm"), 0o755);
+        }
+        if (point.startsWith("checker-")) {
+          const lsof = (await runProcess("/bin/sh", ["-c", "command -v lsof"])).stdout.trim();
+          expect(lsof).not.toBe("");
+          await writeFile(join(fixture.binDir, "lsof"), `#!/usr/bin/env node
+import { readFileSync } from "node:fs"; import { spawnSync } from "node:child_process";
+if (Number(readFileSync(${JSON.stringify(join(fixture.targetDir, ".fake-compose-stop-call-count"))}, "utf8")) >= 2) {
+  ${point === "checker-error" ? "process.exit(2);" : 'process.stderr.write("injected recovery checker warning\\n"); process.exit(0);'}
+}
+const result = spawnSync(${JSON.stringify(lsof)}, process.argv.slice(2), { stdio: "inherit" }); process.exit(result.status ?? 1);
+`);
+          await chmod(join(fixture.binDir, "lsof"), 0o755);
+        }
+        const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, {
+          FAKE_PRESERVE_ORIGINAL_WAL: "1", RESTORE_FAULT_LIVE: fixture.databasePath, RESTORE_FAULT_HOME: fixture.sandbox,
+          RESTORE_HOLD_POINT: point === "cleanup-error" ? "original-wal" : point,
+        });
+        if (point === "cleanup-error") expect(await readFile(join(fixture.sandbox, ".cleanup-fault-seen"), "utf8")).toBe("cleanup");
+        const snapshot = JSON.parse(await readFile(join(fixture.sandbox, ".rollback-path-snapshot.json"), "utf8"));
+        expect(Object.keys(snapshot).length).toBeGreaterThanOrEqual(4);
+        if (!point.startsWith("checker-")) expect(Number(await readFile(join(fixture.sandbox, ".external-holder-pid"), "utf8"))).toBeGreaterThan(0);
+        for (const [path, before] of Object.entries(snapshot)) {
+          expect((await stat(path)).ino, path).toBe(before.inode);
+          expect(createHash("sha256").update(await readFile(path)).digest("hex"), path).toBe(before.digest);
+        }
+        expect(result.exitCode, result.stderr).toBe(70);
+        expect(result.stderr).toMatch(/still in use|consumers|lsof/i);
+        expect((await stat(join(dirname(fixture.databasePath), ".tradereview-restore.lock"))).isDirectory()).toBe(true);
+        const operations = (await readFile(join(fixture.targetDir, ".fake-operations"), "utf8")).trim().split("\n").map(JSON.parse);
+        expect(operations.filter((operation) => operation.operation === "up")).toHaveLength(1);
+        expect(await readFile(join(fixture.targetDir, ".fake-compose-state"), "utf8")).toBe("stopped\n");
+      } finally {
+        await stopExternalRestoreHolder(fixture); await healthServer.close(); await rm(fixture.sandbox, { recursive: true, force: true });
+      }
+    }, 30_000,
+  );
 
   test("provide safe, consistent SQLite operational scripts", async () => {
     const [healthcheck, backup, restore, status] = await Promise.all([

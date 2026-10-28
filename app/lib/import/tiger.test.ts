@@ -26,6 +26,45 @@ const options = {
 };
 
 describe("Tiger fee reconciliation", () => {
+  it("retains a directionless legacy execution when quantity, price and time are all unreadable", () => {
+    const pages = legacyPages();
+    for (const item of pages[0].items) if (item.y === 250 && [370, 440, 1010].includes(item.x)) item.text = "bad";
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(0);
+    expect(result.blocked).toBe(true);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+  });
+
+  it.each([false, true])("ignores an explicit total row with an execution direction: dated=%j", dated => {
+    const pages = legacyPages();
+    pages[0].items.push(legacyItem("买入合计", 290, 290));
+    if (dated) pages[0].items.push(legacyItem("2020-12-08 10:20:30, US/Eastern", 1010, 290));
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.blocked).toBe(false);
+    expect(result.exclusions).toEqual([]);
+    expect(result.diagnostics).toEqual([]);
+  });
+
+  it("keeps multiline identity and date fragments together when a numeric row is unreadable", () => {
+    const pages = structuredClone(TIGER_TRADITIONAL_PAGES);
+    for (const item of pages[0].items) if (item.y === 200 && (item.x === 416 || item.x === 460)) item.text = "bad";
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(2);
+    expect(result.blocked).toBe(true);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+  });
+
+  it.each(["bad", ""])("validates an execution with quantity and price %j instead of dropping its anchor", value => {
+    const pages = structuredClone(TIGER_SHORT_PAGES);
+    for (const item of pages[0].items) if (item.y === 142 && (item.x === 342 || item.x === 420)) item.text = value;
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.blocked).toBe(true);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ severity: "error", code: "invalid-tiger-trade-row" }));
+  });
+
   const subtotal = (amount: string, currency = "USD", y = 340) =>
     legacyRow(y, ["合计", "", "", "", "", "", "", "", amount, "", "", "", "", currency]);
 

@@ -113,4 +113,34 @@ describe("homepage attachment group qualification", () => {
     const conflict = qualifyHomepageAttachmentGroups({ ...raw, current: { boundary: { asOf }, instruments: [...raw.current!.instruments, { identity: identity("A", "X"), evidence: { current: { quantity: "0", reasons: [] } } }] }, attachments: { ...empty, openOnly: true } });
     expect(conflict.groups[0].open.value).toBeNull(); expect(conflict.eligibleGroups).toEqual([]);
   });
+
+  it.each(["invalid", "-1", "NaN"])("qualifies original lineage without interpreting the raw fee %s", fee => {
+    const original = entries([fill("A", "X"), fill("B", "X")]);
+    const execution = original[0].executions[0]; execution.fee = fee;
+    execution.source.settlement = { currency: "HKD", quantity: "1", grossAmount: "100", netAmount: "invalid", fees: { commission: "invalid" } };
+    const before = structuredClone(original);
+    const result = qualifyHomepageAttachmentGroups({ ...input(original, [["A", "X", "1"], ["B", "X", "1"]]), scope: { ...scope, accounts: ["A"] } });
+    expect(result.eligibleGroups.map(group => group.key)).toEqual(['["A","X","live",null]']);
+    expect(result.executions).toEqual([execution]); expect(result.executions[0]).toBe(execution);
+    expect(result.episodes).toEqual(original[0].episodes.filter(item => item.episode.accountId === "A"));
+    expect(result.episodes[0]).toBe(original[0].episodes.find(item => item.episode.accountId === "A"));
+    expect(result.eligibleGroups[0].sources[0].entry).toBe(original[0]);
+    expect(original).toEqual(before);
+    expect(result).not.toHaveProperty("entries");
+  });
+
+  it("keeps reversal originals and existing episode parts when fee allocation cannot be recomputed", () => {
+    const buy = { ...fill("A", "X"), quantity: "2" };
+    const reverse = { ...fill("A", "X", "sell", "2026-10-02T01:00:00Z"), quantity: "5", fee: "5" };
+    reverse.source.positionEffect = "open-short";
+    const original = entries([buy, reverse]); reverse.fee = "invalid";
+    const parts = original[0].episodes.flatMap(item => item.episode.executions);
+    const before = structuredClone(original);
+    const result = qualifyHomepageAttachmentGroups({ ...input(original, [["A", "X", "-3"]]), attachments: { ...empty, openOnly: true } });
+    expect(result.executions).toEqual([buy, reverse]); expect(result.executions[1]).toBe(reverse);
+    expect(result.episodes).toEqual(original[0].episodes);
+    expect(result.episodes.flatMap(item => item.episode.executions)).toEqual(parts);
+    expect(result.eligibleGroups[0].open).toEqual({ value: true, reasons: [] });
+    expect(original).toEqual(before);
+  });
 });

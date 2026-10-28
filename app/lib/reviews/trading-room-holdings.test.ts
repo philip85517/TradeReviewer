@@ -141,7 +141,7 @@ function snapshot(overrides: Partial<PositionLedgerSnapshot> = {}): PositionLedg
 describe("trading room holdings model", () => {
   it("keeps an open position from before the performance window", () => {
     const base = instrument();
-    const entry = openEntry(base, "2020-01-02T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2020-01-02T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
@@ -159,8 +159,8 @@ describe("trading room holdings model", () => {
 
   it("keeps same instrument positions separate by account and sorts latest activity first", () => {
     const base = instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" });
-    const older = openEntry(base, "2026-09-01T01:00:00.000Z", "account-1");
-    const newer = openEntry(base, "2026-09-18T01:00:00.000Z", "account-2");
+    const older = liveOpenEntry(base, "2026-09-01T01:00:00.000Z", "account-1");
+    const newer = liveOpenEntry(base, "2026-09-18T01:00:00.000Z", "account-2");
     const model = buildTradingRoomHoldings([older, newer], {
       scope: scope(),
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
@@ -176,7 +176,7 @@ describe("trading room holdings model", () => {
 
   it("keeps an ETF in its real market group and applies the shared scope category", () => {
     const etf = instrument({ id: "US:SPY", symbol: "SPY", name: "标普ETF" });
-    const entry = openEntry(etf, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(etf, "2026-09-10T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope({ assetCategory: "etf" }),
       instrumentMetadata: new Map([[etf.id, metadataFor(etf, "etf")]]),
@@ -188,7 +188,7 @@ describe("trading room holdings model", () => {
 
   it("uses only unrealized PnL from the current quote and never open net PnL", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z", "account-1", "999");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z", "account-1", "999");
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
@@ -204,7 +204,7 @@ describe("trading room holdings model", () => {
 
   it("refreshes an explicit position snapshot with the current quote", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
@@ -219,7 +219,7 @@ describe("trading room holdings model", () => {
 
   it("keeps a short holding direction when deriving the ledger snapshot", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episode = entry.episodes[0].episode;
     const fill = episode.executions[0];
     fill.side = "sell";
@@ -247,7 +247,7 @@ describe("trading room holdings model", () => {
 
   it("keeps a trusted negative opening position as a short without inventing its cost", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episode = entry.episodes[0].episode;
     const fill = episode.executions[0];
     fill.side = "buy";
@@ -278,7 +278,7 @@ describe("trading room holdings model", () => {
 
   it("does not let a historical open-short marker override a currently non-negative position", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episode = entry.episodes[0].episode;
     const opening = episode.executions[0];
     opening.side = "sell";
@@ -308,7 +308,7 @@ describe("trading room holdings model", () => {
 
   it("does not treat a negative net difference as a legal short when position evidence is absent", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episode = entry.episodes[0].episode;
     const fill = episode.executions[0];
     fill.side = "sell";
@@ -346,7 +346,7 @@ describe("trading room holdings model", () => {
 
   it("does not treat an inferred open-short marker as explicit evidence", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const episode = entry.episodes[0].episode;
     const fill = episode.executions[0];
     fill.side = "sell";
@@ -378,7 +378,7 @@ describe("trading room holdings model", () => {
   it("keeps holding evidence and quote failure reasons distinct", () => {
     const base = instrument();
     const build = (quoteValue: TradingRoomQuote | undefined, overrides: Partial<PositionLedgerSnapshot> = {}) => {
-      const value = openEntry(base, "2026-09-10T01:00:00.000Z");
+      const value = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
       const episodeId = value.episodes[0].episode.id;
       return buildTradingRoomHoldings([value], {
         scope: scope(),
@@ -397,9 +397,9 @@ describe("trading room holdings model", () => {
 
   it("shows explicit unavailable states for missing or stale quotes and uncertain inventory", () => {
     const base = instrument();
-    const missingEntry = openEntry(base, "2026-09-10T01:00:00.000Z", "account-1");
-    const staleEntry = openEntry(base, "2026-09-11T01:00:00.000Z", "account-2");
-    const uncertainEntry = openEntry(base, "2026-09-12T01:00:00.000Z", "account-3");
+    const missingEntry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z", "account-1");
+    const staleEntry = liveOpenEntry(base, "2026-09-11T01:00:00.000Z", "account-2");
+    const uncertainEntry = liveOpenEntry(base, "2026-09-12T01:00:00.000Z", "account-3");
     const model = buildTradingRoomHoldings([missingEntry, staleEntry, uncertainEntry], {
       scope: scope(),
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
@@ -420,7 +420,7 @@ describe("trading room holdings model", () => {
 
   it("supports candle projections and marks an old latest close stale", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
@@ -472,7 +472,7 @@ describe("trading room holdings model", () => {
 
   it("blocks PnL when the ledger marks cost or quantity unknown even without accuracy", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
       quotesByInstrument: { [base.id]: quote() },
@@ -491,7 +491,7 @@ describe("trading room holdings model", () => {
 
   it("rejects mismatched, non-positive, future, and pre-trade quotes for PnL", () => {
     const base = instrument({ currency: "USD" });
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const build = (value: Partial<TradingRoomQuote>) => buildTradingRoomHoldings([entry], {
       scope: scope(),
       asOf: "2026-09-19T00:00:00.000Z",
@@ -508,7 +508,7 @@ describe("trading room holdings model", () => {
 
   it("falls through invalid source dates before applying the market calendar fallback", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     entry.episodes[0].episode.executions[0].source.tradingDate = "not-a-date";
     entry.episodes[0].episode.executions[0].source.marketCalendarDate = "2026-09-01";
     const model = buildTradingRoomHoldings([entry], {
@@ -524,7 +524,7 @@ describe("trading room holdings model", () => {
 
   it("uses the source settlement currency when validating a quote", () => {
     const base = instrument({ currency: "USD" });
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     entry.episodes[0].episode.executions[0].source.settlement = {
       currency: "CNY",
       quantity: "2",
@@ -543,7 +543,7 @@ describe("trading room holdings model", () => {
 
   it("uses the Shanghai local date for an as-of instant near UTC midnight", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
       asOf: "2026-09-18T17:00:00.000Z",
@@ -557,7 +557,7 @@ describe("trading room holdings model", () => {
 
   it("preserves episode accuracy when persisted evidence is not repeated on executions", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     entry.episodes[0].episode.accuracy = { pnl: "unavailable", reasons: ["unknown-cost"] };
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
@@ -570,7 +570,7 @@ describe("trading room holdings model", () => {
 
   it("replays persisted initial inventory evidence instead of treating a later sell as a fresh short", () => {
     const base = instrument();
-    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const entry = liveOpenEntry(base, "2026-09-10T01:00:00.000Z");
     entry.episodes[0].episode.initialPosition = {
       accountId: "account-1",
       market: "US",
@@ -607,7 +607,7 @@ describe("statement-only current holdings", () => {
   const options = { scope: scope(), asOf: "2026-09-19", quotesByInstrument: { "US:TEST": quote() } };
   it("replays a zero-cash bonus share into quantity and average cost", () => {
     const base = instrument({ id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" });
-    const value = openEntry(base, "2026-05-20T02:00:00Z");
+    const value = liveOpenEntry(base, "2026-05-20T02:00:00Z");
     const fill = value.episodes[0].episode.executions[0];
     fill.quantity = "10000";
     fill.price = "2.5";
@@ -707,3 +707,26 @@ describe("statement-only current holdings", () => {
   });
 
 });
+
+
+describe("F07 malformed fee gross holdings", () => {
+  it("retains real cost and gross quote movement with malformed original fees", () => {
+    const entry = openEntry(instrument(), "2026-09-17T14:30:00Z");
+    entry.executions[0].fee = "invalid";
+    entry.episodes[0].episode.accuracy = { pnl: "unavailable", reasons: ["fees-invalid"] };
+    const result = buildTradingRoomHoldings([entry], { scope: scope({ assetCategory: "all" }), asOf: "2026-09-19T12:00:00Z", quotesByInstrument: { "US:TEST": quote() } });
+    expect(result.rows[0]).toMatchObject({ quantity: "2", averageCost: "10", unrealizedPnl: "4" });
+  });
+});
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveOpenEntry(...args: Parameters<typeof openEntry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(openEntry(...args));
+}

@@ -21,6 +21,27 @@ import {
 const REVIEW_V1_PREFIX = "trade-reviewer:review:v1:";
 const REVIEW_V2_PREFIX = "trade-reviewer:review:v2:";
 
+export type BrowserReviewWriteResolution = {
+  ready: boolean;
+  conflicts: readonly BrowserReviewConflict[];
+};
+
+/** Public write seam shared by automatic, retry and completion saves. */
+export function createBrowserReviewStateWriter(
+  currentResolution: () => BrowserReviewWriteResolution,
+  write: (state: EpisodeReviewState) => Promise<unknown>,
+): (state: EpisodeReviewState) => Promise<void> {
+  return async state => {
+    // Read at dispatch, never capture permission when the caller enqueues work.
+    const resolution = currentResolution();
+    if (!resolution.ready) throw new Error("复盘来源尚未核实，已暂停保存，请等待恢复读取完成后重试。");
+    if (resolution.conflicts.some(conflict => conflict.episodeId === state.episodeId)) {
+      throw new Error("浏览器复盘内容冲突，已暂停保存；所有原始内容均已保留。请先解决恢复冲突。");
+    }
+    await write(state);
+  };
+}
+
 export type ActiveAliasLoader = (
   signal?: AbortSignal,
 ) => Promise<readonly TradingViewAccountMigrationAlias[]>;
@@ -109,6 +130,9 @@ export function resolveSharedScopeWithAliases(
 
 type BrowserReviewState = EpisodeReviewState & { legacyThesis?: string };
 
+export type BrowserReviewConflict = { episodeId: string; sourceKeys: string[] };
+type BrowserReviewResolution = { states: BrowserReviewState[]; conflicts: BrowserReviewConflict[] };
+
 function mapReviewState(state: BrowserReviewState, episodeId: string): BrowserReviewState {
   return {
     ...state,
@@ -117,38 +141,57 @@ function mapReviewState(state: BrowserReviewState, episodeId: string): BrowserRe
   };
 }
 
-/** Reads alias-covered browser review keys from both versions without writing compatibility keys. */
+function reviewContent(state: BrowserReviewState): string {
+  const { legacyThesis, ...content } = state;
+  // v1 always has a thesis field; an empty field carries no extra user content.
+  return JSON.stringify(legacyThesis ? { ...content, legacyThesis } : content, (_key, value: unknown) =>
+    value && typeof value === "object" && !Array.isArray(value)
+      ? Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)))
+      : value,
+  );
+}
+
+/**
+ * Reads only exact alias-covered keys. Different-name disagreements pause that
+ * episode's compatibility restore; callers can expose the source keys without
+ * changing any original bytes. SQLite-owned episodes need no browser fallback.
+ */
 export function readAliasedReviewStates(
-  storage: Pick<Storage, "length" | "key" | "getItem">,
+  storage: Pick<Storage, "getItem">,
   aliases: readonly TradingViewAccountMigrationAlias[],
-): BrowserReviewState[] {
+  authoritative: Readonly<Record<string, EpisodeReviewState>> = {},
+): BrowserReviewResolution {
   const episodes = aliasMap(aliases, "episode");
+  if (episodes.size === 0) return { states: [], conflicts: [] };
   const coveredEpisodes = new Set<string>();
   for (const [oldId, newId] of episodes) {
     coveredEpisodes.add(oldId);
     coveredEpisodes.add(newId);
   }
-  const selected = new Map<string, { priority: number; state: BrowserReviewState }>();
-  for (let index = 0; index < storage.length; index += 1) {
-    const key = storage.key(index);
-    if (!key) continue;
-    const prefix = key.startsWith(REVIEW_V2_PREFIX)
-      ? REVIEW_V2_PREFIX
-      : key.startsWith(REVIEW_V1_PREFIX)
-        ? REVIEW_V1_PREFIX
-        : null;
-    if (!prefix) continue;
-    const oldEpisodeId = key.slice(prefix.length);
-    if (!coveredEpisodes.has(oldEpisodeId)) continue;
-    const state = parseStoredReviewState(oldEpisodeId, storage.getItem(key));
-    if (!state) continue;
-    const episodeId = resolveAlias(state.episodeId || oldEpisodeId, episodes);
-    const mapped = mapReviewState(state, episodeId);
-    const priority = prefix === REVIEW_V2_PREFIX ? 2 : 1;
-    const current = selected.get(episodeId);
-    if (!current || priority > current.priority) selected.set(episodeId, { priority, state: mapped });
+  const selected = new Map<string, { key: string; state: BrowserReviewState }[]>();
+  for (const oldEpisodeId of coveredEpisodes) {
+    // v2 then v1 is the existing same-name compatibility protocol, not
+    // evidence that one differently named episode has newer user content.
+    for (const prefix of [REVIEW_V2_PREFIX, REVIEW_V1_PREFIX]) {
+      const key = `${prefix}${oldEpisodeId}`;
+      const state = parseStoredReviewState(oldEpisodeId, storage.getItem(key));
+      if (!state) continue;
+      const episodeId = resolveAlias(state.episodeId || oldEpisodeId, episodes);
+      if (!Object.hasOwn(authoritative, episodeId)) {
+        const sources = selected.get(episodeId) ?? [];
+        sources.push({ key, state: mapReviewState(state, episodeId) });
+        selected.set(episodeId, sources);
+      }
+      break;
+    }
   }
-  return [...selected.values()].map(({ state }) => state);
+  const result: BrowserReviewResolution = { states: [], conflicts: [] };
+  for (const [episodeId, sources] of [...selected].sort(([left], [right]) => left.localeCompare(right))) {
+    if (new Set(sources.map(({ state }) => reviewContent(state))).size > 1) {
+      result.conflicts.push({ episodeId, sourceKeys: sources.map(({ key }) => key).sort() });
+    } else result.states.push(sources[0].state);
+  }
+  return result;
 }
 
 export function mergeAuthoritativeReviewStates(

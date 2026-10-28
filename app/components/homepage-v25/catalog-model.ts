@@ -1,6 +1,7 @@
 import type { StoredInstrument } from "../../lib/storage/sqlite-contracts";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import { validateResolvedInstrument, type InstrumentLookup, type ResolvedInstrument } from "../../lib/instruments/metadata-contracts";
+import { canonicalInstrumentSymbol } from "../../lib/instruments/display-name";
 import { homepageInstrumentIdentity } from "./holdings-model";
 
 export type HomepageCatalogItem = {
@@ -21,16 +22,26 @@ export type HomepageCatalog = { items: HomepageCatalogItem[]; identities: Readon
 function isMarket(market: string): market is InstrumentLookup["market"] {
   return market === "US" || market === "HK" || market === "CN-SH" || market === "CN-SZ";
 }
-/** A known catalog, not a claim of exchange-wide coverage or source nature. */
+/** Navigation membership only: it never assigns a financial class to an unknown carrier. */
 export function buildHomepageCatalog(entries: readonly TradeLibraryEntry[], stored: readonly StoredInstrument[]): HomepageCatalog {
   const sources = new Map<string, { records: StoredInstrument[]; hasExecutions: boolean }>();
   const add = (instrument: StoredInstrument, hasExecutions: boolean) => {
     const group = sources.get(instrument.id) ?? { records: [], hasExecutions: false };
-    group.records.push(instrument); group.hasExecutions ||= hasExecutions; sources.set(instrument.id, group);
+    group.records.push(instrument);
+    group.hasExecutions ||= hasExecutions;
+    sources.set(instrument.id, group);
   };
   for (const instrument of stored) add(instrument, false);
-  for (const entry of entries) add(entry.instrument, entry.executions.length > 0);
-  const projected: Array<{ item: HomepageCatalogItem; base: string | null }> = [];
+  for (const entry of entries) {
+    add(entry.instrument, false);
+    for (const fill of entry.executions) add(fill.instrument, true);
+    for (const { episode } of entry.episodes) {
+      add(episode.instrument, false);
+      for (const fill of episode.executions) add(fill.instrument, true);
+    }
+  }
+  const byBase = new Map<string, HomepageCatalogItem[]>();
+  const items: HomepageCatalogItem[] = [];
   for (const [id, group] of sources) {
     const instrument = group.records[0];
     const metadata: ResolvedInstrument[] = [];
@@ -43,38 +54,58 @@ export function buildHomepageCatalog(entries: readonly TradeLibraryEntry[], stor
       } catch { invalid = true; }
     }
     metadata.sort((left, right) => Date.parse(right.resolvedAt) - Date.parse(left.resolvedAt));
-    const conflictingInstrument = new Set(group.records.map(record => `${record.market}:${record.symbol}`)).size > 1;
+    const symbols = new Set(group.records.map(record => `${record.market}:${canonicalInstrumentSymbol(record.symbol, record.market)}:${record.currency}`));
     const exchanges = new Set(metadata.flatMap(record => record.exchange ? [record.exchange.code] : []));
     const classes = new Set(metadata.map(record => record.assetType));
-    const conflict = conflictingInstrument || exchanges.size > 1 || classes.size > 1;
-    const base = !invalid && !conflict ? homepageInstrumentIdentity(instrument, metadata.find(record => record.exchange)?.exchange) : null;
+    const conflict = symbols.size > 1 || exchanges.size > 1 || classes.size > 1;
+    const symbol = canonicalInstrumentSymbol(instrument.symbol, instrument.market);
+    const base = !invalid && !conflict ? homepageInstrumentIdentity({ ...instrument, symbol }, metadata.find(record => record.exchange)?.exchange) : null;
     const assetType = classes.size === 1 && !invalid && !conflict ? metadata[0].assetType : "unknown";
-    const identity = base && assetType !== "unknown" ? `${base}:${assetType}` : null;
-    const reason = invalid ? "已存证券元数据证据无效，身份待解析" : conflict ? "证券交易所或类别证据冲突，身份待解析" : !base ? "交易所证据尚未解析" : assetType === "unknown" ? "证券类别证据尚未解析" : null;
-    const name = metadata[0]?.localizedName?.name ?? metadata[0]?.name ?? instrument.name;
-    projected.push({ base, item: {
-      key: identity ?? `instrument:${id}`, identity, instrumentIds: [id], name, symbol: instrument.symbol,
-      market: instrument.market, currency: instrument.currency, exchange: base?.split(":")[0] ?? null,
+    const reason = invalid ? "已存证券元数据证据无效，身份待解析" : conflict ? "证券代码、币种、交易所或类别证据冲突，身份待解析" : !base ? "交易所证据尚未解析" : assetType === "unknown" ? "证券类别证据尚未解析" : null;
+    const item: HomepageCatalogItem = {
+      key: `instrument:${id}`, identity: null, instrumentIds: [id],
+      name: metadata[0]?.localizedName?.name ?? metadata[0]?.name ?? instrument.name,
+      symbol, market: instrument.market, currency: instrument.currency, exchange: base?.split(":")[0] ?? null,
       assetType, hasExecutions: group.hasExecutions, reason,
-      searchText: [...group.records.map(record => record.name), ...metadata.flatMap(record => [record.name, record.localizedName?.name ?? ""]), instrument.symbol, base ?? "", assetType === "stock" ? "股票" : assetType === "etf" ? "ETF" : "类别未知"].join(" ").toLocaleLowerCase(),
-    } });
+      searchText: [...group.records.flatMap(record => [record.name, record.symbol]), ...metadata.flatMap(record => [record.name, record.localizedName?.name ?? ""]), symbol, base ?? "", assetType === "stock" ? "股票" : assetType === "etf" ? "ETF" : "类别未知"].join(" ").toLocaleLowerCase(),
+    };
+    if (base) byBase.set(base, [...byBase.get(base) ?? [], item]);
+    else items.push(item);
   }
-  const merged = new Map<string, { item: HomepageCatalogItem; base: string | null }>();
-  for (const current of projected) {
-    const previous = merged.get(current.item.key);
-    if (!previous) { merged.set(current.item.key, current); continue; }
-    previous.item = { ...previous.item, instrumentIds: [...new Set([...previous.item.instrumentIds, ...current.item.instrumentIds])].sort(), hasExecutions: previous.item.hasExecutions || current.item.hasExecutions, searchText: `${previous.item.searchText} ${current.item.searchText}` };
-  }
-  const groups = [...merged.values()].sort((left, right) => left.item.key.localeCompare(right.item.key));
   const identities: Record<string, readonly string[]> = {};
-  const aliases = new Map<string, Array<readonly string[]>>();
-  for (const { item, base } of groups) {
-    if (item.identity) identities[item.identity] = item.instrumentIds;
-    if (base) aliases.set(base, [...aliases.get(base) ?? [], item.instrumentIds]);
+  const merge = (members: HomepageCatalogItem[], identity: string, assetType: HomepageCatalogItem["assetType"], reason: string | null) => {
+    const instrumentIds = [...new Set(members.flatMap(item => item.instrumentIds))].sort();
+    identities[identity] = instrumentIds;
+    items.push({ ...members[0], key: identity, identity, instrumentIds, assetType, reason,
+      hasExecutions: members.some(item => item.hasExecutions), searchText: members.map(item => item.searchText).join(" ") });
+  };
+  for (const [base, members] of byBase) {
+    // A navigation alias must not erase a settlement-currency conflict.
+    if (new Set(members.map(item => item.currency)).size > 1) {
+      items.push(...members.map(item => ({ ...item, reason: "证券币种证据冲突，身份待解析" })));
+      continue;
+    }
+    const classes = [...new Set(members.flatMap(item => item.assetType === "unknown" ? [] : [item.assetType]))];
+    const unknown = members.filter(item => item.assetType === "unknown");
+    if (classes.length > 1) {
+      for (const assetType of classes) merge(members.filter(item => item.assetType === assetType), `${base}:${assetType}`, assetType, null);
+      items.push(...unknown.map(item => ({ ...item, reason: "同代码证券类别证据冲突，未知类别无法确定交易集合" })));
+    } else if (unknown.length) {
+      merge(members, base, "unknown", "部分或全部原始证券类别尚未证明");
+      // A typed legacy URL remains restricted to the carriers with that evidence.
+      for (const assetType of classes) identities[`${base}:${assetType}`] = members.filter(item => item.assetType === assetType).flatMap(item => item.instrumentIds).sort();
+    } else {
+      const identity = `${base}:${classes[0]}`;
+      merge(members, identity, classes[0], null);
+      identities[base] = identities[identity];
+    }
   }
-  // Existing P1 URLs remain valid only when no class collision is hidden.
-  for (const [base, candidates] of aliases) if (candidates.length === 1) identities[base] = candidates[0];
-  return { items: groups.map(group => group.item), identities };
+  return { items: items.sort((left, right) => left.key.localeCompare(right.key)), identities };
+}
+
+/** The same catalog decides forward selection and a raw holding's destination. */
+export function resolveHomepageCatalogInstrument(catalog: HomepageCatalog, instrumentId: string): HomepageCatalogItem | null {
+  return catalog.items.find(item => item.instrumentIds.includes(instrumentId)) ?? null;
 }
 export function searchHomepageCatalog(catalog: HomepageCatalog, query: string): HomepageCatalogItem[] {
   const normalized = query.trim().toLocaleLowerCase();

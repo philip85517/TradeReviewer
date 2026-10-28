@@ -160,15 +160,16 @@ function addExclusion(
   category: ImportExclusion["category"],
   label: string,
   instrumentSymbol?: string,
+  ruleId?: string,
 ) {
   const existing = exclusions.find(
     (item) =>
       item.category === category &&
       item.label === label &&
-      item.instrumentSymbol === instrumentSymbol,
+      item.instrumentSymbol === instrumentSymbol && item.ruleId === ruleId,
   );
   if (existing) existing.count += 1;
-  else exclusions.push({ category, label, count: 1, instrumentSymbol });
+  else exclusions.push({ category, label, count: 1, instrumentSymbol, disposition: ruleId ? "ignored" : "pending", ...(ruleId ? { ruleId } : {}) });
 }
 
 export function detectFutuWorkbook(
@@ -288,6 +289,7 @@ export function parseFutuWorkbook(
         exclusionCategory(assetClass),
         assetClass,
         rawInstrumentSymbol || undefined,
+        exclusionCategory(assetClass) === "unknown-asset" ? undefined : `futu/xlsx/non-security/${exclusionCategory(assetClass)}@1`,
       );
       diagnostics.push({
         severity: "info",

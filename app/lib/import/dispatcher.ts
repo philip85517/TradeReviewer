@@ -2,7 +2,7 @@ import type { ImportDiagnostic } from "./import-result";
 import type { PdfTextPage } from "./pdf-text";
 import { extractPdfPages } from "./pdf-text";
 import type { StatementParseResult } from "./contracts";
-import { fingerprintBytes } from "./file-fingerprint";
+import { fingerprintBytes, identifyFileContent } from "./file-fingerprint";
 import { attachStatementEvidence } from "./statement-evidence";
 import type { StatementTimeOptions } from "./monthly-statement";
 import {
@@ -80,17 +80,18 @@ export async function parseBrokerStatement(
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
+  const fileContent = await identifyFileContent(bytes);
   const tradingViewDetection = detectTradingViewSimulationCsv(bytes);
 
   if (
     tradingViewDetection.matched &&
     tradingViewDetection.confidence >= STATEMENT_DETECTION_THRESHOLD
   ) {
-    return parseTradingViewSimulationCsv(bytes, {
+    return { ...parseTradingViewSimulationCsv(bytes, {
       fileName: file.name,
       sourceFileId: fileFingerprint,
       context: options.tradingViewContext,
-    });
+    }), fileContent };
   }
   const workbookDetections = adaptersFor("xlsx").map((adapter) => ({
     adapter,
@@ -103,10 +104,10 @@ export async function parseBrokerStatement(
   );
 
   if (workbookMatches.length === 1) {
-    return workbookMatches[0].adapter.parse(bytes, {
+    return { ...workbookMatches[0].adapter.parse(bytes, {
       fileName: file.name,
       fileFingerprint,
-    });
+    }), fileContent };
   }
   if (workbookMatches.length > 1) {
     return failure(
@@ -171,6 +172,7 @@ export async function parseBrokerStatement(
   const result = matches[0].adapter.parse(pages, parseOptions);
   const withRuleEvidence = {
     ...result,
+    fileContent,
     records: result.records.map((record) => ({
       ...record,
       source: {

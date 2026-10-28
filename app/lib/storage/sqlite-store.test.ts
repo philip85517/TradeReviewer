@@ -13,8 +13,10 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { openSqliteDatabase } from "../../../db/sqlite";
-import type { BrowserStatePayload } from "./sqlite-contracts";
-import { SqliteStore } from "./sqlite-store";
+import { SQLITE_MIGRATIONS } from "../../../db/sqlite-schema";
+import type { BrowserStatePayload, TradeChangeIntent } from "./sqlite-contracts";
+import { SqliteStore, createTradeChanges } from "./sqlite-store";
+import type { TradeExecution } from "../trades/types";
 
 const directories: string[] = [];
 
@@ -45,6 +47,24 @@ function databaseFor(store: SqliteStore) {
   }).database;
 }
 
+function reviewedReplace(store: SqliteStore, incoming: TradeExecution[], ids: string[]) {
+  const selected = store.getExecutions().filter(row => ids.includes(row.id));
+  const sample = selected[0];
+  const changes = [...selected.map(before => ({ before, after: incoming.find(row => row.id === before.id) ?? null })), ...incoming.filter(row => !ids.includes(row.id)).map(after => ({ before: null, after }))];
+  const coordinator = createTradeChanges(databaseFor(store));
+  const plan = coordinator.prepare({
+    kind: "revision",
+    revision: {
+      id: "reviewed-replacement",
+      instrumentId: sample.instrument.id,
+      accountId: sample.accountId,
+      reason: "Explicit reviewed replacement",
+      changes
+    }
+  });
+  return coordinator.commit({ requestId: "reviewed-replacement", planId: plan.planId, choices: {} }).result.report;
+}
+
 function snapshotAllTables(store: SqliteStore) {
   const database = databaseFor(store);
   const tables = database.prepare(
@@ -57,6 +77,17 @@ function snapshotAllTables(store: SqliteStore) {
       database.prepare(`select * from "${name}" order by rowid`).all(),
     ]),
   );
+}
+
+// Audit rows describe management evidence; they are asserted separately from
+// unchanged business/source tables below.
+const importAuditTables = ["import_history_audit_state", "import_history_plan_proofs", "import_history_memberships", "import_history_material_refs", "import_history_audit_dirty"];
+function expectPendingAudit(earlier: ReturnType<typeof snapshotAllTables>, later: ReturnType<typeof snapshotAllTables>) {
+  const added=later.trade_change_plans.filter(row=>!earlier.trade_change_plans.some(previous=>previous.id===row.id));
+  expect(added).toHaveLength(1);
+  expect(later.import_history_plan_proofs).toEqual([...earlier.import_history_plan_proofs,expect.objectContaining({plan_id:added[0].id,body_digest:added[0].body_digest,consumed:0,receipt_id:null,scope_json:"[]"})]);
+  expect(later.import_history_audit_state).toEqual([expect.objectContaining({...earlier.import_history_audit_state[0],generation:Number(earlier.import_history_audit_state[0].generation)+1,ready:1})]);
+  for(const table of ["import_history_memberships","import_history_material_refs","import_history_audit_dirty"]) expect(later[table],table).toEqual(earlier[table]);
 }
 
 function expectBrowserStateRejectionBeforeTransaction(
@@ -266,7 +297,7 @@ describe("SqliteStore", () => {
       id: "replacement-execution",
       source: { ...execution.source, inputKind: "screenshot" as const },
     };
-    expect(store.mergeTradeData({ executions: [replacement], replaceExecutionIds: [oldExecution.id] })).toEqual({
+    expect(reviewedReplace(store, [{...replacement,accountId:correction.canonicalAccountId}], [oldExecution.id])).toEqual({
       inserted: 1,
       duplicate: 0,
       conflict: 0,
@@ -383,7 +414,10 @@ describe("SqliteStore", () => {
       ]);
     }
 
-    const simulationStore = createStore();
+    const simulationDirectory = mkdtempSync(join(tmpdir(), "tradereview-account-correction-review-"));
+    directories.push(simulationDirectory);
+    const simulationPath = join(simulationDirectory, "store.sqlite");
+    const simulationStore = new SqliteStore(openSqliteDatabase(simulationPath));
     const simulationSource = {
       platform: "tradingview",
       row: 1,
@@ -425,12 +459,75 @@ describe("SqliteStore", () => {
       accountId: "account-1",
       source: { ...simulationSource, simulationRunId: "run-b", inputKind: "statement" as const },
     };
-    expect(() => simulationStore.mergeExecutions([differentRun])).toThrow(
-      "Account correction replacement identity conflict",
-    );
-    expect(simulationStore.getExecutions()).toMatchObject([
-      expect.objectContaining({ id: simulationExecution.id, accountId: "account-canonical" }),
-    ]);
+    const originalExecutions = simulationStore.getExecutions();
+    const before = snapshotAllTables(simulationStore);
+    const withoutReviewPlans = (tables: ReturnType<typeof snapshotAllTables>) =>
+      Object.fromEntries(Object.entries(tables).filter(([name]) => name !== "trade_change_plans" && !importAuditTables.includes(name)));
+    const reviewError = {
+      code: "TRADINGVIEW_SOURCE_REVIEW_REQUIRED",
+      phase: "commit",
+      message: "Resolve source identity with a new prepare before committing",
+    };
+    const expectedReview = {
+      status: "review-required",
+      summary: { changes: [] },
+      identityReviews: [{
+        kind: "same-id-scope-conflict",
+        incomingIds: [simulationExecution.id],
+        existingIds: [simulationExecution.id],
+        reasons: ["account", "proof-unavailable", "run"],
+        allowed: ["keep-independent"],
+      }],
+    };
+    const expectOnePendingReviewPlan = (
+      earlier: ReturnType<typeof snapshotAllTables>,
+      later: ReturnType<typeof snapshotAllTables>,
+    ) => {
+      expect(later.trade_change_plans).toHaveLength(earlier.trade_change_plans.length + 1);
+      expect(later.trade_change_plans).toEqual(expect.arrayContaining(earlier.trade_change_plans));
+      const added = later.trade_change_plans.filter(
+        row => !earlier.trade_change_plans.some(previous => previous.id === row.id),
+      );
+      expect(added).toHaveLength(1);
+      expect(added[0]).toMatchObject({ receipt_id: null, choices_digest: null });
+      expect(JSON.parse(String(added[0].body_json)).review).toMatchObject(expectedReview);
+      expectPendingAudit(earlier,later);
+    };
+
+    // The compatibility wrapper prepares a pending review, then rejects its commit.
+    expect(() => simulationStore.mergeExecutions([differentRun]))
+      .toThrowError(expect.objectContaining(reviewError));
+    const afterWrapper = snapshotAllTables(simulationStore);
+    expect(withoutReviewPlans(afterWrapper)).toEqual(withoutReviewPlans(before));
+    expectOnePendingReviewPlan(before, afterWrapper);
+
+    // The public split flow exposes the same review gate before any fact can change.
+    const changes = createTradeChanges(databaseFor(simulationStore));
+    const plan = changes.prepare({ kind: "import", candidates: [differentRun] });
+    expect(plan).toMatchObject(expectedReview);
+    expect(plan.identityReviews).toHaveLength(1);
+    const afterPrepare = snapshotAllTables(simulationStore);
+    expect(withoutReviewPlans(afterPrepare)).toEqual(withoutReviewPlans(before));
+    expectOnePendingReviewPlan(afterWrapper, afterPrepare);
+    expect(() => changes.commit({
+      requestId: "account-correction-unresolved-run",
+      planId: plan.planId,
+      choices: {},
+    })).toThrowError(expect.objectContaining(reviewError));
+    expect(snapshotAllTables(simulationStore)).toEqual(afterPrepare);
+    expect(simulationStore.getExecutions()).toEqual(originalExecutions);
+    expect(simulationStore.getExecutions()).toMatchObject([simulationExecution]);
+    expect(databaseFor(simulationStore).prepare("select evidence_json from executions where id = ?")
+      .get(simulationExecution.id)).toEqual({ evidence_json: JSON.stringify(simulationEvidence) });
+
+    databaseFor(simulationStore).close();
+    const reopened = new SqliteStore(openSqliteDatabase(simulationPath));
+    try {
+      expect(reopened.getExecutions()).toEqual(originalExecutions);
+      expect(snapshotAllTables(reopened)).toEqual(afterPrepare);
+    } finally {
+      databaseFor(reopened).close();
+    }
   });
 
   it("fails closed in ordinary mergeExecutions when a canonical same-id source changes", () => {
@@ -573,7 +670,7 @@ describe("SqliteStore", () => {
       quantity: "101",
       source: { ...execution.source, inputKind: "screenshot" as const },
     };
-    expect(() => store.mergeTradeData({ executions: [differentTrade], replaceExecutionIds: [oldExecution.id] })).toThrow(
+    expect(() => reviewedReplace(store, [{...differentTrade,accountId:correction.canonicalAccountId}], [oldExecution.id])).toThrow(
       "Account correction replacement identity conflict",
     );
     expect(store.getExecutions()[0]).toMatchObject({
@@ -781,16 +878,141 @@ describe("SqliteStore", () => {
     databaseFor(reopened).close();
   });
 
-  it("rejects stale-client CSV security conflicts against persisted and incoming records", async () => {
-    const store=createStore();
-    const a=await parseBrokerStatement(fileFor());
-    const b=await parseBrokerStatement(fileFor(csv,'回放交易_SSE_600869.csv'));
-    store.mergeExecutions(a.records);
-    expect(()=>store.mergeExecutions(b.records)).toThrow(/simulation.*context/i);
-    expect(store.getExecutions()).toEqual(a.records);
-    const empty=createStore();
-    expect(()=>empty.mergeExecutions([...a.records,...b.records])).toThrow(/simulation.*context/i);
-    expect(empty.getExecutions()).toHaveLength(0);
+  describe("stale-client CSV compatibility and formal evidence boundaries", () => {
+    const sourceTables = ["source_materials", "source_material_versions", "source_observations", "source_execution_links"];
+    const managementTables = ["trade_change_plans", "trade_change_receipts", "trade_change_requests", ...importAuditTables];
+    function productTables(store: SqliteStore) {
+      return Object.fromEntries(Object.entries(snapshotAllTables(store)).filter(([name]) => !managementTables.includes(name)));
+    }
+    function expectNoDecodedEvidence(store: SqliteStore) {
+      const tables = snapshotAllTables(store);
+      for (const name of sourceTables) expect(tables[name], name).toEqual([]);
+    }
+    async function csvInputs() {
+      return {
+        a: await parseBrokerStatement(fileFor()),
+        b: await parseBrokerStatement(fileFor(csv, "回放交易_SSE_600869.csv")),
+      };
+    }
+    function formalIntent(parsed: Awaited<ReturnType<typeof parseBrokerStatement>>): Extract<TradeChangeIntent, { kind: "import" }> {
+      if (parsed.broker !== "tradingview" || !parsed.tradingViewEvidence) throw new Error("Expected real TradingView parser evidence");
+      expect(parsed.records).toHaveLength(2);
+      return {
+        kind: "import",
+        candidates: structuredClone(parsed.records),
+        tradingViewImport: {
+          policy: "tv-import-v1",
+          material: { kind: "reuse-exact-or-propose" },
+          evidence: structuredClone(parsed.tradingViewEvidence),
+        },
+      };
+    }
+
+    // Original 804–814 failure: the fingerprint-only veto was an obsolete compatibility contract.
+    // This records-only seam does not stand in for the formal evidence or UI preflight seams.
+    it("keeps different-security records-only imports independent in sequential and combined batches after reopening", async () => {
+      const { a, b } = await csvInputs();
+      expect(a.records.map(record => record.instrument.id)).toEqual(["CN-SH:600330", "CN-SH:600330"]);
+      expect(b.records.map(record => record.instrument.id)).toEqual(["CN-SH:600869", "CN-SH:600869"]);
+      expect(b.records[0].source.fileFingerprint).toBe(a.records[0].source.fileFingerprint);
+      expect(b.records[0].source.simulationRunId).not.toBe(a.records[0].source.simulationRunId);
+      expect(b.records.every(record => !a.records.some(old => old.id === record.id))).toBe(true);
+
+      const directory = mkdtempSync(join(tmpdir(), "stale-csv-reopen-"));
+      directories.push(directory);
+      const path = join(directory, "store.sqlite");
+      const store = new SqliteStore(openSqliteDatabase(path));
+      expect(store.mergeExecutions(a.records)).toEqual({ inserted: 2, duplicate: 0, conflict: 0 });
+      const oldRows = store.getExecutions();
+      expect(store.mergeExecutions(b.records)).toEqual({ inserted: 2, duplicate: 0, conflict: 0 });
+      const combined = store.getExecutions();
+      expect(combined).toHaveLength(4);
+      expect(combined).toEqual(expect.arrayContaining([...a.records, ...b.records]));
+      for (const old of oldRows) expect(combined.find(record => record.id === old.id)).toEqual(old);
+      expectNoDecodedEvidence(store);
+      const normalized = createTradeChanges(databaseFor(store)).prepare({ kind: "import", candidates: b.records });
+      expect(normalized.summary.tradingViewImport?.material.kind).toBe("normalized-only");
+      databaseFor(store).close();
+
+      const reopened = new SqliteStore(openSqliteDatabase(path));
+      expect(reopened.getExecutions()).toEqual(combined);
+      expectNoDecodedEvidence(reopened);
+      databaseFor(reopened).close();
+
+      const empty = createStore();
+      expect(empty.mergeExecutions([...a.records, ...b.records])).toEqual({ inserted: 4, duplicate: 0, conflict: 0 });
+      expect(empty.getExecutions()).toEqual(combined);
+      expectNoDecodedEvidence(empty);
+    });
+
+    it("requires a formal material choice for the same bytes before explicitly saving independent evidence", async () => {
+      const { a, b } = await csvInputs(), store = createStore();
+      const changes = createTradeChanges(databaseFor(store));
+      const first = changes.prepare(formalIntent(a));
+      changes.commit({ requestId: "stale-csv:first-evidence", planId: first.planId, choices: {} });
+      const oldRows = store.getExecutions(), before = snapshotAllTables(store);
+      expect(before.source_observations).toHaveLength(2);
+      expect(before.source_execution_links).toHaveLength(2);
+      const input = formalIntent(b);
+      expect(() => changes.prepare(input)).toThrowError(expect.objectContaining({ code: "TRADINGVIEW_MATERIAL_CHOICE_REQUIRED", phase: "prepare" }));
+      expect(snapshotAllTables(store)).toEqual(before);
+
+      input.tradingViewImport!.material = { kind: "independent" };
+      const independent = changes.prepare(input);
+      expect(independent.status).toBe("ready");
+      const receipt = changes.commit({ requestId: "stale-csv:independent-evidence", planId: independent.planId, choices: {} });
+      expect(receipt.result.tradingViewImport?.material).toMatchObject({ kind: "save-evidence", reason: "independent", observations: 2, links: 2 });
+      const after = snapshotAllTables(store), stored = store.getExecutions();
+      expect(stored).toHaveLength(4);
+      for (const old of oldRows) expect(stored.find(record => record.id === old.id)).toEqual(old);
+      for (const name of sourceTables) {
+        expect(after[name]).toHaveLength(before[name].length + (name === "source_materials" || name === "source_material_versions" ? 1 : 2));
+        expect(after[name]).toEqual(expect.arrayContaining(before[name]));
+      }
+    });
+
+    it("atomically rejects financial contradictions in a proven same-source namespace", async () => {
+      const { a, b } = await csvInputs(), store = createStore();
+      store.mergeExecutions(a.records);
+      const before = snapshotAllTables(store), changed = structuredClone(a.records);
+      changed[0].price = "999";
+      expect(() => store.mergeExecutions([...b.records, ...changed])).toThrowError(expect.objectContaining({ code: "TRADINGVIEW_SOURCE_FINANCIAL_MISMATCH", phase: "prepare" }));
+      expect(snapshotAllTables(store)).toEqual(before);
+    });
+
+    it("keeps a same-locator different-run import under review and rejects an unresolved commit", async () => {
+      const { a } = await csvInputs(), store = createStore();
+      store.mergeExecutions(a.records);
+      const beforeAll = snapshotAllTables(store), before = productTables(store), changed = structuredClone(a.records);
+      for (const record of changed) record.source.simulationRunId = "other-exact-run";
+      const changes = createTradeChanges(databaseFor(store));
+      const plan = changes.prepare({ kind: "import", candidates: changed });
+      expect(plan.status).toBe("review-required");
+      expect(plan.identityReviews).toHaveLength(2);
+      expect(plan.summary.changes).toEqual([]);
+      expect(productTables(store)).toEqual(before);
+      const prepared = snapshotAllTables(store);
+      expectPendingAudit(beforeAll,prepared);
+      expect(() => changes.commit({ requestId: "stale-csv:unresolved-run", planId: plan.planId, choices: {} })).toThrowError(expect.objectContaining({ code: "TRADINGVIEW_SOURCE_REVIEW_REQUIRED", phase: "commit" }));
+      expect(snapshotAllTables(store)).toEqual(prepared);
+      expect(productTables(store)).toEqual(before);
+    });
+
+    it.each(["mismatched-candidates", "unknown-candidate", "duplicate-candidate", "partial-evidence", "missing-required-field"] as const)("rejects formal %s evidence with INVALID_INPUT without changing any table", async mutation => {
+      const { a, b } = await csvInputs(), store = createStore();
+      store.mergeExecutions([execution]);
+      const before = snapshotAllTables(store), input = formalIntent(a);
+      const evidence = input.tradingViewImport!.evidence!;
+      const row = evidence.rows.find(item => item.outcome === "accepted")!;
+      if (mutation === "mismatched-candidates") input.candidates = b.records;
+      if (mutation === "unknown-candidate") row.candidateIds = ["unknown-candidate"];
+      if (mutation === "duplicate-candidate") row.candidateIds.push(row.candidateIds[0]);
+      if (mutation === "partial-evidence") evidence.rows = evidence.rows.filter(item => item.candidateIds.includes(input.candidates[0].id));
+      if (mutation === "missing-required-field") Reflect.deleteProperty(evidence.derived, "symbol");
+      const changes = createTradeChanges(databaseFor(store));
+      expect(() => changes.prepare(input)).toThrowError(expect.objectContaining({ code: "INVALID_INPUT", phase: "prepare" }));
+      expect(snapshotAllTables(store)).toEqual(before);
+    });
   });
 
   it("rejects invalid simulation evidence atomically", async () => {
@@ -858,7 +1080,7 @@ describe("SqliteStore", () => {
 
     expect(bootstrap).toMatchObject({
       // Version 14 registers the approved TradingView account migration.
-      schemaVersion: 14,
+      schemaVersion: SQLITE_MIGRATIONS.at(-1)?.version ?? 0,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -1212,7 +1434,7 @@ describe("SqliteStore", () => {
     const incoming = { ...execution, id: "incoming-conflict", price: "999" };
     store.mergeExecutions([existing]);
 
-    expect(store.mergeTradeData({ executions: [incoming], replaceExecutionIds: [existing.id] })).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
+    expect(reviewedReplace(store, [incoming], [existing.id])).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
     expect(store.getExecutions().map((item) => item.id)).toEqual([incoming.id]);
     expect(store.getExecutions()[0]?.price).toBe("999");
   });
@@ -1222,7 +1444,9 @@ describe("SqliteStore", () => {
     const existing = { ...execution, id: "monthly-old", source: { ...execution.source, fileFingerprint: "old", statementMonth: "2026-01" } };
     const incoming = { ...existing, id: "monthly-new", price: "999", source: { ...existing.source, fileFingerprint: "new" } };
     store.mergeExecutions([existing]);
-    expect(store.mergeTradeData({ executions: [existing, incoming], replaceExecutionIds: [existing.id] })).toEqual({ inserted: 2, duplicate: 0, conflict: 0 });
+    const changes=createTradeChanges(databaseFor(store));
+    const plan=changes.prepare({kind:"import",candidates:[incoming]});
+    expect(changes.commit({requestId:"monthly-both",planId:plan.planId,choices:{conflicts:plan.conflicts.map(conflict=>({conflictId:conflict.id,decision:"keep-both"}))}}).result.report).toEqual({ inserted: 1, duplicate: 0, conflict: 1 });
     expect(store.getExecutions().map(e => e.id).sort()).toEqual(["monthly-new", "monthly-old"]);
   });
 
@@ -1685,7 +1909,10 @@ describe("SqliteStore", () => {
     const database = (store as unknown as { database: ReturnType<typeof openSqliteDatabase> }).database;
     database.exec("create trigger fail_marker before insert on data_migrations begin select raise(abort, 'marker failed'); end");
 
-    expect(() => store.mergeBrowserState(payload())).toThrow("marker failed");
+    expect(() => store.mergeBrowserState(payload())).toThrowError(expect.objectContaining({
+      code: "UNEXPECTED_FAILURE", category: "unexpected",
+      cause: expect.objectContaining({ message: "marker failed" }),
+    }));
     expect(store.getBootstrap()).toMatchObject({ executions: [], instruments: [] });
   });
 
@@ -1780,4 +2007,98 @@ it("preserves exchange evidence through metadata refresh, late conflict and core
   store.putInstrumentMetadata({ ...record, exchange });
   store.mergeTradeData({ instruments: [{ id: "US:AAPL", market: "US", symbol: "AAPL", name: "Apple", currency: "USD", metadata: record }], executions: [] });
   expect(store.getBootstrap().instruments.find(item => item.id === "US:AAPL")?.metadata?.exchange).toEqual(newer);
+});
+
+describe("SqliteStore narrow interval coverage reads", () => {
+  function fixture() {
+    const store = createStore();
+    const other = { id: "US:SPY", symbol: "SPY", name: "SPDR", market: "US", currency: "USD" };
+    store.mergeTradeData({ instruments: [other, instrument], executions: [] });
+    const first = {
+      requestedStart: "2025-01-03T00:00:00.000Z", requestedEnd: "2025-01-04T00:00:00.000Z",
+      actualStart: "2025-01-03T01:00:00.000Z", actualEnd: "2025-01-03T23:00:00.000Z",
+      status: "partial" as const, provider: "yahoo" as const,
+      fetchedAt: "2025-01-05T00:00:00.000Z", reason: "source gap",
+    };
+    const second = {
+      requestedStart: "2025-01-01T00:00:00.000Z", requestedEnd: "2025-01-02T00:00:00.000Z",
+      status: "complete" as const,
+    };
+    // Deliberately insert out of SQL ordering, and preserve each row's segment ordering.
+    for (const [instrumentId, interval] of [
+      [other.id, "1h"], [instrument.id, "1D"], [instrument.id, "15m"], [other.id, "15m"],
+    ] as const) {
+      store.commitIntervalMarketData({ instrumentId, interval, candles: [], coverage: [{ ...first, interval }, { ...second, interval }] });
+    }
+    return { store, other, first, second };
+  }
+
+  it("filters either optional key or both while preserving all fields and segment ordering", () => {
+    const { store, other, first, second } = fixture();
+    const hk15m = [
+      { ...first, interval: "15m", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...second, interval: "15m", instrumentId: instrument.id, adjustmentMode: "raw" },
+    ];
+    const hkDaily = [
+      { ...first, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...second, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+    ];
+    const us15m = [
+      { ...first, interval: "15m", instrumentId: other.id, adjustmentMode: "raw" },
+      { ...second, interval: "15m", instrumentId: other.id, adjustmentMode: "raw" },
+    ];
+    expect(store.getIntervalCoverage(instrument.id, "1D")).toEqual(hkDaily);
+    expect(store.getIntervalCoverage(instrument.id)).toEqual([...hk15m, ...hkDaily]);
+    expect(store.getIntervalCoverage(undefined, "15m")).toEqual([...hk15m, ...us15m]);
+    expect(store.getIntervalCoverage("missing", "1D")).toEqual([]);
+    expect(store.getIntervalCoverage("HK:700' OR 1=1 --", "1D")).toEqual([]);
+  });
+
+  it("keeps no-argument reads complete and ordered, including legacy object-form segments", () => {
+    const { store, other, first, second } = fixture();
+    databaseFor(store).prepare("update interval_coverage set details_json = ? where instrument_id = ? and interval = ?").run(
+      JSON.stringify({ ...first, interval: "1h" }), other.id, "1h",
+    );
+    expect(store.getIntervalCoverage()).toEqual([
+      { ...first, interval: "15m", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...second, interval: "15m", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...first, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...second, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...first, interval: "15m", instrumentId: other.id, adjustmentMode: "raw" },
+      { ...second, interval: "15m", instrumentId: other.id, adjustmentMode: "raw" },
+      { ...first, interval: "1h", instrumentId: other.id, adjustmentMode: "raw" },
+    ]);
+    expect(store.getIntervalCoverage(other.id, "1h")).toEqual([
+      { ...first, interval: "1h", instrumentId: other.id, adjustmentMode: "raw" },
+    ]);
+  });
+
+  it.each([
+    { instrumentId: "US:SPY", interval: "1h" },
+    { instrumentId: instrument.id, interval: "15m" },
+  ])("filters corrupt $instrumentId/$interval before JSON mapping but still fails when selected", ({ instrumentId, interval }) => {
+    const { store, first, second } = fixture();
+    const database = databaseFor(store);
+    database.exec("pragma ignore_check_constraints = on");
+    database.prepare("update interval_coverage set details_json = ? where instrument_id = ? and interval = ?").run("{", instrumentId, interval);
+    database.exec("pragma ignore_check_constraints = off");
+    expect(store.getIntervalCoverage(instrument.id, "1D")).toEqual([
+      { ...first, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+      { ...second, interval: "1D", instrumentId: instrument.id, adjustmentMode: "raw" },
+    ]);
+    expect(() => store.getIntervalCoverage()).toThrow();
+    expect(() => store.getIntervalCoverage(instrumentId)).toThrow();
+  });
+
+  it("checks exact instrument existence without parsing stored metadata", () => {
+    const { store } = fixture();
+    const database = databaseFor(store);
+    database.exec("pragma ignore_check_constraints = on");
+    database.prepare("update instruments set metadata_json = ?").run("{");
+    database.exec("pragma ignore_check_constraints = off");
+    expect(store.hasInstrument(instrument.id)).toBe(true);
+    expect(store.hasInstrument("missing")).toBe(false);
+    expect(store.hasInstrument("HK:700' OR 1=1 --")).toBe(false);
+    expect(store.hasInstrument(" HK:700 ")).toBe(false);
+  });
 });

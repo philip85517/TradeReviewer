@@ -856,9 +856,17 @@ describe("useScreenshotImport", () => {
     expect(createOcrEngine).toHaveBeenCalledTimes(2);
   });
 
-  it("recomputes duplicate and conflict analysis after an edit", async () => {
+  it("recomputes a stable screenshot row from duplicate to conflict after an edit", async () => {
     const { dependencies } = setupDependencies();
-    const current = execution("existing");
+    // Match the converter's unknown-fee placeholder without claiming reported zero.
+    const current = execution("existing", { fee: "0" });
+    current.source = {
+      ...current.source,
+      fileFingerprint: "fingerprint-1",
+      inputKind: "screenshot",
+      timePrecision: "second",
+      feeStatus: "unknown",
+    };
     const { result } = renderHook(() =>
       useScreenshotImport({
         currentExecutions: () => [current],
@@ -887,12 +895,14 @@ describe("useScreenshotImport", () => {
     expect(result.current.reconciliation?.conflicts).toHaveLength(1);
   });
 
-  it("does not complete while review blockers or decisions remain", async () => {
+  it("blocks completion for review blockers and undecided second-precision conflicts", async () => {
     const { dependencies } = setupDependencies();
     const onPrepared = vi.fn();
+    const current = execution("existing", { price: "101" });
+    current.source = { ...current.source, timePrecision: "second" };
     const { result } = renderHook(() =>
       useScreenshotImport({
-        currentExecutions: () => [execution("existing", { price: "101" })],
+        currentExecutions: () => [current],
         onPrepared,
         dependencies,
       }),
@@ -959,7 +969,7 @@ describe("useScreenshotImport", () => {
     expect(revokeObjectUrl).toHaveBeenCalledTimes(2);
   });
 
-  it("freezes every session mutation while deferred preparation is pending", async () => {
+  it("freezes every session mutation while second-precision conflict preparation is pending", async () => {
     const prepared = deferred<void>();
     const { dependencies, dispose, revokeObjectUrl } = setupDependencies();
     let emitted: PreparedScreenshotImport | undefined;
@@ -969,9 +979,11 @@ describe("useScreenshotImport", () => {
       emitted = value;
       return prepared.promise;
     };
+    const current = execution("existing", { price: "101" });
+    current.source = { ...current.source, timePrecision: "second" };
     const { result } = renderHook(() =>
       useScreenshotImport({
-        currentExecutions: () => [execution("existing", { price: "101" })],
+        currentExecutions: () => [current],
         onPrepared,
         dependencies,
       }),

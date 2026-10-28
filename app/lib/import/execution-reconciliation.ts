@@ -2,7 +2,8 @@ import { Temporal } from "@js-temporal/polyfill";
 import Decimal from "decimal.js";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
-import { tradeNatureOf, tradeScopeKey, type TradeExecution } from "../trades/types";
+import { resolvedTradeNatureOf } from "../trades/nature-resolution";
+import type { TradeExecution } from "../trades/types";
 
 export type ReconciliationDecision =
   | "keep-existing"
@@ -32,13 +33,16 @@ type TaggedExecution = {
   candidateKey: string;
   coreKey: string;
   sourceInstanceId: string;
-  sourceVerified: boolean;
+  rowVerified: boolean;
   instantVerified: boolean;
   coreVerified: boolean;
 };
 
 function executionInstantIdentity(executedAt: string) {
   try {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(executedAt)) {
+      return { value: `date:${Temporal.PlainDate.from(executedAt).toString()}`, verified: true } as const;
+    }
     return {
       value: Temporal.Instant.from(executedAt).toString(),
       verified: true,
@@ -48,11 +52,11 @@ function executionInstantIdentity(executedAt: string) {
   }
 }
 
-function decimalIdentity(value: unknown) {
+function decimalIdentity(value: unknown, allowZero = false) {
   const raw = typeof value === "string" ? value : String(value ?? "");
   try {
     const decimal = new Decimal(raw);
-    if (!decimal.isFinite() || !decimal.gt(0)) {
+    if (!decimal.isFinite() || (allowZero ? decimal.lt(0) : !decimal.gt(0))) {
       return { value: `invalid:${raw}`, verified: false } as const;
     }
     return { value: decimal.toString(), verified: true } as const;
@@ -79,24 +83,34 @@ function executionInstrumentIdentity(execution: TradeExecution) {
     : `unknown:${execution.id}`;
 }
 
+function executionScopeIdentity(execution: TradeExecution) {
+  const nature = resolvedTradeNatureOf(execution);
+  const source = execution.source;
+  const simulation = nature === "simulation" || source.simulationRunId !== undefined;
+  return JSON.stringify([
+    execution.accountId,
+    executionInstrumentIdentity(execution),
+    execution.instrument.currency.trim().toUpperCase(),
+    nature,
+    simulation ? source.simulationRunId?.trim() || source.fileFingerprint?.trim() || execution.id : "",
+    simulation ? source.sourceTradeId ?? source.simulationTradeId ?? "" : "",
+    simulation ? source.simulationRole ?? "unknown" : "",
+  ]);
+}
+
 export function executionCandidateKey(execution: TradeExecution) {
-  const simulation = tradeNatureOf(execution) === "simulation"
-    ? `${tradeScopeKey(execution)}:${execution.source.sourceTradeId ?? execution.source.simulationTradeId ?? ""}|`
-    : "";
-  return `${simulation}${execution.source.timePrecision === "date-only" ? `account:${execution.accountId}|` : ""}${executionInstrumentIdentity(execution)}|${
-    executionInstantIdentity(execution.executedAt).value
-  }`;
+  return `${executionScopeIdentity(execution)}|${execution.source.timePrecision ?? "instant"}|${executionInstantIdentity(execution.executedAt).value}`;
 }
 
 function executionCoreIdentity(execution: TradeExecution) {
   const quantity = decimalIdentity(execution.quantity);
-  const price = decimalIdentity(execution.price);
+  const price = decimalIdentity(execution.price, true);
   return {
     value: [
       execution.side,
       quantity.value,
       price.value,
-      ...(execution.source.timePrecision === "date-only" ? [execution.source.statementRowFingerprint ?? "", new Decimal(execution.fee || 0).toString()] : []),
+      ...(execution.source.timePrecision === "date-only" ? [execution.source.statementRowFingerprint ?? "", decimalIdentity(execution.fee || "0", true).value] : []),
     ].join("|"),
     verified: quantity.verified && price.verified,
   };
@@ -124,7 +138,7 @@ export function executionSourceIdentity(execution: TradeExecution) {
       ? source.fileFingerprint.trim()
       : "";
   if (fingerprint) {
-    return { id: `fingerprint:${fingerprint}`, verified: true } as const;
+    return { id: `fingerprint:${source.platform.trim()}|${fingerprint}`, verified: true } as const;
   }
 
   const platform =
@@ -132,7 +146,7 @@ export function executionSourceIdentity(execution: TradeExecution) {
   const fileName =
     typeof source?.fileName === "string" ? source.fileName.trim() : "";
   if (platform && fileName) {
-    return { id: `file:${platform}|${fileName}`, verified: true } as const;
+    return { id: `file:${platform}|${fileName}`, verified: false } as const;
   }
 
   return { id: `execution:${execution.id}`, verified: false } as const;
@@ -146,20 +160,6 @@ export function compareExecutions(
   left: TradeExecution,
   right: TradeExecution,
 ) {
-  const isCalendarDate = (value: string) => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-    try { Temporal.PlainDate.from(value); return true; } catch { return false; }
-  };
-  // Date-only evidence belongs in its calendar day, not after every timestamp
-  // in the library. This ordering does not manufacture an execution instant.
-  if (isCalendarDate(left.executedAt) || isCalendarDate(right.executedAt)) {
-    const day = (execution: TradeExecution) => execution.executedAt.slice(0, 10);
-    const difference = day(left).localeCompare(day(right));
-    if (difference) return difference;
-    const precisionOrder = Number(isCalendarDate(right.executedAt)) - Number(isCalendarDate(left.executedAt));
-    if (precisionOrder) return precisionOrder;
-    return (left.source.sourceOrder ?? left.source.row) - (right.source.sourceOrder ?? right.source.row) || left.id.localeCompare(right.id);
-  }
   const leftKey = executionOrderKey(left);
   const rightKey = executionOrderKey(right);
   const categoryDifference = leftKey.timeCategory - rightKey.timeCategory;
@@ -177,6 +177,7 @@ export function compareExecutions(
   return (
     categoryDifference ||
     timeDifference ||
+    Number(rightKey.dateOnly) - Number(leftKey.dateOnly) ||
     leftKey.sourceOrder - rightKey.sourceOrder ||
     leftKey.id.localeCompare(rightKey.id)
   );
@@ -187,8 +188,15 @@ function executionOrderKey(execution: TradeExecution) {
     typeof execution.executedAt === "string" ? execution.executedAt : "";
   let timeCategory: 0 | 1 = 0;
   let timeValue: bigint | string;
+  let dateOnly = false;
   try {
-    timeValue = Temporal.Instant.from(executedAt).epochNanoseconds;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(executedAt)) {
+      const date = Temporal.PlainDate.from(executedAt).toString();
+      // A UTC day-start anchor defines a transitive display order only. The
+      // original date remains date precision; it is never stored as an instant.
+      timeValue = Temporal.Instant.from(`${date}T00:00:00Z`).epochNanoseconds;
+      dateOnly = true;
+    } else timeValue = Temporal.Instant.from(executedAt).epochNanoseconds;
   } catch {
     timeCategory = 1;
     timeValue = executedAt;
@@ -203,6 +211,7 @@ function executionOrderKey(execution: TradeExecution) {
   return {
     timeCategory,
     timeValue,
+    dateOnly,
     sourceOrder,
     id: typeof execution.id === "string" ? execution.id : "",
   };
@@ -294,240 +303,152 @@ function groupBy<T>(values: readonly T[], keyOf: (value: T) => string) {
   const groups = new Map<string, T[]>();
   for (const value of values) {
     const key = keyOf(value);
-    groups.set(key, [...(groups.get(key) ?? []), value]);
+    const group = groups.get(key);
+    if (group) group.push(value);
+    else groups.set(key, [value]);
   }
   return groups;
+}
+
+/** A fingerprint identifies a version; the locator identifies one observation. */
+function executionRowIdentity(execution: TradeExecution) {
+  const source = execution.source;
+  if (!source.fileFingerprint?.trim() || !Number.isInteger(source.row) || source.row < 0) return undefined;
+  return JSON.stringify([
+    executionScopeIdentity(execution), executionSourceInstanceId(execution),
+    source.sheet ?? "", source.page ?? null, source.row,
+  ]);
+}
+
+function semanticStatementIdentity(execution: TradeExecution) {
+  const source = execution.source;
+  // china-merchants.ts hashes the security account, actual date, financial
+  // values, fees and both post-transaction balances. This is the existing
+  // legacy/column-layout overlap contract, rather than a generic broker ID.
+  if (source.platform !== "china-merchants" || source.timePrecision !== "date-only" ||
+      !source.fileFingerprint?.trim() || !source.statementRowFingerprint?.trim() || !source.settlement) return undefined;
+  return JSON.stringify([executionScopeIdentity(execution), source.platform, source.statementRowFingerprint]);
 }
 
 export function reconcileExecutions(
   current: readonly TradeExecution[],
   incoming: readonly TradeExecution[],
 ): ExecutionReconciliation {
-  const sameIdGroups = groupBy(
-    [
-      ...current.map((execution) => ({
-        execution,
-        origin: "current" as const,
-      })),
-      ...incoming.map((execution) => ({
-        execution,
-        origin: "incoming" as const,
-      })),
-    ],
-    ({ execution }) => execution.id,
-  );
-  const effective: Array<{
-    execution: TradeExecution;
-    origin: "current" | "incoming";
-  }> = [];
-  const identityDuplicates: ExecutionReconciliation["duplicates"] = [];
-  const identityReplacementIds = new Set<string>();
-  for (const group of sameIdGroups.values()) {
-    const hasIncoming = group.some(({ origin }) => origin === "incoming");
-    if (!hasIncoming || group.length === 1) {
-      effective.push(...group);
-      continue;
-    }
-    const kept = selectRepresentative(group);
-    effective.push(kept);
-    for (const skipped of group) {
-      if (skipped === kept) continue;
-      identityDuplicates.push({
-        kept: kept.execution,
-        skipped: skipped.execution,
-      });
-    }
-    if (
-      kept.origin === "incoming" &&
-      group.some(({ origin }) => origin === "current")
-    ) {
-      identityReplacementIds.add(kept.execution.id);
-    }
-  }
-
-  const tagged: TaggedExecution[] = effective.map(({ execution, origin }) => {
-    const sourceIdentity = executionSourceIdentity(execution);
-    const instantIdentity = executionInstantIdentity(execution.executedAt);
-    const coreIdentity = executionCoreIdentity(execution);
-    return {
-      execution,
-      origin,
-      candidateKey: executionCandidateKey(execution),
-      coreKey: coreIdentity.value,
-      sourceInstanceId: sourceIdentity.id,
-      sourceVerified: sourceIdentity.verified,
-      instantVerified: instantIdentity.verified,
-      coreVerified: coreIdentity.verified,
-    };
+  const tag = (execution: TradeExecution, origin: TaggedExecution["origin"]): TaggedExecution => ({
+    execution, origin, candidateKey: executionCandidateKey(execution),
+    coreKey: executionCoreKey(execution),
+    sourceInstanceId: executionSourceInstanceId(execution),
+    rowVerified: executionRowIdentity(execution) !== undefined,
+    instantVerified: executionInstantIdentity(execution.executedAt).verified,
+    coreVerified: executionCoreIdentity(execution).verified,
   });
-  const acceptedIncoming = new Set<TaggedExecution>();
-  const automaticReplacementIds = new Set(identityReplacementIds);
-  const duplicates: ExecutionReconciliation["duplicates"] = [
-    ...identityDuplicates,
-  ];
-  const unmatchedByCandidate = new Map<
-    string,
-    { current: TaggedExecution[]; incoming: TaggedExecution[] }
-  >();
-
-  const baseCandidateGroups = groupBy(tagged, ({ candidateKey }) => candidateKey);
-  const candidateGroups = new Map<string, TaggedExecution[]>();
-  for (const [key, group] of baseCandidateGroups) {
-    if (group.some(item => item.execution.source.statementMonth || item.execution.source.templateId)) {
-      // A monthly statement identifies an account. Do not collapse identical
-      // fills in distinct accounts, even when older screenshot imports did.
-      for (const [account, members] of groupBy(group, item => item.execution.accountId)) {
-        candidateGroups.set(`${key}|account:${account}`, members);
-      }
-    } else candidateGroups.set(key, group);
-  }
-  for (const [candidateKey, candidateGroup] of [...candidateGroups].sort(
-    ([left], [right]) => left.localeCompare(right),
-  )) {
-    const unmatched = { current: [], incoming: [] } as {
-      current: TaggedExecution[];
-      incoming: TaggedExecution[];
-    };
-    const coreGroups = groupBy(candidateGroup, ({ coreKey }) => coreKey);
-    for (const coreGroup of [...coreGroups.values()]) {
-      for (const record of coreGroup.filter(
-        ({ sourceVerified, instantVerified, coreVerified }) =>
-          !sourceVerified || !instantVerified || !coreVerified,
-      )) {
-        unmatched[record.origin].push(record);
-        if (record.origin === "incoming") acceptedIncoming.add(record);
-      }
-      const sourceGroups = [
-        ...groupBy(
-          coreGroup.filter(
-            ({ sourceVerified, instantVerified, coreVerified }) =>
-              sourceVerified && instantVerified && coreVerified,
-          ),
-          ({ sourceInstanceId }) => sourceInstanceId,
-        ),
-      ]
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([, records]) => [...records].sort(compareTagged));
-      const maximumMultiplicity = Math.max(
-        0,
-        ...sourceGroups.map((records) => records.length),
-      );
-      const sourceMultiplicity = new Map(
-        sourceGroups.flatMap((records) =>
-          records[0]
-            ? [[records[0].sourceInstanceId, records.length] as const]
-            : [],
-        ),
-      );
-
-      for (let index = 0; index < maximumMultiplicity; index += 1) {
-        const automaticPair = sourceGroups
-          .map((records) => records[index])
-          .filter((record): record is TaggedExecution => Boolean(record));
-        if (automaticPair.length === 1) {
-          const [record] = automaticPair;
-          unmatched[record.origin].push(record);
-          if (record.origin === "incoming") acceptedIncoming.add(record);
-          continue;
-        }
-
-        // Contradictory reported fees require the same explicit choice as a
-        // quantity/price conflict. Keep them intact when merging a decided batch.
-        const feeConflicts = automaticPair.filter(left => automaticPair.some(right =>
-          reportedFeesDisagree(left.execution, right.execution),
-        ));
-        if (feeConflicts.length > 0) {
-          const feeRepresentatives = [...groupBy(feeConflicts, record => new Decimal(record.execution.fee).toString()).values()]
-            .map(group => selectRepresentative(group, record => sourceMultiplicity.get(record.sourceInstanceId) ?? 0));
-          const retained = new Set(feeRepresentatives);
-          for (const record of feeRepresentatives) {
-            unmatched[record.origin].push(record);
-            if (record.origin === "incoming") acceptedIncoming.add(record);
-          }
-          for (const skipped of automaticPair.filter(record => !retained.has(record))) {
-            const kept = feeRepresentatives.find(record => skipped.execution.source.feeStatus === "reported" &&
-              !reportedFeesDisagree(record.execution, skipped.execution)) ?? selectRepresentative(feeRepresentatives);
-            duplicates.push({ kept: kept.execution, skipped: skipped.execution });
-            if (kept.origin === "incoming" && skipped.origin === "current") automaticReplacementIds.add(skipped.execution.id);
-          }
-          continue;
-        }
-
-        const kept = selectRepresentative(
-          automaticPair,
-          ({ sourceInstanceId }) =>
-            sourceMultiplicity.get(sourceInstanceId) ?? 0,
-        );
-        if (kept.origin === "incoming") acceptedIncoming.add(kept);
-        for (const skipped of automaticPair) {
-          if (skipped === kept) continue;
-          duplicates.push({ kept: kept.execution, skipped: skipped.execution });
-          if (kept.origin === "incoming" && skipped.origin === "current") {
-            automaticReplacementIds.add(skipped.execution.id);
-          }
-        }
-      }
-    }
-    unmatchedByCandidate.set(candidateKey, unmatched);
-  }
-
+  const taggedCurrent = current.map(execution => tag(execution, "current"));
+  const taggedIncoming = incoming.map(execution => tag(execution, "incoming"));
+  const remainingCurrent = new Set(taggedCurrent);
+  const remainingIncoming = new Set(taggedIncoming);
+  const acceptedIncoming = new Set(taggedIncoming);
+  const automaticReplacementIds = new Set<string>();
+  const duplicates: ExecutionReconciliation["duplicates"] = [];
   const conflicts: ExecutionConflict[] = [];
-  for (const [candidateKey, unmatched] of [...unmatchedByCandidate].sort(
-    ([left], [right]) => left.localeCompare(right),
-  )) {
-    const conflictingIncoming = unmatched.incoming.filter((candidate) =>
-      unmatched.current.some(
-        (existing) =>
-          existing.sourceVerified &&
-          candidate.sourceVerified &&
-          existing.instantVerified &&
-          candidate.instantVerified &&
-          existing.coreVerified &&
-          candidate.coreVerified &&
-          existing.sourceInstanceId !== candidate.sourceInstanceId &&
-          (existing.coreKey !== candidate.coreKey || reportedFeesDisagree(existing.execution, candidate.execution)),
-      ),
-    );
-    if (conflictingIncoming.length === 0) continue;
-    const conflictingExisting = unmatched.current.filter((existing) =>
-      conflictingIncoming.some(
-        (candidate) =>
-          existing.sourceVerified &&
-          candidate.sourceVerified &&
-          existing.instantVerified &&
-          candidate.instantVerified &&
-          existing.coreVerified &&
-          candidate.coreVerified &&
-          existing.sourceInstanceId !== candidate.sourceInstanceId &&
-          (existing.coreKey !== candidate.coreKey || reportedFeesDisagree(existing.execution, candidate.execution)),
-      ),
-    );
-    for (const conflict of conflictingIncoming) {
-      acceptedIncoming.delete(conflict);
-    }
+
+  const sameContent = (left: TaggedExecution, right: TaggedExecution) =>
+    left.candidateKey === right.candidateKey && left.coreKey === right.coreKey &&
+    !reportedFeesDisagree(left.execution, right.execution);
+  const conflict = (key: string, existing: TaggedExecution[], additions: TaggedExecution[]) => {
+    existing.forEach(record => remainingCurrent.delete(record));
+    additions.forEach(record => { remainingIncoming.delete(record); acceptedIncoming.delete(record); });
     conflicts.push({
-      id: `conflict:${candidateKey}`,
-      candidateKey,
-      existing: conflictingExisting
-        .map(({ execution }) => execution)
-        .sort(compareExecutions),
-      incoming: conflictingIncoming
-        .map(({ execution }) => execution)
-        .sort(compareExecutions),
+      id: `conflict:${key}`, candidateKey: key,
+      existing: existing.map(record => record.execution).sort(compareExecutions),
+      incoming: additions.map(record => record.execution).sort(compareExecutions),
     });
+  };
+  const duplicate = (existing: TaggedExecution, addition: TaggedExecution) => {
+    const kept = selectRepresentative([existing, addition]);
+    const skipped = kept === existing ? addition : existing;
+    remainingCurrent.delete(existing);
+    remainingIncoming.delete(addition);
+    if (kept === existing) acceptedIncoming.delete(addition);
+    else automaticReplacementIds.add(existing.execution.id);
+    duplicates.push({ kept: kept.execution, skipped: skipped.execution });
+  };
+
+  // IDs remain authoritative for an exact retry, but never silently upgrade a
+  // changed account, nature or core value merely because the ID was reused.
+  const incomingIds = groupBy(taggedIncoming, record => record.execution.id);
+  const currentIds = new Map(taggedCurrent.map(record => [record.execution.id, record]));
+  for (const [id, additions] of incomingIds) {
+    const existing = currentIds.get(id);
+    if (existing) {
+      const [addition, ...retries] = additions;
+      if (additions.every(record => sameContent(existing, record))) {
+        const kept = selectRepresentative([existing, ...additions]);
+        remainingCurrent.delete(existing);
+        for (const record of additions) {
+          remainingIncoming.delete(record);
+          if (record !== kept) acceptedIncoming.delete(record);
+        }
+        if (kept.origin === "incoming") automaticReplacementIds.add(id);
+        for (const record of [existing, ...additions]) {
+          if (record !== kept) duplicates.push({ kept: kept.execution, skipped: record.execution });
+        }
+      } else conflict(`id:${id}`, [existing], [addition, ...retries]);
+    } else if (additions.length > 1 && additions.every(record => sameContent(additions[0], record))) {
+      const kept = selectRepresentative(additions);
+      for (const record of additions) {
+        if (record === kept) continue;
+        acceptedIncoming.delete(record);
+        remainingIncoming.delete(record);
+        duplicates.push({ kept: kept.execution, skipped: record.execution });
+      }
+    }
+  }
+
+  const pairIdentities = (identityOf: (execution: TradeExecution) => string | undefined, prefix: string) => {
+    const groups = groupBy([...remainingCurrent].filter(record => identityOf(record.execution)), record => identityOf(record.execution)!);
+    for (const addition of [...remainingIncoming].sort(compareTagged)) {
+      const identity = identityOf(addition.execution);
+      if (!identity) continue;
+      const existing = groups.get(identity)?.find(record => remainingCurrent.has(record));
+      if (!existing) continue;
+      if (sameContent(existing, addition) && existing.instantVerified && addition.instantVerified && existing.coreVerified && addition.coreVerified) {
+        duplicate(existing, addition);
+      } else conflict(`${prefix}:${identity}`, [existing], [addition]);
+    }
+  };
+  pairIdentities(executionRowIdentity, "row");
+  pairIdentities(semanticStatementIdentity, "statement");
+
+  // Equality of values across independent material versions is only a
+  // candidate association. Pair exact cores first, then remaining candidates,
+  // with each observation participating at most once. A user choice can never
+  // accidentally replace two same-second fills with one incoming row.
+  const currentCandidates = groupBy([...remainingCurrent].filter(record => record.instantVerified && record.coreVerified), record => record.candidateKey);
+  for (const [key, additions] of groupBy([...remainingIncoming], record => record.candidateKey)) {
+    const existing = (currentCandidates.get(key) ?? []).sort(compareTagged);
+    const pairs: Array<[TaggedExecution, TaggedExecution]> = [];
+    const pair = (addition: TaggedExecution, exact: boolean) => {
+      if (!addition.instantVerified || !addition.coreVerified) return false;
+      const index = existing.findIndex(record =>
+        // Only two proven stable locators establish independent same-file rows.
+        // A fingerprint alone cannot establish that a malformed row is new.
+        (!record.rowVerified || !addition.rowVerified || record.sourceInstanceId !== addition.sourceInstanceId) &&
+        (!exact || sameContent(record, addition)),
+      );
+      if (index < 0) return false;
+      pairs.push([existing.splice(index, 1)[0], addition]);
+      return true;
+    };
+    const unmatched = additions.sort(compareTagged).filter(addition => !pair(addition, true));
+    unmatched.forEach(addition => pair(addition, false));
+    if (pairs.length) conflict(key, pairs.map(([record]) => record), pairs.map(([, record]) => record));
   }
 
   return {
-    acceptedIncoming: [...acceptedIncoming]
-      .map(({ execution }) => execution)
-      .sort(compareExecutions),
+    acceptedIncoming: [...acceptedIncoming].map(record => record.execution).sort(compareExecutions),
     automaticReplacementIds: [...automaticReplacementIds].sort(),
-    duplicates: duplicates.sort(
-      (left, right) =>
-        compareExecutions(left.skipped, right.skipped) ||
-        compareExecutions(left.kept, right.kept),
-    ),
-    conflicts,
+    duplicates: duplicates.sort((left, right) => compareExecutions(left.skipped, right.skipped) || compareExecutions(left.kept, right.kept)),
+    conflicts: conflicts.sort((left, right) => left.id.localeCompare(right.id)),
   };
 }
 

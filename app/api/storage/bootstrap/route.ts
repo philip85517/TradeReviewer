@@ -1,22 +1,8 @@
 import { openSqliteDatabase } from "../../../../db/sqlite";
-import { getSqliteStore } from "../../../lib/storage/sqlite-store";
-
+import { readHomepageStoredCollection } from "../../../lib/storage/homepage-source-snapshot";
+import { tradeFailure, tradeResponse } from "../trades/http";
 export const runtime = "nodejs";
-
-function json(body: unknown, status = 200) {
-  return Response.json(body, {
-    status,
-    headers: { "Cache-Control": "no-store" },
-  });
-}
-
 export async function GET() {
-  try {
-    return json(getSqliteStore(openSqliteDatabase()).getBootstrap());
-  } catch {
-    return json(
-      { error: { code: "database-unavailable", message: "Storage database is unavailable" } },
-      503,
-    );
-  }
+  try { return tradeResponse(readHomepageStoredCollection(openSqliteDatabase())); }
+  catch (error) { return tradeFailure(error); }
 }

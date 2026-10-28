@@ -7,6 +7,53 @@ import { reconcileExecutions } from "./execution-reconciliation";
 const options = { fileName: "arbitrary.pdf", fileFingerprint: "one" };
 
 describe("A-share statement column layouts", () => {
+  it("ignores a page number split across date, business and number columns", () => {
+    const pages = columnStatement();
+    pages[0].items.push(...[["第1页/", 36], ["共", 390], ["2页", 464]].map(([text, x]) => ({ text: String(text), x: Number(x), y: 580, width: 12, height: 9 })));
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(2);
+    expect(result.exclusions).toEqual([]);
+  });
+
+  it("retains a trade with both missing business and malformed date as pending evidence", () => {
+    const pages = columnStatement();
+    pages[0].items.find(item => item.y === 182 && item.x === 20)!.text = "bad";
+    pages[0].items.find(item => item.y === 182 && item.text === "证券卖出")!.text = "";
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+    expect(result.diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it.each([false, true])("ignores a page footer in the business column, including continuation pages: %j", continuation => {
+    const pages = columnStatement({ continuation });
+    for (const page of pages) page.items.push({ text: `第${page.pageNumber}页/共${pages.length}页`, x: 390, y: 580, width: 70, height: 8 });
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(2);
+    expect(result.exclusions).toEqual([]);
+    expect(result.diagnostics.some(item => item.code === "unknown-china-merchants-business")).toBe(false);
+  });
+
+  it.each(["2025-01-03", "not-a-date", ""])("retains a trade with malformed date %j as pending evidence", dateText => {
+    const pages = columnStatement();
+    const date = pages[0].items.find(item => item.y === 182 && item.x === 20)!;
+    date.text = dateText;
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "invalid-china-merchants-trade-row" }));
+  });
+
+  it("keeps a recognized cash flow ignored even when its date is not a trade date", () => {
+    const pages = columnStatement();
+    pages[0].items.find(item => item.y === 182 && item.x === 20)!.text = "not-a-date";
+    pages[0].items.find(item => item.y === 182 && item.text === "证券卖出")!.text = "利息归本";
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.exclusions).toEqual([expect.objectContaining({ category: "cash", disposition: "ignored", ruleId: "china-merchants/non-trade/cash@1" })]);
+    expect(result.diagnostics.some(item => item.code === "invalid-china-merchants-trade-row")).toBe(false);
+  });
+
   it.each([{}, { scale: 1.7, shift: 43 }, { continuation: true }])(
     "reads independent columns without fixed coordinates: %j",
     (variant) => {

@@ -5,6 +5,36 @@ import { f4, legacy, page } from './__fixtures__/futu-pdf-layouts';
 import { contracts } from './__fixtures__/futu-pdf-contracts';
 const options = {fileName:'synthetic.pdf',fileFingerprint:'synthetic'};
 describe('Futu PDF evidence parsing',()=>{
+  it.each(['bad-time', ''])('retains an unreadable child fill when its time is %j too',time=>{
+    const pages=legacy('F1');
+    const child=pages[0].items.filter(item=>item.y===102&&item.x>200).map(item=>({...item,y:120,text:item.x+item.width<390?time:'bad'}));
+    for(const item of pages[0].items)if(item.y>=120)item.y+=18;
+    pages[0].items.push(...child);
+    const result=parseFutuPdfPages(pages,options);
+    expect(result.blocked).toBe(true);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({code:'invalid-futu-numbers',severity:'error'}));
+  });
+
+  it('ignores a lone page footer in the execution columns',()=>{
+    const pages=legacy('F1');
+    pages[0].items.push({text:'第1页/共1页',x:430,y:145,width:60,height:8});
+    const result=parseFutuPdfPages(pages,options);
+    expect(result.blocked).toBe(false);
+    expect(result.records).toEqual(parseFutuPdfPages(legacy('F1'),options).records);
+  });
+
+  it('validates unreadable child-fill values without mistaking them for a clock continuation',()=>{
+    const pages=legacy('F1');
+    const child=pages[0].items.filter(item=>item.y===102&&item.x>200).map(item=>({...item,y:120,text:item.x+item.width<390?'2020/01/27 11:31:42':item.text}));
+    for(const item of pages[0].items)if(item.y>=120)item.y+=18;
+    pages[0].items.push(...child);
+    expect(parseFutuPdfPages(pages,options).records[0]).toMatchObject({quantity:'280',source:{executionGroup:{fillCount:2}}});
+    for(const item of pages[0].items)if(item.y===120&&item.x+item.width>390)item.text='bad';
+    const result=parseFutuPdfPages(pages,options);
+    expect(result.blocked).toBe(true);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({code:'invalid-futu-numbers',severity:'error'}));
+  });
+
   it.each([
     ['交易合約明細', undefined, 'F0', 'supported'],
     ['訂單合計 買賣方向 價格', '買賣方向 訂單日期 價格', 'F4a', 'unsupported'],

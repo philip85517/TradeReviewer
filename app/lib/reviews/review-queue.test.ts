@@ -17,7 +17,7 @@ import { buildReviewQueueSummary } from "./review-queue-summary";
 
 const instrument = {id:"CN-SH:TEST",name:"测试ETF",symbol:"TEST",market:"CN-SH",currency:"CNY"};
 function pair(accountId: string, date: string): TradeExecution[] {
-  return (["buy", "sell"] as const).map((side,i) => ({id:`${accountId}-${date}-${side}`,accountId,accountLabel:accountId,instrument,side,executedAt:`${date}T0${i+1}:00:00Z`,quantity:"100",price:i ? "11" : "10",fee:"1",source:{platform:"china-merchants",row:i}}));
+  return (["buy", "sell"] as const).map((side,i) => ({id:`${accountId}-${date}-${side}`,accountId,accountLabel:accountId,instrument,side,executedAt:`${date}T0${i+1}:00:00Z`,quantity:"100",price:i ? "11" : "10",fee:"1",source:{platform:"china-merchants",row:i,formatRuleId:"china-merchants/pdf/monthly-v1",fileFingerprint:"review-queue-fixture"}}));
 }
 export function queueFixtures() {
   return buildTradeLibraryEntries(buildInstrumentTradeSummaries([...pair("A","2025-01-02"), ...pair("B","2026-01-02"), ...pair("A","2026-02-02")]),{},{});

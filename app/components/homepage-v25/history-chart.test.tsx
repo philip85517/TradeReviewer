@@ -415,3 +415,119 @@ describe("HistoryChart replacement motion lifecycle", () => {
     expect(motion.animate).toHaveBeenCalledTimes(1); motion.preference(true); expect(motion.cancel).toHaveBeenCalled();
   });
 });
+
+describe("HistoryChart candidate2 successful empty plot and caller metadata", () => {
+  it.each(["period-pnl", "cumulative-pnl", "win-rate", "round-count"] as const)("covers the whole successful empty %s plot behind its grid without financial targets", mode => {
+    render(<HistoryChart data={data()} mode={mode} reportCurrency="CNY" readState={{ kind: "empty", reason: "所选范围无已平仓回合" }} />);
+    const region = screen.getByTestId("hp-history-empty-region");
+    expect(region).toHaveAttribute("data-state", "empty");
+    expect(region).toHaveAttribute("x", "84"); expect(region).toHaveAttribute("y", "66");
+    expect(region).toHaveAttribute("width", "1228"); expect(region).toHaveAttribute("height", "210");
+    expect(region).toHaveAttribute("aria-hidden", "true"); expect(region).toHaveAttribute("pointer-events", "none");
+    expect(screen.getByTestId("hp-history-plot").firstElementChild).toBe(region);
+    expect(screen.getByTestId("hp-history-zero-line")).toBeInTheDocument();
+    expect(screen.getAllByTestId("hp-history-y-tick")).toHaveLength(5);
+    expect(screen.getByTestId("hp-history-card")).toHaveAttribute("data-height", "320");
+    expect(screen.queryByTestId("hp-history-segment")).not.toBeInTheDocument();
+    expect(screen.queryByTestId(/^hp-history-point-/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["period-pnl", ["0", "1", "2", "3", "4"]],
+    ["cumulative-pnl", ["0", "1", "2", "3", "4"]],
+    ["win-rate", ["0%", "25%", "50%", "75%", "100%"]],
+    ["round-count", ["0", "1", "2", "3", "4"]],
+  ] as const)("retains twelve caller month labels for empty %s while ignoring contradictory financial axis extents", (mode, ticks) => {
+    const committed = data(Array.from({ length: 12 }, (_, index) => point(String(index + 1).padStart(2, "0"), `${index + 1}月`, "-999999999999999999999999999999", {
+      cumulativeNet: money("888888888888888888888888888888"), roundCount: scalar("777777777777777777777777777777"), winRate: scalar("99.999999"),
+    })));
+    render(<HistoryChart data={committed} mode={mode} reportCurrency="CNY" readState={{ kind: "empty", reason: "范围读取成功，无回合" }} />);
+    const labels = Array.from(screen.getByTestId("hp-history-card").querySelectorAll("svg > text"));
+    expect(labels.map(label => label.textContent)).toEqual(["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]);
+    expect(labels[0]).toHaveAttribute("x", "84"); expect(labels[11]).toHaveAttribute("x", "1312");
+    expect(screen.getAllByTestId("hp-history-y-tick").map(tick => tick.textContent)).toEqual(ticks);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.getByTestId("hp-history-card")).not.toHaveTextContent("999999999999");
+    expect(screen.getByTestId("hp-history-card")).not.toHaveTextContent("888888888888");
+  });
+
+  it("keeps only explicitly supplied irregular annual metadata and describes it without creating hits", () => {
+    const committed: HistoryChartData = { ...data([
+      point("2021", "2021", "900", { start: "2021-01-01", end: "2021-12-31" }),
+      point("2024", "2024", "-800", { start: "2024-01-01", end: "2024-12-31" }),
+      point("2027", "2027", "700", { start: "2027-01-01", end: "2027-12-31" }),
+    ]), grain: "year", range: { label: "2021—2027", start: "2021-01-01", end: "2027-12-31", timeZone: "Asia/Shanghai" } };
+    render(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "明确年度空范围" }} />);
+    const labels = Array.from(screen.getByTestId("hp-history-card").querySelectorAll("svg > text"));
+    expect(labels.map(label => label.textContent)).toEqual(["2021", "2024", "2027"]);
+    expect(labels.map(label => label.getAttribute("x"))).toEqual(["84", "698", "1312"]);
+    expect(screen.getByRole("group", { name: "每年净盈亏，2021—2027" })).toHaveAccessibleDescription("期间：2021、2024、2027");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("does not infer period metadata when a successful empty caller provides no data", () => {
+    const { rerender } = render(<HistoryChart data={data()} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "有明确月份" }} />);
+    rerender(<HistoryChart data={null} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "未提交期间元数据" }} />);
+    expect(screen.getByTestId("hp-history-empty-region")).toBeInTheDocument();
+    expect(screen.getByTestId("hp-history-card").querySelectorAll("svg > text")).toHaveLength(0);
+    expect(screen.getByRole("group", { name: "每月净盈亏，尚无已提交范围" })).not.toHaveAttribute("aria-describedby");
+    expect(screen.getByRole("status")).toHaveTextContent("未提交期间元数据");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it.each([342, 1168, 1328])("lays out explicit empty month metadata at card width%s without inventing targets", width => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, width, 320));
+    const committed = data(Array.from({ length: 12 }, (_, index) => point(String(index + 1).padStart(2, "0"), `${index + 1}月`, "100")));
+    render(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "月份空范围" }} />);
+    const labels = Array.from(screen.getByTestId("hp-history-card").querySelectorAll("svg > text"));
+    expect(labels).toHaveLength(12);
+    expect(new Set(labels.map(label => label.getAttribute("y"))).size).toBe(width === 342 ? 2 : 1);
+    expect(screen.getByTestId("hp-history-empty-region")).toHaveAttribute("width", String(width - 100));
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it.each([342, 759, 760, 761, 1328])("uses measured empty annual labels at width%s, retaining all metadata without financial hits", width => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, width, 320));
+    Object.defineProperty(SVGElement.prototype, "getComputedTextLength", { configurable: true, value: () => 32 });
+    try {
+      const years = Array.from({ length: 40 }, (_, index) => String(1980 + index));
+      const committed: HistoryChartData = { ...data(years.map(year => point(year, year, "999999999", { start: `${year}-01-01`, end: `${year}-12-31` }))), grain: "year",
+        range: { label: "1980—2019", start: "1980-01-01", end: "2019-12-31", timeZone: "Asia/Shanghai" } };
+      render(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "40年空范围" }} />);
+      const all = Array.from(screen.getByTestId("hp-history-card").querySelectorAll("svg > text"));
+      const visible = all.filter(label => label.getAttribute("visibility") !== "hidden");
+      expect(all).toHaveLength(40); expect(visible[0]).toHaveTextContent("1980"); expect(visible.at(-1)).toHaveTextContent("2019");
+      expect(new Set(visible.map(label => label.getAttribute("y"))).size).toBe(2);
+      if (width === 1328) expect(visible).toHaveLength(40);
+      for (const row of ["298", "312"]) {
+        const sameRow = visible.filter(label => label.getAttribute("y") === row);
+        for (let index = 1; index < sameRow.length; index++) {
+          expect(Number(sameRow[index].getAttribute("x")) - Number(sameRow[index - 1].getAttribute("x"))).toBeGreaterThanOrEqual(36);
+        }
+      }
+      expect(screen.getByRole("group", { name: "每年净盈亏，1980—2019" })).toHaveAccessibleDescription(/期间：1980、1981、1982/);
+      expect(screen.getByRole("group", { name: "每年净盈亏，1980—2019" })).toHaveAccessibleDescription(/2018、2019$/);
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    } finally { Reflect.deleteProperty(SVGElement.prototype, "getComputedTextLength"); }
+  });
+
+  it.each(["ready", "pending", "error"] as const)("does not overlay an empty region on %s caller data", kind => {
+    render(<HistoryChart data={data()} mode="period-pnl" reportCurrency="CNY" readState={kind === "ready" ? { kind } : { kind, reason: "保留旧完整数据" }} />);
+    expect(screen.queryByTestId("hp-history-empty-region")).not.toBeInTheDocument();
+    expect(screen.getByTestId("hp-history-point-01")).toBeInTheDocument();
+    expect(screen.getByTestId("hp-history-region-02")).toHaveAttribute("data-state", "no-rounds");
+  });
+
+  it("clears the prior reading through ready→empty→ready with identical caller identity", () => {
+    const committed = data();
+    const { rerender } = render(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "ready" }} />);
+    fireEvent.focus(hit("01")); expect(reading()).toBeInTheDocument();
+    rerender(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "empty", reason: "范围成功为空" }} />);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(); expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    rerender(<HistoryChart data={committed} mode="period-pnl" reportCurrency="CNY" readState={{ kind: "ready" }} />);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(); expect(screen.queryByTestId("hp-history-crosshair")).not.toBeInTheDocument();
+    expect(hit("01")).toBeInTheDocument();
+  });
+});

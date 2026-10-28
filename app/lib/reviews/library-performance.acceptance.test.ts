@@ -45,7 +45,7 @@ function rowsFrom(executions: TradeExecution[]) {
 }
 
 describe("library performance acceptance boundaries", () => {
-  it("uses the built entry's inferred live nature while isolating an explicit unknown entry", () => {
+  it("requires supported legacy statement evidence for live aggregation and isolates unknown members", () => {
     const legacyInstrument = {
       id: "CN:LEGACY",
       symbol: "LEGACY",
@@ -60,26 +60,33 @@ describe("library performance acceptance boundaries", () => {
       market: "CN-SH",
       currency: "CNY",
     };
-    const legacy = [
+    const brokerOnly = [
       execution("legacy-in", legacyInstrument, "buy", "2026-01-01T00:00:00.000Z"),
       execution("legacy-out", legacyInstrument, "sell", "2026-01-02T00:00:00.000Z"),
     ];
+    const brokerOnlyEntry = entriesFrom(brokerOnly)[0];
+    expect(brokerOnlyEntry.tradeNature).toBe("unknown");
+    expect(brokerOnlyEntry.episodes[0].episode.tradeNature).toBe("unknown");
+    const legacy = brokerOnly.map(fill => ({
+      ...fill,
+      source: { ...fill.source, formatRuleId: "futu/xlsx/trades-v1", fileFingerprint: "fixture-legacy-performance-statement" },
+    }));
     const unknown = [
       execution("unknown-in", unknownInstrument, "buy", "2026-01-01T00:00:00.000Z", {
         accountId: "account-unknown",
         accountLabel: "未知账户",
-        source: { platform: "manual", row: 1 },
+        source: { platform: "manual", row: 1, tradeNature: "unknown" },
       }),
       execution("unknown-out", unknownInstrument, "sell", "2026-01-02T00:00:00.000Z", {
         accountId: "account-unknown",
         accountLabel: "未知账户",
-        source: { platform: "manual", row: 2 },
+        source: { platform: "manual", row: 2, tradeNature: "unknown" },
       }),
     ];
     const entries = entriesFrom([...legacy, ...unknown]);
     const legacyEntry = entries.find((entry) => entry.instrument.symbol === "LEGACY");
     expect(legacyEntry?.tradeNature).toBe("live");
-    expect(legacyEntry?.episodes[0]?.episode.tradeNature).toBe("unknown");
+    expect(legacyEntry?.episodes[0]?.episode.tradeNature).toBe("live");
 
     const summary = summarizeLibraryPerformance(
       entries.flatMap((entry) => entry.episodes.map((item) => ({ entry, item }))),
@@ -90,6 +97,37 @@ describe("library performance acceptance boundaries", () => {
       "unknown",
     ]);
     expect(summary.cny).toMatchObject({ available: false, reason: "multiple-scopes" });
+
+    const legacySource = legacy[0].source;
+    const unknownSources: TradeExecution["source"][] = [
+      { ...legacySource, tradeNature: "unknown" },
+      { ...legacySource, tradeNature: "live", tradingNature: "simulated" },
+      { ...legacySource, platform: "fixture" },
+      { ...legacySource, formatRuleId: "futu/xlsx/unsupported" },
+      { ...legacySource, formatRuleId: "tiger/pdf/monthly-v1" },
+      { ...legacySource, fileFingerprint: undefined },
+      { ...legacySource, fileFingerprint: "   " },
+      { ...legacySource, tradeNature: "live", simulationRunId: "run-conflict" },
+    ];
+    for (const source of unknownSources) {
+      const invalid = entriesFrom(brokerOnly.map(fill => ({ ...fill, source: { ...source, row: fill.source.row } })))[0];
+      expect(invalid.tradeNature).toBe("unknown");
+      expect(invalid.episodes[0].episode.tradeNature).toBe("unknown");
+      for (const outerNature of ["live", "simulation"] as const) {
+        invalid.tradeNature = outerNature;
+        invalid.episodes[0].episode.tradeNature = outerNature;
+        const members = invalid.episodes.map(item => ({ entry: invalid, item }));
+        expect(summarizeLibraryPerformance(members).comparableGroups.map(group => group.tradeNature)).toEqual(["unknown"]);
+      }
+    }
+    for (const outerNature of ["live", "simulation"] as const) {
+      const unknownEntry = entries.find(entry => entry.instrument.symbol === "UNKNOWN")!;
+      unknownEntry.tradeNature = outerNature;
+      unknownEntry.episodes[0].episode.tradeNature = outerNature;
+      const mixed = summarizeLibraryPerformance(entries.flatMap(entry => entry.episodes.map(item => ({ entry, item }))));
+      expect(mixed.comparableGroups.map(group => group.tradeNature)).toEqual(["live", "unknown"]);
+      expect(mixed.cny).toMatchObject({ available: false, reason: "multiple-scopes" });
+    }
   });
 
   it("keeps short opening notional correct and does not count duplicated IPO evidence twice", () => {

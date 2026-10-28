@@ -6,6 +6,8 @@ import {
 } from "../../../../lib/instruments/metadata-contracts";
 import { getSqliteStore } from "../../../../lib/storage/sqlite-store";
 
+import { tradeFailure } from "../../trades/http";
+
 export const runtime = "nodejs";
 
 function response(body: unknown, status = 200) {
@@ -58,12 +60,7 @@ export async function GET(request: Request) {
     const instruments = getSqliteStore(openSqliteDatabase())
       .getInstrumentMetadata(instrumentIds);
     return response({ instruments });
-  } catch {
-    return response(
-      { error: { code: "storage-unavailable", message: "storage unavailable" } },
-      503,
-    );
-  }
+  } catch (error) { return tradeFailure(error); }
 }
 
 export async function PUT(request: Request) {
@@ -78,13 +75,5 @@ export async function PUT(request: Request) {
   try {
     getSqliteStore(openSqliteDatabase()).putInstrumentMetadata(metadata);
     return response({ ok: true });
-  } catch (caught) {
-    if (caught instanceof Error && (caught.message.startsWith("Invalid ") || caught.message.includes("证券元数据结果无效"))) {
-      return invalid();
-    }
-    return response(
-      { error: { code: "storage-unavailable", message: "storage unavailable" } },
-      503,
-    );
-  }
+  } catch (error) { return tradeFailure(error); }
 }

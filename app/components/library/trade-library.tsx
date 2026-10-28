@@ -1,5 +1,7 @@
 "use client";
 
+import { parseNonNegativeFee } from "../../lib/trades/execution-fee";
+
 import {
   ArrowLeft,
   BarChart3,
@@ -227,7 +229,7 @@ function feeCurrency(executions: TradeEpisode["executions"]): string | undefined
 }
 
 function feeLabel(execution: TradeEpisode["executions"][number]) {
-  return execution.source.feeStatus === "unknown"
+  return execution.source.feeStatus === "unknown" || parseNonNegativeFee(execution.fee) === null
     ? "待核对"
     : `${execution.fee} ${executionFeeCurrency(execution)}`;
 }
@@ -1341,7 +1343,7 @@ export function TradeLibrary({
                     </span>
                     <b
                       className={
-                        Number(item.metrics.netPnl ?? 0) >= 0
+                        item.metrics.netPnl === null ? undefined : Number(item.metrics.netPnl) >= 0
                           ? "positive"
                           : "negative"
                       }
@@ -1389,7 +1391,7 @@ export function TradeLibrary({
                 <span>净盈亏</span>
                 <strong
                   className={
-                    Number(metrics.netPnl ?? 0) >= 0
+                    detailPnl === null ? undefined : Number(detailPnl) >= 0
                       ? "positive"
                       : "negative"
                   }
@@ -1414,7 +1416,7 @@ export function TradeLibrary({
               </div>
               <div>
                 <span>费用</span>
-                <strong>{episode.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : feeCurrency(episode.executions) ? `${metrics.fees} ${feeCurrency(episode.executions)}` : "币种待核对"}</strong>
+                <strong>{metrics.fees === null || episode.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : feeCurrency(episode.executions) ? `${metrics.fees} ${feeCurrency(episode.executions)}` : "币种待核对"}</strong>
               </div>
               <div>
                 <span>R 倍数</span>

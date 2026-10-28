@@ -47,7 +47,7 @@ describe("RoomHoldingsPanel", () => {
   it("shows holding status and opens the exact episode", async () => {
     const user = userEvent.setup();
     const onOpenInReview = vi.fn();
-    const value = entry();
+    const value = liveEntry();
     const metadata: ReadonlyMap<string, TradingRoomInstrumentMetadata> = new Map([[value.instrument.id, { market: "US", symbol: "TEST", assetType: "stock" }]]);
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
@@ -73,7 +73,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("shows fractional holding quantities to two decimal places without changing the model value", () => {
-    const value = entry();
+    const value = liveEntry();
     value.episodes[0].episode.executions[0].quantity = "1.23456789";
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} />);
@@ -84,7 +84,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("explains missing quote without inventing a current price or PnL", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} />);
     const holdings = screen.getByRole("region", { name: "当前持仓" });
@@ -94,7 +94,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("keeps quote and valuation diagnostics accessible as separate cell content", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} />);
 
@@ -106,7 +106,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("labels a short position without exposing a diagnostics link", async () => {
-    const value = entry();
+    const value = liveEntry();
     const episode = value.episodes[0].episode;
     episode.executions[0].side = "sell";
     episode.executions[0].source.positionEffect = "open-short";
@@ -124,7 +124,7 @@ describe("RoomHoldingsPanel", () => {
 
   it("offers a quote retry for stale holdings", async () => {
     const user = userEvent.setup();
-    const value = entry();
+    const value = liveEntry();
     const onRetryQuote = vi.fn();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-10", fetchedAt: null, provider: "fixture", freshness: "stale" } }} onOpenInReview={() => undefined} onRetryQuote={onRetryQuote} />);
@@ -135,7 +135,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("keeps a negative import difference as evidence-to-check and does not show cost or PnL", () => {
-    const value = entry();
+    const value = liveEntry();
     const episode = value.episodes[0].episode;
     episode.executions[0].side = "sell";
     episode.executions[0].quantity = "10000";
@@ -165,7 +165,7 @@ describe("RoomHoldingsPanel", () => {
     const user = userEvent.setup();
     let resolveRetry!: () => void;
     const onRetryQuote = vi.fn(() => new Promise<void>(resolve => { resolveRetry = resolve; }));
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     const props = {
       entries: [value],
@@ -192,7 +192,7 @@ describe("RoomHoldingsPanel", () => {
   it("reports a rejected quote retry as a failure", async () => {
     const user = userEvent.setup();
     const onRetryQuote = vi.fn(async () => { throw new Error("source down"); });
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} onRetryQuote={onRetryQuote} />);
 
@@ -201,7 +201,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("shows the quote date inline", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
       <RoomHoldingsPanel
@@ -216,8 +216,8 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("disambiguates colliding account labels without exposing account IDs", () => {
-    const first = entry("account-1");
-    const second = entry("account-2");
+    const first = liveEntry("account-1");
+    const second = liveEntry("account-2");
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[first, second]} scope={scope} onOpenInReview={() => undefined} />);
     const holdings = screen.getByRole("region", { name: "当前持仓" });
@@ -228,7 +228,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("keeps source price precision and makes average cost detail available", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
       <RoomHoldingsPanel
@@ -248,7 +248,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("labels stale quotes inline and separates imported, quote, and viewed dates", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
       <RoomHoldingsPanel
@@ -266,7 +266,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("keeps the stale reference warning when the quote predates the latest execution", () => {
-    const value = entry();
+    const value = liveEntry();
     value.episodes[0].episode.executions[0].executedAt = "2026-09-18T01:00:00.000Z";
     value.firstTradeAt = value.episodes[0].episode.executions[0].executedAt;
     value.lastTradeAt = value.firstTradeAt;
@@ -300,8 +300,8 @@ describe("RoomHoldingsPanel", () => {
 
   it("explains disabled PnL sorting in the default recent state for mixed currencies", async () => {
     const user = userEvent.setup();
-    const first = entry("account-1");
-    const second = entry("account-2");
+    const first = liveEntry("account-1");
+    const second = liveEntry("account-2");
     for (const instrument of [second.instrument, second.episodes[0].episode.instrument, second.episodes[0].episode.executions[0].instrument]) {
       instrument.id = "HK:TEST";
       instrument.symbol = "TESTHK";
@@ -325,7 +325,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("uses loss styling and keeps the negative sign for negative PnL", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
       <RoomHoldingsPanel
@@ -341,7 +341,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("uses neutral styling for a zero unrealized PnL", () => {
-    const value = entry();
+    const value = liveEntry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
       <RoomHoldingsPanel
@@ -359,7 +359,7 @@ describe("RoomHoldingsPanel", () => {
   });
 
   it("shows plain-language quote status and an explicit market badge", () => {
-    const value = entry();
+    const value = liveEntry();
     value.instrument.market = "CN-SH";
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     const metadata: ReadonlyMap<string, TradingRoomInstrumentMetadata> = new Map([[value.instrument.id, { market: "CN-SH", symbol: "TEST", assetType: "stock" }]]);
@@ -383,7 +383,7 @@ describe("RoomHoldingsPanel", () => {
 describe("holdings table workflow", () => {
  it("keeps every market in one table with one header and numbered five-row pages", async () => {
   const entries = Array.from({length: 12}, (_, index) => {
-    const value = entry(`account-${index + 1}`);
+    const value = liveEntry(`account-${index + 1}`);
     value.instrument.id = `US:TEST-${index + 1}`;
     value.instrument.symbol = `TEST${index + 1}`;
     value.episodes[0].episode.instrument.id = value.instrument.id;
@@ -410,7 +410,7 @@ describe("holdings table workflow", () => {
  });
 
  it("converts row values and CSV amounts to the selected report currency while prices stay local", () => {
-  const value = entry();
+  const value = liveEntry();
   const fxSnapshot = { id: "fx-hkd", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "complete" as const, rates: { "USD/CNY": "7", "HKD/CNY": "0.9", "CNY/CNY": "1" } };
   const scope = createDefaultRoomScope("2026-09-19");
   const model = buildCurrentPortfolio([value], { scope, asOf: "2026-09-19", quotesByInstrument: { "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } } });
@@ -425,7 +425,7 @@ describe("holdings table workflow", () => {
  });
 
  it("keeps a missing target FX rate visible as unavailable instead of relabeling the source amount", () => {
-  const value = entry();
+  const value = liveEntry();
   const scope = createDefaultRoomScope("2026-09-19");
   const partialFx = { id: "fx-partial", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "partial" as const, rates: { "USD/CNY": "7" } };
   render(<RoomHoldingsPanel entries={[value]} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={partialFx} quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }} onOpenInReview={() => undefined} />);
@@ -436,7 +436,7 @@ describe("holdings table workflow", () => {
  });
 
  it("shows an explicit empty state when search has no table matches", async () => {
-  render(<RoomHoldingsPanel entries={[entry()]} scope={createDefaultRoomScope("2026-09-19")} onOpenInReview={() => undefined} />);
+  render(<RoomHoldingsPanel entries={[liveEntry()]} scope={createDefaultRoomScope("2026-09-19")} onOpenInReview={() => undefined} />);
   await userEvent.type(screen.getByRole("searchbox", { name: "搜索持仓" }), "does-not-exist");
   expect(screen.getByText("没有匹配的持仓")).toBeInTheDocument();
   expect(screen.queryAllByRole("button", { name: "打开持仓回合复盘" })).toHaveLength(0);
@@ -444,7 +444,7 @@ describe("holdings table workflow", () => {
 
  it("exposes shell-owned query and one-based page changes for return navigation", async () => {
   const onBrowseStateChange = vi.fn();
-  const entries = Array.from({ length: 7 }, (_, index) => entry(`account-${index + 1}`));
+  const entries = Array.from({ length: 7 }, (_, index) => liveEntry(`account-${index + 1}`));
   function ControlledHoldings() {
     const [browseState, setBrowseState] = useState({ query: "", page: 1 });
     return <RoomHoldingsPanel entries={entries} scope={createDefaultRoomScope("2026-09-19")} browseState={browseState} onBrowseStateChange={next => { onBrowseStateChange(next); setBrowseState(next); }} onOpenInReview={() => undefined} />;
@@ -457,7 +457,7 @@ describe("holdings table workflow", () => {
  });
 
  it("searches locally, paginates, preserves search on updated review props and opens the selected account episode", async () => {
-  const entries=Array.from({length:7},(_,index)=>entry(`account-${index+1}`));
+  const entries=Array.from({length:7},(_,index)=>liveEntry(`account-${index+1}`));
   const scope=createDefaultRoomScope("2026-09-19"); const open=vi.fn();
   const props={entries,scope,asOf:"2026-09-19",onOpenInReview:open};
   const view=render(<RoomHoldingsPanel {...props} />);
@@ -475,7 +475,7 @@ describe("holdings table workflow", () => {
   expect(screen.getByText("2026-09-19T10:00:00Z")).toBeInTheDocument();
  });
  it("exports every filtered row with unavailable fields, as-of and formula-safe text", () => {
-  const entries=Array.from({length:7},(_,index)=>entry(`account-${index+1}`));
+  const entries=Array.from({length:7},(_,index)=>liveEntry(`account-${index+1}`));
   entries[0].instrument.name='=HYPERLINK("bad")';
   const model=buildCurrentPortfolio(entries,{scope:createDefaultRoomScope("2026-09-19"),asOf:"2026-09-19"});
   const csv=holdingsCsv(model.rows,"2026-09-19");
@@ -494,7 +494,7 @@ it("uses only real raw 30-day prices and preserves missing sessions as gaps", ()
 });
 
 it("refreshes the latest persisted Recall summary and snapshot fallback without a legacy review write", () => {
-  const value = entry();
+  const value = liveEntry();
   value.episodes[0].recallReview = { episodeId: "episode:holding", status: "in-progress", updatedAt: "2026-09-19T09:00:00Z", text: "真实Recall记录", snapshotCount: 1 };
   const props = { scope:createDefaultRoomScope("2026-09-19"), asOf:"2026-09-19", onOpenInReview:vi.fn() };
   const view = render(<RoomHoldingsPanel {...props} entries={[value]} />);
@@ -506,3 +506,15 @@ it("refreshes the latest persisted Recall summary and snapshot fallback without 
   expect(screen.queryByText("真实Recall记录")).not.toBeInTheDocument();
   expect(value.episodes[0].review).toBeUndefined();
 });
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveEntry(...args: Parameters<typeof entry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(entry(...args));
+}

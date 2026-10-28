@@ -1,9 +1,11 @@
+import { resolvedTradeNatureOf, resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import Decimal from 'decimal.js';
+import { parseNonNegativeFee } from '../trades/execution-fee';
 import { calculateRecallPlan } from './plans';
 import { replayPositionAtPrice } from '../replay/position-ledger';
 import { executionBoundaryForCursor, orderedRecallExecutions, visibleRecallExecutions } from '../replay/recall-replay';
 import { replayExecutionAt, replayCursorAt } from '../import/statement-evidence';
-import { hasSettlementCurrencyMismatch, tradeNatureOf, type TradeEpisode } from '../trades/types';
+import { hasSettlementCurrencyMismatch, type TradeEpisode } from '../trades/types';
 import { TRADINGVIEW_CANONICAL_ACCOUNT_ID, tradingViewEpisodeBusinessScope } from '../trades/tradingview-account-identity';
 import type { RecallDecision, RecallPhase, RecallPlanVersion, RecallRiskBaseline } from './types';
 export type RecallActualMetricKey = 'remainingQuantity' | 'averageEntryPrice' | 'weightedExitPrice' | 'realizedGross' | 'realizedNet' | 'unrealizedGross' | 'remainingEntryFee' | 'totalFees' | 'netPnl' | 'actualR' | 'entryPriceDeviation' | 'quantityDeviation' | 'targetRealization';
@@ -103,7 +105,7 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     result.executionIds = visible.map(e => e.id);
     if (!visible.length)
         return result;
-    const episodeNature = episode.tradeNature ?? tradeNatureOf(ordered[0]);
+    const episodeNature = resolvedEpisodeTradeNatureOf(episode);
     const visibleBusinessScope = tradingViewEpisodeBusinessScope({
         accountId: episode.accountId,
         tradeNature: episodeNature,
@@ -112,14 +114,14 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     if (episode.accountId === TRADINGVIEW_CANONICAL_ACCOUNT_ID && !visibleBusinessScope)
         return fail('execution-scope-mismatch');
     if (visible.some(e => {
-        if (e.accountId !== episode.accountId || e.instrument.id !== episode.instrument.id || tradeNatureOf(e) !== episodeNature)
+        if (e.accountId !== episode.accountId || e.instrument.id !== episode.instrument.id || resolvedTradeNatureOf(e) !== episodeNature)
             return true;
         if (episodeNature !== 'simulation')
             return false;
         if (visibleBusinessScope) {
             const executionBusinessScope = tradingViewEpisodeBusinessScope({
                 accountId: e.accountId,
-                tradeNature: tradeNatureOf(e),
+                tradeNature: resolvedTradeNatureOf(e),
                 executions: [e],
             });
             return executionBusinessScope?.accountId !== visibleBusinessScope.accountId ||
@@ -139,27 +141,29 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
         return fail('unknown-quantity');
     if (visible.some(e => !number(e.price)?.gt(0) || e.source.settlement && (!number(e.source.settlement.quantity)?.gt(0) || !number(e.source.settlement.grossAmount)?.gte(0))))
         return fail('unknown-cost');
-    // The existing ledger is the evidence authority. Strip only fee incompleteness
-    // for its gross-cost check; missing fees must not hide otherwise known gross PnL.
-    const grossExecutions = visible.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
+    // Original executions remain the ledger authority. This consumer's established
+    // gross policy permits fee-only uncertainty without manufacturing replacement fills.
     // The canonical shared visibility helper above supplies the exact visible
     // execution prefix while the ledger keeps the independent market cutoff
     // for ancillary statement evidence.
     const ledger = replayPositionAtPrice({
-        executions: grossExecutions,
+        executions: visible,
         markPrice: '0',
         cursor: context.cursor,
         visibleExecutionIds: visible.map(e => e.id),
     });
     if (ledger.quantityKnown === false)
         return fail('unknown-quantity');
-    const reason = ledger.accuracy?.reasons[0] ?? (ledger.costKnown === false ? 'unknown-cost' : null) ?? (visible.length === ordered.length ? episode.accuracy?.reasons.find(r => r !== 'unknown-fees') : undefined);
+    const grossReason = (reason: string) => reason !== 'unknown-fees' && reason !== 'fees-invalid';
+    const ledgerReasons = ledger.accuracy?.reasons ?? [];
+    const reason = ledgerReasons.find(grossReason) ?? (ledger.costKnown === false && !ledgerReasons.length ? 'unknown-cost' : null) ?? (visible.length === ordered.length ? episode.accuracy?.reasons.find(grossReason) : undefined);
     if (reason)
         return fail(reason);
     // Non-fill inventory requires a fee/cost allocation model beyond execution pools.
     if (episode.initialPosition || episode.positionEvents?.some(e => e.quantity !== undefined))
         return fail('inventory-allocation-unavailable');
-    let qty = new Arithmetic(0), cost = new Arithmetic(0), costPool = new Arithmetic(0), pool = new Arithmetic(0), gross = new Arithmetic(0), net = new Arithmetic(0), fees = new Arithmetic(0), exitQty = new Arithmetic(0), exitAmount = new Arithmetic(0), entryQty = new Arithmetic(0), entryAmount = new Arithmetic(0);
+    let qty = new Arithmetic(0), cost = new Arithmetic(0), costPool = new Arithmetic(0), gross = new Arithmetic(0), exitQty = new Arithmetic(0), exitAmount = new Arithmetic(0), entryQty = new Arithmetic(0), entryAmount = new Arithmetic(0);
+    let pool: Decimal | null = new Arithmetic(0), net: Decimal | null = new Arithmetic(0), fees: Decimal | null = new Arithmetic(0);
     let feesKnown = true;
     const openingSide = episode.direction === 'long' ? 'buy' : 'sell';
     const openingIds: string[] = [];
@@ -167,11 +171,10 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
         const q = number(e.quantity)!;
         const s = e.source.settlement;
         const p = s ? number(s.grossAmount)!.div(number(s.quantity)!) : number(e.price)!;
-        const fee = number(e.fee);
+        const fee = parseNonNegativeFee(e.fee, Arithmetic);
         const known = fee !== null && e.source.feeStatus !== 'unknown';
         feesKnown &&= known;
-        if (known)
-            fees = fees.plus(fee!);
+        fees = known && fees !== null ? fees.plus(fee!) : null;
         if (e.side === openingSide) {
             openingIds.push(e.id);
             costPool = costPool.plus(p.mul(q));
@@ -179,20 +182,19 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
             qty = qty.plus(q);
             entryQty = entryQty.plus(q);
             entryAmount = entryAmount.plus(p.mul(q));
-            if (known)
-                pool = pool.plus(fee!);
+            pool = known && pool !== null ? pool.plus(fee!) : null;
             continue;
         }
         if (q.gt(qty))
             return fail('unknown-cost');
-        const allocation = q.eq(qty) ? pool : pool.mul(q).div(qty).toDecimalPlaces(MINOR_UNITS[currency], Decimal.ROUND_DOWN);
-        pool = pool.minus(allocation);
+        const allocation: Decimal | null = pool === null ? null : q.eq(qty) ? pool : pool.mul(q).div(qty).toDecimalPlaces(MINOR_UNITS[currency], Decimal.ROUND_DOWN);
+        pool = pool === null || allocation === null ? null : pool.minus(allocation);
         const allocatedCost = q.eq(qty) ? costPool : costPool.mul(q).div(qty);
         costPool = costPool.minus(allocatedCost);
         const gain = episode.direction === 'long' ? p.mul(q).minus(allocatedCost) : allocatedCost.minus(p.mul(q));
         gross = gross.plus(gain);
-        const exitNet = gain.minus(allocation).minus(fee ?? 0);
-        net = net.plus(exitNet);
+        const exitNet = allocation === null || !known ? null : gain.minus(allocation).minus(fee!);
+        net = net === null || exitNet === null ? null : net.plus(exitNet);
         qty = qty.minus(q);
         exitQty = exitQty.plus(q);
         exitAmount = exitAmount.plus(p.mul(q));
@@ -243,7 +245,7 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
         result.denominator = { riskBaselineId: baseline.id, planVersionId: baseline.planVersionId, amount: baseline.amount, currency: baseline.currency, scope: baseline.scope, method: baseline.method };
         riskReason = '';
     }
-    metrics.actualR = metric(closed && feesKnown && baseline ? net.div(baseline.amount) : null, !closed ? 'episode-open' : !feesKnown ? 'unknown-fees' : riskReason, 'R');
+    metrics.actualR = metric(closed && feesKnown && net !== null && baseline ? net.div(baseline.amount) : null, !closed ? 'episode-open' : !feesKnown ? 'unknown-fees' : riskReason, 'R');
     // Initial execution comparisons follow the surviving initial/correction
     // lineage independently of whether that version can establish a risk.
     const plan = [...planVersions].reverse().find(v => !superseded.has(v.id) &&
@@ -261,6 +263,6 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     metrics.entryPriceDeviation = metric(comparable && plannedPrice && initialQ.gt(0) ? (episode.direction === 'long' ? initialAmount.div(initialQ).minus(plannedPrice) : plannedPrice.minus(initialAmount.div(initialQ))) : null, 'incomparable-plan', 'price');
     metrics.quantityDeviation = metric(comparable && plannedQ?.gt(0) && initialQ.gt(0) ? initialQ.div(plannedQ).minus(1) : null, 'incomparable-plan', 'ratio');
     const reward = plan && comparable ? number(calculateRecallPlan(plan.input).targetReward.value) : null;
-    metrics.targetRealization = metric(closed && feesKnown && reward?.gt(0) ? net.div(reward) : null, !closed ? 'episode-open' : !feesKnown ? 'unknown-fees' : 'incomparable-plan', 'ratio');
+    metrics.targetRealization = metric(closed && feesKnown && net !== null && reward?.gt(0) ? net.div(reward) : null, !closed ? 'episode-open' : !feesKnown ? 'unknown-fees' : 'incomparable-plan', 'ratio');
     return result;
 }

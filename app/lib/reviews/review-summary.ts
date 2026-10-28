@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 
 import { marketTradingDate } from "../market/trading-date";
 import type {
@@ -110,7 +111,7 @@ function episodeScope(
     accountId,
     accountLabel: accountLabels?.get(accountId) ?? episode.accountLabel,
     market: episode.instrument.market,
-    tradeNature: businessScope?.tradeNature ?? entry.tradeNature ?? episode.tradeNature ?? "unknown",
+    tradeNature: resolvedEpisodeTradeNatureOf(episode),
     simulationRunId: businessScope
       ? businessScope.simulationRunId
       : episode.simulationRunId ?? entry.simulationRunId ?? null,
@@ -361,7 +362,7 @@ export function buildReviewPhaseSummary(
     ({ item }) =>
       item.episode.status === "closed" &&
       item.metrics.pnlAvailable !== false &&
-      item.metrics.netPnl !== null,
+      item.metrics.netPnl !== null && item.metrics.fees !== null,
   );
   const planAdherence = {
     followed: 0,
@@ -393,7 +394,7 @@ export function buildReviewPhaseSummary(
       .toString(),
     fees: trusted
       .reduce(
-        (sum, { item }) => sum.plus(item.metrics.fees),
+        (sum, { item }) => sum.plus(item.metrics.fees as string),
         new Decimal(0),
       )
       .toString(),

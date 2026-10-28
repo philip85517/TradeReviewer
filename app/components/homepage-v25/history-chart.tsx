@@ -139,12 +139,14 @@ export function HistoryChart({ data, mode, reportCurrency, readState }: HistoryC
   const valid = selection && selection.data === data && selection.mode === mode && selection.currency === reportCurrency && readState.kind !== "empty";
   if (selection && !valid) setSelection(null);
   const active = valid ? data?.points.find(point => point.key === selection.key) : undefined;
-  const points = readState.kind === "empty" ? EMPTY_POINTS : data?.points ?? EMPTY_POINTS;
+  const periods = data?.points ?? EMPTY_POINTS;
+  // Empty ranges may retain caller period metadata, never their financial facts or hit targets.
+  const points = readState.kind === "empty" ? EMPTY_POINTS : periods;
   const allAxes = MODES.map(candidate => axisFor(points.map(point => read(point, candidate, reportCurrency).number), candidate));
   const axis = allAxes[MODES.indexOf(mode)];
   const labelExtent = Math.max(0, ...allAxes.flatMap((candidate, index) => candidate.ticks.map(tick => tickText(tick, MODES[index]).length * 6.5 + 22)));
   const left = Math.max(84, labelExtent); const right = width - 16;
-  const x = (index: number) => points.length <= 1 ? (left + right) / 2 : left + (right - left) * index / (points.length - 1);
+  const x = (index: number) => periods.length <= 1 ? (left + right) / 2 : left + (right - left) * index / (periods.length - 1);
   const y = (value: Decimal) => 276 - value.minus(axis.low).div(axis.high.minus(axis.low)).mul(200).toNumber();
   const readings = points.map(point => read(point, mode, reportCurrency));
   const segments: string[][] = []; let segment: string[] = [];
@@ -171,12 +173,12 @@ export function HistoryChart({ data, mode, reportCurrency, readState }: HistoryC
   }, []);
   useLayoutEffect(() => {
     // All labels remain measurable. Only annual visual ticks still crowded on two rows may be thinned.
-    const widths = points.map(point => {
+    const widths = periods.map(point => {
       const measured = labelNodes.current.get(point.key)?.getComputedTextLength?.();
       return measured && measured > 0 ? measured : [...point.label].reduce((total, char) => total + (/[^\u0000-\u00ff]/u.test(char) ? 11 : 6.5), 0);
     });
-    const all = points.map((_, index) => index);
-    const spacing = (right - left) / Math.max(1, points.length - 1);
+    const all = periods.map((_, index) => index);
+    const spacing = (right - left) / Math.max(1, periods.length - 1);
     const fits = (indices: readonly number[], rows: number) => {
       const previous: (number | undefined)[] = [];
       return indices.every((index, ordinal) => {
@@ -188,13 +190,13 @@ export function HistoryChart({ data, mode, reportCurrency, readState }: HistoryC
     let selected: readonly number[] | null = null;
     if (stagger && data?.grain === "year" && !fits(all, 2)) {
       // Smallest fixed index stride, always including the last year; its final interval may be shorter.
-      for (let stride = 2; stride < points.length; stride++) {
-        const candidate = all.filter(index => index % stride === 0 || index === points.length - 1);
+      for (let stride = 2; stride < periods.length; stride++) {
+        const candidate = all.filter(index => index % stride === 0 || index === periods.length - 1);
         if (fits(candidate, 2)) { selected = candidate; break; }
       }
     }
     setStaggerLabels(stagger); setLabelIndices(selected);
-  }, [points, width, left, right, data?.grain]);
+  }, [periods, width, left, right, data?.grain]);
   useLayoutEffect(() => {
     if (!hasCommitted.current) { hasCommitted.current = true; return; }
     const element = surface.current;
@@ -210,8 +212,12 @@ export function HistoryChart({ data, mode, reportCurrency, readState }: HistoryC
   return <section className="hp-history-chart" ref={surface} aria-labelledby={`${id}-title`}>
     <div className="hp-history-chart__card" ref={card} data-testid="hp-history-card" data-height="320">
       <header className="hp-history-chart__header"><h3 id={`${id}-title`}>{title(mode, data?.grain)}</h3><span>{unit(mode, reportCurrency)}</span></header>
-      <svg className="hp-history-chart__svg" viewBox={`0 0 ${width} 320`} data-label-rows={staggerLabels ? 2 : 1} role="group" aria-label={`${title(mode, data?.grain)}，${data?.range.label ?? "尚无已提交范围"}`}>
+      <svg className="hp-history-chart__svg" viewBox={`0 0 ${width} 320`} data-label-rows={staggerLabels ? 2 : 1} role="group" aria-label={`${title(mode, data?.grain)}，${data?.range.label ?? "尚无已提交范围"}`}
+        aria-describedby={readState.kind === "empty" && periods.length ? `${id}-periods` : undefined}>
+        {readState.kind === "empty" && periods.length > 0 && <desc id={`${id}-periods`}>期间：{periods.map(point => point.label).join("、")}</desc>}
         <g data-testid="hp-history-plot" data-bounds={`${left},66,${right},276`}>
+          {readState.kind === "empty" && <rect data-testid="hp-history-empty-region" data-state="empty" className="hp-history-chart__region hp-history-chart__region--empty"
+            x={left} y="66" width={right - left} height="210" aria-hidden="true" pointerEvents="none" />}
           {points.map((point, index) => point.state !== "value" && <rect key={point.key} data-testid={`hp-history-region-${point.key}`} data-state={point.state} className={`hp-history-chart__region hp-history-chart__region--${point.state}`}
             x={index === 0 ? left : (x(index - 1) + x(index)) / 2} y="66"
             width={(index === points.length - 1 ? right : (x(index) + x(index + 1)) / 2) - (index === 0 ? left : (x(index - 1) + x(index)) / 2)} height="210" />)}
@@ -227,7 +233,7 @@ export function HistoryChart({ data, mode, reportCurrency, readState }: HistoryC
             <rect x={cellLeft(index)} y="66" width={cellRight(index) - cellLeft(index)} height="210" />
           </g>)}
         </g>
-        {points.map((point, index) => {
+        {periods.map((point, index) => {
           const ordinal = labelIndices === null ? index : labelIndices.indexOf(index);
           return <text key={point.key} ref={element => { if (element) labelNodes.current.set(point.key, element); else labelNodes.current.delete(point.key); }}
             visibility={ordinal < 0 ? "hidden" : undefined} aria-hidden={ordinal < 0 ? true : undefined}

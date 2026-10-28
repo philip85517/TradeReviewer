@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { parseNonNegativeFee } from "../trades/execution-fee";
 import { sha256 } from "../recall/retained-digest";
 
 import {
@@ -13,7 +14,7 @@ import { bonusShareEvidenceKey, collectBonusShareEvidence, isBonusShareEvidence 
 import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
 
 export type PositionLedgerSnapshot = {
-  /** With unavailable accuracy, numeric PnL/cost fields are compatibility placeholders. */
+  /** Non-fee accuracy reasons retain legacy cost/gross placeholders; malformed fees make net fields null. */
   accuracy?: { pnl: "unavailable"; reasons: string[] };
   costKnown?: false;
   /** Quantity is a compatibility placeholder until the evidence establishes inventory. */
@@ -23,10 +24,10 @@ export type PositionLedgerSnapshot = {
   averageCost: string;
   realizedPnl: string;
   unrealizedPnl: string;
-  netPnl: string;
-  fees: string;
+  netPnl: string | null;
+  fees: string | null;
   grossCapitalDeployed: string;
-  returnPercent: string;
+  returnPercent: string | null;
 };
 
 function decimalString(value: Decimal) {
@@ -64,9 +65,28 @@ function statementCoverageGaps(previous: string | undefined, next: string, cover
   return gaps;
 }
 
+function validStatementDay(day: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return false;
+  const at = Date.parse(`${day}T00:00:00.000Z`);
+  return Number.isFinite(at) && new Date(at).toISOString().slice(0, 10) === day;
+}
+function validStatementMonth(month: string): boolean {
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(month);
+}
+function inventoryEvent(event: StatementEvent): boolean {
+  return event.kind === "transfer-in" || event.kind === "transfer-out" ||
+    event.kind === "corporate-action" || event.kind === "ipo" && event.quantity !== undefined;
+}
+function validInventoryEventDate(event: StatementEvent): boolean {
+  return validStatementDay(event.date) || validStatementMonth(event.date);
+}
+function costReasons(reasons: readonly string[]): string[] {
+  return reasons.filter(reason => reason !== "fees-invalid");
+}
+
 function monthEndAt(month: string): string | undefined {
   const match = /^(\d{4})-(\d{2})$/.exec(month);
-  if (!match) return undefined;
+  if (!match || !validStatementMonth(month)) return undefined;
   return new Date(Date.UTC(Number(match[1]), Number(match[2]), 0, 23, 59, 59, 999)).toISOString();
 }
 
@@ -92,17 +112,17 @@ export type PositionLedgerInput = {
   evidence?: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[];
 };
 type Checkpoint = {
-  quantity: Decimal; averageCost: Decimal; realizedPnl: Decimal; fees: Decimal; grossCapitalDeployed: Decimal;
+  quantity: Decimal; averageCost: Decimal; realizedPnl: Decimal; fees: Decimal | null; grossCapitalDeployed: Decimal;
   reasons: string[]; warnings: NonNullable<PositionLedgerSnapshot["warnings"]>; quantityUncertain: boolean;
 };
-type LedgerEntry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
+type LedgerEntry = { at: string; invalidInventoryDate?: true; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
 type MovementObservation = { entry: LedgerEntry; ordinal: number; before: Checkpoint; after: Checkpoint; closed: Decimal | null; opened: Decimal | null; effect: CanonicalMovementFact["effect"]; evidenceIds: string[]; beforeFeeUnavailable: boolean; afterFeeUnavailable: boolean };
 type FactObserver = { context(cursor: string | null, selected: TradeExecution[]): void; movement(value: MovementObservation): void; terminal(value: Checkpoint, feeUnavailable: boolean): void };
 function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoint: Checkpoint) => void, facts?: FactObserver): PositionLedgerSnapshot {
   let quantity = new Decimal(0);
   let averageCost = new Decimal(0);
   let realizedPnl = new Decimal(0);
-  let fees = new Decimal(0);
+  let fees: Decimal | null = new Decimal(0);
   let grossCapitalDeployed = new Decimal(0);
   const reasons = new Set<string>();
   const warnings: Array<{ code: "statement-coverage-gap"; from: string; to: string }> = [];
@@ -130,19 +150,24 @@ function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoi
     const key = JSON.stringify([position.accountId, position.market, position.symbol, position.phase, position.date, position.quantity]);
     if (seen.has(key)) continue;
     seen.add(key);
-    timeline.push({ at: statementPositionAt(position), position });
+    const validDate = validStatementDay(position.date);
+    timeline.push({ at: validDate ? statementPositionAt(position) : position.date, position, ...(!validDate ? { invalidInventoryDate: true as const } : {}) });
   }
   for (const event of events) {
     if (!matches(event) || seen.has(`${event.accountId}:${event.id}`)) continue;
     seen.add(`${event.accountId}:${event.id}`);
     // Month-only IPO results are contextual evidence, known by month end at earliest.
+    if (inventoryEvent(event) && !validInventoryEventDate(event)) {
+      timeline.push({ at: event.date, event, invalidInventoryDate: true });
+      continue;
+    }
     const at = ledgerEventAt(event);
     if (event.date.length === 10 && (event.kind === "transfer-in" || event.kind === "transfer-out")) timeline.push({ at: `${event.date}T00:00:00.000Z`, pendingTransfer: event });
     timeline.push({ at, event });
   }
   const rank = (entry: Entry) => entry.position ? (entry.position.phase === "opening" ? 0 : 4) : entry.pendingTransfer ? 1 : entry.event ? 2 : 3;
-  timeline.sort((a, b) => a.at.localeCompare(b.at) || rank(a) - rank(b));
-  const cursor = input.cursor ? replayCursorAt(input.cursor) : timeline.at(-1)?.at;
+  timeline.sort((a, b) => Number(Boolean(b.invalidInventoryDate)) - Number(Boolean(a.invalidInventoryDate)) || a.at.localeCompare(b.at) || rank(a) - rank(b));
+  const cursor = input.cursor ? replayCursorAt(input.cursor) : timeline.findLast(entry => !entry.invalidInventoryDate)?.at;
   const cursorTime = cursor ? Date.parse(cursor) : Number.POSITIVE_INFINITY;
   const visibleAt = (at: string) => Date.parse(at) <= cursorTime;
   const visibleExecutionIds = input.visibleExecutionIds ? new Set(input.visibleExecutionIds) : undefined;
@@ -160,28 +185,29 @@ function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoi
     (evidence.positions.some(item => item.accountId === position.accountId && item.market === position.market) ||
       evidence.events.some(item => item.accountId === position.accountId && item.market === position.market));
   const visibleEvents = [...new Map(events
-    .filter(event => visibleAt(ledgerEventAt(event)))
+    .filter(event => (!inventoryEvent(event) || validInventoryEventDate(event)) && visibleAt(ledgerEventAt(event)))
     .map(event => [`${event.accountId}:${event.id}`, event])).values()];
   const allPositions = [
     ...(input.evidence ?? []).flatMap(e => e.positions),
     ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])]),
   ];
   const knownPositions = [...new Map(allPositions
-    .filter(position => visibleAt(statementPositionAt(position)))
+    .filter(position => validStatementDay(position.date) && visibleAt(statementPositionAt(position)))
     .map(position => [JSON.stringify([position.accountId, position.market, position.symbol, position.phase, position.date, position.quantity]), position])).values()];
   let hasHistory = false;
   let lastActivity: string | undefined;
   let quantityUncertain = false;
+  let inventoryTimeUncertain = false;
   const pendingTransfers = new Set<string>();
   const checkpoint = (): Checkpoint => ({ quantity, averageCost, realizedPnl, fees, grossCapitalDeployed,
-    reasons: [...reasons], warnings: warnings.map(item => ({ ...item })), quantityUncertain: quantityUncertain || pendingTransfers.size > 0 });
+    reasons: [...reasons], warnings: warnings.map(item => ({ ...item })), quantityUncertain: inventoryTimeUncertain || quantityUncertain || pendingTransfers.size > 0 });
   observe?.(checkpoint());
   facts?.context(cursor ?? null, timeline.flatMap(entry => entry.execution && selectedExecution(entry.execution) ? [entry.execution] : []));
   let ordinal = -1, factFeeUnavailable = false;
   for (const entry of timeline) {
     ordinal++;
     if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
-    if (cursor && Date.parse(entry.at) > Date.parse(cursor)
+    if (!entry.invalidInventoryDate && cursor && Date.parse(entry.at) > Date.parse(cursor)
       && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
     const before = facts ? checkpoint() : undefined;
     const beforeFeeUnavailable = factFeeUnavailable;
@@ -189,6 +215,12 @@ function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoi
     let effect: CanonicalMovementFact["effect"] = "applied";
     let movementEvidence: string[] | undefined;
     try {
+    if (entry.invalidInventoryDate) {
+      inventoryTimeUncertain = true;
+      reasons.add("inventory-date-invalid");
+      effect = "unresolved";
+      continue;
+    }
     if (entry.pendingTransfer) {
       effect = "unresolved";
       pendingTransfers.add(`${entry.pendingTransfer.accountId}:${entry.pendingTransfer.id}`);
@@ -321,7 +353,7 @@ function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoi
           if (!hasHistory) reasons.add("initial-position");
           reasons.add("unknown-cost");
         }
-        if (cost) { fees = fees.plus(cost.feeCost); if (facts) movementEvidence = cost.evidenceIds; }
+        if (cost) { fees = fees === null ? null : fees.plus(cost.feeCost); if (facts) movementEvidence = cost.evidenceIds; }
         if (quantity.gte(0)) {
           const newQuantity = quantity.plus(size);
           if (allocationCost) {
@@ -388,7 +420,9 @@ function evaluatePositionAtPrice(input: PositionLedgerInput, observe?: (checkpoi
     const price = settlement && settlement.currency === execution.instrument.currency
       ? new Decimal(settlement.grossAmount).div(settlement.quantity)
       : new Decimal(execution.price);
-    fees = fees.plus(execution.fee || 0);
+    const fee = parseNonNegativeFee(execution.fee);
+    if (fee === null) reasons.add("fees-invalid");
+    fees = fees === null || fee === null ? null : fees.plus(fee);
 
     if (execution.side === "buy") {
       if (quantity.gte(0)) {
@@ -447,23 +481,25 @@ function finalizePosition(state: Checkpoint, price: string): PositionLedgerSnaps
   const unrealizedPnl = quantity.isPositive()
     ? markPrice.minus(averageCost).mul(quantity)
     : averageCost.minus(markPrice).mul(quantity.abs());
-  const netPnl = realizedPnl.plus(unrealizedPnl).minus(fees);
-  const returnPercent = grossCapitalDeployed.isZero()
+  const grossUnavailable = costReasons(state.reasons).length > 0;
+  const netPnl = fees === null ? null : realizedPnl.plus(unrealizedPnl).minus(fees);
+  const returnPercent = netPnl === null ? null : grossCapitalDeployed.isZero()
     ? new Decimal(0)
     : netPnl.div(grossCapitalDeployed).mul(100);
 
   return {
-    ...(reasons.size ? { costKnown: false as const, accuracy: { pnl: "unavailable" as const, reasons: [...reasons] } } : {}),
+    ...(grossUnavailable ? { costKnown: false as const } : {}),
+    ...(reasons.size ? { accuracy: { pnl: "unavailable" as const, reasons: [...reasons] } } : {}),
     ...(warnings.length ? { warnings } : {}),
     ...(quantityUncertain ? { quantityKnown: false as const } : {}),
     quantity: quantityUncertain ? "0" : decimalString(quantity),
-    averageCost: reasons.size ? "0" : decimalString(averageCost),
-    realizedPnl: reasons.size ? "0" : decimalString(realizedPnl),
-    unrealizedPnl: reasons.size ? "0" : decimalString(unrealizedPnl),
-    netPnl: reasons.size ? "0" : decimalString(netPnl),
-    fees: decimalString(fees),
+    averageCost: grossUnavailable ? "0" : decimalString(averageCost),
+    realizedPnl: grossUnavailable ? "0" : decimalString(realizedPnl),
+    unrealizedPnl: grossUnavailable ? "0" : decimalString(unrealizedPnl),
+    netPnl: netPnl === null ? null : reasons.size ? "0" : decimalString(netPnl),
+    fees: fees === null ? null : decimalString(fees),
     grossCapitalDeployed: decimalString(grossCapitalDeployed),
-    returnPercent: reasons.size ? "0" : decimalString(returnPercent),
+    returnPercent: returnPercent === null ? null : reasons.size ? "0" : decimalString(returnPercent),
   };
 }
 
@@ -505,7 +541,7 @@ export function preparePositionLedger(input: Omit<PositionLedgerInput, "markPric
     after:{quantity:checkpoints[index+1] && !checkpoints[index+1].quantityUncertain ? decimalString(checkpoints[index+1].quantity) : "0",quantityKnown:!checkpoints[index+1]?.quantityUncertain}}));
   const handle = freezeLedgerValue({kind:ordinary ? "ordinary-sweep" as const : "exact-context-fallback" as const,
     diagnostics:{sweeps:ordinary?1:0,transitions:ordinary?ordered.length:0},
-    storage:{checkpoints:checkpoints.length,checkpointEstimatedBytes:2*JSON.stringify(checkpoints.map(state=>({quantity:state.quantity.toString(),averageCost:state.averageCost.toString(),realizedPnl:state.realizedPnl.toString(),fees:state.fees.toString(),grossCapitalDeployed:state.grossCapitalDeployed.toString(),reasons:state.reasons,warnings:state.warnings,quantityUncertain:state.quantityUncertain}))).length},transitions:ordinary?facts:[]});
+    storage:{checkpoints:checkpoints.length,checkpointEstimatedBytes:2*JSON.stringify(checkpoints.map(state=>({quantity:state.quantity.toString(),averageCost:state.averageCost.toString(),realizedPnl:state.realizedPnl.toString(),fees:state.fees?.toString() ?? null,grossCapitalDeployed:state.grossCapitalDeployed.toString(),reasons:state.reasons,warnings:state.warnings,quantityUncertain:state.quantityUncertain}))).length},transitions:ordinary?facts:[]});
   preparedLedgers.set(handle,{input:captured,ordered,checkpoints,index:new Map(ordered.map((execution,index)=>[execution.id,index]))});
   return handle;
 }
@@ -562,9 +598,9 @@ function factValue(value: Decimal | null, reasons: readonly string[] = []): Posi
 }
 function stateFact(state: Checkpoint, feeUnavailable = false): CanonicalStateFact {
   return { quantity: factValue(state.quantity, state.quantityUncertain ? ["quantity-unavailable", ...state.reasons] : []),
-    averageCost: factValue(state.averageCost, state.reasons), realizedPnl: factValue(state.realizedPnl, state.reasons),
+    averageCost: factValue(state.averageCost, costReasons(state.reasons)), realizedPnl: factValue(state.realizedPnl, costReasons(state.reasons)),
     fees: factValue(state.fees, [...state.reasons.filter(reason => reason.includes("fee")), ...(feeUnavailable ? ["ipo-fee-allocation-unavailable"] : [])]),
-    grossCapitalDeployed: factValue(state.grossCapitalDeployed, state.reasons), reasons: [...state.reasons], warnings: state.warnings.map(warning => ({ ...warning })) };
+    grossCapitalDeployed: factValue(state.grossCapitalDeployed, costReasons(state.reasons)), reasons: [...state.reasons], warnings: state.warnings.map(warning => ({ ...warning })) };
 }
 function observedFact(value: MovementObservation): Omit<CanonicalMovementFact, "factId" | "contextId"> {
   const { entry, before, after, ordinal, closed, opened, effect } = value;
@@ -572,7 +608,7 @@ function observedFact(value: MovementObservation): Omit<CanonicalMovementFact, "
   const sourceDate = execution ? execution.source.tradingDate ?? execution.executedAt : event?.date ?? position!.date;
   const precision = execution ? execution.source.timePrecision === "date-only" || execution.executedAt.length === 10 ? "day" : "instant" : sourceDate.length === 7 ? "month" : "day";
   const quantityReasons = before.quantityUncertain || after.quantityUncertain ? ["quantity-unavailable"] : [];
-  const realizedReasons = [...new Set([...before.reasons, ...after.reasons])];
+  const realizedReasons = costReasons([...new Set([...before.reasons, ...after.reasons])]);
   return { ordinal, kind: execution ? "execution" : position ? "position-reconciliation" : entry.pendingTransfer ? "evidence-status" : event?.kind === "ipo" && event.quantity !== undefined ? "ipo-allocation" : event && isBonusShareEvidence(event) ? "bonus" : event?.kind === "transfer-in" || event?.kind === "transfer-out" ? "transfer" : "evidence-status",
     effect, executionId: execution?.id ?? null, eventId: event?.id ?? null,
     evidenceIds: execution ? [execution.id] : event ? [...new Set([event.id, ...value.evidenceIds])] : [JSON.stringify([position!.accountId, position!.market, position!.symbol, position!.phase, position!.date, position!.quantity])],

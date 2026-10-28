@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { beginHomepageRead, completeHomepageRequest, createHomepageState, updateHomepageUi } from "../../lib/reviews/homepage-v25-state";
 import type { StoredInstrument } from "../../lib/storage/sqlite-contracts";
 import { buildHomepageCatalog } from "./catalog-model";
-import { buildHomepageHoldings } from "./holdings-model";
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 import { HomeSurface } from "./home-surface";
 
 // HP03 / approved P3 contract: search is independent of this applied A-share scope.
@@ -46,7 +46,7 @@ function Harness({ phase = "ready" }: { phase?: Phase }) {
       ready={phase !== "not-ready"} accountStatus={phase === "account-error" ? "error" : "ready"}
       accounts={[{ id: "one", label: "实盘一" }]}
       onUi={patch => setUi(current => updateHomepageUi(current, patch))}
-      onScope={noop} onTrades={noop} onReload={noop} onRepair={noop} onImport={noop} />
+      onScope={noop} onTrades={noop} view={holdings.view} onApply={() => true} recovery={{ state: "quiet" }} onRecover={noop} onCatalogRetry={noop} onImport={noop} />
     <output aria-label="已应用范围">{JSON.stringify(ui.snapshot.scope)}</output>
     <output aria-label="已提交搜索词">{ui.snapshot.search.query}</output>
     <output aria-label="已选标的">{ui.snapshot.search.selectedSymbol ?? "(none)"}</output>

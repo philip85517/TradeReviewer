@@ -39,6 +39,46 @@ function parseWithoutLegacyCells(remove: number[], y = 216) {
 }
 
 describe("China Merchants S3a legacy source evidence", () => {
+  it("stops legacy flow collection before the next statement section", () => {
+    const pages = structuredClone(CHINA_MERCHANTS_S3A_LEGACY);
+    pages[1].items.push(
+      { text: "新股配号", x: 36, y: 260, width: 40, height: 9 },
+      { text: "20260309", x: 36, y: 278, width: 40, height: 9 },
+      { text: "配号信息", x: 371, y: 278, width: 40, height: 9 },
+      { text: "1", x: 464, y: 278, width: 12, height: 9 },
+    );
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toEqual(parseChinaMerchantsPages(CHINA_MERCHANTS_S3A_LEGACY, options).records);
+    expect(result.exclusions).toEqual(parseChinaMerchantsPages(CHINA_MERCHANTS_S3A_LEGACY, options).exclusions);
+  });
+
+  it("ignores a legacy page number split across date, business and number columns", () => {
+    const pages = structuredClone(CHINA_MERCHANTS_S3A_LEGACY);
+    pages[1].items.push(...[["第1页/", 36], ["共", 390], ["2页", 464]].map(([text, x]) => ({ text: String(text), x: Number(x), y: 580, width: 12, height: 9 })));
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toEqual(parseChinaMerchantsPages(CHINA_MERCHANTS_S3A_LEGACY, options).records);
+    expect(result.exclusions).toEqual(parseChinaMerchantsPages(CHINA_MERCHANTS_S3A_LEGACY, options).exclusions);
+  });
+
+  it.each(["date", "unknown-business", "missing-business"])("retains a legacy trade with %s as pending evidence", field => {
+    const pages = structuredClone(CHINA_MERCHANTS_S3A_LEGACY);
+    if (field === "date") pages[1].items.find(item => item.y === 216 && item.x === 36)!.text = "2026-03-09 深圳";
+    else pages[1].items.find(item => item.y === 216 && item.x === 371)!.text = field === "unknown-business" ? "未知交易业务" : "";
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(0);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "invalid-row", count: 1 }));
+    expect(result.diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it("keeps recognized legacy cash rows ignored without requiring trade fields", () => {
+    const pages = structuredClone(CHINA_MERCHANTS_S3A_LEGACY);
+    pages[1].items.find(item => item.y === 216 && item.x === 36)!.text = "not-a-date 深圳";
+    pages[1].items.find(item => item.y === 216 && item.x === 371)!.text = "利息归本";
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.exclusions).toContainEqual(expect.objectContaining({ category: "cash", disposition: "ignored" }));
+    expect(result.exclusions.some(item => item.category === "invalid-row")).toBe(false);
+  });
+
   it("reconciles a legacy-layout overlap only after preserving its source evidence", () => {
     const incoming = parseChinaMerchantsPages(
       CHINA_MERCHANTS_S3A_LEGACY,

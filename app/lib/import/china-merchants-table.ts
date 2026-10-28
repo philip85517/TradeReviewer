@@ -91,8 +91,18 @@ export function readChinaMerchantsTable(
         continue;
       }
       if (!layout) continue;
+      // Page numbers can be split across several table columns by PDF.js.
+      if (/^(?:第\d+页(?:[/／]?共\d+页)?|共\d+页|\d+[/／]\d+)\d*$/.test(text)) continue;
       const cells = readPdfCells(row, layout);
-      if (!/^\d{8}$/.test(cells.dateText)) continue;
+      // A malformed trade date belongs in row validation; recognized cash flows
+      // are classified by business type before any trade-date checks. Require
+      // independent body fields so a lone header/footer in one column is ignored.
+      const hasBusiness = Boolean(cells.business.trim());
+      const hasIdentity = Boolean(cells.instrumentSymbol.trim());
+      const hasNumbers = schema.some(column => column.kind === "number" && cells[column.key].trim());
+      if (!/^\d{8}$/.test(cells.dateText) && !(
+        hasBusiness && (hasIdentity || hasNumbers) || hasIdentity && hasNumbers
+      )) continue;
       result.push({
         page: page.pageNumber,
         row: Math.round(row.y),

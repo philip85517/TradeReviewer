@@ -1,0 +1,14 @@
+const started=performance.now();
+const response=await fetch('http://127.0.0.1:3333/api/storage/homepage-source', {signal:AbortSignal.timeout(30000)});
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const body=await response.text();
+const data=JSON.parse(body);
+const size=value=>Buffer.byteLength(JSON.stringify(value));
+const sections=value=>Object.fromEntries(Object.entries(value).map(([key,item])=>[key,{bytes:size(item),count:Array.isArray(item)?item.length:undefined}]));
+const pages=data.tradeReadPages;
+const facts=pages.flatMap(page=>page.snapshot.facts);
+const fieldNames=[...new Set(facts.flatMap(Object.keys))];
+const factFields=Object.fromEntries(fieldNames.map(key=>[key,facts.reduce((total,fact)=>total+(fact[key]===undefined?0:size(fact[key])),0)]));
+const repeatKeys=['materials','materialHistory','diagnostics'];
+const repeated=Object.fromEntries(repeatKeys.map(key=>[key,{same:pages.length===2 && JSON.stringify(pages[0].snapshot[key])===JSON.stringify(pages[1].snapshot[key]),bytesPerPage:pages.map(page=>size(page.snapshot[key]))}]));
+console.log(JSON.stringify({httpStatus:response.status,totalBytes:Buffer.byteLength(body),elapsedMs:Math.round(performance.now()-started),bootstrap:sections(data.bootstrap),pages:pages.map(page=>({snapshot:sections(page.snapshot),display:sections(page.display)})),factCount:facts.length,factFieldValueBytes:factFields,repeated},null,2));

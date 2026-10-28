@@ -39,6 +39,7 @@ function execution(
     simulationRunId?: string;
     platform?: string;
     tradingDate?: string;
+    legacyEvidence?: boolean;
   } = {},
 ): TradeExecution {
   return {
@@ -46,6 +47,7 @@ function execution(
     source: {
       platform: options.platform ?? "futu",
       row: 1,
+      ...(options.legacyEvidence === false ? {} : { formatRuleId: "futu/pdf/f1-execution@1", fileFingerprint: "browse-fixture" }),
       ...(options.tradeNature ? { tradeNature: options.tradeNature } : {}),
       ...(options.simulationRunId
         ? { simulationRunId: options.simulationRunId }
@@ -408,22 +410,23 @@ describe("trade library browse state", () => {
     expect(cache.get("third")).toBe("three");
   });
 
-  it("infers legacy broker executions as live for stock labels", () => {
+  it("keeps bare broker history unknown in stock labels and live filters", () => {
     const entries = entriesFor([
-      execution("buy", "2025-01-02T00:00:00Z", "legacy-in", { platform: "futu" }),
-      execution("sell", "2025-01-03T00:00:00Z", "legacy-out", { platform: "futu" }),
+      execution("buy", "2025-01-02T00:00:00Z", "legacy-in", { platform: "futu", legacyEvidence: false }),
+      execution("sell", "2025-01-03T00:00:00Z", "legacy-out", { platform: "futu", legacyEvidence: false }),
     ]);
-    const rows = buildTradeLibraryBrowseRows(entries, DEFAULT_TRADE_LIBRARY_BROWSE_STATE, {});
+    expect(buildTradeLibraryBrowseRows(entries, DEFAULT_TRADE_LIBRARY_BROWSE_STATE, {})).toEqual([]);
+    const rows = buildTradeLibraryBrowseRows(entries, { ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE, tradeNature: "unknown" }, {});
     expect(rows).toHaveLength(1);
-    expect(aggregateTradeLibraryStocks(rows)[0]?.tradeNature).toBe("live");
+    expect(aggregateTradeLibraryStocks(rows)[0]?.tradeNature).toBe("unknown");
   });
 
-  it("keeps an explicit unknown entry nature isolated from inferred execution nature", () => {
+  it("keeps explicit unknown fills isolated despite a stale live entry label", () => {
     const entries = entriesFor([
-      execution("buy", "2025-01-02T00:00:00Z", "unknown-in", { platform: "futu" }),
-      execution("sell", "2025-01-03T00:00:00Z", "unknown-out", { platform: "futu" }),
+      execution("buy", "2025-01-02T00:00:00Z", "unknown-in", { platform: "futu", tradeNature: "unknown" }),
+      execution("sell", "2025-01-03T00:00:00Z", "unknown-out", { platform: "futu", tradeNature: "unknown" }),
     ]);
-    const entry = { ...entries[0]!, tradeNature: "unknown" as const };
+    const entry = { ...entries[0]!, tradeNature: "live" as const };
     const row = { entry, item: entry.episodes[0]! };
     expect(aggregateTradeLibraryStocks([row])[0]?.tradeNature).toBe("unknown");
   });

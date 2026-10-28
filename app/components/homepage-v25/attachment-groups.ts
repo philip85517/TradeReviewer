@@ -1,13 +1,13 @@
+import { resolvedTradeNatureOf, resolvedEpisodeTradeNatureOf } from "../../lib/trades/nature-resolution";
 import type { HomepageAttachments, HomepageScope } from "../../lib/reviews/homepage-v25-state";
 import Decimal from "decimal.js";
 import { reviewState } from "../../lib/reviews/review-queue";
 import { classifyTradingRoomAsset, normalizeRoomMetadata, type TradingRoomMetadataInput } from "../../lib/reviews/trading-room-scope";
-import { buildTradeLibraryEntries, type TradeLibraryEntry, type TradeLibraryEpisode } from "../../lib/trades/library";
-import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
+import type { TradeLibraryEntry, TradeLibraryEpisode } from "../../lib/trades/library";
 import { replayExecutionAt } from "../../lib/import/statement-evidence";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
-import { tradeNatureOf, type Instrument, type TradeExecution, type TradeNature } from "../../lib/trades/types";
+import { type Instrument, type TradeExecution, type TradeNature } from "../../lib/trades/types";
 
 export type HomepageAttachmentGroupIdentity = {
   accountId: string;
@@ -58,12 +58,12 @@ function scopeIncludes(scope: HomepageScope, identity: HomepageAttachmentGroupId
 }
 
 function executionIdentity(fill: TradeExecution): HomepageAttachmentGroupIdentity {
-  const nature = tradeNatureOf(fill);
+  const nature = resolvedTradeNatureOf(fill);
   return { accountId: fill.accountId, instrumentId: fill.instrument.id, nature,
     simulationRunId: nature === "simulation" ? fill.source.simulationRunId ?? null : null };
 }
 function episodeIdentity(item: TradeLibraryEpisode): HomepageAttachmentGroupIdentity {
-  const episode = item.episode, nature = episode.tradeNature ?? "unknown";
+  const episode = item.episode, nature = resolvedEpisodeTradeNatureOf(episode);
   return { accountId: episode.accountId, instrumentId: episode.instrument.id, nature,
     simulationRunId: nature === "simulation" ? episode.simulationRunId ?? null : null };
 }
@@ -109,20 +109,6 @@ export function homepageAttachmentEpisodeCoverage(entries: readonly TradeLibrary
   }));
 }
 
-/** Select exact lineages before rebuilding the canonical per-instrument entries. */
-function projectEntries(groups: readonly HomepageAttachmentGroup[], input: HomepageAttachmentInput): TradeLibraryEntry[] {
-  const sources = groups.flatMap(group => group.sources);
-  const fills = [...new Map(sources.flatMap(source => source.executions).map(fill => [fill.id, fill])).values()];
-  const items = sources.flatMap(source => source.episodes);
-  const reviews = Object.fromEntries(items.flatMap(item => item.review ? [[item.episode.id, item.review]] : []));
-  const recalls = Object.fromEntries(items.flatMap(item => item.recallReview ? [[item.episode.id, item.recallReview]] : []));
-  const instruments = new Map(sources.map(source => [source.entry.instrument.id, source.entry.instrument]));
-  const summaries = buildInstrumentTradeSummaries(fills).map(summary => ({ ...summary, instrument: instruments.get(summary.instrument.id) ?? summary.instrument }));
-  const candles = Object.fromEntries(Object.entries(input.candlesByInstrument ?? {}).map(([id, values]) => [id, [...values ?? []]]));
-  const statuses = Object.fromEntries(Object.entries(input.marketDataStatuses ?? {}).map(([id, value]) => [id, value ?? "not-requested"]));
-  return buildTradeLibraryEntries(summaries, candles, statuses, reviews, recalls);
-}
-
 function currentOpen(input: HomepageAttachmentInput, key: string): HomepageAttachmentFact<boolean> {
   const targetTime = Date.parse(input.asOf);
   if (!input.current || !Number.isFinite(targetTime) || Date.parse(input.current.boundary.asOf ?? "") !== targetTime) {
@@ -166,7 +152,7 @@ function pendingFact(input: HomepageAttachmentInput, group: HomepageAttachmentGr
  * would broaden the selected set. Original finance/evidence objects are retained.
  */
 export function qualifyHomepageAttachmentGroups(input: HomepageAttachmentInput): {
-  groups: HomepageAttachmentGroup[]; eligibleGroups: HomepageAttachmentGroup[]; executions: TradeExecution[]; episodes: TradeLibraryEpisode[]; entries: TradeLibraryEntry[];
+  groups: HomepageAttachmentGroup[]; eligibleGroups: HomepageAttachmentGroup[]; executions: TradeExecution[]; episodes: TradeLibraryEpisode[];
 } {
   const byKey = new Map<string, HomepageAttachmentGroup>();
   const metadata = normalizeRoomMetadata(input.instrumentMetadata);
@@ -187,12 +173,12 @@ export function qualifyHomepageAttachmentGroups(input: HomepageAttachmentInput):
       return source;
     }
     for (const execution of entry.executions) {
-      const nature = tradeNatureOf(execution);
+      const nature = resolvedTradeNatureOf(execution);
       sourceFor({ accountId: execution.accountId, instrumentId: execution.instrument.id, nature, simulationRunId: nature === "simulation" ? execution.source.simulationRunId ?? null : null }, execution.instrument)?.executions.push(execution);
     }
     for (const item of entry.episodes) {
       const episode = item.episode;
-      const nature = episode.tradeNature ?? "unknown";
+      const nature = resolvedEpisodeTradeNatureOf(episode);
       sourceFor({ accountId: episode.accountId, instrumentId: episode.instrument.id, nature, simulationRunId: nature === "simulation" ? episode.simulationRunId ?? null : null }, episode.instrument)?.episodes.push(item);
     }
   }
@@ -215,7 +201,6 @@ export function qualifyHomepageAttachmentGroups(input: HomepageAttachmentInput):
   }
   const eligibleGroups = groups.filter(group => group.eligible);
   return { groups, eligibleGroups,
-    entries: projectEntries(eligibleGroups, input),
     executions: [...new Set(eligibleGroups.flatMap(group => group.sources.flatMap(source => source.executions)))],
     episodes: [...new Set(eligibleGroups.flatMap(group => group.sources.flatMap(source => source.episodes)))],
   };

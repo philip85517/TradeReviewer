@@ -3,11 +3,13 @@
 ID: P4
 State: open
 Status: blocked
-Assignee: /root/integration_g61
+Assignee: /root
 实现模型: gpt-6.1-sol / ultra
 领域数据候选负责人: /root/financial_g61
 整页视觉、完整数据流与独立接受负责人: /root
 验收: 0/3；内部数据准备/接口审查不重置本票轮数，尚未授权产品实施。
+
+2026-10-24 当前检查点：历史图 leaf 第1轮 FAIL，独立对照确认空态缺少整绘图区琥珀底及调用方已知月份元数据；第2候选由 /root/ui_acceptance_scan24 限定实施，见 [独立接受1](../evidence/P4/history-chart/ROOT-ACCEPTANCE-1.md)。历史四卡第1轮 FAIL、候选2局部静态对照通过，完整交互/动效仍待验。ContributionBars 已 3/3 FAIL 并暂停，保留已有原因，不改名另开第四轮。历史统计生产者/FX/真实页面接线仍依赖未接受的财务 seam；新增纯来源模块不解除这些门槛。整票仍 0/3。
 
 ## Scope / What to build
 

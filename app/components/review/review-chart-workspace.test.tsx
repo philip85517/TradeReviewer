@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   applyDrawingCommand,
@@ -13,6 +13,8 @@ import {
   ReviewChartWorkspace,
   type ReviewChartViewModel,
 } from "./review-chart-workspace";
+
+afterEach(cleanup);
 
 const trend: NormalizedDrawing = {
   version: 2,
@@ -385,4 +387,34 @@ describe("ReviewChartWorkspace", () => {
     expect(screen.getByText(/1 笔成交无对应 K 线：成交所在区间缺少行情/)).toBeVisible();
     expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();
   });
+});
+
+it("separates fee-only unknown from known cost and gross values, and restores neutral replay presentation", () => {
+  const props = {
+    model, episodeOptions: [], playing: false, speed: 700, activeTool: "cursor", drawingHistory: createDrawingHistory(),
+    selectedDrawingId: null, layersOpen: false, settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    instruments: [], review: undefined, activePanelTab: "stats", drawerOpen: false,
+    onEpisodeChange: vi.fn(), onTimeframeChange: vi.fn(), onSelectInstrument: vi.fn(), onRefreshMarketData: vi.fn(),
+    onToggleLayers: vi.fn(), onSettingsChange: vi.fn(), onToolChange: vi.fn(), onDrawingCommand: vi.fn(), onSelectDrawing: vi.fn(),
+    onUndoDrawing: vi.fn(), onRedoDrawing: vi.fn(), onClearDrawings: vi.fn(), onToggleAllDrawings: vi.fn(),
+    onPrevious: vi.fn(), onNext: vi.fn(), onNextExecution: vi.fn(), onTogglePlay: vi.fn(), onSpeedChange: vi.fn(),
+    onActivePanelTabChange: vi.fn(), onDrawerOpenChange: vi.fn(), onSaveReview: vi.fn().mockResolvedValue(undefined),
+  } satisfies ComponentProps<typeof ReviewChartWorkspace>;
+  const { rerender, container } = render(<ReviewChartWorkspace {...props} />);
+  expect(screen.getByTestId("net-pnl")).toHaveTextContent("+HK$130.00");
+  const position: ReviewChartViewModel["position"] = { ...model.position, fees: null, netPnl: null, returnPercent: null, accuracy: { pnl: "unavailable", reasons: ["fees-invalid"] } };
+  const bad: ReviewChartViewModel = { ...model, position, executions: model.executions.map(execution => ({ ...execution, fee: "invalid" })),
+    pathMetrics: { ...model.pathMetrics, current: position, mfe: null, mae: null, maximumDrawdown: null, profitGiveback: null, rMultiple: null } };
+  rerender(<ReviewChartWorkspace {...props} model={bad} />);
+  expect(container.querySelector(".position-stats")).toHaveTextContent("均价 34.50");
+  expect(container.querySelector(".position-stats")).toHaveTextContent("浮动盈亏 +HK$130.00");
+  expect(screen.getByTestId("net-pnl")).toHaveTextContent("费用待核对");
+  expect(screen.getByTestId("net-pnl")).not.toHaveClass("positive", "negative");
+  expect(screen.getAllByText("费用 待核对").length).toBeGreaterThan(1);
+  expect(screen.queryByText(/盈亏及成本线暂不展示/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
+  rerender(<ReviewChartWorkspace {...props} />);
+  expect(screen.getByTestId("net-pnl")).toHaveTextContent("+HK$130.00");
+  expect(screen.getByTestId("net-pnl")).toHaveClass("positive");
+  expect(screen.queryByText("费用待核对")).not.toBeInTheDocument();
 });

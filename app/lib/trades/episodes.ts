@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
+import { parseNonNegativeFee } from "./execution-fee";
 import { simulationScope } from "./trading-nature";
+import { resolvedTradeNatureOfExecutions } from "./nature-resolution";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
@@ -137,7 +139,7 @@ function executionPart(
   execution: TradeExecution,
   quantity: Decimal,
   suffix: string,
-  allocatedFee: Decimal,
+  allocatedFee: Decimal | null,
 ): TradeExecution {
   return {
     ...execution,
@@ -145,7 +147,7 @@ function executionPart(
     source: { ...execution.source },
     instrument: { ...execution.instrument },
     quantity: quantity.toString(),
-    fee: allocatedFee.toString(),
+    fee: allocatedFee === null ? execution.fee : allocatedFee.toString(),
   };
 }
 
@@ -512,6 +514,8 @@ export function buildTradeEpisodes(
     if (!existing && !seenExecution.has(key) && !knownBoundary.has(key) && execution.side === "sell" && (execution.source.statementMonth || execution.source.templateId) && execution.source.positionEffect !== "open-short") flag(key, "ambiguous-opening");
     seenExecution.add(key);
     if (execution.source.feeStatus === "unknown") flag(key, "unknown-fees", existing?.episode);
+    const parsedFee = parseNonNegativeFee(execution.fee);
+    if (parsedFee === null) flag(key, "fees-invalid", existing?.episode);
     if (execution.source.historyIncomplete?.length) flag(key, "history-incomplete", existing?.episode);
 
     if (!existing) {
@@ -536,11 +540,10 @@ export function buildTradeEpisodes(
       const totalQuantity = delta.abs();
       const closingQuantity = existing.position.abs();
       const reversingQuantity = totalQuantity.minus(closingQuantity);
-      const totalFee = new Decimal(execution.fee || 0);
-      const closingFee = totalFee
+      const closingFee = parsedFee === null ? null : parsedFee
         .mul(closingQuantity)
         .div(totalQuantity);
-      const reversingFee = totalFee.minus(closingFee);
+      const reversingFee = parsedFee === null ? null : parsedFee.minus(closingFee!);
       const closingExecution = executionPart(
         execution,
         closingQuantity,
@@ -566,6 +569,7 @@ export function buildTradeEpisodes(
         openingOccurrences,
       );
       if (existing.episode.accuracy?.reasons.some(reason => ["ambiguous-event-order", "ambiguous-opening", "history-incomplete", "unknown-fees", "currency-conflict"].includes(reason))) reversed.episode.accuracy = existing.episode.accuracy;
+      if (parsedFee === null) reversed.episode.accuracy = { pnl: "unavailable", reasons: [...new Set([...(reversed.episode.accuracy?.reasons ?? []), "fees-invalid"])] };
       active.set(key, reversed);
       continue;
     }
@@ -608,7 +612,7 @@ export function buildTradeEpisodes(
     // on the new short episode would incorrectly seed the previous long again.
     const start = Date.parse(episode.startedAt);
     const end = episode.endedAt ? Date.parse(replayCursorAt(episode.endedAt)) : Infinity;
-    return { ...episode, ...(episode.accuracy?.reasons.some(r => r === "ambiguous-event-order" || r === "ambiguous-opening") ? { directionKnown: false as const } : {}), executions: episode.executions.map((execution, index) => {
+    return { ...episode, tradeNature: resolvedTradeNatureOfExecutions(episode.executions), ...(episode.accuracy?.reasons.some(r => r === "ambiguous-event-order" || r === "ambiguous-opening") ? { directionKnown: false as const } : {}), executions: episode.executions.map((execution, index) => {
       const source = { ...execution.source };
       if (index === 0 && episode.initialPosition) source.openingPosition = episode.initialPosition;
       if (index === 0 && episode.positionEvents?.length) {

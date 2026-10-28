@@ -48,7 +48,10 @@ function row(id: string, options: RowOptions = {}): ReviewQueueItem {
   const currency = options.currency ?? "CNY";
   const instrument = { ...baseInstrument, id: `${currency}:${id}`, currency };
   const timestamps = options.timestamps ?? ["2026-01-01T00:00:00.000Z"];
-  const executions = timestamps.map((executedAt, index) => execution(`${id}:${index}`, executedAt, instrument));
+  const executions = timestamps.map((executedAt, index) => ({
+    ...execution(`${id}:${index}`, executedAt, instrument),
+    source: { platform: "fixture", row: index + 1, tradeNature: nature, ...(options.runId ? { simulationRunId: options.runId } : {}) },
+  }));
   const netPnl = options.netPnl === undefined ? "0" : options.netPnl;
   const grossExposure = options.grossExposure ?? "100";
   const episode: TradeEpisode = {

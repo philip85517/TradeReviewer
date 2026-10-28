@@ -25,7 +25,7 @@ export function MonthlyStatementReview({ fileName, parsed, busy, onReparse, onCo
   return <div className="modal-backdrop"><section ref={ref} className="import-dialog" role="dialog" aria-modal="true" aria-labelledby="monthly-review-title">
     <header className="modal-header"><div><span className="eyebrow">月结单证据核对</span><h2 id="monthly-review-title">核对月结单与时间口径</h2></div><button className="secondary-button" onClick={onCancel}>取消</button></header>
     <div className="import-file-summary"><div><strong>{fileName}</strong><p>{monthly?.month ?? "账期未识别"} · {monthly?.templateIds.join(" / ")}</p><p>时间依据：{monthly?.timePolicy ?? "请核对原件时间说明"}</p></div></div>
-    <p>已识别 {parsed.records.length} 笔成交、{monthly?.positions.length ?? 0} 条持仓快照、{monthly?.events.length ?? 0} 条辅助流水。合计行不计为成交。重新导入同一文件会更新该文件的解析记录。</p>
+    <p>已识别 {parsed.records.length} 笔成交、{monthly?.positions.length ?? 0} 条持仓快照、{monthly?.events.length ?? 0} 条辅助流水。合计行不计为成交。成功完整导入的同一文件会在确认前阻止重复导入；未完成的项目仍可重试。</p>
     <section className="import-category-panel" aria-label="月结单诊断">
       {parsed.diagnostics.length === 0 ? <p>未发现解析问题；仍请核对原件。</p> : <ul>{parsed.diagnostics.map((d, i) => <li key={`${d.code}:${i}`}><strong>{d.severity === "error" ? "错误" : d.severity === "warning" ? "需核对" : "说明"}</strong>：{d.page ? `第 ${d.page} 页 ` : ""}{d.message}</li>)}</ul>}
     </section>

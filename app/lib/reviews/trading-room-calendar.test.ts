@@ -116,8 +116,8 @@ function metadata(entries: readonly TradeLibraryEntry[]): ReadonlyMap<string, Tr
 describe("buildTradingRoomCalendar", () => {
   it("builds a daily cumulative trend whose end equals the same-scope summary", () => {
     const entries = [
-      closedEntry("2026-09-02", "100"),
-      closedEntry("2026-09-03", "-40", { id: "US:SECOND" }),
+      liveClosedEntry("2026-09-02", "100"),
+      liveClosedEntry("2026-09-03", "-40", { id: "US:SECOND" }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(),
@@ -141,9 +141,9 @@ describe("buildTradingRoomCalendar", () => {
 
   it("uses truncated month buckets for a custom range spanning calendar months", () => {
     const entries = [
-      closedEntry("2026-08-20", "10"),
-      closedEntry("2026-09-02", "20", { id: "US:SEP" }),
-      closedEntry("2026-10-02", "30", { id: "US:OCT" }),
+      liveClosedEntry("2026-08-20", "10"),
+      liveClosedEntry("2026-09-02", "20", { id: "US:SEP" }),
+      liveClosedEntry("2026-10-02", "30", { id: "US:OCT" }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(buildRoomDateRange("custom", "2026-10-10", { startDate: "2026-08-15", endDate: "2026-10-10" })),
@@ -168,9 +168,9 @@ describe("buildTradingRoomCalendar", () => {
 
   it("shows the three selected natural months before month drilldown", () => {
     const entries = [
-      closedEntry("2026-07-02", "10"),
-      closedEntry("2026-08-02", "20", { id: "US:AUG" }),
-      closedEntry("2026-09-02", "30", { id: "US:SEP" }),
+      liveClosedEntry("2026-07-02", "10"),
+      liveClosedEntry("2026-08-02", "20", { id: "US:AUG" }),
+      liveClosedEntry("2026-09-02", "30", { id: "US:SEP" }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(buildRoomDateRange("last-3-months", "2026-09-19")),
@@ -205,9 +205,9 @@ describe("buildTradingRoomCalendar", () => {
 
   it("keeps the all-years model inside scope while discovering history separately", () => {
     const entries = [
-      closedEntry("2024-12-31", "5"),
-      closedEntry("2025-01-02", "10", { id: "US:2025" }),
-      closedEntry("2026-09-02", "20", { id: "US:2026" }),
+      liveClosedEntry("2024-12-31", "5"),
+      liveClosedEntry("2025-01-02", "10", { id: "US:2025" }),
+      liveClosedEntry("2026-09-02", "20", { id: "US:2026" }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(),
@@ -237,8 +237,8 @@ describe("buildTradingRoomCalendar", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T08:00:00.000Z"));
     const entries = [
-      closedEntry("2025-09-02", "100", { id: "US:2025" }),
-      closedEntry("2026-09-20", "200", { id: "US:2026" }),
+      liveClosedEntry("2025-09-02", "100", { id: "US:2025" }),
+      liveClosedEntry("2026-09-20", "200", { id: "US:2026" }),
     ];
     const historicalScope = scope(buildRoomDateRange("custom", "2025-09-19", { startDate: "2025-01-01", endDate: "2025-09-19" }));
 
@@ -251,9 +251,9 @@ describe("buildTradingRoomCalendar", () => {
 
   it("stops using all-history rows when an external shortcut changes the period", () => {
     const entries = [
-      closedEntry("2024-09-02", "50", { id: "US:2024" }),
-      closedEntry("2025-09-02", "100", { id: "US:2025" }),
-      closedEntry("2026-09-02", "200", { id: "US:2026" }),
+      liveClosedEntry("2024-09-02", "50", { id: "US:2024" }),
+      liveClosedEntry("2025-09-02", "100", { id: "US:2025" }),
+      liveClosedEntry("2026-09-02", "200", { id: "US:2026" }),
     ];
     const allHistory = buildTradingRoomCalendar(entries, {
       scope: scope(buildRoomDateRange("custom", "2026-09-19", { startDate: "2025-09-02", endDate: "2026-09-19" })),
@@ -278,10 +278,10 @@ describe("buildTradingRoomCalendar", () => {
   });
 
   it("keeps zero, excluded, empty, future, and mixed-currency values explicit", () => {
-    const zero = closedEntry("2026-09-02", "0");
-    const excluded = closedEntry("2026-09-03", "100", { id: "US:EXCLUDED", trusted: false });
-    const hkd = closedEntry("2026-09-04", "2", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) });
-    const future = closedEntry("2026-09-20", "9", { id: "US:FUTURE" });
+    const zero = liveClosedEntry("2026-09-02", "0");
+    const excluded = liveClosedEntry("2026-09-03", "100", { id: "US:EXCLUDED", trusted: false });
+    const hkd = liveClosedEntry("2026-09-04", "2", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) });
+    const future = liveClosedEntry("2026-09-20", "9", { id: "US:FUTURE" });
     const entries = [zero, excluded, hkd, future];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(buildRoomDateRange("custom", "2026-09-20", { startDate: "2026-09-01", endDate: "2026-09-20" })),
@@ -298,7 +298,7 @@ describe("buildTradingRoomCalendar", () => {
   });
 
   it("keeps unknown assets out of closed-round exclusions while retaining their count", () => {
-    const unknown = closedEntry("2026-09-02", "100", { instrument: instrument({ id: "OTHER:UNKNOWN", symbol: "UNKNOWN", market: "OTHER", currency: "CNY" }) });
+    const unknown = liveClosedEntry("2026-09-02", "100", { instrument: instrument({ id: "OTHER:UNKNOWN", symbol: "UNKNOWN", market: "OTHER", currency: "CNY" }) });
     const model = buildTradingRoomCalendar([unknown], {
       scope: scope(),
       level: "month",
@@ -310,8 +310,8 @@ describe("buildTradingRoomCalendar", () => {
 
   it("uses one FX snapshot for summary, trend, and every calendar cell", () => {
     const entries = [
-      closedEntry("2026-09-02", "10"),
-      closedEntry("2026-09-03", "20", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) }),
+      liveClosedEntry("2026-09-02", "10"),
+      liveClosedEntry("2026-09-03", "20", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(),
@@ -328,8 +328,8 @@ describe("buildTradingRoomCalendar", () => {
 
   it("uses the selected HKD target for calendar summary and trend values", () => {
     const entries = [
-      closedEntry("2026-09-02", "10"),
-      closedEntry("2026-09-03", "20", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) }),
+      liveClosedEntry("2026-09-02", "10"),
+      liveClosedEntry("2026-09-03", "20", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) }),
     ];
     const model = buildTradingRoomCalendar(entries, {
       scope: scope(),
@@ -356,3 +356,15 @@ describe("buildTradingRoomCalendar", () => {
     expect(model.cells.find(cell => cell.key === "2026-09-20")).toMatchObject({ state: "future", value: null });
   });
 });
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveClosedEntry(...args: Parameters<typeof closedEntry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(closedEntry(...args));
+}

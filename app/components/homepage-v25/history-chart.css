@@ -11,7 +11,7 @@
 .hp-history-chart__point { fill: #6ca8ff; transition: fill 120ms ease-out; }
 .hp-history-chart__point--active { fill: #a4c9ff; }
 .hp-history-chart__crosshair { stroke: #a8b6cb; stroke-width: 1px; stroke-dasharray: 4 4; pointer-events: none; }
-.hp-history-chart__region--no-rounds { fill: #30291e; opacity: .65; }
+.hp-history-chart__region--no-rounds, .hp-history-chart__region--empty { fill: #30291e; opacity: .65; }
 .hp-history-chart__region--source-missing { fill: #423125; opacity: .55; }
 .hp-history-chart__region--future { fill: #343b46; opacity: .65; }
 .hp-history-chart__region--loading { fill: #263448; opacity: .5; }

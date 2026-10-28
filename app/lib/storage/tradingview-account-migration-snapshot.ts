@@ -14,6 +14,7 @@ import type {
   TradingViewCanonicalAccountOccupancySnapshot,
   TradingViewEpisodeSnapshot,
   TradingViewMigrationReferenceSnapshot,
+  TradingViewPrincipalSnapshot,
 } from "./tradingview-account-migration-plan";
 
 export type ReadonlySqliteRow = Record<string, unknown>;
@@ -34,6 +35,7 @@ export type TradingViewSnapshotAdapterBlocker = {
   code:
     | "domain-run-grouping"
     | "invalid-execution-row"
+    | "invalid-principal-row"
     | "invalid-json"
     | "table-read-error";
   message: string;
@@ -573,6 +575,11 @@ export function buildTradingViewAccountMigrationSnapshot(
     const includedRows = rows.filter((row) => rowContainsIdentity(row, identityNeedles));
     scans.push({ table, scanned: rows.length, included: includedRows.length, digest: rawRowsDigest(rows) });
     for (const row of includedRows) {
+      if (table === "trade_revisions" && (row.scope_account_unknown === 1 || [row.request_json, row.revision_json].some((value) => {
+        if (typeof value !== "string") return false;
+        try { return (JSON.parse(value) as { kind?: unknown } | null)?.kind === "fact-state-audit-v1"; }
+        catch { return false; }
+      }))) continue;
       const primaryKey = referencePrimaryKey(table, row);
       references.push({
         table,
@@ -592,7 +599,18 @@ export function buildTradingViewAccountMigrationSnapshot(
     newEpisodes,
     references,
     canonicalAccountOccupancy: canonicalOccupancy(mappedExecutions.map((item) => item.execution)),
-    existingProvisionals: [],
+    existingProvisionals: readRows<ReadonlySqliteRow>(reader, "select * from account_principal_provisionals", "account_principal_provisionals", blockers)
+      .filter((row) => row.account_id === TRADINGVIEW_CANONICAL_ACCOUNT_ID)
+      .flatMap((row): TradingViewPrincipalSnapshot[] => {
+        if (typeof row.currency !== "string" || typeof row.amount !== "string"
+          || (row.as_of !== null && typeof row.as_of !== "string")
+          || (row.status !== "provisional" && row.status !== "confirmed")
+          || typeof row.source !== "string" || !Number.isSafeInteger(row.revision) || Number(row.revision) < 0) {
+          blockers.push({ code: "invalid-principal-row", message: "The canonical principal row is malformed.", table: "account_principal_provisionals", primaryKey: TRADINGVIEW_CANONICAL_ACCOUNT_ID });
+          return [];
+        }
+        return [{ accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID, currency: row.currency, amount: row.amount, asOf: row.as_of as string | null, status: row.status, source: row.source, revision: Number(row.revision) }];
+      }),
   };
   return {
     snapshot,

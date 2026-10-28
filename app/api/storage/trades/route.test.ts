@@ -28,6 +28,13 @@ beforeEach(() => {
 afterEach(() => { database.close(); rmSync(directory, { recursive: true, force: true }); vi.clearAllMocks(); });
 
 describe("broad trades metadata write boundary", () => {
+  it("preserves the typed version conflict when legacy replacement is refused", async () => {
+    expect((await PUT(request({ executions: [execution] }))).status).toBe(200);
+    const response = await PUT(request({ executions: [{ ...execution, price: "101" }], replaceExecutionIds: [execution.id] }));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ error: { code: "VERSION_REQUIRED", category: "conflict", phase: "compatibility", retryable: false } });
+    expect(await (await GET()).json()).toMatchObject({ executions: [{ id: execution.id, price: "100" }] });
+  });
   it.each([
     ["guessed market code", { code: "US", source: "sec", resolvedAt: metadata.resolvedAt }],
     ["untrusted exchange provider", { code: "NASDAQ", source: "tencent", resolvedAt: metadata.resolvedAt }],
@@ -37,7 +44,7 @@ describe("broad trades metadata write boundary", () => {
     for (const payload of [{ instruments: [invalid], executions: [] }, { executions: [{ ...execution, instrument: invalid }] }]) {
       const response = await PUT(request(payload));
       expect(response.status).toBe(400);
-      expect(await response.json()).toEqual({ error: { code: "invalid-request", message: "invalid request" } });
+      expect(await response.json()).toMatchObject({ error: { code: "INVALID_INPUT", category: "input", phase: "prepare", retryable: false } });
       expect(await (await GET()).json()).toEqual({ instruments: [], executions: [], importHistory: [] });
     }
   });

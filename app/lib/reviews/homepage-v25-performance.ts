@@ -1,5 +1,6 @@
+import { resolvedTradeNatureOf, resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import Decimal from "decimal.js";
-import { tradeNatureOf, type Instrument, type TradeExecution, type TradeNature } from "../trades/types";
+import { type Instrument, type TradeExecution, type TradeNature } from "../trades/types";
 import type { TradeLibraryEntry } from "../trades/library";
 import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
 import type { RoomFxSnapshot, TradingRoomMetadataInput } from "./trading-room-scope";
@@ -134,7 +135,7 @@ function collect(input: HomepageV25Input): { groups: Group[]; scope: HomepageV25
   const raw = real ? input.entries!.flatMap(entry => entry.executions ?? []) : [...input.executions];
   const seen = new Map<string, TradeExecution>();
   for (const execution of raw) {
-    const nature = tradeNatureOf(execution), run = execution.source.simulationRunId ?? null;
+    const nature = resolvedTradeNatureOf(execution), run = execution.source.simulationRunId ?? null;
     const reject = real && (nature !== requested.nature ? `nature:${nature}` : requested.nature === "simulation" && (!requested.simulationRunId || run !== requested.simulationRunId) ? "simulation-run" : requested.accountIds && !requested.accountIds.includes(execution.accountId) ? "account" : requested.markets && !requested.markets.includes(execution.instrument.market) ? "market" : null);
     if (reject) { scope.excludedExecutions++; excluded[reject] = (excluded[reject] ?? 0) + 1; continue; }
     const group = groupFor(execution.accountId, execution.instrument, real ? nature : "caller-scoped", real ? run : null);
@@ -156,7 +157,7 @@ function collect(input: HomepageV25Input): { groups: Group[]; scope: HomepageV25
     // the whole settlement, so they must never be flattened as fresh fills.
     for (const entry of input.entries!) for (const item of entry.episodes) {
       const episode = item.episode;
-      const nature = episode.tradeNature ?? (episode.executions[0] ? tradeNatureOf(episode.executions[0]) : "unknown");
+      const nature = resolvedEpisodeTradeNatureOf(episode);
       const run = episode.simulationRunId ?? null;
       if (nature !== requested.nature || requested.nature === "simulation" && run !== requested.simulationRunId || requested.accountIds && !requested.accountIds.includes(episode.accountId) || requested.markets && !requested.markets.includes(episode.instrument.market)) continue;
       const group = groupFor(episode.accountId, episode.instrument, nature, run);
@@ -210,9 +211,9 @@ function replay(group: Group, boundary: Boundary, start: string, prepared?: Prep
       return { quantity: "0", averageCost: "0", realizedPnl: "0", unrealizedPnl: "0", netPnl: "0", fees: "0", grossCapitalDeployed: "0", returnPercent: "0", quantityKnown: false, costKnown: false, accuracy: { pnl: "unavailable", reasons: ["evidence-invalid"] } };
     }
   };
-  const actual = selected.map(e => normalizedById.get(e.id)!.execution).filter(e => tradeNatureOf(e) !== "simulation");
+  const actual = selected.map(e => normalizedById.get(e.id)!.execution).filter(e => resolvedTradeNatureOf(e) !== "simulation");
   const knownEvents = [...new Map(safe.flatMap(e => e.source.positionEvents ?? []).map(event => [`${event.accountId}:${event.id}`, event])).values()].filter(event => eventAt(event) <= boundary.cursor);
-  const allocations = safe.some(e => tradeNatureOf(e) !== "simulation") ? knownEvents.filter(event => event.kind === "ipo" && D(event.quantity)?.gt(0) && event.accountId === group.identity.accountId && event.symbol && event.market && canonicalInstrumentId(event.symbol, event.market) === canonicalInstrumentId(group.instrument.symbol, group.instrument.market) && !isExecutionBackedIpoAllocation(event, actual)) : [];
+  const allocations = safe.some(e => resolvedTradeNatureOf(e) !== "simulation") ? knownEvents.filter(event => event.kind === "ipo" && D(event.quantity)?.gt(0) && event.accountId === group.identity.accountId && event.symbol && event.market && canonicalInstrumentId(event.symbol, event.market) === canonicalInstrumentId(group.instrument.symbol, group.instrument.market) && !isExecutionBackedIpoAllocation(event, actual)) : [];
   // The same selected fills that make canonical skip a repeated allotment
   // must also suppress that allotment in every fee movement prefix.
   const feeExecutions = knownEvents.some(event => isExecutionBackedIpoAllocation(event, actual)) ? safe.map(e => ({ ...e, source: { ...e.source, positionEvents: e.source.positionEvents?.filter(event => !isExecutionBackedIpoAllocation(event, actual)) } })) : safe;
@@ -359,6 +360,9 @@ function amount(group: Group, state: State, quote: Quote | null, type: "unrealiz
   const value = reasons.size || !quantity || !price ? null : type === "market" ? price.mul(quantity) : price.minus(D(state.ledger.averageCost)!).mul(quantity).minus(state.openFees!);
   return { currency: currency(group.instrument.currency), value, reasons: [...reasons], eligible };
 }
+function convertAtFxRates(value: Decimal, sourceRate: Decimal, targetRate: Decimal): Decimal {
+  return value.mul(sourceRate).div(targetRate);
+}
 function metric(amounts: Amount[], input: HomepageV25Input, asOf: Boundary | null): HomepageV25Metric {
   const eligible = amounts.filter(a => a.eligible);
   const reasons = new Set(eligible.flatMap(a => a.reasons));
@@ -383,7 +387,7 @@ function metric(amounts: Amount[], input: HomepageV25Input, asOf: Boundary | nul
     const sourceRate = rate(a.currency), targetRate = rate(target);
     if (!sourceRate || !targetRate) { reasons.add("fx-rate-invalid"); money.conversion = "partial"; return null; }
     if (money.conversion === "same-currency") money.conversion = "complete";
-    return a.value.mul(sourceRate).div(targetRate);
+    return convertAtFxRates(a.value, sourceRate, targetRate);
   };
   const values = eligible.map(convert);
   if (!target && original.size > 1) reasons.add("target-currency-required");
@@ -851,7 +855,7 @@ function collectFeeFacts(data: PreparedData, supplemental: readonly { event: Sta
       const reasons = unique([...settlement.pnl.filter(reason => reason.includes("fee")), ...(e.source.feeStatus === "unknown" ? ["unknown-fees"] : []), ...[...group.conflicts].filter(reason => reason === "duplicate-execution-conflict")]);
       if (!day) reasons.push("fee-incurred-date-unavailable");
       const at = day ? replayExecutionAt(e) : null;
-      facts.push({ factId: `${group.key}|execution:${e.id}`, accountId: e.accountId, instrumentId: e.instrument.id, nature: tradeNatureOf(e), simulationRunId: e.source.simulationRunId ?? null, kind: "execution-fee", currency: currency(e.instrument.currency), expense: fee && fee.gte(0) && !reasons.length ? text(fee) : null,
+      facts.push({ factId: `${group.key}|execution:${e.id}`, accountId: e.accountId, instrumentId: e.instrument.id, nature: resolvedTradeNatureOf(e), simulationRunId: e.source.simulationRunId ?? null, kind: "execution-fee", currency: currency(e.instrument.currency), expense: fee && fee.gte(0) && !reasons.length ? text(fee) : null,
         incurred: { businessDate: day, at: precise ? e.executedAt : null, precision: day ? precise ? "instant" : "day" : "unknown" }, knowledge: { amountKnownAt: at, attributionKnownAt: at, availableAt: at, evidenceIds: [e.id] }, lineage: { executionIds: [e.id], eventIds: [], sourceRows: [`${e.source.platform}:${e.source.row}`] }, coverage: reasons.length ? "unknown" : "complete", reasons });
       for (const event of e.source.positionEvents ?? []) {
         const key = `${event.accountId}|${group.identity.nature}|${group.identity.simulationRunId ?? ""}|${event.id}`;
@@ -1069,6 +1073,70 @@ function financialFactValue(value: Decimal | null, reasons: readonly string[] = 
   const unavailable = unique(reasons);
   return { value: value === null || unavailable.length ? null : value.isZero() ? "0" : value.toFixed(), available: value !== null && !unavailable.length, reasons: unavailable };
 }
+type HistoricalFxValues = Readonly<Record<"gross" | "allocatedFees" | "net", PositionFactValue>>;
+export type HomepageV25HistoricalFxRequest = Readonly<{
+  asOf: string; targetCurrency: string;
+  requests: readonly Readonly<{ key: string; businessDate: string; originalCurrency: string; nativeValues: HistoricalFxValues }>[];
+}>;
+export type HomepageV25HistoricalFxResult = Readonly<{
+  key: string; businessDate: string; originalCurrency: string; targetCurrency: string;
+  cutoff: string; coverage: FxCoverage; conversionId: string; values: HistoricalFxValues;
+}>;
+const historicalFxConversionPolicy = "historical-close-day-slots-1" as const;
+export type HomepageV25HistoricalFxBatch = ProjectionVersions & Readonly<{
+  asOf: string; conversionPolicy: typeof historicalFxConversionPolicy; results: readonly HomepageV25HistoricalFxResult[];
+}>;
+/** Convert supplied closed-round slots with the existing historical FX authority.
+ * Resolution is shared only within this call; the prepared handle retains nothing. */
+export function readHomepageV25HistoricalFx(source: HomepageV25PreparedSource, request: HomepageV25HistoricalFxRequest): HomepageV25HistoricalFxBatch {
+  const data = preparedData.get(source);
+  if (!data) throw new HomepageV25ProjectionInputError("prepared-source-invalid");
+  const asOf = parseAsOf(request.asOf);
+  if (!asOf || !validDay(request.asOf.slice(0, 10))) throw new HomepageV25ProjectionInputError("as-of-invalid");
+  const checkedCurrency = (code: string) => {
+    if (typeof code !== "string" || !code.trim()) throw new HomepageV25ProjectionInputError("historical-fx-currency-invalid");
+    return currency(code);
+  };
+  const targetCurrency = checkedCurrency(request.targetCurrency), keys = new Set<string>();
+  // Validate the complete batch before resolving any context, including future days.
+  const requests = request.requests.map(item => {
+    if (typeof item.key !== "string" || !item.key.trim()) throw new HomepageV25ProjectionInputError("historical-fx-key-invalid");
+    if (keys.has(item.key)) throw new HomepageV25ProjectionInputError("historical-fx-key-duplicate");
+    keys.add(item.key);
+    if (!validDay(item.businessDate)) throw new HomepageV25ProjectionInputError("historical-fx-date-invalid");
+    if (item.businessDate > asOf.day) throw new HomepageV25ProjectionInputError("historical-fx-future-day");
+    return { ...item, originalCurrency: checkedCurrency(item.originalCurrency) };
+  });
+  type Context = { cutoff: string; coverage: FxCoverage; conversionId: string; sourceRate: Decimal | null; targetRate: Decimal | null };
+  const contexts = new Map<string, Context>();
+  const results = requests.map(item => {
+    const contextKey = JSON.stringify([item.businessDate, item.originalCurrency, targetCurrency]);
+    let context = contexts.get(contextKey);
+    if (!context) {
+      const boundary = item.businessDate === asOf.day ? asOf : dayBoundary(item.businessDate);
+      const fx = fxFor(data, boundary, [item.originalCurrency], targetCurrency, false, false);
+      const rate = (code: string) => code === "CNY" ? new Decimal(1) : D(fx.snapshot?.rates[`${code}/CNY`]);
+      context = {
+        cutoff: boundary.cursor, coverage: fx.coverage,
+        conversionId: sha256(stableProjectionJson({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, conversionPolicy: historicalFxConversionPolicy, businessDate: item.businessDate, cutoff: boundary.cursor, originalCurrency: item.originalCurrency, targetCurrency, coverage: fx.coverage, snapshot: fx.snapshot ?? null })),
+        sourceRate: rate(item.originalCurrency), targetRate: rate(targetCurrency),
+      };
+      contexts.set(contextKey, context);
+    }
+    const resolved = context;
+    const convert = (native: PositionFactValue): PositionFactValue => {
+      if (!native.available || native.value === null || native.reasons.length) return financialFactValue(null, native.reasons.length ? native.reasons : ["native-value-unavailable"]);
+      const amount = D(native.value);
+      if (!amount) return financialFactValue(null, ["native-value-invalid"]);
+      if (item.originalCurrency === targetCurrency) return financialFactValue(amount);
+      if (!resolved.sourceRate || !resolved.targetRate) return financialFactValue(null, resolved.coverage.reasons);
+      return financialFactValue(convertAtFxRates(amount, resolved.sourceRate, resolved.targetRate));
+    };
+    return { key: item.key, businessDate: item.businessDate, originalCurrency: item.originalCurrency, targetCurrency, cutoff: resolved.cutoff, coverage: resolved.coverage, conversionId: resolved.conversionId,
+      values: { gross: convert(item.nativeValues.gross), allocatedFees: convert(item.nativeValues.allocatedFees), net: convert(item.nativeValues.net) } };
+  });
+  return freezeProjection({ sourceId: source.sourceId, revisions: source.revisions, policies: projectionPolicies, conversionPolicy: historicalFxConversionPolicy, scope: structuredClone(data.scope), asOf: asOf.cursor, results });
+}
 /** Financial-owner read seam. Collects transient canonical movements and observes F's existing allocation steps. */
 export function readHomepageV25FinancialFacts(source: HomepageV25PreparedSource, request: { asOf: string; targetCurrency?: string }) {
   const data = preparedData.get(source);
@@ -1077,7 +1145,7 @@ export function readHomepageV25FinancialFacts(source: HomepageV25PreparedSource,
   if (!boundary) throw new HomepageV25ProjectionInputError("as-of-invalid");
   const episodesByGroup = new Map<string, TradeLibraryEntry["episodes"][number]["episode"][]>();
   for (const entry of data.input.entries) for (const item of entry.episodes) {
-    const episode = item.episode, nature = episode.tradeNature ?? (episode.executions[0] ? tradeNatureOf(episode.executions[0]) : "unknown");
+    const episode = item.episode, nature = resolvedEpisodeTradeNatureOf(episode);
     const key = `${episode.accountId}|${episode.instrument.id}|${nature}|${episode.simulationRunId ?? ""}`;
     const bucket = episodesByGroup.get(key) ?? []; bucket.push(episode); episodesByGroup.set(key, bucket);
   }
@@ -1185,8 +1253,8 @@ function episodeEndMatches(endedAt: string, time: CanonicalFactResult["facts"][n
   if (!month && !day && !Number.isFinite(instant)) return false;
   if (time.precision === "instant" && !month && !day) return instant === Date.parse(time.at);
   const length = month || time.precision === "month" ? 7 : 10;
-  const declared = month || day ? endedAt : new Date(instant).toISOString();
-  const canonical = time.precision === "instant" ? new Date(time.at).toISOString() : time.sourceDate;
+  const declared = month || day ? endedAt : shanghai.format(new Date(instant));
+  const canonical = time.precision === "instant" ? shanghai.format(new Date(time.at)) : time.sourceDate;
   return declared.slice(0, length) === canonical.slice(0, length);
 }
 function classificationFactCoverage(canonical: CanonicalFactResult, executions: readonly TradeExecution[]) {

@@ -349,7 +349,7 @@ describe("ReviewDashboard", () => {
     const onQualityModelChange = vi.fn();
     const view = render(
       <ReviewDashboard
-        entries={[holdingDashboardEntry()]}
+        entries={[liveHoldingDashboardEntry()]}
         holdingsQuotesByInstrument={{ "US:TEST": { price: null, currency: "USD", quoteDate: "2026-10-15", fetchedAt: "2026-10-15T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
         qualityInput={{
           marketDataStatuses: { "US:TEST": "latest-available" },
@@ -381,7 +381,7 @@ describe("ReviewDashboard", () => {
 
     view.rerender(
       <ReviewDashboard
-        entries={[holdingDashboardEntry()]}
+        entries={[liveHoldingDashboardEntry()]}
         holdingsQuotesByInstrument={{ "US:TEST": { price: null, currency: "USD", quoteDate: "2026-10-15", fetchedAt: "2026-10-15T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
         qualityInput={{
           marketDataStatuses: { "US:TEST": "complete" },
@@ -415,7 +415,7 @@ describe("ReviewDashboard", () => {
     const onRetryDataQuality = vi.fn(() => new Promise<void>(resolve => { resolveRetry = resolve; }));
     render(
       <ReviewDashboard
-        entries={[holdingDashboardEntry()]}
+        entries={[liveHoldingDashboardEntry()]}
         qualityInput={{ marketDataDailyStatuses: { "US:TEST": "not-requested" } }}
         onRetryDataQuality={onRetryDataQuality}
         onOpenInReview={() => undefined}
@@ -488,7 +488,7 @@ describe("ReviewDashboard", () => {
   });
 
   it("labels a pure CNY summary as original currency instead of an FX conversion", () => {
-    const trustedEntries = dashboardEntries().map(entry => ({
+    const trustedEntries = liveDashboardEntries().map(entry => ({
       ...entry,
       episodes: entry.episodes.map(item => ({
         ...item,
@@ -613,7 +613,7 @@ describe("ReviewDashboard", () => {
   it("keeps original currency subtotals beside the converted summary", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const usd: Instrument = { ...shanghai, id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" };
-    const entries = [dashboardEntries(shanghai), dashboardEntries(usd, "2026-10", "usd-")].flat();
+    const entries = [liveDashboardEntries(shanghai), liveDashboardEntries(usd, "2026-10", "usd-")].flat();
     render(
       <ReviewDashboard
         entries={entries}
@@ -640,7 +640,7 @@ describe("ReviewDashboard", () => {
     const etf: Instrument = { ...shanghai, id: "US:SPY", symbol: "SPY", name: "标普ETF", market: "US", currency: "USD" };
     render(
       <ReviewDashboard
-        entries={[...dashboardEntries(shanghai, "2026-09"), ...dashboardEntries(etf, "2026-10", "etf-")]}
+        entries={[...liveDashboardEntries(shanghai, "2026-09"), ...liveDashboardEntries(etf, "2026-10", "etf-")]}
         instrumentMetadata={new Map([[shanghai.id, metadata(shanghai, "stock")], [etf.id, metadata(etf, "etf")]])}
         onOpenInReview={() => undefined}
       />,
@@ -833,7 +833,7 @@ describe("ReviewDashboard", () => {
 
   it("keeps the last valid scope when a custom date draft is invalid", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    render(<ReviewDashboard entries={liveDashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
     await openRoomFilters(user);
     fireEvent.change(revealDateEditor(within(room).getByLabelText("交易室起始日期")), { target: { value: "2026-11-01" } });
@@ -1002,8 +1002,8 @@ it("keeps holding observation and closed performance periods independent in two 
 });
 
 it("reactively bounds all observation history by selected account, nature/run and refreshed entries", () => {
-  const accountA = dashboardEntries(shanghai, "2026-09", "a")[0];
-  const accountB = dashboardEntries(shanghai, "2023-02", "b")[0];
+  const accountA = liveDashboardEntries(shanghai, "2026-09", "a")[0];
+  const accountB = liveDashboardEntries(shanghai, "2023-02", "b")[0];
   accountB.executions.forEach(execution => { execution.accountId = "account-2"; execution.accountLabel = "第二账户"; });
   accountB.episodes.forEach(item => { item.episode.accountId = "account-2"; });
   const run = copyEntry(dashboardEntries(shanghai, "2022-03", "sim")[0], { prefix: "sim", tradeNature: "simulation", simulationRunId: "run-one" });
@@ -1016,14 +1016,14 @@ it("reactively bounds all observation history by selected account, nature/run an
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2023-02-02");
   view.rerender(<ReviewDashboard {...props} entries={[accountA, accountB, run]} sharedScope={{ ...scope, nature: "simulation", simulationRunId: "run-one" }} />);
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2022-03-02");
-  const earlier = dashboardEntries(shanghai, "2021-04", "earlier")[0];
+  const earlier = liveDashboardEntries(shanghai, "2021-04", "earlier")[0];
   view.rerender(<ReviewDashboard {...props} entries={[accountA, accountB, run, earlier]} sharedScope={scope} />);
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2021-04-02");
   expect(screen.getByRole("tab", { name: "持仓历史：全部" })).toHaveAttribute("aria-selected", "true");
 });
 
 it("uses validated source trading dates and visible matching opening evidence for all observation history", () => {
-  const holding = holdingDashboardEntry();
+  const holding = liveHoldingDashboardEntry();
   const execution = holding.executions[0];
   execution.executedAt = "2026-09-25T00:30:00Z";
   execution.source.tradingDate = "2026-09-24";
@@ -1057,8 +1057,8 @@ it("shows the model current date across Shanghai midnight", () => {
 });
 
 it("assembles the B2 current portfolio, allocation, history and pending work without observing old dates changing current KPI", () => {
-  const holding = holdingDashboardEntry();
-  render(<ReviewDashboard entries={[holding, ...dashboardEntries()]} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} holdingsAsOf="2026-10-15" holdingsQuotesByInstrument={{ [holding.instrument.id]: { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "current" } }} />);
+  const holding = liveHoldingDashboardEntry();
+  render(<ReviewDashboard entries={[holding, ...liveDashboardEntries()]} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} holdingsAsOf="2026-10-15" holdingsQuotesByInstrument={{ [holding.instrument.id]: { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "current" } }} />);
   const current = screen.getByRole("region", { name: "当前持仓概览" });
   expect(current).toHaveTextContent("持仓市值USD 30.00");
   expect(current).toHaveTextContent("持仓标的数1");
@@ -1097,7 +1097,7 @@ it("does not rebuild holdings for shared-scope closed-period changes but rebuild
   const portfolioSpy = vi.spyOn(portfolioModule, "buildCurrentPortfolio");
   const historySpy = vi.spyOn(historyModule, "buildHoldingsHistory");
   try {
-    const entries = [...dashboardEntries(shanghai, "2026-09"), holdingDashboardEntry()];
+    const entries = [...liveDashboardEntries(shanghai, "2026-09"), liveHoldingDashboardEntry()];
     const shared: SharedScope = { nature: "live", accountIds: [], simulationRunId: null, reportCurrency: "original" };
     const props = { entries, onOpenInReview: vi.fn(), referenceCapitalEnabled: false, holdingsAsOf: "2026-10-15" };
     const view = render(<ReviewDashboard {...props} sharedScope={shared} />);
@@ -1280,3 +1280,19 @@ it("lets an explicit history return context override stored dashboard preference
   const saved = JSON.parse(localStorage.getItem(dashboardBrowsePreferencesKey)!);
   expect(saved).toMatchObject({ assetType: "stock", period: { preset: "custom", startDate: "2026-10-02", endDate: "2026-10-05" } });
 });
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveDashboardEntries(...args: Parameters<typeof dashboardEntries>): TradeLibraryEntry[] {
+  return dashboardEntries(...args).map(withExplicitLiveMembers);
+}
+
+function liveHoldingDashboardEntry(...args: Parameters<typeof holdingDashboardEntry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(holdingDashboardEntry(...args));
+}

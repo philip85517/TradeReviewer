@@ -9,6 +9,7 @@ import {
   type TradeLibraryEpisode,
 } from "../trades/library";
 import Decimal from "decimal.js";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 
 export type ReviewQueueSort =
   | "newest"
@@ -99,7 +100,7 @@ function sortBrokerTags(left: ReviewQueueBrokerTag, right: ReviewQueueBrokerTag)
 }
 
 function reviewQueueTradeNature(row: ReviewQueueItem) {
-  return row.entry.tradeNature ?? row.item.episode.tradeNature ?? "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 function reviewQueueSimulationRunId(row: ReviewQueueItem) {

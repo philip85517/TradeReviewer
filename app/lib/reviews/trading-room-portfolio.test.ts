@@ -96,18 +96,18 @@ function openEntry(
 const options = { scope: createDefaultRoomScope(), asOf: "2026-09-25", quotesByInstrument: { "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-25", fetchedAt: null, provider: "fixture", freshness: "current" as const } } };
 describe("buildCurrentPortfolio", () => {
  it("uses remaining cost, counts securities across accounts, and excludes closed positions", () => {
-  const first = openEntry(instrument(), "2026-09-01", "a");
-  const sell = execution(first.instrument, "sell", "2026-09-02", "a"); sell.quantity = "1";
+  const first = liveOpenEntry(instrument(), "2026-09-01", "a");
+  const sell = liveExecution(first.instrument, "sell", "2026-09-02", "a"); sell.quantity = "1";
   first.episodes[0].episode.executions.push(sell);
-  const model = buildCurrentPortfolio([first, openEntry(instrument(), "2026-09-01", "b")], options);
+  const model = buildCurrentPortfolio([first, liveOpenEntry(instrument(), "2026-09-01", "b")], options);
   expect(model.count).toBe(1); expect(model.rows).toHaveLength(2);
   expect(model.cost.originalByCurrency).toEqual({ USD: "30" });
   expect(model.marketValue.originalByCurrency).toEqual({ USD: "36" });
   expect(model.unrealizedReturnPercent).toBe("20");
  });
  it("keeps missing price and missing cost coverage independent", () => {
-  const good = openEntry(instrument(), "2026-09-01");
-  const missing = openEntry(instrument({id:"US:OTHER"}), "2026-09-01");
+  const good = liveOpenEntry(instrument(), "2026-09-01");
+  const missing = liveOpenEntry(instrument({id:"US:OTHER"}), "2026-09-01");
   const model = buildCurrentPortfolio([good, missing], options);
   expect(model.coverage.marketValue.complete).toBe(false);
   expect(model.coverage.cost.complete).toBe(true);
@@ -120,7 +120,7 @@ describe("buildCurrentPortfolio", () => {
   expect(unknownCost.rows[0].cost).toBeNull();
  });
  it("accepts signed verified shorts but not unsupported return denominators or negative evidence", () => {
-  const short = openEntry(instrument(), "2026-09-01");
+  const short = liveOpenEntry(instrument(), "2026-09-01");
   short.episodes[0].episode.executions[0].side = "sell";
   const unknown = buildCurrentPortfolio([short], options);
   expect(unknown.rows[0].marketValue).toBeNull();
@@ -131,7 +131,7 @@ describe("buildCurrentPortfolio", () => {
   expect(verified.unrealizedReturnPercent).toBeNull();
  });
  it("refreshes freshness against each supplied clock and represents empty portfolios", () => {
-  const model = buildCurrentPortfolio([openEntry(instrument(), "2026-09-01")], {...options, asOf:"2026-10-01"});
+  const model = buildCurrentPortfolio([liveOpenEntry(instrument(), "2026-09-01")], {...options, asOf:"2026-10-01"});
   expect(model.rows[0].marketValue).toBeNull();
   const empty = buildCurrentPortfolio([], options);
   expect(empty.count).toBe(0); expect(empty.marketValue.convertedCny).toBeNull();
@@ -140,15 +140,18 @@ describe("buildCurrentPortfolio", () => {
   const first = openEntry(instrument(), "2026-09-01");
   first.tradeNature = "simulation"; first.episodes[0].episode.tradeNature = "simulation";
   first.episodes[0].episode.simulationRunId = "run-1";
+  for (const member of new Set([...first.executions, ...first.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "simulation", simulationRunId: "run-1" };
+  }
   expect(buildCurrentPortfolio([first], {...options, scope:{...options.scope,nature:"simulation",simulationRunId:"run-1"}}).count).toBe(1);
   expect(buildCurrentPortfolio([first], {...options, scope:{...options.scope,nature:"simulation",simulationRunId:"run-2"}}).count).toBe(0);
-  const closed = openEntry(instrument(), "2026-09-01");
-  closed.episodes[0].episode.executions.push(execution(closed.instrument, "sell", "2026-09-02"));
+  const closed = liveOpenEntry(instrument(), "2026-09-01");
+  closed.episodes[0].episode.executions.push(liveExecution(closed.instrument, "sell", "2026-09-02"));
   expect(buildCurrentPortfolio([closed], options).empty).toBe(true);
  });
  it("requires complete FX for CNY totals and keeps cross-currency returns unavailable", () => {
-  const usd = openEntry(instrument(), "2026-09-01");
-  const cny = openEntry(instrument({id:"CN:TEST",currency:"CNY"}), "2026-09-01");
+  const usd = liveOpenEntry(instrument(), "2026-09-01");
+  const cny = liveOpenEntry(instrument({id:"CN:TEST",currency:"CNY"}), "2026-09-01");
   const mixed = {...options,quotesByInstrument:{...options.quotesByInstrument,"CN:TEST":{...options.quotesByInstrument["US:TEST"],currency:"CNY"}}};
   const raw = buildCurrentPortfolio([usd,cny], mixed);
   expect(raw.marketValue.convertedCny).toBeNull(); expect(raw.unrealizedReturnPercent).toBeNull();
@@ -158,17 +161,34 @@ describe("buildCurrentPortfolio", () => {
   expect(buildCurrentPortfolio([usd,cny], {...mixed,fxSnapshot:{...fx,status:"partial"}}).marketValue.convertedCny).toBeNull();
  });
  it("exposes target HKD totals while retaining the original USD values", () => {
-  const usd = openEntry(instrument(), "2026-09-01");
+  const usd = liveOpenEntry(instrument(), "2026-09-01");
   const fx = { id:"fx-hkd",baseCurrency:"CNY" as const,asOf:"2026-09-25",source:"fixture",status:"complete" as const,rates:{"USD/CNY":"7","HKD/CNY":"0.875"} };
   const converted = buildCurrentPortfolio([usd], {...options,fxSnapshot:fx,targetCurrency:"HKD"});
   expect(converted.marketValue).toMatchObject({ originalByCurrency: { USD: "24" }, targetCurrency: "HKD", converted: "192" });
   expect(converted.unrealizedPnl).toMatchObject({ targetCurrency: "HKD", converted: "32" });
  });
  it("does not divide by a zero remaining cost", () => {
-  const free = openEntry(instrument(), "2026-09-01");
+  const free = liveOpenEntry(instrument(), "2026-09-01");
   free.episodes[0].episode.executions[0].price = "0";
   const model = buildCurrentPortfolio([free], options);
   expect(model.rows[0].cost).toBe("0"); expect(model.rows[0].unrealizedReturnPercent).toBeNull();
  });
 
 });
+
+// Opt in only the authorized live scenarios; original helper defaults remain unknown.
+function withExplicitLiveMembers(value: TradeLibraryEntry): TradeLibraryEntry {
+  for (const member of new Set([...value.executions, ...value.episodes.flatMap(item => item.episode.executions)])) {
+    member.source = { ...member.source, tradeNature: "live" };
+  }
+  return value;
+}
+
+function liveOpenEntry(...args: Parameters<typeof openEntry>): TradeLibraryEntry {
+  return withExplicitLiveMembers(openEntry(...args));
+}
+
+function liveExecution(...args: Parameters<typeof execution>): TradeExecution {
+  const value = execution(...args);
+  return { ...value, source: { ...value.source, tradeNature: "live" } };
+}

@@ -1,5 +1,5 @@
 {
-  "databasePath": "/Users/zhoulin/projects/交易空间/database/TradingReview/tradereview.sqlite",
+  "databasePath": "/Users/zhoulin/projects/交易空间/database/TradingReview/migrated-20261028-0955/database.sqlite",
   "port": 3022,
   "hostname": "127.0.0.1"
 }

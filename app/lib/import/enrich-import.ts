@@ -29,6 +29,8 @@ export const UNRESOLVED_ASSET_EXCLUSION_LABEL =
   "无法确认属于股票或 ETF";
 
 export type EnrichedImportResult = {
+  fileContent?: import("./file-fingerprint").FileContentIdentity;
+  tradingViewEvidence?: import("./contracts").TradingViewDecodedEvidence;
   monthly?: StatementParseResult["monthly"];
   blocked?: boolean;
   broker: StatementParseResult["broker"];
@@ -264,6 +266,8 @@ export async function enrichStatementImport(
       broker: parsed.broker,
       ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
       ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
+      ...(parsed.fileContent ? { fileContent: parsed.fileContent } : {}),
+      ...(parsed.tradingViewEvidence ? { tradingViewEvidence: parsed.tradingViewEvidence } : {}),
       importable: [],
       unresolved: [],
       exclusions,
@@ -542,6 +546,8 @@ export async function enrichStatementImport(
     broker: parsed.broker,
     ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
     ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
+    ...(parsed.fileContent ? { fileContent: parsed.fileContent } : {}),
+    ...(parsed.tradingViewEvidence ? { tradingViewEvidence: parsed.tradingViewEvidence } : {}),
     importable,
     monthly: parsed.monthly,
     blocked: parsed.blocked,

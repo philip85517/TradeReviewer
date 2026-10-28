@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 16,
+  "provenance": {
+    "writer": "task-6-candidate-1-baseline (pre-engine) frozen source",
+    "writerSha256": "b60bd13c096022fd04a727d83a1eb3363bfdeb3ee7831749499e69cdcf0a9e32",
+    "migrations": [
+      {
+        "version": 1,
+        "checksum": "bf5e2a51726b8284b3e5abf4b5639db602a4792e2d6af678559aa953396eea40"
+      },
+      {
+        "version": 2,
+        "checksum": "401b915358bb32042c4d79eed35edd18662a1cec58193b08f498d245a33938fa"
+      },
+      {
+        "version": 3,
+        "checksum": "1ed38012c97a6e534ffd44da7489a94a88399115f074f9807f8e6dc474806feb"
+      },
+      {
+        "version": 4,
+        "checksum": "7545b452834b42b1bb56d0b947126942749e42e72975fa4b88c7701aac32887a"
+      },
+      {
+        "version": 5,
+        "checksum": "868fc720cea02b82444dcf7874fdaaa6fa71d36cc7a7583643ce752b94225d8d"
+      },
+      {
+        "version": 6,
+        "checksum": "64857cafe9e22606a02cd9f8d579f2095f2e425b3b6ace3d0affa1d5c2e436ee"
+      },
+      {
+        "version": 7,
+        "checksum": "5b45b208853e1d914b0c74bb5c9acc2b9dbe14408817bd7260c44ea822aea698"
+      },
+      {
+        "version": 8,
+        "checksum": "51b4ee7565671f5331e5b8f7defd278e9b8f4dc35df52688d9e7320a67223ee3"
+      },
+      {
+        "version": 9,
+        "checksum": "3a171f5f5c651c76e69d0d056e1e4b958f5cbe054efc1f5d5fafbcd79b5e4900"
+      },
+      {
+        "version": 10,
+        "checksum": "090afc7c2043eed3b0059d869533b4ef2c8e1b1fe1b6c66391fe9adcec581147"
+      },
+      {
+        "version": 11,
+        "checksum": "71ad249ec789586e19e37c7f68fb4358b9564a58426d78a35c024c305e3d8ef5"
+      },
+      {
+        "version": 12,
+        "checksum": "1efa87843cd5da1e1e31f9d4af72536bcde9f2562c7989299e15e71df6f4e260"
+      },
+      {
+        "version": 13,
+        "checksum": "5182cc3c0c82f291e8a0adf4919f29af8669e498ff1d485f7f1e0b25595f7c95"
+      },
+      {
+        "version": 14,
+        "checksum": "b71c5f174924db11a58ee1a39896919e8a061eb343e101b13ac61bd4c09de699"
+      },
+      {
+        "version": 15,
+        "checksum": "f1fd4ab0ae461eae135a02230a1ac4ad0fa105efbf0ab7fc9b437cccae2f6aad"
+      },
+      {
+        "version": 16,
+        "checksum": "ca67a99f7c57b9b388f8d11ef90f83cdc42d9a9b1f22d514894d49e2366d0356"
+      }
+    ],
+    "columns": {
+      "instruments": [
+        "id",
+        "symbol",
+        "name",
+        "market",
+        "currency",
+        "metadata_json",
+        "created_at",
+        "updated_at",
+        "localized_name_json"
+      ],
+      "executions": [
+        "id",
+        "import_batch_id",
+        "instrument_id",
+        "account",
+        "side",
+        "executed_at",
+        "quantity",
+        "price",
+        "fee",
+        "currency",
+        "evidence_json",
+        "created_at",
+        "updated_at",
+        "trade_nature",
+        "simulation_run_id"
+      ],
+      "reviews": [
+        "episode_id",
+        "instrument_id",
+        "cursor_json",
+        "plan_json",
+        "review_json",
+        "drawings_json",
+        "revisions_json",
+        "confirmed_tags_json",
+        "created_at",
+        "updated_at"
+      ],
+      "recall_documents": [
+        "episode_id",
+        "draft_json",
+        "finalized_json",
+        "revision",
+        "updated_at"
+      ],
+      "trade_revisions": [
+        "id",
+        "instrument_id",
+        "account_id",
+        "request_json",
+        "revision_json",
+        "recorded_at"
+      ],
+      "account_principal_provisionals": [
+        "account_id",
+        "currency",
+        "amount",
+        "as_of",
+        "status",
+        "source",
+        "revision",
+        "updated_at"
+      ],
+      "tradingview_account_migration_operations": [
+        "operation_id",
+        "operation_kind",
+        "parent_operation_id",
+        "idempotency_key",
+        "plan_digest",
+        "base_snapshot_digest",
+        "after_snapshot_digest",
+        "status",
+        "request_json",
+        "result_json",
+        "created_at",
+        "updated_at"
+      ],
+      "tradingview_account_migration_rows": [
+        "operation_id",
+        "table_name",
+        "primary_key",
+        "before_json",
+        "after_json",
+        "before_digest",
+        "after_digest"
+      ],
+      "tradingview_account_migration_aliases": [
+        "operation_id",
+        "alias_kind",
+        "old_id",
+        "new_id"
+      ],
+      "tradingview_account_migration_dependencies": [
+        "operation_id",
+        "table_name",
+        "row_key",
+        "row_digest"
+      ]
+    }
+  },
+  "before": {
+    "id": "ordinary-revision",
+    "instrument_id": "CN-SH:600330",
+    "account_id": "tradingview:old:fixture",
+    "request_json": "{\"accountId\":\"tradingview:old:fixture\",\"executionId\":\"fill-entry\"}",
+    "revision_json": "{\"accountId\":\"tradingview:old:fixture\",\"executionId\":\"fill-entry\"}",
+    "recorded_at": "2026-01-04"
+  },
+  "committed": {
+    "operationId": "historical-schema16-ordinary-revision",
+    "status": "committed",
+    "idempotent": false,
+    "afterSnapshotDigest": "sha256:8ad8ca0fbe17c6808a03c9cbbeb45369cc633cd707d334c0776898f7b95b76bc",
+    "affectedRows": 6,
+    "executionCount": 2,
+    "quantity": "2000",
+    "fee": "0.4",
+    "episodeMap": [
+      {
+        "oldEpisodeId": "episode-old",
+        "newEpisodeId": "episode-new",
+        "accountId": "tradingview:simulation:default",
+        "instrumentId": "CN-SH:600330",
+        "direction": "long",
+        "executionIds": [
+          "fill-entry",
+          "fill-exit"
+        ],
+        "sourceRunId": "fixture-run",
+        "beforeDigest": "sha256:83397889302d871294a8bfe60ba2bc7c826fd93d049427c75d50d8c2a3b3956c",
+        "afterDigest": "sha256:9a09080fc768efe439a67b61b7979c8abff42adb63d5acb7bed3417d6f2a056c"
+      }
+    ],
+    "provisionalPrincipalRevision": 0
+  },
+  "rows": {
+    "instruments": [
+      {
+        "id": "CN-SH:600330",
+        "symbol": "600330",
+        "name": "测试标的",
+        "market": "CN-SH",
+        "currency": "CNY",
+        "metadata_json": null,
+        "created_at": "2026-01-03",
+        "updated_at": "2026-01-03",
+        "localized_name_json": null
+      }
+    ],
+    "executions": [
+      {
+        "id": "fill-entry",
+        "import_batch_id": null,
+        "instrument_id": "CN-SH:600330",
+        "account": "tradingview:simulation:default",
+        "side": "buy",
+        "executed_at": "2026-01-01T07:00:00.000Z",
+        "quantity": "1000",
+        "price": "10.25",
+        "fee": "0",
+        "currency": "CNY",
+        "evidence_json": "{\"accountLabel\":\"TradingView · 模拟盘\",\"source\":{\"platform\":\"tradingview\",\"tradeNature\":\"simulation\",\"simulationRunId\":\"fixture-run\",\"simulationRole\":\"entry\",\"fileFingerprint\":\"fixture\",\"row\":3,\"sourceTradeId\":\"entry\"},\"accountCorrection\":{\"originalAccountId\":\"tradingview:old:fixture\",\"canonicalAccountId\":\"tradingview:simulation:default\",\"originalAccountLabel\":\"旧账户\",\"reason\":\"tradingview-account-migration\",\"operationId\":\"historical-schema16-ordinary-revision\"}}",
+        "created_at": "2026-01-03",
+        "updated_at": "2026-10-26 12:16:04",
+        "trade_nature": "simulation",
+        "simulation_run_id": "fixture-run"
+      },
+      {
+        "id": "fill-exit",
+        "import_batch_id": null,
+        "instrument_id": "CN-SH:600330",
+        "account": "tradingview:simulation:default",
+        "side": "sell",
+        "executed_at": "2026-01-02T07:00:00.000Z",
+        "quantity": "1000",
+        "price": "10.75",
+        "fee": "0.4",
+        "currency": "CNY",
+        "evidence_json": "{\"accountLabel\":\"TradingView · 模拟盘\",\"source\":{\"platform\":\"tradingview\",\"tradeNature\":\"simulation\",\"simulationRunId\":\"fixture-run\",\"simulationRole\":\"exit\",\"fileFingerprint\":\"fixture\",\"row\":4,\"sourceTradeId\":\"exit\"},\"accountCorrection\":{\"originalAccountId\":\"tradingview:old:fixture\",\"canonicalAccountId\":\"tradingview:simulation:default\",\"originalAccountLabel\":\"旧账户\",\"reason\":\"tradingview-account-migration\",\"operationId\":\"historical-schema16-ordinary-revision\"}}",
+        "created_at": "2026-01-03",
+        "updated_at": "2026-10-26 12:16:04",
+        "trade_nature": "simulation",
+        "simulation_run_id": "fixture-run"
+      }
+    ],
+    "reviews": [
+      {
+        "episode_id": "episode-new",
+        "instrument_id": "CN-SH:600330",
+        "cursor_json": "{\"episodeId\":\"episode-new\",\"cursor\":\"2026-01-02T07:00:00.000Z\"}",
+        "plan_json": "{\"episodeId\":\"episode-new\",\"accountId\":\"tradingview:simulation:default\",\"source\":{\"accountId\":\"tradingview:old:fixture\",\"audit\":\"keep\"}}",
+        "review_json": "{\"decision\":\"保留\",\"episodeId\":\"episode-new\"}",
+        "drawings_json": null,
+        "revisions_json": null,
+        "confirmed_tags_json": null,
+        "created_at": "2026-01-03",
+        "updated_at": "2026-01-03T00:00:00.000Z"
+      }
+    ],
+    "recall_documents": [
+      {
+        "episode_id": "episode-new",
+        "draft_json": "{\"episodeId\":\"episode-new\",\"accountId\":\"tradingview:simulation:default\",\"source\":{\"accountId\":\"tradingview:old:fixture\",\"audit\":\"keep\"}}",
+        "finalized_json": null,
+        "revision": 1,
+        "updated_at": "2026-01-03T00:00:00.000Z"
+      }
+    ],
+    "trade_revisions": [
+      {
+        "id": "ordinary-revision",
+        "instrument_id": "CN-SH:600330",
+        "account_id": "tradingview:simulation:default",
+        "request_json": "{\"accountId\":\"tradingview:old:fixture\",\"executionId\":\"fill-entry\"}",
+        "revision_json": "{\"accountId\":\"tradingview:simulation:default\",\"executionId\":\"fill-entry\"}",
+        "recorded_at": "2026-01-04"
+      }
+    ],
+    "account_principal_provisionals": [
+      {
+        "account_id": "tradingview:simulation:default",
+        "currency": "CNY",
+        "amount": "100000",
+        "as_of": null,
+        "status": "provisional",
+        "source": "user-default",
+        "revision": 0,
+        "updated_at": "2026-09-29T00:00:00.000Z"
+      }
+    ],
+    "tradingview_account_migration_operations": [
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "operation_kind": "commit",
+        "parent_operation_id": null,
+        "idempotency_key": "historical-schema16-ordinary-revision:commit",
+        "plan_digest": "sha256:466a2a5f8eb457a53a3b25c703d807742ac5761803b134b404fe6d999790c2b4",
+        "base_snapshot_digest": "sha256:5919e24ee374ef9d5e0dbe3cf5f51e524d620758b836c7e8e20d2f82d433f567",
+        "after_snapshot_digest": "sha256:8ad8ca0fbe17c6808a03c9cbbeb45369cc633cd707d334c0776898f7b95b76bc",
+        "status": "committed",
+        "request_json": "{\"operationId\":\"historical-schema16-ordinary-revision\",\"idempotencyKey\":\"historical-schema16-ordinary-revision:commit\",\"planDigest\":\"sha256:466a2a5f8eb457a53a3b25c703d807742ac5761803b134b404fe6d999790c2b4\",\"baseSnapshotDigest\":\"sha256:5919e24ee374ef9d5e0dbe3cf5f51e524d620758b836c7e8e20d2f82d433f567\",\"episodeMapDigest\":null,\"expectedAffectedRows\":[{\"table\":\"executions\",\"key\":\"fill-entry\",\"beforeDigest\":\"sha256:d3f33d2a04817498f83bd26c679bce6be756b474dd4eebc96ba23ea6890f530f\"},{\"table\":\"executions\",\"key\":\"fill-exit\",\"beforeDigest\":\"sha256:77a9e72d3c650f33f6b9cb2d756d4b7364ab96d3cd4ebcb1a8fd059b73c34f08\"},{\"table\":\"recall_documents\",\"key\":\"episode-old\",\"beforeDigest\":\"sha256:217fc0952a4a285f8e41f4d64afdd217f911c2c1243bbdc812d5c7be849d2e21\"},{\"table\":\"reviews\",\"key\":\"episode-old\",\"beforeDigest\":\"sha256:7d8ef434b5c81231f055d229d94b3f6d4c46a111b3e2d8c6f9825447f33928c7\"},{\"table\":\"trade_revisions\",\"key\":\"ordinary-revision\",\"beforeDigest\":\"sha256:5c540891da8ad3c009cb86e844f89e1451728af12493fa4a8b2aebb1cca5e485\"}],\"provisionalPrincipalAction\":\"create-if-absent\"}",
+        "result_json": "{\"operationId\":\"historical-schema16-ordinary-revision\",\"status\":\"committed\",\"idempotent\":false,\"afterSnapshotDigest\":\"sha256:8ad8ca0fbe17c6808a03c9cbbeb45369cc633cd707d334c0776898f7b95b76bc\",\"affectedRows\":6,\"executionCount\":2,\"quantity\":\"2000\",\"fee\":\"0.4\",\"episodeMap\":[{\"oldEpisodeId\":\"episode-old\",\"newEpisodeId\":\"episode-new\",\"accountId\":\"tradingview:simulation:default\",\"instrumentId\":\"CN-SH:600330\",\"direction\":\"long\",\"executionIds\":[\"fill-entry\",\"fill-exit\"],\"sourceRunId\":\"fixture-run\",\"beforeDigest\":\"sha256:83397889302d871294a8bfe60ba2bc7c826fd93d049427c75d50d8c2a3b3956c\",\"afterDigest\":\"sha256:9a09080fc768efe439a67b61b7979c8abff42adb63d5acb7bed3417d6f2a056c\"}],\"provisionalPrincipalRevision\":0}",
+        "created_at": "2026-09-29T00:00:00.000Z",
+        "updated_at": "2026-09-29T00:00:00.000Z"
+      }
+    ],
+    "tradingview_account_migration_rows": [
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "executions",
+        "primary_key": "fill-entry",
+        "before_json": "{\"id\":\"fill-entry\",\"import_batch_id\":null,\"instrument_id\":\"CN-SH:600330\",\"account\":\"tradingview:old:fixture\",\"side\":\"buy\",\"executed_at\":\"2026-01-01T07:00:00.000Z\",\"quantity\":\"1000\",\"price\":\"10.25\",\"fee\":\"0\",\"currency\":\"CNY\",\"evidence_json\":\"{\\\"accountLabel\\\":\\\"旧账户\\\",\\\"source\\\":{\\\"platform\\\":\\\"tradingview\\\",\\\"tradeNature\\\":\\\"simulation\\\",\\\"simulationRunId\\\":\\\"fixture-run\\\",\\\"simulationRole\\\":\\\"entry\\\",\\\"fileFingerprint\\\":\\\"fixture\\\",\\\"row\\\":3,\\\"sourceTradeId\\\":\\\"entry\\\"}}\",\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-01-03\",\"trade_nature\":\"simulation\",\"simulation_run_id\":\"fixture-run\"}",
+        "after_json": "{\"id\":\"fill-entry\",\"import_batch_id\":null,\"instrument_id\":\"CN-SH:600330\",\"account\":\"tradingview:simulation:default\",\"side\":\"buy\",\"executed_at\":\"2026-01-01T07:00:00.000Z\",\"quantity\":\"1000\",\"price\":\"10.25\",\"fee\":\"0\",\"currency\":\"CNY\",\"evidence_json\":\"{\\\"accountLabel\\\":\\\"TradingView · 模拟盘\\\",\\\"source\\\":{\\\"platform\\\":\\\"tradingview\\\",\\\"tradeNature\\\":\\\"simulation\\\",\\\"simulationRunId\\\":\\\"fixture-run\\\",\\\"simulationRole\\\":\\\"entry\\\",\\\"fileFingerprint\\\":\\\"fixture\\\",\\\"row\\\":3,\\\"sourceTradeId\\\":\\\"entry\\\"},\\\"accountCorrection\\\":{\\\"originalAccountId\\\":\\\"tradingview:old:fixture\\\",\\\"canonicalAccountId\\\":\\\"tradingview:simulation:default\\\",\\\"originalAccountLabel\\\":\\\"旧账户\\\",\\\"reason\\\":\\\"tradingview-account-migration\\\",\\\"operationId\\\":\\\"historical-schema16-ordinary-revision\\\"}}\",\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-10-26 12:16:04\",\"trade_nature\":\"simulation\",\"simulation_run_id\":\"fixture-run\"}",
+        "before_digest": "sha256:47b1614bfb2688974ce8a7642241d98b44469e0f8c7bcd66badcb7d0bc89029c",
+        "after_digest": "sha256:529a9a3485175a7b9e2a2119f3c18e14e000b2185b8f42957a3a6ddaa8d73b34"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "executions",
+        "primary_key": "fill-exit",
+        "before_json": "{\"id\":\"fill-exit\",\"import_batch_id\":null,\"instrument_id\":\"CN-SH:600330\",\"account\":\"tradingview:old:fixture\",\"side\":\"sell\",\"executed_at\":\"2026-01-02T07:00:00.000Z\",\"quantity\":\"1000\",\"price\":\"10.75\",\"fee\":\"0.4\",\"currency\":\"CNY\",\"evidence_json\":\"{\\\"accountLabel\\\":\\\"旧账户\\\",\\\"source\\\":{\\\"platform\\\":\\\"tradingview\\\",\\\"tradeNature\\\":\\\"simulation\\\",\\\"simulationRunId\\\":\\\"fixture-run\\\",\\\"simulationRole\\\":\\\"exit\\\",\\\"fileFingerprint\\\":\\\"fixture\\\",\\\"row\\\":4,\\\"sourceTradeId\\\":\\\"exit\\\"}}\",\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-01-03\",\"trade_nature\":\"simulation\",\"simulation_run_id\":\"fixture-run\"}",
+        "after_json": "{\"id\":\"fill-exit\",\"import_batch_id\":null,\"instrument_id\":\"CN-SH:600330\",\"account\":\"tradingview:simulation:default\",\"side\":\"sell\",\"executed_at\":\"2026-01-02T07:00:00.000Z\",\"quantity\":\"1000\",\"price\":\"10.75\",\"fee\":\"0.4\",\"currency\":\"CNY\",\"evidence_json\":\"{\\\"accountLabel\\\":\\\"TradingView · 模拟盘\\\",\\\"source\\\":{\\\"platform\\\":\\\"tradingview\\\",\\\"tradeNature\\\":\\\"simulation\\\",\\\"simulationRunId\\\":\\\"fixture-run\\\",\\\"simulationRole\\\":\\\"exit\\\",\\\"fileFingerprint\\\":\\\"fixture\\\",\\\"row\\\":4,\\\"sourceTradeId\\\":\\\"exit\\\"},\\\"accountCorrection\\\":{\\\"originalAccountId\\\":\\\"tradingview:old:fixture\\\",\\\"canonicalAccountId\\\":\\\"tradingview:simulation:default\\\",\\\"originalAccountLabel\\\":\\\"旧账户\\\",\\\"reason\\\":\\\"tradingview-account-migration\\\",\\\"operationId\\\":\\\"historical-schema16-ordinary-revision\\\"}}\",\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-10-26 12:16:04\",\"trade_nature\":\"simulation\",\"simulation_run_id\":\"fixture-run\"}",
+        "before_digest": "sha256:b4718929199852989b534e61bbefe57c66d1375225837a719cd1c9791f0aa7fd",
+        "after_digest": "sha256:c7a142b19fec53490949e7c075daa53dcd396a939ac1afc770b9f64bb97ece6b"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "recall_documents",
+        "primary_key": "episode-old",
+        "before_json": "{\"episode_id\":\"episode-old\",\"draft_json\":\"{\\\"episodeId\\\":\\\"episode-old\\\",\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"source\\\":{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"audit\\\":\\\"keep\\\"}}\",\"finalized_json\":null,\"revision\":1,\"updated_at\":\"2026-01-03T00:00:00.000Z\"}",
+        "after_json": "{\"episode_id\":\"episode-new\",\"draft_json\":\"{\\\"episodeId\\\":\\\"episode-new\\\",\\\"accountId\\\":\\\"tradingview:simulation:default\\\",\\\"source\\\":{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"audit\\\":\\\"keep\\\"}}\",\"finalized_json\":null,\"revision\":1,\"updated_at\":\"2026-01-03T00:00:00.000Z\"}",
+        "before_digest": "sha256:26613342635dd23d0a768668bcbd955f1c3010d3616a42d1d447147509875977",
+        "after_digest": "sha256:02bdb106042e6b3b1fbb1131064ff2385093861bcee9966f10dcf1412e52c9a0"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "reviews",
+        "primary_key": "episode-old",
+        "before_json": "{\"episode_id\":\"episode-old\",\"instrument_id\":\"CN-SH:600330\",\"cursor_json\":\"{\\\"episodeId\\\":\\\"episode-old\\\",\\\"cursor\\\":\\\"2026-01-02T07:00:00.000Z\\\"}\",\"plan_json\":\"{\\\"episodeId\\\":\\\"episode-old\\\",\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"source\\\":{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"audit\\\":\\\"keep\\\"}}\",\"review_json\":\"{\\\"decision\\\":\\\"保留\\\",\\\"episodeId\\\":\\\"episode-old\\\"}\",\"drawings_json\":null,\"revisions_json\":null,\"confirmed_tags_json\":null,\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-01-03T00:00:00.000Z\"}",
+        "after_json": "{\"episode_id\":\"episode-new\",\"instrument_id\":\"CN-SH:600330\",\"cursor_json\":\"{\\\"episodeId\\\":\\\"episode-new\\\",\\\"cursor\\\":\\\"2026-01-02T07:00:00.000Z\\\"}\",\"plan_json\":\"{\\\"episodeId\\\":\\\"episode-new\\\",\\\"accountId\\\":\\\"tradingview:simulation:default\\\",\\\"source\\\":{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"audit\\\":\\\"keep\\\"}}\",\"review_json\":\"{\\\"decision\\\":\\\"保留\\\",\\\"episodeId\\\":\\\"episode-new\\\"}\",\"drawings_json\":null,\"revisions_json\":null,\"confirmed_tags_json\":null,\"created_at\":\"2026-01-03\",\"updated_at\":\"2026-01-03T00:00:00.000Z\"}",
+        "before_digest": "sha256:fdd8a0aba8f5286f96d82c18add7cedabd0c0b679929f16179a5fcb62bce4aa3",
+        "after_digest": "sha256:ddd9dbae6164f5dfa525129ebecebac4229c6f77194deec28996942b7639f6da"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "trade_revisions",
+        "primary_key": "ordinary-revision",
+        "before_json": "{\"id\":\"ordinary-revision\",\"instrument_id\":\"CN-SH:600330\",\"account_id\":\"tradingview:old:fixture\",\"request_json\":\"{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"executionId\\\":\\\"fill-entry\\\"}\",\"revision_json\":\"{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"executionId\\\":\\\"fill-entry\\\"}\",\"recorded_at\":\"2026-01-04\"}",
+        "after_json": "{\"id\":\"ordinary-revision\",\"instrument_id\":\"CN-SH:600330\",\"account_id\":\"tradingview:simulation:default\",\"request_json\":\"{\\\"accountId\\\":\\\"tradingview:old:fixture\\\",\\\"executionId\\\":\\\"fill-entry\\\"}\",\"revision_json\":\"{\\\"accountId\\\":\\\"tradingview:simulation:default\\\",\\\"executionId\\\":\\\"fill-entry\\\"}\",\"recorded_at\":\"2026-01-04\"}",
+        "before_digest": "sha256:a1b551d196ff5d3b6f772c7b6ae16c246d0e523f59eca6af1dc09e70294f4e40",
+        "after_digest": "sha256:82f9ace4c1053560e346c2bda1eb584f710bd256d8a1a145a8adb7a83a7232c3"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "account_principal_provisionals",
+        "primary_key": "tradingview:simulation:default",
+        "before_json": null,
+        "after_json": "{\"account_id\":\"tradingview:simulation:default\",\"currency\":\"CNY\",\"amount\":\"100000\",\"as_of\":null,\"status\":\"provisional\",\"source\":\"user-default\",\"revision\":0,\"updated_at\":\"2026-09-29T00:00:00.000Z\"}",
+        "before_digest": "sha256:74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "after_digest": "sha256:06aaf265d2d43bb0177911839944d75a8f66cfce427072e01e4650a0b2dbc2fb"
+      }
+    ],
+    "tradingview_account_migration_aliases": [
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "alias_kind": "account",
+        "old_id": "tradingview:old:fixture",
+        "new_id": "tradingview:simulation:default"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "alias_kind": "episode",
+        "old_id": "episode-old",
+        "new_id": "episode-new"
+      }
+    ],
+    "tradingview_account_migration_dependencies": [
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "recall_documents",
+        "row_key": "sha256:4285b043925672c7a21fc303dc32944346d72c88a08b0baf077e7c28e928b0b0",
+        "row_digest": "sha256:02bdb106042e6b3b1fbb1131064ff2385093861bcee9966f10dcf1412e52c9a0"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "reviews",
+        "row_key": "sha256:d74a9757138cd59c48508b56581638da5f55bb84795108d69ebf2f46fd51375a",
+        "row_digest": "sha256:ddd9dbae6164f5dfa525129ebecebac4229c6f77194deec28996942b7639f6da"
+      },
+      {
+        "operation_id": "historical-schema16-ordinary-revision",
+        "table_name": "trade_revisions",
+        "row_key": "sha256:ad373abc2038e957e6830b9f83f0ad395cd85273f84c15ddf755e41ce941e85f",
+        "row_digest": "sha256:82f9ace4c1053560e346c2bda1eb584f710bd256d8a1a145a8adb7a83a7232c3"
+      }
+    ]
+  }
+}

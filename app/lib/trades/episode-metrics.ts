@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { parseNonNegativeFee } from "./execution-fee";
 
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt } from "../import/statement-evidence";
 import { collectBonusShareEvidence, isBonusShareEvidence } from "./bonus-share-evidence";
@@ -6,14 +7,14 @@ import { resolveIpoAcquisitionCost } from "./ipo-cost";
 import { hasSettlementCurrencyMismatch, type TradeEpisode } from "./types";
 
 export type TradeEpisodeMetrics = {
-  /** False means realizedPnl/grossExposure must not be presented as reliable metrics. */
+  /** False excludes net performance; only fees-invalid may retain known gross realization. */
   pnlAvailable?: false;
   buyCount: number;
   sellCount: number;
   boughtQuantity: string;
   soldQuantity: string;
   grossExposure: string;
-  fees: string;
+  fees: string | null;
   realizedPnl: string;
   unrealizedPnl: string | null;
   netPnl: string | null;
@@ -25,7 +26,7 @@ export function summarizeTradeEpisode(
   episode: TradeEpisode,
   markPrice?: string,
 ): TradeEpisodeMetrics {
-  let unavailable = Boolean(episode.accuracy) || episode.executions.some(e =>
+  let unavailable = Boolean(episode.accuracy?.reasons.some(reason => reason !== "fees-invalid")) || episode.executions.some(e =>
     e.source.feeStatus === "unknown" ||
     e.source.historyIncomplete?.length ||
     hasSettlementCurrencyMismatch(e),
@@ -38,7 +39,7 @@ export function summarizeTradeEpisode(
   let remainingQuantity = new Decimal(0);
   let averageEntryPrice = new Decimal(0);
   let grossExposure = new Decimal(0);
-  let fees = new Decimal(0);
+  let fees: Decimal | null = new Decimal(0);
   let realizedPnl = new Decimal(0);
   let signedCashFlow = new Decimal(0);
   let buyCount = 0;
@@ -97,7 +98,7 @@ export function summarizeTradeEpisode(
       averageEntryPrice = existingExposure.plus(cashCost).div(remainingQuantity);
       grossExposure = grossExposure.plus(cashCost);
       signedCashFlow = signedCashFlow.minus(cashCost);
-      fees = fees.plus(entry.acquisition.cost.feeCost);
+      fees = fees === null ? null : fees.plus(entry.acquisition.cost.feeCost);
       boughtQuantity = boughtQuantity.plus(quantity);
       buyCount += 1;
       continue;
@@ -108,7 +109,8 @@ export function summarizeTradeEpisode(
     const price = settlement && settlement.currency === execution.instrument.currency
       ? new Decimal(settlement.grossAmount).div(settlement.quantity)
       : new Decimal(execution.price);
-    fees = fees.plus(execution.fee || 0);
+    const fee = parseNonNegativeFee(execution.fee);
+    fees = fees === null || fee === null ? null : fees.plus(fee);
     const executionValue = quantity.times(price);
     signedCashFlow = signedCashFlow.plus(
       execution.side === "sell"
@@ -157,7 +159,7 @@ export function summarizeTradeEpisode(
     episode.status === "closed"
       ? signedCashFlow
       : realizedPnl.toDecimalPlaces(8);
-  const netPnl =
+  const netPnl = fees === null ? null :
     episode.status === "closed"
       ? signedCashFlow.minus(fees)
       : markPrice === undefined || remainingQuantity.isZero()
@@ -174,25 +176,25 @@ export function summarizeTradeEpisode(
       ? new Decimal(0)
       : netPnl === null
         ? null
-        : netPnl.plus(fees).minus(reportedRealizedPnl);
+        : netPnl.plus(fees!).minus(reportedRealizedPnl);
   const returnPercent =
     netPnl === null || grossExposure.isZero()
       ? null
       : netPnl.div(grossExposure).times(100);
 
   return {
-    ...(unavailable ? { pnlAvailable: false as const } : {}),
+    ...(unavailable || fees === null ? { pnlAvailable: false as const } : {}),
     buyCount,
     sellCount,
     boughtQuantity: boughtQuantity.toString(),
     soldQuantity: soldQuantity.toString(),
     grossExposure: grossExposure.toString(),
-    fees: fees.toString(),
+    fees: fees?.toString() ?? null,
     realizedPnl: unavailable ? "0" : reportedRealizedPnl.toString(),
     unrealizedPnl: unavailable ? null : unrealizedPnl?.toString() ?? null,
     netPnl: unavailable ? null : netPnl?.toString() ?? null,
     returnPercent: unavailable ? null : returnPercent?.toString() ?? null,
-    holdingMilliseconds: episode.endedAt && !unavailable
+    holdingMilliseconds: episode.endedAt && !unavailable && fees !== null
       ? new Date(episode.endedAt).getTime() -
         new Date(episode.startedAt).getTime()
       : null,

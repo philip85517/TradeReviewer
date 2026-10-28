@@ -82,7 +82,7 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
     const m=/^([A-Z][A-Z0-9.-]{0,14}|\d{5})[（(]([^]*)/.exec(identity) ?? /^(\d{5})([^\d(（].*)/.exec(identity);
     const explicitDerivative=/\d{6}[CP]\d{6,}|期權|期权|认购|認購|認沽|认沽/.test(identity);
     if(!m||explicitDerivative) {
-      result.exclusions.push({category:'unknown-asset',label:'非股票或证券身份不明确',count:g.fills.length});
+      result.exclusions.push({category:'unknown-asset',label:'非股票或证券身份不明确',count:g.fills.length,disposition:explicitDerivative?'ignored':'pending',...(explicitDerivative?{ruleId:'futu/pdf/explicit-derivative@1'}:{})});
       warn('unsupported-futu-instrument','交易组无法确认为股票/ETF，保留为排除项',g.row,explicitDerivative?'warning':'error');return;
     }
     const symbol=m[1], market=g.market??documentMarket??(/^\d{5}$/.test(symbol)&&g.currency==='HKD'?'HK':/^[A-Z]/.test(symbol)&&g.currency==='USD'?'US':undefined);
@@ -188,7 +188,7 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
       if(pendingIdentity){pendingIdentity+=identityParts;pendingFragments.push(fragment(r,'identity'));}else if(group){group.identity+=identityParts;group.fragments.push(fragment(r,'identity'));}
     }
     if(direction){
-      if(excluded){result.exclusions.push({category:excluded,label:'非股票交易分区',count:1});pendingIdentity='';continue;}
+      if(excluded){result.exclusions.push({category:excluded,label:'非股票交易分区',count:1,disposition:'ignored',ruleId:excluded==='fund'?'futu/pdf/fund-section@1':'futu/pdf/option-section@1'});pendingIdentity='';continue;}
       const side=/買|买|補|补/.test(direction.text)?'buy':'sell' as const;
       const candidateIdentity=compact(pendingIdentity+identityParts);
       const orderReference=layout!.order === undefined ? undefined : r.items.find(i=>i.x>=layout!.order!-4&&i.x<layout!.identity-4&&/^\d{4,}$/.test(compact(i.text)))?.text.trim();
@@ -205,13 +205,16 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
       if(group && !group.positionEffect && /^(?:補回|补回|買入平倉|买入平仓)$/.test(explicit))group.positionEffect='close-short';
       pendingIdentity='';pendingDate='';pendingFragments=[];
     }
+    // Raw values in the execution columns must survive even when none parse as
+    // numbers; a clock-only continuation has no cells in this region.
+    const hasExecutionCells=r.items.some(i=>i.x>(layout!.timeEnd+layout!.numericEnds[0])/2&&i.x<=layout!.numericEnds.at(-1)!+4&&i.text.trim());
     const dateAbove=r.items.find(i=>i.x>layout!.identity+25&&i.x<layout!.timeEnd+4&&datePattern.test(i.text));
-    if(!direction&&dateAbove&&!r.items.some(i=>i.x>layout!.timeEnd+5&&numberPattern.test(i.text.trim()))&&!timePattern.test(c)){
+    if(!direction&&dateAbove&&!hasExecutionCells&&!timePattern.test(c)){
       pendingDate=datePattern.exec(dateAbove.text)![0];pendingFragments.push(fragment(r,'time'));continue;
     }
     if(!group) {
       if(excluded)continue;
-      if(timePattern.test(c)&&r.items.some(i=>numberPattern.test(i.text.trim())))warn('orphan-futu-execution','成交行缺少有界订单身份',r,'error');
+      if(timePattern.test(c)&&(hasExecutionCells||r.items.some(i=>numberPattern.test(i.text.trim()))))warn('orphan-futu-execution','成交行缺少有界订单身份',r,'error');
       continue;
     }
     const rowVenue=venueFromText(r.text);
@@ -244,8 +247,12 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
     const timeText=timeItems.map(i=>i.text).join(' ');
     const date=datePattern.exec(timeText)?.[0], clock=timePattern.exec(timeText)?.[0];
     if(date&&direction)group.date=date;
+    const rawValueColumns=layout.numericEnds.slice(0,3).filter(end=>r.items.some(i=>Math.abs(i.x+i.width-end)<7&&i.text.trim())).length;
     const values=layout.numericEnds.map(end=>r.items.filter(i=>Math.abs(i.x+i.width-end)<7&&numberPattern.test(i.text.trim())).map(i=>i.text.trim()));
-    if(values.slice(0,3).some(v=>v.length)){
+    // Raw time plus execution cells, or multiple financial columns, identify a
+    // child fill even if its time and all its numbers are unreadable together.
+    // Fee continuations were consumed above; lone footers have neither shape.
+    if(values.slice(0,3).some(v=>v.length)||hasExecutionCells&&(direction||timeText.trim()||rawValueColumns>=2)){
       if(values.slice(0,3).some(v=>v.length!==1)){warn('invalid-futu-numbers','成交数量、价格或金额缺失/歧义',r,'error');continue;}
       const [quantity,price,gross,cash]=values.map(v=>v[0]===undefined?undefined:new Decimal(v[0].replaceAll(',','')).toString());
       const isTotal=direction&&(layout.family==='F3'||layout.family==='F4');

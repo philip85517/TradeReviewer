@@ -109,7 +109,7 @@ function row(
       source: {
         platform: overrides.tradeNature === "simulation" ? "tradingview" : "futu",
         row: 1,
-        ...(overrides.tradeNature ? { tradeNature: overrides.tradeNature } : {}),
+        tradeNature: overrides.tradeNature ?? "live",
         ...(overrides.simulationRunId ? { simulationRunId: overrides.simulationRunId } : {}),
       },
     }),
@@ -119,7 +119,7 @@ function row(
           source: {
             platform: overrides.tradeNature === "simulation" ? "tradingview" : "futu",
             row: 2,
-            ...(overrides.tradeNature ? { tradeNature: overrides.tradeNature } : {}),
+            tradeNature: overrides.tradeNature ?? "live",
             ...(overrides.simulationRunId ? { simulationRunId: overrides.simulationRunId } : {}),
           },
         })]
@@ -189,7 +189,7 @@ describe("dashboard statistics", () => {
         metrics: { pnlAvailable: false },
         episode: {
           executions: [execution("unknown-fees:fill", "buy", "2026-01-03T01:00:00.000Z", {
-            source: { platform: "futu", row: 1, feeStatus: "unknown" },
+            source: { platform: "futu", row: 1, tradeNature: "live", feeStatus: "unknown" },
           })],
         },
       }),
@@ -201,6 +201,7 @@ describe("dashboard statistics", () => {
             source: {
               platform: "china-merchants",
               row: 1,
+              tradeNature: "live",
               settlement: {
                 currency: "CNY",
                 quantity: "1",

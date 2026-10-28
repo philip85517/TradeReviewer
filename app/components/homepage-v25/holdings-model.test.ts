@@ -3,7 +3,9 @@ import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { TradeExecution } from "../../lib/trades/types";
 import type { TradingRoomQuote } from "../../lib/reviews/trading-room-holdings";
-import { buildHomepageHoldings, filterHomepageHoldings, holdingsCsv } from "./holdings-model";
+import { buildHomepageHoldings as projectHoldings, filterHomepageHoldings, holdingsCsv } from "./holdings-model";
+
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 
 function execution(id: string, accountId: string, nature?: "live" | "simulation"): TradeExecution {
   return { id, accountId, accountLabel: accountId, source: { platform: "futu", row: 1, ...(nature ? { tradeNature: nature } : {}) },
@@ -66,7 +68,7 @@ describe("homepage holdings projection", () => {
     const model = buildHomepageHoldings(entries([buy, laterBuy, futureClose]), { scope, asOf: "2026-10-23T02:00:00Z", quotesByInstrument: quotes, candlesByInstrument: candlesFromQuotes(quotes) });
     expect(model.rows).toHaveLength(1);
     expect(model.rows[0].quantity).toBe("2");
-    expect(model.rows[0].row.item.episode.executions.map(fill => fill.id)).toEqual(["past"]);
+    expect(model.facts.groups[0].canonical.selectedExecutionIds).toEqual(["past"]);
   });
   it("keeps account plus episode identity and excludes a legacy broker row without explicit live nature", () => {
     const model = buildHomepageHoldings(entries([execution("a", "one", "live"), execution("b", "two", "live"), execution("u", "legacy")]), { scope, asOf: "2026-10-23", quotesByInstrument: quotes, candlesByInstrument: candlesFromQuotes(quotes) });
@@ -75,6 +77,22 @@ describe("homepage holdings projection", () => {
     expect(model.uniqueInstrumentCount).toBe(1);
     expect(model.rows[0]).toMatchObject({ identity: "SSE:600519", days: 1, quantity: "2.125", marketValue: "233.75", unrealizedPnl: "21.25" });
     expect(model.totalMarketValue).toBe("467.5");
+  });
+
+  it("associates one live fact group with distinct historical and explicit identity carriers", () => {
+    const legacy = { ...execution("legacy", "one"), quantity: "1", executedAt: "2026-10-21T01:00:00Z",
+      source: { platform: "futu", row: 1, formatRuleId: "futu/pdf/f1-execution@1", fileFingerprint: "holdings-fixture" } };
+    const explicit = { ...execution("explicit", "one", "live"), quantity: "1", executedAt: "2026-10-22T01:00:00Z" };
+    const original = entries([legacy, explicit]);
+    const identities = original.map(entry => ({ groupId: entry.groupId, episodes: entry.episodes.map(({ episode }) => ({ id: episode.id, members: episode.executions.map(fill => fill.id) })) }));
+    expect(original).toHaveLength(2);
+    const explicitEpisode = original.find(entry => entry.executions.some(fill => fill.id === "explicit"))!.episodes[0].episode.id;
+    const model = buildHomepageHoldings(original, { scope, asOf: "2026-10-23", candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(model.rows).toHaveLength(1);
+    expect(model.rows[0]).toMatchObject({ quantity: "2", episodeId: explicitEpisode });
+    expect(model.facts.groups).toHaveLength(1);
+    expect(model.source.selectedEntries).toHaveLength(2);
+    expect(original.map(entry => ({ groupId: entry.groupId, episodes: entry.episodes.map(({ episode }) => ({ id: episode.id, members: episode.executions.map(fill => fill.id) })) }))).toEqual(identities);
   });
 
   it("does not derive continuous holding age from the latest fill or incomplete statement history", () => {
@@ -102,6 +120,7 @@ describe("homepage holdings projection", () => {
     expect(model.rows.map(row => row.quantity)).toEqual(["-1", "-1"]);
     expect(model.rows.map(row => row.marketValue)).toEqual(["-110", "-110"]);
     expect(model.totalMarketValue).toBe("-220");
+    expect(model.rows.find(row => row.accountId === "reversal")?.days).toBe(0);
   });
 
   it("reports US in USD without needing FX for USD, converting other settlement currencies only with evidence", () => {
@@ -130,5 +149,59 @@ describe("homepage holdings projection", () => {
     expect(csv).toContain("'=account");
     expect(csv).toContain("2.125");
     expect(csv.split("\r\n")).toHaveLength(3);
+  });
+});
+
+
+describe("single owned financial authority", () => {
+  it("retains literal known rows while unproven universe prevents a summed or empty zero total", () => {
+    const model = buildHomepageHoldings(entries([execution("a", "one", "live")]), { scope, asOf: "2026-10-23", candlesByInstrument: candlesFromQuotes(quotes), universe: "unknown" });
+    expect(model.rows[0]).toMatchObject({ quantity: "2.125", averageCost: "100", marketValue: "233.75", reportPnl: "21.25" });
+    expect(model.totalMarketValue).toBeNull(); expect(model.totalUnrealizedPnl).toBeNull();
+    expect(buildHomepageHoldings([], { scope, universe: "unknown" }).totalMarketValue).toBeNull();
+  });
+  it("keeps valid cost for negative fee but preserves canonical unknown-fees as unknown cost", () => {
+    const fill = execution("fee", "one", "live");
+    const invalidEntries = entries([fill]);
+    invalidEntries[0].executions[0].fee = "-1";
+    const invalid = buildHomepageHoldings(invalidEntries, { scope, candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(invalid.rows[0].averageCost).toBe("100"); expect(invalid.rows[0].reportPnl).toBeNull();
+    const unknown = buildHomepageHoldings(entries([{ ...fill, fee: "0", source: { ...fill.source, feeStatus: "unknown" } }]), { scope, candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(unknown.rows[0].averageCost).toBeNull(); expect(unknown.rows[0].quantity).toBe("2.125");
+  });
+  it("retains canonical cost under conflicting fee evidence without inventing net PnL", () => {
+    const fill = execution("conflict", "one", "live");
+    const model = buildHomepageHoldings(entries([{ ...fill, fee: "2", source: { ...fill.source, settlement: { currency: "CNY", quantity: "2.125", grossAmount: "212.5", netAmount: "212.5", fees: {} } } }]), { scope, candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(model.rows[0]).toMatchObject({ quantity: "2.125", averageCost: "100", marketValue: "233.75", reportPnl: null });
+    expect(model.view.current.instruments[0].currentUnrealized.reasons).toContain("fees-conflict");
+  });
+  // Known upstream qualification regression: retained RED until its frozen owner repairs it.
+  it("retains a known current quantity and cost when the raw fee string is malformed", () => {
+    const raw = entries([execution("malformed-fee", "one", "live")]);
+    raw[0].executions[0].fee = "invalid";
+    const result = buildHomepageHoldings(raw, { scope, candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(result.rows[0]).toMatchObject({ quantity: "2.125", averageCost: "100", reportPnl: null });
+  });
+  it("rejects another facts source and never borrows its average cost", () => {
+    const a = buildHomepageHoldings(entries([execution("a", "one", "live")]), { scope });
+    const b = buildHomepageHoldings(entries([{ ...execution("b", "two", "live"), price: "999" }]), { scope });
+    expect(() => projectHoldings(a.source, a.view, b.facts, {})).toThrow(/source/);
+  });
+  it.each([{ accountId: "another" }, { instrumentId: "CN-SH:600520" }, { nature: "simulation" as const }, { simulationRunId: "another-run" }])("rejects a current group with a different full identity %j", mismatch => {
+    const result = buildHomepageHoldings(entries([execution("identity", "one", "live")]), { scope });
+    const current = { ...result.view.current, instruments: result.view.current.instruments.map(group => ({ ...group, identity: { ...group.identity, ...mismatch } })) };
+    expect(() => projectHoldings(result.source, { stamp: result.view.stamp, current }, result.facts)).toThrow("holdings-source-group-mismatch");
+  });
+  it("keeps cost unknown on exact quantity precision disagreement instead of rounding to join", () => {
+    const model = buildHomepageHoldings(entries([{ ...execution("precision", "one", "live"), quantity: "1.000000001" }]), { scope });
+    expect(model.rows[0].quantity).toBe("1"); expect(model.rows[0].averageCost).toBeNull();
+  });
+  it("uses one row per full group across closed and reopened episodes, retaining original owned carriers", () => {
+    const buy = { ...execution("first", "one", "live"), quantity: "1", executedAt: "2026-10-01T01:00:00Z" };
+    const sell = { ...buy, id: "closed", side: "sell" as const, executedAt: "2026-10-02T01:00:00Z" };
+    const reopen = { ...buy, id: "reopen", price: "90", executedAt: "2026-10-22T01:00:00Z" };
+    const model = buildHomepageHoldings(entries([buy, sell, reopen]), { scope, asOf: "2026-10-23", candlesByInstrument: candlesFromQuotes(quotes) });
+    expect(model.rows).toHaveLength(1); expect(model.rows[0]).toMatchObject({ averageCost: "90", quantity: "1", marketValue: "110", days: 1 });
+    expect(model.source.selectedEntries[0].executions.map(fill => fill.id)).toEqual(["first", "closed", "reopen"]);
   });
 });

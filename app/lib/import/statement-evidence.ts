@@ -1,9 +1,12 @@
+import { resolvedTradeNatureOf } from "../trades/nature-resolution";
 import type { StatementParseResult } from "./contracts";
 import { isMonthlyEvidenceScope, isMonthlyStatement, type MonthlyStatement, type StatementEvent, type StatementPosition } from "./monthly-statement";
 import type { PdfTextItem, PdfTextPage } from "./pdf-text";
-import type { TradeExecution } from "../trades/types";
+import { type TradeExecution } from "../trades/types";
+import { canonicalRecord } from "../storage/trade-revisions";
 import type { ImportHistoryEntry } from "../storage/import-history";
 import Decimal from "decimal.js";
+import { parseStatementCashIdentity } from "./statement-cash-identity";
 
 export type MonthlyEvidenceHistoryEntry = Pick<ImportHistoryEntry, "id" | "importedAt" | "monthly">;
 
@@ -30,9 +33,9 @@ function compareMonthlyEvidenceVersion(
  * attached. A newer scoped revision overlays an older full-document base for
  * that one target; a newer full revision supersedes older scoped revisions.
  */
-export function selectMonthlyEvidenceHistory(
+function selectMonthlyEvidenceCandidates(
   entries: readonly MonthlyEvidenceHistoryEntry[],
-): MonthlyStatement[] {
+): MonthlyEvidenceCandidate[] {
   const groups = new Map<string, {
     full?: MonthlyEvidenceCandidate;
     scoped: Map<string, MonthlyEvidenceCandidate>;
@@ -73,7 +76,11 @@ export function selectMonthlyEvidenceHistory(
     // A full snapshot is the base when revisions share a timestamp.
     return Number(Boolean(left.monthly.evidenceScope)) - Number(Boolean(right.monthly.evidenceScope));
   });
-  return selected.map((candidate) => candidate.monthly);
+  return selected;
+}
+
+export function selectMonthlyEvidenceHistory(entries: readonly MonthlyEvidenceHistoryEntry[]): MonthlyStatement[] {
+  return selectMonthlyEvidenceCandidates(entries).map(candidate => candidate.monthly);
 }
 import { canonicalInstrumentId } from "../instruments/display-name";
 
@@ -258,7 +265,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       if (section === "position" && /^[A-Z]{1,6}\d{6}[CP]\d{8}(?:\s|$)/.test(nameText)) continue; // Unambiguous OCC option, outside stock replay.
       const instrument = identity(nameText)
         ?? (section === "stock" ? identity(row.text) ?? adjacentStockIdentity(rows, index) : undefined)
-        ?? (section === "cash" || section === "asset" ? identity(row.text.match(/<SEHK[^>]+>|#\d{5}/)?.[0]?.replace(/^</, "") ?? "") : undefined);
+        ?? (section === "cash" || section === "asset" ? parseStatementCashIdentity(row.text) : undefined);
       if (section === "position") {
         if (!stock) continue;
         const quantity = numericCell(row, headers, /^(數量|数量|持有數量)$/);
@@ -426,6 +433,19 @@ export function executionSourceOrderConflictsWithTime(left: TradeExecution, righ
  * from this call retain their attachments. Callers must supply only the current revision per ID.
  */
 export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthly: MonthlyStatement[]): TradeExecution[] {
+  return applyMonthlyHistoryEvidenceCore(executions, monthly);
+}
+
+type EvidenceObserver = {
+  alias(item: object, original: object): void;
+  handled(item: object, execution: TradeExecution, retired?: boolean): void;
+  candidates(items: readonly (StatementPosition | StatementEvent)[], kind: "position" | "event", execution: TradeExecution): void;
+  rawFlags(execution: TradeExecution, documents: ReadonlySet<string>): void;
+};
+
+function applyMonthlyHistoryEvidenceCore(
+  executions: readonly TradeExecution[], monthly: readonly MonthlyStatement[], observer?: EvidenceObserver,
+): TradeExecution[] {
   const appliesToExecution = (statement: MonthlyStatement, execution: TradeExecution) => {
     if (statement.evidenceScope === undefined) return true;
     // A malformed persisted scope must never fall back to document-wide
@@ -461,15 +481,30 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
         .map(statement => statement.documentId),
     );
     const positions = applicableMonthly.flatMap(m => m.positions
-      .filter(position => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(position)))
-      .map(p => ({ ...p, documentId: p.documentId ?? m.documentId })));
+      .filter(position => {
+        const retained = !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(position));
+        if (!retained) observer?.handled(position, execution, true);
+        return retained;
+      })
+      .map(p => { const attached = { ...p, documentId: p.documentId ?? m.documentId }; observer?.alias(attached, p); return attached; }));
     const events = applicableMonthly.flatMap(m => m.events
-      .filter(event => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(event)))
-      .map(e => ({ ...e, documentId: e.documentId ?? m.documentId })));
+      .filter(event => {
+        const retained = !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(event));
+        if (!retained) observer?.handled(event, execution, true);
+        return retained;
+      })
+      .map(e => { const attached = { ...e, documentId: e.documentId ?? m.documentId }; observer?.alias(attached, e); return attached; }));
     const isSimulation = execution.source.tradeNature === "simulation" || execution.source.tradingNature === "simulated";
     const day = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
-    const retainedPosition = execution.source.openingPosition && !superseded(execution.source.openingPosition, documents) ? [execution.source.openingPosition] : [];
-    const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p, documents)), ...retainedPosition].filter(matches).map(p => [statementPositionEvidenceKey(p), p])).values()];
+    const retainOriginal = (item: StatementPosition | StatementEvent) => {
+      const retained = !superseded(item, documents);
+      if (!retained) observer?.handled(item, execution, true);
+      return retained;
+    };
+    const retainedPosition = execution.source.openingPosition && retainOriginal(execution.source.openingPosition) ? [execution.source.openingPosition] : [];
+    const positionCandidates = [...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(retainOriginal), ...retainedPosition].filter(matches);
+    observer?.candidates(positionCandidates, "position", execution);
+    const statementPositions = [...new Map(positionCandidates.map(p => [statementPositionEvidenceKey(p), p])).values()];
     const transactionExecutions = (position: StatementPosition) => executions.filter(candidate => statementPositionMatchesExecution(position, candidate));
     const precedesExecution = (position: StatementPosition) => {
       if (position.phase === "opening") return position.date <= day;
@@ -525,7 +560,9 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
         const bOrder = bExecution ? explicitExecutionSourceOrder(bExecution) : undefined;
         return aOrder !== undefined && bOrder !== undefined ? bOrder - aOrder : 0;
       })[0];
-    const positionEvents = [...new Map([...(execution.source.positionEvents ?? []).filter(e => !superseded(e, documents)), ...events.filter(event => matches(event) || (!isSimulation && compatibleUnassignedFee(event, execution)))].map(event => [`${event.documentId ?? ""}:${event.accountId}:${event.id}`, event])).values()];
+    const eventCandidates = [...(execution.source.positionEvents ?? []).filter(retainOriginal), ...events.filter(event => matches(event) || (!isSimulation && compatibleUnassignedFee(event, execution)))];
+    observer?.candidates(eventCandidates, "event", execution);
+    const positionEvents = [...new Map(eventCandidates.map(event => [`${event.documentId ?? ""}:${event.accountId}:${event.id}`, event])).values()];
     const source = { ...execution.source };
     delete source.openingPosition;
     delete source.statementPositions;
@@ -536,16 +573,133 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
     // A later no-trade month can invalidate an earlier still-held position.
     // Conservatively withhold certification for that instrument's history until
     // corrected; do not silently lose the flag just because no later fill exists.
-    const affectedDocuments = applicableMonthly.filter(m =>
-      !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId)) &&
-      (!m.accountId || m.accountId === execution.accountId) &&
-      (m.historyIncomplete || m.incompleteInstruments?.some(i => i.market === execution.instrument.market && symbolKey(i.symbol, i.market) === symbolKey(execution.instrument.symbol, execution.instrument.market))),
-    );
+    const affectedDocuments = applicableMonthly.filter(m => {
+      const replaced = m.evidenceScope === undefined && scopedDocuments.has(m.documentId);
+      const accountMatches = !m.accountId || m.accountId === execution.accountId;
+      const incomplete = m.incompleteInstruments?.filter(i => i.market === execution.instrument.market && symbolKey(i.symbol, i.market) === symbolKey(execution.instrument.symbol, execution.instrument.market)) ?? [];
+      if (accountMatches) {
+        if (m.historyIncomplete) observer?.handled(m, execution, replaced);
+        for (const item of incomplete) observer?.handled(item, execution, replaced);
+      }
+      return !replaced && accountMatches && (m.historyIncomplete || incomplete.length > 0);
+    });
+    observer?.rawFlags(execution, documents);
     const historyIncomplete = [...new Set([...(source.historyIncomplete ?? []).filter(id => !documents.has(id)), ...affectedDocuments.map(m => m.documentId)])];
     delete source.historyIncomplete;
     if (historyIncomplete.length) source.historyIncomplete = historyIncomplete;
     return { ...execution, source };
   });
+}
+
+export type MonthlyRepresentationGap = Readonly<{ sourceRef: string; reason: string }>;
+
+type RepresentationItem = {
+  sourceRef: string;
+  ownerId?: string;
+  attached: boolean;
+  retired: boolean;
+  universeReason?: string;
+};
+
+/**
+ * Same selection/attachment authority, with a short-lived original-carrier check.
+ * Dispositions are observed at the existing decisions, never inferred by a caller.
+ */
+export function projectMonthlyHistoryEvidence(
+  executions: readonly TradeExecution[], history: readonly MonthlyEvidenceHistoryEntry[],
+): Readonly<{
+  executions: TradeExecution[];
+  inspectOriginalCarriers(carriers: readonly TradeExecution[]): Readonly<{
+    state: "complete" | "unknown";
+    gaps: readonly MonthlyRepresentationGap[];
+    universeReasons: readonly string[];
+  }>;
+}> {
+  const selected = selectMonthlyEvidenceCandidates(history);
+  const inventory: RepresentationItem[] = [];
+  const byItem = new WeakMap<object, RepresentationItem[]>();
+  const aliases = new WeakMap<object, object>();
+  const rawFlagItems = new Map<string, RepresentationItem[]>();
+  const conflicts = new Map<string, MonthlyRepresentationGap>();
+  const activePayloads = new Map<string, string>();
+  const register = (item: object, sourceRef: string, ownerId?: string, universeReason?: string) => {
+    const record: RepresentationItem = { sourceRef, ownerId, attached: false, retired: false, universeReason };
+    inventory.push(record);
+    const records = byItem.get(item) ?? []; records.push(record); byItem.set(item, records);
+    return record;
+  };
+  const eventReason = (event: StatementEvent) => event.symbol === undefined || event.market === undefined
+    ? "unassigned-evidence-scope" : event.kind === "corporate-action" || event.kind === "other" ? "unresolved-corporate-action" : undefined;
+  for (const candidate of selected) {
+    const prefix = `import:${candidate.id}`;
+    candidate.monthly.positions.forEach((item, index) => register(item, `${prefix}:position:${index}`));
+    candidate.monthly.events.forEach((item, index) => register(item, `${prefix}:event:${index}`, undefined, eventReason(item)));
+    if (candidate.monthly.historyIncomplete) register(candidate.monthly, `${prefix}:historyIncomplete`, undefined, "history-incomplete");
+    candidate.monthly.incompleteInstruments?.forEach((item, index) => register(item, `${prefix}:incompleteInstrument:${index}`, undefined, "history-incomplete"));
+  }
+  for (const execution of executions) {
+    const prefix = `execution:${execution.id}`;
+    if (execution.source.openingPosition) register(execution.source.openingPosition, `${prefix}:openingPosition`, execution.id);
+    execution.source.statementPositions?.forEach((item, index) => register(item, `${prefix}:position:${index}`, execution.id));
+    execution.source.positionEvents?.forEach((item, index) => register(item, `${prefix}:event:${index}`, execution.id, eventReason(item)));
+    rawFlagItems.set(execution.id, (execution.source.historyIncomplete ?? []).map((id, index) =>
+      register({ id }, `${prefix}:historyIncomplete:${index}`, execution.id, "history-incomplete")));
+  }
+  const recordsFor = (item: object, execution: TradeExecution) => (byItem.get(aliases.get(item) ?? item) ?? [])
+    .filter(record => record.ownerId === undefined || record.ownerId === execution.id);
+  const observer: EvidenceObserver = {
+    alias(item, original) { aliases.set(item, original); },
+    handled(item, execution, retired = false) {
+      // Existing attachment behavior is preserved even when its carrier cannot certify live evidence.
+      if (resolvedTradeNatureOf(execution) !== "live") return;
+      for (const record of recordsFor(item, execution)) record[retired ? "retired" : "attached"] = true;
+    },
+    candidates(items, kind, execution) {
+      for (const item of items) {
+        observer.handled(item, execution);
+        const key = "phase" in item ? statementPositionEvidenceKey(item) : `${item.documentId ?? ""}:${item.accountId}:${item.id}`;
+        const payload = canonicalRecord(item);
+        const activeKey = `${kind}:${key}`;
+        if (activePayloads.has(activeKey) && activePayloads.get(activeKey) !== payload) {
+          const refs = recordsFor(item, execution);
+          const sourceRef = refs[0]?.sourceRef ?? `execution:${execution.id}:${kind}`;
+          conflicts.set(`${sourceRef}:active-payload-conflict`, { sourceRef, reason: "active-payload-conflict" });
+        }
+        activePayloads.set(activeKey, payload);
+      }
+    },
+    rawFlags(execution, documents) {
+      if (resolvedTradeNatureOf(execution) !== "live") return;
+      (rawFlagItems.get(execution.id) ?? []).forEach((item, index) => {
+        item[documents.has(execution.source.historyIncomplete![index]) ? "retired" : "attached"] = true;
+      });
+    },
+  };
+  const projected = applyMonthlyHistoryEvidenceCore(executions, selected.map(candidate => candidate.monthly), observer);
+  const expected = new Map<string, string>();
+  for (const execution of projected) {
+    if (expected.has(execution.id)) throw new Error("Original carrier identity conflict");
+    expected.set(execution.id, canonicalRecord(execution));
+  }
+  const gaps = [...conflicts.values(), ...inventory.filter(item => !item.attached && !item.retired)
+    .map(item => ({ sourceRef: item.sourceRef, reason: "no-original-carrier" }))]
+    .sort((left, right) => left.sourceRef.localeCompare(right.sourceRef) || left.reason.localeCompare(right.reason));
+  const universeReasons = [...new Set(inventory.filter(item => item.universeReason && (!item.retired || item.attached))
+    .map(item => item.universeReason!))].sort();
+  return {
+    executions: projected,
+    inspectOriginalCarriers(carriers) {
+      const seen = new Set<string>();
+      for (const carrier of carriers) {
+        let payload: string;
+        try { payload = canonicalRecord(carrier); } catch { throw new Error("Original carrier assembly mismatch"); }
+        if (seen.has(carrier.id) || expected.get(carrier.id) !== payload) throw new Error("Original carrier assembly mismatch");
+        seen.add(carrier.id);
+      }
+      if (seen.size !== expected.size) throw new Error("Original carrier assembly mismatch");
+      return { state: gaps.length ? "unknown" : "complete", gaps, universeReasons };
+    },
+  };
 }
 
 export function hasStatementMonthGap(previous: string | undefined, next: string, coveredMonths: string[]): boolean {

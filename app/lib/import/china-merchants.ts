@@ -176,15 +176,16 @@ function addExclusion(
   category: ImportExclusion["category"],
   label: string,
   instrumentSymbol?: string,
+  ruleId?: string,
 ) {
   const existing = exclusions.find(
     (item) =>
       item.category === category &&
       item.label === label &&
-      item.instrumentSymbol === instrumentSymbol,
+      item.instrumentSymbol === instrumentSymbol && item.ruleId === ruleId,
   );
   if (existing) existing.count += 1;
-  else exclusions.push({ category, label, count: 1, instrumentSymbol });
+  else exclusions.push({ category, label, count: 1, instrumentSymbol, disposition: ruleId ? "ignored" : "pending", ...(ruleId ? { ruleId } : {}) });
 }
 
 function obviousBond(symbol: string, name: string | undefined): boolean {
@@ -308,6 +309,7 @@ export function parseChinaMerchantsPages(
         knownFlow.category,
         knownFlow.label,
         parsedIdentity?.symbol,
+        `china-merchants/non-trade/${knownFlow.category}@1`,
       );
       if (
         knownFlow.category === "corporate-action" &&
@@ -398,15 +400,16 @@ export function parseChinaMerchantsPages(
         "market",
         "非境内 A股/ETF 市场",
         parsedIdentity.symbol,
+        "china-merchants/non-trade/market@1",
       );
       continue;
     }
     if (obviousBond(parsedIdentity.symbol, parsedIdentity.sourceName)) {
-      addExclusion(exclusions, "bond", "可转换债券", parsedIdentity.symbol);
+      addExclusion(exclusions, "bond", "可转换债券", parsedIdentity.symbol, "china-merchants/non-trade/bond@1");
       continue;
     }
     if (obviousFund(parsedIdentity.symbol, parsedIdentity.sourceName)) {
-      addExclusion(exclusions, "fund", "非 ETF 基金", parsedIdentity.symbol);
+      addExclusion(exclusions, "fund", "非 ETF 基金", parsedIdentity.symbol, "china-merchants/non-trade/fund@1");
       continue;
     }
 

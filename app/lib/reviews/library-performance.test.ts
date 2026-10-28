@@ -61,6 +61,7 @@ function row(
   const currency = overrides.currency ?? instrument.currency;
   const scopeNature = overrides.tradeNature ?? "live";
   const scopedInstrument = { ...instrument, currency, id: `${currency}:${id}` };
+  const source = { platform: "fixture", row: 1, tradeNature: scopeNature, ...(overrides.simulationRunId ? { simulationRunId: overrides.simulationRunId } : {}) };
   const episode: TradeEpisode = {
     id,
     accountId: "account-1",
@@ -75,9 +76,9 @@ function row(
     openingQuantity: "1",
     remainingQuantity: status === "closed" ? "0" : "1",
     executions: [
-      execution(`${id}:buy`, "buy", { instrument: scopedInstrument }),
+      execution(`${id}:buy`, "buy", { instrument: scopedInstrument, source }),
       ...(status === "closed"
-        ? [execution(`${id}:sell`, "sell", { instrument: scopedInstrument, executedAt: "2026-01-02T00:00:00.000Z" })]
+        ? [execution(`${id}:sell`, "sell", { instrument: scopedInstrument, source, executedAt: "2026-01-02T00:00:00.000Z" })]
         : []),
     ],
   };
@@ -437,7 +438,7 @@ describe("library performance", () => {
     });
   });
 
-  it("uses the entry nature for legacy episodes while isolating explicit unknown scope", () => {
+  it("uses fill nature despite stale episode metadata while isolating explicit unknown scope", () => {
     const legacyLive = row("legacy-live", { currency: "CNY", tradeNature: "live", netPnl: "10" });
     legacyLive.item.episode.tradeNature = "unknown";
     const explicitUnknown = row("unknown", { currency: "CNY", tradeNature: "unknown", netPnl: "20" });

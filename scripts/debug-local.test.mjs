@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
+import { initializeSqlite } from "../db/sqlite-initialization.ts";
 import { mkdtempSync, mkdirSync, readFileSync, symlinkSync, writeFileSync, linkSync, rmSync, existsSync, renameSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -13,7 +14,8 @@ function fixture() {
   mkdirSync(join(root, "conf"), { recursive: true });
   writeFileSync(join(root, "conf", "runtime.json"), JSON.stringify({ databasePath: source, port: 3022, hostname: "127.0.0.1" }));
   const db = new DatabaseSync(source);
-  db.exec("PRAGMA journal_mode=WAL; CREATE TABLE sample(value TEXT); INSERT INTO sample VALUES ('wal-value');");
+  initializeSqlite(db);
+  db.exec("PRAGMA journal_mode=WAL; CREATE TABLE sample(value TEXT); INSERT INTO sample VALUES ('wal-value'); UPDATE trade_book_state SET database_id='fixture-book', epoch='source-epoch', sequence=7;");
   db.close();
   return { root, source, paths: resolveDebugPaths({ root }) };
 }
@@ -146,4 +148,34 @@ test("post-publication quarantine cleanup failure never restores old sidecars ov
   const refreshed = new DatabaseSync(f.paths.target, { readOnly: true });
   assert.deepEqual(refreshed.prepare("SELECT value FROM sample").all().map((r) => r.value), ["wal-value"]);
   refreshed.close();
+});
+
+
+test("independent debug clone changes its epoch before publication while source and restart remain stable", async (t) => {
+  const f = fixture(); t.after(() => rmSync(f.root, { recursive: true, force: true }));
+  const sourceBytes = readFileSync(f.source);
+  const lock = await prepareDebugDatabase(f.paths, { isPortOccupied: () => false });
+  const copy = new DatabaseSync(f.paths.target, { readOnly: true });
+  const after = copy.prepare("SELECT database_id, epoch, sequence FROM trade_book_state").get(); copy.close();
+  assert.equal(after.database_id, "fixture-book");
+  assert.notEqual(after.epoch, "source-epoch");
+  assert.equal(after.sequence, 0);
+  const restarted = new DatabaseSync(f.paths.target, { readOnly: true });
+  assert.deepEqual(restarted.prepare("SELECT database_id, epoch, sequence FROM trade_book_state").get(), after); restarted.close();
+  assert.deepEqual(readFileSync(f.source), sourceBytes);
+  lock.release();
+});
+
+
+test("epoch or future-schema activation failure keeps the old copy and cannot spawn a candidate", async (t) => {
+  for (const corruption of ["DELETE FROM trade_book_state", "INSERT INTO schema_migrations(version,name,checksum) VALUES(9999,'future','future')", "CREATE TRIGGER reject_epoch BEFORE UPDATE OF epoch ON trade_book_state BEGIN SELECT RAISE(ABORT,'synthetic rotation failure'); END"]) {
+    const f = fixture(); t.after(() => rmSync(f.root, { recursive: true, force: true }));
+    const db = new DatabaseSync(f.source); db.exec(corruption); db.close();
+    const sourceBytes = readFileSync(f.source);
+    mkdirSync(join(f.root, ".data"), { recursive: true }); writeFileSync(f.paths.target, "old-copy");
+    let spawned = false;
+    await assert.rejects(() => startDebugServer({ root: f.root, env: {}, isPortOccupied: () => false, assertNativeEnvironment() {}, spawn() { spawned = true; throw new Error("must not spawn"); } }), /version state|unsupported|synthetic rotation failure/);
+    assert.equal(spawned, false); assert.equal(readFileSync(f.paths.target, "utf8"), "old-copy");
+    assert.deepEqual(readFileSync(f.source), sourceBytes); assert.equal(existsSync(f.paths.lockPath), false);
+  }
 });

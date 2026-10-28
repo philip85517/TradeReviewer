@@ -1359,3 +1359,265 @@ describe("P4 seam candidate2 independent source review", () => {
     expect(group.diagnostics.mode).toBe("exact-context-fallback");
   });
 });
+
+// Candidate3: the episode declaration and canonical execution are independent
+// sources; only mixed precision comparisons use Shanghai business dates.
+describe("P4 seam candidate3 Shanghai episode end precision", () => {
+  it.each([
+    ["coarse close shares next Shanghai day", "2026-01-06", true, "2026-01-05T16:00:00Z", true],
+    ["coarse close differs despite same UTC day", "2026-01-06", true, "2026-01-06T18:00:00Z", false],
+    ["precise close matches coarse Shanghai declaration", "2026-01-05T16:00:00Z", false, "2026-01-06", true],
+    ["precise close differs from UTC date declaration", "2026-01-05T16:00:00Z", false, "2026-01-05", false],
+    ["coarse March close matches February UTC instant", "2026-03-01", true, "2026-02-28T16:00:00Z", true],
+    ["coarse February close rejects March Shanghai instant", "2026-02-28", true, "2026-02-28T16:00:00Z", false],
+    ["precise March close matches coarse month", "2026-02-28T16:00:00Z", false, "2026-03", true],
+    ["precise March close rejects UTC month", "2026-02-28T16:00:00Z", false, "2026-02", false],
+    ["coarse January close matches previous UTC year", "2026-01-01", true, "2025-12-31T16:00:00Z", true],
+    ["precise January close matches business year month", "2025-12-31T16:00:00Z", false, "2026-01", true],
+    ["precise January close rejects UTC year month", "2025-12-31T16:00:00Z", false, "2025-12", false],
+    ["coarse date respects offset declaration", "2026-01-06", true, "2026-01-05T11:00:00-05:00", true],
+    ["precise close accepts equal epoch with offset", "2026-01-05T16:00:00Z", false, "2026-01-06T00:00:00+08:00", true],
+    ["precise close rejects distinct epoch on same business day", "2026-01-05T16:00:00Z", false, "2026-01-06T01:00:00+08:00", false],
+    ["precise close rejects one millisecond difference", "2026-01-05T16:00:00Z", false, "2026-01-05T16:00:00.001Z", false],
+    ["DST spring precise equivalent offset", "2026-03-08T07:00:00Z", false, "2026-03-08T03:00:00-04:00", true],
+    ["DST spring distinct adjacent instant", "2026-03-08T07:00:00Z", false, "2026-03-08T01:59:59-05:00", false],
+    ["DST fall repeated local time distinct epoch", "2026-11-01T05:30:00Z", false, "2026-11-01T01:30:00-05:00", false],
+    ["date-only source retains its own label", "2026-01-06", true, "2026-01-06", true],
+    ["coarse month accepts contained day", "2026-01-06", true, "2026-01", true],
+    ["coarse month rejects other month", "2026-01-06", true, "2026-02", false],
+    ["invalid declaration", "2026-01-06", true, "not-a-date", false],
+    ["invalid date declaration", "2026-01-06", true, "2026-02-30", false],
+    ["invalid month declaration", "2026-01-06", true, "2026-13", false],
+    ["timezone-free declaration", "2026-01-06", true, "2026-01-06T12:00:00", false],
+    ["invalid precise declaration", "2026-01-06", true, "2026-01-06T25:00:00Z", false],
+  ] as const)("ISR05 %s", (_label, closedAt, coarse, declaredEnd, compatible) => {
+    const executions = [
+      fill("candidate3-buy", "2025-12-01T00:00:00Z", { fee: "2" }),
+      fill("candidate3-sell", closedAt, { side: "sell", price: "110", fee: "2", ...(coarse ? { source: { platform: "statement", row: 1, timePrecision: "date-only" as const, tradingDate: closedAt } } : {}) }),
+    ];
+    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
+    const episode = entries[0].episodes[0].episode;
+    episode.endedAt = declaredEnd;
+    const group = seamRead(preparedFixture(executions, [], { entries }), "2027-01-02");
+    expect(group.episodeCoverage).toEqual({ available: compatible, reasons: compatible ? [] : ["episode-canonical-conflict"], episodeIds: [episode.id], conflictingEpisodeIds: compatible ? [] : [episode.id] });
+    expect(group.canonical.facts.at(-1)?.time).toMatchObject({ sourceDate: closedAt, precision: coarse ? "day" : "instant" });
+    expect([group.canonical.terminal.quantity.value, group.canonical.terminal.realizedPnl.value, group.openFees.value, group.realizedFees.value, group.nativeRealizedNet.value]).toEqual(["0", "10", "0", "4", "6"]);
+    expect(group.quantityCoverage).toEqual({ available: true, reasons: [] });
+  });
+});
+
+// Historical FX is an independent additive feature after the accepted seam3/3.
+import type { PositionFactValue } from "../replay/position-ledger";
+const historicalNative = (value: string | null, reasons: string[] = []): PositionFactValue => ({ value, available: value !== null && reasons.length === 0, reasons });
+const historicalRequest = (key: string, businessDate = "2026-01-30", originalCurrency = "USD", gross = "10", allocatedFees = "2", net = "8") => ({ key, businessDate, originalCurrency, nativeValues: { gross: historicalNative(gross), allocatedFees: historicalNative(allocatedFees), net: historicalNative(net) } });
+const historicalQuery = (requests: ReturnType<typeof historicalRequest>[], targetCurrency = "CNY", asOf = "2026-02-02T10:00:00Z") => ({ asOf, targetCurrency, requests });
+const historicalRead = (source: ReturnType<typeof prepareHomepageV25Source>, request: ReturnType<typeof historicalQuery>) => preparedPerformance.readHomepageV25HistoricalFx(source, request);
+const historicalPair = (pair: string, rate: string, businessDate = "2026-01-30", at = `${businessDate}T00:00:00Z`): HistoricalFxObservation => ({ id: `${businessDate}:${pair}`, source: "history-journal", sourceRevision: "historical-fx1", businessDate, rates: { [pair]: rate }, status: "complete", publishedAtByPair: { [pair]: at }, knownAtByPair: { [pair]: at }, fetchedAt: at, evidenceIds: [`evidence:${businessDate}:${pair}`] });
+
+describe("historical FX converted-slot batch", () => {
+  it("multiplies before dividing and retains recurring decimal precision separately for each slot", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "1"), historicalPair("HKD/CNY", "3")] });
+    const result = historicalRead(source, historicalQuery([historicalRequest("thirds", undefined, "USD", "3", "1", "2")], "HKD")).results[0];
+    expect(result.values).toEqual({ gross: historicalNative("1"), allocatedFees: historicalNative("0.33333333333333333333"), net: historicalNative("0.66666666666666666667") });
+    expect(result.coverage).toMatchObject({ state: "complete", businessDate: "2026-01-30", requiredPairs: ["USD/CNY", "HKD/CNY"] });
+  });
+  it("retains large, tiny, negative and independent supplied net values without eight-place rounding", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "1"), historicalPair("HKD/CNY", "3")] });
+    const results = historicalRead(source, historicalQuery([
+      historicalRequest("large", undefined, "USD", "30000000000000000000", "0.00000000003", "-3"),
+      historicalRequest("tiny", undefined, "USD", "0.00000000003", "0", "0.00000000006"),
+    ], "HKD")).results;
+    expect(results.map(result => result.values)).toEqual([
+      { gross: historicalNative("10000000000000000000"), allocatedFees: historicalNative("0.00000000001"), net: historicalNative("-1") },
+      { gross: historicalNative("0.00000000001"), allocatedFees: historicalNative("0"), net: historicalNative("0.00000000002") },
+    ]);
+  });
+  it("converts each close day independently, preserving request order and a stable shared context for duplicate day/pairs", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "6", "2026-01-29"), historicalPair("USD/CNY", "7")] });
+    const results = historicalRead(source, historicalQuery([
+      historicalRequest("second"), historicalRequest("first", "2026-01-29"), historicalRequest("second-again", undefined, " usd ", "20"),
+    ])).results;
+    expect(results.map(result => [result.key, result.businessDate, result.values.gross.value, result.cutoff])).toEqual([
+      ["second", "2026-01-30", "70", "2026-01-30T15:59:59.999Z"], ["first", "2026-01-29", "60", "2026-01-29T15:59:59.999Z"], ["second-again", "2026-01-30", "140", "2026-01-30T15:59:59.999Z"],
+    ]);
+    expect(results[0].coverage).toBe(results[2].coverage);
+    expect(results[0].conversionId).toBe(results[2].conversionId);
+    expect(results[0].conversionId).not.toBe(results[1].conversionId);
+    expect(results[2].originalCurrency).toBe("USD");
+  });
+  it("passes same currency through with full precision, including zero, without journal requirements", () => {
+    const source = preparedFixture([], []);
+    const result = historicalRead(source, historicalQuery([historicalRequest("native", undefined, " usd ", "0.12345678901234567890123456789", "0.00000000001", "-0")], " usd ")).results[0];
+    expect(result.values).toEqual({ gross: historicalNative("0.12345678901234567890123456789"), allocatedFees: historicalNative("0.00000000001"), net: historicalNative("0") });
+    expect(result.coverage).toEqual({ state: "not-required", businessDate: "2026-01-30", observationIds: [], requiredPairs: [], pairKnowledge: {}, reasons: [] });
+    expect(result.targetCurrency).toBe("USD");
+  });
+  it("keeps known USD conversion when HKD evidence is absent in the same batch", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "7")] });
+    const results = historicalRead(source, historicalQuery([historicalRequest("usd"), historicalRequest("hkd", undefined, "HKD")])).results;
+    expect(results[0].values.gross).toEqual(historicalNative("70"));
+    expect(results[0].coverage.state).toBe("complete");
+    expect(results[1].values.gross).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+    expect(results[1].coverage.state).toBe("missing");
+  });
+  it("requires both cross pairs and reports partial coverage without suppressing a same-currency request", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "7")] });
+    const results = historicalRead(source, historicalQuery([historicalRequest("cross"), historicalRequest("native", undefined, "HKD")], "HKD")).results;
+    expect(results[0].coverage).toMatchObject({ state: "partial", requiredPairs: ["USD/CNY", "HKD/CNY"] });
+    expect(results[0].values.net).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+    expect(results[1].values.net).toEqual(historicalNative("8"));
+  });
+  it("uses supported colon pairs without deriving reciprocals from reversed pairs", () => {
+    const colon = historicalRead(preparedFixture([], [], { fxObservations: [historicalPair("USD:CNY", "7")] }), historicalQuery([historicalRequest("colon")])).results[0];
+    const reversed = historicalRead(preparedFixture([], [], { fxObservations: [historicalPair("CNY/USD", "0.14285714285714285714")] }), historicalQuery([historicalRequest("reverse")])).results[0];
+    expect(colon.values.gross.value).toBe("70");
+    expect(reversed.values.gross).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+  });
+  it.each(["published", "known", "fetched"] as const)("excludes evidence whose %s clock follows the exact same-day cutoff", clock => {
+    const pair = "USD/CNY", row = historicalPair(pair, "7", undefined, "2026-01-30T04:00:00Z");
+    const late = "2026-01-30T04:00:00.001Z";
+    const future = { ...row, ...(clock === "published" ? { publishedAtByPair: { [pair]: late } } : clock === "known" ? { knownAtByPair: { [pair]: late } } : { fetchedAt: late }) };
+    const result = historicalRead(preparedFixture([], [], { fxObservations: [future] }), historicalQuery([historicalRequest("future-clock")], "CNY", "2026-01-30T12:00:00+08:00")).results[0];
+    expect(result.cutoff).toBe("2026-01-30T04:00:00.000Z");
+    expect(result.values.gross).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+  });
+  it("includes evidence exactly at asOf and excludes the next Shanghai day even with a later asOf", () => {
+    const equal = historicalPair("USD/CNY", "7", undefined, "2026-01-30T04:00:00Z");
+    const exact = historicalRead(preparedFixture([], [], { fxObservations: [equal] }), historicalQuery([historicalRequest("exact")], "CNY", "2026-01-30T04:00:00Z")).results[0];
+    expect(exact.values.gross.value).toBe("70");
+    const late = historicalPair("USD/CNY", "9", undefined, "2026-01-30T16:00:00Z");
+    const closed = historicalRead(preparedFixture([], [], { fxObservations: [late] }), historicalQuery([historicalRequest("closed")])).results[0];
+    expect(closed.cutoff).toBe("2026-01-30T15:59:59.999Z");
+    expect(closed.values.gross.value).toBeNull();
+  });
+  it("uses Shanghai rather than UTC for the current business day and accepts its first instant", () => {
+    const row = historicalPair("USD/CNY", "7", "2026-01-31", "2026-01-30T16:00:00Z");
+    const result = historicalRead(preparedFixture([], [], { fxObservations: [row] }), historicalQuery([historicalRequest("midnight", "2026-01-31")], "CNY", "2026-01-30T16:00:00Z")).results[0];
+    expect([result.businessDate, result.cutoff, result.values.gross.value]).toEqual(["2026-01-31", "2026-01-30T16:00:00.000Z", "70"]);
+  });
+  it("never fills a historical gap from previous-day evidence or a current snapshot", () => {
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "6", "2026-01-29")], currentFxSnapshot: { snapshot: { id: "current", source: "live", baseCurrency: "CNY", asOf: "2026-01-30T00:00:00Z", rates: { "USD/CNY": "9" }, status: "complete" }, fetchedAt: "2026-01-30T00:00:00Z", publishedAtByPair: { "USD/CNY": "2026-01-30T00:00:00Z" }, sourceRevision: "f1", evidenceIds: ["current-evidence"] } });
+    expect(historicalRead(source, historicalQuery([historicalRequest("no-journal")])).results[0].values.gross).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+  });
+  it("preserves pair conflict rules while leaving another pair available", () => {
+    const hkd = historicalPair("HKD/CNY", "0.9");
+    const source = preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "7"), hkd, { ...hkd, rates: { "HKD/CNY": "0.8" } }] });
+    const results = historicalRead(source, historicalQuery([historicalRequest("usd"), historicalRequest("conflict", undefined, "HKD")])).results;
+    expect(results[0].values.gross.value).toBe("70");
+    expect(results[1].values.gross).toEqual(historicalNative(null, ["fx-evidence-conflict", "fx-knowledge-unavailable"]));
+  });
+  it("honors the authority's latest-known then ID tie order and tolerates identical duplicate evidence", () => {
+    const first = { ...historicalPair("USD/CNY", "6"), id: "a" };
+    const late = { ...historicalPair("USD/CNY", "7", undefined, "2026-01-30T01:00:00Z"), id: "b" };
+    const tied = { ...late, id: "c", rates: { "USD/CNY": "8" } };
+    const source = preparedFixture([], [], { fxObservations: [tied, first, late, structuredClone(late)] });
+    const result = historicalRead(source, historicalQuery([historicalRequest("ties")])).results[0];
+    expect(result.values.gross.value).toBe("70");
+    expect(result.coverage.observationIds).toEqual(["b"]);
+  });
+  it.each(["0", "-1", "NaN", "Infinity", "invalid"])("rejects unusable rate %s as unknown rather than an amount", rate => {
+    const result = historicalRead(preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", rate)] }), historicalQuery([historicalRequest("invalid-rate")])).results[0];
+    expect(result.values.gross).toEqual(historicalNative(null, ["fx-knowledge-unavailable"]));
+  });
+  it("preserves unknown slots independently and never recomputes an explicitly unknown net", () => {
+    const request = historicalRequest("unknown");
+    request.nativeValues.allocatedFees = historicalNative(null, ["fees-unavailable"]);
+    request.nativeValues.net = { value: "8", available: false, reasons: ["native-net-unknown"] };
+    const result = historicalRead(preparedFixture([], [], { fxObservations: [historicalPair("USD/CNY", "7")] }), historicalQuery([request])).results[0];
+    expect(result.values).toEqual({ gross: historicalNative("70"), allocatedFees: historicalNative(null, ["fees-unavailable"]), net: historicalNative(null, ["native-net-unknown"]) });
+  });
+  it("fails closed for inconsistent native knownness and missing reasons without freezing the caller", () => {
+    const request = historicalRequest("inconsistent");
+    request.nativeValues.gross = { value: "10", available: true, reasons: ["unproven"] };
+    request.nativeValues.allocatedFees = { value: null, available: true, reasons: [] };
+    request.nativeValues.net = { value: "8", available: false, reasons: [] };
+    const result = historicalRead(preparedFixture([], []), historicalQuery([request], "USD")).results[0];
+    expect(result.values).toEqual({ gross: historicalNative(null, ["unproven"]), allocatedFees: historicalNative(null, ["native-value-unavailable"]), net: historicalNative(null, ["native-value-unavailable"]) });
+    expect(Object.isFrozen(request.nativeValues)).toBe(false);
+  });
+  it.each(["NaN", "Infinity", "bad"])("returns unavailable for malformed known native value %s", value => {
+    const result = historicalRead(preparedFixture([], []), historicalQuery([historicalRequest("invalid-native", undefined, "USD", value)], "USD")).results[0];
+    expect(result.values.gross).toEqual(historicalNative(null, ["native-value-invalid"]));
+    expect(result.values.net).toEqual(historicalNative("8"));
+  });
+  it.each(["2026-02-30", "2026-13-01", "2026-01", "unknown", "2026-1-30", "2026-01-30T00:00:00Z", ""])("rejects illegal or non-day close date %s without substituting another day", businessDate => {
+    expect(() => historicalRead(preparedFixture([], []), historicalQuery([historicalRequest("bad-day", businessDate)]))).toThrowError("historical-fx-date-invalid");
+  });
+  it("accepts a real leap day and rejects a future close day including a one-millisecond midnight boundary", () => {
+    const source = preparedFixture([], []);
+    expect(historicalRead(source, historicalQuery([historicalRequest("leap", "2024-02-29")], "USD")).results[0].cutoff).toBe("2024-02-29T15:59:59.999Z");
+    expect(() => historicalRead(source, historicalQuery([historicalRequest("future", "2026-01-31")], "USD", "2026-01-30T15:59:59.999Z"))).toThrowError("historical-fx-future-day");
+    expect(() => historicalRead(source, historicalQuery([historicalRequest("ok"), historicalRequest("future", "2026-02-03")]))).toThrowError("historical-fx-future-day");
+  });
+  it.each(["", "invalid", "2026-02-30", "2026-02-30T00:00:00Z", "2026-01-30T04:00:00"])("rejects invalid asOf %s", asOf => {
+    expect(() => historicalRead(preparedFixture([], []), historicalQuery([historicalRequest("asof")], "USD", asOf))).toThrowError("as-of-invalid");
+  });
+  it("rejects duplicate keys and blank identifiers even for different days", () => {
+    const source = preparedFixture([], []);
+    expect(() => historicalRead(source, historicalQuery([historicalRequest("same"), historicalRequest("same", "2026-01-29")]))).toThrowError("historical-fx-key-duplicate");
+    expect(() => historicalRead(source, historicalQuery([historicalRequest("  ")]))).toThrowError("historical-fx-key-invalid");
+    expect(() => historicalRead(source, historicalQuery([historicalRequest("currency", undefined, " ")]))).toThrowError("historical-fx-currency-invalid");
+    expect(() => historicalRead(source, historicalQuery([], " "))).toThrowError("historical-fx-currency-invalid");
+    expect(() => historicalRead({ ...source }, historicalQuery([]))).toThrowError("prepared-source-invalid");
+  });
+  it("returns a stamped immutable empty batch without changing the prepared handle", () => {
+    const source = preparedFixture([], []), before = preparedPerformance.inspectHomepageV25PreparedSource(source);
+    const result = historicalRead(source, historicalQuery([], "CNY", "2026-01-30"));
+    expect(result).toMatchObject({ sourceId: source.sourceId, revisions: source.revisions, asOf: "2026-01-30T15:59:59.999Z", conversionPolicy: "historical-close-day-slots-1", results: [] });
+    expect(Object.isFrozen(result.results)).toBe(true);
+    expect(preparedPerformance.inspectHomepageV25PreparedSource(source)).toEqual(before);
+  });
+  it("detaches and freezes results without freezing request objects or retaining a memo", () => {
+    const rows = [historicalPair("USD/CNY", "7")], revisions = { trades: "t1", metadata: "m1", quotes: "q1", fx: "f1" };
+    const source = preparedFixture([], [], { fxObservations: rows, revisions });
+    const request = historicalRequest("immutable"), query = historicalQuery([request]);
+    request.nativeValues.net = historicalNative(null, ["native-unknown"]);
+    const before = preparedPerformance.inspectHomepageV25PreparedSource(source), first = historicalRead(source, query);
+    expect(Object.isFrozen(query)).toBe(false);
+    expect(Object.isFrozen(request.nativeValues.net.reasons)).toBe(false);
+    expect(Object.isFrozen(first)).toBe(true);
+    expect(Object.isFrozen(first.results[0].values.net.reasons)).toBe(true);
+    expect(Object.isFrozen(first.results[0].coverage.pairKnowledge["USD/CNY"])).toBe(true);
+    request.nativeValues.net = historicalNative("99"); query.requests.push(historicalRequest("other")); rows[0] = historicalPair("USD/CNY", "9"); revisions.fx = "mutated";
+    expect(first.results).toHaveLength(1);
+    expect(first.results[0].values).toEqual({ gross: historicalNative("70"), allocatedFees: historicalNative("14"), net: historicalNative(null, ["native-unknown"]) });
+    expect(first.revisions.fx).toBe("f1");
+    const again = historicalRead(source, historicalQuery([historicalRequest("different-key")]));
+    expect(again.results[0].values.gross.value).toBe("70");
+    expect(again.results[0].conversionId).toBe(first.results[0].conversionId);
+    expect(again.results[0].coverage).not.toBe(first.results[0].coverage);
+    expect(preparedPerformance.inspectHomepageV25PreparedSource(source)).toEqual(before);
+  });
+  it("binds conversion identity to source revisions and cutoff while preserving old normal-A output", () => {
+    const observationRows = [historicalPair("USD/CNY", "7")];
+    const source = preparedFixture([], [], { fxObservations: observationRows });
+    const normal = projectHomepageV25Boundaries(source, { ...batchQuery, targetCurrency: "CNY" });
+    const before = preparedPerformance.inspectHomepageV25PreparedSource(source);
+    const result = historicalRead(source, historicalQuery([historicalRequest("stamp")]));
+    expect(result.sourceId).toBe(normal.sourceId); expect(result.revisions).toEqual(normal.revisions); expect(result.policies).toEqual(normal.policies);
+    expect(result.results[0].conversionId).toMatch(/^[a-f0-9]{64}$/);
+    const different = preparedFixture([], [], { fxObservations: observationRows, revisions: { trades: "t1", metadata: "m1", quotes: "q1", fx: "f2" } });
+    expect(historicalRead(different, historicalQuery([historicalRequest("stamp")])).results[0].conversionId).not.toBe(result.results[0].conversionId);
+    expect(historicalRead(source, historicalQuery([historicalRequest("stamp")], "CNY", "2026-01-30T04:00:00Z")).results[0].conversionId).not.toBe(result.results[0].conversionId);
+    expect(preparedPerformance.inspectHomepageV25PreparedSource(source)).toEqual(before);
+    expect(projectHomepageV25Boundaries(source, { ...batchQuery, targetCurrency: "CNY" })).toBe(normal);
+  });
+});
+
+
+describe("F07 canonical inventory date gate with an eligible quote", () => {
+  it.each(["invalid-date", "", "2026-02-30", "2026-02-29", "2026-13-01", "2026-10", "2026-10-01T00:00:00Z"])("keeps current quantity and MV unknown for %j", date => {
+    const execution = fill("original", "2026-10-01T01:00:00Z");
+    execution.source.statementPositions = [{ accountId: "a", market: "US", symbol: "AAPL", phase: "opening", date, quantity: "5", cost: "20", source: [{ page: 1, row: 1 }] }];
+    const result = real([execution], { period: { start: "2026-10-01", end: "2026-10-23" }, asOf: "2026-10-23T12:00:03Z" }, [raw("2026-10-22", "110")]);
+    expect(result.currentMarketValue.value).toBeNull();
+    expect(result.instruments[0].evidence.current.quantity).toBeNull();
+  });
+  it("does not hide literal MV550 when only the valid position cost is unknown", () => {
+    const execution = fill("original", "2026-10-01T01:00:00Z");
+    execution.source.statementPositions = [{ accountId: "a", market: "US", symbol: "AAPL", phase: "closing", date: "2026-10-02", quantity: "5", cost: "20", source: [{ page: 1, row: 1 }] }];
+    const result = real([execution], { period: { start: "2026-10-01", end: "2026-10-23" }, asOf: "2026-10-23T12:00:03Z" }, [raw("2026-10-22", "110")]);
+    expect(result.currentMarketValue.value).toBe("550");
+    expect(result.instruments[0].evidence.current).toMatchObject({ quantity: "5", costKnown: false });
+  });
+});

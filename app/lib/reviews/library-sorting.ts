@@ -2,9 +2,9 @@ import Decimal from "decimal.js";
 
 import type { RoomTargetCurrency } from "./trading-room-scope";
 import {
-  tradeNatureOf as executionTradeNatureOf,
   type TradeNature,
 } from "../trades/types";
+import { resolvedEpisodeTradeNatureOf } from "../trades/nature-resolution";
 import {
   reviewState,
   type ReviewQueueItem,
@@ -33,12 +33,7 @@ type PreparedItem<T> = {
 };
 
 function rowTradeNature(row: ReviewQueueItem): TradeNature {
-  return row.entry.tradeNature ??
-    row.item.episode.tradeNature ??
-    (row.item.episode.executions[0]
-      ? executionTradeNatureOf(row.item.episode.executions[0])
-      : undefined) ??
-    "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 function rowSimulationRunId(row: ReviewQueueItem): string | null {

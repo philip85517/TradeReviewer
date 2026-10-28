@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { TradeExecution } from "../../lib/trades/types";
-import { buildHomepageHoldings } from "./holdings-model";
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 import { HomeSurface } from "./home-surface";
 import { useHomepageHost } from "./use-homepage-host";
 
@@ -16,7 +16,7 @@ function harness() {
   function App() {
     const host = useHomepageHost({ enabled: true, ready: true, data: entries, accounts: [{ id: "one", label: "账户一" }], identities: {}, revision: 1, reload, guard: async () => true });
     const holdings = buildHomepageHoldings(host.data, { scope: host.ui.snapshot.scope, attachments: host.ui.snapshot.attachments, asOf: "2026-10-23", instrumentMetadata: metadata, reviewSummariesComplete: true });
-    return <HomeSurface ui={host.ui} holdings={holdings} ready={host.initialized} accountStatus="ready" accounts={[{ id: "one", label: "账户一" }]} onUi={host.onUi} onScope={host.onScope} onTrades={vi.fn()} onReload={host.reload} onRepair={vi.fn()} onImport={vi.fn()} attachmentActions={{ onDraft: host.onAttachmentDraft, onApply: host.applyAttachments, onClear: host.clearAttachments, onReset: host.resetDefaults, onCancel: host.cancelAttachmentRead, onRemove: host.removeAttachment }} />;
+    return <HomeSurface ui={host.ui} holdings={holdings} ready={host.initialized} accountStatus="ready" accounts={[{ id: "one", label: "账户一" }]} onUi={host.onUi} onScope={host.onScope} onTrades={vi.fn()} view={holdings.view} onApply={host.applyPeriod} recovery={{ state: "quiet" }} onRecover={host.reload} onCatalogRetry={host.reload} onImport={vi.fn()} attachmentActions={{ onDraft: host.onAttachmentDraft, onApply: host.applyAttachments, onClear: host.clearAttachments, onReset: host.resetDefaults, onCancel: host.cancelAttachmentRead, onRemove: host.removeAttachment }} />;
   }
   render(<App />);
   return reads;

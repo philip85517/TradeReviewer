@@ -3,7 +3,8 @@ import { createEmptyEpisodeReviewRecord } from "../../lib/reviews/review-metrics
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { TradeExecution } from "../../lib/trades/types";
-import { buildHomepageHoldings, holdingsCsv } from "./holdings-model";
+import { holdingsCsv } from "./holdings-model";
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 
 const scope = { live: true as const, market: "all" as const, accounts: ["*"], rangeMode: "all" as const };
 const asOf = "2026-10-23T12:00:00Z";
@@ -29,8 +30,8 @@ describe("owned homepage attachment consumer integration", () => {
   it("projects one canonical instrument entry while retaining separate eligible account episodes", () => {
     const entries = source([fill("A", "X"), fill("B", "X")]);
     const result = buildHomepageHoldings(entries, { scope, asOf, instrumentMetadata: metadata });
-    expect(result.selection.entries).toHaveLength(1);
-    expect(result.selection.entries[0].episodes.map(item => item.episode.accountId).sort()).toEqual(["A", "B"]);
+    expect(result.source.selectedEntries).toHaveLength(1);
+    expect(result.source.selectedEntries[0].episodes.map(item => item.episode.accountId).sort()).toEqual(["A", "B"]);
     expect(result.rows).toHaveLength(2);
   });
   // Dropping the shared qualifier would admit the A/Y and B/X competitors into holdings and CSV.
@@ -43,7 +44,7 @@ describe("owned homepage attachment consumer integration", () => {
     expect(csv).toContain("Y证券,HKEX:Y,账户B");
     expect(csv).not.toContain("Y证券,HKEX:Y,账户A");
     expect(csv).not.toContain("X证券,HKEX:X,账户B");
-    expect(result.selection.entries.flatMap(entry => entry.executions).map(item => item.id).sort()).toEqual(["A-X-buy-01", "B-Y-buy-01"]);
+    expect(result.source.selectedEntries.flatMap(entry => entry.executions).map(item => item.id).sort()).toEqual(["A-X-buy-01", "B-Y-buy-01"]);
   });
 
   it("qualifies open exposure without quotes or unrealized money and retains complete selected histories", () => {
@@ -53,10 +54,10 @@ describe("owned homepage attachment consumer integration", () => {
       instrumentMetadata: metadata, attachments: { categories: [], openOnly: true, pendingReview: [] }, reviewSummariesComplete: true });
     expect(result.rows.map(row => [row.accountId, row.instrumentId, row.quantity])).toEqual([["A", "HK:X", "1"]]);
     expect(result.rows[0].reportPnl).toBeNull();
-    expect(result.selection.executions).toEqual([bought, sold, later]);
-    expect(result.selection.executions[0]).toBe(bought);
-    expect(result.selection.executions.map(item => item.fee)).toEqual(["2", "2", "2"]);
-    expect(result.selection.entries.flatMap(entry => entry.episodes)).toHaveLength(2);
+    expect(result.source.selectedEntries.flatMap(entry => entry.executions)).toEqual([bought, sold, later]);
+    expect(result.source.selectedEntries.flatMap(entry => entry.executions)[0]).not.toBe(bought);
+    expect(result.source.selectedEntries.flatMap(entry => entry.executions).map(item => item.fee)).toEqual(["2", "2", "2"]);
+    expect(result.source.selectedEntries.flatMap(entry => entry.episodes)).toHaveLength(2);
   });
 
   it("does not label completed-looking incomplete histories as pending=no or guess missing stock metadata", () => {
@@ -64,11 +65,11 @@ describe("owned homepage attachment consumer integration", () => {
     const entries = source([incomplete, fill("B", "Y")], ["A/X", "B/Y"]);
     const result = buildHomepageHoldings(entries, { scope, asOf, instrumentMetadata: metadata,
       attachments: { categories: [], openOnly: false, pendingReview: [false] }, reviewSummariesComplete: true });
-    expect(result.selection.eligibleGroups.map(group => [group.identity.accountId, group.identity.instrumentId])).toEqual([["B", "HK:Y"]]);
-    expect(result.selection.groups.find(group => group.identity.accountId === "A")?.pendingReview.value).toBeNull();
+    expect(result.rows.map(row => [row.accountId, row.instrumentId])).toEqual([["B", "HK:Y"]]);
+    expect(result.source.receipt.reasons).toContain('group:["A","HK:X","live",null]:pending-review-unknown');
     const noMetadata = buildHomepageHoldings(entries, { scope, asOf, instrumentMetadata: {},
       attachments: { categories: ["stock"], openOnly: false, pendingReview: [] }, reviewSummariesComplete: true });
-    expect(noMetadata.selection.eligibleGroups).toEqual([]);
+    expect(noMetadata.source.receipt.eligibleGroupKeys).toEqual([]);
   });
 
   it("uses Recall completion from its owned entries and resolves source identity to concrete instruments", () => {
@@ -77,7 +78,7 @@ describe("owned homepage attachment consumer integration", () => {
     item.recallReview = { episodeId: item.episode.id, status: "completed", completedAt: asOf, updatedAt: asOf, text: "saved", snapshotCount: 0 };
     const result = buildHomepageHoldings(entries, { scope: { ...scope, symbolIdentity: "HKEX:X" }, asOf, instrumentMetadata: metadata,
       symbolInstrumentIds: ["HK:X"], attachments: { categories: [], openOnly: false, pendingReview: [false] }, reviewSummariesComplete: true });
-    expect(result.selection.eligibleGroups.map(group => group.identity.instrumentId)).toEqual(["HK:X"]);
-    expect(result.selection.entries[0].episodes[0].recallReview?.status).toBe("completed");
+    expect(result.rows.map(row => row.instrumentId)).toEqual(["HK:X"]);
+    expect(result.source.selectedEntries[0].episodes[0].recallReview?.status).toBe("completed");
   });
 });

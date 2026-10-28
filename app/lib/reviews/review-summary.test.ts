@@ -345,15 +345,15 @@ describe("review scope and tracked rules", () => {
       },
     ]);
   });
-  it("uses canonical entry nature for legacy episodes and filters insights by the same end-date range", () => {
+  it("keeps unknown empty episodes isolated and filters insights by the same end-date range", () => {
     const first = entry({id:"old", endedAt:"2026-08-02T15:00:00Z"});
     first.episodes[0].episode.tradeNature = "unknown";
     const second = entry({id:"new", endedAt:"2026-09-02T15:00:00Z"});
     const entries=[first, second];
     const scopes=reviewScopeOptions(entries);
-    expect(scopes).toHaveLength(1);
-    expect(scopes[0].scope.tradeNature).toBe("live");
-    expect(filterTradeLibraryEntriesByScope(entries, scopes[0].id, {id:"sep",label:"September",startDate:"2026-09-01",endDate:"2026-09-30"}).flatMap(value => value.episodes.map(item => item.episode.id))).toEqual(["new"]);
+    expect(scopes.map(option => option.scope.tradeNature).sort()).toEqual(["live", "unknown"]);
+    const liveScope = scopes.find(option => option.scope.tradeNature === "live")!;
+    expect(filterTradeLibraryEntriesByScope(entries, liveScope.id, {id:"sep",label:"September",startDate:"2026-09-01",endDate:"2026-09-30"}).flatMap(value => value.episodes.map(item => item.episode.id))).toEqual(["new"]);
   });
 
   it("retains checked snapshots when an older source is cleared or no longer tracked", () => {

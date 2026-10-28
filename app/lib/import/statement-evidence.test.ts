@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyMonthlyHistoryEvidence, attachStatementEvidence, isExecutionBackedIpoAllocation, replayExecutionAt, selectMonthlyEvidenceHistory } from "./statement-evidence";
+import { applyMonthlyHistoryEvidence, projectMonthlyHistoryEvidence, attachStatementEvidence, isExecutionBackedIpoAllocation, replayExecutionAt, selectMonthlyEvidenceHistory } from "./statement-evidence";
 import type { StatementParseResult } from "./contracts";
 import type { PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
@@ -841,5 +841,133 @@ describe("verified IPO allocation duplicate matching", () => {
   it("keeps the amount path based on stock amount, independent of fee-inclusive effective price", () => {
     const event = { id: "stock-6049", accountId: "acct", market: "HK", symbol: "6049", date: "2019-12", kind: "ipo" as const, quantity: "200", amount: "7090.74", description: "IPO Allotment", source: [] };
     expect(isExecutionBackedIpoAllocation(event, [execution({ price: "35.7037" })])).toBe(true);
+  });
+});
+
+
+describe("monthly same-call representation projection", () => {
+  function carrier(symbol = "X", accountId = "A"): TradeExecution {
+    return { id: `${accountId}-${symbol}`, accountId, accountLabel: accountId,
+      instrument: { id: `US:${symbol}`, market: "US", symbol, name: symbol, currency: "USD" },
+      executedAt: "2026-10-02T12:00:00Z", side: "buy", quantity: "1", price: "10", fee: "0",
+      source: { platform: "tiger", row: 1, tradeNature: "live" } };
+  }
+  function document(): MonthlyStatement {
+    return { documentId: "doc", templateIds: [], accountId: "A", positions: [{ accountId: "A", market: "US", symbol: "X",
+      phase: "opening", date: "2026-10-01", quantity: "5", cost: "20", source: [{ page: 1, row: 1 }] }],
+    events: [], reviewRequired: false };
+  }
+  function history(monthly: MonthlyStatement[]) {
+    return monthly.map((item, index) => ({ id: `history-${index}`, importedAt: `2026-10-${String(index + 3).padStart(2, "0")}T00:00:00Z`, monthly: item }));
+  }
+  function observed(executions: TradeExecution[], monthly: MonthlyStatement[]) {
+    const source = history(monthly);
+    const projection = projectMonthlyHistoryEvidence(executions, source);
+    // Old selection and attachment are the exact compatibility oracle, not a reimplementation.
+    expect(projection.executions).toEqual(applyMonthlyHistoryEvidence(executions, selectMonthlyEvidenceHistory(source)));
+    return { projection, inspection: projection.inspectOriginalCarriers(projection.executions) };
+  }
+
+  it("R02 inventories a position before any execution exists", () => {
+    expect(observed([], [document()]).inspection).toMatchObject({ state: "unknown", gaps: [expect.objectContaining({ reason: "no-original-carrier" })] });
+  });
+
+  it.each(["different-account", "simulation", "unknown"])("R04 does not use %s as a live statement carrier", nature => {
+    const execution = carrier("X", nature === "different-account" ? "B" : "A");
+    if (nature === "simulation") execution.source.tradeNature = "simulation";
+    if (nature === "unknown") delete execution.source.tradeNature;
+    expect(observed([execution], [document()]).inspection.state).toBe("unknown");
+  });
+
+  it("R05 keeps no-carrier scoped disposal unknown rather than inferring symbol coverage", () => {
+    const full = document(); full.positions.push({ ...full.positions[0], symbol: "Y" });
+    const scoped = { ...document(), positions: [], evidenceScope: { accountId: "A", instrumentId: "US:X" } };
+    const { inspection } = observed([carrier("Y")], [full, scoped]);
+    expect(inspection.state).toBe("unknown");
+    expect(inspection.gaps).toContainEqual(expect.objectContaining({ reason: "no-original-carrier" }));
+  });
+
+  it("R06 follows actual full revision supersession and removes stale raw attachments", () => {
+    const old = { ...document(), evidenceScope: { accountId: "A", instrumentId: "US:X" } };
+    const current = { ...document(), positions: [] };
+    const execution = carrier();
+    execution.source.statementPositions = old.positions.map(position => ({ ...position, documentId: "doc" }));
+    const { projection, inspection } = observed([execution], [old, current]);
+    expect(projection.executions[0].source.statementPositions).toBeUndefined();
+    expect(inspection.state).toBe("complete");
+  });
+
+  it("R07 preserves compatible unassigned IPO fees but leaves their universe scope unknown", () => {
+    const monthly = { ...document(), positions: [], events: [{ id: "fee", accountId: "A", date: "2026-10-01", kind: "fee" as const,
+      currency: "USD", amount: "-3", description: "IPO subscription fee", source: [{ page: 1, row: 2 }] }] };
+    const { projection, inspection } = observed([carrier()], [monthly]);
+    expect(projection.executions[0].source.positionEvents?.[0].amount).toBe("-3");
+    expect(inspection.state).toBe("complete");
+    expect(inspection.universeReasons).toContain("unassigned-evidence-scope");
+  });
+
+  it.each(["ordinary fee", "IPO subscription fee"])("R08 keeps an uncarried %s unknown", description => {
+    const monthly = { ...document(), positions: [], events: [{ id: "fee", accountId: "B", date: "2026-10-01", kind: "fee" as const,
+      amount: "-3", currency: "USD", description, source: [] }] };
+    expect(observed([carrier()], [monthly]).inspection.state).toBe("unknown");
+  });
+
+  it.each(["amount", "currency", "source"])("R09 observes conflicting active event %s before deduplication", field => {
+    const event: StatementEvent = { id: "same", accountId: "A", market: "US", symbol: "X", date: "2026-10-01", kind: "fee",
+      amount: "-3", currency: "USD", description: "fee", source: [{ page: 1, row: 2 }] };
+    const changed = { ...event };
+    if (field === "amount") changed.amount = "-9";
+    if (field === "currency") changed.currency = "HKD";
+    if (field === "source") changed.source = [{ page: 1, row: 3 }];
+    const { inspection } = observed([carrier()], [{ ...document(), positions: [], events: [event, changed] }]);
+    expect(inspection.gaps).toContainEqual(expect.objectContaining({ reason: "active-payload-conflict" }));
+  });
+
+  it("identical repeated attachments and legal newer payload replacements remain complete", () => {
+    const current = document(); current.positions.push(structuredClone(current.positions[0]));
+    expect(observed([carrier()], [current]).inspection.state).toBe("complete");
+    const newer = structuredClone(current); newer.positions[0].cost = "40"; newer.positions[1].cost = "40";
+    expect(observed([carrier()], [current, newer]).inspection.state).toBe("complete");
+  });
+
+  it("R10 preserves instrument-specific missing-carrier flags and history uncertainty", () => {
+    const monthly = { ...document(), positions: [], incompleteInstruments: [{ market: "US", symbol: "X" }, { market: "US", symbol: "Y" }] };
+    const { inspection } = observed([carrier()], [monthly]);
+    expect(inspection.state).toBe("unknown");
+    expect(inspection.universeReasons).toContain("history-incomplete");
+    const represented = observed([carrier()], [{ ...monthly, incompleteInstruments: [], historyIncomplete: true }]).inspection;
+    expect(represented.state).toBe("complete");
+    expect(represented.universeReasons).toContain("history-incomplete");
+  });
+
+  it("retains attachments from documents absent from history and audits their original payload", () => {
+    const execution = carrier(); execution.source.statementPositions = document().positions;
+    const { projection, inspection } = observed([execution], []);
+    expect(inspection.state).toBe("complete");
+    const modified = structuredClone(projection.executions); modified[0].source.statementPositions![0].cost = "999";
+    expect(() => projection.inspectOriginalCarriers(modified)).toThrow(/assembly mismatch/i);
+  });
+
+  it("R12 does not discard a future original fill carrying earlier evidence", () => {
+    const execution = carrier(); execution.executedAt = "2026-11-01T12:00:00Z";
+    const { projection, inspection } = observed([execution], [document()]);
+    expect(projection.executions[0].executedAt).toBe("2026-11-01T12:00:00Z");
+    expect(inspection.state).toBe("complete");
+  });
+
+  it("R09 detects cross-carrier active payload conflicts even when each individual Map has one item", () => {
+    const first = carrier(), second = { ...carrier(), id: "second-fill", executedAt: "2026-10-03T12:00:00Z", source: { ...carrier().source } };
+    first.source.statementPositions = document().positions;
+    second.source.statementPositions = [{ ...document().positions[0], cost: "999" }];
+    const { inspection } = observed([first, second], []);
+    expect(inspection.gaps).toContainEqual(expect.objectContaining({ reason: "active-payload-conflict" }));
+  });
+
+  it("R15 preserves invalid quantities and dates, and treats unsupported corporate actions as unresolved scope", () => {
+    const invalid = document(); invalid.positions[0].quantity = "invalid"; invalid.positions[0].date = "not-a-date";
+    const { projection } = observed([carrier()], [invalid]);
+    expect(projection.executions[0].source.statementPositions?.[0]).toMatchObject({ quantity: "invalid", date: "not-a-date" });
+    const action: StatementEvent = { id: "action", accountId: "A", market: "US", symbol: "X", date: "2026-10-01", kind: "corporate-action", description: "unknown action", source: [] };
+    expect(observed([carrier()], [{ ...document(), positions: [], events: [action] }]).inspection.universeReasons).toContain("unresolved-corporate-action");
   });
 });

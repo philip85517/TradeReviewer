@@ -1,0 +1,94 @@
+{
+  "purpose": "pure synthetic UI acceptance inputs",
+  "accountId": "futu:99991007",
+  "month": "2026-01",
+  "variants": [
+    {
+      "name": "monthly-01-complete",
+      "label": "BASE: 2 synthetic fills",
+      "rows": [
+        [
+          "買入",
+          "90001",
+          "2026/01/27 11:30:42",
+          "2",
+          "10",
+          "20",
+          "-20.5"
+        ],
+        [
+          "賣出",
+          "90002",
+          "2026/01/28 11:30:42",
+          "1",
+          "11",
+          "11",
+          "10.5"
+        ]
+      ]
+    },
+    {
+      "name": "monthly-02-missing",
+      "label": "NEW VERSION: second fill absent",
+      "rows": [
+        [
+          "買入",
+          "90001",
+          "2026/01/27 11:30:42",
+          "2",
+          "10",
+          "20",
+          "-20.5"
+        ]
+      ]
+    },
+    {
+      "name": "monthly-03-restore",
+      "label": "NEW VERSION: second fill returns",
+      "rows": [
+        [
+          "買入",
+          "90001",
+          "2026/01/27 11:30:42",
+          "2",
+          "10",
+          "20",
+          "-20.5"
+        ],
+        [
+          "賣出",
+          "90002",
+          "2026/01/28 11:30:42",
+          "1",
+          "11",
+          "11",
+          "10.5"
+        ]
+      ]
+    },
+    {
+      "name": "monthly-04-conflict",
+      "label": "NEW VERSION: first fill price corrected",
+      "rows": [
+        [
+          "買入",
+          "90001",
+          "2026/01/27 11:30:42",
+          "2",
+          "12",
+          "24",
+          "-24.5"
+        ],
+        [
+          "賣出",
+          "90002",
+          "2026/01/28 11:30:42",
+          "1",
+          "11",
+          "11",
+          "10.5"
+        ]
+      ]
+    }
+  ]
+}

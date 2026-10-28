@@ -6,6 +6,12 @@ import type { StatementParseResult } from "../../lib/import/contracts";
 function result(): StatementParseResult { return { broker: "futu", records: [], candidates: [], exclusions: [], diagnostics: [{ severity: "warning", code: "test", message: "来源时区未确认" }], blocked: false, monthly: { documentId: "f", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: true } }; }
 afterEach(cleanup);
 describe("monthly statement review", () => {
+  it("explains that successfully imported identical files will be blocked before confirmation", () => {
+    render(<MonthlyStatementReview fileName="2025-06.pdf" parsed={result()} onReparse={vi.fn()} onContinue={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText(/成功完整导入的同一文件会在确认前阻止重复导入/)).toBeInTheDocument();
+    expect(screen.queryByText(/重新导入同一文件会更新/)).not.toBeInTheDocument();
+  });
+
   it("shows inferred timezone confidence in the execution evidence table", () => {
     const parsed = {
       ...result(),

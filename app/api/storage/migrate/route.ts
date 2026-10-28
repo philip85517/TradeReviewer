@@ -2,6 +2,8 @@ import { openSqliteDatabase } from "../../../../db/sqlite";
 import type { BrowserStatePayload } from "../../../lib/storage/sqlite-contracts";
 import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 
+import { tradeFailure } from "../trades/http";
+
 export const runtime = "nodejs";
 
 const COLLECTIONS = [
@@ -36,10 +38,6 @@ function parsePayload(value: unknown): BrowserStatePayload | undefined {
   return payload as BrowserStatePayload;
 }
 
-function isValidationError(error: unknown): boolean {
-  return error instanceof Error && error.message.startsWith("Invalid ");
-}
-
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -54,10 +52,6 @@ export async function POST(request: Request) {
   try {
     return json(getSqliteStore(openSqliteDatabase()).mergeBrowserState(payload));
   } catch (error) {
-    if (isValidationError(error)) return invalidPayload();
-    return json(
-      { error: { code: "database-unavailable", message: "Storage database is unavailable" } },
-      503,
-    );
+    return tradeFailure(error);
   }
 }

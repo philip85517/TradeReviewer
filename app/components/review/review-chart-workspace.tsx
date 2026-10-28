@@ -18,6 +18,7 @@ import {
 } from "../../lib/chart/drawings";
 import type { TimeframeAvailability } from "../../lib/market/availability";
 import type { Candle, Timeframe } from "../../lib/market/types";
+import { parseNonNegativeFee } from "../../lib/trades/execution-fee";
 import type { PositionLedgerSnapshot } from "../../lib/replay/position-ledger";
 import type { PositionPathMetrics } from "../../lib/replay/position-path-metrics";
 import {
@@ -135,7 +136,8 @@ type Props = {
   onLocateTimeframeChange?: (timeframe: Timeframe) => void;
 };
 
-function money(value: string, currency: string) {
+function money(value: string | null, currency: string) {
+  if (value === null) return "—";
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
     currency,
@@ -276,8 +278,10 @@ export function ReviewChartWorkspace({
   const unmatchedExecutions = model.executions.filter(execution => !mappedExecutionIds.has(execution.id));
   const greyMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession === "grey-market");
   const missingMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession !== "grey-market");
-  const pnlPositive = Number(model.position.netPnl) >= 0;
-  const pnlAvailable = !model.position.accuracy;
+  const pnlPositive = model.position.netPnl !== null && Number(model.position.netPnl) >= 0;
+  const pnlAvailable = !model.position.accuracy && model.position.netPnl !== null;
+  const costAvailable = model.position.costKnown !== false && !model.position.accuracy?.reasons.some(reason => reason !== "fees-invalid");
+  const feeOnlyUnknown = costAvailable && model.position.fees === null;
   const quantityAvailable = model.position.quantityKnown !== false && !model.position.accuracy?.reasons.some(reason => ["ambiguous-opening", "ambiguous-event-order", "history-incomplete"].includes(reason));
   const feeCurrencies = new Set(model.executions.map(executionFeeCurrency));
   const feeCurrency = feeCurrencies.size === 1
@@ -436,17 +440,17 @@ export function ReviewChartWorkspace({
               </div>
               <div className="position-stats">
                 <span>持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b></span>
-                <span>均价 <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</b></span>
-                <span>净盈亏 <b data-testid="net-pnl" className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</b></span>
+                <span>均价 <b>{costAvailable ? Number(model.position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</b></span>
+                <span>净盈亏 <b data-testid="net-pnl" className={pnlAvailable ? pnlPositive ? "positive" : "negative" : undefined}>{pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : feeOnlyUnknown ? "费用待核对" : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</b></span>
                 <details className="secondary-position-stats"><summary>更多指标</summary><div>
-                  <span>浮动盈亏 <b>{pnlAvailable ? money(model.position.unrealizedPnl, model.instrument.currency) : "—"}</b></span>
-                  <span>已实现 <b>{pnlAvailable ? money(model.position.realizedPnl, model.instrument.currency) : "—"}</b></span>
-                  <span>收益率 <b>{pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}</b></span>
+                  <span>浮动盈亏 <b>{costAvailable ? money(model.position.unrealizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>已实现 <b>{costAvailable ? money(model.position.realizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>收益率 <b>{pnlAvailable && model.position.returnPercent !== null ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}</b></span>
                 </div></details>
               </div>
             </div>
 
-            {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : model.position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
+            {!pnlAvailable && <p role="status">{feeOnlyUnknown ? "费用待核对，净盈亏与净路径统计暂不可用。" : "持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。"}{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : model.position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
             <ReplayChart
               episodeId={model.episodeId}
               focusRange={focusRange}
@@ -459,7 +463,7 @@ export function ReviewChartWorkspace({
               averageCost={Number(model.position.averageCost)}
               drawings={chartDrawings}
               activeTool={activeTool}
-              settings={pnlAvailable ? settings : { ...settings, showAverageCost: false }}
+              settings={costAvailable ? settings : { ...settings, showAverageCost: false }}
               selectedDrawingId={selectedDrawingId}
               plannedRiskAmount={visiblePlan?.plannedRiskAmount}
               currency={model.instrument.currency}
@@ -521,7 +525,7 @@ export function ReviewChartWorkspace({
                 <span className="status-separator">·</span>
                 <CircleDollarSign size={14} />
                 <span>
-                  费用 {model.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? money(model.position.fees, feeCurrency) : "币种待核对"}
+                  费用 {model.position.fees === null || model.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? money(model.position.fees, feeCurrency) : "币种待核对"}
                 </span>
               </div>
             </div>
@@ -585,7 +589,7 @@ export function ReviewChartWorkspace({
                           {execution.quantity} × {execution.price}
                         </span>
                         <span>
-                          费用 {execution.source.feeStatus === "unknown" ? "待核对" : fee(execution.fee, executionFeeCurrency(execution))}
+                          费用 {execution.source.feeStatus === "unknown" || parseNonNegativeFee(execution.fee) === null ? "待核对" : fee(execution.fee, executionFeeCurrency(execution))}
                         </span>
                         <small>来源 {executionSource(execution)}</small>
                         <small>

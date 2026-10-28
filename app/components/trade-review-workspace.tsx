@@ -23,11 +23,12 @@ import {
   X,
   Sparkles,
 } from "lucide-react";
-import { StockDataDialog } from "./review/stock-data-dialog";
+import { StockDataDialog, type RevisionReviewContext } from "./review/stock-data-dialog";
+import { submitReviewedTrade, type ReviewedTradeSubmission } from "../lib/storage/trade-change-submission";
 import { tradeRepairClient } from "../lib/storage/trade-repair-client";
 import type { TradeRevisionRequest } from "../lib/storage/trade-revisions";
 import { StockEpisodeNavigation } from "./review/stock-episode-navigation";
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } from "react";
 
 import {
   applyDrawingCommand,
@@ -51,7 +52,6 @@ import {
   enrichStatementImport,
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
-import { parseBrokerStatement } from "../lib/import/dispatcher";
 import { applyMonthlyHistoryEvidence, selectMonthlyEvidenceHistory } from "../lib/import/statement-evidence";
 import { belongsToMonthlyDocument } from "../lib/import/statement-identity";
 import { assessMonthlyReimport } from "../lib/import/monthly-reimport";
@@ -167,11 +167,14 @@ import { mergeTradingViewReimports } from "../lib/import/tradingview-reimport";
 import type { EpisodeReviewState } from "../lib/storage/review-storage";
 import {
   createActiveAliasLoader,
+  createBrowserReviewStateWriter,
   mergeAuthoritativeReviewStates,
   readAliasedReviewStates,
   resolveSharedScopeWithAliases,
   writeCanonicalSharedScope,
   type ActiveAliasLoader,
+  type BrowserReviewConflict,
+  type BrowserReviewWriteResolution,
 } from "../lib/storage/migration-browser-alias";
 import type { MarketDataRepository } from "../lib/storage/market-data-repository";
 import {
@@ -197,7 +200,7 @@ import {
   buildCachedTradeLibraryEntries,
   type TradeLibraryEntryCache,
 } from "../lib/reviews/trade-library-entry-cache";
-import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
+import { resolvedEpisodeTradeNatureOf } from "../lib/trades/nature-resolution";
 import { buildReviewQueue, stableAccountDisplayLabels } from "../lib/reviews/review-queue";
 import { localizedInstrumentOverlay, overlayStoredInstrumentMetadata } from "../lib/reviews/instrument-display-overlay";
 import type {
@@ -212,6 +215,11 @@ import type {
 import type { StoredInstrument } from "../lib/storage/sqlite-contracts";
 import type { MarketDataDetails } from "./chart/market-data-popover";
 import { ImportConfirmDialog } from "./import/import-confirm-dialog";
+import { importIntentForPreview, tradePlanChoicesComplete, tradePlanReadyForPreview, TradeImportPlan, ImportMaterialSelection } from "./import/trade-import-plan";
+import { importMaterialOptions, monthlyImportIntent, tradingViewImportIntent, monthlyFileAlreadyImported, type ImportMaterialOption } from "./import/trade-import-material";
+import { encodeTradeRead } from "../lib/storage/trade-read-contract";
+import { parseTradeCommitReceipt } from "../lib/storage/trade-change-response";
+import type { ReviewPlan, TradeChangeCommit, CommitReceipt, TradeChangeChoices, TradeChangeIntent } from "../lib/storage/sqlite-contracts";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
 import { ImportManagementDrawer } from "./import/import-management-drawer";
 import { ScreenshotReviewDialog } from "./import/screenshot-review-dialog";
@@ -240,12 +248,17 @@ import { TradingRoomPrincipalSlot } from "./data-management/trading-room-princip
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
-import { HomeSurface } from "./homepage-v25/home-surface";
-import { buildHomepageHoldings, explicitLiveEntries } from "./homepage-v25/holdings-model";
-import { buildHomepageCatalog } from "./homepage-v25/catalog-model";
+import { HomeSurface, type HomepageRecoveryPresentation } from "./homepage-v25/home-surface";
+import { buildHomepageHoldings, explicitLiveEntries, EMPTY_HOMEPAGE_HOLDINGS, type HomepageHoldingsView } from "./homepage-v25/holdings-model";
+import { buildHomepageCatalog, resolveHomepageCatalogInstrument } from "./homepage-v25/catalog-model";
 import { homepageCollectionState } from "./homepage-v25/session-model";
+import type { HomepageRequest } from "../lib/reviews/homepage-v25-state";
 import { useHomepageHost, type HomepageHostReadContext } from "./homepage-v25/use-homepage-host";
-import { homepageFxSnapshot } from "./homepage-v25/fx-adapter";
+import { prepareHomepageFinancialAcquisition } from "./homepage-v25/financial-acquisition";
+import { ownHomepageFinancialSource } from "./homepage-v25/financial-source-model";
+import { projectHomepageFinancialView, type HomepagePeriodView } from "./homepage-v25/financial-view-model";
+import { homepageProducerRequestKey, type HomepageOwnedFinancialSource } from "./homepage-v25/source-contract";
+import { readHomepageV25FinancialFacts } from "../lib/reviews/homepage-v25-performance";
 import type { StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { LibraryScopeControls } from "./library/library-scope-controls";
 import {
@@ -282,7 +295,7 @@ import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
 import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
 import { retryMarketData } from "../lib/market/retry-market-data";
 import { composeAbortSignals } from "../lib/instruments/abort-signal";
-import { toRoomFxSnapshot } from "../lib/fx/room-contracts";
+import { toRoomFxSnapshot, type FxState } from "../lib/fx/room-contracts";
 import { useFxRates } from "../lib/fx/use-fx-rates";
 import type {
   TradingRoomQualityDimensionId,
@@ -341,6 +354,9 @@ const ALL_TIMEFRAMES: TimeframeAvailability = {
   "1W": { enabled: true },
 };
 
+type HomepagePeriodDomain = { source: HomepageOwnedFinancialSource | null; view: HomepagePeriodView | null; holdings: HomepageHoldingsView };
+type HomepageHistoryDomain = { source: HomepageOwnedFinancialSource | null; status: "not-wired" };
+
 type InstrumentMarketState = {
   daily: DailyCandleRecord[];
   intraday: MarketCandleRecord[];
@@ -369,9 +385,8 @@ type Props = {
   activeAliasLoader?: ActiveAliasLoader;
 };
 
-function sharedEpisodeNature(entryNature: SharedScope["nature"] | undefined, episode: TradeEpisode): SharedScope["nature"] {
-  if (episode.tradeNature && episode.tradeNature !== "unknown") return episode.tradeNature;
-  return entryNature ?? "unknown";
+function sharedEpisodeNature(episode: TradeEpisode): SharedScope["nature"] {
+  return resolvedEpisodeTradeNatureOf(episode);
 }
 
 function legacyEpisodeSimulationRunId(entryRunId: string | null | undefined, episode: TradeEpisode): string | null {
@@ -1074,7 +1089,7 @@ function episodeOptions(episodes: TradeEpisode[], reviews: Record<string, Episod
   );
   return episodes.map((episode) => ({
     id: episode.id,
-    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${displayTradeNature(episode.executions[0]) === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
+    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${resolvedEpisodeTradeNatureOf(episode) === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
     contextLabel: `${marketTradingDate(episode.startedAt, episode.instrument.market)} · ${episode.executions[0]?.accountLabel ?? "账户未记录"} · ${reviews[episode.id]?.review.completed ? "已复盘" : "待复盘"}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
@@ -1298,6 +1313,7 @@ export function TradeReviewWorkspace({
   const [aliasRecoveryState, setAliasRecoveryState] = useState<"loading" | "ready" | "error">("loading");
   const [aliasRecoveryError, setAliasRecoveryError] = useState<string | null>(null);
   const [aliasRecoveryAttempt, setAliasRecoveryAttempt] = useState(0);
+  const [browserReviewConflicts, setBrowserReviewConflicts] = useState<BrowserReviewConflict[]>([]);
   useEffect(() => {
     if (!sharedScopeRestored) return;
     try {
@@ -1401,6 +1417,99 @@ export function TradeReviewWorkspace({
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
     null,
   );
+  const [reviewChoices, setReviewChoices] = useState<TradeChangeChoices>({});
+  const [reviewRequiresPrepare, setReviewRequiresPrepare] = useState(false);
+  const [unconfirmedImportOutcome, setUnconfirmedImportOutcome] = useState(false);
+  const [retainedReviewReasons, setRetainedReviewReasons] = useState<string[]>([]);
+  const [pendingReviewPlan, setPendingReviewPlan] = useState<ReviewPlan | null>(null);
+  const [preparedReviewContext, setPreparedReviewContext] = useState<{
+    preview: ImportPreview | null;
+    materialId: string;
+    attempt: number;
+    client: typeof storageClient;
+  } | null>(null);
+  const [materialSelection, setMaterialSelection] = useState<{ preview: ImportPreview; id: string } | null>(null);
+  const [materialOptions, setMaterialOptions] = useState<ImportMaterialOption[]>([]);
+  const [materialFileAlreadyImported, setMaterialFileAlreadyImported] = useState(false);
+  const selectedMaterialId = materialSelection?.preview === pendingImport ? materialSelection.id : "";
+  const [preparingReviewPlan, setPreparingReviewPlan] = useState(false);
+  const [reviewPlanError, setReviewPlanError] = useState<string | null>(null);
+  const [reviewPlanFileBlock, setReviewPlanFileBlock] = useState<"file" | "trades" | null>(null);
+  const [reviewPlanAttempt, setReviewPlanAttempt] = useState(0);
+  const frozenImportIntentRef = useRef<{preview: ImportPreview; material: string; intent: TradeChangeIntent} | null>(null);
+  const identitySelectionRef = useRef<{preview: ImportPreview; selection: import("../lib/storage/sqlite-contracts").TradingViewIdentitySelection} | null>(null);
+  const confirmedBookVersionRef = useRef<CommitReceipt["bookVersion"] | null>(null);
+  const loadImportHistoryCommit = useCallback(async (batchId: string, signal: AbortSignal) => {
+    const version = confirmedBookVersionRef.current;
+    if (!version || !storageClient.readImportHistoryCommit) return { batchId };
+    return storageClient.readImportHistoryCommit(batchId, version, signal);
+  }, [storageClient]);
+  const pendingCommitRef = useRef<TradeChangeCommit | null>(null);
+  const pendingReceiptRef = useRef<CommitReceipt | null>(null);
+  const [savedImportAwaitingRead, setSavedImportAwaitingRead] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      // Begin the external plan request asynchronously; an obsolete preview cancels all updates.
+      await Promise.resolve();
+      if (cancelled) return null;
+      setPendingReviewPlan(null);
+    setReviewChoices({});
+    setReviewRequiresPrepare(false);
+    setUnconfirmedImportOutcome(false);
+    setReviewPlanError(null);
+    setReviewPlanFileBlock(null);
+    pendingCommitRef.current = null;
+    pendingReceiptRef.current = null;
+    setSavedImportAwaitingRead(false);
+    if (!pendingImport || pendingImport.blocked) {
+      setPreparingReviewPlan(false);
+      return null;
+    }
+    setPreparingReviewPlan(true);
+    const prepare = storageClient.prepareTradeChanges;
+    if (!prepare) {
+      throw new Error("服务器审核协议不可用，当前预览尚未保存。");
+    }
+      let intent: TradeChangeIntent;
+      let sourceVersion: CommitReceipt["bookVersion"] | undefined;
+      if (supplementScopeRef.current) intent = { kind: "revision", revision: supplementRevisionForPreview(pendingImport, supplementScopeRef.current) };
+      else if (pendingImport.monthly || pendingImport.sourceKind==="tradingview") {
+        if (!storageClient.readTradeBook) throw new Error("来源材料读取协议不可用，请保留文件后重试。");
+        const book = await storageClient.readTradeBook();
+        if (cancelled) return null;
+        const options = importMaterialOptions(book);
+        setMaterialOptions(options);
+        setMaterialFileAlreadyImported(monthlyFileAlreadyImported(pendingImport, book));
+        if (selectedMaterialId && selectedMaterialId!=="__tv_independent__" && !options.some(option => option.id === selectedMaterialId)) throw new Error("所选来源材料当前不可核实，请重新选择或独立保存。");
+        sourceVersion = book.bookVersion;
+        intent = pendingImport.sourceKind==="tradingview" ? tradingViewImportIntent(pendingImport,selectedMaterialId,book) : monthlyImportIntent(pendingImport, selectedMaterialId || null, `version:${crypto.randomUUID()}`, new Date().toISOString(), book);
+      } else intent = importIntentForPreview(pendingImport);
+      if (pendingImport.sourceKind==="tradingview" && intent.kind==="import") {
+        const frozen=frozenImportIntentRef.current;
+        if (frozen?.preview===pendingImport && frozen.material===selectedMaterialId) intent=structuredClone(frozen.intent);
+        else { frozenImportIntentRef.current={preview:pendingImport,material:selectedMaterialId,intent:structuredClone(intent)}; identitySelectionRef.current=null; }
+        const selection=identitySelectionRef.current;
+        if (intent.kind==="import" && intent.tradingViewImport && selection?.preview===pendingImport) intent.tradingViewImport.identity=structuredClone(selection.selection);
+      }
+      const plan = await prepare(intent);
+      if (pendingImport.sourceKind==="tradingview" && (!plan || plan.reviewContract!=="trade-review-v2" || !["ready","review-required"].includes(plan.status) || !plan.summary.tradingViewImport || plan.tvImportGuard?.policy!=="tv-compat-v1")) throw new Error("TradingView 审核协议已变化，请重新准备完整计划。");
+      if (sourceVersion && encodeTradeRead(plan.baseVersion) !== encodeTradeRead(sourceVersion)) throw new Error("准备期间来源版本已变化。替换意图保留，请重新读取材料并准备计划。");
+      return plan;
+    })().then(plan => {
+      if (!cancelled) {
+        setPendingReviewPlan(plan);
+        setPreparedReviewContext({ preview: pendingImport, materialId: selectedMaterialId, attempt: reviewPlanAttempt, client: storageClient });
+      }
+    }).catch(error => {
+      if (!cancelled) {
+        const code=error && typeof error==="object" && "code" in error ? String(error.code) : "";
+        setReviewPlanFileBlock(code === "FILE_ALREADY_IMPORTED" ? "file" : code === "FILE_TRADES_ALREADY_EXIST" ? "trades" : null);
+        setReviewPlanError(code==="FILE_ALREADY_IMPORTED" ? "此文件已成功导入，不能重复导入。文件名变化不会改变此结果。请取消并选择其他文件。" : code==="FILE_TRADES_ALREADY_EXIST" ? "疑似已导入；本次成交均已存在，无新增。请取消并核对原导入记录。" : code==="TRADINGVIEW_SOURCE_FINANCIAL_MISMATCH" ? "同一已证明的 TradingView 来源身份存在财务矛盾。导入未保存，请通过正式成交修订核对原值、改后值与理由。" : code==="POLICY_CHANGED" ? "审核规则已更新，请重新准备计划。" : error instanceof Error ? error.message : "审核计划准备失败，请重试。");
+      }
+    }).finally(() => { if (!cancelled) setPreparingReviewPlan(false); });
+    return () => { cancelled = true; };
+  }, [pendingImport, reviewPlanAttempt, storageClient, selectedMaterialId]);
   const [pendingTradingViewFile, setPendingTradingViewFile] =
     useState<File | null>(null);
   const [pendingParsedImport, setPendingParsedImport] =
@@ -1457,6 +1566,12 @@ export function TradeReviewWorkspace({
   const [importPhase, setImportPhase] = useState<ImportPhase>("idle");
   const [savingImport, setSavingImport] = useState(false);
   const [retryingUnresolved, setRetryingUnresolved] = useState(false);
+  const activeReviewPlan = preparedReviewContext?.preview === pendingImport
+    && preparedReviewContext?.materialId === selectedMaterialId
+    && preparedReviewContext?.attempt === reviewPlanAttempt
+    && preparedReviewContext?.client === storageClient
+    && !preparingReviewPlan && !reviewRequiresPrepare && !retryingUnresolved && !reviewPlanError
+    ? pendingReviewPlan : null;
   const [hydrated, setHydrated] = useState(false);
   const [storageState, setStorageState] = useState<
     "loading" | "migration" | "ready" | "error"
@@ -1495,6 +1610,11 @@ export function TradeReviewWorkspace({
     Record<string, EpisodeReviewState>
   >({});
   const drawingDraftsRef = useRef<Record<string, EpisodeReviewState>>({});
+  const browserReviewWriteResolutionRef = useRef<BrowserReviewWriteResolution>({ ready: false, conflicts: [] });
+  const writeReviewState = createBrowserReviewStateWriter(
+    () => browserReviewWriteResolutionRef.current,
+    state => storageClient.putReviewState(state),
+  );
   const drawingSaveQueuesRef = useRef<Record<string, Promise<void>>>({});
   const drawingSaveSequencesRef = useRef<Record<string, number>>({});
   const drawingSaveErrorsRef = useRef<Record<string, string>>({});
@@ -1868,7 +1988,7 @@ export function TradeReviewWorkspace({
   );
   const sharedAccountOptions = useMemo(() => {
     const options = [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
-      .filter(item => sharedEpisodeNature(entry.tradeNature, item.episode) === sharedScope.nature)
+      .filter(item => sharedEpisodeNature(item.episode) === sharedScope.nature)
       .map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel || "未命名账户" }] as const))).values()];
     const displayLabels = stableAccountDisplayLabels(options);
     return options.map(option => ({ ...option, label: displayLabels.get(option.id) ?? option.label }));
@@ -1878,7 +1998,7 @@ export function TradeReviewWorkspace({
     const runs = new Map<string, { instrumentName: string; symbol: string }>();
     for (const entry of tradeLibraryEntries) {
       for (const item of entry.episodes) {
-        if (sharedEpisodeNature(entry.tradeNature, item.episode) !== "simulation") continue;
+        if (sharedEpisodeNature(item.episode) !== "simulation") continue;
         if (sharedScope.accountIds.length > 0 && !sharedScope.accountIds.includes(item.episode.accountId)) continue;
         // A migrated TradingView episode is a canonical whole-account scope;
         // its source run remains provenance and must not reappear as a business filter.
@@ -1898,7 +2018,7 @@ export function TradeReviewWorkspace({
       let next = normalizeSharedScope({ ...current, ...patch });
       if (next.nature === "simulation" && next.simulationRunId) {
         const runIsCompatible = tradeLibraryEntries.some(entry => entry.episodes.some(item =>
-          sharedEpisodeNature(entry.tradeNature, item.episode) === "simulation" &&
+          sharedEpisodeNature(item.episode) === "simulation" &&
           (next.accountIds.length === 0 || next.accountIds.includes(item.episode.accountId)) &&
           !tradingViewEpisodeBusinessScope(item.episode) &&
           legacyEpisodeSimulationRunId(entry.simulationRunId, item.episode) === next.simulationRunId,
@@ -2178,45 +2298,129 @@ export function TradeReviewWorkspace({
     staleAfterDays: 3, fxSnapshot, bootstrap: undefined as StorageBootstrap | undefined, states: marketStates,
     reviewBaseline: undefined as { reviews: typeof episodeReviews; states: typeof reviewStates; sequences: Record<string, number> } | undefined,
     reviewSummariesComplete: false,
+    acquisition: null as ReturnType<ReturnType<typeof prepareHomepageFinancialAcquisition>["complete"]> | null,
+    executions: [] as TradeExecution[],
+    collectionSource: null as HomepageOwnedFinancialSource | null,
   }), [tradeLibraryEntries, storedInstruments, instrumentMetadata, homepageExchanges, holdingsQuotesByInstrument, marketDataCandles, marketDataStatuses, marketDataDailyStatuses, marketDataLabels, marketDataJobs, fxSnapshot, marketStates]);
+  type RecoveryAttempt = {
+    owner: "alias" | "global" | "period" | "data";
+    phase: "alias" | "work" | "read";
+    navigationEpoch: number;
+    workContext: { routeKey: number; counter: number };
+    binding: { domain: "global" | "period"; requestKey: string } | null;
+    initialAliasDelegate: boolean;
+    aliasSettled: boolean;
+    workError: string | null;
+  };
+  const homepageRecoveryAttempt = useRef<RecoveryAttempt | null>(null);
+  const homepageRecoveryArm = useRef<{ attempt: RecoveryAttempt; domain: "global" | "period" } | null>(null);
+  const [homepageRecoveryActive, setHomepageRecoveryActive] = useState(false);
+  const [homepageRecoveryFeedback, setHomepageRecoveryFeedback] = useState<(Exclude<HomepageRecoveryPresentation, { state: "quiet" }> & { routeKey: number; counter: number; navigationEpoch: number }) | null>(null);
+  const homepageRecoveryContext = useRef({ counter: 0, routeKey: 0, active: false, initialized: false, aliasReady: false, storageReady: false });
+  const retireHomepageRecovery = useCallback(() => {
+    if (!homepageRecoveryAttempt.current) return;
+    homepageRecoveryAttempt.current = null;
+    setHomepageRecoveryActive(false);
+    setHomepageRecoveryFeedback(null);
+  }, []);
+  const observeHomepageRecoveryRead = useCallback((request: HomepageRequest<unknown, "global" | "period">, destination: "home" | "trades") => {
+    // These existing entries are synchronous with the host action. The arm is
+    // scoped to that call, never an invitation to capture the next request.
+    setHomepageRecoveryFeedback(null);
+    const attempt = homepageRecoveryAttempt.current;
+    if (!attempt) return;
+    const current = homepageRecoveryContext.current;
+    const arm = homepageRecoveryArm.current;
+    const explicit = arm?.attempt === attempt && arm.domain === request.domain;
+    const initialAlias = attempt.initialAliasDelegate && attempt.phase === "alias"
+      && !current.initialized && current.aliasReady && current.storageReady
+      && request.domain === "global" && request.purpose === "navigation";
+    if (!attempt.binding && attempt.navigationEpoch === navigationAttemptRef.current && current.active
+      && destination === "home" && (explicit || initialAlias)) {
+      attempt.binding = { domain: request.domain, requestKey: homepageProducerRequestKey(request) };
+      attempt.initialAliasDelegate = false;
+      attempt.phase = "read";
+    } else retireHomepageRecovery();
+  }, [retireHomepageRecovery]);
   const readHomepageBundle = async (requestId: number, context?: HomepageHostReadContext): Promise<{ requestId: number; data: typeof homepageData; kind?: "collection" }> => {
-    // Every result closes over its own bootstrap, market reads and FX response.
-    // No global revision/latest-data pairing participates in request acceptance.
-    const asOf = new Date().toISOString();
+    if (context) observeHomepageRecoveryRead(context.request, context.destination);
+    // Each request owns one atomic stored snapshot, including its Recall summaries.
+    const requestedAt = new Date().toISOString();
     const collectionOnly = context?.destination === "trades";
     const reviewBaseline = { reviews: episodeReviews, states: reviewStates, sequences: { ...drawingSaveSequencesRef.current } };
-    // Only a requested pending predicate needs Recall evidence. Its summary
-    // read is owned by this request; the ambient summary effect is not coverage.
-    const needsReviewSummaries = (context?.readTarget.attachments.pendingReview.length ?? 0) === 1;
-    const [bootstrap, fxResponse, recallSummaries] = await Promise.all([
-      storageClient.getBootstrap(),
+    if (!storageClient.getHomepageSource) throw new Error("首页原子来源读取不可用");
+    const [stored, fxResponse] = await Promise.all([
+      storageClient.getHomepageSource(undefined, confirmedBookVersionRef.current ? { atLeast: confirmedBookVersionRef.current } : undefined),
       collectionOnly ? undefined : fetch("/api/trading-room/fx", { cache: "no-store", headers: { accept: "application/json" } }),
-      needsReviewSummaries ? fetchRecallReviewSummaries() : undefined,
     ]);
-    if (fxResponse && !fxResponse.ok) throw new Error("汇率状态读取失败，新范围未应用。");
-    const freshFx = fxResponse ? homepageFxSnapshot(await fxResponse.json()) : undefined;
-    const executions = applyMonthlyHistoryEvidence(bootstrap.executions.filter(fill => fill.source.platform !== "demo"), selectMonthlyEvidenceHistory(bootstrap.importHistory));
-    await activeAliasLoader();
-    const summaries = overlayStoredInstrumentMetadata(buildInstrumentTradeSummaries(executions), bootstrap.instruments);
-    const jobs = Object.fromEntries(bootstrap.marketDataJobs.map(job => [job.instrumentId, job]));
-    const states: Record<string, InstrumentMarketState> = collectionOnly ? {} : Object.fromEntries(await Promise.all(summaries.map(async summary => [summary.instrument.id, applyPersistedMarketDataJob(await readInstrumentMarketState(summary, marketDataRepository, { includeIntraday: false }), jobs[summary.instrument.id])] as const)));
-    const candles = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.daily ?? []]));
-    const statuses = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.dailyStatus ?? "not-requested" as const]));
-    const labels = Object.fromEntries(summaries.map(summary => [summary.instrument.id, `日线：${marketDataStatusLabel(statuses[summary.instrument.id])}`]));
-    const reviews = Object.fromEntries(bootstrap.reviews.map(review => [review.episodeId, review]));
-    const recall = Object.fromEntries((recallSummaries ?? []).map(summary => [summary.episodeId, summary]));
-    const entries = buildCachedTradeLibraryEntries(undefined, summaries, candles, statuses, reviews, recall).entries;
-    const metadata = new Map<string, TradingRoomInstrumentMetadata>(bootstrap.instruments.flatMap(instrument => instrument.metadata ? [[instrument.id, { market: instrument.metadata.market, symbol: instrument.metadata.symbol, assetType: instrument.metadata.assetType }]] : []));
-    const quotes = Object.fromEntries(entries.map(entry => [entry.instrument.id, entry.latestQuote ? { price: entry.latestQuote.price, currency: entry.latestQuote.currency, quoteDate: entry.latestQuote.quoteDate, fetchedAt: entry.latestQuote.fetchedAt, provider: entry.latestQuote.provider, freshness: "current" as const } : undefined]));
-    const exchanges = Object.fromEntries(bootstrap.instruments.flatMap(instrument => instrument.metadata?.exchange ? [[instrument.id, instrument.metadata.exchange]] : []));
-    return { requestId, ...(collectionOnly ? { kind: "collection" as const } : {}), data: { entries, storedInstruments: bootstrap.instruments, instrumentMetadata: metadata, exchangeByInstrument: exchanges, quotesByInstrument: quotes, candlesByInstrument: candles, marketDataStatuses: statuses, marketDataDailyStatuses: statuses, marketDataLabels: labels, marketDataJobs: jobs, asOf, staleAfterDays: 3, fxSnapshot: freshFx, bootstrap, states, reviewBaseline, reviewSummariesComplete: recallSummaries !== undefined } };
+    const prepared = prepareHomepageFinancialAcquisition(stored);
+    try {
+      const { bootstrap, recallSummaries } = stored;
+      confirmedBookVersionRef.current = stored.bookVersion;
+      // Existing summaries/state require a mutable array; retain the same observed
+      // carrier objects and reuse this single array again at acceptance.
+      const executions = [...stored.bootstrap.executions];
+      if (fxResponse && !fxResponse.ok) throw new Error("汇率状态读取失败，新范围未应用。");
+      const fxState: FxState | null = fxResponse ? await fxResponse.json() : null;
+      const observedFx = fxState ? { state: fxState, observedAt: new Date().toISOString() } : null;
+      const freshFx = toRoomFxSnapshot(fxState);
+      await activeAliasLoader();
+      const summaries = overlayStoredInstrumentMetadata(buildInstrumentTradeSummaries(executions), bootstrap.instruments);
+      const jobs = Object.fromEntries(bootstrap.marketDataJobs.map(job => [job.instrumentId, job]));
+      const states: Record<string, InstrumentMarketState> = collectionOnly ? {} : Object.fromEntries(await Promise.all(summaries.map(async summary => [summary.instrument.id, applyPersistedMarketDataJob(await readInstrumentMarketState(summary, marketDataRepository, { includeIntraday: false }), jobs[summary.instrument.id])] as const)));
+      const candles = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.daily ?? []]));
+      const statuses = Object.fromEntries(summaries.map(summary => [summary.instrument.id, states[summary.instrument.id]?.dailyStatus ?? "not-requested" as const]));
+      const labels = Object.fromEntries(summaries.map(summary => [summary.instrument.id, `日线：${marketDataStatusLabel(statuses[summary.instrument.id])}`]));
+      const reviews = Object.fromEntries(bootstrap.reviews.map(review => [review.episodeId, review]));
+      const recall = Object.fromEntries(recallSummaries.map(summary => [summary.episodeId, summary]));
+      const entries = buildCachedTradeLibraryEntries(undefined, summaries, candles, statuses, reviews, recall).entries;
+      const metadata = new Map<string, TradingRoomInstrumentMetadata>(bootstrap.instruments.flatMap(instrument => instrument.metadata ? [[instrument.id, { market: instrument.metadata.market, symbol: instrument.metadata.symbol, assetType: instrument.metadata.assetType }]] : []));
+      const quotes = Object.fromEntries(entries.map(entry => [entry.instrument.id, entry.latestQuote ? { price: entry.latestQuote.price, currency: entry.latestQuote.currency, quoteDate: entry.latestQuote.quoteDate, fetchedAt: entry.latestQuote.fetchedAt, provider: entry.latestQuote.provider, freshness: "current" as const } : undefined]));
+      const exchanges = Object.fromEntries(bootstrap.instruments.flatMap(instrument => instrument.metadata?.exchange ? [[instrument.id, instrument.metadata.exchange]] : []));
+      const completedAt = new Date().toISOString();
+      const acquisition = prepared.complete({ entries, instrumentMetadata: metadata, candlesByInstrument: candles,
+        marketDataStatuses: statuses, requestedAt, completedAt, fx: observedFx,
+        dailyCoverageByInstrument: Object.fromEntries(Object.entries(states).map(([id, state]) => [id, state.dailyCoverage])),
+      });
+      return { requestId, ...(collectionOnly ? { kind: "collection" as const } : {}), data: { entries, storedInstruments: bootstrap.instruments, instrumentMetadata: metadata, exchangeByInstrument: exchanges, quotesByInstrument: quotes, candlesByInstrument: candles, marketDataStatuses: statuses, marketDataDailyStatuses: statuses, marketDataLabels: labels, marketDataJobs: jobs, asOf: completedAt, staleAfterDays: 3, fxSnapshot: freshFx, bootstrap, states, reviewBaseline, reviewSummariesComplete: true, acquisition, executions, collectionSource: null } };
+    } finally {
+      prepared.dispose();
+    }
   };
-  const homepage = useHomepageHost({ enabled: !showDemo, ready: storageState === "ready" && aliasRecoveryState === "ready", readOnInitialize: true, readCollections: true, revision: homepageDataRevision,
+  const homepage = useHomepageHost<typeof homepageData, HomepagePeriodDomain, HomepageHistoryDomain>({ enabled: !showDemo, ready: storageState === "ready" && aliasRecoveryState === "ready", readOnInitialize: true, readCollections: true, revision: homepageDataRevision,
     data: homepageData, accounts: homepageAccounts, identities: homepageInitialCatalog.identities, reload: readHomepageBundle,
     catalogFor: data => ({ accounts: [...new Map(explicitLiveEntries(data.entries).flatMap(entry => entry.episodes.map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel }] as const))).values()], identities: buildHomepageCatalog(data.entries, data.storedInstruments).identities }),
+    fromCollection: (data, _context, acceptedTarget) => {
+      if (!data.acquisition) throw new Error("首页采集证据缺失");
+      const identities = buildHomepageCatalog(data.entries, data.storedInstruments).identities;
+      const collectionSource = ownHomepageFinancialSource(data.acquisition.raw, { scope: acceptedTarget, attachments: acceptedTarget.attachments,
+        symbolInstrumentIds: acceptedTarget.symbolIdentity ? identities[acceptedTarget.symbolIdentity] ?? [] : undefined });
+      return { ...data, collectionSource };
+    },
+    domains: {
+      seed: { period: { source: null, view: null, holdings: EMPTY_HOMEPAGE_HOLDINGS }, history: { source: null, status: "not-wired" } },
+      fromGlobal: (data, context, accepted) => {
+        if (!data.acquisition) throw new Error("首页采集证据缺失");
+        const identities = buildHomepageCatalog(data.entries, data.storedInstruments).identities;
+        const source = ownHomepageFinancialSource(data.acquisition.raw, { scope: accepted.scope, attachments: accepted.attachments,
+          symbolInstrumentIds: accepted.scope.symbolIdentity ? identities[accepted.scope.symbolIdentity] ?? [] : undefined });
+        const view = projectHomepageFinancialView(source, { domain: "global", request: context.request, acceptedSnapshot: accepted });
+        // Read the existing canonical facts once; the committed display retains no full graph.
+        const facts = readHomepageV25FinancialFacts(source.prepared, { asOf: view.current.asOf, targetCurrency: source.reportCurrency });
+        const holdings = buildHomepageHoldings(source, view, facts, { instrumentMetadata: data.instrumentMetadata,
+          exchangeByInstrument: data.exchangeByInstrument, staleAfterDays: data.staleAfterDays, receipt: data.acquisition.receipt });
+        return { period: { source, view, holdings }, history: { source, status: "not-wired" } };
+      },
+      reloadPeriod: async ({ previous, request }) => {
+        observeHomepageRecoveryRead(request, "home");
+        if (!previous.source || !previous.view) throw new Error("首页财务来源尚未就绪");
+        return { request, data: { ...previous, view: projectHomepageFinancialView(previous.source, { domain: "period", request }) } };
+      },
+      reloadHistory: async () => { throw new Error("历史财务读取尚未接线"); },
+    },
     onReadAccepted: data => {
       const bootstrap = data.bootstrap; if (!bootstrap) return;
-      const executions = applyMonthlyHistoryEvidence(bootstrap.executions.filter(fill => fill.source.platform !== "demo"), selectMonthlyEvidenceHistory(bootstrap.importHistory));
+      const executions = data.executions;
       importedExecutionsRef.current = executions; setImportedExecutions(executions); setStoredInstruments(bootstrap.instruments);
       // Bootstrap owns inventory, not edits made after this read began. Keep
       // local drafts and any newer persisted review revision authoritative.
@@ -2252,7 +2456,130 @@ export function TradeReviewWorkspace({
   });
   const catalogData = homepage.route.page === "trades" ? homepage.collectionData : homepage.data;
   const homepageCatalog = useMemo(() => buildHomepageCatalog(catalogData?.entries ?? [], catalogData?.storedInstruments ?? []), [catalogData]);
-  const homepageHoldings = useMemo(() => buildHomepageHoldings(homepage.data.entries, { ...homepage.data, scope: homepage.ui.snapshot.scope, attachments: homepage.ui.snapshot.attachments }), [homepage.data, homepage.ui.snapshot.scope, homepage.ui.snapshot.attachments]);
+  const homepageHoldings = homepage.domainData?.period.holdings ?? EMPTY_HOMEPAGE_HOLDINGS;
+  const homepageView = homepage.domainData?.period.view ?? null;
+  const repairableQuotes = new Set(["quote-missing", "quote-invalid", "missing-completed-session"]);
+  const homepageQuoteIds = [...new Set([
+    ...(homepageView?.current.instruments.filter(item => repairableQuotes.has(homepageView.current.quoteCoverage[item.key]?.state)).map(item => item.identity.instrumentId) ?? []),
+    ...(homepageView?.series?.points.flatMap(point => point.state === "future" ? [] : point.instruments.filter(item => repairableQuotes.has(item.quoteCoverage.opening.state) || repairableQuotes.has(item.quoteCoverage.endpoint.state)).map(item => item.identity.instrumentId)) ?? []),
+  ])];
+  const homepageNeedsFx = homepageView?.current.fxCoverage.state === "missing" || homepageView?.current.fxCoverage.state === "partial";
+  useLayoutEffect(() => {
+    homepageRecoveryContext.current = { counter: homepage.ui.requestCounter, routeKey: homepage.route.key,
+      active: activeView === "dashboard", initialized: homepage.initialized,
+      aliasReady: aliasRecoveryState === "ready", storageReady: storageState === "ready" };
+  });
+  useEffect(() => () => { homepageRecoveryAttempt.current = null; homepageRecoveryArm.current = null; }, []);
+  const startHomepageRecoveryRead = useCallback((attempt: RecoveryAttempt, domain: "global" | "period") => {
+    if (homepageRecoveryAttempt.current !== attempt || navigationAttemptRef.current !== attempt.navigationEpoch) {
+      retireHomepageRecovery(); return;
+    }
+    attempt.phase = "read";
+    homepageRecoveryArm.current = { attempt, domain };
+    try {
+      if (domain === "period") homepage.retryPeriodRead();
+      else homepage.reload();
+    } finally {
+      homepageRecoveryArm.current = null;
+      // A no-start must not leave a latch that can claim an unrelated read.
+      if (homepageRecoveryAttempt.current === attempt && !attempt.binding) retireHomepageRecovery();
+    }
+  }, [homepage.reload, homepage.retryPeriodRead, retireHomepageRecovery]);
+  const recoveryFeedback = homepageRecoveryFeedback?.navigationEpoch === navigationAttemptRef.current
+    && homepageRecoveryFeedback.routeKey === homepage.route.key && homepageRecoveryFeedback.counter === homepage.ui.requestCounter ? homepageRecoveryFeedback : null;
+  // Observe committed data before passive initialization can start a new read in
+  // this same commit. Only an exact accepted producer key proves completion.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useLayoutEffect(() => {
+    const attempt = homepageRecoveryAttempt.current;
+    if (!attempt) return;
+    const finish = (state: "recovered" | "actionable", message: string) => {
+      retireHomepageRecovery();
+      setHomepageRecoveryFeedback({ state, message, routeKey: homepage.route.key, counter: homepage.ui.requestCounter, navigationEpoch: attempt.navigationEpoch });
+    };
+    if (attempt.navigationEpoch !== navigationAttemptRef.current || activeView !== "dashboard") { retireHomepageRecovery(); return; }
+    if (attempt.phase === "alias") {
+      if (aliasRecoveryState === "error" && attempt.aliasSettled) { finish("actionable", "账户范围恢复失败，请重试。"); return; }
+      if (storageState === "error") { finish("actionable", "来源读取失败，请重试。"); return; }
+      if (aliasRecoveryState !== "ready" || storageState !== "ready") return;
+      if (attempt.initialAliasDelegate) {
+        // The host's one automatic initial navigation consumes this delegation
+        // at its actual loader entry. Ready alone is not financial acceptance.
+        if (homepage.initialized || homepage.route.error || homepage.route.page !== "home") retireHomepageRecovery();
+        return;
+      }
+      startHomepageRecoveryRead(attempt, "global");
+      return;
+    }
+    if (homepage.route.page !== "home" || homepage.route.error) { retireHomepageRecovery(); return; }
+    if (attempt.phase === "work") {
+      if (homepage.ui.requestCounter !== attempt.workContext.counter || homepage.route.key !== attempt.workContext.routeKey) retireHomepageRecovery();
+      return;
+    }
+    const binding = attempt.binding;
+    if (!binding) { retireHomepageRecovery(); return; }
+    const pending = [homepage.ui.requests.global, homepage.ui.requests.period].filter(request => request !== null);
+    if (pending.length) {
+      if (pending.some(request => homepageProducerRequestKey<unknown, "global" | "period">(request) !== binding.requestKey)) retireHomepageRecovery();
+      return;
+    }
+    if (homepage.ui.errors[binding.domain] || homepage.ui.timeouts[binding.domain]) {
+      finish("actionable", binding.domain === "period" ? "新期间未应用，请重试。" : "新范围未应用，请重试。"); return;
+    }
+    if (homepageView?.stamp.requestGeneration !== binding.requestKey) { retireHomepageRecovery(); return; }
+    if (attempt.owner === "data" && (attempt.workError || homepageQuoteIds.length || homepageNeedsFx)) { finish("actionable", "仍有数据缺失，请重试或查看口径原因。"); return; }
+    finish("recovered", "已更新");
+  });
+  /* eslint-enable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (recoveryFeedback?.state !== "recovered") return;
+    const timer = window.setTimeout(() => setHomepageRecoveryFeedback(current => current === recoveryFeedback ? null : current), 2000);
+    return () => window.clearTimeout(timer);
+  }, [recoveryFeedback]);
+  const homepageBusy = Boolean(homepageRecoveryActive || homepage.ui.requests.global || homepage.ui.requests.period || marketDataRefresh.running || fxRates.refreshing || aliasRecoveryState === "loading");
+  const homepageRecovery: HomepageRecoveryPresentation = homepageBusy
+    ? { state: "busy", message: homepage.ui.requests.period ? "正在应用期间…" : homepage.ui.requests.global ? "正在读取新范围…" : "修复中…" }
+    : aliasRecoveryState === "error" ? { state: "actionable", message: `账户范围恢复失败：${aliasRecoveryError ?? "请重试。"}` }
+      : homepage.ui.errors.global ? { state: "actionable", message: homepage.ui.timeouts.global ? "读取已超时，新范围未应用。" : "新范围读取失败，仍显示原范围。" }
+        : homepage.route.error ? { state: "unavailable", message: homepage.route.error }
+          : homepage.ui.errors.period ? { state: "actionable", message: homepage.ui.timeouts.period ? "期间读取已超时，仍显示原期间。" : "期间读取失败，仍显示原期间。" }
+            : recoveryFeedback ?? (homepageQuoteIds.length || homepageNeedsFx ? { state: "actionable", message: "行情或汇率待更新。" }
+              : homepageView?.reasons.length ? { state: "unavailable", message: "部分来源证据不足，请查看口径详情。" } : { state: "quiet" });
+  function recoverHomepage(catalogOnly = false) {
+    if (homepageRecoveryAttempt.current || homepageBusy || activeView !== "dashboard") return;
+    const owner = aliasRecoveryState === "error" ? "alias" : homepage.ui.errors.global || catalogOnly ? "global" : homepage.ui.errors.period ? "period" : "data";
+    if (homepage.route.error && !homepage.ui.errors.global) return;
+    if (owner === "data" && !homepageQuoteIds.length && !homepageNeedsFx) return;
+    const attempt: RecoveryAttempt = { owner, phase: owner === "data" ? "work" : owner === "alias" ? "alias" : "read",
+      navigationEpoch: navigationAttemptRef.current, workContext: { routeKey: homepage.route.key, counter: homepage.ui.requestCounter },
+      binding: null, workError: null, aliasSettled: false,
+      initialAliasDelegate: owner === "alias" && !homepage.initialized && !homepage.ui.requests.global && !homepageView };
+    homepageRecoveryAttempt.current = attempt;
+    setHomepageRecoveryActive(true);
+    setHomepageRecoveryFeedback({ state: "busy", message: "修复中…", ...attempt.workContext, navigationEpoch: attempt.navigationEpoch });
+    if (owner === "alias") { setAliasRecoveryAttempt(value => value + 1); return; }
+    if (owner === "global" || owner === "period") { startHomepageRecoveryRead(attempt, owner); return; }
+    const quoteIds = homepageQuoteIds;
+    const needsFx = homepageNeedsFx;
+    const previousJobs = new Map(quoteIds.map(id => [id, marketDataJobsRef.current[id]]));
+    const stillOwnsWork = () => {
+      const latest = homepageRecoveryContext.current;
+      return homepageRecoveryAttempt.current === attempt && navigationAttemptRef.current === attempt.navigationEpoch
+        && latest.active && latest.routeKey === attempt.workContext.routeKey && latest.counter === attempt.workContext.counter;
+    };
+    void (async () => {
+      try {
+        if (quoteIds.length) await retryMarketData({ dimension: "holdings", instrumentIds: quoteIds,
+          start: () => startMarketDataUpdate(quoteIds, { refreshMetadata: true, batch: true, includeIntraday: false }),
+          jobFor: id => marketDataJobsRef.current[id] === previousJobs.get(id) ? undefined : marketDataJobsRef.current[id] });
+      } catch (error) { attempt.workError = error instanceof Error ? error.message : "行情更新失败"; }
+      if (!stillOwnsWork()) return;
+      if (needsFx) await fxRates.refresh();
+      if (!stillOwnsWork()) return;
+      // Even partial persisted repairs are read as one whole accepted bundle.
+      startHomepageRecoveryRead(attempt, "global");
+    })();
+  }
   const [ordinaryLibraryScope, setOrdinaryLibraryScope] = useState<SharedScope | null>(null);
   const [ordinaryLibraryKey, setOrdinaryLibraryKey] = useState(-1);
   const globalLibraryBrowse = useRef<TradeLibraryBrowseState | undefined>(libraryBrowseState);
@@ -2279,13 +2606,12 @@ export function TradeReviewWorkspace({
     const target = homepage.collectionTarget;
     const data = homepage.collectionData;
     if (ordinaryLibraryScope && target && data && homepage.route.collectionOrigin === "homepage") {
-      return buildHomepageHoldings(data.entries, { ...data, scope: target, attachments: target.attachments,
-        symbolInstrumentIds: target.symbolIdentity ? homepageCatalog.identities[target.symbolIdentity] ?? [] : undefined }).selection.entries;
+      return [...(data.collectionSource?.selectedEntries ?? [])];
     }
     return ordinaryLibraryScope
       ? filterEntriesBySharedScope(ordinaryLibraryScope.nature === "live" ? explicitLiveEntries(tradeLibraryEntries) : tradeLibraryEntries, ordinaryLibraryScope)
       : scopedTradeLibraryEntries;
-  }, [ordinaryLibraryScope, homepage.collectionTarget, homepage.collectionData, homepage.route.collectionOrigin, homepageCatalog, tradeLibraryEntries, scopedTradeLibraryEntries]);
+  }, [ordinaryLibraryScope, homepage.collectionTarget, homepage.collectionData, homepage.route.collectionOrigin, tradeLibraryEntries, scopedTradeLibraryEntries]);
   const currentEpisodeIds = useMemo(
     () => new Set(tradeLibraryEntries.flatMap(entry => entry.episodes.map(({ episode }) => episode.id))),
     [tradeLibraryEntries],
@@ -2316,7 +2642,7 @@ export function TradeReviewWorkspace({
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
     tradeNature: selectedImportedInstrument
-      ? selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : "unknown"
+      ? selectedEpisode ? resolvedEpisodeTradeNatureOf(selectedEpisode) : "unknown"
       : undefined,
     simulationRunId: selectedImportedInstrument
       ? selectedEpisode?.simulationRunId
@@ -2641,6 +2967,7 @@ export function TradeReviewWorkspace({
     let active = true;
     const requestId = ++replayRequestSequence.current;
     const aliasController = new AbortController();
+    browserReviewWriteResolutionRef.current = { ...browserReviewWriteResolutionRef.current, ready: false };
     const bootstrapWorkspace = async () => {
       const reloadRequested = pendingMigrationReloads.current.length > 0;
       try {
@@ -2659,10 +2986,8 @@ export function TradeReviewWorkspace({
         }
         if (!active) return;
         setStoredInstruments(bootstrap.instruments);
-        const productionExecutions = applyMonthlyHistoryEvidence(showDemo
-          ? bootstrap.executions
-          : bootstrap.executions.filter((execution) => execution.source.platform !== "demo"),
-          selectMonthlyEvidenceHistory(bootstrap.importHistory));
+        if (bootstrap.bookVersion) confirmedBookVersionRef.current = bootstrap.bookVersion;
+        const productionExecutions = showDemo ? bootstrap.executions : bootstrap.executions.filter(execution => execution.source.platform !== "demo");
         const savedScope = readPersistedSharedScope();
         const scopeGeneration = sharedScopeChangeGeneration.current;
         let aliases: readonly import("../lib/storage/tradingview-account-migration-client").TradingViewAccountMigrationAlias[] = [];
@@ -2683,6 +3008,10 @@ export function TradeReviewWorkspace({
           }
         }
         if (!active || requestId !== replayRequestSequence.current) return;
+        // Record this prerequisite's actual completion even when React batches
+        // loading/error into one commit. It still cannot prove financial recovery.
+        const recovery = homepageRecoveryAttempt.current;
+        if (recovery?.phase === "alias" && recovery.navigationEpoch === navigationAttemptRef.current) recovery.aliasSettled = true;
         const scopeBeforeAlias = scopeGeneration === sharedScopeChangeGeneration.current
           ? (savedScope ?? DEFAULT_SHARED_SCOPE)
           : sharedScopeRef.current;
@@ -2727,15 +3056,19 @@ export function TradeReviewWorkspace({
         const sqliteStates = Object.fromEntries(
           bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
         );
-        let browserStates: ReturnType<typeof readAliasedReviewStates> = [];
+        let browserResolution: ReturnType<typeof readAliasedReviewStates> = { states: [], conflicts: [] };
+        let browserResolutionReady = showDemo || !aliasFailure;
         if (!showDemo && !aliasFailure && typeof window !== "undefined") {
           try {
-            browserStates = readAliasedReviewStates(window.localStorage, aliases);
+            browserResolution = readAliasedReviewStates(window.localStorage, aliases, sqliteStates);
           } catch {
             // SQLite review state remains authoritative when browser storage is unavailable.
+            browserResolutionReady = false;
           }
         }
-        const states = mergeAuthoritativeReviewStates(sqliteStates, browserStates);
+        const states = mergeAuthoritativeReviewStates(sqliteStates, browserResolution.states);
+        browserReviewWriteResolutionRef.current = { ready: browserResolutionReady, conflicts: browserResolution.conflicts };
+        setBrowserReviewConflicts(browserResolution.conflicts);
         const reviews = Object.fromEntries(
           bootstrap.reviews.filter((record) => showDemo || record.episodeId !== REVIEW_ID).map((record) => [record.episodeId, record]),
         );
@@ -2844,6 +3177,7 @@ export function TradeReviewWorkspace({
     void bootstrapWorkspace();
     return () => {
       active = false;
+      browserReviewWriteResolutionRef.current = { ...browserReviewWriteResolutionRef.current, ready: false };
       aliasController.abort();
       replayRequestSequence.current += 1;
     };
@@ -3277,7 +3611,7 @@ export function TradeReviewWorkspace({
       .catch(() => undefined)
       .then(async () => {
         if (drawingSaveSequencesRef.current[episodeId] !== sequence) return;
-        await storageClient.putReviewState(state);
+        await writeReviewState(state);
         if (drawingSaveSequencesRef.current[episodeId] !== sequence) return;
         setReviewStates((current) => ({ ...current, [episodeId]: state }));
         clearDrawingSaveError(episodeId);
@@ -3336,6 +3670,7 @@ export function TradeReviewWorkspace({
       restoring ||
       !activeEpisodeId ||
       drawingEpisodeRef.current !== activeEpisodeId ||
+      browserReviewConflicts.some(conflict => conflict.episodeId === activeEpisodeId) ||
       (!showDemo && !selectedRawImportedInstrument)
     ) return;
     const state: EpisodeReviewState = {
@@ -3352,6 +3687,7 @@ export function TradeReviewWorkspace({
     effectiveImportedCursor,
     activeEpisodeId,
     activePanelTab,
+    browserReviewConflicts,
     drawingHistory.present,
     hydrated,
     restoring,
@@ -3911,16 +4247,8 @@ export function TradeReviewWorkspace({
               : execution,
           );
           try {
-            await storageClient.mergeExecutions({
-              instruments: [{
-                id: instrumentId,
-                market: instrument.market,
-                symbol: instrument.symbol,
-                name,
-                currency: instrument.currency,
-              }],
-              executions: renamed,
-            });
+            if (!storageClient.putInstrumentName) throw new Error("证券展示名称保存协议不可用");
+            await storageClient.putInstrumentName({ instrumentId, name });
           } catch {
             metadataPersistenceFailed = true;
             setImportError(
@@ -4470,45 +4798,9 @@ export function TradeReviewWorkspace({
           belongsToMonthlyDocument(execution, enriched.monthly!),
         ),
     );
-    const current = currentExecutionSnapshot().filter(
-      (execution) =>
-        !enriched.monthly ||
-        !belongsToMonthlyDocument(execution, enriched.monthly),
-    );
-    const tradingViewMerge = enriched.broker === "tradingview"
-      ? mergeTradingViewReimports(current, enriched.importable)
-      : undefined;
-    const merged = tradingViewMerge?.merged ?? (
-      tradingViewMerge
-        ? current
-        : mergeExecutions(current, enriched.importable)
-    );
-    const retainedIncomingCount = Math.max(
-      0,
-      merged.length - current.length,
-    );
-    const libraryDuplicateCount = tradingViewMerge
-      ? tradingViewMerge.reconciliation.duplicates.length
-      : Math.max(
-          0,
-          enriched.importable.length - retainedIncomingCount,
-        );
-    const tradingViewConflicts = tradingViewMerge?.reconciliation.conflicts ?? [];
     return {
       ...basePreview,
-      ...(incompleteReplacement ? { blocked: true, blockingReason: "同一月结单仍有证券分类未完成，暂不替换已存成交。请重试分类或取消；旧记录保持不变。" } : {}),
-      ...(tradingViewConflicts.length > 0
-        ? {
-            blocked: true,
-            blockingReason: "同一 TradingView 来源的已有成交与本次导入财务字段不一致，已阻止导入；请核对原文件。",
-            conflictTradeCount: tradingViewConflicts.reduce(
-              (total, conflict) => total + conflict.incoming.length,
-              0,
-            ),
-          }
-        : {}),
-      duplicateTradeCount:
-        basePreview.duplicateTradeCount + libraryDuplicateCount,
+      ...(incompleteReplacement ? { blocked: true, blockingReason: "同一月结单仍有证券分类未完成，请先重试分类或取消；已存成交保持不变。" } : {}),
     };
   }
 
@@ -4541,24 +4833,8 @@ export function TradeReviewWorkspace({
     const requestId = ++importRequestSequence.current;
     const originalExecutions = currentExecutionSnapshot();
     if (supplementScopeRef.current) setSupplementExcluded(screenshotExcludedRef.current);
-    const { incomingToMerge } =
-      applyReconciliationDecisions(
-        originalExecutions,
-        prepared.reconciliation,
-        prepared.decisions,
-      );
-    const incomingInstrumentIds = new Set(
-      incomingToMerge.map(({ instrument }) => instrument.id),
-    );
-    const parsed: StatementParseResult = {
-      ...prepared.parsed,
-      records: incomingToMerge,
-      candidates: prepared.parsed.candidates.filter((candidate) =>
-        incomingInstrumentIds.has(
-          canonicalInstrumentId(candidate.symbol, candidate.market),
-        ),
-      ),
-    };
+    // Parser candidates stay intact; only the server plan decides duplicates and conflicts.
+    const parsed = prepared.parsed;
     const conflictTradeCount = prepared.reconciliation.conflicts.reduce(
       (total, conflict) => total + conflict.incoming.length,
       0,
@@ -4579,24 +4855,14 @@ export function TradeReviewWorkspace({
         repository: metadataRepository,
       });
       if (requestId !== importRequestSequence.current) return;
-      const survivorReconciliation = reconcileExecutions(
-        originalExecutions,
-        rawEnriched.importable,
-      );
-      const { currentAfterReplacements, incomingToMerge: survivors } =
-        applyReconciliationDecisions(
-          originalExecutions,
-          survivorReconciliation,
-          prepared.decisions,
-        );
-      const enriched = { ...rawEnriched, importable: survivors };
+      const enriched = rawEnriched;
       const preview = previewForImport(prepared.fileName, enriched, {
         captureCount: prepared.captureCount,
         duplicateTradeCount: prepared.reconciliation.duplicates.length,
         conflictTradeCount,
       });
       setPendingEnrichedImport(enriched);
-      setPendingImportMergeBase(currentAfterReplacements);
+      setPendingImportMergeBase(null);
       setPendingImport(preview);
       setImportPhase("ready");
     } catch (error) {
@@ -4841,9 +5107,24 @@ export function TradeReviewWorkspace({
       setNavigationNotice("成交已修订，原回合身份发生变化。请重新选择回合；原笔记和绘图已保留，可在数据检查中核对。");
     }
   }
-  async function reviseCurrentTrades(input: TradeRevisionRequest) {
-    const result = await tradeRepairClient.revise(input);
+  const revisionSubmissionsRef = useRef(new Map<string, ReviewedTradeSubmission>());
+  async function prepareRevision(input: TradeRevisionRequest) {
+    if (!storageClient.prepareTradeChanges) throw new Error("修订审核接口暂不可用，本地输入已保留。");
+    return storageClient.prepareTradeChanges({ kind: "revision", revision: input });
+  }
+  async function reviseCurrentTrades(_input: TradeRevisionRequest, review?: RevisionReviewContext) {
+    if (!review) throw new Error("请先准备服务器审核计划。");
+    let submission = revisionSubmissionsRef.current.get(review.requestId);
+    if (!submission) {
+      submission = { envelope: { requestId: review.requestId, planId: review.plan.planId, choices: structuredClone(review.choices) } };
+      revisionSubmissionsRef.current.set(review.requestId, submission);
+    }
+    const result = await submitReviewedTrade(storageClient, submission);
+    confirmedBookVersionRef.current = result.bookVersion;
     applyCorrectedExecutions(result.executions);
+    setStoredInstruments(result.instruments);
+    setImportHistory(result.importHistory);
+    revisionSubmissionsRef.current.delete(review.requestId);
   }
 
   async function prepareStatementPreview(file: File, parsed: StatementParseResult, requestId: number) {
@@ -4854,29 +5135,17 @@ export function TradeReviewWorkspace({
     if (requestId !== importRequestSequence.current) return;
     if (parsed.monthly) {
       const current = currentExecutionSnapshot();
-      const reimport = assessMonthlyReimport(
-        current,
-        parsed.records,
-        rawEnriched,
-        parsed.monthly,
-      );
       setPendingImportOriginalExecutions(current);
-      setPendingImportMergeBase(
-        reimport.idempotent
-          ? current
-          : current.filter((e) => !belongsToMonthlyDocument(e, parsed.monthly!)),
-      );
-      setPendingEnrichedImport(reimport.enriched);
-      const preview = previewForImport(file.name, reimport.enriched, undefined, {
-          allowIncompleteMonthlyReimport: reimport.idempotent,
-      });
+      setPendingImportMergeBase(null);
+      setPendingEnrichedImport(rawEnriched);
+      const preview = previewForImport(file.name, rawEnriched);
       const scope = supplementScopeRef.current;
       setPendingImport(scope
         ? previewForScopedSupplement(
             preview,
             current,
             scope,
-            reimport.enriched.diagnostics.filter((diagnostic) => diagnostic.code.toLowerCase().includes("duplicate")).length,
+            rawEnriched.diagnostics.filter((diagnostic) => diagnostic.code.toLowerCase().includes("duplicate")).length,
           )
         : preview);
       setImportPhase("ready");
@@ -4932,14 +5201,18 @@ export function TradeReviewWorkspace({
     setPendingImportMergeBase(null);
     setPendingScreenshotDecisions(null);
     setMonthlyReview(null);
+    let parserModuleLoaded = false;
     try {
-      await Promise.resolve();
+      const { parseBrokerStatement } = await import("../lib/import/dispatcher");
+      parserModuleLoaded = true;
+      if (requestId !== importRequestSequence.current) return;
       setImportPhase("parsing");
       const parsedResult = tradingViewContext
         ? await parseBrokerStatement(file, { ...timeOptions, tradingViewContext })
         : Object.keys(timeOptions).length > 0
           ? await parseBrokerStatement(file, timeOptions)
           : await parseBrokerStatement(file);
+      if (requestId !== importRequestSequence.current) return;
       const scope = supplementScopeRef.current;
       const parsed = scope && parsedResult.broker !== "unknown"
         ? scopeStatementParseResult(parsedResult, scope)
@@ -4993,9 +5266,11 @@ export function TradeReviewWorkspace({
     } catch (error) {
       if (requestId !== importRequestSequence.current) return;
       setImportError(
-        error instanceof Error
-          ? error.message
-          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商证券格式。",
+        !parserModuleLoaded
+          ? "导入组件加载失败，请刷新页面后重试。"
+          : error instanceof Error
+            ? error.message
+            : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商证券格式。",
       );
       setImportPhase("idle");
     } finally {
@@ -5007,6 +5282,7 @@ export function TradeReviewWorkspace({
 
   async function retryUnresolved(instrumentIds: string[]) {
     if (
+      savingImport || unconfirmedImportOutcome || savedImportAwaitingRead ||
       instrumentIds.length === 0 ||
       !pendingParsedImport ||
       !pendingEnrichedImport ||
@@ -5025,31 +5301,9 @@ export function TradeReviewWorkspace({
         previous: pendingEnrichedImport,
       });
       if (requestId !== importRequestSequence.current) return;
-      let enriched = rawEnriched;
+      const enriched = rawEnriched;
       const screenshotDuplicateTradeCount = pendingImport.duplicateTradeCount;
-      let screenshotConflictTradeCount = pendingImport.conflictTradeCount ?? 0;
-      if (
-        pendingImport.sourceKind === "screenshot" &&
-        pendingImportOriginalExecutions &&
-        pendingScreenshotDecisions
-      ) {
-        const survivorReconciliation = reconcileExecutions(
-          pendingImportOriginalExecutions,
-          rawEnriched.importable,
-        );
-        const { currentAfterReplacements, incomingToMerge } =
-          applyReconciliationDecisions(
-            pendingImportOriginalExecutions,
-            survivorReconciliation,
-            pendingScreenshotDecisions,
-          );
-        enriched = { ...rawEnriched, importable: incomingToMerge };
-        setPendingImportMergeBase(currentAfterReplacements);
-        screenshotConflictTradeCount = survivorReconciliation.conflicts.reduce(
-          (total, conflict) => total + conflict.incoming.length,
-          0,
-        );
-      }
+      const screenshotConflictTradeCount = pendingImport.conflictTradeCount ?? 0;
       const preview = previewForImport(
         pendingImport.fileName,
         enriched,
@@ -5088,122 +5342,76 @@ export function TradeReviewWorkspace({
     }
   }
 
+  function supplementRevisionForPreview(preview: ImportPreview, scope: SupplementScope): TradeRevisionRequest {
+    if (supplementRequestRef.current) return supplementRequestRef.current;
+    const before = pendingImportOriginalExecutions ?? currentExecutionSnapshot();
+    const monthly = preview.monthly;
+    const monthlyHistory = monthly ? selectMonthlyEvidenceHistory([
+      ...importHistory.filter(entry => entry.monthly?.documentId === monthly.documentId),
+      { id: preview.id, importedAt: new Date().toISOString(), monthly },
+    ]) : [];
+    const after = applyScopedMonthlyEvidence(mergeExecutions(before, preview.records), monthlyHistory, scope);
+    const changes = supplementChanges(before, after, scope);
+    if (!changes.length) throw new Error("本次补充未产生可审计的目标成交或证据变更，尚未保存。");
+    const batchId = `supplement:${crypto.randomUUID()}`;
+    const input: TradeRevisionRequest = {
+      id: batchId, instrumentId: scope.instrumentId, accountId: scope.accountId,
+      reason: `补充导入：${preview.fileName}`,
+      changes: changes.map(change => ({ ...change, after: change.after ? { ...change.after, source: { ...change.after.source, batchId: change.after.source.batchId ?? batchId } } : null })),
+      expectedScope: before.filter(e => e.instrument.id === scope.instrumentId && e.accountId === scope.accountId),
+      importHistory: { ...importIntentForPreview(preview).importHistory![0], id: batchId, excludedRecordCount: supplementExcluded },
+    };
+    supplementRequestRef.current = input;
+    return input;
+  }
+
   async function confirmImport() {
     if (!pendingImport || pendingImport.blocked || retryingUnresolved || savingImport) {
       return;
     }
-    if (supplementScopeRef.current) {
-      if (supplementSaving.current) return;
-      const scope = supplementScopeRef.current;
-      supplementSaving.current = true; setSavingSupplement(true);
-      try {
-        const before = pendingImportOriginalExecutions ?? currentExecutionSnapshot();
-        const mergedExecutions = mergeExecutions(before, pendingImport.records);
-        const pendingMonthly = pendingImport.monthly;
-        const monthlyDocumentId = pendingMonthly?.documentId;
-        const monthlyHistory = monthlyDocumentId && pendingMonthly
-          ? selectMonthlyEvidenceHistory([
-              ...importHistory.filter((entry) => entry.monthly?.documentId === monthlyDocumentId),
-              { id: pendingImport.id, importedAt: new Date().toISOString(), monthly: pendingMonthly },
-            ])
-          : [];
-        const evidenceEnrichedExecutions = applyScopedMonthlyEvidence(
-          mergedExecutions,
-          monthlyHistory,
-          scope,
-        );
-        const changes = supplementChanges(before, evidenceEnrichedExecutions, scope);
-        const hasStoredMonthlyHistory = monthlyDocumentId
-          ? importHistory.some((entry) => entry.monthly?.documentId === monthlyDocumentId)
-          : false;
-        if (changes.length === 0 && pendingImport.monthly && !hasStoredMonthlyHistory) {
-          throw new Error("本次月结单没有产生可审计的目标证据变更，未标记为已保存。");
-        }
-        if (changes.length) {
-          const batchId = `supplement:${crypto.randomUUID()}`;
-          const request = supplementRequestRef.current ?? {
-            id: batchId,
-            instrumentId: scope.instrumentId,
-            accountId: scope.accountId,
-            reason: `补充导入：${pendingImport.fileName}`,
-            changes: changes.map(change => ({
-              ...change,
-              after: change.after
-                ? {
-                    ...change.after,
-                    source: {
-                      ...change.after.source,
-                      batchId: change.after.source.batchId ?? batchId,
-                    },
-                  }
-                : null,
-            })),
-            importHistory: {
-              ...(pendingImport.monthly ? { monthly: pendingImport.monthly } : {}),
-              id: batchId,
-              fileName: pendingImport.fileName,
-              sourceLabel: pendingImport.sourceLabel,
-              importedAt: new Date().toISOString(),
-              tradeCount: changes.filter(change => change.before === null && change.after !== null).length,
-              instrumentCount: 1,
-              excludedInstrumentCount: pendingImport.excludedInstrumentCount,
-              excludedRecordCount: supplementExcluded,
-              duplicateTradeCount: pendingImport.duplicateTradeCount,
-              unresolvedInstrumentCount: pendingImport.unresolvedInstrumentCount,
-            },
-            expectedScope: before.filter(e => e.instrument.id === scope.instrumentId && e.accountId === scope.accountId),
-          };
-          supplementRequestRef.current = request;
-          const result = await tradeRepairClient.revise(request);
-          applyCorrectedExecutions(result.executions);
-          if (request.importHistory) setImportHistory(history => [request.importHistory!, ...history.filter(entry=>entry.id !== request.importHistory!.id)]);
-        }
-        setPendingImport(null); setPendingParsedImport(null); setPendingEnrichedImport(null); setPendingImportOriginalExecutions(null); setPendingImportMergeBase(null); setPendingScreenshotDecisions(null); setImportPhase("idle"); clearSupplement();
-      } catch (error) { setImportError(error instanceof Error ? error.message : "补充导入未保存，请重试。"); } finally { supplementSaving.current = false; setSavingSupplement(false); }
+    if (!activeReviewPlan || !tradePlanReadyForPreview(activeReviewPlan,pendingImport) || !tradePlanChoicesComplete(activeReviewPlan, reviewChoices)) return;
+    if (!storageClient.commitTradeChanges || !storageClient.getTradeCommit || !storageClient.readTradeBook) {
+      setImportError("服务器审核协议不可用，当前预览尚未保存。");
       return;
     }
-    importRequestSequence.current += 1;
-    const currentExecutions =
-      pendingImportOriginalExecutions ?? currentExecutionSnapshot();
-    const mergeBase = pendingImport.monthly
-      ? pendingImportMergeBase ??
-        currentExecutionSnapshot().filter(
-          (e) => !belongsToMonthlyDocument(e, pendingImport.monthly!),
-        )
-      : pendingImportMergeBase ?? currentExecutions;
-    const importBatchId = pendingImport.id;
-    const recordsForStorage = pendingImport.records.map((execution) => ({
-      ...execution,
-      source: {
-        ...execution.source,
-        batchId: importBatchId,
-      },
-    }));
-    const previousSummaries = new Map(
-      buildInstrumentTradeSummaries(currentExecutions).map((item) => [
-        item.instrument.id,
-        item,
-      ]),
-    );
-    const reconciliation = pendingImport.monthly ? reconcileExecutions(mergeBase, recordsForStorage) : null;
-    if (reconciliation?.conflicts.some(c => !monthlyConflictDecisions.has(c.id))) return;
-    const resolvedMonthly = reconciliation ? applyReconciliationDecisions(mergeBase, reconciliation, monthlyConflictDecisions) : null;
-    const tradingViewMerge = pendingImport.sourceKind === "tradingview"
-      ? mergeTradingViewReimports(mergeBase, recordsForStorage)
-      : undefined;
-    if (tradingViewMerge?.reconciliation.conflicts.length) {
-      setImportError("同一 TradingView 来源的已有成交与本次导入财务字段不一致，已阻止导入；请核对原文件。");
-      return;
-    }
-    const tradingViewNoOp = Boolean(
-      tradingViewMerge &&
-      recordsForStorage.length > 0 &&
-      tradingViewMerge.reconciliation.acceptedIncoming.length === 0 &&
-      tradingViewMerge.reconciliation.automaticReplacementIds.length === 0 &&
-      tradingViewMerge.reconciliation.duplicates.length >= recordsForStorage.length,
-    );
-    if (tradingViewNoOp) {
-      setNavigationNotice("本次 TradingView 文件中的成交均已存在，未新增记录。");
+    const currentExecutions = currentExecutionSnapshot();
+    const previousSummaries = new Map(buildInstrumentTradeSummaries(currentExecutions).map(item => [item.instrument.id, item]));
+    const request = pendingCommitRef.current ?? {
+      requestId: crypto.randomUUID(), planId: activeReviewPlan.planId, choices: structuredClone(reviewChoices),
+    };
+    const isRetry = pendingCommitRef.current !== null;
+    pendingCommitRef.current = request;
+    setSavingImport(true);
+    setImportError(null);
+    try {
+      let receipt = pendingReceiptRef.current;
+      if (!receipt && isRetry) receipt = await storageClient.getTradeCommit(request.requestId);
+      if (!receipt) receipt = await storageClient.commitTradeChanges(request);
+      receipt = parseTradeCommitReceipt(receipt, request.planId);
+      pendingReceiptRef.current = receipt;
+      setUnconfirmedImportOutcome(false);
+      setSavedImportAwaitingRead(true);
+      // A commit is not a page refresh. Only publish a complete collection at
+      // least as new as the authoritative receipt, with all pages validated.
+      const fresh = await storageClient.readTradeBook({ version: { atLeast: receipt.bookVersion } });
+      confirmedBookVersionRef.current = fresh.bookVersion;
+      applyCorrectedExecutions(fresh.executions);
+      setStoredInstruments(fresh.instruments);
+      setImportHistory(fresh.importHistory);
+      const summaries = buildInstrumentTradeSummaries(fresh.executions);
+      const importedIds = new Set(pendingImport.records.map(execution => execution.instrument.id));
+      const automaticSyncIds = summaries.filter(summary => importedIds.has(summary.instrument.id)).filter(summary => {
+        const previous = previousSummaries.get(summary.instrument.id);
+        return requiredRangeExpanded(previous ? marketRanges(previous).daily : undefined, marketRanges(summary).daily)
+          || sortedEpisodes(summary)[0]?.id !== sortedEpisodes(previous)[0]?.id;
+      }).map(summary => summary.instrument.id);
+      const firstImported = summaries.find(item => importedIds.has(item.instrument.id));
+      if (firstImported && activeView === "review") {
+        const importedEpisode = sortedEpisodes(buildInstrumentTradeSummaries(pendingImport.records).find(item => item.instrument.id === firstImported.instrument.id))[0];
+        selectImportedSummary(firstImported, importedEpisode?.id);
+      }
+      void startMarketDataUpdate(automaticSyncIds, { executions: fresh.executions, batch: automaticSyncIds.length > 1 });
+      setNavigationNotice(`已保存并核实本次导入：新增 ${receipt.result.report.inserted} 笔，重复 ${receipt.result.report.duplicate} 笔。`);
       setPendingImport(null);
       setPendingParsedImport(null);
       setPendingEnrichedImport(null);
@@ -5211,131 +5419,28 @@ export function TradeReviewWorkspace({
       setPendingImportMergeBase(null);
       setPendingScreenshotDecisions(null);
       setImportPhase("idle");
-      return;
-    }
-    const mergedExecutions = applyMonthlyHistoryEvidence(
-      tradingViewMerge?.merged ?? mergeExecutions(
-        resolvedMonthly?.currentAfterReplacements ?? mergeBase,
-        resolvedMonthly?.incomingToMerge ?? recordsForStorage,
-      ), [
-      ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
-        .flatMap(entry => entry.monthly ? [entry.monthly] : []),
-      ...(pendingImport.monthly ? [pendingImport.monthly] : []),
-    ]);
-    const mergedIds = new Set(mergedExecutions.map((execution) => execution.id));
-    // Reinsert explicitly retained conflicting rows together, so storage cannot
-    // reinterpret the user's keep-both decision as an unresolved conflict.
-    const decidedExistingIds = new Set(reconciliation?.conflicts.flatMap(c => c.existing.map(e => e.id)) ?? []);
-    const replaceExecutionIds = currentExecutions
-      .filter((execution) => !mergedIds.has(execution.id) || decidedExistingIds.has(execution.id) || Boolean(pendingImport.monthly && belongsToMonthlyDocument(execution, pendingImport.monthly)))
-      .map((execution) => execution.id);
-    const summaries = buildInstrumentTradeSummaries(mergedExecutions);
-    const importedAt = new Date().toISOString();
-    const historyEntry: ImportHistoryEntry = {
-      ...(pendingImport.monthly ? { monthly: pendingImport.monthly } : {}),
-      id: pendingImport.id,
-      fileName: pendingImport.fileName,
-      sourceLabel: pendingImport.sourceLabel,
-      importedAt,
-      firstTradeAt: pendingImport.firstTradeAt,
-      lastTradeAt: pendingImport.lastTradeAt,
-      tradeCount: pendingImport.tradeCount,
-      instrumentCount: pendingImport.instrumentCount,
-      excludedInstrumentCount: pendingImport.excludedInstrumentCount,
-      excludedRecordCount: pendingImport.exclusionGroups.reduce(
-        (total, group) => total + group.count,
-        0,
-      ),
-      duplicateTradeCount: pendingImport.duplicateTradeCount,
-      ...(pendingImport.tradeNature
-        ? { tradeNature: pendingImport.tradeNature }
-        : {}),
-      ...(pendingImport.simulationRunId
-        ? { simulationRunId: pendingImport.simulationRunId }
-        : {}),
-      ...(pendingImport.sourceKind === "screenshot"
-        ? {
-            sourceKind: "screenshot" as const,
-            captureCount: pendingImport.captureCount ?? 0,
-            conflictTradeCount: pendingImport.conflictTradeCount ?? 0,
-          }
-        : pendingImport.sourceKind === "tradingview"
-          ? { sourceKind: "tradingview" as const }
-        : {}),
-      unresolvedInstrumentCount:
-        pendingImport.unresolvedInstrumentCount,
-    };
-    setSavingImport(true);
-    setImportError(null);
-    try {
-      await storageClient.mergeExecutions({
-        executions: mergedExecutions,
-        instruments: summaries.map(({ instrument }) => instrument),
-        importHistory: [historyEntry],
-        ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
-      });
+      clearSupplement();
+      const nextFile = importFileQueue.current.shift();
+      if (nextFile) void parseImport(nextFile);
     } catch (error) {
-      setImportError(
-        error instanceof Error && "code" in error && error.code === "conflict"
-          ? "同一 CSV 已关联另一证券，请核对已有导入记录。当前预览尚未保存。"
-          : "SQLite 未能保存这次导入，请检查服务状态后重试。",
-      );
-      return;
+      const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
+      if (!pendingReceiptRef.current && ["BOOK_VERSION_CHANGED", "PLAN_EXPIRED", "PLAN_NOT_FOUND", "POLICY_CHANGED", "IDENTITY_REVIEW_STALE", "FILE_ALREADY_IMPORTED", "FILE_TRADES_ALREADY_EXIST"].includes(String(code))) {
+        setReviewRequiresPrepare(true);
+        setReviewPlanFileBlock(code === "FILE_ALREADY_IMPORTED" ? "file" : code === "FILE_TRADES_ALREADY_EXIST" ? "trades" : null);
+        setReviewPlanError(code === "FILE_ALREADY_IMPORTED" ? "此文件已成功导入，不能重复导入。请取消并选择其他文件。" : code === "FILE_TRADES_ALREADY_EXIST" ? "疑似已导入；本次成交均已存在，无新增。请取消并核对原导入记录。" : "已存数据或审核计划已变化。请重新准备，并再次逐项确认选择。");
+        pendingCommitRef.current = null;
+        setImportError("本次未保存，候选和理由草稿已保留。");
+      } else {
+        const uncertain = !pendingReceiptRef.current && (!error || typeof error !== "object" || !("category" in error) || code === "invalid-response");
+        setUnconfirmedImportOutcome(uncertain);
+        setImportError(pendingReceiptRef.current
+          ? "本次导入已保存，读取尚未确认。请重试读取已保存结果。"
+          : uncertain ? "保存结果尚未确认。请查询原请求凭据；核实前不能更换候选或关闭。"
+          : error instanceof Error ? `${error.message} 当前预览保留；重试将先查询原请求凭据。` : "保存未完成，请重试。");
+      }
     } finally {
       setSavingImport(false);
     }
-    importedExecutionsRef.current = mergedExecutions;
-    setImportedExecutions(mergedExecutions);
-    setImportHistory([
-      historyEntry,
-      ...importHistory.filter((entry) => entry.id !== historyEntry.id),
-    ]);
-    const importedIds = pendingImport.instruments.map(
-      (item) => item.instrument.id,
-    );
-    for (const evidence of [...(pendingImport.monthly?.positions ?? []), ...(pendingImport.monthly?.events ?? [])]) {
-      if (evidence.market && evidence.symbol) importedIds.push(canonicalInstrumentId(evidence.symbol, evidence.market));
-    }
-    const automaticSyncIds = summaries
-      .filter((summary) => importedIds.includes(summary.instrument.id))
-      .filter((summary) => {
-        const previous = previousSummaries.get(summary.instrument.id);
-        const range = marketRanges(summary).daily;
-        const previousRange = previous
-          ? marketRanges(previous).daily
-          : undefined;
-        const newestEpisode = sortedEpisodes(summary)[0];
-        const previousNewestEpisode = sortedEpisodes(previous)[0];
-        const episodeShape = (episode: TradeEpisode | undefined) =>
-          episode
-            ? `${episode.startedAt}|${episode.endedAt ?? ""}|${episode.status}`
-            : "";
-        return (
-          requiredRangeExpanded(previousRange, range) ||
-          episodeShape(newestEpisode) !== episodeShape(previousNewestEpisode)
-        );
-      })
-      .map((summary) => summary.instrument.id);
-    const firstImported = summaries.find((item) =>
-      importedIds.includes(item.instrument.id),
-    );
-    if (firstImported && activeView === "review") {
-      const importedEpisode = sortedEpisodes(buildInstrumentTradeSummaries(pendingImport.records).find(item=>item.instrument.id===firstImported.instrument.id))[0];
-      selectImportedSummary(firstImported, importedEpisode?.id);
-    }
-    void startMarketDataUpdate(automaticSyncIds, {
-      executions: mergedExecutions,
-      batch: automaticSyncIds.length > 1,
-    });
-    setPendingImport(null);
-    setPendingParsedImport(null);
-    setPendingEnrichedImport(null);
-    setPendingImportOriginalExecutions(null);
-    setPendingImportMergeBase(null);
-    setPendingScreenshotDecisions(null);
-    setImportPhase("idle");
-    const nextFile = importFileQueue.current.shift();
-    if (nextFile) void parseImport(nextFile);
   }
 
   function openLibraryEpisode(
@@ -5414,7 +5519,7 @@ export function TradeReviewWorkspace({
   }
 
   function continueFromReview() {
-    const candidates = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})});
+    const candidates = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode ? resolvedEpisodeTradeNatureOf(selectedEpisode) : undefined, simulationRunId:selectedEpisode?.simulationRunId})});
     const next = reviewQueueIds
       ? candidates
         .filter(row => reviewQueueIds.indexOf(row.item.episode.id) > reviewQueueIds.indexOf(activeEpisodeId))
@@ -5595,6 +5700,10 @@ export function TradeReviewWorkspace({
       record.review.completed || record.review.deferredReason?.trim(),
     );
     if (requiresDrawingFlush && record.episodeId === activeEpisodeId) {
+      const recovery = browserReviewWriteResolutionRef.current;
+      if (!recovery.ready || recovery.conflicts.some(conflict => conflict.episodeId === record.episodeId)) {
+        throw new Error("复盘恢复尚未解决，已暂停完成或暂存；所有浏览器原始内容均已保留。");
+      }
       if (drawingSaveErrorsRef.current[record.episodeId]) {
         throw new Error(
           "复盘状态尚未保存，请点击“重试保存复盘状态”后再完成本回合。",
@@ -5918,8 +6027,16 @@ export function TradeReviewWorkspace({
 
       {mobileNavOpen && <button className="mobile-navigation-backdrop" aria-label="关闭导航" onClick={() => setMobileNavOpen(false)} />}
       <div className="app-content">
-      {aliasRecoveryState === "loading" && !showDemo && <p role="status" className="navigation-notice">正在恢复账户范围…</p>}
-      {aliasRecoveryState === "error" && !showDemo && aliasRecoveryError && <p role="alert" className="navigation-notice">账户范围恢复失败：{aliasRecoveryError}<button type="button" onClick={() => setAliasRecoveryAttempt(value => value + 1)}>重试账户范围恢复</button></p>}
+      {browserReviewConflicts.length > 0 && <section role="alert" aria-label="浏览器复盘恢复冲突" className="navigation-notice">
+        <strong>浏览器复盘内容冲突，已暂停自动恢复</strong>
+        <p>以下回合不同来源的浏览器复盘内容不同。所有原始内容均已保留；选择与恢复界面尚未提供。</p>
+        {browserReviewConflicts.map(conflict => <div key={conflict.episodeId}>
+          <p>回合：<code style={{ overflowWrap: "anywhere" }}>{conflict.episodeId}</code></p>
+          <ul>{conflict.sourceKeys.map(key => <li key={key}><code style={{ overflowWrap: "anywhere" }}>{key}</code></li>)}</ul>
+        </div>)}
+      </section>}
+      {aliasRecoveryState === "loading" && !showDemo && activeView !== "dashboard" && <p role="status" className="navigation-notice">正在恢复账户范围…</p>}
+      {aliasRecoveryState === "error" && !showDemo && activeView !== "dashboard" && aliasRecoveryError && <p role="alert" className="navigation-notice">账户范围恢复失败：{aliasRecoveryError}<button type="button" onClick={() => setAliasRecoveryAttempt(value => value + 1)}>重试账户范围恢复</button></p>}
       {activeView === "review" && showDemo && !selectedImportedInstrument && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
           <span className="demo-chip">
@@ -6029,11 +6146,15 @@ export function TradeReviewWorkspace({
             error={homepage.route.page === "home" ? homepage.route.error ?? homepage.notice ?? storageError : null}
             accountStatus={aliasRecoveryState === "error" ? "error" : homepage.initialized ? "ready" : "loading"}
             accounts={homepageAccounts} onUi={homepage.onUi} onScope={homepage.onScope}
-            onTrades={row => void homepage.openTrades(row?.identity ?? null)} onReload={homepage.reload}
+            onTrades={row => {
+              if (!row) { void homepage.openTrades(null); return; }
+              const target = resolveHomepageCatalogInstrument(homepageCatalog, row.instrumentId);
+              if (target?.identity) void homepage.openTrades(target.identity);
+            }} onCatalogRetry={() => recoverHomepage(true)}
             onSymbolTrades={homepage.openTrades}
             attachmentActions={{ onDraft: homepage.onAttachmentDraft, onApply: homepage.applyAttachments, onClear: homepage.clearAttachments, onReset: homepage.resetDefaults, onCancel: homepage.cancelAttachmentRead, onRemove: homepage.removeAttachment }}
             onImport={() => { setDataTab("import"); setActiveView("data"); }}
-            onRepair={() => { void startMarketDataUpdate(undefined, { refreshMetadata: true, batch: true, includeIntraday: false }).then(started => { if (started) homepage.reload(); }); }}
+            view={homepageView} onApply={homepage.applyPeriod} recovery={homepageRecovery} onRecover={() => recoverHomepage()}
           />)}
         </div>
         <div
@@ -6484,7 +6605,7 @@ export function TradeReviewWorkspace({
         `本地日线：${marketStates[dataTarget.instrument.id]?.daily.length ?? 0} 根；小时线：${marketStates[dataTarget.instrument.id]?.intraday.length ?? 0} 根`,
         ...(marketStates[dataTarget.instrument.id]?.dailyCoverage ?? []).map(segment => `日线覆盖：${segment.startDate} 至 ${segment.endDate}，${marketDataStatusLabel(segment.status)}`),
         ...(marketStates[dataTarget.instrument.id]?.intradayCoverage ?? []).map(segment => `小时线覆盖：${segment.actualStart ?? segment.requestedStart} 至 ${segment.actualEnd ?? segment.requestedEnd}，${marketDataStatusLabel(segment.status)}`),
-      ]} refreshing={marketDataStatuses[dataTarget.instrument.id] === "syncing"} onRefresh={() => void startMarketDataUpdate([dataTarget.instrument.id], { refreshMetadata: true, priority: "interactive" })} onClose={() => setDataTarget(undefined)} onRevise={reviseCurrentTrades} loadHistory={tradeRepairClient.history} onSupplement={(accountId, kind) => { const scope = { instrumentId: dataTarget.instrument.id, accountId, accountLabel: importedExecutions.find(e=>e.accountId===accountId)?.accountLabel ?? accountId, kind }; supplementScopeRef.current = scope; setSupplementScope(scope); setDataTarget(undefined); if (kind === "file") importFileRef.current?.click(); else importScreenshotRef.current?.click(); }} retainedReviews={[
+      ]} refreshing={marketDataStatuses[dataTarget.instrument.id] === "syncing"} onRefresh={() => void startMarketDataUpdate([dataTarget.instrument.id], { refreshMetadata: true, priority: "interactive" })} onClose={() => setDataTarget(undefined)} onRevise={reviseCurrentTrades} prepareRevision={prepareRevision} loadHistory={tradeRepairClient.history} onSupplement={(accountId, kind) => { const scope = { instrumentId: dataTarget.instrument.id, accountId, accountLabel: importedExecutions.find(e=>e.accountId===accountId)?.accountLabel ?? accountId, kind }; supplementScopeRef.current = scope; setSupplementScope(scope); setDataTarget(undefined); if (kind === "file") importFileRef.current?.click(); else importScreenshotRef.current?.click(); }} retainedReviews={[
         ...new Set([...Object.values(episodeReviews).filter(review => review.instrumentId === dataTarget.instrument.id).map(review => review.episodeId), ...Object.keys(reviewStates).filter(id => id.includes(encodeURIComponent(dataTarget.instrument.id)))])
       ].filter(id => !currentEpisodeIds.has(id)).map(episodeId => ({ episodeId, review: episodeReviews[episodeId], drawingCount: reviewStates[episodeId]?.drawings.length ?? 0, drawings: reviewStates[episodeId]?.drawings }))} />}
 
@@ -6508,15 +6629,18 @@ export function TradeReviewWorkspace({
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}
-          conflicts={pendingImport.monthly ? reconcileExecutions(importedExecutions.filter(e => !belongsToMonthlyDocument(e, pendingImport.monthly!)), pendingImport.records).conflicts : []}
-          conflictDecisions={monthlyConflictDecisions}
-          onConflictDecision={(id, decision) => setMonthlyConflictDecisions(current => new Map(current).set(id, decision))}
+          fileImportBlock={reviewPlanFileBlock}
+          reviewPlanContent={<>{(pendingImport.monthly || pendingImport.sourceKind==="tradingview") && !supplementScope && <ImportMaterialSelection tradingView={pendingImport.sourceKind==="tradingview"} options={materialOptions} value={selectedMaterialId} alreadyImported={materialFileAlreadyImported} disabled={reviewPlanFileBlock === "file" || preparingReviewPlan || savingImport || unconfirmedImportOutcome || savedImportAwaitingRead} onChange={id => { setRetainedReviewReasons([...reviewChoices.conflicts ?? [], ...reviewChoices.missingExecutions ?? [], ...reviewChoices.reactivateExecutions ?? []].flatMap(choice => choice.reason?.trim() ? [choice.reason] : [])); setMaterialSelection({ preview: pendingImport, id }); }} />}{retainedReviewReasons.length > 0 && <p>上次理由草稿（请在新计划中重新核对填写）：{retainedReviewReasons.join("；")}</p>}<TradeImportPlan plan={activeReviewPlan} preview={pendingImport} loading={preparingReviewPlan || retryingUnresolved || (!activeReviewPlan && !reviewPlanError && !pendingImport.blocked)} error={reviewPlanError} fileImportBlocked={reviewPlanFileBlock !== null} choices={reviewChoices} onChoicesChange={setReviewChoices} disabled={savingImport || unconfirmedImportOutcome || savedImportAwaitingRead} onKeepIndependent={selection => { if (savingImport || unconfirmedImportOutcome || savedImportAwaitingRead) return; identitySelectionRef.current={preview:pendingImport,selection}; setPendingReviewPlan(null); setReviewChoices({}); setReviewPlanAttempt(attempt=>attempt+1); }} onRetry={() => { identitySelectionRef.current=null; setRetainedReviewReasons([...reviewChoices.conflicts ?? [], ...reviewChoices.missingExecutions ?? [], ...reviewChoices.reactivateExecutions ?? []].flatMap(choice => choice.reason?.trim() ? [choice.reason] : [])); setReviewPlanAttempt(attempt => attempt + 1); }} /></>}
+          confirmDisabled={!activeReviewPlan || !tradePlanReadyForPreview(activeReviewPlan,pendingImport) || !tradePlanChoicesComplete(activeReviewPlan, reviewChoices)}
+          dismissDisabled={unconfirmedImportOutcome || savedImportAwaitingRead}
+          confirmLabel={savedImportAwaitingRead ? "重试读取已保存结果" : unconfirmedImportOutcome ? "查询原请求并核实保存结果" : undefined}
           scopeNotice={supplementScope ? `仅补充 ${supplementScope.instrumentId} / ${supplementScope.accountLabel}；范围外排除 ${supplementExcluded} 笔。截图成交归入此账户。` : undefined}
           saveError={importError}
           saving={savingImport || savingSupplement}
           onCancel={() => {
-            if (savingImport || supplementSaving.current) return;
+            if (savingImport || supplementSaving.current || unconfirmedImportOutcome || savedImportAwaitingRead) return;
             clearSupplement();
+            setRetainedReviewReasons([]);
             importRequestSequence.current += 1;
             importFileQueue.current = [];
             setRetryingUnresolved(false);
@@ -6586,6 +6710,7 @@ export function TradeReviewWorkspace({
       {showImportHistory && (
         <ImportHistoryDialog
           entries={importHistory}
+          loadCommit={loadImportHistoryCommit}
           onClose={() => setShowImportHistory(false)}
         />
       )}

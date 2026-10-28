@@ -62,9 +62,10 @@ export function PositionStatsPanel({
     current.grossCapitalDeployed,
     current.realizedPnl,
     current.fees,
-  ].some((value) => Number(value) !== 0);
-  const currentValue = (value: string, format: (input: string) => string) =>
-    currentAvailable && !current.accuracy ? format(value) : "—";
+  ].some((value) => value !== null && Number(value) !== 0);
+  const costAvailable = current.costKnown !== false && !current.accuracy?.reasons.some(reason => reason !== "fees-invalid");
+  const currentValue = (value: string | null, format: (input: string) => string, gross = false) =>
+    currentAvailable && value !== null && (gross ? costAvailable : !current.accuracy) ? format(value) : "—";
   const path = (value: PositionPathMetrics["mfe"]) => ({
     value: amount(value?.amount, currency, true),
     detail: value?.percent === null || value === null ? undefined : percentage(value.percent),
@@ -76,9 +77,9 @@ export function PositionStatsPanel({
       {reason && <p className="position-stats-notice">{reason}</p>}
       <section aria-labelledby="current-state-heading"><h3 id="current-state-heading">当前状态</h3><dl>
         <Metric label="持仓数量" value={!quantityAvailable ? "待核对" : currentAvailable ? current.quantity : "—"} />
-        <Metric label="平均成本" value={currentValue(current.averageCost, (value) => amount(value, currency))} />
-        <Metric label="已实现盈亏" value={currentValue(current.realizedPnl, (value) => amount(value, currency, true))} />
-        <Metric label="浮动盈亏" value={currentValue(current.unrealizedPnl, (value) => amount(value, currency, true))} />
+        <Metric label="平均成本" value={currentValue(current.averageCost, (value) => amount(value, currency), true)} />
+        <Metric label="已实现盈亏" value={currentValue(current.realizedPnl, (value) => amount(value, currency, true), true)} />
+        <Metric label="浮动盈亏" value={currentValue(current.unrealizedPnl, (value) => amount(value, currency, true), true)} />
         <Metric label="当前净盈亏" value={currentValue(current.netPnl, (value) => amount(value, currency, true))} />
         <Metric label="收益率" value={currentValue(current.returnPercent, percentage)} />
         <Metric label="累计费用" value={currentValue(current.fees, (value) => amount(value, currency))} />

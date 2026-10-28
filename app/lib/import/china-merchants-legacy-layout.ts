@@ -320,22 +320,36 @@ export function readLegacyChinaMerchantsRows(
         inFlowSection = true;
         continue;
       }
+      if (/^(新股配号|配号信息|配号明细|证券配号|重要提示|温馨提示|特别提示|说明)/.test(compact(text))) {
+        inFlowSection = false;
+        activeLayout = null;
+        continue;
+      }
       const detectedLayout = tableLayout(row);
       if (detectedLayout) {
         if (inFlowSection) activeLayout = detectedLayout;
         continue;
       }
       if (!inFlowSection || !activeLayout) continue;
+      const layout = activeLayout;
+      // Read pagination as a whole row even when its fragments land in columns.
+      if (/^(?:第\d+页(?:[/／]?共\d+页)?|共\d+页|\d+[/／]\d+)\d*$/.test(compact(text))) continue;
 
-      const dateItem = row.items.find((item) =>
-        /^\s*\d{8}\s+\S+/.test(item.text),
-      );
+      const dateItem = row.items
+        .filter(item => item.x < layout.instrumentStart && item.text.trim())
+        .sort((left, right) => left.x - right.x)[0];
       if (!dateItem) continue;
-      const dateMatch = dateItem.text.trim().match(/^(\d{8})\s+(.+?)\s*$/);
+      const dateMatch = dateItem.text.trim().match(/^(\S+)(?:\s+(.+?))?\s*$/);
       if (!dateMatch) continue;
 
-      const business = businessItem(row, activeLayout);
+      const knownBusiness = businessItem(row, layout);
+      // Preserve unrecognized or missing business labels on dated body rows so
+      // the parser can record pending evidence rather than silently lose them.
+      const business = knownBusiness ?? row.items
+        .filter(item => item.x >= layout.instrumentStart && item.x < layout.numericStart && item.text.trim())
+        .sort((left, right) => right.x - left.x)[0];
       if (!business) continue;
+      if (!knownBusiness && !/^\d{8}$/.test(dateMatch[1]) && !Object.keys(numericCells(row, layout)).length) continue;
       const businessLabel = normalizedBusiness(business.text);
       const parsedIdentity = rowIdentity(
         row,
@@ -343,7 +357,7 @@ export function readLegacyChinaMerchantsRows(
         business,
         businessLabel,
       );
-      const cells = numericCells(row, activeLayout);
+      const cells = numericCells(row, layout);
       const currencyItem = row.items.find(
         (item) =>
           item.x > dateItem.x &&
@@ -395,7 +409,7 @@ export function readLegacyChinaMerchantsRows(
         row: Math.round(row.y),
         sourceOrder,
         dateText: dateMatch[1],
-        marketLabel: dateMatch[2].trim(),
+        marketLabel: dateMatch[2]?.trim() ?? "",
         instrumentSymbol: parsedIdentity?.symbol,
         instrumentName: parsedIdentity?.sourceName,
         business: businessLabel,

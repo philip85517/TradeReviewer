@@ -1,7 +1,9 @@
+import { csv as tradingViewCsv } from "./__fixtures__/tradingview";
+import { parseTradingViewSimulationCsv } from "./tradingview-simulation";
 import { describe, expect, it } from "vitest";
 
 import type { TradeExecution } from "../trades/types";
-import type { EnrichedImportResult } from "./enrich-import";
+import { enrichStatementImport, type EnrichedImportResult } from "./enrich-import";
 import type { StatementParseResult } from "./contracts";
 import { createImportPreview } from "./import-preview";
 
@@ -36,6 +38,17 @@ function execution(
 }
 
 describe("createImportPreview", () => {
+  it("preserves TradingView decoded evidence through real enrichment and preview creation", async () => {
+    const parsed = parseTradingViewSimulationCsv(new TextEncoder().encode(tradingViewCsv), { fileName: "回放交易_SSE_600330_2026-09-03.csv", sourceFileId: "preview-proof" });
+    const enriched = await enrichStatementImport(parsed, { resolver: async () => ({ resolved: new Map([["CN-SH:600330", { market: "CN-SH", symbol: "600330", name: "天通股份", assetType: "stock", source: "tencent", confidence: "portal", resolvedAt: "2026-09-07T00:00:00Z" }]]), unresolved: new Map(), cacheHits: 0, backgroundRefresh: Promise.resolve() }) });
+    const preview = createImportPreview("回放交易_SSE_600330_2026-09-03.csv", enriched);
+    expect(enriched.importable).toHaveLength(2);
+    expect(preview.sourceKind).toBe("tradingview");
+    expect(preview.tradingViewEvidence).toEqual(parsed.tradingViewEvidence);
+    expect(preview.tradingViewEvidence?.rows.flatMap(row => row.candidateIds).sort()).toEqual(preview.records.map(row => row.id).sort());
+    expect(preview.records.every(row => row.instrument.name === "天通股份")).toBe(true);
+  });
+
   it("summarizes only complete instruments and groups exclusions", () => {
     const result: EnrichedImportResult = {
       broker: "tiger",

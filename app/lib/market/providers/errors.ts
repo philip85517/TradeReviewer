@@ -18,18 +18,34 @@ export class MarketDataProviderError extends Error {
   }
 }
 
+const marketTimeFormatters: Partial<Record<
+  "Asia/Shanghai" | "Asia/Hong_Kong" | "America/New_York",
+  Intl.DateTimeFormat
+>> = {};
+
+function marketTimeFormatter(timeZone: string) {
+  const knownTimeZone = timeZone === "Asia/Shanghai" || timeZone === "Asia/Hong_Kong" || timeZone === "America/New_York" ? timeZone : null;
+  const cached = knownTimeZone ? marketTimeFormatters[knownTimeZone] : undefined;
+  if (cached) return cached;
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  });
+  // Retain only these three immutable configurations, never dates or offsets.
+  // Other zones (and constructor errors) follow the original uncached path.
+  if (knownTimeZone) marketTimeFormatters[knownTimeZone] = formatter;
+  return formatter;
+}
+
 function marketTimeParts(timestamp: Date, timeZone: string) {
   return Object.fromEntries(
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23",
-    })
+    marketTimeFormatter(timeZone)
       .formatToParts(timestamp)
       .filter((part) => part.type !== "literal")
       .map((part) => [part.type, part.value]),

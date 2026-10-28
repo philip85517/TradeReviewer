@@ -1,8 +1,10 @@
 import * as XLSX from "xlsx";
+import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 
 import { CHINA_MERCHANTS_PAGES } from "./__fixtures__/china-merchants-pages";
 import { TIGER_PAGES } from "./__fixtures__/tiger-pages";
+import { f4 } from "./__fixtures__/futu-pdf-layouts";
 import { parseBrokerStatement } from "./dispatcher";
 import { STATEMENT_ADAPTERS } from "./statement-adapters";
 
@@ -83,19 +85,26 @@ describe("parseBrokerStatement", () => {
   });
 
   it("detects a Futu workbook from its worksheet structure", async () => {
+    const bytes = futuBytes();
     const result = await parseBrokerStatement(
-      new File([futuBytes()], "renamed.bin"),
+      new File([bytes], "renamed.bin"),
     );
 
     expect(result).toMatchObject({
       broker: "futu",
       blocked: false,
+      fileContent: { sha256: createHash("sha256").update(new Uint8Array(bytes)).digest("hex"), byteLength: bytes.byteLength },
     });
+    const renamed = await parseBrokerStatement(new File([bytes], "another-name.xlsx"));
+    if (result.broker === "unknown" || renamed.broker === "unknown") throw new Error("fixture must parse");
+    expect(renamed.fileContent).toEqual(result.fileContent);
+    expect(result.records[0]?.source.fileFingerprint).toHaveLength(16);
   });
 
   it.each([
     ["tiger.data", TIGER_PAGES, "tiger"],
     ["cms.data", CHINA_MERCHANTS_PAGES, "china-merchants"],
+    ["futu.data", f4(), "futu"],
   ])(
     "detects %s by extracted PDF content",
     async (fileName, pages, broker) => {
@@ -106,6 +115,7 @@ describe("parseBrokerStatement", () => {
       );
 
       expect(result.broker).toBe(broker);
+      expect(result).toMatchObject({ fileContent: { sha256: createHash("sha256").update(pdfBytes()).digest("hex"), byteLength: pdfBytes().byteLength } });
       expect(extractPdfPages).toHaveBeenCalledOnce();
       if (broker === "tiger") {
         expect(result.records[0]?.source.formatRuleId).toBe("tiger/pdf/monthly-v1");

@@ -19,6 +19,7 @@ function entry(
   date: string,
   pnl: string,
   overrides: { instrument?: Instrument; id?: string } = {},
+  memberTradeNature?: "live",
 ): TradeLibraryEntry {
   const instrument = overrides.instrument ?? {
     id: "CN-SH:600000",
@@ -37,7 +38,12 @@ function entry(
     quantity: "1",
     price: "10",
     fee: "0",
-    source: { platform: "fixture", row: 1, tradingDate: date },
+    source: {
+      platform: "fixture",
+      row: 1,
+      tradingDate: date,
+      ...(memberTradeNature === "live" ? { tradeNature: "live" as const } : {}),
+    },
   };
   const sell = {
     ...buy,
@@ -45,7 +51,12 @@ function entry(
     side: "sell" as const,
     executedAt: `${date}T02:00:00.000Z`,
     price: "11",
-    source: { platform: "fixture", row: 2, tradingDate: date },
+    source: {
+      platform: "fixture",
+      row: 2,
+      tradingDate: date,
+      ...(memberTradeNature === "live" ? { tradeNature: "live" as const } : {}),
+    },
   };
   const episode = {
     id: `${overrides.id ?? instrument.id}:${date}`,
@@ -100,6 +111,14 @@ function entry(
   };
 }
 
+function liveChartEntry(
+  date: string,
+  pnl: string,
+  overrides: { instrument?: Instrument; id?: string } = {},
+): TradeLibraryEntry {
+  return entry(date, pnl, overrides, "live");
+}
+
 function scope(period = buildRoomDateRange("month", "2026-09-19")): RoomScope {
   return { ...createDefaultRoomScope("2026-09-19"), period };
 }
@@ -147,7 +166,7 @@ describe("RoomPerformance", () => {
   });
 
   it("uses simple trend titles and shows sparse cumulative point amounts directly", () => {
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     const { container } = render(
       <RoomPerformance
         entries={[value]}
@@ -167,8 +186,8 @@ describe("RoomPerformance", () => {
   });
 
   it("colors period and cumulative amounts by their own signed values", () => {
-    const gain = entry("2026-09-02", "100");
-    const loss = entry("2026-09-03", "-150", { id: "loss" });
+    const gain = liveChartEntry("2026-09-02", "100");
+    const loss = liveChartEntry("2026-09-03", "-150", { id: "loss" });
     const { container } = render(
       <RoomPerformance
         entries={[gain, loss]}
@@ -188,7 +207,7 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps dense labels separated and exposes every point through the data table", () => {
-    const values = Array.from({ length: 8 }, (_, index) => entry(`2026-09-${String(index + 2).padStart(2, "0")}`, String(index % 2 ? -20 : 20), { id: `dense-${index}` }));
+    const values = Array.from({ length: 8 }, (_, index) => liveChartEntry(`2026-09-${String(index + 2).padStart(2, "0")}`, String(index % 2 ? -20 : 20), { id: `dense-${index}` }));
     const { container } = render(
       <RoomPerformance
         entries={values}
@@ -223,7 +242,7 @@ describe("RoomPerformance", () => {
   });
 
   it("labels all sparse points that have room on a wide chart", () => {
-    const values = [100, -50, 300, 356, 3557, 200, -120, 480, 90].map((value, index) => entry(
+    const values = [100, -50, 300, 356, 3557, 200, -120, 480, 90].map((value, index) => liveChartEntry(
       `2026-09-${String(index + 2).padStart(2, "0")}`,
       String(value),
       { id: `sparse-${index}` },
@@ -243,8 +262,8 @@ describe("RoomPerformance", () => {
   });
 
   it("avoids overlapping labels between nearby original-currency series", () => {
-    const usd = entry("2026-09-02", "123456.78", { id: "usd", instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-02", "98765.43", { id: "hkd", instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "123456.78", { id: "usd", instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-02", "98765.43", { id: "hkd", instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     const { container } = render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -275,7 +294,7 @@ describe("RoomPerformance", () => {
   });
 
   it("starts on the cumulative trend and keeps a visible zero baseline", () => {
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     const { container } = render(
       <RoomPerformance
         entries={[value]}
@@ -312,8 +331,8 @@ describe("RoomPerformance", () => {
   });
 
   it("labels trend axes and exposes period and cumulative values for every point", () => {
-    const first = entry("2026-09-02", "100");
-    const second = entry("2026-09-03", "200", { id: "second" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const second = liveChartEntry("2026-09-03", "200", { id: "second" });
     render(
       <RoomPerformance
         entries={[first, second]}
@@ -336,8 +355,8 @@ describe("RoomPerformance", () => {
 
   it("shows a selected trend point detail without opening the fallback disclosure", async () => {
     const user = userEvent.setup();
-    const first = entry("2026-09-02", "100");
-    const second = entry("2026-09-03", "200", { id: "second" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const second = liveChartEntry("2026-09-03", "200", { id: "second" });
     render(
       <RoomPerformance
         entries={[first, second]}
@@ -384,7 +403,7 @@ describe("RoomPerformance", () => {
 
   it("separates the full-history selector from the current performance scope", async () => {
     const user = userEvent.setup();
-    const entries = [entry("2025-09-02", "100", { id: "2025" }), entry("2026-09-02", "200", { id: "2026" })];
+    const entries = [liveChartEntry("2025-09-02", "100", { id: "2025" }), liveChartEntry("2026-09-02", "200", { id: "2026" })];
     const initialPeriod = buildRoomDateRange("month", "2026-09-19");
     expect(findTradingRoomHistoryRange(entries, scope(initialPeriod), { asOf: "2026-09-19T08:00:00.000Z", instrumentMetadata: metadata(entries) })).toEqual({ preset: "custom", startDate: "2025-09-02", endDate: "2026-09-02" });
     render(<PerformanceScopeHarness entries={entries} initialPeriod={initialPeriod} />);
@@ -443,7 +462,7 @@ describe("RoomPerformance", () => {
   });
 
   it("labels a single unconverted USD trend with USD instead of CNY", () => {
-    const value = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const value = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
     render(
       <RoomPerformance
         entries={[value]}
@@ -461,7 +480,7 @@ describe("RoomPerformance", () => {
   });
 
   it("renders a visible point when the selected range has one trend bucket", () => {
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     const { container } = render(
       <RoomPerformance
         entries={[value]}
@@ -478,7 +497,7 @@ describe("RoomPerformance", () => {
 
   it("drills a day cell into exact review callback rows", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     const onOpenInReview = vi.fn();
     render(
       <RoomPerformance
@@ -501,7 +520,7 @@ describe("RoomPerformance", () => {
 
   it("uses the selected report currency in calendar review details", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-09-02", "798", {
+    const value = liveChartEntry("2026-09-02", "798", {
       instrument: { id: "US:AAPL", symbol: "AAPL", name: "苹果", market: "US", currency: "USD" },
     });
     render(
@@ -527,7 +546,7 @@ describe("RoomPerformance", () => {
 
   it("shows unknown assets as unavailable in the day detail", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-09-02", "100", {
+    const value = liveChartEntry("2026-09-02", "100", {
       instrument: { id: "OTHER:UNKNOWN", symbol: "UNKNOWN", name: "未知标的", market: "OTHER", currency: "CNY" },
     });
     render(
@@ -548,8 +567,8 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps original currencies visible when mixed currency conversion is unavailable", () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -596,8 +615,8 @@ describe("RoomPerformance", () => {
   });
 
   it("draws one converted line when the shared FX snapshot is complete", () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     const { container } = render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -615,8 +634,8 @@ describe("RoomPerformance", () => {
   });
 
   it("uses the selected HKD target and the same FX snapshot for the trend", () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -637,8 +656,8 @@ describe("RoomPerformance", () => {
 
   it("keeps selected original currency readouts isolated", async () => {
     const user = userEvent.setup();
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
     await user.click(within(panel).getByRole("button", { name: /USD.*2026-09-02/ }));
@@ -649,8 +668,8 @@ describe("RoomPerformance", () => {
 
   it("keeps no-trade buckets as a known plateau and exposes keyboard readouts", async () => {
     const user = userEvent.setup();
-    const first = entry("2026-09-02", "100");
-    const last = entry("2026-09-04", "-50", { id: "last" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const last = liveChartEntry("2026-09-04", "-50", { id: "last" });
     render(<RoomPerformance entries={[first, last]} scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))} instrumentMetadata={metadata([first, last])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
     const point = within(panel).getByRole("button", { name: /2026-09-02.*本期盈亏.*累计盈亏/ });
@@ -660,9 +679,9 @@ describe("RoomPerformance", () => {
   });
 
   it("breaks the trend across an unavailable bucket", () => {
-    const first = entry("2026-09-02", "100");
-    const unknown = entry("2026-09-03", "20", { id: "unknown", instrument: { id: "UNKNOWN:TEST", symbol: "TEST", name: "未知测试", market: "XX", currency: "CNY" } });
-    const last = entry("2026-09-04", "-50", { id: "last" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const unknown = liveChartEntry("2026-09-03", "20", { id: "unknown", instrument: { id: "UNKNOWN:TEST", symbol: "TEST", name: "未知测试", market: "XX", currency: "CNY" } });
+    const last = liveChartEntry("2026-09-04", "-50", { id: "last" });
     const { container } = render(<RoomPerformance entries={[first, unknown, last]} scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))} instrumentMetadata={metadata([first, last])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
     expect(container.querySelectorAll("svg path")).toHaveLength(1);
   });
@@ -716,8 +735,8 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps each currency point paired with its own date when a series starts later", () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -735,8 +754,8 @@ describe("RoomPerformance", () => {
   });
 
   it("uses padded shared coordinates for points, ticks, and the zero baseline", () => {
-    const first = entry("2026-09-02", "-100");
-    const second = entry("2026-09-03", "200", { id: "second" });
+    const first = liveChartEntry("2026-09-02", "-100");
+    const second = liveChartEntry("2026-09-03", "200", { id: "second" });
     const { container } = render(
       <RoomPerformance
         entries={[first, second]}
@@ -764,8 +783,8 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps trend ticks short and gives visible points a larger touch target", () => {
-    const first = entry("2026-09-02", "100");
-    const second = entry("2026-09-03", "200", { id: "second" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const second = liveChartEntry("2026-09-03", "200", { id: "second" });
     const { container } = render(
       <RoomPerformance
         entries={[first, second]}
@@ -791,8 +810,8 @@ describe("RoomPerformance", () => {
 
   it("keeps cross-month ranges in the daily calendar", async () => {
     const user = userEvent.setup();
-    const first = entry("2026-07-02", "100");
-    const second = entry("2026-08-02", "200", { id: "second" });
+    const first = liveChartEntry("2026-07-02", "100");
+    const second = liveChartEntry("2026-08-02", "200", { id: "second" });
     render(
       <RoomPerformance
         entries={[first, second]}
@@ -832,7 +851,7 @@ describe("RoomPerformance", () => {
       disconnect() {}
     });
 
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     const { container, rerender } = render(
       <RoomPerformance
         entries={[]}
@@ -868,7 +887,7 @@ describe("RoomPerformance", () => {
 
   it("shows the same trend point detail on hover, focus, and click", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-09-02", "100");
+    const value = liveChartEntry("2026-09-02", "100");
     render(
       <RoomPerformance
         entries={[value]}
@@ -892,8 +911,8 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps a committed point through focus/hover, replaces it on click, and rejects distant clicks", () => {
-    const first = entry("2026-09-02", "100");
-    const second = entry("2026-09-03", "200", { id: "second" });
+    const first = liveChartEntry("2026-09-02", "100");
+    const second = liveChartEntry("2026-09-03", "200", { id: "second" });
     const { container } = render(
       <RoomPerformance
         entries={[first, second]}
@@ -925,8 +944,8 @@ describe("RoomPerformance", () => {
   });
 
   it("keeps coincident currency choices after hover and lets the audit select the exact one", async () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-02", "100", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-02", "100", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     const { container } = render(
       <RoomPerformance
         entries={[usd, hkd]}
@@ -957,8 +976,8 @@ describe("RoomPerformance", () => {
   });
 
   it("clears a committed currency point when the report currency changes", () => {
-    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
-    const hkd = entry("2026-09-02", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usd = liveChartEntry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = liveChartEntry("2026-09-02", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     const props = {
       entries: [usd, hkd],
       scope: scope(buildRoomDateRange("custom", "2026-09-02", { startDate: "2026-09-02", endDate: "2026-09-02" })),
@@ -982,7 +1001,7 @@ describe("RoomPerformance", () => {
   it("resolves overlapping pointer targets to the nearest point while keyboard focus stays exact", () => {
     const monthlyEntries = Array.from({ length: 15 }, (_, index) => {
       const date = new Date(Date.UTC(2015, index, 2)).toISOString().slice(0, 10);
-      return entry(date, "100", { id: `monthly-${index}` });
+      return liveChartEntry(date, "100", { id: `monthly-${index}` });
     });
     const startDate = "2015-01-02";
     const endDate = "2016-03-02";
@@ -1030,7 +1049,7 @@ describe("RoomPerformance", () => {
 
   it("uses compact daily cells and keeps complete amount, sample, and win-rate details below", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-02-25", "50360.44");
+    const value = liveChartEntry("2026-02-25", "50360.44");
     render(
       <RoomPerformance
         entries={[value]}
@@ -1056,7 +1075,7 @@ describe("RoomPerformance", () => {
 
   it("shows integer short values below one thousand while retaining the precise detail", async () => {
     const user = userEvent.setup();
-    const value = entry("2026-09-18", "-948.89");
+    const value = liveChartEntry("2026-09-18", "-948.89");
     render(
       <RoomPerformance
         entries={[value]}
@@ -1112,7 +1131,7 @@ describe("RoomPerformance", () => {
 
 it("shows B2 trend, contribution and calendar together and natural-month win rates with empty gaps", () => {
   const scope = { ...createDefaultRoomScope("2026-03-31"), period: buildRoomDateRange("custom", "2026-03-31", "2026-01-01", "2026-03-31") };
-  render(<RoomPerformance entries={[entry("2026-01-02", "10"), entry("2026-01-03", "0"), entry("2026-03-02", "-5")]} scope={scope} onScopeChange={vi.fn()} onOpenInReview={vi.fn()} asOf="2026-03-31" layout="workspace" contributionSlot={<div>贡献插槽内容</div>} />);
+  render(<RoomPerformance entries={[liveChartEntry("2026-01-02", "10"), liveChartEntry("2026-01-03", "0"), liveChartEntry("2026-03-02", "-5")]} scope={scope} onScopeChange={vi.fn()} onOpenInReview={vi.fn()} asOf="2026-03-31" layout="workspace" contributionSlot={<div>贡献插槽内容</div>} />);
   expect(screen.getByRole("img", { name: "累计盈亏趋势图" })).toBeInTheDocument();
   expect(screen.getByRole("group", { name: "日历层级" })).toBeInTheDocument();
   expect(screen.getByText("贡献插槽内容")).toBeInTheDocument();

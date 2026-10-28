@@ -1,3 +1,50 @@
+## 2026-10-24 — 最终独立判定：FAIL / 整页未交付
+
+当前权威版本见 [P1/F07 第3轮完整报告](evidence/resume-2026-10-24/ROOT-ACCEPTANCE-3.md)。三个Astra Ultra实现者本轮均已停止写入；root独立审查与浏览器接受后，**P1/F07 3/3 FAIL，按用户限制暂停**。ContributionBars原3/3 FAIL继续暂停。其余模块保持各自历史轮数，纯模块通过不替代整页接受。
+
+|独立门|当前结果与证据边界|
+|---|---|
+|本地运行环境|PASS，可运行固定Node26/SQLite3.53及3333隔离预览；旧ENOENT根因未复现|
+|财务核心与原固定性能|PASS：48例控制、9样本、原金额及公开字节；cold0.762–1.224秒、64MiB内，仅限核心范围|
+|来源恢复及编辑会话运行测试|38/38、80/80 PASS；完整项目strict有8处新增测试错误，FAIL，后续lint未运行|
+|真实持久化|有限鼠标工作图→A/B→返回、保存rev33→返回→reload→重开PASS；dirty/failure/conflict完整矩阵NOT VERIFIED|
+|首页真实数据与终态|FAIL：实际15秒超时，拒收/超时还显示期间加载；历史区尚未接入|
+|全控件与参考视觉|55项/96状态分母保持；完整门NOT VERIFIED，Bars已有空间FAIL；键盘、模拟/实体触摸分别保留未验证|
+|原业务数据保护|PASS：四张关键表行数/SHA与基线相同；浏览器写入仅在显式隔离库|
+|交付|FAIL / 未完成；没有push、merge或发布|
+
+[CPU归因](evidence/resume-2026-10-24/homepage-timeout-stage-plan/post-sample-design/cpu-attribution/ROOT-CHECKPOINT.md)已完成一次采样与一次离线分析；Node发布前12.121秒不证明真实UI满足15秒。统一下一候选设计已保存，未继续第四轮。完整问题、来源指纹、根因和恢复边界均在最终报告内。
+
+新鲜真实浏览器预览仍运行：[首页（当前超时现场）](http://127.0.0.1:3333/home?scope=live&market=a&accounts=*&rangeMode=all)。[启动说明](evidence/resume-2026-10-24/STARTUP.md)区分标准重建隔离库与保留当前fixture的启动方式。
+
+以下历史结果保留原版本效力，不能覆盖本节最终结论。
+
+## 2026-10-24 05:45 — 历史独立验收检查点
+
+实际执行者继续为 gpt-6-astra / ultra，root负责独立接受。**整页尚未交付**；原任务计数保留，P1/F07仍2/3 FAIL、Bars3/3 FAIL暂停。
+
+- 原财务时序48例PASS，48条violations空、12源码hash不变；其中4个非法日期控制在进入F前拒收，不能写成48例均完成F。原九样本全部PASS：cold0.762–1.224秒，27repeat最高2.622毫秒，原金额/public bytes/输入SHA保持，49core guards及872整票文件冻结一致，64MiB未超限。见[独立结果](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/final-preparation/ROOT-RESULT.json)。这是F/core范围，不能代替首页时延。
+- 单次真实首页分段样本仍FAIL：read到holdings约19.245秒，页面显示原15秒deadline超时。prepare1.932秒、complete5.911秒、own5.905秒为wall窗口，未作内部CPU归因。探针已精确恢复Workspace原acf7字节并reload验证。见[结果](evidence/resume-2026-10-24/homepage-timeout-stage-plan/root-execution/ROOT-RESULT.json)。
+- retained来源消费者修复获root129测试PASS；实际旧快照仍保持unknown，新快照统计27/fee3/Actual17.5且update→返回→reload保持（证据46–52），五文件版本绑定待单独检查点整合。完整编辑会话仍FAIL：root真实工作图Oct22→编辑A→编辑B→返回后错退Oct21，53–56保留；左导航污染工作状态的独立静态反例也保留。不能将来源修复宣称为整个快照旅程通过。
+- Homepage recovery候选当前35PASS/2FAIL：market=bad原S合同合法fallback，属于测试错误；local cancel保留旧金融包且拒绝晚到结果，但ref退役未触发render，残留“修复中”。原21PASS/16FAIL的act调度死锁及18PASS/1FAIL记录均保留。统一终态方案待root有界批准，不能重命名重置迭代。
+- M08保存响应JSON失败、RS07旧Markdown导出、完整首页持久化/视觉/响应式及未闭合叶子门仍OPEN/NOT VERIFIED。原业务库未参与写入。3333在quiet性能窗口停止后，已用原隔离库显式重新启动；未执行会重置fixture的make dev。
+
+以下为历史版本记录，不代表当前整页接受。
+
+## 2026-10-24 — Astra 续推检查点（当前）
+
+当前实际执行者为 **gpt-6-astra / ultra**，按用户最新选择更换；分工与保留轮次见 [Astra 续推](ASTRA-CONTINUE-2026-10-24.md)。本地环境和3333隔离预览已恢复，未复现的旧ENOENT不归因成已修复根因。
+
+root 新运行20文件480/480定向测试、F/S1 strict与lint通过；S1来源所有权正式 **1/3 PASS（纯模块）**，见 [独立接受](evidence/resume-2026-10-24/source/ROOT-ACCEPTANCE-1.md)。财务 seam **第3/3轮 PASS**：原ISR01–05与固定九个原门槛性能样本全通过，三市场cold1.245–1.294秒；见 [财务接受](evidence/P4/seam/ROOT-ACCEPTANCE-3.md)。允许既定producer消费，不等于页面通过。
+
+[统一接线设计](evidence/resume-2026-10-24/astra-integration/UNIFIED-DESIGN.md) 已审核；host截止修复获root111测试及真实15.203秒超时/重试有限PASS，见 [接受](evidence/resume-2026-10-24/astra-integration/deadline/ROOT-ACCEPTANCE.md)。Acquisition 经root101回归+5独立反例及strict/lint获 **1/3纯模块PASS**，见 [接受](evidence/resume-2026-10-24/source/astra/acquisition/ROOT-ACCEPTANCE-1.md)。历史FX获 **1/3纯模块PASS**：root389回归+6独立检查及原固定9性能样本全通过，cold0.767–1.443秒，见 [接受](evidence/P4/historical-fx/ROOT-ACCEPTANCE-1.md)；PeriodView获 **1/3纯模块PASS**（root233+6、strict/lint），见 [接受](evidence/resume-2026-10-24/root-period-view/ROOT-ACCEPTANCE-1.md)。Metrics最后候选3已完成root59+3测试和13状态/7视口/正常动效有限复验，见 [叶子检查点](evidence/P2/metrics/astra-current/root/ROOT-CHECKPOINT.md)，仍2/3 FAIL待完整验收。Workspace同源持仓接线与存储快照方案B已批准实施；存储接口已获root **1/3 PASS**（146测试、strict/lint、hash、真实隔离API），见 [独立接受](evidence/resume-2026-10-24/root-stored-source/ROOT-ACCEPTANCE-1.md)。新发现invalid fee在上游episode摘要解析抛错，正在根因审查，失败反例保留。真实数据接线、完整持久化和视觉仍未通过；ContributionBars **3/3 FAIL暂停**，P1仍2/3，其他历史轮数保持。**整页未交付**。下方记录按各自历史版本理解。
+
+## 2026-10-24 — 当前接受结论：未交付
+
+环境恢复有限PASS（真实3333隔离库浏览器载入）；产品与整页接受不因此通过。财务seam第2/3轮FAIL（ISR05上海/UTC混合精度），HistoryChart第1/3轮FAIL（空范围背景）；四项原财务反例与Stats2原截断静态关闭仅是限定证据。性能12组对照A/B均有cold超时，原因未证，固定四进程CPU诊断准备中，不以诊断补跑替代正式速度门。HistoryStats1/3、Metrics2/3待接受；Bars3/3 FAIL暂停不绕限。
+
+新 source 组合纯模块0/3按 [ROOT-DATA-CONTRACT](evidence/P4/ROOT-DATA-CONTRACT.md) 独立实施中；真实数据到领域到页面尚未完成。P1 2/3 FAIL，P2/P3/P4整票0/3。功能、状态与持久化、整页视觉、完整控件仍 FAIL/NOT VERIFIED。实际模型gpt-6.1-sol / ultra；原失败与以下历史证据保留，无推送、合并、发布。
+
 ## 2026-10-23 — 新三域host有限接受；seam与相邻性能回归重开
 
 root独立364/364定向回归及源码/hash复核完成。新configured domain-host纯协议第1/3轮PASS，见[evidence/P2/domain-host/ROOT-ACCEPTANCE-1.md](evidence/P2/domain-host/ROOT-ACCEPTANCE-1.md)，P1旧2/3 FAIL与页面接线NV不变。
@@ -142,3 +189,64 @@ P1正式2/3 FAIL、第三轮未启动；P3正式0/3，不因有限checkpoint增�
 request-body实际消费者OPEN，生产调用图只定位到app handler首次clone之前，未定位原始非GET请求消费者；旧探针预算/首页GET漏记局限及全部原失败保留，无新探针激活或猜测性框架修复。完整当前Workspace回归、整页视觉/控件/响应式/触控仍NOT VERIFIED，已知未实现功能保持FAIL。所有恢复代理实际gpt-6.1-sol / ultra，当前候选已冻结；无提交、推送、合并或发布。
 
 2026-10-23：独立期间选择器leaf root第1/3轮FAIL（evidence/P2/selector/ROOT-ACCEPTANCE-1.md）：外点本月误提交、靠右弹层24px预算失败、server error色被specificity覆盖。交原owner有限修复；P2整体仍0/3/未放行金额接线，原P1 2/3 FAIL保持。
+
+### 2026-10-24 S1 regression reopening
+
+Prior S1 1/3 PASS remains evidence, but qualification regression is OPEN: unused eager entries reconstruction parses malformed fee before existing F unknown gates. Bounded repair dispatched to Astra finance; next formal S1 round 2/3. First raw Workspace assembly remains separately OPEN; no end-to-end malformed-source PASS. Whole homepage and paused Bars status unchanged.
+
+### 2026-10-24 S1 qualification accepted 2/3
+
+Root fresh 196 regression +4 independent checks PASS; strict/lint exit0 and frozen hashes match. Removed unused qualifier financial rebuild; original malformed fee is retained for F unknown gates. [Acceptance](evidence/resume-2026-10-24/source/qualifier-repair/ROOT-ACCEPTANCE-2.md). F07 initial raw assembly remains OPEN (independent check confirms throw); page wiring/fidelity and paused Bars unchanged.
+
+2026-10-24 root Workspace checkpoint preserves FAIL: real Tencent detail -> ordinary collection renders zero records, despite a visible holding. Fresh 231 regression + 4 independent literal tests PASS do not close the browser gate. Exact version and evidence: `evidence/resume-2026-10-24/root-workspace/ROOT-CHECKPOINT.md`. P1 remains 2/3 FAIL (third candidate preparation); no whole-page acceptance or cap reset. Period/history UI and required visual/persistence gates remain NOT VERIFIED.
+
+2026-10-24 root补充：Workspace冻结13文件 strict/lint exit0、after hash13/13匹配；231+4测试局部PASS保留。腾讯空集合已确认canonical显示与raw carrier映射缺失，授权catalog+Surface+Workspace六文件统一候选；P1仍2/3FAIL最后候选准备。冻结后真实重试再次15s超时/0行，独立于此前HMR污染，分段诊断OPEN；详见 evidence/resume-2026-10-24/root-workspace/ROOT-CHECKPOINT.md。
+
+2026-10-24 representation 正式 root 第1/3轮 FAIL：四文件hash匹配，独立134 PASS/1 FAIL。有效USD110报价下，非法日期期初仓5被ledger处理为已知，错误返回市值550；R15原始失败保留。见 `evidence/resume-2026-10-24/root-representation/ROOT-ACCEPTANCE-1.md`。阶段A冻结、阶段B接线未放行，canonical日期/数量合同正在统一诊断；不在acquisition另设财务校验，不重置P1或Bars轮数。
+
+## 2026-10-24 F07 + chronology single-owner implementation release
+
+Root authorized `/root/astra_finance` to implement the original F07 14-product/17-test manifest plus chronology tests only in homepage-v25-performance.test.ts. Exact contracts, dependency gates and evidence: [dispatch](evidence/resume-2026-10-24/source/qualifier-repair/F07-ROOT-IMPLEMENTATION-DISPATCH.md). F07 remains P1 2/3 FAIL final candidate preparation; representation remains 1/3 FAIL, next round2. Invalid calendar/inventory chronology must be consistently unknown; valid cost-unknown market value and future/cutoff behavior preserved. Root real-chart gate precedes Recall/editor expansion. Catalog six-file source work remains disjoint; period UI design only. No new acceptance budget, business data writes or Bars fourth attempt.
+
+
+## 2026-10-24 — root real-response / catalog checkpoint
+
+Root's actual-response Node diagnostic completed in 11.718s at unchanged 15s deadline, with 845-file pre/post digest identical and 289/289 actual response bodies. This excludes React publication and is not browser acceptance. Root browser Retry still reached timeout/zero holdings; no blind retry or deadline increase. Root catalog 159+4 tests PASS and six hashes match, but Tencent → ordinary collection → return is still NOT VERIFIED. [Evidence](evidence/resume-2026-10-24/source/astra/workspace-design/real-response-cpu-probe-localhost-permission/ROOT-CHECKPOINT.md). Actual agents are gpt-6-astra / ultra; finance F07+chronology implementation resumed, source does read-only performance diagnosis, integration designs pending gates. P1 2/3 FAIL, representation 1/3 FAIL, Bars 3/3 FAIL paused; whole homepage is not delivered.
+
+
+## 2026-10-24 — representation stage A independently accepted 2/3
+
+Root fresh 135/135 representation and 48/48 chronology controls PASS; strict/lint exit0 and four frozen file hashes match. Additional bounded finance regression 619 PASS / 4 external sample tests SKIPPED, 29 stage hashes unchanged. Prior R15 FAIL preserved. [Root acceptance](evidence/resume-2026-10-24/root-representation/ROOT-ACCEPTANCE-2.md). Stage B may proceed after the temporary browser probe is restored and ownership released. F07 real-chart, editor persistence, browser performance, final page integration and fidelity remain open; P1 2/3 FAIL and ContributionBars 3/3 FAIL paused are unchanged. Existing legacy statement-only chronology prefilter risk A01 remains separately OPEN; it is not the current homepage projection.
+
+
+## 2026-10-24 — real Recall partial checkpoint / persistence reopened
+
+Root independently verified actual candle/marker advancement, separate market/execution cutoffs, rewind, known gross cost100 and neutral unavailable net for the bad-fee fixture. [Evidence](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/root-minimal-chart/ROOT-CHECKPOINT.md). Plan input then produced a real invalid-JSON autosave error; inputs remained locally, persistence is FAIL / unresolved. Text, full phase/save/return/reload, matching-state visual and final performance are NOT VERIFIED. The page later reset during active Workspace HMR; that interrupted sequence is not claimed as a valid frozen-version acceptance. P14 waits; A1 selective capture and Workspace StageB proceed in their bounded files. P1 2/3 FAIL, next formal3/3; S1 prior2/3 PASS, next formal3/3; Bars3/3 FAIL paused. No counters reset or feature delivery.
+
+
+## 2026-10-24 — S1 selective capture independently accepted 3/3
+
+Root independently reviewed the retained-reference ownership and ran 238/238 adjacent tests, scoped strict/lint exit0; six candidate/dependency hashes match. [Acceptance](evidence/resume-2026-10-24/source/astra/a1-selective-capture/ROOT-ACCEPTANCE-3.md). S1 formal3/3 PASS, budget exhausted; structural clone reduction only, browser speed remains NOT VERIFIED. Read-only Recall DB inspection finds the original100/95/120/qty2 plan saved at revision6 after the earlier invalid-JSON symptom. Thus the observed error does not prove an uncommitted plan; response-confirmation/persistence acceptance remains OPEN pending a frozen-service browser return/reload. Prior FAIL evidence is preserved. P1 2/3 FAIL, Bars3/3 FAIL paused, and whole-feature gates unchanged.
+
+
+2026-10-24 Stage B root checkpoint: independently reviewed atomic Workspace acquisition and disposal; fresh 323/323 tests (308 + 15 deadline), scoped strict/lint exit0, both candidate hashes match. [Evidence](evidence/resume-2026-10-24/representation-design/stage-b/ROOT-CHECKPOINT.md). This accepts only the bounded implementation seam; final homepage browser/performance/whole-page gates remain NOT VERIFIED. Recall unknown-fee snapshot has now survived return/reopen in the ordinary frozen service, with hard-reload check in progress; prior invalid-JSON remains OPEN. P1 2/3 FAIL last candidate and Bars3/3 FAIL paused unchanged.
+
+
+## 2026-10-24 — scoped real-chart gate and parallel release
+
+Root independently verified known fee1/cumulative net−1 → unknown on actual sell reveal → known on rewind; plan/Text/snapshot return and explicit reload/reopen evidence09–23 is retained. Stage B323/323 checkpoint accepted. [Exact root release](evidence/resume-2026-10-24/ROOT-DEPENDENCY-RELEASE.md) releases Period UI to astra_source and original P14 two-file editor to astra_finance, both actual Astra ultra. Root owns integrated visual/persistence gates; existing reference/element inventories remain authoritative. No formal counter reset or full UI acceptance. Old JSON failure OPEN; F07/P1 last candidate, Bars3/3 paused. Final financial/performance/real-edit/fidelity gates remain open.
+
+
+### 2026-10-24 P14 root scoped verification
+
+Root independently reviewed the complete two-file fee editor candidate and ran38/38 component tests, with identical pre/post hashes. [Scoped checkpoint](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/p14-editor/root/ROOT-CHECKPOINT.md). Actual fee2 persistence/reload and old unknown retained bundle remain NOT VERIFIED. Original U06/U11/U14 coverage is being completed test-only in one bounded candidate; financial product code is frozen. Period UI is still in implementation; intermediate HMR evidence is retained without treating a partial caller migration as final acceptance. Original P1/F072/3 FAIL and paused Bars3/3 FAIL remain unchanged; whole-feature delivery is blocked by unresolved required gates.
+
+
+### 2026-10-24 — root P14 real persistence checkpoint
+
+Root actual isolated UI fee invalid→2 save, audit-before/after, actual candle17.5 net/3 fees/0.5 remaining, new snapshot, old snapshot unknown, return/reload/reopen PASS in scope. Original retained bundle hash unchanged throughout. [Evidence](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/root-minimal-chart/ROOT-P14-PERSISTENCE-CHECKPOINT.md). Initial save click interrupted by concurrent HMR had no DB write and was preserved; subsequent run used production QUIET. Potential retained summary current-data mixing is under read-only review, not declared visible from DOM alone. Earlier invalid-JSON response OPEN. Whole F07/P1 still2/3 FAIL final candidate preparation; Bars3/3 FAIL paused. Final40 independent regression running; chronology/fixed9/strict and complete homepage UI/fidelity remain unverified.
+
+
+### 2026-10-24 — root financial regression and retained UI mismatch
+
+Fresh root regression: **1,135 PASS / 4 external-sample SKIP**, 39 passed files / 1 skipped, all54 pre/post fingerprints unchanged. [Checkpoint](evidence/resume-2026-10-24/source/qualifier-repair/F07-acceptance/root-final-40-suite/ROOT-CHECKPOINT.md). Root also reproduced the retained-source mismatch in a real visible Statistics panel: old bundle Actual fees unknown versus current fee3/net27. Screenshot44 preserves this FAIL; original bundle bytes remain intact. Unified consumer/update-snapshot diagnosis is pending. Final chronology/fixed9/strict and complete homepage UI/fidelity remain NOT VERIFIED; prior invalid-JSON OPEN, P1/F072/3 FAIL final candidate and Bars3/3 FAIL paused unchanged.

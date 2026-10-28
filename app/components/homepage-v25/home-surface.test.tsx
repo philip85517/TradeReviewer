@@ -5,18 +5,36 @@ import { createHomepageState, updateHomepageUi, type HomepageState } from "../..
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { TradeExecution } from "../../lib/trades/types";
-import { buildHomepageHoldings, type HomepageHolding } from "./holdings-model";
+import type { HomepageHolding } from "./holdings-model";
+import { homepageHoldingsFixture as buildHomepageHoldings } from "./holdings-test-fixture";
 import { HomeSurface } from "./home-surface";
+import { buildHomepageCatalog, type HomepageCatalog } from "./catalog-model";
 
 const scope = { live: true as const, market: "all" as const, accounts: ["*"], rangeMode: "all" as const };
 const fills: TradeExecution[] = [{ id: "a", accountId: "one", accountLabel: "实盘一", source: { platform: "futu", row: 1, tradeNature: "live" }, instrument: { id: "CN-SH:600519", symbol: "600519", name: "贵州茅台", market: "CN-SH", currency: "CNY" }, side: "buy", executedAt: "2026-10-22T01:00:00Z", quantity: "2", price: "100", fee: "0" }];
+const catalog = buildHomepageCatalog(buildTradeLibraryEntries(buildInstrumentTradeSummaries(fills), {}, {}), []);
 const model = buildHomepageHoldings(buildTradeLibraryEntries(buildInstrumentTradeSummaries(fills), {}, {}), { scope, asOf: "2026-10-23" });
-function Harness({ onTrades = vi.fn(), onImport = vi.fn(), holdings = model, accounts = [{ id: "one", label: "实盘一" }], initialUi }: { onTrades?: (row: HomepageHolding | null) => void; onImport?: () => void; holdings?: typeof model; accounts?: { id: string; label: string }[]; initialUi?: HomepageState }) {
+function Harness({ onTrades = vi.fn(), onImport = vi.fn(), holdings = model, accounts = [{ id: "one", label: "实盘一" }], initialUi, catalog: suppliedCatalog = catalog }: { catalog?: HomepageCatalog; onTrades?: (row: HomepageHolding | null) => void; onImport?: () => void; holdings?: typeof model; accounts?: { id: string; label: string }[]; initialUi?: HomepageState }) {
   const [ui, setUi] = useState(() => initialUi ?? createHomepageState(scope));
-  return <HomeSurface ui={ui} holdings={holdings} ready accountStatus="ready" accounts={accounts} onImport={onImport} onUi={patch => setUi(current => updateHomepageUi(current, patch))} onScope={vi.fn()} onTrades={onTrades} onReload={vi.fn()} onRepair={vi.fn()} />;
+  return <HomeSurface catalog={suppliedCatalog} ui={ui} holdings={holdings} ready accountStatus="ready" accounts={accounts} onImport={onImport} onUi={patch => setUi(current => updateHomepageUi(current, patch))} onScope={vi.fn()} onTrades={onTrades} view={holdings.view} onApply={vi.fn(() => true)} recovery={{ state: "quiet" }} onRecover={vi.fn()} onCatalogRetry={vi.fn()} />;
 }
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 describe("real homepage holding controls", () => {
+  it("uses the catalog's exact raw membership for holding detail and refuses unresolved class collisions", () => {
+    const instrument = fills[0].instrument;
+    const stock = { ...instrument, metadata: { market: "CN-SH" as const, symbol: "600519", name: "贵州茅台", assetType: "stock" as const, source: "eastmoney" as const, confidence: "portal" as const, resolvedAt: "2026-10-22T08:00:00Z" } };
+    const fund = { ...stock, id: "CN-SH:600519:fund", metadata: { ...stock.metadata, assetType: "etf" as const } };
+    const known = buildHomepageCatalog([], [stock, fund]);
+    const { rerender } = render(<Harness catalog={known} />);
+    fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
+    expect(within(screen.getByRole("dialog")).getByText(/SSE:600519:stock/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "查看交易" })).toBeEnabled();
+    const unresolved = buildHomepageCatalog([], [{ ...stock, id: "stock-alias" }, fund, instrument]);
+    rerender(<Harness catalog={unresolved} />);
+    expect(screen.getByRole("button", { name: "查看交易" })).toBeDisabled();
+    expect(within(screen.getByRole("dialog")).getByText(/类别.*冲突/)).toBeInTheDocument();
+  });
+
   it("makes the surrounding navigation inert while detail owns focus and restores it on close", () => {
     render(<div className="homepage-v25-app"><aside className="app-sidebar" aria-label="主导航"><button type="button">交易库</button></aside><Harness /></div>);
     const navigation = screen.getByLabelText("主导航");
@@ -46,7 +64,7 @@ describe("real homepage holding controls", () => {
   });
   it("retains detail keyboard focus through a fresh row object and explains a removed row without clearing local UI", () => {
     const ui = updateHomepageUi(createHomepageState(scope), { holdings: { query: "茅台", sort: "name-desc", page: 1 } });
-    const props = { ui, holdings: model, ready: true, accountStatus: "ready" as const, accounts: [{ id: "one", label: "实盘一" }], onUi: vi.fn(), onScope: vi.fn(), onTrades: vi.fn(), onReload: vi.fn(), onRepair: vi.fn(), onImport: vi.fn() };
+    const props = { ui, catalog, holdings: model, ready: true, accountStatus: "ready" as const, accounts: [{ id: "one", label: "实盘一" }], onUi: vi.fn(), onScope: vi.fn(), onTrades: vi.fn(), view: model.view, onApply: vi.fn(() => true), recovery: { state: "quiet" as const }, onRecover: vi.fn(), onCatalogRetry: vi.fn(), onImport: vi.fn() };
     const { rerender } = render(<HomeSurface {...props} />);
     fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
     const forward = screen.getByRole("button", { name: "查看交易" }); forward.focus();
@@ -176,5 +194,33 @@ describe("real homepage holding controls", () => {
     expect(screen.queryByRole("button", { name: "查看持仓详情" })).not.toBeInTheDocument();
     expect(screen.getByText("没有匹配的持仓")).toBeInTheDocument();
     expect(screen.getAllByTestId("holding-slot")).toHaveLength(8);
+  });
+});
+
+
+describe("Period UI committed composition", () => {
+  it("keeps the original catalog retry separate from financial recovery and preserves its query", () => {
+    const recover = vi.fn(), catalogRetry = vi.fn();
+    const state = createHomepageState(scope);
+    const ui = { ...state, snapshot: { ...state.snapshot, search: { ...state.snapshot.search, open: true, query: "META", selectedSymbol: "NASDAQ:META:stock" } }, errors: { ...state.errors, global: "catalog failed" } };
+    render(<HomeSurface ui={ui} holdings={model} view={model.view} ready accountStatus="ready" accounts={[]}
+      onUi={vi.fn()} onScope={vi.fn()} onTrades={vi.fn()} onImport={vi.fn()} onApply={vi.fn(() => true)}
+      recovery={{ state: "actionable", message: "目录读取失败" }} onRecover={recover} onCatalogRetry={catalogRetry} />);
+    const dialog = within(screen.getByRole("dialog", { name: "标的搜索" }));
+    fireEvent.click(dialog.getByRole("button", { name: "重试" }));
+    expect(catalogRetry).toHaveBeenCalledTimes(1);
+    expect(recover).not.toHaveBeenCalled();
+    expect(dialog.getByRole("searchbox", { name: "搜索标的" })).toHaveValue("META");
+  });
+  it("presents the committed period and one header recovery without a detail repair action", () => {
+    const recover = vi.fn();
+    const props = { ui: createHomepageState(scope), holdings: model, view: model.view, ready: true, accountStatus: "ready" as const, accounts: [], onUi: vi.fn(), onScope: vi.fn(), onTrades: vi.fn(), onImport: vi.fn(), onApply: vi.fn(() => true), recovery: { state: "actionable" as const, message: "期间读取失败，仍显示原期间。" }, onRecover: recover, onCatalogRetry: vi.fn() };
+    render(<HomeSurface {...props} />);
+    expect(screen.getByRole("button", { name: "本周" })).toBeInTheDocument();
+    const action = screen.getByRole("button", { name: "一键修复" });
+    expect(action.closest("header")).not.toBeNull();
+    fireEvent.click(action); expect(recover).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "查看持仓详情" }));
+    expect(screen.queryByRole("button", { name: "更新数据" })).not.toBeInTheDocument();
   });
 });

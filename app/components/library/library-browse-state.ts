@@ -7,7 +7,7 @@ import {
   pendingFinalCloseDate,
   type TradeLibraryRoomFilters,
 } from "../../lib/reviews/trading-room-pending";
-import { displayTradeNature } from "../../lib/trades/trading-nature";
+import { resolvedEpisodeTradeNatureOf } from "../../lib/trades/nature-resolution";
 import { tradingViewEpisodeBusinessScope } from "../../lib/trades/tradingview-account-identity";
 import {
   buildReviewQueue,
@@ -75,12 +75,7 @@ export type TradeLibraryBrowseState = {
 
 /** Resolve legacy rows whose episode metadata predates explicit trade nature. */
 export function tradeNatureForReviewRow(row: ReviewQueueItem): TradeNature {
-  const entryNature = row.entry.tradeNature;
-  if (entryNature) return entryNature;
-  const episodeNature = row.item.episode.tradeNature;
-  if (episodeNature) return episodeNature;
-  const execution = row.item.episode.executions[0] ?? row.entry.executions[0];
-  return execution ? displayTradeNature(execution) : "unknown";
+  return resolvedEpisodeTradeNatureOf(row.item.episode);
 }
 
 type LegacyBrowseState = Partial<TradeLibraryBrowseState> & {

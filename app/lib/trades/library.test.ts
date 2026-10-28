@@ -70,7 +70,7 @@ function candle(
 }
 
 describe("buildTradeLibraryEntries", () => {
-  it("uses the canonical broker nature for display without changing historical episode scope", () => {
+  it("keeps a bare broker name unknown without changing historical episode scope", () => {
     const executions = [
       fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
       fill(xpev, "a", "sell", "2025-01-03T14:30:00Z", "100", "11"),
@@ -87,14 +87,28 @@ describe("buildTradeLibraryEntries", () => {
     );
 
     expect(entry).toMatchObject({
-      tradeNature: "live",
-      tradingLabel: "实盘",
+      tradeNature: "unknown",
+      tradingLabel: "交易性质未知",
     });
     expect(entry.scopeKey).toBeUndefined();
     expect(entry.episodes[0].episode).toMatchObject({
       id: historicalEpisode.id,
       tradeNature: "unknown",
     });
+  });
+
+  it("resolves evidence-backed broker history without changing its original scope", () => {
+    const executions = [
+      fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
+      fill(xpev, "a", "sell", "2025-01-03T14:30:00Z", "100", "11"),
+    ];
+    executions.forEach(execution => {
+      execution.source = { ...execution.source, platform: "futu", formatRuleId: "futu/pdf/f1-execution@1", fileFingerprint: "library-fixture" };
+    });
+    const [entry] = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
+    expect(entry).toMatchObject({ groupId: "US:XPEV|unknown", tradeNature: "live", tradingLabel: "实盘" });
+    expect(entry.scopeKey).toBeUndefined();
+    expect(entry.episodes[0].episode.tradeNature).toBe("live");
   });
 
   it("keeps live and simulated summaries separate for the same instrument", () => {

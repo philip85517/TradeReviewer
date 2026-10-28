@@ -17,12 +17,31 @@ import type {
 } from "../trades/types";
 import type { ImportDiagnostic } from "./import-result";
 import type {
+  DecodedCell,
+  TradingViewDecodedEvidence,
   DetectionResult,
   ImportExclusion,
   ParsedInstrumentCandidate,
   StatementParseResult,
   TradingViewSimulationContext,
 } from "./contracts";
+
+/** Total, JSON-safe tagging. Never reads an unknown object's getters or toString. */
+export function tagTradingViewDecodedCell(value: unknown, diagnosticId: string): DecodedCell {
+  if (value === null) return { kind: "null" };
+  if (value === undefined) return { kind: "undefined" };
+  if (typeof value === "string") return { kind: "string", value };
+  if (typeof value === "boolean") return { kind: "boolean", value };
+  if (typeof value === "number") return Number.isFinite(value)
+    ? { kind: "number", value: Object.is(value, -0) ? 0 : value, negativeZero: Object.is(value, -0) }
+    : { kind: "non-finite", value: Number.isNaN(value) ? "NaN" : value > 0 ? "+Infinity" : "-Infinity" };
+  if (typeof value === "bigint") return { kind: "bigint", decimal: value.toString() };
+  if (value instanceof Error) {
+    const own = Object.getOwnPropertyDescriptors(value);
+    return { kind: "error", code: typeof own.code?.value === "string" ? own.code.value : null, message: typeof own.message?.value === "string" ? own.message.value : null };
+  }
+  return { kind: "unsupported", jsType: typeof value === "function" ? "function" : typeof value === "symbol" ? "symbol" : "object", diagnosticId };
+}
 
 const REQUIRED_HEADERS = [
   "交易编号",
@@ -316,6 +335,49 @@ export function parseTradingViewSimulationCsv(
     row,
     sourceRow: index + 2,
   }));
+  const workbook = csvWorkbook(input);
+  const sheetName = workbook.SheetNames[0];
+  const decodedHeaders = XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets[sheetName], { header: 1, defval: "", raw: false })[0] ?? [];
+  const cellDiagnostics: TradingViewDecodedEvidence["cellDiagnostics"] = [];
+  const tag = (value: unknown, logicalRow: number, column: string) => {
+    const id = `decoded:${logicalRow}:${column}`;
+    const cell = tagTradingViewDecodedCell(value, id);
+    if (cell.kind === "unsupported") cellDiagnostics.push({ id, sheet: sheetName, logicalRow, column });
+    return cell;
+  };
+  const observedRows = rows.map(({row, sourceRow}) => ({ logicalRow: sourceRow,
+    entries: Object.entries(row).map(([key, value]) => ({ key, cell: tag(value, sourceRow, key) })) }));
+  return parseDecodedRows(rows, context, options, {
+    sheetName, headers: decodedHeaders.map((value, index) => tag(value, 1, String(index))), observedRows, cellDiagnostics,
+  });
+}
+
+/** Replay already-tagged observations through the same row/pair rules as the file parser. */
+export function replayTradingViewDecodedEvidence(evidence: TradingViewDecodedEvidence): StatementParseResult {
+  const value = (cell: DecodedCell): string | number | null | undefined => {
+    switch (cell.kind) {
+      case "string": case "number": return cell.value;
+      case "boolean": return String(cell.value);
+      case "bigint": return cell.decimal;
+      case "non-finite": return cell.value === "NaN" ? NaN : cell.value === "+Infinity" ? Infinity : -Infinity;
+      case "null": return null;
+      case "undefined": case "error": case "unsupported": return undefined;
+    }
+  };
+  const rows = evidence.rows.map(row => ({ sourceRow: row.logicalRow, row: Object.fromEntries(row.entries.map(entry => [entry.key, value(entry.cell)])) }));
+  return parseDecodedRows(rows, { market: evidence.derived.market as TradingViewSimulationContext["market"], symbol: evidence.derived.symbol },
+    { fileName: "", sourceFileId: evidence.fileFingerprint }, {
+      sheetName: evidence.sheet.name, headers: evidence.headers, observedRows: evidence.rows.map(({logicalRow, entries}) => ({logicalRow, entries})), cellDiagnostics: evidence.cellDiagnostics,
+    });
+}
+
+function parseDecodedRows(rows: RowWithNumber[], context: TradingViewSimulationContext,
+  options: { fileName: string; sourceFileId: string }, decoded: {
+    sheetName: string; headers: DecodedCell[];
+    observedRows: {logicalRow: number; entries: {key: string; cell: DecodedCell}[]}[];
+    cellDiagnostics: TradingViewDecodedEvidence["cellDiagnostics"];
+  }): StatementParseResult {
+  const {sheetName, headers, observedRows, cellDiagnostics} = decoded;
   const groups = new Map<string, PairedRows>();
   const diagnostics: ImportDiagnostic[] = [];
   const exclusions: ImportExclusion[] = [];
@@ -335,11 +397,13 @@ export function parseTradingViewSimulationCsv(
     } catch (error) {
       const message = error instanceof Error ? error.message : "字段无法识别";
       diagnostics.push(diagnostic("invalid-tradingview-row", `第 ${current.sourceRow} 行无法导入：${message}`, current.sourceRow));
+      exclusions.push({ category: "invalid-row", label: `TradingView 第 ${current.sourceRow} 行无法导入`, count: 1, disposition: "pending" });
       continue;
     }
     const pair = groups.get(id) ?? { id };
     if (pair[currentRole]) {
       diagnostics.push(diagnostic("duplicate-tradingview-role", `交易编号 ${id} 存在重复${currentRole === "entry" ? "进场" : "出场"}行`, current.sourceRow, id));
+      exclusions.push({ category: "invalid-row", label: `TradingView 交易编号 ${id} 重复${currentRole === "entry" ? "进场" : "出场"}行`, count: 1, disposition: "pending" });
       continue;
     }
     pair[currentRole] = current;
@@ -413,5 +477,20 @@ export function parseTradingViewSimulationCsv(
     blocked: acceptedRecords.length === 0,
     tradeNature: "simulation",
     simulationRunId: acceptedRecords[0]?.source.simulationRunId,
+    tradingViewEvidence: {
+      kind: "tradingview-xlsx-records-v1", fidelity: "xlsx-decoded-records-raw-false", parserVersion: "tradingview-simulation-v2",
+      fileFingerprint: options.sourceFileId, sheet: { ordinal: 0, name: sheetName },
+      headers, cellDiagnostics,
+      rows: observedRows.map(row => {
+        const candidateIds = acceptedRecords.filter(record => record.source.row === row.logicalRow).map(record => record.id);
+        const rowDiagnostics = diagnostics.filter(item => item.row === row.logicalRow);
+        const diagnosticCodes = rowDiagnostics.map(item => item.code);
+        const outcome = candidateIds.length ? "accepted" : diagnosticCodes.includes("duplicate-tradingview-role") ? "duplicate-role"
+          : diagnosticCodes.includes("ambiguous-tradingview-order") ? "ambiguous" : diagnosticCodes.includes("incomplete-tradingview-trade") ? "unpaired" : "invalid";
+        return { ...row, candidateIds, outcome, diagnosticCodes };
+      }),
+      derived: { accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID, accountOrigin: "parser-canonical-constant", tradeNature: "simulation", natureOrigin: "parser-format-contract",
+        sourceRun: `tradingview:${options.sourceFileId}:${context.market}:${canonicalInstrumentSymbol(context.symbol,context.market)}`, runOrigin: "parser-fingerprint-market-symbol", market: context.market, symbol: canonicalInstrumentSymbol(context.symbol,context.market), currency: "CNY" },
+    },
   };
 }

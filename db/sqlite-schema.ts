@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 
-import { TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA } from "./tradingview-account-migration-schema";
+import { IMPORT_HISTORY_AUDIT_SCHEMA } from "./import-history-audit-schema.ts";
+
+import { TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA } from "./tradingview-account-migration-schema.ts";
 
 export interface SqliteMigration {
   readonly version: number;
@@ -409,6 +411,291 @@ function migration(version: number, name: string, sql: string): SqliteMigration 
   };
 }
 
+type VersionedJsonColumn = string | Readonly<{ column: string; ignoreRootKeys: readonly string[] }>;
+
+function sqlIdentifier(value: string): string {
+  if (!/^[a-z_][a-z0-9_]*$/.test(value)) throw new Error("Invalid version trigger identifier");
+  return value;
+}
+
+function ignoredJsonRootKeys(column: VersionedJsonColumn): string[] {
+  if (typeof column === "string") return [];
+  return column.ignoreRootKeys.map((key) => {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) throw new Error("Invalid version trigger JSON key");
+    return key;
+  });
+}
+
+function jsonSemanticsChanged(oldValue: string, newValue: string, ignoredRootKeys: readonly string[]): string {
+  const includeBranch = ignoredRootKeys.length === 0 ? "" : `
+        where not (p.path = '$' and typeof(n.key) = 'text' and n.key in (${ignoredRootKeys.map((key) => `'${key}'`).join(", ")}))`;
+  const ignoredSame = ignoredRootKeys.length === 0 ? "" : `
+    when json_remove(${oldValue}, ${ignoredRootKeys.map((key) => `'$.${key}'`).join(", ")})
+      is json_remove(${newValue}, ${ignoredRootKeys.map((key) => `'$.${key}'`).join(", ")}) then 0`;
+  // JSONB retains numeric token text; atom does not (REAL rounds/overflows).
+  // Parse each input tree once, using decoded keys for paths and duplicate
+  // detection. Removing ignored branches here never rewrites source numbers.
+  // Decimal coefficients stay text. <=15-digit exponents plus SQLite's bounded
+  // string-length shift fit INTEGER exactly. Larger exponents retain a textual
+  // (exponent, shift) pair: equivalent rewrites may advance, distinct values
+  // cannot be lost. No per-digit arithmetic or connection UDF is required.
+  // Bound exact comparison to 4096 bytes / 64 nodes per input. Larger changed
+  // inputs conservatively invalidate plans, avoiding quadratic path lookups.
+  // json_remove's text-equality fast path preserves original numeric tokens.
+  return `(case
+    when ${oldValue} is ${newValue} then 0
+    when coalesce(json_valid(${oldValue}), 0) = 0 or coalesce(json_valid(${newValue}), 0) = 0 then 1
+    ${ignoredSame}
+    when length(cast(${oldValue} as blob)) > 4096 or length(cast(${newValue} as blob)) > 4096 then 1
+    else (with recursive
+      inputs(side, document) as materialized (values (0, jsonb(${oldValue})), (1, jsonb(${newValue}))),
+      tree as materialized (
+        select side, document, j.id, j.parent, j.key, j.type, j.atom, j.fullkey
+        from inputs, json_tree(document) j
+      ),
+      paths(side, id, path) as (
+        select side, id, '$' from tree where parent is null
+        union all
+        select n.side, n.id, p.path || '/' || json_quote(n.key)
+        from tree n join paths p on n.side = p.side and n.parent = p.id ${includeBranch}
+      ),
+      visible as materialized (
+        select t.side, p.path, t.type, t.atom, t.document, t.fullkey
+        from tree t join paths p on t.side = p.side and t.id = p.id
+      ),
+      number_tokens as (
+        select side, path, lower(document -> fullkey) as token
+        from visible where type in ('integer', 'real')
+      ),
+      unsigned_numbers as (
+        select side, path, case when substr(token, 1, 1) = '-' then '-' else '' end as sign,
+          ltrim(token, '-') as token from number_tokens
+      ),
+      number_parts as (
+        select side, path, sign,
+          case when instr(token, 'e') > 0 then substr(token, 1, instr(token, 'e') - 1) else token end as mantissa,
+          case when instr(token, 'e') > 0 then substr(token, instr(token, 'e') + 1) else '0' end as exponent
+        from unsigned_numbers
+      ),
+      decimal_parts as (
+        select side, path, sign, replace(mantissa, '.', '') as digits,
+          case when instr(mantissa, '.') > 0 then length(mantissa) - instr(mantissa, '.') else 0 end as scale,
+          case when substr(exponent, 1, 1) = '-' then '-' else '' end as exponent_sign,
+          coalesce(nullif(ltrim(ltrim(exponent, '+-'), '0'), ''), '0') as exponent_digits
+        from number_parts
+      ),
+      normalized_numbers as (
+        select side, path, sign, rtrim(ltrim(digits, '0'), '0') as coefficient,
+          length(digits) - length(rtrim(digits, '0')) - scale as shift, exponent_sign, exponent_digits
+        from decimal_parts
+      ),
+      canonical_numbers as (
+        select side, path, case when coefficient = '' then '0' else sign || coefficient || 'e' ||
+          case when length(exponent_digits) <= 15
+            then cast(cast(exponent_sign || exponent_digits as integer) + shift as text)
+            else exponent_sign || exponent_digits || ':' || cast(shift as text) end end as exact_number
+        from normalized_numbers
+      ),
+      canonical as materialized (
+        select v.side, v.path, case when v.type in ('integer', 'real') then 'number' else v.type end as kind,
+          case when v.type in ('integer', 'real') then n.exact_number else v.atom end as scalar
+        from visible v left join canonical_numbers n on v.side = n.side and v.path = n.path
+      )
+      select case
+        when exists(select 1 from tree group by side having count(*) > 64) then 1
+        when exists(select 1 from visible group by side, path having count(*) > 1) then 1
+        else exists(select path, kind, scalar from canonical where side = 0 except select path, kind, scalar from canonical where side = 1)
+          or exists(select path, kind, scalar from canonical where side = 1 except select path, kind, scalar from canonical where side = 0)
+      end)
+    end)`;
+}
+
+/** Migration-time SQL only. New formal source tables must install these in their own migration. */
+export function tradeBookVersionTriggersSql(
+  table: string,
+  scalarColumns: readonly string[],
+  jsonColumns: readonly VersionedJsonColumn[] = [],
+): string {
+  const name = sqlIdentifier(table);
+  const differences = [
+    ...scalarColumns.map((column) => `old.${sqlIdentifier(column)} is not new.${sqlIdentifier(column)}`),
+    ...jsonColumns.map((column) => {
+      const name = sqlIdentifier(typeof column === "string" ? column : column.column);
+      return jsonSemanticsChanged(`old.${name}`, `new.${name}`, ignoredJsonRootKeys(column));
+    }),
+  ];
+  if (differences.length === 0) throw new Error("Versioned tables must declare their business columns");
+  const advance = `
+    update trade_book_state set sequence = sequence + 1
+      where singleton = 1 and typeof(sequence) = 'integer'
+        and sequence >= 0 and sequence < 9007199254740991
+        and length(trim(database_id)) > 0 and length(trim(epoch)) > 0;
+    select case when changes() != 1 then raise(abort, 'Trade book version state is unavailable or exhausted') end;
+  `;
+  return `
+    create trigger trade_book_${name}_insert after insert on ${name} begin ${advance} end;
+    create trigger trade_book_${name}_delete after delete on ${name} begin ${advance} end;
+    create trigger trade_book_${name}_update after update on ${name}
+      when ${differences.join(" or ")}
+      begin ${advance} end;
+  `;
+}
+
+const tradeBookVersionSql = `
+create table trade_book_state (
+  singleton integer primary key check(singleton = 1),
+  database_id text not null check(length(trim(database_id)) > 0),
+  epoch text not null check(length(trim(epoch)) > 0),
+  sequence integer not null check(typeof(sequence) = 'integer' and sequence >= 0 and sequence <= 9007199254740991)
+);
+insert into trade_book_state(singleton, database_id, epoch, sequence)
+values (1, lower(hex(randomblob(16))), lower(hex(randomblob(16))), 0);
+${tradeBookVersionTriggersSql("instruments", ["id", "symbol", "market", "currency"])}
+${tradeBookVersionTriggersSql("executions", [
+  "id", "import_batch_id", "instrument_id", "account", "side", "executed_at",
+  "quantity", "price", "fee", "currency", "trade_nature", "simulation_run_id",
+], [{ column: "evidence_json", ignoreRootKeys: ["accountLabel"] }])}
+${tradeBookVersionTriggersSql("import_batches", [
+  "id", "source_fingerprint", "source_name", "source_type", "imported_at", "record_count", "trade_nature", "simulation_run_id",
+], ["reconciliation_json", "evidence_json"])}
+${tradeBookVersionTriggersSql("trade_revisions", ["id", "instrument_id", "account_id", "recorded_at"], ["request_json", "revision_json"])}
+${tradeBookVersionTriggersSql("tradingview_account_migration_aliases", ["operation_id", "alias_kind", "old_id", "new_id"])}
+`;
+
+const sourceMaterialsSql = `
+create table source_materials (
+  id text primary key,
+  current_version_id text references source_material_versions(id) deferrable initially deferred,
+  created_at text not null
+);
+create table source_material_versions (
+  id text primary key,
+  material_id text not null references source_materials(id) on delete restrict,
+  supersedes_version_id text references source_material_versions(id) on delete restrict,
+  parser_version text not null,
+  source_kind text not null,
+  locator_json text not null check(json_valid(locator_json)),
+  file_fingerprint text,
+  scope_json text not null check(json_valid(scope_json)),
+  diagnostics_json text not null check(json_valid(diagnostics_json)),
+  content_json text not null check(json_valid(content_json)),
+  legacy_batch_id text unique,
+  legacy_batch_json text check(legacy_batch_json is null or json_valid(legacy_batch_json)),
+  raw_reconciliation_json text,
+  raw_evidence_json text,
+  legacy_revision_request_json text,
+  recorded_at text not null,
+  unique(material_id,id)
+);
+create table source_observations (
+  id text primary key,
+  version_id text not null references source_material_versions(id) on delete restrict,
+  observation_key text,
+  identity_status text not null check(identity_status in ('located','unresolved')),
+  locator_json text not null check(json_valid(locator_json)),
+  raw_json text check(raw_json is null or json_valid(raw_json)),
+  original_account_id text,
+  check((identity_status='located' and observation_key is not null) or (identity_status='unresolved' and observation_key is null))
+);
+create index source_observations_version on source_observations(version_id,id);
+create table source_execution_links (
+  observation_id text not null references source_observations(id) on delete restrict,
+  execution_id text not null references executions(id) on delete restrict,
+  reason text not null,
+  recorded_at text not null,
+  primary key(observation_id,execution_id)
+);
+create index source_execution_links_execution on source_execution_links(execution_id,observation_id);
+create table source_material_account_mappings (
+  material_id text not null references source_materials(id) on delete restrict,
+  original_account_id text not null,
+  canonical_account_id text not null,
+  reason text not null,
+  audit_reference text not null,
+  recorded_at text not null,
+  primary key(material_id,original_account_id)
+);
+-- Only the coordinated fact writer changes this state. Absence means active.
+create table execution_fact_states (
+  execution_id text primary key references executions(id) on delete restrict,
+  state text not null check(state in ('active','withdrawn')),
+  revision_id text not null references trade_revisions(id) on delete restrict,
+  reason text not null,
+  recorded_at text not null,
+  check(state <> 'withdrawn' or length(trim(reason)) > 0)
+);
+
+-- Every historical batch keeps its own identity; names and amounts are not identity.
+insert into source_materials(id,created_at)
+select 'legacy:material:'||id,imported_at from import_batches;
+insert into source_material_versions (
+  id,material_id,parser_version,source_kind,locator_json,file_fingerprint,
+  scope_json,diagnostics_json,content_json,legacy_batch_id,legacy_batch_json,
+  raw_reconciliation_json,raw_evidence_json,legacy_revision_request_json,recorded_at
+)
+select 'legacy:version:'||b.id,'legacy:material:'||b.id,'legacy-unrecorded',
+  coalesce(b.source_type,'unknown'),json_object('legacyBatchId',b.id),b.source_fingerprint,
+  '{"accounts":{"values":[],"unknown":true},"markets":{"values":[],"unknown":true},"instruments":{"values":[],"unknown":true},"periods":{"values":[],"unknown":true}}',
+  case when b.source_fingerprint is null then '[{"code":"FILE_FINGERPRINT_UNKNOWN"}]' else '[]' end,
+  '{}',b.id,
+  json_object('id',b.id,'source_fingerprint',b.source_fingerprint,'source_name',b.source_name,
+    'source_type',b.source_type,'imported_at',b.imported_at,'record_count',b.record_count,
+    'reconciliation_json',b.reconciliation_json,'evidence_json',b.evidence_json,
+    'created_at',b.created_at,'trade_nature',b.trade_nature,'simulation_run_id',b.simulation_run_id),
+  b.reconciliation_json,b.evidence_json,r.request_json,b.imported_at
+from import_batches b left join trade_revisions r on r.id=b.id;
+update source_materials set current_version_id='legacy:version:'||substr(id,length('legacy:material:')+1);
+
+-- Raw evidence alone may prove a file-local position. Never use Store's row:0 fallback.
+with candidates as (
+  select e.*,
+    case when json_type(evidence_json,'$.source.fileFingerprint')='text'
+      and length(trim(json_extract(evidence_json,'$.source.fileFingerprint')))>0
+      and json_type(evidence_json,'$.source.row')='integer' and json_extract(evidence_json,'$.source.row')>0
+    then json_array(json_extract(evidence_json,'$.source.fileFingerprint'),
+      json_extract(evidence_json,'$.source.page'),json_extract(evidence_json,'$.source.sheet'),json_extract(evidence_json,'$.source.row')) end as position_key
+  from executions e where import_batch_id is not null
+), positions as (
+  select *,count(*) over(partition by import_batch_id,position_key) as multiplicity from candidates
+)
+insert into source_observations(id,version_id,observation_key,identity_status,locator_json,raw_json,original_account_id)
+select 'legacy:observation:'||length(import_batch_id)||':'||import_batch_id||':'||id,
+  'legacy:version:'||import_batch_id,
+  case when multiplicity=1 then position_key end,
+  case when multiplicity=1 and position_key is not null then 'located' else 'unresolved' end,
+  case when position_key is not null then json_object('fileFingerprint',json_extract(evidence_json,'$.source.fileFingerprint'),
+    'page',json_extract(evidence_json,'$.source.page'),'sheet',json_extract(evidence_json,'$.source.sheet'),'row',json_extract(evidence_json,'$.source.row')) else '{}' end,
+  evidence_json,
+  case when json_type(evidence_json,'$.accountCorrection.originalAccountId')='text'
+    then json_extract(evidence_json,'$.accountCorrection.originalAccountId') else account end
+from positions;
+insert into source_execution_links(observation_id,execution_id,reason,recorded_at)
+select 'legacy:observation:'||length(import_batch_id)||':'||import_batch_id||':'||id,id,'legacy-batch-reference',created_at
+from executions where import_batch_id is not null;
+
+create trigger source_material_head_owner before update of current_version_id on source_materials
+when new.current_version_id is not null and not exists(
+  select 1 from source_material_versions where id=new.current_version_id and material_id=new.id
+) begin select raise(abort,'Material version belongs to another material'); end;
+create trigger source_material_head_insert_owner after insert on source_materials
+when new.current_version_id is not null and not exists(
+  select 1 from source_material_versions where id=new.current_version_id and material_id=new.id
+) begin select raise(abort,'Material version belongs to another material'); end;
+create trigger source_version_parent_owner before insert on source_material_versions
+when new.supersedes_version_id is not null and not exists(
+  select 1 from source_material_versions where id=new.supersedes_version_id and material_id=new.material_id
+) begin select raise(abort,'Superseded version belongs to another material'); end;
+${["source_material_versions", "source_observations", "source_execution_links"].map(table => `
+create trigger ${table}_immutable_update before update on ${table} begin select raise(abort,'Source evidence is immutable'); end;
+create trigger ${table}_immutable_delete before delete on ${table} begin select raise(abort,'Source evidence is immutable'); end;`).join("\n")}
+${tradeBookVersionTriggersSql("source_materials", ["id", "current_version_id"])}
+${tradeBookVersionTriggersSql("source_material_versions", ["id", "material_id", "supersedes_version_id", "parser_version", "source_kind", "file_fingerprint", "legacy_batch_id", "recorded_at", "raw_reconciliation_json", "raw_evidence_json", "legacy_revision_request_json"], ["locator_json", "scope_json", "diagnostics_json", "content_json", "legacy_batch_json"])}
+${tradeBookVersionTriggersSql("source_observations", ["id", "version_id", "observation_key", "identity_status", "original_account_id"], ["locator_json", "raw_json"])}
+${tradeBookVersionTriggersSql("source_execution_links", ["observation_id", "execution_id", "reason", "recorded_at"])}
+${tradeBookVersionTriggersSql("source_material_account_mappings", ["material_id", "original_account_id", "canonical_account_id", "reason", "audit_reference", "recorded_at"])}
+${tradeBookVersionTriggersSql("execution_fact_states", ["execution_id", "state", "revision_id", "reason", "recorded_at"])}
+`;
+
 export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(1, "unified-storage-schema", unifiedSchemaSql),
   migration(2, "preserve-repository-provenance", repositoryCompletenessSql),
@@ -434,4 +721,104 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(12, "project-frozen-recall-actual-metrics", recallActualMetricsSql),
   migration(13, "project-frozen-recall-manual-evaluations", recallManualEvaluationsSql),
   migration(14, "tradingview-account-migration", TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA),
+  migration(15, "persist-trade-book-version-and-legacy-write-coverage", tradeBookVersionSql),
+  migration(16, "preserve-source-material-lineage-and-scope", sourceMaterialsSql),
+  migration(17, "persist-trade-change-plans-and-receipts", `
+    alter table trade_revisions add column scope_account_unknown integer not null default 0 check(scope_account_unknown in (0,1));
+    -- This discriminator is an encoding boundary, never an editable account identity.
+    create trigger trade_revision_scope_immutable before update of scope_account_unknown on trade_revisions
+    when new.scope_account_unknown is not old.scope_account_unknown
+    begin select raise(abort,'Audit account scope is immutable'); end;
+    create trigger trade_revision_scope_insert before insert on trade_revisions
+    when (new.scope_account_unknown=1 and (new.account_id<>''
+        or json_extract(new.request_json,'$.kind') is not 'fact-state-audit-v1'
+        or json_type(new.request_json,'$.accountId') is not 'null'))
+      or (new.scope_account_unknown=0 and length(trim(new.account_id))=0)
+    begin select raise(abort,'Invalid audit account encoding'); end;
+    create trigger trade_revision_scope_update before update of account_id,request_json,revision_json on trade_revisions
+    when (new.scope_account_unknown=1 and (new.account_id<>''
+        or json_extract(new.request_json,'$.kind') is not 'fact-state-audit-v1'
+        or json_type(new.request_json,'$.accountId') is not 'null'))
+      or (new.scope_account_unknown=0 and length(trim(new.account_id))=0)
+    begin select raise(abort,'Invalid audit account encoding'); end;
+    create trigger fact_state_audit_validate before insert on trade_revisions
+    when json_extract(new.request_json,'$.kind')='fact-state-audit-v1'
+      or json_extract(new.revision_json,'$.kind')='fact-state-audit-v1'
+    begin
+      select case when new.request_json is not new.revision_json
+        or json_extract(new.request_json,'$.kind') is not 'fact-state-audit-v1'
+        or json_extract(new.request_json,'$.id') is not new.id
+        or json_extract(new.request_json,'$.instrumentId') is not new.instrument_id
+        or json_extract(new.request_json,'$.recordedAt') is not new.recorded_at
+        or json_type(new.request_json,'$.reason') is not 'text'
+        or length(trim(json_extract(new.request_json,'$.reason')))=0
+        or json_extract(new.request_json,'$.action') not in ('withdraw','activate')
+        or json_type(new.request_json,'$.action') is not 'text'
+        or json_type(new.request_json,'$.changes') is not 'array'
+        or json_array_length(new.request_json,'$.changes')<>1
+        or json_extract(new.request_json,'$.changes[0].before') is not json_extract(new.request_json,'$.before')
+        or (json_extract(new.request_json,'$.action')='withdraw' and json_type(new.request_json,'$.changes[0].after') is not 'null')
+        or (json_extract(new.request_json,'$.action')='activate' and json_extract(new.request_json,'$.changes[0].after') is not json_extract(new.request_json,'$.before'))
+        or not exists(
+          select 1 from executions e where e.id=json_extract(new.request_json,'$.executionId')
+            and e.instrument_id=new.instrument_id
+            and ((new.scope_account_unknown=1 and e.account is null)
+              or (new.scope_account_unknown=0 and e.account=new.account_id
+                and json_extract(new.request_json,'$.accountId') is e.account))
+            and json_type(new.request_json,'$.before')='object'
+            and json_type(new.request_json,'$.before.accountId')=case when e.account is null then 'null' else 'text' end
+            ${Object.entries({
+              id: "id",
+              instrumentId: "instrument_id",
+              accountId: "account",
+              side: "side",
+              executedAt: "executed_at",
+              quantity: "quantity",
+              price: "price",
+              fee: "fee",
+              currency: "currency",
+              tradeNature: "trade_nature",
+              simulationRunId: "simulation_run_id",
+              importBatchId: "import_batch_id",
+              rawEvidenceJson: "evidence_json",
+            }).map(([field, column]) =>
+              `and json_type(new.request_json,'$.before.${field}') = case when e.${column} is null then 'null' else 'text' end and json_extract(new.request_json,'$.before.${field}') is e.${column}`
+            ).join("\n            ")}
+        ) then raise(abort,'Invalid fact state audit') end;
+    end;
+    create trigger fact_state_audit_immutable_update before update on trade_revisions
+    when json_extract(old.request_json,'$.kind')='fact-state-audit-v1'
+      or json_extract(new.request_json,'$.kind')='fact-state-audit-v1'
+    begin select raise(abort,'Fact state audit is immutable'); end;
+    create trigger fact_state_audit_immutable_delete before delete on trade_revisions
+    when json_extract(old.request_json,'$.kind')='fact-state-audit-v1'
+    begin select raise(abort,'Fact state audit is retained'); end;
+    create table trade_change_plans (
+      id text primary key, policy text not null, created_at text not null, expires_at text not null,
+      body_json text check(body_json is null or json_valid(body_json)), body_digest text not null,
+      receipt_id text references trade_change_receipts(id), choices_digest text,
+      check((receipt_id is null) = (choices_digest is null))
+    );
+    create table trade_change_receipts (
+      id text primary key, plan_id text not null unique references trade_change_plans(id),
+      receipt_json text not null check(json_valid(receipt_json))
+    );
+    create table trade_change_requests (
+      request_id text primary key, request_digest text not null,
+      receipt_id text not null references trade_change_receipts(id)
+    );
+    create trigger trade_change_plan_immutable before update on trade_change_plans
+    when new.id is not old.id or new.policy is not old.policy or new.created_at is not old.created_at
+      or new.expires_at is not old.expires_at or new.body_digest is not old.body_digest
+      or (new.body_json is not old.body_json and (new.body_json is not null or old.receipt_id is not null))
+      or (old.receipt_id is not null and (new.receipt_id is not old.receipt_id or new.choices_digest is not old.choices_digest))
+      or (new.receipt_id is not null and not exists(select 1 from trade_change_receipts r where r.id=new.receipt_id and r.plan_id=new.id))
+    begin select raise(abort,'Review plans are immutable'); end;
+    create trigger trade_change_plan_no_delete before delete on trade_change_plans begin select raise(abort,'Plan consumption keys are retained'); end;
+    create trigger trade_change_receipt_immutable_update before update on trade_change_receipts begin select raise(abort,'Commit receipts are immutable'); end;
+    create trigger trade_change_receipt_immutable_delete before delete on trade_change_receipts begin select raise(abort,'Commit receipts are retained'); end;
+    create trigger trade_change_request_immutable_update before update on trade_change_requests begin select raise(abort,'Commit aliases are immutable'); end;
+    create trigger trade_change_request_immutable_delete before delete on trade_change_requests begin select raise(abort,'Commit aliases are retained'); end;
+  `),
+  migration(18, "persist-import-history-evidence-audit", IMPORT_HISTORY_AUDIT_SCHEMA),
 ];

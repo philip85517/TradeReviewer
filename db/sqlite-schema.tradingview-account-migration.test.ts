@@ -12,12 +12,13 @@ afterEach(() => {
 });
 
 describe("TradingView account migration SQLite schema", () => {
-  it("registers the migration DDL as the next version without changing prior checksums", () => {
-    expect(SQLITE_MIGRATIONS.at(-1)).toMatchObject({
+  it("preserves the published migration 14 and prior checksums when later migrations are added", () => {
+    expect(SQLITE_MIGRATIONS.find((migration) => migration.version === 14)).toMatchObject({
       version: 14,
       name: "tradingview-account-migration",
+      checksum: "b71c5f174924db11a58ee1a39896919e8a061eb343e101b13ac61bd4c09de699",
     });
-    expect(SQLITE_MIGRATIONS.slice(0, -1).map(({ version, checksum }) => ({ version, checksum }))).toEqual([
+    expect(SQLITE_MIGRATIONS.filter((migration) => migration.version < 14).map(({ version, checksum }) => ({ version, checksum }))).toEqual([
       { version: 1, checksum: "bf5e2a51726b8284b3e5abf4b5639db602a4792e2d6af678559aa953396eea40" },
       { version: 2, checksum: "401b915358bb32042c4d79eed35edd18662a1cec58193b08f498d245a33938fa" },
       { version: 3, checksum: "1ed38012c97a6e534ffd44da7489a94a88399115f074f9807f8e6dc474806feb" },

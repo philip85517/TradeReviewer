@@ -1,0 +1,2277 @@
+[
+  {
+    "label": "interim-A-T0-1440",
+    "horizontalOverflow": false,
+    "metric": "¥100,000",
+    "playDisabled": false,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 718,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 710,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 600,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 827
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 871
+      },
+      {
+        "height": 710,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-14 · 已展开至 2024-06-14",
+    "stepDisabled": false,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A-complete-1440",
+    "horizontalOverflow": false,
+    "metric": "¥102,050",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A complete 1440 final",
+    "horizontalOverflow": false,
+    "metric": "¥102,050",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A results 1440",
+    "horizontalOverflow": false,
+    "metric": "¥102,050",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "结果截止 2024-06-25 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A event 0618 1440",
+    "horizontalOverflow": false,
+    "metric": "¥100,860",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "事件日 2024-06-18 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A close event stays 0618",
+    "horizontalOverflow": false,
+    "metric": "¥100,860",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A next event 0620",
+    "horizontalOverflow": false,
+    "metric": "¥101,280",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "事件日 2024-06-20 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A return original result 0625",
+    "horizontalOverflow": false,
+    "metric": "¥102,050",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "结果截止 2024-06-25 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A comparison common 0619",
+    "horizontalOverflow": false,
+    "metric": "¥100,610",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "结果截止 2024-06-19 · 已展开至 2024-06-25",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A T0",
+    "horizontalOverflow": false,
+    "metric": "¥100,000",
+    "playDisabled": false,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-14 · 已展开至 2024-06-14",
+    "stepDisabled": false,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A single day 0617",
+    "horizontalOverflow": false,
+    "metric": "¥100,380",
+    "playDisabled": false,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-17 · 已展开至 2024-06-17",
+    "stepDisabled": false,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A config closes paused",
+    "horizontalOverflow": false,
+    "metric": "¥100,380",
+    "playDisabled": false,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-17 · 已展开至 2024-06-17",
+    "stepDisabled": false,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A review blocked",
+    "horizontalOverflow": false,
+    "metric": "¥100,380",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-17 · 已展开至 2024-06-20",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A review enters results at V 0617",
+    "horizontalOverflow": false,
+    "metric": "¥100,380",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "结果截止 2024-06-17 · 已展开至 2024-06-20",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A loading",
+    "horizontalOverflow": false,
+    "metric": "—",
+    "playDisabled": true,
+    "regions": [
+      {
+        "height": 48,
+        "selector": ".topbar",
+        "width": 1386,
+        "x": 54,
+        "y": 0
+      },
+      {
+        "height": 48,
+        "selector": ".identity",
+        "width": 1386,
+        "x": 54,
+        "y": 48
+      },
+      {
+        "height": 48,
+        "selector": ".summary",
+        "width": 1386,
+        "x": 54,
+        "y": 96
+      },
+      {
+        "height": 674,
+        "selector": ".main-area",
+        "width": 1386,
+        "x": 54,
+        "y": 182
+      },
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      },
+      {
+        "height": 44,
+        "selector": ".design-controls",
+        "width": 1386,
+        "x": 54,
+        "y": 856
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-20",
+    "stepDisabled": true,
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A cancel expand",
+    "disabled": false,
+    "metric": "¥100,860",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-18",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A confirmed expand keeps V",
+    "disabled": true,
+    "metric": "¥100,860",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A retry failed preserves Mi",
+    "disabled": true,
+    "metric": "¥100,610",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-19 · 已展开至 2024-06-19",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A exclude keeps comparison row",
+    "disabled": true,
+    "metric": "¥100,610",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "结果截止 2024-06-19 · 已展开至 2024-06-19",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "B complete 1440",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 454,
+        "selector": ".workspace",
+        "width": 1366,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 344,
+        "selector": ".plot",
+        "width": 1364,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1364,
+        "x": 65,
+        "y": 571
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1364,
+        "x": 65,
+        "y": 615
+      },
+      {
+        "height": 196,
+        "selector": ".inspect",
+        "width": 1366,
+        "x": 64,
+        "y": 652
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "C open 1440",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1366,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1364,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1364,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1364,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "C closed 1440",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1366,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1364,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1364,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1364,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 0,
+        "selector": ".inspect",
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 2,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "label": "A complete 1280",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A event 1280",
+    "disabled": true,
+    "metric": "¥100,860",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "事件日 2024-06-18 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A pressure sixth long-name 1280",
+    "disabled": true,
+    "metric": "¥124,325,925",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-20 · 已展开至 2024-06-21",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "B complete 1280",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 378,
+        "selector": ".workspace",
+        "width": 1206,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 268,
+        "selector": ".plot",
+        "width": 1204,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1204,
+        "x": 65,
+        "y": 495
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1204,
+        "x": 65,
+        "y": 539
+      },
+      {
+        "height": 172,
+        "selector": ".inspect",
+        "width": 1206,
+        "x": 64,
+        "y": 576
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "C complete 1280",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 1206,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 1204,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1204,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1204,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A T0 1280 final",
+    "disabled": false,
+    "metric": "¥100,000",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-14 · 已展开至 2024-06-14",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A running 1280 final",
+    "disabled": false,
+    "metric": "¥100,860",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-18",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A review 1280 final",
+    "disabled": true,
+    "metric": "¥100,380",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-17 · 已展开至 2024-06-20",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A loading 1280 final",
+    "disabled": true,
+    "metric": "—",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-18 · 已展开至 2024-06-20",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A error 1280 final",
+    "disabled": true,
+    "metric": "¥100,500",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-19 · 已展开至 2024-06-19",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A error last complete 1280",
+    "disabled": true,
+    "metric": "¥100,500",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-19 · 已展开至 2024-06-19",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A latest then can continue 1280",
+    "disabled": false,
+    "metric": "¥101,280",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 558,
+        "selector": ".workspace",
+        "width": 878,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 448,
+        "selector": ".plot",
+        "width": 876,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 876,
+        "x": 65,
+        "y": 675
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 876,
+        "x": 65,
+        "y": 719
+      },
+      {
+        "height": 558,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 950,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-20 · 已展开至 2024-06-20",
+    "viewport": {
+      "dpr": 1,
+      "height": 800,
+      "width": 1280
+    }
+  },
+  {
+    "label": "A full detail overlay preserves plot",
+    "disabled": true,
+    "metric": "¥102,050",
+    "overflow": false,
+    "play": "播放",
+    "regions": [
+      {
+        "height": 658,
+        "selector": ".workspace",
+        "width": 1038,
+        "x": 64,
+        "y": 190
+      },
+      {
+        "height": 548,
+        "selector": ".plot",
+        "width": 1036,
+        "x": 65,
+        "y": 227
+      },
+      {
+        "height": 44,
+        "selector": ".replay",
+        "width": 1036,
+        "x": 65,
+        "y": 775
+      },
+      {
+        "height": 28,
+        "selector": ".status-line",
+        "width": 1036,
+        "x": 65,
+        "y": 819
+      },
+      {
+        "height": 658,
+        "selector": ".inspect",
+        "width": 320,
+        "x": 1110,
+        "y": 190
+      }
+    ],
+    "status": "当前查看日 2024-06-25 · 已展开至 2024-06-25",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    }
+  }
+]

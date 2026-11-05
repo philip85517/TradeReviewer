@@ -1,0 +1,670 @@
+{
+  "body": {
+    "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+    "size": "13px"
+  },
+  "items": [
+    {
+      "bg": "rgb(11, 18, 32)",
+      "class": "rail",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "h": 900,
+        "w": 54,
+        "x": 0,
+        "y": 0
+      },
+      "size": "13px",
+      "svg": [
+        {
+          "h": 19,
+          "stroke": null,
+          "w": 19
+        }
+      ],
+      "tag": "ASIDE",
+      "text": "工作台\n      策略库\n      实验",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "class": "rail-btn active",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "6px",
+      "rect": {
+        "h": 42,
+        "w": 48,
+        "x": 2.5,
+        "y": 67
+      },
+      "size": "12px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "工作台",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "rail-btn",
+      "color": "rgb(156, 172, 194)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "6px",
+      "rect": {
+        "h": 42,
+        "w": 48,
+        "x": 2.5,
+        "y": 115
+      },
+      "size": "12px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "策略库",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "rail-btn",
+      "color": "rgb(156, 172, 194)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "6px",
+      "rect": {
+        "h": 42,
+        "w": 48,
+        "x": 2.5,
+        "y": 163
+      },
+      "size": "12px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "实验",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(8, 15, 29, 0.84)",
+      "class": "topbar",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 18px",
+      "radius": "0px",
+      "rect": {
+        "h": 48,
+        "w": 1386,
+        "x": 54,
+        "y": 0
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "HEADER",
+      "text": "TradeReview/ 策略实验 / 工作台\n        视觉模型 · 合成数据 · 刷新重置查看配置实验列表林 ",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "soft-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 10px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 74,
+        "x": 1188.8828125,
+        "y": 5.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "查看配置",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "soft-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 10px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 74,
+        "x": 1274.8828125,
+        "y": 5.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "实验列表",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.14)",
+      "class": "strategy-tag",
+      "color": "rgb(199, 220, 250)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "5px 9px",
+      "radius": "5px",
+      "rect": {
+        "h": 36,
+        "w": 175,
+        "x": 347.2265625,
+        "y": 53.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "SELECT",
+      "text": "EMA20 动量 v1.4 · 锁定低波动防守 v2.0 · 锁定组合 B · 数据缺失 · 锁定",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.16)",
+      "class": "tab",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 12px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 78,
+        "x": 1098.7734375,
+        "y": 53.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "回放观察",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "tab",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 12px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 78,
+        "x": 1178.7734375,
+        "y": 53.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "阶段结果",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "tab",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 12px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 78,
+        "x": 1258.7734375,
+        "y": 53.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "组合对比",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 10px",
+      "radius": "5px",
+      "rect": {
+        "h": 36,
+        "w": 77.2265625,
+        "x": 1344.7734375,
+        "y": 53.5
+      },
+      "size": "12px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "实验操作⌄",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "metric",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "line": "normal",
+      "padding": "0px 16px 0px 0px",
+      "radius": "0px",
+      "rect": {
+        "h": 28,
+        "w": 325.75,
+        "x": 72,
+        "y": 105.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "DIV",
+      "text": "总资产¥100,000",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "metric",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "line": "normal",
+      "padding": "0px 16px",
+      "radius": "0px",
+      "rect": {
+        "h": 28,
+        "w": 341.75,
+        "x": 397.75,
+        "y": 105.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "DIV",
+      "text": "累计收益0.00%按当前查看日计算",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "metric",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "line": "normal",
+      "padding": "0px 16px",
+      "radius": "0px",
+      "rect": {
+        "h": 28,
+        "w": 341.75,
+        "x": 739.5,
+        "y": 105.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "DIV",
+      "text": "组合当日收益—尚未开始",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "metric",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "line": "normal",
+      "padding": "0px 16px",
+      "radius": "0px",
+      "rect": {
+        "h": 28,
+        "w": 340.75,
+        "x": 1081.25,
+        "y": 105.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "DIV",
+      "text": "现金比例100.0%",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "soft-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 10px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 74,
+        "x": 1348,
+        "y": 144.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "原型工具",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.16)",
+      "class": "icon-btn active",
+      "color": "rgb(141, 188, 248)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 72,
+        "x": 869.1796875,
+        "y": 194.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "组合净值",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "icon-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 73.8203125,
+        "x": 943.1796875,
+        "y": 194.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "标的 K 线",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "icon-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 72,
+        "x": 1019,
+        "y": 194.5
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "视野说明",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "icon-btn",
+      "color": "rgb(101, 117, 138)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 8px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 83,
+        "x": 132,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "回看上一日",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "replay-date",
+      "color": "rgb(231, 237, 246)",
+      "font": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 8px",
+      "radius": "5px",
+      "rect": {
+        "h": 36,
+        "w": 130,
+        "x": 219,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "SELECT",
+      "text": "2024-06-14",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "icon-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 8px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 96,
+        "x": 353,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "回到最新进度",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(47, 128, 237)",
+      "class": "icon-btn primary",
+      "color": "rgb(255, 255, 255)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 8px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 44,
+        "x": 842,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "播放",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "icon-btn",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px 8px",
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 109,
+        "x": 890,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "推进下一交易日",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "speed",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px",
+      "radius": "5px",
+      "rect": {
+        "h": 36,
+        "w": 58,
+        "x": 1033,
+        "y": 823
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "SELECT",
+      "text": "1x2x4x",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "class": "inspect",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "0px",
+      "radius": "7px",
+      "rect": {
+        "h": 702,
+        "w": 320,
+        "x": 1110,
+        "y": 190
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "ASIDE",
+      "text": "组合详情返回来源×概览调仓记录统计指标持仓概览按 2024-06-14 显示 · 已展开至 2024-06-14 · 合",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "inspect-tab",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "0px",
+      "rect": {
+        "h": 36,
+        "w": 102,
+        "x": 1117,
+        "y": 237
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "概览",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "inspect-tab",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "0px",
+      "rect": {
+        "h": 36,
+        "w": 102,
+        "x": 1219,
+        "y": 237
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "调仓记录",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "class": "inspect-tab",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "0px",
+      "rect": {
+        "h": 36,
+        "w": 102,
+        "x": 1321,
+        "y": 237
+      },
+      "size": "13px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "统计指标",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.1)",
+      "class": "detail-button",
+      "color": "rgb(141, 188, 248)",
+      "font": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "padding": "1px 6px",
+      "radius": "5px",
+      "rect": {
+        "h": 36,
+        "w": 294,
+        "x": 1123,
+        "y": 653.09375
+      },
+      "size": "12px",
+      "svg": [],
+      "tag": "BUTTON",
+      "text": "展开完整明细",
+      "weight": "400"
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 900,
+    "width": 1440
+  }
+}

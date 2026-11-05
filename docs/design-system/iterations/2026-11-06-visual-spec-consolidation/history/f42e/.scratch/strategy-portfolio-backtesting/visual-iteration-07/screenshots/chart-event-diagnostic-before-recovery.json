@@ -1,0 +1,50 @@
+[
+  {
+    "level": "debug",
+    "message": "[WB-DRAW before] {\"view\":\"compare\",\"chart\":\"navy\",\"eventMode\":false,\"v\":2,\"m\":2,\"safeLimit\":2,\"followChart\":true,\"lwViewport\":null,\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"dom\":{\"width\":876,\"height\":484,\"rect\":{\"x\":65,\"y\":235,\"width\":876,\"height\":484,\"top\":235,\"right\":941,\"bottom\":719,\"left\":65}},\"data\":{\"candles\":83,\"net\":3,\"compareA\":3,\"compareB\":3},\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609},\"unavailable\":false}",
+    "timestamp": "2026-10-06T12:54:17.265Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW after-series] {\"view\":\"compare\",\"chart\":\"navy\",\"eventMode\":false,\"data\":{\"candles\":83,\"net\":3,\"compare\":3},\"target\":{\"candleVisible\":false,\"netVisible\":true,\"compareVisible\":true},\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609},\"dom\":{\"width\":876,\"height\":484}}",
+    "timestamp": "2026-10-06T12:54:17.266Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW after-range] Object",
+    "timestamp": "2026-10-06T12:54:17.266Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW raf] {\"view\":\"compare\",\"chart\":\"navy\",\"eventMode\":false,\"followChart\":false,\"lwViewport\":{\"from\":-0.5,\"to\":2.5},\"logical\":{\"from\":-0.5,\"to\":2.5},\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":54.72000000000003,\"timeCoord\":609.5},\"dom\":{\"width\":876,\"height\":484},\"canvas\":[{\"width\":1628,\"height\":912,\"css\":[814,456]},{\"width\":1628,\"height\":912,\"css\":[814,456]},{\"width\":124,\"height\":912,\"css\":[62,456]},{\"width\":124,\"height\":912,\"css\":[62,456]},{\"width\":1628,\"height\":56,\"css\":[814,28]},{\"width\":1628,\"height\":56,\"css\":[814,28]},{\"width\":124,\"height\":56,\"css\":[62,28]}]}",
+    "timestamp": "2026-10-06T12:54:17.277Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW before] {\"view\":\"observe\",\"chart\":\"navy\",\"eventMode\":true,\"v\":2,\"m\":2,\"safeLimit\":2,\"followChart\":true,\"lwViewport\":null,\"logical\":{\"from\":-0.5,\"to\":2.5},\"dom\":{\"width\":876,\"height\":484,\"rect\":{\"x\":65,\"y\":235,\"width\":876,\"height\":484,\"top\":235,\"right\":941,\"bottom\":719,\"left\":65}},\"data\":{\"candles\":83,\"net\":3,\"compareA\":3,\"compareB\":3},\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":54.72000000000003,\"timeCoord\":609.5},\"unavailable\":false}",
+    "timestamp": "2026-10-06T12:54:17.531Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW after-series] {\"view\":\"observe\",\"chart\":\"navy\",\"eventMode\":true,\"data\":{\"candles\":83,\"net\":3,\"compare\":0},\"target\":{\"candleVisible\":false,\"netVisible\":true,\"compareVisible\":false},\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null},\"dom\":{\"width\":876,\"height\":484}}",
+    "timestamp": "2026-10-06T12:54:17.531Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW after-range] Object",
+    "timestamp": "2026-10-06T12:54:17.531Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-DRAW raf] {\"view\":\"observe\",\"chart\":\"navy\",\"eventMode\":true,\"followChart\":false,\"lwViewport\":{\"from\":-0.5,\"to\":2.5},\"logical\":null,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null},\"dom\":{\"width\":876,\"height\":484},\"canvas\":[{\"width\":816,\"height\":456,\"css\":[816,456]},{\"width\":816,\"height\":456,\"css\":[816,456]},{\"width\":60,\"height\":456,\"css\":[60,456]},{\"width\":60,\"height\":456,\"css\":[60,456]},{\"width\":816,\"height\":28,\"css\":[816,28]},{\"width\":816,\"height\":28,\"css\":[816,28]},{\"width\":60,\"height\":28,\"css\":[60,28]}]}",
+    "timestamp": "2026-10-06T12:54:17.540Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  }
+]

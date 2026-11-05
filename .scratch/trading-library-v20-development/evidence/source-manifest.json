@@ -1,0 +1,375 @@
+{
+  "date": "2026-10-26",
+  "base_commit": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "stable_ids": [
+    "LIB-V20-DOC-INTRO",
+    "LIB-V20-REFERENCES",
+    "LIB-V20-BT01-SCOPE",
+    "LIB-V20-BT01-ACCURACY",
+    "LIB-V20-BT01-TRADEOFF",
+    "LIB-V20-BT01-FIXTURE"
+  ],
+  "chapters": [
+    "BT06",
+    "BT01",
+    "BT02",
+    "BT01",
+    "BT02",
+    "BT03",
+    "BT04",
+    "BT05",
+    "BT06",
+    "BT07",
+    "BT08",
+    "BT09",
+    "BT10"
+  ],
+  "files": [
+    {
+      "path": "docs/design-system/trading-library-design-spec.md",
+      "sha256": "99c5c0930395e649a500a105e265e169a88636c7932949aa78bf8659ee39a3a3",
+      "bytes": 16137,
+      "lines": 164
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/visual-design.candidate.md",
+      "sha256": "dd25c5dab416ff1c24b1abd02fdd8212b79ae90eb5456846a7c3e59f751aca43",
+      "bytes": 42192,
+      "lines": 411
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "daa1434e4437c340cbd23e38e15a7a34c31a892685ad7dfd1269ffe418605c22",
+      "bytes": 62054,
+      "lines": 668
+    },
+    {
+      "path": "docs/specs/2026-09-25-chart-first-review-ui.md",
+      "sha256": "4b215909e326d24bb1a28b2ff24667578ec0f48238711d09c109edaa9542a839",
+      "bytes": 41647,
+      "lines": 295
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "0decd31562077f3a696a2b1d6bc072d023962e27eff6fa1e23000c4c25fa3c6f",
+      "bytes": 6578,
+      "lines": 31
+    },
+    {
+      "path": "CONTEXT.md",
+      "sha256": "967f9270eb155510f8bd40d8c3efed9934dfeab7c2015ce741c62ac0aeddc937",
+      "bytes": 10098,
+      "lines": 116
+    },
+    {
+      "path": "docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146",
+      "bytes": 27120,
+      "lines": 171
+    },
+    {
+      "path": "docs/agents/task-decomposition.md",
+      "sha256": "f0180fca7dbdd18b930bf442a04014e4cff392d2896de3526b87743e02c7cf92",
+      "bytes": 10287,
+      "lines": 100
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "sha256": "f63b9d2619dfbff376c70253cefdd62dfc9a74f14f8e26b30da1ffc9dd8b57e2",
+      "bytes": 6104,
+      "lines": 44
+    },
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777",
+      "bytes": 21905,
+      "lines": 228
+    },
+    {
+      "path": "docs/agents/ui-task-templates.md",
+      "sha256": "ae199796cd5b21f21c6018fad414b1a59b36122718c3deaeac1e6236ffb372eb",
+      "bytes": 15501,
+      "lines": 199
+    },
+    {
+      "path": "conf/runtime.json",
+      "sha256": "1af6fdabccadad0ec0bc6374eaa9013a798ce95ae57fa7e56a96f30af7e05eb0",
+      "bytes": 146
+    },
+    {
+      "path": "conf/README.md",
+      "sha256": "400017e79b8a8b26678d262a0d3024eb871a7d6341eca18c9594eb6fa0756eaf",
+      "bytes": 2429,
+      "lines": 21
+    },
+    {
+      "path": "conf/native-environment.json",
+      "sha256": "0696e9467559261f591f47e73795258ee147eb0923f5fd27b76506a172914b0a",
+      "bytes": 177
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-live-list-1440.jpg",
+      "sha256": "5eecb75308af558f060cbd4ad8551d2a88705ac9665dfce82a8aba03f9f69b73",
+      "bytes": 92470,
+      "reference_dimensions": "1440x1000; directly viewed, geometry reference only"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-live-stats-1440.jpg",
+      "sha256": "7c2a33a84d02956f93e71971348432e0b651843ad4e17ef04c244037acd05635",
+      "bytes": 79985,
+      "reference_dimensions": "1440x1000; directly viewed, geometry reference only"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-sim-list-1440.jpg",
+      "sha256": "fb912315670a2c97027287aeb016f61e8d00f62fca3689e705fd6662ea6d538f",
+      "bytes": 69156,
+      "reference_dimensions": "1440x1000; directly viewed, geometry reference only"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-sim-stats-1440.jpg",
+      "sha256": "57786f975467c1acf9be9e304cfa0b07cd54d5d02060a9c59cedfab6cd1383d9",
+      "bytes": 80016,
+      "reference_dimensions": "1440x1000; directly viewed, geometry reference only"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-date.svg",
+      "sha256": "35a0587f3ebc2dd3a1f9142f086be74a48c5f031854ee90b1734cfcf64f81ec8",
+      "bytes": 8340,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-date-1280.svg",
+      "sha256": "f02b5ced522280eaf4f6a486119ea21881b401c5a9937d3f43d76457611908c3",
+      "bytes": 8333,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-date-month.svg",
+      "sha256": "458dd0ec3d3ce6277285a7e7cec999cb7947d3ba625c46ef4ddb7fd846aee9ce",
+      "bytes": 13472,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-sim-ab.svg",
+      "sha256": "2d8708bbf94155e1367775687c822bd971ccb8646790a5e15f133de2c1f09c2f",
+      "bytes": 12442,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-rounds-a.svg",
+      "sha256": "3f4c98f04bd7be65ae63b7d977ce8f32d573dd176ba258f7c26d3ac7c6ca9ebf",
+      "bytes": 10605,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-replay-a1.svg",
+      "sha256": "da4f33949b554dc838b09eeb5f55af54c9f7bac65f6cec64fb37b32b8e767a37",
+      "bytes": 12150,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-replay-a2.svg",
+      "sha256": "7b8ab95b9e44c15c1b6f7f0e8ab371833270e225ab893c78e514fd6ce722f659",
+      "bytes": 12149,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-rounds-a-return.svg",
+      "sha256": "6065d200f219418a9be6ed4b0da0ce95b172688c0b0ed37769c6313fbfb5bc7f",
+      "bytes": 10692,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-simulation-return.svg",
+      "sha256": "3147b5cfd85b974cf28f0ffa7df1a466eb751130010907ea22a1a70170a795ea",
+      "bytes": 12529,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-rounds-b.svg",
+      "sha256": "7f35bb13fe4065f174f3a90e4732393edf5b2420f059a64e9c9b04856a79ae37",
+      "bytes": 9954,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-replay-b1.svg",
+      "sha256": "5af2262faabd9311097e8a6533375687bdd16eb13af62933f26906c9dec5debd",
+      "bytes": 9445,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/01-live-normal.svg",
+      "sha256": "9c64b78014d5596fb3ff0949c9a2caa8de8a3004b6596c98fbefdfe475bf1891",
+      "bytes": 14959,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/02-simulation-normal.svg",
+      "sha256": "b94c97b35db80ed6b5ecf70aeb5b63aaee38c855db0547b86e271c4c5c424731",
+      "bytes": 16537,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/distribution-amount.svg",
+      "sha256": "da2163bde844b2e9615e8065759cf0324aba2e2db2adbf750c77feeec9165ea4",
+      "bytes": 14963,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/03-distribution-selected.svg",
+      "sha256": "c0ea752539a293b43330338fe191e07363f96ff71dc24a2526648b03ca041650",
+      "bytes": 16380,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/04-return.svg",
+      "sha256": "4b547e72c9dbb326141b62d8f57465645371e1239f67dbd2faa988039c61cff7",
+      "bytes": 16468,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-trend-gap.svg",
+      "sha256": "8cad17a098308c141954c51c76b709760cc56310d7c3cf2049ec24b5ed870fe7",
+      "bytes": 17318,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-trend-single.svg",
+      "sha256": "77a2832e45c0d779712f67a917a43d6cec96c52b1c0117ae59648c8e3af6ca99",
+      "bytes": 15336,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-trend-empty.svg",
+      "sha256": "b9fb17270d3ec6e14b5ee6716a00df9783f18fb2396798abf6d9ccbae29f0530",
+      "bytes": 14713,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-trend-month.svg",
+      "sha256": "e8af20008e40689d09af32576af5bedaa7e0b516b347342386baed4bdcad3e9e",
+      "bytes": 15386,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-trend-year.svg",
+      "sha256": "ff139272f931d7e8ff4424edb4348e63afe1dd1d59b3e184a1ec3abaf6800c43",
+      "bytes": 15380,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/handoff.svg",
+      "sha256": "a73aad6556698df58f01abc56d539e6eef09d4fefc07abb4012d85f6ef12434d",
+      "bytes": 38031,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-home-entry.svg",
+      "sha256": "a73aad6556698df58f01abc56d539e6eef09d4fefc07abb4012d85f6ef12434d",
+      "bytes": 38031,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-library-list.svg",
+      "sha256": "32110b5af7036da92624c644975a203bc0ebccb5669a4b92be47c1f90ec72862",
+      "bytes": 13472,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-live-rounds.svg",
+      "sha256": "737c367176e0d3915a19162353e533dd6282549c36a38191bbd4debb2d7c98b4",
+      "bytes": 9763,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-library-replay.svg",
+      "sha256": "d5b45cce6a6fdfc70c690343e729d267058d30589efd49df6d0bbb28778cb75e",
+      "bytes": 9634,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-live-rounds-return.svg",
+      "sha256": "af8d09d4a0be631de8ead56ce280dfebaee91792d32348a1dc491cdd8e287563",
+      "bytes": 9850,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-library-list-return.svg",
+      "sha256": "661e1077fb1b2ca38f373d0e86f05301d9ac00fd941415e2f5fa2f1ece3cb628",
+      "bytes": 13559,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-view-simulation.svg",
+      "sha256": "2d8708bbf94155e1367775687c822bd971ccb8646790a5e15f133de2c1f09c2f",
+      "bytes": 12442,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-view-restore.svg",
+      "sha256": "661e1077fb1b2ca38f373d0e86f05301d9ac00fd941415e2f5fa2f1ece3cb628",
+      "bytes": 13559,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-pending-library.svg",
+      "sha256": "abcf6d444ecd5de27a6942667ea1e9600a9b03786883c9e1a738e737a9c5e6e5",
+      "bytes": 10172,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-pending-library-1280.svg",
+      "sha256": "0cc3a5065bbf83c4cbbc7e60d74560805e2daf9278765332d6360e9e2e3f27f4",
+      "bytes": 10165,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/library-return.svg",
+      "sha256": "29a78527bb80bc28504d098b066210496538c6f6777c3ffc7698fbc3d828fd87",
+      "bytes": 38129,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-library-return.svg",
+      "sha256": "29a78527bb80bc28504d098b066210496538c6f6777c3ffc7698fbc3d828fd87",
+      "bytes": 38129,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-return.svg",
+      "sha256": "4b547e72c9dbb326141b62d8f57465645371e1239f67dbd2faa988039c61cff7",
+      "bytes": 16468,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/05-loading.svg",
+      "sha256": "ac2113c429e02271e9df76dcd4d369161d60bc46a2451c13c9fa98080bd9784d",
+      "bytes": 13357,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/06-empty.svg",
+      "sha256": "b9fb17270d3ec6e14b5ee6716a00df9783f18fb2396798abf6d9ccbae29f0530",
+      "bytes": 14713,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/07-error.svg",
+      "sha256": "48a3fc1cdcda31d21b4fd71a788301547f5416571917131ea6d844ca307a6a25",
+      "bytes": 15539,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/08-extreme.svg",
+      "sha256": "218880bfaca09a81b574090cfbe4edcba510783698b6f6bf49690043303a3afa",
+      "bytes": 16141,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/09-missing-input.svg",
+      "sha256": "15c4198b5985a6a92924b1f94b0a70ad9eb3a761380adae4a345077a441bd33c",
+      "bytes": 16869,
+      "inspection": "source reference; rendered comparison not performed in this documentation session"
+    }
+  ]
+}

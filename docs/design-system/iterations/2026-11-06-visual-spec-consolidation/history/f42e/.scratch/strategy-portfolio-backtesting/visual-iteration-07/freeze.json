@@ -1,0 +1,883 @@
+{
+  "date": "2026-10-06 21:25:57.564493+08:00",
+  "branch": "codex/strategy-workbench-v1-design",
+  "source_sha256": {
+    "strategy-library-wireframes/build.py": "aa66c44dae6441af3e2a8f9b63b45fb40948e7392bc85d9203c8d67f4dd2edf1",
+    "strategy-library-wireframes/index.html": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+    "workbench-design/index.html": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea"
+  },
+  "evidence": [
+    {
+      "file": "screenshots/final10-a-config-1280.jpg",
+      "sha256": "8d6573f3bae9ed65b760ca0e8176f53e723df3e5b4aa89cefc9b8c38ae009b3e",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-a-event-compare-1280.jpg",
+      "sha256": "f801a96edff34dd3f6f1ac58b24e8d8be832b45fe53fefc9315a584d6673fc5f",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-a-package-history-1280.jpg",
+      "sha256": "a3fa4c045826033e95fd576a1db76c649787ab56fbf531a7eaa73f99cc6dc4a3",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-a-return-source-1280.jpg",
+      "sha256": "600cc93203d1751827c03b36ad2532000fbf10bb85e5148a10b867f3142cde86",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f16-two-1280.jpg",
+      "sha256": "7232ad3faccc8a92520074b47e2082520b22754b1a8d2643ec31c124d2f37c99",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f16-two-1440.jpg",
+      "sha256": "ef47942ee9bd048d1b784631f988a0479716ea747c8bac166308a8f0ff2a686f",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-missing-data-1280.jpg",
+      "sha256": "11fec95f36379c8bce15ff05a5c3daaec00b8e896096d457753ea619b070805d",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-missing-details-1280.jpg",
+      "sha256": "db6beb856aadb0861cdf750eae7a5b3a43b7cb76acdc4b0bba4da23cace61d48",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-missing-details-1440.jpg",
+      "sha256": "732615b57b7e38f857d58ddfe7e87956c830cb8a5e5ea1d283ed4b31e9ec2c2b",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-no-candidate-bottom-1280.jpg",
+      "sha256": "fb76b48d5cb229eeac829e71e01a3dc7ba496abd7922a52ec21ccb0f0b3e1d27",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-no-signal-bottom-1280.jpg",
+      "sha256": "5a487674e22cfd5ab15dcd8a6e20ffc91a5ad025553d91ef474f8225d6041398",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f17-two-1440.jpg",
+      "sha256": "27a724c626d106ef2911bd1d8d245fc917a6a92c901d4c2528a95a0006a7c740",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f18-one-top-1280.jpg",
+      "sha256": "07a466e600cc8cc7174ce176bc1eda98ca5c6a32e3bc67da048bdace8d09d42a",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f18-two-top-1280.jpg",
+      "sha256": "854616883d7b881b168b17872e74f3e725c70e873043e83bf906ec7c59bbfac0",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final10-f18-two-top-1440.jpg",
+      "sha256": "fcb66cea65f408bd5ff231a111c1adde602482884cbc87175956eff0be9b2ea7",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "118b31a2483f5ed44144d46d9f3fa1a7b6c44ef83234a7951d622357c5b23dc9",
+      "inheritance": "Only final F16 overlay button CSS changed; this non-overlay frame is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-a-close-event-stable-1280.jpg",
+      "sha256": "18ce6e58d1328a48e6f9780ccd3892e2a58abeda3ccdaf6a308a07bc45b3ecd2",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f16-detail-1280.jpg",
+      "sha256": "afb1ddc4f6a8beb241f6f8f6f64922b566a296b8c04187a84b0df411dff25573",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f16-history-1280.jpg",
+      "sha256": "83cb8fbd804b543a594f048d8b1526ac6a1748f9cc83e5a5e51422f4cb759fd7",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f16-two-1280.jpg",
+      "sha256": "33e4df878941719bda4746060d9a6ba2d42e338d0c84a759d625e0b82ab7a783",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f16-two-1440.jpg",
+      "sha256": "1958fc76f430ff940449e3038ecd93825e8c113444c9861c7d69b694c03e51ef",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f17-two-1280.jpg",
+      "sha256": "727c5081ebc023396c3c8adf080372eb99d67ae1e2c8df8c88bc33214835004c",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f17-two-1440.jpg",
+      "sha256": "27a724c626d106ef2911bd1d8d245fc917a6a92c901d4c2528a95a0006a7c740",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f18-one-top-1280.jpg",
+      "sha256": "07a466e600cc8cc7174ce176bc1eda98ca5c6a32e3bc67da048bdace8d09d42a",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f18-two-top-1280.jpg",
+      "sha256": "854616883d7b881b168b17872e74f3e725c70e873043e83bf906ec7c59bbfac0",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final11-f18-two-top-1440.jpg",
+      "sha256": "fcb66cea65f408bd5ff231a111c1adde602482884cbc87175956eff0be9b2ea7",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-backlook-1280.jpg",
+      "sha256": "58cc20f96d006095460aea8046327c0424bd76754a8772ddc428429f8f353a82",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-compare-1280.jpg",
+      "sha256": "7775be29a7149ba11d23d922fc7738bab451f3744370f9cb703b1aad90db9144",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-compare-1440.jpg",
+      "sha256": "a5f7cb7f1d5c439167bb42ef34460b48d801731852a20f3b7c7c1066635d6260",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-complete-1280.jpg",
+      "sha256": "d039888e6fe175a2701e15c5f155c4ddc4bc7f23323c86ca3abf38a801bc8b60",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-event-compare-1280.jpg",
+      "sha256": "1ad856a13cbb699fae8445394e541cd31576d02fd89ded52038cc7f299cbf770",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-event-compare-1440.jpg",
+      "sha256": "77923400159e74dfd9eedbaeb038f62a06436c82ef125da7cbddf44784630cf0",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-event-result-1280.jpg",
+      "sha256": "45a6b76eb460fbaa8d9b03a818e67754dd6fc559f06cabc7d8b535f04419b1df",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-failure-1280.jpg",
+      "sha256": "49c29abf2636ceef518d54ae76dd9be657dd4f3ec238e0c66664fb31e172d492",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-loading-1280.jpg",
+      "sha256": "4c799acb52af5624c27ebca9eb77e5d483ef7f4807c153ae7b20db4cc404a85b",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-long-event-bottom-1280.jpg",
+      "sha256": "866404d4cba39c3ebb3449649c669685a1f8b7cb2bb1d490180ae533307b4318",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-long-event-top-1280.jpg",
+      "sha256": "9ef09c7f1db2f6951812109635e46e1f6919d875682bffde33cc00c5f00e8370",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-mi-1280.jpg",
+      "sha256": "bfa71bc519b8ff6eca4230ef55f639971df02087247d71fa36b571153be19ff4",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-name-focus-1280.jpg",
+      "sha256": "ff7b4fb6aed7a4ae1865d51dc461df00a04e239ffc31a6097235618f59952373",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-name-hover-1280.jpg",
+      "sha256": "4d19907e2f7a25a97518ada887ab73202d9aa2518004d5c9149d1a0dd844ad4d",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-pressure-1299.jpg",
+      "sha256": "4a81c6b54aa6c48417bec679af5cf56fec986a9466279560a2b7392b5d84f982",
+      "pixels": [
+        1299,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-pressure-1301.jpg",
+      "sha256": "9ffe8aee52b125a2014b9742524136d3dc3e409bbb66698b660d8cda1aed96f6",
+      "pixels": [
+        1301,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-pressure-1440.jpg",
+      "sha256": "971c50d570393bf4d0b65175bf5dc367efca41c19f5160fef242aca497d55480",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-result-1280.jpg",
+      "sha256": "fa1437d94c6a11119af44d7b57783dd4b2ec4f29695aa1c72254fd4f07109535",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-result-1440.jpg",
+      "sha256": "b9a18f6592fbc05a14cce8cde52d498766fda9968b7a4c5a019c98977487ebe1",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-step-candle-1280.jpg",
+      "sha256": "9f9a8fe62787dbe54edbb1d35fbe94290ef942652ed13c47643d5a3ad2aac503",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-t0-1280.jpg",
+      "sha256": "3dbb5a1ad96c5541fa21a8bb3a4590a96a2bfdadb5c71eb7e628b91be39fee43",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-a-t0-1440.jpg",
+      "sha256": "49e6de035598f5b314d74a4062991fafefe854ac57616349445161fcf8cdb3d6",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-creation-name-focus-1280.jpg",
+      "sha256": "e3513f4473a023035311621ded8f1d266a6c33721585edad7eae691cd1d9ed0f",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-creation-name-hover-1280.jpg",
+      "sha256": "86eca5d7077cc39a61cd347cba9121db3dae8c47bbd4c5dd22846ba41e6508a1",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-creation-name-pressure-1280.jpg",
+      "sha256": "acc83a00ac98d05b812bac8ffdf9ab1e22f6ee566950c5261cf6a3f0b0c34702",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f14-1280.jpg",
+      "sha256": "b7053ffee26e6686a70a17ebecc81a15a5556f1cc63d43689f77c543d14db3da",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f14-1440.jpg",
+      "sha256": "b27257719759b95198eb0630ecc0663f10db8a7f2aadc7ed4592176e851117ce",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f14-lower-1280.jpg",
+      "sha256": "58bae1f5c7d25e92ad5e1f141b31393dd2c40b2bbe6b0c2e9036267d3611c68b",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f14-lower-1440.jpg",
+      "sha256": "13fdae7676d9b670cc708a00ba3a7f4131247ebf5e3ad711913b7da5e30ecd98",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f15-bottom-1280.jpg",
+      "sha256": "d34d019eb2001f943355f082e138269ff303a41a95b5b38707807cfb38ad3405",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f15-bottom-1440.jpg",
+      "sha256": "93bc56b4e829a07cf69e2a405c3772fbbde185988d5c09671188c5ea024df370",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f15-top-1280.jpg",
+      "sha256": "89867899a36ec816431d44af0675fb0e6be37ba536aa4d999ccfc477baad0a53",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f15-top-1440.jpg",
+      "sha256": "d52e52fd63075c8d6b18cfbeb537d621a98160e44fb09d97f77ecd2a234b7b7c",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f18-bottom-1280.jpg",
+      "sha256": "231cb074a0188f7a8f99337e94433d29a9c35c571836cfa2ed8709799eaa9423",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f18-bottom-1440.jpg",
+      "sha256": "9db290e98633ff8a25d72bde969288dd38846556ad631fad4bfa4de357b8db7a",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final8-f18-checks-1280.jpg",
+      "sha256": "dc26eb52ed4a314f96e925536ea02b24947f54aa9356513dbf52bc5c52c6d5ba",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "570a2767b91ca61b3c223bd41b9269199d6f969014cec4f5c4d4ec28c14ce89a",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-a-play-paused-1280.jpg",
+      "sha256": "4b2ac0267191d936908072b2265becebbdf33f9997797dbda186f03efae83255",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-a-play-running-1280.jpg",
+      "sha256": "7a22765cc3ddabec000a807fb20780f95df4ac45266a1acb8ad3efa98f12d182",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-a-pressure-1299-800.jpg",
+      "sha256": "7ec2a7adc229c370ea31df128e338d8af1362f7f34665159a7b69c75cd573acd",
+      "pixels": [
+        1299,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-a-pressure-1301-800.jpg",
+      "sha256": "84bc76271de7c061fad43cff769442ca9c80d2774ea87140ee152d8172bbd96c",
+      "pixels": [
+        1301,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-f10-1440.jpg",
+      "sha256": "e436db62d0b3e65413cc5b023ae7acf25941fe3f2e2c8d2b269461f3460e256c",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "78cb7273fa05508e8f562f28055a46917ef1fe7ebc74dca9176f18762b74b7e6",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this F10/F12 state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/final9-f12-1440.jpg",
+      "sha256": "fbbfcacf2c76792c688ef298a37518306a084d8c5fb8c8f110cb1e51b685239c",
+      "pixels": [
+        1440,
+        900
+      ],
+      "capture_source_sha256": "78cb7273fa05508e8f562f28055a46917ef1fe7ebc74dca9176f18762b74b7e6",
+      "inheritance": "Later changes only affect F17 missing disclosure and F16 overlay buttons; this F10/F12 state is unchanged.",
+      "encoding": "JPEG",
+      "scope": "Rendered viewport; DPR1, zoom100%"
+    },
+    {
+      "file": "screenshots/delivery-f14-1280.jpg",
+      "sha256": "b7053ffee26e6686a70a17ebecc81a15a5556f1cc63d43689f77c543d14db3da",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Fresh delivery URL browser check; DPR1, zoom100%; supplemental to independently reviewed matching state."
+    },
+    {
+      "file": "screenshots/delivery-a-t0-1280.jpg",
+      "sha256": "3dbb5a1ad96c5541fa21a8bb3a4590a96a2bfdadb5c71eb7e628b91be39fee43",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Fresh delivery URL browser check; DPR1, zoom100%; supplemental to independently reviewed matching state."
+    },
+    {
+      "file": "screenshots/final12-f10-1280.jpg",
+      "sha256": "1c924cdb725f33d0749abf86b967e280f1834ba5901390366804c29807244ec3",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Final 1280x800 catalogue/package metadata; root browser mouse navigation and actual F12 bottom scroll 1242/1242; DPR1 zoom100%."
+    },
+    {
+      "file": "screenshots/final12-f12-1280.jpg",
+      "sha256": "485b296d223aaa50ba8652e068c112596ec567f2c6eae9c613680503633e8e4c",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Final 1280x800 catalogue/package metadata; root browser mouse navigation and actual F12 bottom scroll 1242/1242; DPR1 zoom100%."
+    },
+    {
+      "file": "screenshots/final12-f12-bottom-1280.jpg",
+      "sha256": "89965142a8ac5030e64f31da15b8f26c4c07c85658c51bfe2885bbd5115ec2cf",
+      "pixels": [
+        1280,
+        800
+      ],
+      "capture_source_sha256": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+      "inheritance": null,
+      "encoding": "JPEG",
+      "scope": "Final 1280x800 catalogue/package metadata; root browser mouse navigation and actual F12 bottom scroll 1242/1242; DPR1 zoom100%."
+    }
+  ],
+  "excluded": "Screenshots not listed are historical/intermediate: white-button final10-f16-history FAIL, toast final10-a-close-event, intermediate-cfa incomplete missing disclosure, earlier blank charts and wrong-state/scroll frames. Preserve historical FAIL conclusions. VIS07-07 original final8 clipped-frame bytes were overwritten; frozen2 directly reviewed same-failure evidence is retained instead, so original screenshot bytes are not all retained.",
+  "boundaries": "1299/1301x800 required; x900 supplementary width evidence only.",
+  "provenance_limits": [
+    "118b final10 creation frames are inherited only for states unaffected by the final ce278 overlay-button CSS rule.",
+    "DR08 visual review covers directly viewed A long experiment names, F10 creation name entry and explicit F16 pressure fixture. Mouse and keyboard behavior have separate root browser evidence.",
+    "VIS07-07 original clipped final8 screenshot bytes were overwritten; frozen2 preserves the same observed failure."
+  ],
+  "preview_last_browser_check": "2026-10-06T21:28:50.666792+08:00"
+}

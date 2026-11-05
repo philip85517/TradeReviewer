@@ -1,0 +1,58 @@
+[
+  {
+    "element": "topbar",
+    "height": 48,
+    "width": 1386,
+    "x": 54,
+    "y": 0
+  },
+  {
+    "element": "identity",
+    "height": 48,
+    "width": 1386,
+    "x": 54,
+    "y": 48
+  },
+  {
+    "element": "summary",
+    "height": 48,
+    "width": 1386,
+    "x": 54,
+    "y": 96
+  },
+  {
+    "element": "design-strip",
+    "height": 38,
+    "width": 1386,
+    "x": 54,
+    "y": 144
+  },
+  {
+    "element": "workspace",
+    "height": 702,
+    "width": 1038,
+    "x": 64,
+    "y": 190
+  },
+  {
+    "element": "plot",
+    "height": 584,
+    "width": 1036,
+    "x": 65,
+    "y": 235
+  },
+  {
+    "element": "replay",
+    "height": 44,
+    "width": 1036,
+    "x": 65,
+    "y": 819
+  },
+  {
+    "element": "inspect",
+    "height": 702,
+    "width": 320,
+    "x": 1110,
+    "y": 190
+  }
+]

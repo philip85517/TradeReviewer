@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-06 21:25:57.564493+08:00",
+  "checks": {
+    "compile": {
+      "exit": 0,
+      "output": ""
+    },
+    "generate": {
+      "exit": 0,
+      "output": "Rendered 19 static boards to /Users/zhoulin/.codex/worktrees/f42e/TradeReview/.scratch/strategy-portfolio-backtesting/strategy-library-wireframes/index.html\n"
+    },
+    "format": {
+      "exit": 0,
+      "output": ""
+    },
+    "strategy-library-wireframes/index.html": [
+      {
+        "exit": 0,
+        "output": ""
+      }
+    ],
+    "workbench-design/index.html": [
+      {
+        "exit": 0,
+        "output": ""
+      }
+    ],
+    "before": {
+      "strategy-library-wireframes/build.py": true,
+      "strategy-library-wireframes/index.html": true,
+      "workbench-design/index.html": true
+    },
+    "http://127.0.0.1:3063/strategy-library-wireframes/": {
+      "status": 200,
+      "bytes": 124375
+    },
+    "http://127.0.0.1:3063/workbench-design/?variant=A": {
+      "status": 200,
+      "bytes": 96641
+    }
+  },
+  "source_sha256": {
+    "strategy-library-wireframes/build.py": "aa66c44dae6441af3e2a8f9b63b45fb40948e7392bc85d9203c8d67f4dd2edf1",
+    "strategy-library-wireframes/index.html": "ce278f9022cfd396bc7037bf627dae3375b343528edbfe8886e295d19e1ddc09",
+    "workbench-design/index.html": "d12096e92a19cc944205a445ba366dec9634ee16a961b263bcc0827e42a8acea"
+  },
+  "production_files": "No app/API/model/database edits in this delivery; preexisting worktree changes preserved."
+}

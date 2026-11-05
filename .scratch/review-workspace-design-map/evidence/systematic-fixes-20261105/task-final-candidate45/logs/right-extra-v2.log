@@ -1,0 +1,38 @@
+{
+  "target": "9236CBA9E6D99B0EF6F1322B5B02B727",
+  "failures": [
+    "legal short fields still show validation error",
+    "replay next-stop path did not reach exit",
+    "replay next-stop path did not reach exit"
+  ],
+  "notVerified": [
+    {
+      "step": "I36-adherence-native-select-attempt",
+      "reason": "native select did not reliably commit in this channel"
+    },
+    {
+      "step": "I37-rating-native-select-attempt",
+      "reason": "native rating select commit is not reliable in this channel"
+    }
+  ],
+  "errors": 0,
+  "steps": [
+    "I30-trade3-short-legal",
+    "I30-trade2-long",
+    "I30-trade3-return-short",
+    "I30-trade2-return-long",
+    "I30-direction-keyboard",
+    "replay-to-exit",
+    "I35-mouse-unrated",
+    "I35-mouse-yes",
+    "I35-mouse-no",
+    "I35-mouse-uncertain",
+    "I35-keyboard-no",
+    "I36-reason-typed",
+    "I36-adherence-native-select-attempt",
+    "I37-rating-native-select-attempt",
+    "I36-I37-trade2-entry-after-trade3",
+    "replay-to-exit",
+    "I36-I37-trade3-exit-return"
+  ]
+}

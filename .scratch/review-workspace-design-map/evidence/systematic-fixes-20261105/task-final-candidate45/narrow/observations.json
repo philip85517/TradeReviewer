@@ -1,0 +1,160 @@
+{
+  "steps": [
+    {
+      "name": "01-390-before-mouse",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页",
+      "scrollY": 0,
+      "scrollHeight": 844,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "BODY",
+        "text": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页"
+      },
+      "chart": false
+    },
+    {
+      "name": "02-390-after-mouse",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "title": "复盘页视觉规范 V1.0",
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n区域职责先于像素参数\n用完整宽度推导收缩顺序\n布局变化与图表观察分开处理\n三、视觉语言与 TradingView 专用工具\n公共视觉承担层级，图形承担对象含义\n按截图槽位锁定图标与功能\n底栏保留参考语义，交易导航另设入口\n证据缺口按外观、动作和恢复分别补齐\n四、交易单位与连续复盘动线\n关系模型与取舍\n与旧完成规则的差异及兼容\n三条完整旅程\n旅程 A：最近未复盘独立交易的普通入场与退出\n旅程 B：加仓后减仓、部分退出与多批次匹配\n旅程 C：恢复未完成复盘\n左右区域和节点行为\n五、回放的时间与信息边界\n状态字段\n未来信息的整面约束\n引用与效力\n六、节点计划、图形与判断记录\n先冻结独立入场批次的计划\n计划线与 TradingView 图形不是同一对象\n图形与 Text 共享可核对的生命周期\n逐工具合同：已知轮廓与待验证动作分开\n判断记录的归属、锚点和时间边界\n交叉边界与待证项目\n七、过程指标与退出评价\n指标字典（候选规则）\n可复算算例\n缺失、顺序与未来统计\n对象与可见性矩阵\n退出事实与评分卡\n八、窄屏、键盘与异常状态\n从并排转为单一内容区\n工具形态与触控适配分别审阅\n输入期间的焦点与快捷键\n异常反馈固定在能恢复的位置\n逐区域状态与操作承诺\n九、保存、完成与工作区出口\n目标与取舍\n保存状态与恢复矩阵\n快照、导出与版本\n两层关闭与返回\n设计验收边界\n十、任务覆盖、证据与验收\n十二项任务怎样进入正文\n原元素与新工作区逐项对应\n评论、旧图与证据保持可追溯\n定稿与产品交付的分开门槛\n\n文档 1.0 · 复盘页视觉规范\n\n评论\n复盘页视觉规范 V1.0\n\n2026-10-24 全文改写候选 · 范围仅限复盘工作区 · 待审阅\n\n复盘工作区围绕一笔笔交易展开：从交易库进入标的，找到最近一笔待复盘交易，在入场节点补充计划，随着行情推进留下判断，在退出节点核对事实并评价。主图承载这条连续过程；左右区域帮助选择交易和编辑当前记录，不要求用户靠“入场前、持仓中、事后”三个按钮完成流程。\n\n本次将 12 项文档设计任务整合为十章。第一至三章说明设计方向、空间和工具；第四、五章确定交易对象与推进边界；",
+      "scrollY": 0,
+      "scrollHeight": 47486,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "chart": false
+    },
+    {
+      "name": "03-390-document-scrolled",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "title": "复盘页视觉规范 V1.0",
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n区域职责先于像素参数\n用完整宽度推导收缩顺序\n布局变化与图表观察分开处理\n三、视觉语言与 TradingView 专用工具\n公共视觉承担层级，图形承担对象含义\n按截图槽位锁定图标与功能\n底栏保留参考语义，交易导航另设入口\n证据缺口按外观、动作和恢复分别补齐\n四、交易单位与连续复盘动线\n关系模型与取舍\n与旧完成规则的差异及兼容\n三条完整旅程\n旅程 A：最近未复盘独立交易的普通入场与退出\n旅程 B：加仓后减仓、部分退出与多批次匹配\n旅程 C：恢复未完成复盘\n左右区域和节点行为\n五、回放的时间与信息边界\n状态字段\n未来信息的整面约束\n引用与效力\n六、节点计划、图形与判断记录\n先冻结独立入场批次的计划\n计划线与 TradingView 图形不是同一对象\n图形与 Text 共享可核对的生命周期\n逐工具合同：已知轮廓与待验证动作分开\n判断记录的归属、锚点和时间边界\n交叉边界与待证项目\n七、过程指标与退出评价\n指标字典（候选规则）\n可复算算例\n缺失、顺序与未来统计\n对象与可见性矩阵\n退出事实与评分卡\n八、窄屏、键盘与异常状态\n从并排转为单一内容区\n工具形态与触控适配分别审阅\n输入期间的焦点与快捷键\n异常反馈固定在能恢复的位置\n逐区域状态与操作承诺\n九、保存、完成与工作区出口\n目标与取舍\n保存状态与恢复矩阵\n快照、导出与版本\n两层关闭与返回\n设计验收边界\n十、任务覆盖、证据与验收\n十二项任务怎样进入正文\n原元素与新工作区逐项对应\n评论、旧图与证据保持可追溯\n定稿与产品交付的分开门槛\n\n文档 1.0 · 复盘页视觉规范\n\n评论\n复盘页视觉规范 V1.0\n\n2026-10-24 全文改写候选 · 范围仅限复盘工作区 · 待审阅\n\n复盘工作区围绕一笔笔交易展开：从交易库进入标的，找到最近一笔待复盘交易，在入场节点补充计划，随着行情推进留下判断，在退出节点核对事实并评价。主图承载这条连续过程；左右区域帮助选择交易和编辑当前记录，不要求用户靠“入场前、持仓中、事后”三个按钮完成流程。\n\n本次将 12 项文档设计任务整合为十章。第一至三章说明设计方向、空间和工具；第四、五章确定交易对象与推进边界；",
+      "scrollY": 600,
+      "scrollHeight": 47486,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "chart": false
+    },
+    {
+      "name": "04-history-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页",
+      "scrollY": 0,
+      "scrollHeight": 844,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "A",
+        "text": "返回阅读页",
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html"
+      },
+      "chart": false
+    },
+    {
+      "name": "05-390-keyboard-link",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页",
+      "scrollY": 0,
+      "scrollHeight": 844,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "A",
+        "text": "返回阅读页",
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html"
+      },
+      "chart": false
+    },
+    {
+      "name": "06-390-after-keyboard",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "title": "复盘页视觉规范 V1.0",
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n区域职责先于像素参数\n用完整宽度推导收缩顺序\n布局变化与图表观察分开处理\n三、视觉语言与 TradingView 专用工具\n公共视觉承担层级，图形承担对象含义\n按截图槽位锁定图标与功能\n底栏保留参考语义，交易导航另设入口\n证据缺口按外观、动作和恢复分别补齐\n四、交易单位与连续复盘动线\n关系模型与取舍\n与旧完成规则的差异及兼容\n三条完整旅程\n旅程 A：最近未复盘独立交易的普通入场与退出\n旅程 B：加仓后减仓、部分退出与多批次匹配\n旅程 C：恢复未完成复盘\n左右区域和节点行为\n五、回放的时间与信息边界\n状态字段\n未来信息的整面约束\n引用与效力\n六、节点计划、图形与判断记录\n先冻结独立入场批次的计划\n计划线与 TradingView 图形不是同一对象\n图形与 Text 共享可核对的生命周期\n逐工具合同：已知轮廓与待验证动作分开\n判断记录的归属、锚点和时间边界\n交叉边界与待证项目\n七、过程指标与退出评价\n指标字典（候选规则）\n可复算算例\n缺失、顺序与未来统计\n对象与可见性矩阵\n退出事实与评分卡\n八、窄屏、键盘与异常状态\n从并排转为单一内容区\n工具形态与触控适配分别审阅\n输入期间的焦点与快捷键\n异常反馈固定在能恢复的位置\n逐区域状态与操作承诺\n九、保存、完成与工作区出口\n目标与取舍\n保存状态与恢复矩阵\n快照、导出与版本\n两层关闭与返回\n设计验收边界\n十、任务覆盖、证据与验收\n十二项任务怎样进入正文\n原元素与新工作区逐项对应\n评论、旧图与证据保持可追溯\n定稿与产品交付的分开门槛\n\n文档 1.0 · 复盘页视觉规范\n\n评论\n复盘页视觉规范 V1.0\n\n2026-10-24 全文改写候选 · 范围仅限复盘工作区 · 待审阅\n\n复盘工作区围绕一笔笔交易展开：从交易库进入标的，找到最近一笔待复盘交易，在入场节点补充计划，随着行情推进留下判断，在退出节点核对事实并评价。主图承载这条连续过程；左右区域帮助选择交易和编辑当前记录，不要求用户靠“入场前、持仓中、事后”三个按钮完成流程。\n\n本次将 12 项文档设计任务整合为十章。第一至三章说明设计方向、空间和工具；第四、五章确定交易对象与推进边界；",
+      "scrollY": 0,
+      "scrollHeight": 47486,
+      "viewport": [
+        390,
+        844
+      ],
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "chart": false
+    },
+    {
+      "name": "07-desktop-return",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "body": "›\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n十字线 ¥52.50\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\n‹\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏",
+      "scrollY": 0,
+      "scrollHeight": 900,
+      "viewport": [
+        1440,
+        900
+      ],
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "›\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前"
+      },
+      "chart": true
+    }
+  ],
+  "failures": [],
+  "nav": [
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18"
+  ],
+  "errors": [],
+  "target": "DA38619C104E095C40BFF33071C1B29B"
+}

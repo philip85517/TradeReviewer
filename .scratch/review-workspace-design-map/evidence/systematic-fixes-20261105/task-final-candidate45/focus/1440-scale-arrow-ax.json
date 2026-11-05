@@ -1,0 +1,307 @@
+[
+  {
+    "nodeId": "2032",
+    "ignored": false,
+    "role": {
+      "type": "role",
+      "value": "radiogroup"
+    },
+    "chromeRole": {
+      "type": "internalRole",
+      "value": 142
+    },
+    "name": {
+      "type": "computedString",
+      "value": "计划规模 · 金额",
+      "sources": [
+        {
+          "type": "relatedElement",
+          "value": {
+            "type": "computedString",
+            "value": "计划规模 · 金额"
+          },
+          "attribute": "aria-labelledby",
+          "attributeValue": {
+            "type": "idrefList",
+            "value": "scale-options-label",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 2033,
+                "idref": "scale-options-label",
+                "text": "计划规模 · 金额"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "aria-label",
+          "superseded": true
+        },
+        {
+          "type": "relatedElement",
+          "superseded": true,
+          "nativeSource": "legend"
+        },
+        {
+          "type": "attribute",
+          "attribute": "title",
+          "superseded": true
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 2033,
+              "idref": "scale-options-label",
+              "text": "计划规模 · 金额"
+            }
+          ]
+        }
+      }
+    ],
+    "parentId": "2017",
+    "childIds": [
+      "2033",
+      "2034",
+      "2038"
+    ],
+    "backendDOMNodeId": 2032
+  },
+  {
+    "nodeId": "2035",
+    "ignored": false,
+    "role": {
+      "type": "role",
+      "value": "radio"
+    },
+    "chromeRole": {
+      "type": "internalRole",
+      "value": 141
+    },
+    "name": {
+      "type": "computedString",
+      "value": "按数量",
+      "sources": [
+        {
+          "type": "relatedElement",
+          "attribute": "aria-labelledby"
+        },
+        {
+          "type": "attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "type": "relatedElement",
+          "nativeSource": "label"
+        },
+        {
+          "type": "contents",
+          "value": {
+            "type": "computedString",
+            "value": "按数量"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "title",
+          "superseded": true
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "checked",
+        "value": {
+          "type": "tristate",
+          "value": "false"
+        }
+      }
+    ],
+    "parentId": "2034",
+    "childIds": [
+      "2245"
+    ],
+    "backendDOMNodeId": 2035
+  },
+  {
+    "nodeId": "2036",
+    "ignored": false,
+    "role": {
+      "type": "role",
+      "value": "radio"
+    },
+    "chromeRole": {
+      "type": "internalRole",
+      "value": 141
+    },
+    "name": {
+      "type": "computedString",
+      "value": "按金额",
+      "sources": [
+        {
+          "type": "relatedElement",
+          "attribute": "aria-labelledby"
+        },
+        {
+          "type": "attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "type": "relatedElement",
+          "nativeSource": "label"
+        },
+        {
+          "type": "contents",
+          "value": {
+            "type": "computedString",
+            "value": "按金额"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "title",
+          "superseded": true
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "focused",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "checked",
+        "value": {
+          "type": "tristate",
+          "value": "true"
+        }
+      }
+    ],
+    "parentId": "2034",
+    "childIds": [
+      "2246"
+    ],
+    "backendDOMNodeId": 2036
+  },
+  {
+    "nodeId": "2037",
+    "ignored": false,
+    "role": {
+      "type": "role",
+      "value": "radio"
+    },
+    "chromeRole": {
+      "type": "internalRole",
+      "value": 141
+    },
+    "name": {
+      "type": "computedString",
+      "value": "按仓位",
+      "sources": [
+        {
+          "type": "relatedElement",
+          "attribute": "aria-labelledby"
+        },
+        {
+          "type": "attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "type": "relatedElement",
+          "nativeSource": "label"
+        },
+        {
+          "type": "contents",
+          "value": {
+            "type": "computedString",
+            "value": "按仓位"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": "title",
+          "superseded": true
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "checked",
+        "value": {
+          "type": "tristate",
+          "value": "false"
+        }
+      }
+    ],
+    "parentId": "2034",
+    "childIds": [
+      "2247"
+    ],
+    "backendDOMNodeId": 2037
+  }
+]

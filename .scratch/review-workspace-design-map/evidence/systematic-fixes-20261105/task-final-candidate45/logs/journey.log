@@ -1,0 +1,207 @@
+{
+  "failures": [],
+  "errors": 0,
+  "steps": [
+    {
+      "name": "entry-28",
+      "bars": 28,
+      "markers": 0,
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1100"
+      },
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "holding-29",
+      "bars": 29,
+      "markers": 1,
+      "fields": {},
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "node-33",
+      "bars": 33,
+      "markers": 1,
+      "fields": {},
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "node-41",
+      "bars": 41,
+      "markers": 3,
+      "fields": {},
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "node-49",
+      "bars": 49,
+      "markers": 4,
+      "fields": {},
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ],
+      "readonlyCards": [
+        "原计划（只读）\n\n方向：做多 · 入场 ¥57 · 止损 ¥51 · 目标 ¥64\n\n数量 1100.00 股 · 金额 62700.00 · 仓位 31.35%",
+        "已完成交易事实\n\n首次买入：2025-02-03 · ¥51.40 · 1000 股\n\n最终平仓：2025-02-23 · ¥46.45 · 800 股"
+      ]
+    },
+    {
+      "name": "other-trade-entry",
+      "bars": 28,
+      "markers": 0,
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "lines": [
+        {
+          "price": 52,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 56,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 68,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "original-trade-return",
+      "bars": 28,
+      "markers": 0,
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1100"
+      },
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    }
+  ]
+}

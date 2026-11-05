@@ -1,0 +1,766 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "exceptions": [],
+    "steps": [
+      {
+        "name": "initial",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "list-open",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "28-entry-before-edit",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "28-entry-draft",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "57.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "29-holding",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1164,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "33-holding",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-10 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 33 根 · 未来信息已隐藏",
+        "date": "2025-01-10\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1056,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "34-holding",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-11 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 34 根 · 未来信息已隐藏",
+        "date": "2025-01-11\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1033,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 1126,
+              "y": 378,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "41-holding",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-18 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+        "note": "已揭示 41 根 · 未来信息已隐藏",
+        "date": "2025-01-18\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 845,
+              "y": 563,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 995,
+              "y": 410,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 1177,
+              "y": 462,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "49-exit",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 521,
+              "y": 534,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 634,
+              "y": 401,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 767,
+              "y": 482,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 892,
+              "y": 478,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-before-edit",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-draft",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "58.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade2-restored",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "57.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-restored",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "58.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade1-selected",
+        "selected": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2024-12-01\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        }
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "exceptions": [],
+    "steps": [
+      {
+        "name": "initial",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "list-open",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel is-collapsed ",
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 958,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "28-entry-before-edit",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "28-entry-draft",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "57.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "29-holding",
+        "selected": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1002,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "33-holding",
+        "selected": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-10 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 33 根 · 未来信息已隐藏",
+        "date": "2025-01-10\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 892,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "34-holding",
+        "selected": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-11 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 34 根 · 未来信息已隐藏",
+        "date": "2025-01-11\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 868,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 969,
+              "y": 331,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "41-holding",
+        "selected": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-18 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+        "note": "已揭示 41 根 · 未来信息已隐藏",
+        "date": "2025-01-18\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 676,
+              "y": 500,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 828,
+              "y": 355,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 1015,
+              "y": 406,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel is-collapsed holding-rail",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "49-exit",
+        "selected": "",
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 346,
+              "y": 472,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 463,
+              "y": 348,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 600,
+              "y": 423,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 730,
+              "y": 415,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-before-edit",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-draft",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "58.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade2-restored",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "markers": [],
+        "entry": "57.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade3-restored",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "markers": [],
+        "entry": "58.25",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      },
+      {
+        "name": "trade1-selected",
+        "selected": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2024-12-01\n⌄",
+        "markers": [],
+        "entry": "56.00",
+        "right": "sidebar right-panel  ",
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        }
+      }
+    ]
+  }
+]

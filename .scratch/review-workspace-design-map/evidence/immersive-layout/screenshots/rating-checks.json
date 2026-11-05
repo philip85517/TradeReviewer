@@ -1,0 +1,114 @@
+[
+  {
+    "key": "discipline",
+    "value": "unrated"
+  },
+  {
+    "key": "discipline",
+    "value": "insufficient"
+  },
+  {
+    "key": "discipline",
+    "value": "1"
+  },
+  {
+    "key": "discipline",
+    "value": "2"
+  },
+  {
+    "key": "discipline",
+    "value": "3"
+  },
+  {
+    "key": "discipline",
+    "value": "4"
+  },
+  {
+    "key": "discipline",
+    "value": "5"
+  },
+  {
+    "key": "opportunity",
+    "value": "unrated"
+  },
+  {
+    "key": "opportunity",
+    "value": "insufficient"
+  },
+  {
+    "key": "opportunity",
+    "value": "1"
+  },
+  {
+    "key": "opportunity",
+    "value": "2"
+  },
+  {
+    "key": "opportunity",
+    "value": "3"
+  },
+  {
+    "key": "opportunity",
+    "value": "4"
+  },
+  {
+    "key": "opportunity",
+    "value": "5"
+  },
+  {
+    "key": "position",
+    "value": "unrated"
+  },
+  {
+    "key": "position",
+    "value": "insufficient"
+  },
+  {
+    "key": "position",
+    "value": "1"
+  },
+  {
+    "key": "position",
+    "value": "2"
+  },
+  {
+    "key": "position",
+    "value": "3"
+  },
+  {
+    "key": "position",
+    "value": "4"
+  },
+  {
+    "key": "position",
+    "value": "5"
+  },
+  {
+    "key": "experience",
+    "value": "unrated"
+  },
+  {
+    "key": "experience",
+    "value": "insufficient"
+  },
+  {
+    "key": "experience",
+    "value": "1"
+  },
+  {
+    "key": "experience",
+    "value": "2"
+  },
+  {
+    "key": "experience",
+    "value": "3"
+  },
+  {
+    "key": "experience",
+    "value": "4"
+  },
+  {
+    "key": "experience",
+    "value": "5"
+  }
+]

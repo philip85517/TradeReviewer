@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-24",
+  "scope": "Local document sources and three archived screenshots; no new live UI acceptance.",
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "sha256": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "sha256": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/evidence/full-rewrite-20261024/before/visual-design.candidate.md",
+      "sha256": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/comments-snapshot.json",
+      "sha256": "3dbcbd0ef8f5e0a9d9637508de76a1209e8c0534f2cce9a4f83327699e6426d6"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/comment-migration.json",
+      "sha256": "a4e5b17836f31747d32afbb9852e4ede47ac176547e49ca1a6d489c66c900957"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/index.html",
+      "sha256": "60e907d0d9479b3e36589087aec33b2a9c445f561654f4e64bf519bbdbd7445b"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/README.md",
+      "sha256": "2804af590ce31fbe7d41f6b57a8e8447d33807cdb0d1f211ce3dd5e24d6dd464"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/references/2026-10-24-tradingview-toolbar-reference.png",
+      "sha256": "b1cebf52d131a0d9da0186f2328621ad488514e428f6e39d74bd54d399ec78a7"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "sha256": "1f532219fc78f52b8c9c7366aa4bf1b02d349fb43c3d0093311f7784bde246f0"
+    }
+  ],
+  "before_inline_images": [
+    {
+      "line": 61,
+      "alt": "入场前 · 1440×900完整工作区",
+      "src": "images/01-entry-1440.svg"
+    },
+    {
+      "line": 82,
+      "alt": "紧凑桌面 · 1280×800",
+      "src": "images/06-entry-1280.svg"
+    },
+    {
+      "line": 143,
+      "alt": "持仓过程 · 用户展开侧栏后，只展示当前已知事实",
+      "src": "images/02-holding-1440.svg"
+    },
+    {
+      "line": 151,
+      "alt": "事后复盘 · 原计划与实际只读，逐次评价退出",
+      "src": "images/03-final-1440.svg"
+    },
+    {
+      "line": 218,
+      "alt": "记录与快照 · 同一侧栏位置的独立视图",
+      "src": "images/04-records-1440.svg"
+    },
+    {
+      "line": 265,
+      "alt": "保存冲突 · 图表保持，侧栏展示本地保留与恢复",
+      "src": "images/05-conflict-1440.svg"
+    },
+    {
+      "line": 284,
+      "alt": "边界状态局部稿 · 加载、无行情、末尾、缺项和候选",
+      "src": "images/08-boundaries.svg"
+    },
+    {
+      "line": 298,
+      "alt": "窄屏 · 390×844，趋势和当前字段同屏",
+      "src": "images/07-entry-390.svg"
+    },
+    {
+      "line": 300,
+      "alt": "导航展开 · 工作区不足并排宽度时下置侧栏",
+      "src": "images/10-nav-expanded.svg"
+    },
+    {
+      "line": 332,
+      "alt": "导出 · 三张阶段图与可编辑总结表",
+      "src": "images/09-export.svg"
+    }
+  ],
+  "current_inline_images": [
+    {
+      "line": 73,
+      "alt": "空间预算图：1440 双栏与 1280 左栏收起的尺寸构成",
+      "src": "images/rewrite-space-budget.svg"
+    },
+    {
+      "line": 185,
+      "alt": "数量配对图：先买100、再买60、卖80后两笔独立交易分别余80和0",
+      "src": "images/rewrite-trade-pairing.svg"
+    },
+    {
+      "line": 232,
+      "alt": "连续动线图：入场前置暂停、揭示并播放、退出后暂停与继续",
+      "src": "images/rewrite-node-journey.svg"
+    },
+    {
+      "line": 485,
+      "alt": "评分状态图：未评分、资料不足、系统建议和人工修改",
+      "src": "images/rewrite-rating-states.svg"
+    },
+    {
+      "line": 510,
+      "alt": "响应状态图：桌面并排、窄屏单内容和键盘打开的分工",
+      "src": "images/rewrite-responsive-states.svg"
+    }
+  ],
+  "viewed_archived_screenshots": [
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/evidence/coordinator-final-entry.png",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/evidence/full-rewrite-20261024/diagram-a.png",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/evidence/reviewer-reference-v25.png"
+  ]
+}

@@ -1,0 +1,572 @@
+{
+  "target": "7C3D911F21287319923BDCE2EAFB91D6",
+  "steps": [
+    {
+      "name": "i01-before-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BODY",
+        "id": "",
+        "label": null
+      },
+      "modal": null,
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i01-back-exit-dialog",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null
+      },
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        },
+        {
+          "action": "resume-workspace",
+          "label": null,
+          "text": "继续工作",
+          "visible": true
+        },
+        {
+          "action": "confirm-exit",
+          "label": null,
+          "text": "退出到交易列表",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "查看记录",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i01-resume-after-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "返回交易库"
+      },
+      "modal": null,
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n十字线 ¥50.79\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i02-close-exit-dialog",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null
+      },
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        },
+        {
+          "action": "resume-workspace",
+          "label": null,
+          "text": "继续工作",
+          "visible": true
+        },
+        {
+          "action": "confirm-exit",
+          "label": null,
+          "text": "退出到交易列表",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "查看记录",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i02-confirmed-closed-workspace",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null
+      },
+      "modal": null,
+      "exitDialog": false,
+      "filter": null,
+      "trades": [],
+      "clearVisible": false,
+      "topControls": [
+        {
+          "action": "resume-workspace",
+          "label": null,
+          "text": "返回工作区",
+          "visible": true
+        }
+      ],
+      "bodyText": "已退出 TradeReview 工作区\n\n当前草稿仍只保存在内存中。\n\n返回工作区"
+    },
+    {
+      "name": "i03-resumed-after-close",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "关闭工作区"
+      },
+      "modal": null,
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n十字线 ¥50.79\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i04-close-dialog-second-sample",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null
+      },
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        },
+        {
+          "action": "resume-workspace",
+          "label": null,
+          "text": "继续工作",
+          "visible": true
+        },
+        {
+          "action": "confirm-exit",
+          "label": null,
+          "text": "退出到交易列表",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "查看记录",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i04-resumed",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "关闭工作区"
+      },
+      "modal": null,
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中"
+        },
+        {
+          "id": "600000-2",
+          "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录"
+        },
+        {
+          "id": "600000-1",
+          "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录与快照\n3",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        }
+      ],
+      "bodyText": "REVIEW QUEUE\n交易列表\n‹\n清除\n第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中\n第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录\n第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录\n记录与快照\n3\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n十字线 ¥50.79\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    },
+    {
+      "name": "i08-left-expanded",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "historyLength": 2,
+      "path": "/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "hash": "",
+      "title": "TradeReview · Workspace prototype v0.1",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "toggle-left",
+        "label": "展开交易列表"
+      },
+      "modal": null,
+      "exitDialog": false,
+      "leftOpen": false,
+      "filter": "",
+      "trades": [
+        {
+          "id": "600000-3",
+          "text": ""
+        },
+        {
+          "id": "600000-2",
+          "text": ""
+        },
+        {
+          "id": "600000-1",
+          "text": ""
+        }
+      ],
+      "clearVisible": true,
+      "topControls": [
+        {
+          "action": "records",
+          "label": null,
+          "text": "",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "返回交易库",
+          "text": "‹",
+          "visible": true
+        },
+        {
+          "action": "records",
+          "label": null,
+          "text": "记录",
+          "visible": true
+        },
+        {
+          "action": "exit",
+          "label": "关闭工作区",
+          "text": "×",
+          "visible": true
+        }
+      ],
+      "bodyText": "›\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息\n记录对象：入场前计划\nMARKET / SYNTHETIC FIXTURE\n示例股份 / 600000\n·\n日线\n止损 ¥52\n入场 ¥56\n目标 ¥68\n已揭示 28 根 · 未来信息已隐藏\n\t\n\t\n\n\t\n\t\n回放\n首次成交前 · 计划信息\n2025-02-02\n⌄\n播放速度\n0.5x\n1x\n2x\n天\n下一回放停点\n→\n跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\nNODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›\n审阅\n结构 A\n内存刷新会重置本轮动作\n审阅场景\n买入前\n持仓中\n结束之后\n隐藏"
+    }
+  ],
+  "errors": [],
+  "failures": [
+    "I08 left toggle did not visibly expand queue"
+  ],
+  "note": "NOT VERIFIED until this script is run in the designated browser; no DOM click/value assignment is used.",
+  "error": "Error: not a real clickable target: [data-filter] {\"x\":35,\"y\":116,\"selector\":\"[data-filter]\",\"hit\":false,\"hitHtml\":\"<aside class=\\\"sidebar left-panel is-collapsed\\\" aria-label=\\\"示例股份交易回合列表\\\">\\n    <div class=\\\"side-head\\\"><div><span class=\\\"eyebrow\\\">REVIEW QUEUE</span><h2>交易列表</h2></div>\\n      <button class=\\\"icon-btn\\\" data-action=\\\"toggle-left\\\" aria-label=\\\"展开交易列表\",\"disabled\":false}\n    at click (file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:53:36)\n    at async clearAndType (file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:57:13)\n    at async file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:126:3"
+}

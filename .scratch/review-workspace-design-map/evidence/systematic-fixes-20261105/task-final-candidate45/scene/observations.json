@@ -1,0 +1,1212 @@
+{
+  "target": "960840FF4471C8DBE524EEDAB25BC4D8",
+  "steps": [
+    {
+      "name": "exit-before-date",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 48
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 749.265306122449,
+        "highY": 360.3632670488405,
+        "lowY": 420.9038111861749
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "exit",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "draft-date-28",
+      "value": "2025-02-02",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-23\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-back-28",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 29
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 693.8333333333334,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "draft-date-29",
+      "value": "2025-02-03",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "entry",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-29",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 30
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 29,
+      "last": {
+        "open": 52.223460117378295,
+        "high": 53.87346011737829,
+        "low": 50.201195879444654,
+        "close": 51.40119587944466,
+        "time": 1738540800,
+        "x": 938.5806451612904,
+        "highY": 279.4505523656099,
+        "lowY": 339.6588663368608
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-03 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 29 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "draft-date-41",
+      "value": "2025-02-15",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-03\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "holding",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-41",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 6,
+        "to": 42
+      },
+      "price": {
+        "from": 44.708009946694936,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 41,
+      "last": {
+        "open": 46.761336920612344,
+        "high": 48.41133692061234,
+        "low": 44.708009946694936,
+        "close": 45.90800994669494,
+        "time": 1739577600,
+        "x": 951.9459459459459,
+        "highY": 409.10179399547565,
+        "lowY": 477.4
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-15 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+      "reveal": "已揭示 41 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "draft-date-49",
+      "value": "2025-02-23",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-15\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "holding",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-49",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 14,
+        "to": 50
+      },
+      "price": {
+        "from": 42.87873651532279,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 705.7837837837837,
+        "highY": 373.7833826516722,
+        "lowY": 436.9236087539797
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "exit",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "invalid-year-draft",
+      "value": "",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-23\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "invalid-confirm",
+      "value": "",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "请选择样本范围内的有效日期。",
+      "shown": true,
+      "scene": "exit",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2,
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 14,
+        "to": 50
+      },
+      "price": {
+        "from": 42.87873651532279,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 705.7837837837837,
+        "highY": 373.7833826516722,
+        "lowY": 436.9236087539797
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "invalid-cancel-unchanged",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 14,
+        "to": 50
+      },
+      "price": {
+        "from": 42.87873651532279,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 705.7837837837837,
+        "highY": 373.7833826516722,
+        "lowY": 436.9236087539797
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "exit",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "valid-cancel-draft",
+      "value": "2025-02-22",
+      "active": "<input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-23\" min=\"2025-01-06\" max=\"2025-03-08\">",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "valid-cancel-unchanged",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 14,
+        "to": 50
+      },
+      "price": {
+        "from": 42.87873651532279,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 705.7837837837837,
+        "highY": 373.7833826516722,
+        "lowY": 436.9236087539797
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2,
+      "trade": "600000-3",
+      "scene": "exit",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "scene-select-end",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 3,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "scene-select-holding",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 3,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-entry-600000-1",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1733011200,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 4,
+      "trade": "600000-1",
+      "scene": "entry",
+      "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-entry-600000-2",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1736035200,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 5,
+      "trade": "600000-2",
+      "scene": "entry",
+      "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-entry-600000-3",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 6,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-holding-600000-1",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -142.33333333333334,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1733011200,
+        "x": 1018,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 7,
+      "trade": "600000-1",
+      "scene": "entry",
+      "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-holding-600000-2",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -142.33333333333334,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1736035200,
+        "x": 1018,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 8,
+      "trade": "600000-2",
+      "scene": "entry",
+      "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-holding-600000-3",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -142.33333333333334,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 1018,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 9,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-exit-600000-1",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -98.33333333333333,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1733011200,
+        "x": 754,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 10,
+      "trade": "600000-1",
+      "scene": "entry",
+      "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-exit-600000-2",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -98.33333333333333,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1736035200,
+        "x": 754,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 11,
+      "trade": "600000-2",
+      "scene": "entry",
+      "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "matrix-exit-600000-3",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": -98.33333333333333,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 754,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 12,
+      "trade": "600000-3",
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "history-workspace-before-leave",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": -97.33333333333333,
+        "to": 28
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 29,
+      "last": {
+        "open": 52.223460117378295,
+        "high": 53.87346011737829,
+        "low": 50.201195879444654,
+        "close": 51.40119587944466,
+        "time": 1738540800,
+        "x": 754,
+        "highY": 279.4505523656099,
+        "lowY": 339.6588663368608
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 14,
+      "trade": "600000-3",
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-03 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 29 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "history-back-to-workspace",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 30
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 29,
+      "last": {
+        "open": 52.223460117378295,
+        "high": 53.87346011737829,
+        "low": 50.201195879444654,
+        "close": 51.40119587944466,
+        "time": 1738540800,
+        "x": 938.5806451612904,
+        "highY": 279.4505523656099,
+        "lowY": 339.6588663368608
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        }
+      ],
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 15,
+      "trade": "600000-3",
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-03 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 29 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "history-forward-to-spec",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html#chapter-RV02",
+      "title": "复盘页视觉规范 V1.0"
+    }
+  ],
+  "errors": [],
+  "historyBefore": {
+    "currentIndex": 14,
+    "entries": [
+      {
+        "id": 648,
+        "url": "about:blank",
+        "userTypedURL": "about:blank",
+        "title": "",
+        "transitionType": "auto_toplevel"
+      },
+      {
+        "id": 650,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 652,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 656,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 658,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 660,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 662,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 664,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 666,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 668,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 670,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 672,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 674,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "title": "复盘页视觉规范 V1.0",
+        "transitionType": "typed"
+      },
+      {
+        "id": 676,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+        "title": "TradeReview · Workspace prototype v0.1",
+        "transitionType": "typed"
+      },
+      {
+        "id": 678,
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html#chapter-RV02",
+        "userTypedURL": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html#chapter-RV02",
+        "title": "复盘页视觉规范 V1.0",
+        "transitionType": "typed"
+      }
+    ]
+  }
+}

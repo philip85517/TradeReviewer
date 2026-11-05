@@ -1,0 +1,321 @@
+{
+  "version": "candidate-31",
+  "target": "D6CCBA0E14B3E2208BACF2260C7DB7AB",
+  "steps": [
+    {
+      "name": "trade3-scene-exit",
+      "at": "2026-11-04T23:35:07.910Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-3",
+      "adherence": {
+        "value": "unrated",
+        "label": "未评价",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "unrated",
+        "opportunity": "unrated",
+        "position": "unrated",
+        "experience": "unrated"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typed": "结",
+      "tabReached": true
+    },
+    {
+      "name": "trade3-set",
+      "at": "2026-11-04T23:35:14.289Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-3",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "1",
+        "opportunity": "2",
+        "position": "3",
+        "experience": "4"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "4",
+        "scene": null,
+        "rating": "experience",
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typedAdherence": "符",
+      "typedRatings": {
+        "discipline": "1",
+        "opportunity": "2",
+        "position": "3",
+        "experience": "4"
+      },
+      "adherenceTabReached": true
+    },
+    {
+      "name": "trade2-scene-exit",
+      "at": "2026-11-04T23:35:21.632Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-2",
+      "adherence": {
+        "value": "unrated",
+        "label": "未评价",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "unrated",
+        "opportunity": "unrated",
+        "position": "unrated",
+        "experience": "unrated"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typed": "结",
+      "tabReached": true
+    },
+    {
+      "name": "trade2-exit-before-rating",
+      "at": "2026-11-04T23:35:21.723Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-2",
+      "adherence": {
+        "value": "unrated",
+        "label": "未评价",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "unrated",
+        "opportunity": "unrated",
+        "position": "unrated",
+        "experience": "unrated"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": []
+    },
+    {
+      "name": "trade2-set",
+      "at": "2026-11-04T23:35:28.041Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-2",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "4",
+        "opportunity": "3",
+        "position": "2",
+        "experience": "1"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "1",
+        "scene": null,
+        "rating": "experience",
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typedAdherence": "符",
+      "typedRatings": {
+        "discipline": "4",
+        "opportunity": "3",
+        "position": "2",
+        "experience": "1"
+      },
+      "adherenceTabReached": true
+    },
+    {
+      "name": "trade3-return-scene-exit",
+      "at": "2026-11-04T23:35:35.332Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-3",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "1",
+        "opportunity": "2",
+        "position": "3",
+        "experience": "4"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typed": "结",
+      "tabReached": true
+    },
+    {
+      "name": "trade3-exit-return",
+      "at": "2026-11-04T23:35:35.424Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-3",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "1",
+        "opportunity": "2",
+        "position": "3",
+        "experience": "4"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": []
+    },
+    {
+      "name": "trade2-return-scene-exit",
+      "at": "2026-11-04T23:35:42.175Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-2",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "4",
+        "opportunity": "3",
+        "position": "2",
+        "experience": "1"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": [],
+      "typed": "结",
+      "tabReached": true
+    },
+    {
+      "name": "trade2-exit-return",
+      "at": "2026-11-04T23:35:42.280Z",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "query": "?variant=A&scene=exit&task-final-c45-native-typeahead-v2=1",
+      "hash": "",
+      "scene": "结束之后评价",
+      "sceneValue": "exit",
+      "trade": "600000-2",
+      "adherence": {
+        "value": "yes",
+        "label": "符合",
+        "visible": true
+      },
+      "ratings": {
+        "discipline": "4",
+        "opportunity": "3",
+        "position": "2",
+        "experience": "1"
+      },
+      "active": {
+        "tag": "SELECT",
+        "value": "exit",
+        "scene": "exit",
+        "rating": null,
+        "action": null,
+        "trade": null,
+        "connected": true,
+        "visible": true
+      },
+      "errors": []
+    }
+  ],
+  "failures": [],
+  "notVerified": [],
+  "runtimeErrors": []
+}

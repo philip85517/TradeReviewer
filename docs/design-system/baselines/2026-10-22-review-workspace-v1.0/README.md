@@ -1,6 +1,10 @@
 # 复盘页视觉规范 V1.0
 
+> **2026-11-06 用户取舍：** 图上 Text 由用户自行放置；影响阅读时由用户自行调整文字控件范围。不要求系统专门自动避让文字与文字、文字与成交标记的重叠，同点可读性不再单独作为验收失败。下文 2026-11-05 评语保留为历史，其他功能和整页视觉仍需分别核验；正式规范待原型经用户确认后再更新。
+
 状态：2026-10-24 全文候选改写完成，待设计审阅。范围仅复盘工作区；12 项文档任务已整合为 10 章正文，业务功能未实施，待决议事项没有自动批准。
+
+视觉迭代更新：当前正文缺少与新规则对应的完整界面和公共规范应用样例，视觉设计包尚不完整。用户已确认先审阅完整工作区原型，再补控件与状态示例，达成一致后回填规范。[原因与迭代计划](../../../../.scratch/review-workspace-design-map/visual-recovery-20261024/PLAN.md)及[视觉覆盖清单](../../../../.scratch/review-workspace-design-map/visual-recovery-20261024/DESIGN-COVERAGE.md)已建立。2026-10-24 已按用户“确认推进”制作独立原型，正式正文、阅读页、既有工具原型与用户评论继续保留。
 
 - [阅读新版](visual-spec.html)：目标与取舍 → 空间与工具 → 交易动线与时间 → 计划、指标、评价 → 适配与出口 → 覆盖和验收。
 - [权威正文](source/visual-design.candidate.md)：后续编辑入口。
@@ -8,6 +12,11 @@
 - [逐章扫描与改写记录](evidence/full-rewrite-20261024/scan-and-rewrite.md)：原导言及十章的问题、根因、改写去向。
 - [本轮验收](evidence/full-rewrite-20261024/acceptance.md)与[独立审查原文](evidence/full-rewrite-20261024/independent-review.md)：版本、检查范围、发现、修复和保留边界。
 - [TradingView 逐项对照](prototypes/tradingview-alignment-v0.1/index.html)：原图与已修正候选，13 个绘图槽和 7 个回放入口；未知身份、真实操作与触控仍待补证。
+- [完整工作区原型 v0.1](prototypes/workspace-v0.1/index.html?variant=A&scene=entry)：用户已选择 A，已有同股交易次数列表、买入前/结束之后表单、持仓自由图上 Text 与缩小工具条的候选。限定功能、内存旅程与两种桌面视口视觉独立检查通过的[首轮记录](../../../../.scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/acceptance.md)只适用于当时版本，不能替代后续验收。首稿证据保留，原型不代表正式功能或完整 TradingView 1:1 实现。
+
+2026-11-05 当前原型以 [candidate-45 验收记录](../../../../.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md)为准。短窗口布局、回放视野、表单和焦点等修复已有局部证据，但密集 Text 仍遮挡行情、与成交标记混淆，[独立静态视觉复核](../../../../.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/INDEPENDENT-VISUAL.md)为 **FAIL**；独立浏览器操作等路径尚未验证。原型仍待用户审阅，确认后才回填正式规范。
+
+2026-11-05 另有[自由 Text 轻量隔离候选](../../../../.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-direct-text-stage/REPORT.md)，尚未并入当前原型。局部编辑提示已修正，但文字与成交标记归属、重叠可读性仍为视觉 **FAIL**；独立浏览器交互未验，不改变 candidate-45 或正式规范的结论。
 
 ## 版本与图示
 

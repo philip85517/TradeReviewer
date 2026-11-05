@@ -1,0 +1,779 @@
+{
+  "target": "118EA1FAC1C30C2F348156A115E5D716",
+  "steps": [
+    {
+      "name": "entry-before",
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "rawScreen": {
+          "x": 671.6071428571429,
+          "y": 519.9359050084878
+        },
+        "sentScreen": {
+          "x": 672,
+          "y": 520
+        },
+        "rawLocal": {
+          "x": 418.60714285714283,
+          "y": 365.9359050084878
+        },
+        "sentLocal": {
+          "x": 419,
+          "y": 366
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 15,
+        "price": 48.59458050097774
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "BODY",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "entry-after-text-tool",
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "rawScreen": {
+          "x": 671.6071428571429,
+          "y": 519.9359050084878
+        },
+        "sentScreen": {
+          "x": 672,
+          "y": 520
+        },
+        "rawLocal": {
+          "x": 418.60714285714283,
+          "y": 365.9359050084878
+        },
+        "sentLocal": {
+          "x": 419,
+          "y": 366
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 15,
+        "price": 48.59458050097774
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "INPUT",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "entry-after-rounded-click",
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "rawScreen": {
+          "x": 671.6071428571429,
+          "y": 519.9359050084878
+        },
+        "sentScreen": {
+          "x": 672,
+          "y": 520
+        },
+        "rawLocal": {
+          "x": 418.60714285714283,
+          "y": 365.9359050084878
+        },
+        "sentLocal": {
+          "x": 419,
+          "y": 366
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 15,
+        "price": 48.59458050097774
+      },
+      "editor": {
+        "editorLabel": "Text · 2025-01-21 · 48.59",
+        "anchorDom": {
+          "x": 667.59375,
+          "y": 516,
+          "width": 8,
+          "height": 8,
+          "centerX": 671.59375,
+          "centerY": 520
+        },
+        "active": {
+          "tag": "TEXTAREA",
+          "id": "textInput"
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "entry-after-cancel",
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "rawScreen": {
+          "x": 671.6071428571429,
+          "y": 519.9359050084878
+        },
+        "sentScreen": {
+          "x": 672,
+          "y": 520
+        },
+        "rawLocal": {
+          "x": 418.60714285714283,
+          "y": 365.9359050084878
+        },
+        "sentLocal": {
+          "x": 419,
+          "y": 366
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 15,
+        "price": 48.59458050097774
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "BUTTON",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "exit-before",
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "rawScreen": {
+          "x": 661.9387755102041,
+          "y": 476.0782273544577
+        },
+        "sentScreen": {
+          "x": 662,
+          "y": 476
+        },
+        "rawLocal": {
+          "x": 408.9387755102041,
+          "y": 322.0782273544577
+        },
+        "sentLocal": {
+          "x": 409,
+          "y": 322
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 26,
+        "price": 51.278256820933045
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "BODY",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "exit-after-text-tool",
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "rawScreen": {
+          "x": 661.9387755102041,
+          "y": 476.0782273544577
+        },
+        "sentScreen": {
+          "x": 662,
+          "y": 476
+        },
+        "rawLocal": {
+          "x": 408.9387755102041,
+          "y": 322.0782273544577
+        },
+        "sentLocal": {
+          "x": 409,
+          "y": 322
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 26,
+        "price": 51.278256820933045
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "INPUT",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "exit-after-rounded-click",
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "rawScreen": {
+          "x": 661.9387755102041,
+          "y": 476.0782273544577
+        },
+        "sentScreen": {
+          "x": 662,
+          "y": 476
+        },
+        "rawLocal": {
+          "x": 408.9387755102041,
+          "y": 322.0782273544577
+        },
+        "sentLocal": {
+          "x": 409,
+          "y": 322
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 26,
+        "price": 51.278256820933045
+      },
+      "editor": {
+        "editorLabel": "Text · 2025-02-01 · 51.28",
+        "anchorDom": {
+          "x": 657.9375,
+          "y": 472,
+          "width": 8,
+          "height": 8,
+          "centerX": 661.9375,
+          "centerY": 476
+        },
+        "active": {
+          "tag": "TEXTAREA",
+          "id": "textInput"
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    },
+    {
+      "name": "exit-after-cancel",
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "rawScreen": {
+          "x": 661.9387755102041,
+          "y": 476.0782273544577
+        },
+        "sentScreen": {
+          "x": 662,
+          "y": 476
+        },
+        "rawLocal": {
+          "x": 408.9387755102041,
+          "y": 322.0782273544577
+        },
+        "sentLocal": {
+          "x": 409,
+          "y": 322
+        }
+      },
+      "conversionAtSentPixel": {
+        "timeCoordinate": 26,
+        "price": 51.278256820933045
+      },
+      "editor": {
+        "editorLabel": null,
+        "anchorDom": null,
+        "active": {
+          "tag": "BUTTON",
+          "id": ""
+        }
+      },
+      "canvas": [
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 154,
+          "width": 758,
+          "height": 598,
+          "cssWidth": "758px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 1011,
+          "y": 154,
+          "width": 96,
+          "height": 598,
+          "cssWidth": "96px",
+          "cssHeight": "598px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 253,
+          "y": 752,
+          "width": 758,
+          "height": 28,
+          "cssWidth": "758px",
+          "cssHeight": "28px"
+        },
+        {
+          "x": 1011,
+          "y": 752,
+          "width": 96,
+          "height": 28,
+          "cssWidth": "96px",
+          "cssHeight": "28px"
+        }
+      ]
+    }
+  ]
+}

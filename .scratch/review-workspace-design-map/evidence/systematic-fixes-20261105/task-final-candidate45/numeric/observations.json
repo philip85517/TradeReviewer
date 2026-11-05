@@ -1,0 +1,227 @@
+{
+  "steps": [
+    {
+      "name": "quantity--1-via-amount-percent",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "funds": "200000",
+      "mode": "quantity",
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。",
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "amount--1-via-percent-quantity",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "funds": "200000",
+      "mode": "amount",
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。",
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "percent--1-via-amount-quantity",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "funds": "200000",
+      "mode": "percent",
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。",
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "quantity-empty-via-amount-percent",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": ""
+      },
+      "funds": "200000",
+      "mode": "quantity",
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。",
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "trade3-amount",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "70000"
+      },
+      "funds": "200000",
+      "mode": "amount",
+      "metrics": [
+        "¥5000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "trade2-default",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "funds": "180000",
+      "mode": "quantity",
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "trade2-percent",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "25"
+      },
+      "funds": "180000",
+      "mode": "percent",
+      "metrics": [
+        "¥3214.29",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "trade3-return",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "70000"
+      },
+      "funds": "200000",
+      "mode": "amount",
+      "metrics": [
+        "¥5000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "trade2-return",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "25"
+      },
+      "funds": "180000",
+      "mode": "percent",
+      "metrics": [
+        "¥3214.29",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "new-valid-source-amount",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "56000"
+      },
+      "funds": "200000",
+      "mode": "amount",
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "new-valid-source-percent",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "28.00"
+      },
+      "funds": "200000",
+      "mode": "percent",
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    },
+    {
+      "name": "new-valid-source-quantity",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task09=chain-isolation",
+      "scene": "入场前计划",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000.00"
+      },
+      "funds": "200000",
+      "mode": "quantity",
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ],
+      "legend": "止损 ¥52\n入场 ¥56\n目标 ¥68"
+    }
+  ],
+  "errors": [],
+  "target": "BAD6EFAE2F9EADB22AE69DC1D9D56AEE",
+  "failures": []
+}

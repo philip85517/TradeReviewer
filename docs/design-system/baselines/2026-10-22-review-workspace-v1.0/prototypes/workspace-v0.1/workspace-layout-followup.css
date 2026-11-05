@@ -1,0 +1,123 @@
+/* Follow-up layout overrides for narrow desktop columns and shared controls.
+   Load after workspace.css and workspace-overrides.css. */
+
+/* The review strip is fixed to the viewport and already owns the final 44px.
+   Let the workspace shrink to the available viewport instead of retaining the
+   656px desktop minimum; otherwise short desktop viewports scroll the whole
+   workspace underneath the fixed strip and hide its bottom controls. */
+.workspace {
+  min-height: 0;
+  height: calc(100vh - 44px);
+}
+
+/* The existing <=1107px rule collapses both rails unconditionally. Reapply the
+   rendered grid from the open-state classes so an expanded rail stays visible. */
+@media (max-width: 1107px) {
+  .workspace:not(.left-open):not(.right-open) {
+    grid-template-columns: 40px minmax(640px, 1fr) 40px;
+  }
+
+  .workspace.left-open:not(.right-open) {
+    grid-template-columns: var(--left) minmax(640px, 1fr) 40px;
+  }
+
+  .workspace.right-open:not(.left-open) {
+    grid-template-columns: 40px minmax(640px, 1fr) var(--right);
+  }
+
+  .workspace.left-open:not(.right-open) .left-panel {
+    width: auto;
+  }
+
+  .workspace.left-open:not(.right-open) .left-panel > * {
+    visibility: visible;
+  }
+
+  .workspace.left-open:not(.right-open) .left-panel .side-head {
+    justify-content: space-between;
+  }
+
+  .workspace.left-open:not(.right-open) .left-panel .side-head h2,
+  .workspace.left-open:not(.right-open) .left-panel .eyebrow {
+    display: block;
+  }
+
+  .workspace.right-open:not(.left-open) .right-panel {
+    width: auto;
+  }
+
+  .workspace.right-open:not(.left-open) .right-panel > * {
+    visibility: visible;
+  }
+
+  .workspace.right-open:not(.left-open) .right-panel .side-head {
+    justify-content: space-between;
+  }
+
+  .workspace.right-open:not(.left-open) .right-panel .side-head h2,
+  .workspace.right-open:not(.left-open) .right-panel .eyebrow {
+    display: block;
+  }
+}
+
+/* Center using the plotting area's width (chart width minus a 96px price scale
+   and 14px gutter). The 2px frame belongs inside that budget. */
+.tv-toolbar {
+  left: calc((100% - 110px) / 2);
+  max-width: calc(100% - 112px);
+}
+
+/* Expand hit boxes without changing the top bar or glyph sizes. Flex-basis
+   keeps neighboring controls from collapsing into or overlapping these boxes. */
+.icon-btn {
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+}
+
+.topbar .back,
+.topbar .close {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  flex: 0 0 36px;
+  padding: 0;
+}
+
+/* Modal actions in the date, exit, and records dialogs share the public
+   minimum hit-area contract without changing their type or surrounding flow. */
+.modal-dialog > button,
+.modal-dialog .dialog-actions > button {
+  box-sizing: border-box;
+  min-height: 36px;
+}
+
+/* Keep the conditional scroll cue inside the existing header so it does not
+   consume form height or cover the fixed Text entry. */
+.right-panel .side-head {
+  position: relative;
+}
+
+.right-panel .side-head .right-scroll-hint {
+  position: absolute;
+  left: 14px;
+  bottom: 4px;
+  max-width: calc(100% - 64px);
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.right-scroll-hint[hidden] {
+  display: none !important;
+}

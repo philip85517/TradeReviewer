@@ -1,0 +1,1992 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "method": "Chrome headless CDP mouse events and synthetic keyboard; DOM read-only; no handler calls or programmatic state mutations",
+    "target": "A645F05C5CD20A711F49498703E83D99",
+    "actions": [
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-plan=entry]",
+        "x": 1274.5,
+        "y": 256
+      },
+      {
+        "type": "keyboard",
+        "selector": "[data-plan=entry]",
+        "value": "57.25"
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=step]",
+        "x": 676.5,
+        "y": 812
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 928.1171875,
+        "y": 812
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=step]",
+        "x": 674.34375,
+        "y": 812
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 923.3671875,
+        "y": 812
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 925.8203125,
+        "y": 812
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-3\"]",
+        "x": 125.5,
+        "y": 195.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-plan=entry]",
+        "x": 1274.5,
+        "y": 256
+      },
+      {
+        "type": "keyboard",
+        "selector": "[data-plan=entry]",
+        "value": "58.25"
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-3\"]",
+        "x": 125.5,
+        "y": 195.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-1\"]",
+        "x": 125.5,
+        "y": 365.5
+      }
+    ],
+    "steps": [
+      {
+        "name": "initial",
+        "screenshot": "1440-initial.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "list-open",
+        "screenshot": "1440-list-open.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "28-entry-before-edit",
+        "screenshot": "1440-28-entry-before-edit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "28-entry-draft",
+        "screenshot": "1440-28-entry-draft.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥5250.00\n预期收益 / 风险\n2.05R · 2.05:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "57.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "29-holding",
+        "screenshot": "1440-29-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1386,
+            "y": 0,
+            "width": 40,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1164,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "33-holding",
+        "screenshot": "1440-33-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-10 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 33 根 · 未来信息已隐藏",
+        "date": "2025-01-10\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1386,
+            "y": 0,
+            "width": 40,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1056,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "34-holding",
+        "screenshot": "1440-34-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-11 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 34 根 · 未来信息已隐藏",
+        "date": "2025-01-11\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1386,
+            "y": 0,
+            "width": 40,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1033,
+              "y": 526,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 1126,
+              "y": 378,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "41-holding",
+        "screenshot": "1440-41-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-18 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+        "note": "已揭示 41 根 · 未来信息已隐藏",
+        "date": "2025-01-18\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1386,
+            "y": 0,
+            "width": 40,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 845,
+              "y": 563,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 995,
+              "y": 410,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 1177,
+              "y": 462,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "49-exit",
+        "screenshot": "1440-49-exit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=exit",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n结束之后评价\n↓ 可继续向下查看\n›\n\n退出后 · 结果与评价可见 · 结果与评价\n\n原计划（只读）\n\n方向：做多 · 入场 ¥57.25 · 止损 ¥52.00 · 目标 ¥68.00\n\n数量 1000.00 股 · 金额 57250.00 · 仓位 31.81%\n\n已完成交易事实\n\n首次买入：2025-01-06 · ¥51.40 · 800 股\n\n最终平仓：2025-01-26 · ¥46.45 · 600 股\n\n是否提前退出\n未评价\n是\n否\n不确定\n退出原因\n计划符合度\n未评价\n符合\n部分符合\n不符合\n纪律\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n机会\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n仓位\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n体验\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 521,
+              "y": 534,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 634,
+              "y": 401,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 767,
+              "y": 482,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 892,
+              "y": 478,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "trade3-before-edit",
+        "screenshot": "1440-trade3-before-edit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade3-draft",
+        "screenshot": "1440-trade3-draft.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥6250.00\n预期收益 / 风险\n1.56R · 1.56:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "58.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade2-restored",
+        "screenshot": "1440-trade2-restored.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥5250.00\n预期收益 / 风险\n2.05R · 2.05:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "57.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade3-restored",
+        "screenshot": "1440-trade3-restored.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥6250.00\n预期收益 / 风险\n1.56R · 1.56:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "58.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade1-selected",
+        "screenshot": "1440-trade1-selected.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "title": "示例股份 / 600000\n日线 · 第1次交易 · 合成演示行情",
+        "selected": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2024-12-01\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥160000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 842,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 854,
+          "height": 627,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      }
+    ],
+    "exceptions": []
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "method": "Chrome headless CDP mouse events and synthetic keyboard; DOM read-only; no handler calls or programmatic state mutations",
+    "target": "75A9A6B3513CC48726A10BA022C4051C",
+    "actions": [
+      {
+        "type": "mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-plan=entry]",
+        "x": 1114.5,
+        "y": 256
+      },
+      {
+        "type": "keyboard",
+        "selector": "[data-plan=entry]",
+        "value": "57.25"
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=step]",
+        "x": 579.5,
+        "y": 712
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 714.1171875,
+        "y": 712
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=step]",
+        "x": 577.34375,
+        "y": 712
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 709.3671875,
+        "y": 712
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=next-node]",
+        "x": 711.8203125,
+        "y": 712
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-3\"]",
+        "x": 125.5,
+        "y": 195.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-plan=entry]",
+        "x": 1114.5,
+        "y": 256
+      },
+      {
+        "type": "keyboard",
+        "selector": "[data-plan=entry]",
+        "value": "58.25"
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-3\"]",
+        "x": 125.5,
+        "y": 195.5
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "mouse",
+        "selector": "[data-trade=\"600000-1\"]",
+        "x": 125.5,
+        "y": 365.5
+      }
+    ],
+    "steps": [
+      {
+        "name": "initial",
+        "screenshot": "1280-initial.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "list-open",
+        "screenshot": "1280-list-open.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+        "rounds": [
+          "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+          "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+          "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录"
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed ",
+          "body": "‹",
+          "rect": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 224,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 958,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "28-entry-before-edit",
+        "screenshot": "1280-28-entry-before-edit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "28-entry-draft",
+        "screenshot": "1280-28-entry-draft.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥5250.00\n预期收益 / 风险\n2.05R · 2.05:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "57.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "29-holding",
+        "screenshot": "1280-29-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "workspace": "workspace  ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1002,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "33-holding",
+        "screenshot": "1280-33-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-10 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 33 根 · 未来信息已隐藏",
+        "date": "2025-01-10\n⌄",
+        "workspace": "workspace  ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 892,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "34-holding",
+        "screenshot": "1280-34-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-11 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "note": "已揭示 34 根 · 未来信息已隐藏",
+        "date": "2025-01-11\n⌄",
+        "workspace": "workspace  ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 868,
+              "y": 473,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 969,
+              "y": 331,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "41-holding",
+        "screenshot": "1280-41-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-18 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+        "note": "已揭示 41 根 · 未来信息已隐藏",
+        "date": "2025-01-18\n⌄",
+        "workspace": "workspace  ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "rect": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 1142,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 676,
+              "y": 500,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 828,
+              "y": 355,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 1015,
+              "y": 406,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "49-exit",
+        "screenshot": "1280-49-exit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=exit",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n结束之后评价\n↓ 可继续向下查看\n›\n\n退出后 · 结果与评价可见 · 结果与评价\n\n原计划（只读）\n\n方向：做多 · 入场 ¥57.25 · 止损 ¥52.00 · 目标 ¥68.00\n\n数量 1000.00 股 · 金额 57250.00 · 仓位 31.81%\n\n已完成交易事实\n\n首次买入：2025-01-06 · ¥51.40 · 800 股\n\n最终平仓：2025-01-26 · ¥46.45 · 600 股\n\n是否提前退出\n未评价\n是\n否\n不确定\n退出原因\n计划符合度\n未评价\n符合\n部分符合\n不符合\n纪律\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n机会\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n仓位\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n体验\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 346,
+              "y": 472,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 463,
+              "y": 348,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 600,
+              "y": 423,
+              "width": 56,
+              "height": 21,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 730,
+              "y": 415,
+              "width": 34,
+              "height": 21,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {}
+      },
+      {
+        "name": "trade3-before-edit",
+        "screenshot": "1280-trade3-before-edit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade3-draft",
+        "screenshot": "1280-trade3-draft.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥6250.00\n预期收益 / 风险\n1.56R · 1.56:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "58.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade2-restored",
+        "screenshot": "1280-trade2-restored.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥5250.00\n预期收益 / 风险\n2.05R · 2.05:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "57.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade3-restored",
+        "screenshot": "1280-trade3-restored.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第3次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-02-02\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥200000\n初始风险\n¥6250.00\n预期收益 / 风险\n1.56R · 1.56:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "58.25",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      },
+      {
+        "name": "trade1-selected",
+        "screenshot": "1280-trade1-selected.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800
+        },
+        "title": "示例股份 / 600000\n日线 · 第1次交易 · 合成演示行情",
+        "selected": "",
+        "rounds": [
+          "",
+          "",
+          ""
+        ],
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-11-04 · 行情截止 2024-12-01 · 成交截止：首次成交前 · 计划信息",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2024-12-01\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥160000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "rect": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "visible": true
+          }
+        },
+        "left": {
+          "x": 14,
+          "y": 0,
+          "width": 40,
+          "height": 742,
+          "visible": true
+        },
+        "chart": {
+          "x": 69,
+          "y": 154,
+          "width": 878,
+          "height": 527,
+          "visible": true
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        }
+      }
+    ],
+    "exceptions": []
+  }
+]

@@ -1,5 +1,9 @@
 # 确定整份规范的整合与独立验收方案
 
+2026-11-05 补充：当前 3091 预览绑定冻结 candidate-45；短高布局、价格视野、回放/场景、输入计算、焦点、部分图标及 Text 圆点居中在限定视口和操作路径内已有修复证据。当前 Text 自由锚点与成交标记的视觉区分仍 **FAIL**，candidate-44 隔离候选也未通过；原生下拉的部分输入方式、设备、真实 TradingView 和业务持久化等仍有 **NOT VERIFIED**。详见[当前版本验收](../evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md)与[问题 17](17-review-text-overlay-state.md)。功能、状态与独立视觉门禁须分别完成，用户确认原型后才可回填正式规范；本票仍开放。
+
+2026-11-05：candidate-v37 独立功能、状态链及视觉门槛均 FAIL，另有必需项 NOT VERIFIED；原通过记录只适用于其历史版本。已归档[40 组结果及证据](../evidence/independent-acceptance-20261104/ACCEPTANCE.md)，用户已授权[依次修复](../evidence/systematic-fixes-20261105/PLAN.md)。所有适用门槛完成新版本验证和用户确认前，本票保持开放，正式规范不回填候选。
+
 ID: review-design-12
 Parent: [复盘工作区视觉规范重构决策地图](00-design-map.md)
 Labels: wayfinder:grilling
@@ -50,6 +54,7 @@ Resolution comment: 待解决
 - [确定保存、完成、导出与关闭的职责](09-save-export-return.md)
 - [确定窄屏、键盘及异常状态的空间规则](10-responsive-and-states.md)
 - [确定全文论述结构与图示分工](11-document-argument.md)
+- [确定公共视觉样例与参数标注](13-visual-specimens.md)
 
 ## 执行的主要思路
 
@@ -87,3 +92,30 @@ Resolution comment: 待解决
 - 文档覆盖：PASS；证据见[全文验收](../../../docs/design-system/baselines/2026-10-22-review-workspace-v1.0/evidence/full-rewrite-20261024/acceptance.md)及[覆盖合同](../rewrite-20261024/DESIGN-COVERAGE.md)。
 - 剩余边界：最终产品整合验收仍须独立执行；不关闭其余 HITL 票。
 - 本记录是制作进度，不是 HITL Resolution；原 State、依赖与决议门槛不变。
+
+## 2026-10-24 视觉完整性门槛补充
+
+[视觉恢复计划](../visual-recovery-20261024/PLAN.md)登记本次问题，[视觉覆盖](../visual-recovery-20261024/DESIGN-COVERAGE.md)是后续派发与整包审阅的补充合同。完整工作区和公共规范应用样例当前缺失，视觉完整性 FAIL；原型操作、独立新视觉比较、具体方案用户确认均 NOT VERIFIED。历史文字覆盖 PASS 不变，但不得合并成视觉设计包完成。
+
+- [ ] 整页、局部规范、状态故事板三类证据都齐全，逐章能定位批准版本；不用图片数量、预算条或状态表替代视觉判断。
+- [ ] 三旅程和 14 类适用状态均对应实际材料；每个重要偏差已解决或获得用户明确接受。
+- [ ] 版本/视口/场景/参考/偏差/独立审阅与用户决议完整；保存原失败和旧批准历史。
+- [ ] 具体设计经用户确认后再回填正式规范；规划完成与用户确认推进顺序都不使设计票自动关闭。
+
+## 2026-10-29 candidate-v34 / v35 验收状态追加
+
+协调者对 candidate-v34 的真实浏览器复验显示，1280×800 28→29 根时 info-row 高度均为 49px、chart y=154px 不变、play x=540.24→540.57px；然而 replay-actions 与关闭按钮在 1108×800 及 1280×800 右栏展开态重叠，candidate-v34 整体 **FAIL**。v35 间距修正后，1108×800 初始态“下一回放停点”完全裁出，且原生滚动条未滚动时不可见、鼠标水平滚动后才出现，可发现性 **FAIL**。详见[问题14](14-review-responsive-collision.md)与[版本绑定覆盖/验收记录](../evidence/review-fixes-20261028/DESIGN-COVERAGE.md)。问题仍在修复；独立复审与最终验收未完成。旧版任何 PASS 均不迁移，本票仍不接受整体交付。
+
+## 2026-10-29 candidate-v37 后续状态
+
+v36 的 1108px 裁切保留为该版 FAIL。v37 的九个运行文件及快照与[冻结清单](../evidence/review-fixes-20261028/candidate-v37/manifest.json)一致；协调者对回放、日期、Text、弹层和多视口进行了真实浏览器局部操作，详见 [控件登记](../evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md)及[操作记录](../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json)。非实现者的[静态复审](../evidence/review-fixes-20261028/final-review-v37/REPORT.md)在所看画面无新 P1/P2 静态视觉阻断，仍保留三项 P3；两位独立审核者的浏览器连接不可用，独立交互实操为 NOT VERIFIED，见[记录](../evidence/review-fixes-20261028/final-review-v37-interaction-2/REPORT.md)。整体视觉、完整交互、TradingView 逐项 1:1、模拟及物理触控、正式产品持久化和用户确认均不能由局部观察替代；本票继续开放，原型经用户确认后再回填正式规范。
+
+## 2026-11-05 系统排查和版本绑定验收
+
+当时 3091 预览以 [candidate-31 验收台账](../evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md)记录 I01–I40。短高度、价格视野、阶段 URL、规模数值、焦点、图标和阅读入口等修复有不同范围的实操证据；阶段、三档回放与两回合评分又以模拟首字符键盘路径补测。Text 遮挡/语义仍由非实现者判为 **FAIL**；入场/结束的坐标补测还发现锚点圆心约 1px 的几何偏移，已单独修复和验证中。其他设备、真实 TradingView 和业务持久化仍 NOT VERIFIED。
+
+隔离的 [candidate-44](../evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md)改善了 Text 身份和成交箭头遮挡，但正文与密集态空间仍未通过[独立视觉](../evidence/systematic-fixes-20261105/task-04-candidate44-stage/INDEPENDENT-VISUAL.md)。它未替换当前预览，用户也尚未确认密集态取舍。本票仍开放，不能把若干控件局部 PASS 当作整页及正式视觉规范通过。
+
+## 2026-11-05 candidate-45 当前验收
+
+当前预览已修正 Text 锚点圆点约 1px 的视觉偏移，限定入场/结束样本的圆心坐标与图表对应。重新按冻结版本检查的 [40 项结果](../evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md)、[用户汇总](../evidence/systematic-fixes-20261105/task-final-candidate45/USER-SUMMARY.md)及[非实现者静态视觉审阅](../evidence/systematic-fixes-20261105/task-final-candidate45/INDEPENDENT-VISUAL.md)表明：密集 Text 的遮挡和身份仍 FAIL，独立浏览器操作与其他列明的链路仍未验证。此前 candidate-31 记录保留为历史，不代替本版结论。本票继续开放。

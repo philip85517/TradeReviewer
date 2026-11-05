@@ -1,0 +1,15 @@
+{
+  "a": {
+    "title": "示例股份 / 600000\n日线 · 合成演示行情",
+    "selected": "",
+    "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+    "workspace": "workspace  right-open"
+  },
+  "b": {
+    "title": "示例股份 / 600000\n日线 · 合成演示行情",
+    "selectedVisible": "",
+    "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+    "workspace": "workspace  "
+  },
+  "method": "CDP mouse events and DOM read-only"
+}

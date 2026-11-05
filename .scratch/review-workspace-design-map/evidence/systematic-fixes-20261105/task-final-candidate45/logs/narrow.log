@@ -1,0 +1,117 @@
+{
+  "failures": [],
+  "errors": 0,
+  "nav": [
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+    "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18"
+  ],
+  "steps": [
+    {
+      "name": "01-390-before-mouse",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "scrollY": 0,
+      "chart": false,
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "BODY",
+        "text": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页"
+      },
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页"
+    },
+    {
+      "name": "02-390-after-mouse",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "scrollY": 0,
+      "chart": false,
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+    },
+    {
+      "name": "03-390-document-scrolled",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "scrollY": 600,
+      "chart": false,
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+    },
+    {
+      "name": "04-history-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "scrollY": 0,
+      "chart": false,
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "A",
+        "text": "返回阅读页",
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html"
+      },
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页"
+    },
+    {
+      "name": "05-390-keyboard-link",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "scrollY": 0,
+      "chart": false,
+      "link": {
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "text": "返回阅读页",
+        "x": 89,
+        "y": 456,
+        "hit": true
+      },
+      "active": {
+        "tag": "A",
+        "text": "返回阅读页",
+        "href": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html"
+      },
+      "body": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页"
+    },
+    {
+      "name": "06-390-after-keyboard",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "scrollY": 0,
+      "chart": false,
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+      },
+      "body": "复盘页视觉规范\n\n文档 1.0\n\n复盘页视觉规范 V1.0\n一、设计目标与取舍\n从用户的操作顺序决定页面结构\n哪些决定已经有依据\n以稳定空间支持连续思考\n规范之间如何衔接\n二、沉浸式工作区与空间预算\n"
+    },
+    {
+      "name": "07-desktop-return",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task07=18",
+      "scrollY": 0,
+      "chart": true,
+      "link": null,
+      "active": {
+        "tag": "BODY",
+        "text": "›\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前"
+      },
+      "body": "›\n‹\n示例股份 / 600000\n日线 · 合成演示行情\n入场前计划\n● 内存草稿\n导出\n更多\n记录\n×\n复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前"
+    }
+  ]
+}

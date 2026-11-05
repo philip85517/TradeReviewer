@@ -1,0 +1,293 @@
+{
+  "target": "5222BDF7B6FD35668EC16BCD10A002AF",
+  "failures": [
+    "I03 real plan input did not retain 57.25 before exit",
+    "I03 plan draft was not retained after return"
+  ],
+  "steps": [
+    {
+      "name": "before-v2",
+      "active": {
+        "tag": "BODY",
+        "id": "",
+        "label": null,
+        "value": null
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i01-back-dialog-initial",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i01-back-dialog-tab",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "confirm-exit",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i01-back-dialog-shift-tab-wrap",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i01-back-escape-resume",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "返回交易库",
+        "value": ""
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i02-close-dialog-initial",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i02-close-escape-resume",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "关闭工作区",
+        "value": ""
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.00"
+    },
+    {
+      "name": "i03-plan-draft-before-confirm-exit",
+      "active": {
+        "tag": "INPUT",
+        "id": "",
+        "label": "计划入场",
+        "value": "56.0057.25"
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i03-confirm-dialog",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i03-confirmed-exit",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": false,
+      "filter": null,
+      "trades": [],
+      "planEntry": null
+    },
+    {
+      "name": "i03-returned-draft",
+      "active": {
+        "tag": "BUTTON",
+        "id": "",
+        "action": "exit",
+        "label": "关闭工作区",
+        "value": ""
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i08-date-filter",
+      "active": {
+        "tag": "INPUT",
+        "id": "",
+        "label": "筛选交易回合",
+        "value": "2025-01-06"
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "2025-01-06",
+      "trades": [
+        "600000-2"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i08-date-cleared",
+      "active": {
+        "tag": "BODY",
+        "id": "",
+        "label": null,
+        "value": null
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i09-round-filter",
+      "active": {
+        "tag": "INPUT",
+        "id": "",
+        "label": "筛选交易回合",
+        "value": "第2次交易"
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "第2次交易",
+      "trades": [
+        "600000-2"
+      ],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i09-mismatch-empty",
+      "active": {
+        "tag": "INPUT",
+        "id": "",
+        "label": "筛选交易回合",
+        "value": "第2次交易不存在的日期-999"
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "第2次交易不存在的日期-999",
+      "trades": [],
+      "planEntry": "56.0057.25"
+    },
+    {
+      "name": "i09-mismatch-cleared",
+      "active": {
+        "tag": "BODY",
+        "id": "",
+        "label": null,
+        "value": null
+      },
+      "exitDialog": false,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ],
+      "planEntry": "56.0057.25"
+    }
+  ]
+}

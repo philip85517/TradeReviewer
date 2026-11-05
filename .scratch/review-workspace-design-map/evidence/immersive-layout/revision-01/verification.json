@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-24T20:02:43.316047",
+  "scope": "revision-01 desktop in-memory prototype; no production or database acceptance",
+  "base_head": "270aad42cb807773e716249deb04b03bf53a1e4e",
+  "protected_files": {
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md": {
+      "expected": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+      "actual": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html": {
+      "expected": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b",
+      "actual": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/README.md": {
+      "expected": "2804af590ce31fbe7d41f6b57a8e8447d33807cdb0d1f211ce3dd5e24d6dd464",
+      "actual": "2804af590ce31fbe7d41f6b57a8e8447d33807cdb0d1f211ce3dd5e24d6dd464",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/contract.md": {
+      "expected": "3f86ff27d61c9719b25253cb9b4d35626241fc2439251dd8505181abdaa41453",
+      "actual": "3f86ff27d61c9719b25253cb9b4d35626241fc2439251dd8505181abdaa41453",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/data.json": {
+      "expected": "591a8a156a339e3c19ffd44a2d4181c144ce0dc6e9a8aa69f5f74c2cf2763534",
+      "actual": "591a8a156a339e3c19ffd44a2d4181c144ce0dc6e9a8aa69f5f74c2cf2763534",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/icons.svg": {
+      "expected": "3b5ccbd147ee1a8ae55067be49d1f15b046b59ec2a875dc982bb487ac0392c6f",
+      "actual": "3b5ccbd147ee1a8ae55067be49d1f15b046b59ec2a875dc982bb487ac0392c6f",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/index.html": {
+      "expected": "60e907d0d9479b3e36589087aec33b2a9c445f561654f4e64bf519bbdbd7445b",
+      "actual": "60e907d0d9479b3e36589087aec33b2a9c445f561654f4e64bf519bbdbd7445b",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/prototype.css": {
+      "expected": "dc2badc5e7d9ae487ae4b847e54394d10cc0212e773f0bf15d4720a9e764b245",
+      "actual": "dc2badc5e7d9ae487ae4b847e54394d10cc0212e773f0bf15d4720a9e764b245",
+      "unchanged": true
+    },
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/prototype.js": {
+      "expected": "c54384146732acc81b9717828c3271c1d201e2085faa1ac2797b54be6eac8d79",
+      "actual": "c54384146732acc81b9717828c3271c1d201e2085faa1ac2797b54be6eac8d79",
+      "unchanged": true
+    }
+  },
+  "checks": [
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "node --check /Users/zhoulin/.codex/worktrees/80b0/TradeReview/docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "node --check /Users/zhoulin/.codex/worktrees/80b0/TradeReview/docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/chrome.js",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "lsof -nP -iTCP:3091 -sTCP:LISTEN",
+      "exit_code": 0,
+      "output": "COMMAND     PID    USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\npython3.1 67140 zhoulin    3u  IPv4 0xab7d16ef196e263f      0t0  TCP 127.0.0.1:3091 (LISTEN)\n"
+    }
+  ],
+  "browser_console_warn_error": [],
+  "browser": "IAB; coordinator independent of Luna UI implementation",
+  "viewports": [
+    "1440x900 DPR1",
+    "1280x800 DPR1",
+    "1291/1292 boundary",
+    "390x844 fallback only"
+  ],
+  "functional": "PASS within C01-C15 scope",
+  "memory_state_journeys": "PASS",
+  "independent_visual_comparison": "PASS",
+  "user_design_confirmation": "PENDING",
+  "database_persistence": "NOT APPLICABLE - no business writes; memory prototype",
+  "full_tv_drawing": "NOT VERIFIED - outside this revision",
+  "physical_touch_and_ime": "NOT VERIFIED - outside desktop scope"
+}

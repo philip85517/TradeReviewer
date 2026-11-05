@@ -1,0 +1,17 @@
+{
+  "out": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/text-anchor-pan-v7",
+  "failures": [],
+  "notVerified": [],
+  "steps": [
+    "initial",
+    "text-one-click",
+    "text-one-confirmed",
+    "text-two-click",
+    "text-two-confirmed",
+    "after-pan-path-hit-test",
+    "after-pan",
+    "after-price-axis-drag-path-hit-test",
+    "after-price-axis-drag"
+  ],
+  "errors": 0
+}

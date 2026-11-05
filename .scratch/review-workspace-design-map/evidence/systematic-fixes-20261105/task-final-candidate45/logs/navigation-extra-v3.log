@@ -1,0 +1,93 @@
+{
+  "target": "F891E6AA8870938A2D77B3C7CB393C96",
+  "failures": [],
+  "steps": [
+    {
+      "name": "i03-v3-exact-draft",
+      "active": {
+        "tag": "INPUT",
+        "label": "计划入场",
+        "value": "57.25"
+      },
+      "exitDialog": false,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "i03-v3-exit-dialog",
+      "active": {
+        "tag": "BUTTON",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "i03-v3-confirmed-exit",
+      "active": {
+        "tag": "BUTTON",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": false,
+      "planEntry": null
+    },
+    {
+      "name": "i03-v3-returned-draft",
+      "active": {
+        "tag": "BUTTON",
+        "action": "exit",
+        "label": "关闭工作区",
+        "value": ""
+      },
+      "exitDialog": false,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "focus-v3-modal-first",
+      "active": {
+        "tag": "BUTTON",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "focus-v3-shift-tab-last",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "focus-v3-tab-wrap-first",
+      "active": {
+        "tag": "BUTTON",
+        "action": "resume-workspace",
+        "label": null,
+        "value": ""
+      },
+      "exitDialog": true,
+      "planEntry": "57.25"
+    },
+    {
+      "name": "focus-v3-escape-source-focus",
+      "active": {
+        "tag": "BUTTON",
+        "action": "exit",
+        "label": "关闭工作区",
+        "value": ""
+      },
+      "exitDialog": false,
+      "planEntry": "57.25"
+    }
+  ]
+}

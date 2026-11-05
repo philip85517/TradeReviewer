@@ -1,0 +1,177 @@
+[
+  {
+    "chart": {
+      "bottom": 781,
+      "height": 659,
+      "left": 253,
+      "right": 1107,
+      "top": 122,
+      "width": 854,
+      "x": 253,
+      "y": 122
+    },
+    "hotspot": {
+      "bottom": 178,
+      "height": 40,
+      "left": 477.2265625,
+      "right": 513.2265625,
+      "top": 138,
+      "width": 36,
+      "x": 477.2265625,
+      "y": 138
+    },
+    "overflow": false,
+    "state": "workspace left-open right-open",
+    "toolbar": {
+      "bottom": 179,
+      "height": 42,
+      "left": 409.5,
+      "right": 950.5,
+      "top": 137,
+      "width": 541,
+      "x": 409.5,
+      "y": 137
+    },
+    "width": 1440
+  },
+  {
+    "chart": {
+      "bottom": 781,
+      "height": 659,
+      "left": 69,
+      "right": 1107,
+      "top": 122,
+      "width": 1038,
+      "x": 69,
+      "y": 122
+    },
+    "hotspot": {
+      "bottom": 178,
+      "height": 40,
+      "left": 385.2265625,
+      "right": 421.2265625,
+      "top": 138,
+      "width": 36,
+      "x": 385.2265625,
+      "y": 138
+    },
+    "overflow": false,
+    "state": "workspace  right-open",
+    "toolbar": {
+      "bottom": 179,
+      "height": 42,
+      "left": 317.5,
+      "right": 858.5,
+      "top": 137,
+      "width": 541,
+      "x": 317.5,
+      "y": 137
+    },
+    "width": 1440
+  },
+  {
+    "chart": {
+      "bottom": 781,
+      "height": 659,
+      "left": 69,
+      "right": 1371,
+      "top": 122,
+      "width": 1302,
+      "x": 69,
+      "y": 122
+    },
+    "hotspot": {
+      "bottom": 178,
+      "height": 40,
+      "left": 517.2265625,
+      "right": 553.2265625,
+      "top": 138,
+      "width": 36,
+      "x": 517.2265625,
+      "y": 138
+    },
+    "overflow": false,
+    "state": "workspace  ",
+    "toolbar": {
+      "bottom": 179,
+      "height": 42,
+      "left": 449.5,
+      "right": 990.5,
+      "top": 137,
+      "width": 541,
+      "x": 449.5,
+      "y": 137
+    },
+    "width": 1440
+  },
+  {
+    "chart": {
+      "bottom": 781,
+      "height": 659,
+      "left": 253,
+      "right": 1371,
+      "top": 122,
+      "width": 1118,
+      "x": 253,
+      "y": 122
+    },
+    "hotspot": {
+      "bottom": 178,
+      "height": 40,
+      "left": 609.2265625,
+      "right": 645.2265625,
+      "top": 138,
+      "width": 36,
+      "x": 609.2265625,
+      "y": 138
+    },
+    "overflow": false,
+    "state": "workspace left-open ",
+    "toolbar": {
+      "bottom": 179,
+      "height": 42,
+      "left": 541.5,
+      "right": 1082.5,
+      "top": 137,
+      "width": 541,
+      "x": 541.5,
+      "y": 137
+    },
+    "width": 1440
+  },
+  {
+    "chart": {
+      "bottom": 781,
+      "height": 659,
+      "left": 253,
+      "right": 1107,
+      "top": 122,
+      "width": 854,
+      "x": 253,
+      "y": 122
+    },
+    "hotspot": {
+      "bottom": 178,
+      "height": 40,
+      "left": 477.2265625,
+      "right": 513.2265625,
+      "top": 138,
+      "width": 36,
+      "x": 477.2265625,
+      "y": 138
+    },
+    "overflow": false,
+    "state": "workspace left-open right-open",
+    "toolbar": {
+      "bottom": 179,
+      "height": 42,
+      "left": 409.5,
+      "right": 950.5,
+      "top": 137,
+      "width": 541,
+      "x": 409.5,
+      "y": 137
+    },
+    "width": 1440
+  }
+]

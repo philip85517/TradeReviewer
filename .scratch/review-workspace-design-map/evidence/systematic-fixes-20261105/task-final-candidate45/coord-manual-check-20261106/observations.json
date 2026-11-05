@@ -1,0 +1,130 @@
+{
+  "date": "2026-11-06 Asia/Shanghai",
+  "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=holding",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "dpr": 1
+  },
+  "steps": [
+    {
+      "name": "01-initial",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": null,
+        "editor": null,
+        "active": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open \"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\""
+      }
+    },
+    {
+      "name": "02-confirmed",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": {
+          "box": {
+            "x": 544.21875,
+            "y": 408.5,
+            "width": 144.34375,
+            "height": 55
+          },
+          "content": "等待确认再行动Text · 2025-01-14 · 53.72",
+          "aria": "编辑图上文字：等待确认再行动，锚点 2025-01-14 · 53.72",
+          "widthStyle": "144.344px",
+          "maxWidth": "280px"
+        },
+        "editor": null,
+        "active": "<div class=\"chart-text\" style=\"left: 291.226px; top: 254.5px; max-width: 280px; max-height: 458.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabin"
+      }
+    },
+    {
+      "name": "03-after-text-drag",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": {
+          "box": {
+            "x": 544.21875,
+            "y": 408.5,
+            "width": 144.34375,
+            "height": 55
+          },
+          "content": "等待确认再行动Text · 2025-01-14 · 53.72",
+          "aria": "编辑图上文字：等待确认再行动，锚点 2025-01-14 · 53.72",
+          "widthStyle": "144.344px",
+          "maxWidth": "280px"
+        },
+        "editor": null,
+        "active": "<div class=\"chart-text\" style=\"left: 291.226px; top: 254.5px; max-width: 280px; max-height: 458.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabin"
+      }
+    },
+    {
+      "name": "04-editing",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": null,
+        "editor": {
+          "box": {
+            "x": 551.21875,
+            "y": 383.5,
+            "width": 233,
+            "height": 76
+          },
+          "value": "等待确认再行动",
+          "resize": "vertical"
+        },
+        "active": "<textarea id=\"textInput\" aria-label=\"图上 Text 内容\">等待确认再行动</textarea>"
+      }
+    },
+    {
+      "name": "05-content-edited",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": {
+          "box": {
+            "x": 544.21875,
+            "y": 408.5,
+            "width": 154,
+            "height": 55
+          },
+          "content": "等待确认再行动（补充）Text · 2025-01-14 · 53.72",
+          "aria": "编辑图上文字：等待确认再行动（补充），锚点 2025-01-14 · 53.72",
+          "widthStyle": "154px",
+          "maxWidth": "280px"
+        },
+        "editor": null,
+        "active": "<div class=\"chart-text\" style=\"left: 291.226px; top: 254.5px; max-width: 280px; max-height: 458.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabin"
+      }
+    }
+  ],
+  "errors": [],
+  "actionNotes": [
+    "T selected and chart point chosen with browser input",
+    "drag attempted from center of one confirmed Text by +80,+32 CSS px",
+    "one Text clicked and content changed through browser input",
+    "no gesture on textarea resize handle was performed"
+  ]
+}

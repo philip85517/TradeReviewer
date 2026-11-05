@@ -1,0 +1,112 @@
+{
+  "target": "7C3D911F21287319923BDCE2EAFB91D6",
+  "error": "Error: not a real clickable target: [data-filter] {\"x\":35,\"y\":116,\"selector\":\"[data-filter]\",\"hit\":false,\"hitHtml\":\"<aside class=\\\"sidebar left-panel is-collapsed\\\" aria-label=\\\"示例股份交易回合列表\\\">\\n    <div class=\\\"side-head\\\"><div><span class=\\\"eyebrow\\\">REVIEW QUEUE</span><h2>交易列表</h2></div>\\n      <button class=\\\"icon-btn\\\" data-action=\\\"toggle-left\\\" aria-label=\\\"展开交易列表\",\"disabled\":false}\n    at click (file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:53:36)\n    at async clearAndType (file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:57:13)\n    at async file:///private/tmp/tradereview-final-c45-navigation-extra.mjs:126:3",
+  "failures": [
+    "I08 left toggle did not visibly expand queue"
+  ],
+  "steps": [
+    {
+      "name": "i01-before-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i01-back-exit-dialog",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i01-resume-after-back",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i02-close-exit-dialog",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i02-confirmed-closed-workspace",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "filter": null,
+      "trades": []
+    },
+    {
+      "name": "i03-resumed-after-close",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i04-close-dialog-second-sample",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": "退出工作区？\n\n当前内容仅保存在内存草稿中。\n\n继续工作\n退出到交易列表\n查看记录",
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i04-resumed",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "leftOpen": true,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    },
+    {
+      "name": "i08-left-expanded",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-navigation-extra",
+      "modal": null,
+      "leftOpen": false,
+      "filter": "",
+      "trades": [
+        "600000-3",
+        "600000-2",
+        "600000-1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "judgmentFields": 0,
+    "review": "审阅结构 A内存刷新会重置本轮动作",
+    "right": "\n    NODE / A持仓中\n    持仓过程在图上标注\n    \n  ",
+    "scene": "holding",
+    "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=B&scene=add"
+  },
+  {
+    "judgmentFields": 0,
+    "review": "审阅结构 A内存刷新会重置本轮动作",
+    "right": "\n    NODE / A持仓中\n    持仓过程在图上标注\n    \n  ",
+    "scene": "holding",
+    "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=B&scene=partial"
+  },
+  {
+    "judgmentFields": 0,
+    "review": "审阅结构 A内存刷新会重置本轮动作",
+    "right": "\n    NODE / A持仓中\n    持仓过程在图上标注\n    \n  ",
+    "scene": "holding",
+    "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=B&scene=resume"
+  }
+]

@@ -8,6 +8,9 @@
 |[交易库 V1.1](baselines/2026-10-24-trading-library-v1.1/visual-spec.html)|历史冻结版本|保留 E 定型过程与原评论；逻辑修订见 V2.0|
 |[交易库 V1.0](baselines/2026-10-22-trading-library-v1.0/visual-spec.html)|历史工作版本|保留原评论和布局探索；现行交易库规范见 V2.0|
 |[复盘页视觉规范](baselines/2026-10-22-review-workspace-v1.0/visual-spec.html)|**V1.0 · 设计提案**|仅复盘工作区；三阶段、回放边界、记录、保存、响应式与导出；继承 V2.5 公共规范|
+|[策略台视觉方案](baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html) · [公共扩展 SW01–SW08](shared/strategy-workbench-v1.2/manual.html)|**V1.2 · 最新策略静态设计包**|10/24 聊天要求形成 V1.2；保留原静态验收，不代表用户正式批准或产品功能验收|
+|[策略台 V1.0](baselines/2026-10-22-strategy-workbench-v1.0/visual-spec.html)|历史设计与依赖|保留要素映射、旧验收与原 FAIL；后续视觉表达见 V1.2|
+|[11/6 本地视觉资料整合](iterations/2026-11-06-visual-spec-consolidation/README.md)|来源、聊天时间与 cherry-pick 记录|区分当前规范、未批准原型及历史；不代表已合入 master|
 |[拆分前完整快照](baselines/2026-10-22-homepage-v2.4.2/visual-spec.html)|V2.4.2 · 冻结基线|保存拆分前累计内容、图稿和43条评论；不作为后续新增修订入口|
 |[版本拆分与验收记录](iterations/2026-10-22-design-doc-split/README.md)|本次追溯入口|版本职责、评论归属、完整性检查和启动说明|
 |[原首页 V2.4.1](baselines/2026-10-20-homepage-v2.4.1/visual-spec.html)|历史工作版本|原目录保留，不覆盖历史内容|

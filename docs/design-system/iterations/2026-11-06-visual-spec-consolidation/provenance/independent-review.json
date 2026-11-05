@@ -1,0 +1,272 @@
+{
+  "audited_at": "2026-11-05T18:31:39.003728+00:00",
+  "scope": "Independent read-only byte/provenance/scope/version-separation review; no UI tests or service/database actions.",
+  "branch": "codex/visual-specs-consolidation-20261106",
+  "HEAD_at_check": "be219d555f5d2a9236b3e3c69de6d4ae6ffe70d5",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "master": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "origin_master": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "former_branch": "906ac6e1fbbf948d17768aea8ab958ea3532b85d",
+  "frozen_manifests": {
+    "strategy-manifest.json": {
+      "files": 392,
+      "bytes": 17285815,
+      "captured_at": "2026-11-06T02:16:27.922082+08:00",
+      "snapshot_commit": "3b5c2ccfb889bc65e469d88d7c434fe55e347cba",
+      "snapshot_ref_matches": true
+    },
+    "review-current-manifest.json": {
+      "files": 1110,
+      "bytes": 126506356,
+      "captured_at": "2026-11-06T02:20:01.005985+08:00",
+      "snapshot_commit": "39645f102c3d630c8d4870ea677c98008501da8a",
+      "snapshot_ref_matches": true
+    },
+    "supporting-history-manifest.json": {
+      "files": 647,
+      "bytes": 50619182,
+      "captured_at": "2026-11-06T02:22:20.520537+08:00",
+      "snapshot_commit": "32f66f54a5aad31cb77be3e7e39d0b4cfc7057ce",
+      "snapshot_ref_matches": true
+    },
+    "review-decision-clarifications-manifest.json": {
+      "files": 3,
+      "bytes": 33053,
+      "captured_at": "2026-11-06T02:27:19.287685+08:00",
+      "snapshot_commit": "1cefa26776e3d30a2726ad659ef84dfb84c9f603",
+      "snapshot_ref_matches": true
+    }
+  },
+  "source_changed_since_capture": [],
+  "branch_diff_files": 2185,
+  "branch_diff_outside_docs_scratch": [],
+  "deleted_base_paths": [],
+  "modified_base_paths": [
+    "docs/design-system/README.md",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html"
+  ],
+  "worktree_modified": [
+    "docs/design-system/README.md",
+    "docs/design-system/iterations/README.md"
+  ],
+  "untracked_count": 10,
+  "pending_outside_docs_scratch": [],
+  "current_library_baseline_unchanged": true,
+  "current_library_baseline_file_count": 61,
+  "new_index_links_checked": 55,
+  "new_index_broken_links": [],
+  "pending_wrappers": true,
+  "latest_bounded_capture_at": "2026-11-06T02:27:19.287685+08:00",
+  "superseded_manifest_entries": [
+    {
+      "destination": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+      "prior_manifest": "review-current-manifest.json",
+      "prior_sha256": "5d2f35c713a2023a61986a9ffdda8455c9a12b7b31a46f1cf2457476e15fb170",
+      "superseding_manifest": "review-decision-clarifications-manifest.json",
+      "superseding_sha256": "b28e99311dac9987d83ddcc6c14f84acc6266b4ec086cfb0b305db612326cbc6",
+      "status": "SUPERSEDED; original snapshot remains retained"
+    },
+    {
+      "destination": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/independent-trade2-20261106/REPORT.md",
+      "prior_manifest": "review-current-manifest.json",
+      "prior_sha256": "23d45b1ccfefec432927f7a5896e1d19dd7c4477fe07fc577abd20ca93bee04d",
+      "superseding_manifest": "review-decision-clarifications-manifest.json",
+      "superseding_sha256": "960d81eada7cc04630a429a8f831d3769daf04157d0e8235f843afb4d30c7936",
+      "status": "SUPERSEDED; original snapshot remains retained"
+    },
+    {
+      "destination": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-10-identity-stage/coordinator-review/REPORT.md",
+      "prior_manifest": "review-current-manifest.json",
+      "prior_sha256": "ff43dd5d7c126b434319fb6324b8aaa0d4baa5c6f84844d9d94bbd567502a46b",
+      "superseding_manifest": "review-decision-clarifications-manifest.json",
+      "superseding_sha256": "01b5a13525c7828278b54f77e82a398862e8149c6957581c580acf76c531041e",
+      "status": "SUPERSEDED; original snapshot remains retained"
+    }
+  ],
+  "effective_manifest_files_total": 2149,
+  "effective_manifest_disk_HEAD_failures": [],
+  "manifest_snapshot_failures": [],
+  "current_source_drift_at_check": [],
+  "source_follow_up_note": "The former three changed reports were captured in bounded follow-up snapshot 1cefa267. Earlier review-current entries are SUPERSEDED, not damaged. Sources may continue after the explicit cutoff; this archive is not a live mirror.",
+  "formal_source_comparison": {
+    "source_commit": "270aad42cb807773e716249deb04b03bf53a1e4e",
+    "cherry_pick_commit": "ff82d354",
+    "source_diff_paths": 203,
+    "cherry_pick_mismatches": [
+      "docs/design-system/README.md"
+    ],
+    "mismatch_explanation": "Only global design-system index intentionally resolved to preserve master trading-library V2.0 status while adding review proposal link.",
+    "effective_remaining_source_files": 35,
+    "effective_remaining_failures": []
+  },
+  "effective_preserved_source_files_total": 2184,
+  "home_selection_files": [
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/visual-contract.md",
+      "kind": "subordinate-execution-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/25db/TradeReview/.scratch/trading-library-v20-development/visual-contract.md",
+      "kind": "subordinate-execution-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/25db/TradeReview/.scratch/trading-library-v20-development/evidence/source-manifest.json",
+      "kind": "subordinate-source-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/docs/design-system/TradeReview-设计规范-v0.1.md",
+      "kind": "historical-unapproved-candidate",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/docs/design-system/TradeReview-首页拉齐-v0.2.md",
+      "kind": "historical-unapproved-candidate",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/design-system-calibration-20261007/visual-contract.md",
+      "kind": "historical-execution-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/design-system-calibration-20261007/README.md",
+      "kind": "historical-status-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/homepage-master-alignment-20261007/visual-contract.md",
+      "kind": "historical-execution-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/homepage-master-alignment-20261007/FINAL-ACCEPTANCE.md",
+      "kind": "historical-status-reference",
+      "matched_count": 1,
+      "hash_matches": true
+    }
+  ],
+  "candidate_freeze_checks": {
+    "total": 36,
+    "groups": {
+      "candidate45-frozen": 9,
+      "candidate45-default": 9,
+      "direct-text-v5-frozen": 9,
+      "identity-isolated": 9
+    },
+    "failures": []
+  },
+  "candidate_guard_hashes": {
+    "formal_source_md": {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "sha256": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+      "pass": true
+    },
+    "formal_html": {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "sha256": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b",
+      "pass": true
+    },
+    "candidate45_workspace_js": {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js",
+      "sha256": "0504ece60a3f04fc27f78ab13db3f44a8bcfe0ee930bb56a6bcb08be06ff9ca2",
+      "pass": true
+    },
+    "direct_text_v5_workspace_js": {
+      "path": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-direct-text-v5/workspace-v0.1/workspace.js",
+      "sha256": "f18728ad337822e765b9c67d3e7c85125d2ae73918f9f2e934a14e1ed47de54b",
+      "pass": true
+    },
+    "identity_stage_workspace_js": {
+      "path": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-10-identity-stage/workspace-v0.1/workspace.js",
+      "sha256": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+      "pass": true
+    }
+  },
+  "candidate_version_verdict": "PASS: candidate45 default stays frozen; direct-text-v5 and identity remain isolated pending user review. Formal V1.0 source is not promoted or rewritten.",
+  "homepage_v25_identity": {
+    "changed_package_files": [
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json",
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html"
+    ],
+    "source_b387_byte_identical": {
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json": true,
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json": true,
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html": true,
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": true,
+      "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html": true
+    },
+    "blocks": 532,
+    "block_ids_unique": true,
+    "identity_manifest_blocks_equal": true,
+    "HTML_block_ids_count": 532,
+    "HTML_ids_unique": true,
+    "HTML_missing_ids": [],
+    "HTML_extra_ids": [],
+    "images": 88,
+    "image_shared_fields_match": true,
+    "source_fingerprint_match": true,
+    "old_existing_ids_renumbered": 21,
+    "renumbering_origin": "Existing b387 SW public-component source augmentation; not a migration edit. Source bytes intentionally retained.",
+    "comment_files": [
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/reviews/SITE-HOME-V25.json",
+        "master_identical": true,
+        "comments_count": 0
+      },
+      {
+        "path": "docs/design-system/reviews/SITE-HOME-V25.json",
+        "master_identical": true,
+        "comments_count": 0
+      }
+    ],
+    "external_old_block_anchors": "NOT VERIFIED; wrapper explicitly preserves this limitation."
+  },
+  "source_whitespace_warnings": [
+    ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md:9: trailing whitespace.",
+    "+日期：2026-11-05  ",
+    ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/INDEPENDENT-VISUAL.md:32: new blank line at EOF.",
+    ".scratch/review-workspace-design-map/evidence/tradingview-research/research.md:46: trailing whitespace.",
+    "+|R05|天|周期/更新间隔候选，身份未唯一确认；不能直接写成“切换图表周期”| ",
+    "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/visual-iteration-07/reports/workbench-worker.md:3: trailing whitespace.",
+    "+Model: `gpt-5.6-luna`"
+  ],
+  "source_whitespace_status": "WARN: inherited raw-source whitespace retained for byte fidelity, not an acceptance blocker; wrappers must pass their own diff check.",
+  "verdict": "PASS for local document/static-prototype preservation scope; no blocking migration findings.",
+  "blocking_findings": [],
+  "required_finalization": "Coordinator to fill independent acceptance and tracking statuses, copy this independent review into provenance, and commit wrappers. This is expected administrative finalization, not a source-byte acceptance failure.",
+  "not_verified": [
+    "UI functional or visual acceptance is outside this documentation-only consolidation.",
+    "Physical touch, real input breakpoints, live services and business database acceptance are not performed by this review.",
+    "External consumers of old V2.5 block anchors remain NOT VERIFIED.",
+    "Historical raw snapshots are not standalone runnable sites; original relative references remain unchanged.",
+    "Design approval is not granted: strategy static delivery and review candidates retain their recorded statuses."
+  ],
+  "library_baseline_counts": {
+    "2026-10-22-trading-library-v1.0": 201,
+    "2026-10-24-trading-library-v1.1": 89,
+    "2026-10-26-trading-library-v2.0": 61
+  },
+  "all_existing_library_baselines_unchanged": true,
+  "current_library_baseline_paths": [
+    "2026-10-26-trading-library-v2.0"
+  ],
+  "clarification_increment_verdict": "PASS: three final target disk files and HEAD blobs match review-decision-clarifications manifest and immutable 1cefa267 source snapshot. Only three review-current entries superseded."
+}

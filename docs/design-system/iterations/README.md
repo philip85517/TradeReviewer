@@ -4,6 +4,7 @@
 
 |日期|记录|用途与后续状态|
 |---|---|---|
+|2026-11-06|[跨 worktree 视觉资料本地整合](2026-11-06-visual-spec-consolidation/README.md)|依据真实聊天和版本时间选择；保留策略 V1.2、复盘 candidate45 与隔离候选、旧稿历史及逐文件来源，不改变 master|
 |2026-10-26|[交易库 V2.0 规范同步](2026-10-26-trading-library-v2.0/README.md)|独立扫描、规则裁决、图文修订与验收记录；保留 E 布局和 V1.1 历史|
 |2026-10-24|[交易库 V1.1 定型](../baselines/2026-10-24-trading-library-v1.1/review-records/README.md)|E 原型定型，V1.0 与旧评论原状态保留|
 |2026-10-22|[首页统一交易库入口](2026-10-22-homepage-library-entry/README.md)|取消独立待复盘入口，入口及返回分镜同步验收|

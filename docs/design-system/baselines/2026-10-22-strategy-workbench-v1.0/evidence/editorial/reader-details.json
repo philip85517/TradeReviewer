@@ -1,0 +1,399 @@
+{
+  "viewport": "1280×720",
+  "checks": [
+    {
+      "chapter": "ST01",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B064",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看布局尺寸与适用范围",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST02",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B068",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看查询、引用统计、置顶和归档规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST03",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B073",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看版本、包详情和可运行性规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST04",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B077",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 0,
+        "summary": "查看实验状态与列表恢复规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST05",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B082",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 0,
+        "summary": "查看四步字段、数据边界及失败规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST06",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B087",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看观察元素、原因示例和空间规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          },
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST07",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B092",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看每个动作的时间、视野和失败规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST08",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B096",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 0,
+        "summary": "查看结果口径与事件往返",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST09",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B100",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 0,
+        "summary": "查看比较与派生规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST10",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B104",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看异常与恢复清单",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST11",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B123",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看断点、触控和长内容规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST12",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B127",
+        "headings": 5,
+        "open": true,
+        "paragraphs": 4,
+        "summary": "查看控件映射、八态及动效精确规则",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          },
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          },
+          {
+            "columns": 2,
+            "rowSizes": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST13",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B131",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 1,
+        "summary": "查看跨页面状态与后续实现接受顺序",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    },
+    {
+      "chapter": "ST14",
+      "opened": {
+        "commentAnchor": "STRATEGY-DOC-B136",
+        "headings": 0,
+        "open": true,
+        "paragraphs": 2,
+        "summary": "查看历史清单、变更归属与交付边界",
+        "summaryHasCommentAnchor": false,
+        "tableRows": [
+          {
+            "columns": 3,
+            "rowSizes": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      "keyboardClosed": true
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "chapterTitles": [
+    "一、研究背景、设计目标与取舍",
+    "二、设计理念与完整研究流程",
+    "三、信息架构、整体布局与视觉层级",
+    "四、策略库与方法查找",
+    "五、完整策略组装与版本保存",
+    "六、实验列表与研究进度",
+    "七、四步创建实验",
+    "八、观察工作台与当日证据",
+    "九、逐日推进、播放与回看",
+    "十、阶段结果与事件追溯",
+    "十一、组合比较与下一次研究",
+    "十二、等待、异常与恢复",
+    "十三、窄窗口与长内容适配",
+    "十四、公共组件与交互反馈",
+    "十五、实现顺序与设计验收",
+    "附录、设计依据与方案边界"
+  ],
+  "detailsOpen": 0,
+  "heading": "策略台视觉设计方案 V1.0",
+  "images": [
+    {
+      "complete": true,
+      "src": "source/images/06-observe.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/01-library.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/01b-package-management.svg",
+      "width": 920
+    },
+    {
+      "complete": true,
+      "src": "source/images/02-compose.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/03-experiments.svg",
+      "width": 1440
+    },
+    {
+      "complete": false,
+      "src": "source/images/04-create.svg",
+      "width": 0
+    },
+    {
+      "complete": false,
+      "src": "source/images/04b-select-strategies.svg",
+      "width": 0
+    },
+    {
+      "complete": false,
+      "src": "source/images/05-confirm.svg",
+      "width": 0
+    },
+    {
+      "complete": true,
+      "src": "source/images/06-observe.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/06-observe-status-detail.svg",
+      "width": 920
+    },
+    {
+      "complete": true,
+      "src": "source/images/07-time-states.svg",
+      "width": 1440
+    },
+    {
+      "complete": false,
+      "src": "source/images/07a-t0.svg",
+      "width": 0
+    },
+    {
+      "complete": false,
+      "src": "source/images/07b-first-day.svg",
+      "width": 0
+    },
+    {
+      "complete": false,
+      "src": "source/images/07c-lookback.svg",
+      "width": 0
+    },
+    {
+      "complete": true,
+      "src": "source/images/07-time-controls-detail.svg",
+      "width": 920
+    },
+    {
+      "complete": true,
+      "src": "source/images/08-results.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/09-compare.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/10-states.svg",
+      "width": 1440
+    },
+    {
+      "complete": true,
+      "src": "source/images/11-responsive.svg",
+      "width": 1280
+    },
+    {
+      "complete": true,
+      "src": "source/images/11-compact.svg",
+      "width": 1280
+    },
+    {
+      "complete": true,
+      "src": "source/images/11-narrow.svg",
+      "width": 390
+    },
+    {
+      "complete": true,
+      "src": "source/images/12-components.svg",
+      "width": 1440
+    }
+  ],
+  "intro": "策略台是一处研究投资方法的工作空间。用户把选股、买入与退出的想法整理成策略，在指定的历史起点创建实验，逐日观察策略如何执行，再通过结果与事件证据判断方法的表现。",
+  "title": "策略台视觉设计方案 V1.0",
+  "viewport": {
+    "dpr": 1,
+    "height": 720,
+    "width": 1280
+  }
+}

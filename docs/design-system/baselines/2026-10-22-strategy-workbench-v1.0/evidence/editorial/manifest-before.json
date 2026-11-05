@@ -1,0 +1,656 @@
+{
+  "schema": "strategy-document-manifest/1",
+  "documentId": "STRATEGY-DESK-V10",
+  "version": "1.0",
+  "fingerprint": "10f454f689da2234a4267d90889e97e8ac40a4a3dbc96e687fb98c92f9068a9a",
+  "sourceFile": "docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/source/visual-design.candidate.md",
+  "documentUrl": "visual-spec.html",
+  "blocks": [
+    {
+      "id": "STRATEGY-DOC-B054",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "策略台帮助你把投资想法变成可重复的策略，放到同一段历史里观察，再用成交原因和结果检验它。设计的重心是：先知道正在看哪个策略、哪一天，再看图表发生了什么，最后追问为什么。",
+      "sourceLine": 3,
+      "sourceKey": "e7919bfdd2ee73b4fce07cf1"
+    },
+    {
+      "id": "STRATEGY-DOC-B055",
+      "chapter": "DOC",
+      "kind": "caption",
+      "text": "图 ST06｜本次完整观察设计，虚构示例数据。延续已确认的 0.7 观察层级，统一为当前全站 V2.5 控件语言。V1.0 是本模块的新版本编号，不替换历史 2.x 文档；新增视觉方案待评审。",
+      "sourceLine": 7,
+      "sourceKey": "8a7347bba90314b868fa6c8f"
+    },
+    {
+      "id": "STRATEGY-DOC-B056",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "你可以按“策略库 → 创建实验 → 观察与回看 → 结果和比较”的顺序阅读，也可以从侧边目录直接看关心的画面。图中按钮用于说明设计；正文的分镜按钮用于浏览方案。",
+      "sourceLine": 9,
+      "sourceKey": "f1d9f0f8be7be9a4241e6b4e"
+    },
+    {
+      "id": "STRATEGY-DOC-B057",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "策略库保存“用什么办法选股、何时买入、何时退出”；我的实验保存“用哪个版本、从哪天开始、投入多少资金、运行到哪天”。两个对象分开，修改今天的策略不会改写昨天的实验。创建实验始终从“我的实验”开始；在创建途中缺少合适策略，可以就地组装，保存后回到原来的选择步骤。",
+      "sourceLine": 15,
+      "sourceKey": "51041a433aecfbeeeadae7ed"
+    },
+    {
+      "id": "STRATEGY-DOC-B058",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "进入实验后，回放观察、阶段结果、组合对比共用实验身份和时间说明。查看结果不用重新找策略，打开事件也能返回原来那一页。策略台里的你是观察者：买卖由策略和执行规则决定，页面不会把候选名单画成手动下单面板。",
+      "sourceLine": 17,
+      "sourceKey": "f813493dc2ab8c007165aec3"
+    },
+    {
+      "id": "STRATEGY-DOC-B059",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "保留图表与解释相邻。 主图回答走势与成交，右侧回答持仓和调仓原因。将解释放在图旁，比每次开弹窗更容易对照；代价是图表变窄，所以低频配置另开覆盖层，右侧不塞完整表单。窄窗口按图表、解释的顺序向下阅读。",
+      "sourceLine": 21,
+      "sourceKey": "e8934fcf90b218c5df800735"
+    },
+    {
+      "id": "STRATEGY-DOC-B060",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "共用控件，不照搬首页布局。 颜色、字号、按钮、输入、焦点、金额展示沿用 V2.5；策略的身份栏、日期、回放工具保留自己的业务顺序。首页的72px导航、64px页头和八行持仓表不是全站强制尺寸。",
+      "sourceLine": 23,
+      "sourceKey": "5abd3c8f0ee6b04bc7360be0"
+    },
+    {
+      "id": "STRATEGY-DOC-B061",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "保留完整信息，允许向下滚动。 0.7 已确认完整观察和页外滚动，本版延续。四项指标合并为一条88px高的摘要带，减少卡片嵌套；它比旧紧凑摘要稍高，换来统一字号与可读金额。图表净绘图区仍至少320px，不靠缩字塞满一屏。",
+      "sourceLine": 25,
+      "sourceKey": "64bca46d19746c99f8d84e68"
+    },
+    {
+      "id": "STRATEGY-DOC-B062",
+      "chapter": "ST01",
+      "kind": "paragraph",
+      "text": "| 区域 | 本版规则 | 来源/数值性质 | | --- | --- | --- | | 全局框架 NAV01 | 导航展开200px、折叠54px；顶栏48px；折叠状态跨页面保留 | 沿用融合契约 H04；非首页72/64 | | 内容 NAV02 | 左右24px、模块间24px、内容最大1240px；工作台不叠加策略库的40px业务标签栏 | 历史H04/H07；本版整合 | | 摘要 OBS02 | 四等分连续带88px；28/34主值，14/20标签，12/16说明；中间细分隔 | V2.5组件适配，本次视觉建议 | | 图表 OBS04 | 桌面图+320px检查区、间隔24px；1440画布净图区360px；1280最低320px | 保留H06完整观察重心，尺寸为本版候选 | | 滚动 NAV03 | 观察页面外层纵向滚动；覆盖层独立滚动；结果/比较的长明细在有高度预算的表区滚动 | H06后续决定优先旧固定单屏方案 | | 低频操作 OBS08 | 配置、复制、派生集中“更多”；播放、单步、日期、结果入口常驻 | H04/H05 | 策略台入口目标为应用导航“策略台”。当前生产入口是否开放不由这份设计确认；设计浏览链接不是正式业务入口。",
+      "sourceLine": 30,
+      "sourceKey": "c27f1595fba35689c6bc1424"
+    },
+    {
+      "id": "STRATEGY-DOC-B063",
+      "chapter": "ST02",
+      "kind": "paragraph",
+      "text": "完整策略放在默认视图。三类包作为相邻目录，名称直接说明职责：标的筛选、买入信号、止盈止损。列表优先展示名称、版本、规则摘要与状态；搜索、筛选和排序固定在顶部。“新建策略”是这里唯一主动作，保存成功只进入策略详情。",
+      "sourceLine": 47,
+      "sourceKey": "21cb995e21aa912406262b83"
+    },
+    {
+      "id": "STRATEGY-DOC-B064",
+      "chapter": "ST02",
+      "kind": "paragraph",
+      "text": "本版建议将大卡片改成紧凑行，让你同屏比较更多策略。规则全文不塞入每一行，而是在详情里展开。这个密度调整是本次建议，历史“整体模型认可”不代表已经认可这组新尺寸。",
+      "sourceLine": 49,
+      "sourceKey": "f8d13b44be3508912e3f0a22"
+    },
+    {
+      "id": "STRATEGY-DOC-B065",
+      "chapter": "ST02",
+      "kind": "paragraph",
+      "text": "包目录复用同一套查询工具，额外显示使用策略数和版本发布时间。“查看详情”不会选中包；回到选择列表后，再点“使用此包”，避免把探索说明变成修改配置。",
+      "sourceLine": 51,
+      "sourceKey": "3c8fbc1a41dcc6d9bbf05e7f"
+    },
+    {
+      "id": "STRATEGY-DOC-B066",
+      "chapter": "ST02",
+      "kind": "paragraph",
+      "text": "| 元素 | 操作与状态 | 完成/失败后的表现 | | --- | --- | --- | | LIB01 查询 | 搜索名称/说明/标签/标识；按类型、标签、来源、生命周期筛选；显式显示排序方向 | 修改查询回第1页；库与实验各存自己的条件；返回详情恢复查询/页码/滚动/焦点 | | LIB02 默认顺序 | 默认未归档、最近规则版本发布在前、置顶优先；置顶仅作用匹配结果 | 不改变策略执行顺序；空库与无匹配分别说明 | | LIB03 计数 | 使用策略数按完整策略最新版本引用包身份去重；当前版本数是子集；历史版本与锁定实验另列 | 未保存草稿不计；未知用“—”，不显示0；日期区分首次开发、版本发布与导入 | | LIB04 管理信息 | 标签、备注、置顶属于包身份的管理信息 | 不产生执行版本；不改规则发布时间；单次置顶失败回滚 | | LIB05 整理顺序 | 置顶与手动顺序是个人偏好，三类包分别跨会话保存；独立整理模式暂显本类型全部未归档包，置顶/普通组不可跨组排序；组内上下移动、拖动或到本组第N位，支持跨页 | 保存后手动排序；取消恢复原查询/顺序；失败留草稿；冲突提示重新读取，不覆盖别人修改 | | LIB06 归档/恢复 | 归档覆盖包身份及其全部版本，确认展示引用影响；隐藏新增选择，但旧策略/旧实验引用保留，仍独立检查可执行性 | 新增草稿提交时遇到归档需恢复/替换；编辑/复制已有策略可明确沿用原归档版本；恢复原身份，普通组末尾、不自动置顶 | 归档不是删除，也不是执行禁用。归档失败留在确认层；成功定位邻行，空末页回最近有效页。永久删除、跨页批量归档、团队权限和文件夹不在V1.0范围。",
+      "sourceLine": 56,
+      "sourceKey": "729e1af650591cdb754a0bc7"
+    },
+    {
+      "id": "STRATEGY-DOC-B067",
+      "chapter": "ST03",
+      "kind": "paragraph",
+      "text": "组装页按“筛选 → 买入 → 止盈止损”排列三个区域，表达先找到候选，再产生交易意图的关系。每个区域先给出包名、版本和命名预设，随后显示关键规则与数据要求。排序、仓位分配和再平衡仍在完整策略配置里；第三个包不能把它们替代掉。",
+      "sourceLine": 75,
+      "sourceKey": "6a8533e0032d11857acf38f8"
+    },
+    {
+      "id": "STRATEGY-DOC-B068",
+      "chapter": "ST03",
+      "kind": "paragraph",
+      "text": "右侧包详情覆盖层宽480px，适合阅读说明；运行中的320px检查区只读当日证据，两者不能因为都在右侧就混成一个容器。关闭详情回到原位置，未保存内容不丢失。用户不需要逐条搭建原子条件，也不需要在这里上传脚本。",
+      "sourceLine": 77,
+      "sourceKey": "b62329304a10ddc31dde5449"
+    },
+    {
+      "id": "STRATEGY-DOC-B069",
+      "chapter": "ST03",
+      "kind": "paragraph",
+      "text": "编辑已有策略时，按钮明确写“保存新版本”；复制历史版本时写“创建副本”。前者属于同一个策略的新版本，后者是独立策略。已有实验始终引用原来的完整策略版本和三个包版本。",
+      "sourceLine": 79,
+      "sourceKey": "e149e8661a82c09bafd3f235"
+    },
+    {
+      "id": "STRATEGY-DOC-B070",
+      "chapter": "ST03",
+      "kind": "paragraph",
+      "text": "| 元素 | 必须展示/保留 | 边界 | | --- | --- | --- | | ASM01 三包槽 | 类型、包身份、版本、预设、有效参数与单位、来源 | 缺一个职责或接口不兼容不能保存为可运行策略 | | ASM02 说明 | 用途、规则、输入输出、数据依赖、市场范围、预热、脚本标记、兼容性 | 未提供明确写未提供，不能补成经验默认值 | | ASM03 版本 | 编辑产生新版本；实验读取锁定快照 | 库升级不自动升级实验；旧包不可执行时旧结果仍可读 | | ASM04 详情返回 | 包目录进入全页详情；组装/选择/运行配置用覆盖层，嵌套详情按层级返回 | Esc/返回恢复来源焦点；看详情不选择、不保存、不升级 | | ASM05 执行说明 | 触发条件、退出/再平衡冲突优先级、跳空、未成交、再入场、费用来源 | 日线无法推断日内高低先后；不能承诺按止损价成交；包未声明执行语义则阻断运行 | | ASM06 保存 | 校验→保存中防重复→成功显示准确版本；取消保留原策略 | 失败保留完整输入；版本冲突展示差异并允许另存，不静默覆盖 |",
+      "sourceLine": 84,
+      "sourceKey": "65a5ffd0c082eb5a59ca4f4d"
+    },
+    {
+      "id": "STRATEGY-DOC-B071",
+      "chapter": "ST04",
+      "kind": "paragraph",
+      "text": "实验列表回答“我研究过什么、进行到哪里、现在可以做什么”。状态放在实验名称附近，日期区间和策略组合放在同一行上下文里。草稿提供“继续编辑”，未开始提供“进入实验”，暂停提供“继续观察”，完成提供“查看结果”，失败提供“查看原因”。",
+      "sourceLine": 99,
+      "sourceKey": "8b039c2a9a87fa1aaf6f9e67"
+    },
+    {
+      "id": "STRATEGY-DOC-B072",
+      "chapter": "ST04",
+      "kind": "paragraph",
+      "text": "这些入口使用相同位置，文字随真实状态变化。打开一个曾运行的实验先保持暂停，避免刚进来就继续暴露未来。搜索、筛选、排序与策略库一致，切换两页不会创建草稿，也不会偷偷选中策略。",
+      "sourceLine": 101,
+      "sourceKey": "b261ebe910b762018c4d00f2"
+    },
+    {
+      "id": "STRATEGY-DOC-B073",
+      "chapter": "ST04",
+      "kind": "paragraph",
+      "text": "EXP01 草稿保留步骤、输入和已选版本；EXP02 确认后有独立运行身份，初态未开始；EXP03 保存的暂停/失败运行重开后仍暂停；EXP04 完成后保留观察、结果、比较和复制入口；EXP05 从详情返回恢复查询、页码、滚动和触发焦点。未保存草稿离开时给出“保存草稿 / 放弃本次修改 / 继续编辑”，不让普通切换隐式保存失败的数据。",
+      "sourceLine": 106,
+      "sourceKey": "2c09ba7a33e30790a2c3073f"
+    },
+    {
+      "id": "STRATEGY-DOC-B074",
+      "chapter": "ST05",
+      "kind": "paragraph",
+      "text": "第一步确定历史起点与期限。第二步选择一个或多个完整策略；需要新策略时，次动作进入组装，保存后只追加新选项，取消则原样返回。第三步预览历史可知数据形成的候选与目标仓位，并核对各组独立资金。第四步把时间、版本、资金、费用和执行假设集中呈现，确认后进入尚未开始的工作台。",
+      "sourceLine": 118,
+      "sourceKey": "2c4a2ffe6aa237f229706164"
+    },
+    {
+      "id": "STRATEGY-DOC-B075",
+      "chapter": "ST05",
+      "kind": "paragraph",
+      "text": "预览刻意同时展示“目标”和“实际”。目标仓位表达策略希望如何配置；尚未运行时，实际持仓仍为0，现金仍为100%。没有候选可以是一种有效结果，页面说明原因，不制造一个默认买入。",
+      "sourceLine": 120,
+      "sourceKey": "39d4d78d7635dc6cf92cd645"
+    },
+    {
+      "id": "STRATEGY-DOC-B076",
+      "chapter": "ST05",
+      "kind": "paragraph",
+      "text": "| 步骤/元素 | 字段与规则 | 用户可观察结果 | | --- | --- | --- | | WIZ01 设置起点 | 绝对时间、业务时区、市场/证券池、历史区间；期限沿用1周、1个月、3个月、半年、1年 | 一周为7自然日，其余为1/3/6/12日历月，月末无同日取目标月末；终点取目标之前最后完整交易日，显示名义/实际终点和交易日数；目标超出数据末端时等待补齐，或明确选择部分区间，不静默缩短 | | WIZ02 选择策略 | 完整策略身份与版本、三包版本、数据适配、可运行说明 | 多选不是共享本金；不可用原因就近可查；查看与选择分开 | | WIZ03 就地组装 | 保存成功返回步骤2追加准确新版本；重新预检 | 取消不变；保存失败留表单；已有选择与查询仍在 | | WIZ04 预览组合 | 候选清单、入围依据、目标权重、现金余量、数据截止与预热覆盖 | 目标/实际分列；空候选、数据缺失与策略失败用不同说明 | | WIZ05 独立资金 | 每个组合本金、币种、费用、滑点及整股/分股约束 | 示例10万元仅为样本，不成为默认值；费用未知不能显示免费 | | WIZ06 执行约定 | 信号截止、最早下一可交易开盘执行、停牌/涨跌停/成交不足、退出与再平衡冲突规则 | 触发不等于成交；不从日线假定精确盘中撮合 | | WIZ07 锁定确认 | 实验名、T0、区间、各版本与参数、数据快照/修订、费用和执行口径 | 一次确认产生一个运行；成功进待开始，失败回本步并保留输入 | | WIZ08 历史可知 | T0只能用已完整结束的日/周及当时已发布财务信息 | 盘中T0不能用当天收盘；未结束周线不能当完整周；缺必需数据明确阻断 |",
+      "sourceLine": 125,
+      "sourceKey": "6b6f45bd601b5cbc5c21ac88"
+    },
+    {
+      "id": "STRATEGY-DOC-B077",
+      "chapter": "ST06",
+      "kind": "paragraph",
+      "text": "先读顶部实验名与组合版本，再看摘要和查看日。净值曲线呈现这一组合的变化；切到标的K线后，成交标记解释具体买卖位置。右侧“组合详情”在概览、调仓记录、统计指标之间切换，始终属于当前组合和当前查看日。",
+      "sourceLine": 144,
+      "sourceKey": "de56bd87bc1682e7cad60f0a"
+    },
+    {
+      "id": "STRATEGY-DOC-B078",
+      "chapter": "ST06",
+      "kind": "paragraph",
+      "text": "主图下方放固定位置的播放/暂停、下一交易日、速度和回看动作，避免日期文字变长时按钮换行跑位。配置放到低频入口，常驻信息只留下理解当下所需的内容。摘要中的净资产、累计收益、最大回撤和仓位共同回答结果与风险，不重复展示一整套账本。",
+      "sourceLine": 146,
+      "sourceKey": "196ada64d5fed6915c5f826c"
+    },
+    {
+      "id": "STRATEGY-DOC-B079",
+      "chapter": "ST06",
+      "kind": "paragraph",
+      "text": "组合很多时，在固定宽度选择区显示当前项和“更多组合”。名称可以换行或在列表完整阅读，不能因为组合增加就向下挤压主图。切换组合只换观察对象，查看日不变；某组执行落后时显示自己的已完成日，不把旧值伪装成今天。",
+      "sourceLine": 148,
+      "sourceKey": "9c4915d9ae9431592d016920"
+    },
+    {
+      "id": "STRATEGY-DOC-B080",
+      "chapter": "ST06",
+      "kind": "paragraph",
+      "text": "OBS01 身份：实验/完整策略/版本同时可追溯。OBS02 摘要：统一到当前查看日与当前组合；未知用“—”。OBS03 日期：显示“正在查看”“行情已展开至”，回看时另保留已看后续提示。OBS04 图表：净值与K线共享舞台；切换恢复对应视野。OBS05 成交：买卖文字/形状与颜色并用；意图、计划和成交分别展示。OBS06 检查区：长原因自然换行；展开详情时主图不换容器、不改变已展开边界。OBS07 回放：播放/暂停同槽；下一日永远表示交易日；不在输入法组合输入时触发快捷键。OBS08 配置：只读锁定值，修改只能“基于此配置新建实验”。 规则原因的完整例文：市值¥2,140亿（大于¥200亿）；日成交额¥4,280万（大于¥2,000万）；前周EMA20 ¥111.80，本周¥112.40；收盘¥113.10，较EMA20高0.62%，处于±2%范围。阈值、价格、单位与数据截止需一起可达；不因排版缩短成“满足条件”。 价格保留2位小数，重要价格直接可读。金额按万/亿缩写，完整值可通过聚焦、详情、复制/导出取得；说明正文14/20，长规则候选使用14/22改善阅读，不改变共享按钮行高。",
+      "sourceLine": 153,
+      "sourceKey": "fe9279e058a7013774c0c3ef"
+    },
+    {
+      "id": "STRATEGY-DOC-B081",
+      "chapter": "ST07",
+      "kind": "paragraph",
+      "text": "点一次“下一交易日”，日期、行情和当日证据一起更新。新一天必须出现在主图里；若发生了成交，同时出现成交标记与实际持仓变化。没有成交，就只揭示行情，不能为了让按钮显得有效而制造交易。",
+      "sourceLine": 174,
+      "sourceKey": "b6bf04aea78afae01622c06d"
+    },
+    {
+      "id": "STRATEGY-DOC-B082",
+      "chapter": "ST07",
+      "kind": "paragraph",
+      "text": "回看过去只是换一个观察位置。比如已经看到6月28日，再回到6月14日，主图和当日持仓回到起点，但“已看后续至6月28日”仍然可见。这样你能复查原来的判断，又不会误以为自己从未看过未来。",
+      "sourceLine": 176,
+      "sourceKey": "37ec898232c26dd65da64587"
+    },
+    {
+      "id": "STRATEGY-DOC-B083",
+      "chapter": "ST07",
+      "kind": "paragraph",
+      "text": "连续播放按交易日依次揭示；速度只改变观看节奏。展开到指定日期会明确说明将揭示哪段历史。返回最新只回到已经展开的截止，不产生新的进度。错误发生时停在最后完整成功的一天，保留图表与原因。",
+      "sourceLine": 178,
+      "sourceKey": "3e919e077caa7810bad299c5"
+    },
+    {
+      "id": "STRATEGY-DOC-B084",
+      "chapter": "ST07",
+      "kind": "paragraph",
+      "text": "| 动作/元素 | 日期与信息变化 | 视野/中断 | | --- | --- | --- | | TIME01 进入T0 | 查看=T0；实际0、现金100%；候选来自T0前可知数据 | 可显示预热历史；T0以后不在图、轴、提示、列表或后台响应中泄露 | | TIME02 下一日 | 行情、组合执行和估值完成后原子提交；策略意图按约定成交 | 用户在右边缘时跟随新bar；手动回看时暂停自动播放；不能只改日期不露新bar | | TIME03 播放/速度 | 逐日提交，不跨过未完成日；速度0.5×/1×/2×/4×为本次控件建议 | 可立即暂停；停止排队帧，不重复成交；失焦或输入时暂停 | | TIME04 指定截止 | 先说明即将揭示的目标日与不可撤销的“已看”记录 | 取消不推进；执行中保留最后完整日；可暂停于已完成日 | | TIME05 回看 | 仅改变查看日；所有当日摘要/持仓/事件随之投影 | 保留行情/执行截止和已看后续；不显示查看日之后的价格提示 | | TIME06 返回最新 | 查看日回到当前可用最新已完成日，不新增行情 | 图表定位该日；记住各图模式范围 | | TIME07 组合/周期/侧栏/缩放 | 不改变阶段与任何截止 | 图范围/轴/提示均受可见截止限制；周线仅由允许数据形成；显示未完成周时明确标“未完成”，不得用于默认周线信号 | | TIME08 失败/重试 | 停最后完整提交日，失败组展示真实已完成日；重试不重复写入 | 旧图保留，错误槽显示恢复入口；不能靠改标签冒充成功 | 实现时分别保存：查看日V、行情已展开截止M、每组执行截止Ei、结果截止R、已看后续记录。它们不是一个日期变量。结果/比较不得超过所需组的有效数据交集；打开旧运行、复制或派生时保留已看来源。后续安全验收必须检查Tooltip、列表、摘要、缩放、周线、传输内容和导出。",
+      "sourceLine": 183,
+      "sourceKey": "a15bd20916249851d19b9c19"
+    },
+    {
+      "id": "STRATEGY-DOC-B085",
+      "chapter": "ST08",
+      "kind": "paragraph",
+      "text": "结果页先把“统计到哪一天”说清楚，再展示净值、回撤、仓位、已实现与未实现盈亏、费用、换手和贡献。净值、回撤、仓位是同一区域的三个视角，切换不重新运行实验。",
+      "sourceLine": 202,
+      "sourceKey": "413001bf86b17f2480635960"
+    },
+    {
+      "id": "STRATEGY-DOC-B086",
+      "chapter": "ST08",
+      "kind": "paragraph",
+      "text": "贡献解释收益从哪里来，调仓表解释策略做过什么。点击一条事件进入发生当日的观察画面，主图、持仓和原因一起切换；“返回阶段结果”恢复原区间、筛选和滚动位置。关闭事件详情只关闭说明层，不突然把日期跳回最新。",
+      "sourceLine": 204,
+      "sourceKey": "ac02c6333b0314ca0b99ec96"
+    },
+    {
+      "id": "STRATEGY-DOC-B087",
+      "chapter": "ST08",
+      "kind": "paragraph",
+      "text": "RES01 统计、图、账本、事件统一到结果截止R。RES02 本金/净资产/现金/市值/已实现/未实现/费用口径各自说明，收益率分母可查；估值缺失不能当0。RES03 无平仓交易时胜率“不可计算”，没有有效基准时不算超额收益。RES04 贡献正负从真实零线展开，缺估值断开，真零不画假柱；采用V2.5贡献负柱#EF7F89，普通亏损数字仍#FF8592。RES05 事件跳转记录来源区间/过滤/滚动/焦点/R，观察上下文另存；返回恢复来源快照。RES06 导出沿用同一截止、组合、过滤和精度，并带版本/费用/数据质量说明；本方案定义输出内容，不把静态图当成已实现导出。RES07 结果和比较保留回放槽，推进和速度禁用，显示“返回观察后推进”；切换视图不推进。RES08 到期未执行计划保留原状态和原因，不回填成交；部分区间结果持续标明实际覆盖。",
+      "sourceLine": 209,
+      "sourceKey": "9af0c631b65dc605533352b8"
+    },
+    {
+      "id": "STRATEGY-DOC-B088",
+      "chapter": "ST09",
+      "kind": "paragraph",
+      "text": "对比页顶部先显示共同有效区间，各组合使用自己的本金账本。曲线颜色用来辨认策略，盈亏颜色用来表达正负，两者分开。图上最多同时高亮四条曲线，其他组合仍完整保留在表里；这不限制创建的组合数量。",
+      "sourceLine": 217,
+      "sourceKey": "643fce9bf3b268b2258490f7"
+    },
+    {
+      "id": "STRATEGY-DOC-B089",
+      "chapter": "ST09",
+      "kind": "paragraph",
+      "text": "若某组缺行情、执行落后或失败，仍列出其身份、原因与可用区间。只有共同有效区间内的数据才参与可比统计，不能让一个只跑了半段的组合获得完整期间排名。需要试新参数时，从配置派生一个新实验，旧结果原样保留。",
+      "sourceLine": 219,
+      "sourceKey": "00011d2b33da3a44c91e0e2b"
+    },
+    {
+      "id": "STRATEGY-DOC-B090",
+      "chapter": "ST09",
+      "kind": "paragraph",
+      "text": "CMP00 比较与结果共用只读回放槽，返回观察后才可继续推进。CMP01 共同区间为所选组合的起止、行情、执行、估值有效日交集；标题显示实际交集，空交集解释原因。CMP02 同一比较视图共用截止和收益计算口径，费用/本金/执行差异并列披露。CMP03 无效组合不参与排名，未选/失败组合不从表中悄悄消失。CMP04 曲线身份蓝/紫/青/橙加名称/线型；选中行、图例与曲线联动，不重置日期。CMP05 “基于此配置新建实验”新建草稿并携带来源与已看记录，不复制成伪装未见历史的盲测；“复制该版本为新策略”只创建库对象，两者文案与结果不同。",
+      "sourceLine": 224,
+      "sourceKey": "30e8117c8b389932dd964064"
+    },
+    {
+      "id": "STRATEGY-DOC-B091",
+      "chapter": "ST10",
+      "kind": "paragraph",
+      "text": "正常时，页面只展示结果与当前范围，不常驻绿色“数据完整”徽章。出问题时，提示放在受影响的区域：列表失败留住搜索条件，包不兼容标到对应槽位，执行失败留在日期和回放附近。你应该能直接知道哪部分没完成、哪些内容仍然有效，以及下一步可以做什么。",
+      "sourceLine": 232,
+      "sourceKey": "21f4e1789a2c5091042cd8ea"
+    },
+    {
+      "id": "STRATEGY-DOC-B092",
+      "chapter": "ST10",
+      "kind": "paragraph",
+      "text": "加载保留原区域尺寸。首次加载使用骨架；更新已有结果时保留旧内容并说明“正在更新”，新的有效请求完成后才替换。快速切换两次组合，较早请求不能覆盖后一次选择。",
+      "sourceLine": 234,
+      "sourceKey": "4f3c5c50b20e6b135495760b"
+    },
+    {
+      "id": "STRATEGY-DOC-B093",
+      "chapter": "ST10",
+      "kind": "paragraph",
+      "text": "| 元素/状态 | 说明与动作 | 保留内容 | | --- | --- | --- | | ERR01 加载 | 正在读取/更新，提交按钮防重复；允许离开 | 输入、旧对象身份、几何与最后有效数据 | | ERR02 空库/无匹配 | 空库“新建策略”；无匹配由搜索尾部清空恢复 | 查询工具；不在空态再堆一组相同清空按钮 | | ERR03 无候选/无信号 | 显示原因与覆盖范围；允许合法现金组合 | 实际0与现金100%；不能称为引擎失败 | | ERR04 缺必需数据 | 分别披露历史可知数据、证券池和交易模型覆盖；标出包、能力、起止缺口；更换包或区间 | 原配置与输入；未知不填0、不显示成功覆盖；部分证券不可评估时，需显式选择剩余集合并永久标注覆盖偏差，不自动排除 | | ERR05 执行失败 | 停最后完整日；查看原因、重试、返回列表 | 不重复成交，不提前推进，保留图表 | | ERR06 组合落后 | 显示该组已完成日，比较使用交集或不参与 | 身份、真实数据日期，不冒充当前结果 | | ERR07 版本/归档冲突 | 说明被改变对象；重读、另存或显式沿用可用历史版本 | 未保存输入；不自动切到最新版 | | ERR08 确认/保存失败 | 留在原确认界面，显示原因并可重试/取消 | 一次提交身份、完整草稿，不制造第二个实验 | 重试是各业务局部动作，不移植首页专属“唯一修复入口”。无权限或不可用的禁用项旁说明原因；焦点落到可读说明，不能仅用灰色传达。",
+      "sourceLine": 239,
+      "sourceKey": "87c6d9bb26a43884153e07c3"
+    },
+    {
+      "id": "STRATEGY-DOC-B094",
+      "chapter": "ST11",
+      "kind": "paragraph",
+      "text": "桌面保留图表与检查区并排；窄屏先看摘要和日期，再看图表、回放与解释。让内容向下延续，比把整张桌面界面按比例缩小更容易读。图表价格轴始终留出空间，长名称和原因在说明区换行，重要价格不省略。",
+      "sourceLine": 262,
+      "sourceKey": "2ed289ebad2441207c74dd29"
+    },
+    {
+      "id": "STRATEGY-DOC-B095",
+      "chapter": "ST11",
+      "kind": "paragraph",
+      "text": "覆盖层在桌面从右侧打开；窄屏铺满可用宽度，标题和返回入口常驻，正文自己滚动。打开与关闭只改变这一层，底层查看日和图表位置不变。长表在自己的区域横向滚动，页面本身不左右漂移。",
+      "sourceLine": 264,
+      "sourceKey": "b632c9ccf917809b61f5b3b2"
+    },
+    {
+      "id": "STRATEGY-DOC-B096",
+      "chapter": "ST11",
+      "kind": "paragraph",
+      "text": "| 范围 | 布局/可达性规则 | 后续实现的检查点 | | --- | --- | --- | | ≥1024 | 主图与检查区并排，检查区320；摘要四列；主区内边距24 | 1440×900、1280×720/800，图净高≥320 | | ≤1023 | 图表在前、解释在后；摘要两列；桌面导航折叠或顶端菜单 | 1024/1023两侧，不把缩放当重排 | | ≤759 | 日期工具自然换行；菜单跟随锚点并限制屏内；图净高280 | 760/759与390×844，动作命中44px | | ≤359 | 摘要一列；长标题完整换行 | 360/359，不挤压数值 | | 长内容 | 正文14/20或规则14/22；表格金额与表头右边界一致；名称可换行 | 长中文、巨额、负数、未知、长版本名、错误三行 | 画板11是设计重排示意。真实设备触摸、软键盘、中文字形与产品断点行为属于后续实现验收，不能由缩放SVG证明。",
+      "sourceLine": 269,
+      "sourceKey": "52cee409b0a10911721e7964"
+    },
+    {
+      "id": "STRATEGY-DOC-B097",
+      "chapter": "ST12",
+      "kind": "paragraph",
+      "text": "策略台复用当前全站的文字、颜色、边框和操作反馈，让你从首页进入时不必重新学习按钮。蓝色用于主动作与选中，绿色和红色用于盈亏，黄色用于需要注意的限制。版本、截止和普通说明保持中性，不把整个页面染成状态灯。",
+      "sourceLine": 285,
+      "sourceKey": "412e16ef2e1b677737c8b2ca"
+    },
+    {
+      "id": "STRATEGY-DOC-B098",
+      "chapter": "ST12",
+      "kind": "paragraph",
+      "text": "操作区采用36px高控件，视觉图标16px，焦点环2px；窄屏命中区放大到44px。按钮文字保持14px，长名称通过布局解决。标签视觉24px但命中36px；表头40px、数据行48px。默认参数与八态的唯一公共来源是全站 V2.5 控件手册。",
+      "sourceLine": 287,
+      "sourceKey": "823290e74cffdad3610a45e3"
+    },
+    {
+      "id": "STRATEGY-DOC-B099",
+      "chapter": "ST12",
+      "kind": "paragraph",
+      "text": "| 策略台元素 | 复用控件 | 特有语义 | | --- | --- | --- | | 播放/暂停、下一日、更多 | IconButton / Tooltip | 同槽状态转换；中文可读名称；暂停不回退已展开日 | | 库/实验、图模式、右侧详情 | SegmentedTabs | 各有独立作用域；箭头移动、Enter确认；不推进日期 | | 组合/版本/速度 | Select / Popover | 当前值常驻；选项全文与禁用原因；关闭回焦点 | | 搜索/筛选/标签 | InlineFilter / FilterPopover / Token | 只过滤所属列表；筛选草稿“应用”后生效，取消不变 | | 摘要/列表/详情 | Metric / DataTable / Drawer | 身份与截止贯穿；金额右齐；480包层与320观察栏分工 | | 错误/空数据 | StatusBadge / EmptyState / RetryAction | 只在需要时出现；真零、未知与无数据分别表达 | 默认、悬停、聚焦、按下、禁用、加载、空、错误分别沿用公共合同；图标动作无“空内容”态，业务空态由容器表达。按钮不得用占位文案假装已完成操作。悬停120ms，Tooltip延迟300ms；浮层160ms透明度加4px位移；数据替换150ms。减少动态效果时直接切换，仍保留逐步状态与可见焦点。 策略推进候选动效：新bar/成交标记在原子提交后淡入150ms，不横扫整图；视野只在跟随模式移动，回看模式不强行拉到右边。播放速度控制交易日间隔，不等同150ms界面动画。连续点击串行处理，不能补播已取消的过渡。覆盖层Esc关闭一层，焦点返回触发器，未保存编辑先处理草稿；输入框和中文输入法组合输入期间禁止全局播放快捷键。 颜色权威：背景#0B1019、面板#111A26、抬高#162233、边框#283448、主文字#E6EDF7、次文字#A8B6CB、弱文字#71829B、动作#6CA8FF、焦点#A9C8FF、正#53D7A0、负#FF8592、警告#FFC66D。贡献负柱例外#EF7F89。标题24/32、区块18/24、正文与金额14/20、辅助12/16、指标28/34；间距4/8/12/16/24/32、圆角6/8。上述是公共既定参数，具体页面分配为本次方案。",
+      "sourceLine": 292,
+      "sourceKey": "8275a4e62df8f6bb8ca9e8b6"
+    },
+    {
+      "id": "STRATEGY-DOC-B100",
+      "chapter": "ST13",
+      "kind": "paragraph",
+      "text": "从实验列表继续草稿，在第二步新建策略，打开筛选包说明，再返回保存。此时回到原实验第二步，新策略已加入，原来选择的其他策略仍在。继续到确认，进入T0，推进到首次交易；再从结果进入事件日，查看原因并返回。整条路径中，对象、版本、日期和来源都保持清楚。",
+      "sourceLine": 311,
+      "sourceKey": "2c762b8992a40d3a7b267543"
+    },
+    {
+      "id": "STRATEGY-DOC-B101",
+      "chapter": "ST13",
+      "kind": "paragraph",
+      "text": "这是本方案的组合体验主线。各按钮单独看起来正确还不够：返回后换了一组策略、关闭详情跳到最新、刷新后丢失“已看后续”，都会破坏研究过程。",
+      "sourceLine": 313,
+      "sourceKey": "0a633f2127c4f3013f1ff37b"
+    },
+    {
+      "id": "STRATEGY-DOC-B102",
+      "chapter": "ST13",
+      "kind": "paragraph",
+      "text": "| 路径/元素 | 需保存的上下文 | 返回或重开 | | --- | --- | --- | | FLOW01 库→策略→包 | 库类型、查询、排序、页码、滚动、焦点、详情版本 | 逐层返回；只读不修改 | | FLOW02 实验草稿→组装 | 草稿身份、步骤、各输入、已选版本、原查询 | 保存追加；取消不变；失败留组装 | | FLOW03 确认→运行 | 配置与版本快照、资金、执行约定、数据版本、幂等提交身份 | 一次运行；成功后未开始；失败无半成品 | | FLOW04 观察→配置→包 | 组合、图模式、日期、视野、展开的检查区 | 返回同对象同日、暂停 | | FLOW05 结果→事件→返回 | 结果截止、过滤、区间、滚动、焦点；观察投影分开存 | 关闭详情留事件日；显式返回恢复结果 | | FLOW06 比较→观察→返回 | 所选组、共同区间、图模式、表格位置 | 不把观察日期覆盖比较截止 | | FLOW07 派生 | 来源策略/实验版本与已看记录、新草稿身份 | 原运行不改；新草稿可编辑 | | FLOW08 保存→列表→刷新 | 草稿/版本/运行进度/成交估值/已看来源真实持久化 | 读取同身份同值；失败不伪报成功 | 实现先接受“确认T0→下一交易日→真实图表新bar/适用成交→回看→返回最新”的最小闭环，再扩展结果与比较。之后在隔离数据库验证保存→返回列表→重新打开→刷新→账本对账；功能正确性、时间安全、视觉对照分别验收。设计图不替代这些运行证据。",
+      "sourceLine": 318,
+      "sourceKey": "695d36502ce388e8fa24a416"
+    },
+    {
+      "id": "STRATEGY-DOC-B103",
+      "chapter": "ST14",
+      "kind": "paragraph",
+      "text": "本版整合9月策略实验与策略库规格、9月30日融合契约、10月确认的0.7完整观察，以及后续图文文档与聊天反馈。原型主要使用合成数据与内存状态；其中明确未验的持久化和未来信息安全，不因文档升级变为已通过。公共标准取当前V2.5，历史样式仅用于理解业务与已确认布局。",
+      "sourceLine": 335,
+      "sourceKey": "2480c50ae357e201544e1931"
+    },
+    {
+      "id": "STRATEGY-DOC-B104",
+      "chapter": "ST14",
+      "kind": "paragraph",
+      "text": "这次需要评审的是三项具体视觉取舍：紧凑列表是否比旧卡片更适合扫描；88px连续摘要是否平衡了统一字号与图表面积；480px包说明层与320px观察栏的分工是否清楚。业务对象、四步路径、版本不可变、计划与成交分离，以及已确认的完整观察方向都继续保留。",
+      "sourceLine": 337,
+      "sourceKey": "1820d02d2001392d67850072"
+    },
+    {
+      "id": "STRATEGY-DOC-B105",
+      "chapter": "ST14",
+      "kind": "paragraph",
+      "text": "你不需要为字号或技术字段重新做决定。可以直接对某张图或一段说明留下意见，例如“这里看不出当前日期”“原因区太窄”“返回后希望还停在这条事件”。方案通过后，再按覆盖矩阵分解实施；这次未修改生产页面、原始交易数据，也未提交远端。",
+      "sourceLine": 339,
+      "sourceKey": "9a577da3f7e7debf080f2874"
+    },
+    {
+      "id": "STRATEGY-DOC-B106",
+      "chapter": "ST14",
+      "kind": "paragraph",
+      "text": "| 来源 | 采用内容 | 本版处理 | | --- | --- | --- | | H01/H02 9月29日规格 | 观察者、四步创建、历史可知、独立组合、回放/结果/比较 | 保留；库内入口按后续H03纠正 | | H03/H04 9月30日规格与融合契约 | 策略库、三类包、版本、管理、实验入口、返回状态 | 补入完整方案，不被后期观察截图遗漏 | | H05 稳定工作台方案 | 固定动作槽、连续空间与状态边界 | 保留意图；严格单屏预算不覆盖后续完整观察 | | H06/H09/H10 0.7 | 用户确认的完整观察与外层滚动，桌面/窄屏参考 | 保留阅读顺序；颜色/控件按V2.5适配 | | H07/H08 历史文档2.1/2.2 | 图文、时序分镜、精确规则与范围边界 | 2.2仅两个代表章，本版扩为全模块设计 | | 聊天记录 | 用户要求说人话、理由与取舍、动态过程及整页组合 | 正文叙事、展开规则、可浏览图稿；聊天摘要 | | 全站V2.5 | 色彩、文字、尺寸、八态、数值展示与焦点 | 公共唯一来源，不复制首页业务限制 | 来源原件的字节快照与哈希见历史清单，历史相对链接按原目录保存、不作为本版导航。需求与元素映射、接受记录、包说明与启动提供实施与维护入口。采用历史VDF-002表达标准，来源见标准快照。 本版新画板为可编辑SVG设计稿，全部样本数据虚构；观察、结果、比较与响应式曲线共用 source/example-data.json，净值终点、资产和最大回撤相互核对；画布尺寸不冒充真实浏览器视口。图稿/文档浏览验收与生产回测、数据库、导出、物理触摸的验收分别记录。新画稿是待用户评审方案，历史用户确认范围没有被扩写。",
+      "sourceLine": 344,
+      "sourceKey": "b3e44a4245042f89e9cca6db"
+    }
+  ],
+  "images": [
+    {
+      "id": "ST06",
+      "occurrenceId": "ST06@5",
+      "sharedImageId": "ST06",
+      "src": "source/images/06-observe.svg",
+      "fingerprint": "c3a19740ff5f56f607b70b6d01e03da5160d0f48d0dfd6121385f9c28b75ebe7",
+      "chapter": "DOC",
+      "sourceLine": 5,
+      "alt": "完整观察：策略身份、日期、主图与相邻解释区"
+    },
+    {
+      "id": "01-library",
+      "occurrenceId": "01-library@45",
+      "sharedImageId": "01-library",
+      "src": "source/images/01-library.svg",
+      "fingerprint": "0c56cb6b6e0ae940fc04adba81e2ad4b39fa69d403f2fc055300da0411afbec2",
+      "chapter": "ST02",
+      "sourceLine": 45,
+      "alt": "策略库：完整策略与三类包、查询和管理"
+    },
+    {
+      "id": "01b-package-management",
+      "occurrenceId": "01b-package-management@71",
+      "sharedImageId": "01b-package-management",
+      "src": "source/images/01b-package-management.svg",
+      "fingerprint": "66c00c066636c50a43c2f291226f252bb9aab58c585c55f8ccfaf7ee9c52d76b",
+      "chapter": "ST03",
+      "sourceLine": 71,
+      "alt": "包目录管理：引用计数、个人排序与归档"
+    },
+    {
+      "id": "02-compose",
+      "occurrenceId": "02-compose@73",
+      "sharedImageId": "02-compose",
+      "src": "source/images/02-compose.svg",
+      "fingerprint": "1773bae8fdbd65ab6190f318ab7eeb2863834d5d97e03bd185dcc40f2852e385",
+      "chapter": "ST03",
+      "sourceLine": 73,
+      "alt": "完整策略组装、包说明与版本保存"
+    },
+    {
+      "id": "03-experiments",
+      "occurrenceId": "03-experiments@97",
+      "sharedImageId": "03-experiments",
+      "src": "source/images/03-experiments.svg",
+      "fingerprint": "00ed2256bb242b0fd0b207aef9a532cb0d0ce3f5f846287695aff305c0b0beda",
+      "chapter": "ST04",
+      "sourceLine": 97,
+      "alt": "实验列表：草稿、未开始、暂停、完成与失败"
+    },
+    {
+      "id": "06-observe",
+      "occurrenceId": "06-observe@140",
+      "sharedImageId": "06-observe",
+      "src": "source/images/06-observe.svg",
+      "fingerprint": "c3a19740ff5f56f607b70b6d01e03da5160d0f48d0dfd6121385f9c28b75ebe7",
+      "chapter": "ST06",
+      "sourceLine": 140,
+      "alt": "完整观察：当前组合与当日证据"
+    },
+    {
+      "id": "06-observe-status-detail",
+      "occurrenceId": "06-observe-status-detail@142",
+      "sharedImageId": "06-observe-status-detail",
+      "src": "source/images/06-observe-status-detail.svg",
+      "fingerprint": "ebc080427911f409cec15fba5907a99a146d7172aa52020bfce49c235a6edd53",
+      "chapter": "ST06",
+      "sourceLine": 142,
+      "alt": "时间状态与摘要的原尺寸细节"
+    },
+    {
+      "id": "07-time-states",
+      "occurrenceId": "07-time-states@163",
+      "sharedImageId": "07-time-states",
+      "src": "source/images/07-time-states.svg",
+      "fingerprint": "7fe05817f22ca748fa8698f3ce98a703d1ffe4b61fae524292386dd586dd279e",
+      "chapter": "ST07",
+      "sourceLine": 163,
+      "alt": "T0、首个交易日与回看：同尺度的状态变化"
+    },
+    {
+      "id": "07-time-controls-detail",
+      "occurrenceId": "07-time-controls-detail@165",
+      "sharedImageId": "07-time-controls-detail",
+      "src": "source/images/07-time-controls-detail.svg",
+      "fingerprint": "a924ce3d53c571c14de5f0cad069fad6110be764f41c956af0b07db558e2ea74",
+      "chapter": "ST07",
+      "sourceLine": 165,
+      "alt": "时间截止与回放控制的原尺寸细节"
+    },
+    {
+      "id": "08-results",
+      "occurrenceId": "08-results@200",
+      "sharedImageId": "08-results",
+      "src": "source/images/08-results.svg",
+      "fingerprint": "f050ee51e37f63ecc884a74919526df7c8e4b39abda6285931727b567960ad31",
+      "chapter": "ST08",
+      "sourceLine": 200,
+      "alt": "阶段结果：净值、风险、贡献与事件"
+    },
+    {
+      "id": "09-compare",
+      "occurrenceId": "09-compare@215",
+      "sharedImageId": "09-compare",
+      "src": "source/images/09-compare.svg",
+      "fingerprint": "d10aad7ff3f68141cfa5cd1cd3bc52bf8d45d8494b4f165666695d4c8aeebb32",
+      "chapter": "ST09",
+      "sourceLine": 215,
+      "alt": "组合对比：共同有效区间、曲线与完整账本"
+    },
+    {
+      "id": "10-states",
+      "occurrenceId": "10-states@230",
+      "sharedImageId": "10-states",
+      "src": "source/images/10-states.svg",
+      "fingerprint": "35136e36a30190e7acf7a5abe3ecb9c5e04eb44160756d9c83ad1a8125dbb519",
+      "chapter": "ST10",
+      "sourceLine": 230,
+      "alt": "加载、空结果、覆盖不足、执行失败与冲突状态"
+    },
+    {
+      "id": "11-responsive",
+      "occurrenceId": "11-responsive@256",
+      "sharedImageId": "11-responsive",
+      "src": "source/images/11-responsive.svg",
+      "fingerprint": "d7ba4e5ec969ff6cab33fe1a3fb3966f9c11207344e33d9594d54fae296a3bd6",
+      "chapter": "ST11",
+      "sourceLine": 256,
+      "alt": "紧凑桌面与窄屏：保留图表、完整说明及可触达动作"
+    },
+    {
+      "id": "11-compact",
+      "occurrenceId": "11-compact@258",
+      "sharedImageId": "11-compact",
+      "src": "source/images/11-compact.svg",
+      "fingerprint": "793ea7ceaee42c6e9935410952fe1c5d51b47d12ea4142766dd05b63f563e208",
+      "chapter": "ST11",
+      "sourceLine": 258,
+      "alt": "1280px 紧凑桌面完整画板"
+    },
+    {
+      "id": "11-narrow",
+      "occurrenceId": "11-narrow@260",
+      "sharedImageId": "11-narrow",
+      "src": "source/images/11-narrow.svg",
+      "fingerprint": "0a165a0cc4bf96434ff19d353564867a159d08fda8916b6f832d43c006d99053",
+      "chapter": "ST11",
+      "sourceLine": 260,
+      "alt": "390px 窄屏完整画板：按原宽阅读，纵向延续"
+    },
+    {
+      "id": "12-components",
+      "occurrenceId": "12-components@283",
+      "sharedImageId": "12-components",
+      "src": "source/images/12-components.svg",
+      "fingerprint": "05ad3dfa7ece5030062719f43003c6dda8e31d972324be421886fdb19112fb01",
+      "chapter": "ST12",
+      "sourceLine": 283,
+      "alt": "公共颜色、字体、尺寸和控件状态"
+    },
+    {
+      "id": "04-create",
+      "occurrenceId": "04-create@state-demo-1-1",
+      "sharedImageId": "04-create",
+      "src": "source/images/04-create.svg",
+      "fingerprint": "4262056f8d7f406634cc96192221b3defffd9a49a60c30b8d56344e686d44fc4",
+      "chapter": "ST05",
+      "sourceLine": 112,
+      "alt": "第一步：设置起点"
+    },
+    {
+      "id": "04b-select-strategies",
+      "occurrenceId": "04b-select-strategies@state-demo-1-2",
+      "sharedImageId": "04b-select-strategies",
+      "src": "source/images/04b-select-strategies.svg",
+      "fingerprint": "a4f862e5760e05dbb7ae6718a868e513716708c22640c26b0e6eecf4aba5198a",
+      "chapter": "ST05",
+      "sourceLine": 112,
+      "alt": "第二步：选择策略"
+    },
+    {
+      "id": "05-confirm",
+      "occurrenceId": "05-confirm@state-demo-1-3",
+      "sharedImageId": "05-confirm",
+      "src": "source/images/05-confirm.svg",
+      "fingerprint": "4d2e18ca9da8b18d185de5a91c2ee5ee92fea232d0875664e55b4169eafd7570",
+      "chapter": "ST05",
+      "sourceLine": 112,
+      "alt": "预览组合，再确认创建"
+    },
+    {
+      "id": "07a-t0",
+      "occurrenceId": "07a-t0@state-demo-2-1",
+      "sharedImageId": "07a-t0",
+      "src": "source/images/07a-t0.svg",
+      "fingerprint": "59d8b854c89003ab0cfc6ce4846efbb570a636a146b53e3efab98d20ebd8f86a",
+      "chapter": "ST07",
+      "sourceLine": 167,
+      "alt": "起点：2024-06-14，尚未成交"
+    },
+    {
+      "id": "07b-first-day",
+      "occurrenceId": "07b-first-day@state-demo-2-2",
+      "sharedImageId": "07b-first-day",
+      "src": "source/images/07b-first-day.svg",
+      "fingerprint": "71f6fa26a3a65cfca6d87ec321f5a72707dd1f8f49ead4455bbd16e72609af89",
+      "chapter": "ST07",
+      "sourceLine": 167,
+      "alt": "下一交易日：2024-06-17"
+    },
+    {
+      "id": "07c-lookback",
+      "occurrenceId": "07c-lookback@state-demo-2-3",
+      "sharedImageId": "07c-lookback",
+      "src": "source/images/07c-lookback.svg",
+      "fingerprint": "3e222976f2e04594c62ee6e2d6801692e57abaee8b6a388ed6c0d122dfb807d8",
+      "chapter": "ST07",
+      "sourceLine": 167,
+      "alt": "已看到6月28日，再回看6月14日"
+    }
+  ]
+}

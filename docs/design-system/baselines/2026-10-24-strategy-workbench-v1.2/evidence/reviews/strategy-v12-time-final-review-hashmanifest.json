@@ -1,0 +1,181 @@
+{
+  "version": "V1.2 final after responsive date/data correction and time-caption clarification",
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-controls-detail.png",
+      "sha256": "401b92b43d98301ae048ddd5b63a63f845b2092c6ae82f9c58c30b4d0743ef32",
+      "bytes": 34613,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-controls-detail.svg",
+      "sha256": "d3df9c98deb74271635703cbdb42d81cf308b69c1791c7ce348ba2daa72f3852",
+      "bytes": 7237
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-states.png",
+      "sha256": "9be5f03a514174d6e0f779b85a04b573b34dffb97060bf51e24598a7aadc159d",
+      "bytes": 92252,
+      "pixels": [
+        1440,
+        1010
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-states.svg",
+      "sha256": "3a9e31ef549fac126850aab60a89bd713b54171cbfc3399edab7656af9455229",
+      "bytes": 24065
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07a-t0.png",
+      "sha256": "2dbc4a09d0da7aace034beb4dca7c96a108c43da2c54f5dd45ecb530afebfa99",
+      "bytes": 48842,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07a-t0.svg",
+      "sha256": "8425b4a2975d05b7abd670e4ecf6da9dc88a0818f8090ce5ed80f3fc808203b4",
+      "bytes": 12010
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07b-first-day.png",
+      "sha256": "3cd5e67b5fb964d96428a851eab252424f6dec78bec5b3a247f70b7e16c22a1c",
+      "bytes": 50458,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07b-first-day.svg",
+      "sha256": "ea1279693f13eaf1c5252925df7613137485a0b87816f1080eb8ce74e34bb548",
+      "bytes": 12944
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07c-lookback.png",
+      "sha256": "44c915f23529076624c93c1a8a154e9b69bea64ef2070e48d01622487bd0c453",
+      "bytes": 50641,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07c-lookback.svg",
+      "sha256": "cc3e04916bc2158bacea4cfc06cec980c53be3a9bcc0ba1b28cc2867778c2052",
+      "bytes": 12039
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/08-results.png",
+      "sha256": "02955cd1d4744e59dfd4f4a3193b02ec25fbd1708a26dbb7f8f2aa63a63056de",
+      "bytes": 113779,
+      "pixels": [
+        1440,
+        1410
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/08-results.svg",
+      "sha256": "fc68c2f9efcac1b1433e884a15fa5688cd97a38d8beb566da479a21f2849f3e8",
+      "bytes": 25795
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/09-compare.png",
+      "sha256": "39d644aabf8266b1e334c623ea94941121fe6cead473e564a380db570098d92a",
+      "bytes": 125110,
+      "pixels": [
+        1440,
+        1460
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/09-compare.svg",
+      "sha256": "7639edf08d7de2637d473efdb0a29e8d6d20cb8382b77ff89d7b1ce56105ee87",
+      "bytes": 24975
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-compact.png",
+      "sha256": "df8876cadfe484121f3379953ce06e8b858a7d52f7a8d30eb42dd06bf4e7761b",
+      "bytes": 83327,
+      "pixels": [
+        1280,
+        1100
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "sha256": "fa96046402f05608d88c315532eeff4d866b89c76cd57c8ea367996d2ac34b9a",
+      "bytes": 17824
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-narrow.png",
+      "sha256": "c1b4571d1e34b20a19db494236493476080a634bc0b1c1f02a4de56bed13adf2",
+      "bytes": 62253,
+      "pixels": [
+        390,
+        1910
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-narrow.svg",
+      "sha256": "5f74c7fe272aa280a064b69c1e791a216c3e39222f22c00e10ca4d14e9e8970b",
+      "bytes": 15203
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-responsive.png",
+      "sha256": "7f3279ab81a4728336f5159f810668788d8497bfd265db1c267a90fa05b2554d",
+      "bytes": 68548,
+      "pixels": [
+        1280,
+        1200
+      ],
+      "encoding": "JPEG"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-responsive.svg",
+      "sha256": "eee63258a251d4468504ee4e30334ea95f794b4993cb7e2eba3ed43556f392af",
+      "bytes": 9180
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-responsive.py",
+      "sha256": "b9f37611315fc0fbe56bd175dd8a4b16b42d67b752ebd182af879cbb39d4d1e3",
+      "bytes": 8686
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-time-results.py",
+      "sha256": "0dfb856df1d2781c8b91843044df0f313cb66df22d9748c608c35e5311f6c692",
+      "bytes": 15006
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/shared-primitives.py",
+      "sha256": "29dcf4d37fe1ee5b1d9aa296dd2c6615f41d29ecd456a57eb3cb139bb9faf227",
+      "bytes": 6036
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab",
+      "bytes": 62018
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/example-data.json",
+      "sha256": "733688cc3bd261662891c47cde987bc55774b7a0e1fd9449f41b373241cc055b",
+      "bytes": 719
+    }
+  ],
+  "verification": "view_image directly reviewed all 10; latest 11-compact and 11-narrow reviewed again; 07-time-controls-detail independently re-viewed after caption clarification"
+}

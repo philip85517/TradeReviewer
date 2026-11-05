@@ -1,0 +1,1408 @@
+<!doctype html>
+<html lang="zh-CN" data-document-id="STRATEGY-DESK-V10" data-document-version="1.0" data-document-fingerprint="a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>策略台视觉设计方案 V1.0</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: var(--plate-width, 952px); max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+.image-viewer-modal[hidden] { display: none; }
+.image-viewer-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgba(3, 8, 16, .86); }
+.image-viewer-dialog { position: relative; display: flex; flex-direction: column; width: min(1100px, 100%); max-height: calc(100vh - 48px); overflow: hidden; border: 1px solid #45678f; border-radius: 10px; background: #0b1220; box-shadow: 0 16px 60px rgba(0,0,0,.55); outline: none; }
+.image-viewer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; color: #e7edf6; background: #101c2f; }
+.image-viewer-head button { min-height: 36px; padding: 5px 12px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; }
+.image-viewer-scroll { overflow: auto; padding: 16px; overscroll-behavior: contain; }
+.image-viewer-scroll img { width: auto; max-width: none; height: auto; margin: 0 auto; border-color: #45678f; }
+body.image-viewer-open { overflow: hidden; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+.review-image-target { outline: 3px solid #66b5ff; outline-offset: 6px; border-radius: 6px; box-shadow: 0 0 0 8px rgba(55, 151, 255, .22), 0 0 24px rgba(102, 181, 255, .72); }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: auto; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: auto; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style><link rel="stylesheet" href="review-client.css"></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>策略台视觉方案</strong><p class="nav-meta">文档 1.0</p><a class="toc-level-1" href="#策略台视觉设计方案-v10" data-target="策略台视觉设计方案-v10">策略台视觉设计方案 V1.0</a>
+<a class="toc-level-2" href="#chapter-ST01" data-target="chapter-ST01">一、研究背景、设计目标与取舍</a>
+<a class="toc-level-3" href="#从一个投资想法到一份可解释的结果" data-target="从一个投资想法到一份可解释的结果">从一个投资想法到一份可解释的结果</a>
+<a class="toc-level-3" href="#本方案要达到什么" data-target="本方案要达到什么">本方案要达到什么</a>
+<a class="toc-level-3" href="#为什么作出这些取舍" data-target="为什么作出这些取舍">为什么作出这些取舍</a>
+<a class="toc-level-2" href="#chapter-ST13" data-target="chapter-ST13">二、设计理念与完整研究流程</a>
+<a class="toc-level-3" href="#用三个对象组织研究" data-target="用三个对象组织研究">用三个对象组织研究</a>
+<a class="toc-level-3" href="#从理念拆解到界面" data-target="从理念拆解到界面">从理念拆解到界面</a>
+<a class="toc-level-3" href="#一次研究怎样展开" data-target="一次研究怎样展开">一次研究怎样展开</a>
+<a class="toc-level-2" href="#chapter-ST15" data-target="chapter-ST15">三、信息架构、整体布局与视觉层级</a>
+<a class="toc-level-3" href="#两个入口承接准备与研究" data-target="两个入口承接准备与研究">两个入口承接准备与研究</a>
+<a class="toc-level-3" href="#观察画面的阅读顺序" data-target="观察画面的阅读顺序">观察画面的阅读顺序</a>
+<a class="toc-level-3" href="#视觉语言怎样服务研究" data-target="视觉语言怎样服务研究">视觉语言怎样服务研究</a>
+<a class="toc-level-2" href="#chapter-ST02" data-target="chapter-ST02">四、策略库与方法查找</a>
+<a class="toc-level-3" href="#先判断方法再阅读规则" data-target="先判断方法再阅读规则">先判断方法，再阅读规则</a>
+<a class="toc-level-3" href="#阅读详情与使用方法分开" data-target="阅读详情与使用方法分开">阅读详情与使用方法分开</a>
+<a class="toc-level-3" href="#让目录整理不破坏历史引用" data-target="让目录整理不破坏历史引用">让目录整理不破坏历史引用</a>
+<a class="toc-level-2" href="#chapter-ST03" data-target="chapter-ST03">五、完整策略组装与版本保存</a>
+<a class="toc-level-3" href="#把三类判断组合成一份方法" data-target="把三类判断组合成一份方法">把三类判断组合成一份方法</a>
+<a class="toc-level-3" href="#长说明与当日证据使用不同空间" data-target="长说明与当日证据使用不同空间">长说明与当日证据使用不同空间</a>
+<a class="toc-level-3" href="#保存结果必须能被辨认" data-target="保存结果必须能被辨认">保存结果必须能被辨认</a>
+<a class="toc-level-2" href="#chapter-ST04" data-target="chapter-ST04">六、实验列表与研究进度</a>
+<a class="toc-level-3" href="#从上次停下的位置继续" data-target="从上次停下的位置继续">从上次停下的位置继续</a>
+<a class="toc-level-3" href="#用状态说明下一步而不自动推进" data-target="用状态说明下一步而不自动推进">用状态说明下一步，而不自动推进</a>
+<a class="toc-level-2" href="#chapter-ST05" data-target="chapter-ST05">七、四步创建实验</a>
+<a class="toc-level-3" href="#先把研究假设说明白" data-target="先把研究假设说明白">先把研究假设说明白</a>
+<a class="toc-level-3" href="#创建过程的交互分镜" data-target="创建过程的交互分镜">创建过程的交互分镜</a>
+<a class="toc-level-3" href="#预览怎样避免被误读成成交" data-target="预览怎样避免被误读成成交">预览怎样避免被误读成成交</a>
+<a class="toc-level-2" href="#chapter-ST06" data-target="chapter-ST06">八、观察工作台与当日证据</a>
+<a class="toc-level-3" href="#先理解一个组合在一天里的状态" data-target="先理解一个组合在一天里的状态">先理解一个组合在一天里的状态</a>
+<a class="toc-level-3" href="#一次联动包含哪些信息" data-target="一次联动包含哪些信息">一次联动包含哪些信息</a>
+<a class="toc-level-3" href="#用完整原因支持判断" data-target="用完整原因支持判断">用完整原因支持判断</a>
+<a class="toc-level-2" href="#chapter-ST07" data-target="chapter-ST07">九、逐日推进、播放与回看</a>
+<a class="toc-level-3" href="#区分展开历史当前查看与已经看过" data-target="区分展开历史当前查看与已经看过">区分展开历史、当前查看与已经看过</a>
+<a class="toc-level-3" href="#从起点到首次推进的分镜" data-target="从起点到首次推进的分镜">从起点到首次推进的分镜</a>
+<a class="toc-level-3" href="#连续播放怎样保持可控" data-target="连续播放怎样保持可控">连续播放怎样保持可控</a>
+<a class="toc-level-2" href="#chapter-ST08" data-target="chapter-ST08">十、阶段结果与事件追溯</a>
+<a class="toc-level-3" href="#先评价一段过程再追查原因" data-target="先评价一段过程再追查原因">先评价一段过程，再追查原因</a>
+<a class="toc-level-3" href="#从一个事件返回发生当天" data-target="从一个事件返回发生当天">从一个事件返回发生当天</a>
+<a class="toc-level-3" href="#让没有数据的结果也能被理解" data-target="让没有数据的结果也能被理解">让没有数据的结果也能被理解</a>
+<a class="toc-level-2" href="#chapter-ST09" data-target="chapter-ST09">十一、组合比较与下一次研究</a>
+<a class="toc-level-3" href="#比较从共同条件开始" data-target="比较从共同条件开始">比较从共同条件开始</a>
+<a class="toc-level-3" href="#曲线突出少量对象表格保留全部对象" data-target="曲线突出少量对象表格保留全部对象">曲线突出少量对象，表格保留全部对象</a>
+<a class="toc-level-3" href="#把新假设带到新的实验" data-target="把新假设带到新的实验">把新假设带到新的实验</a>
+<a class="toc-level-2" href="#chapter-ST10" data-target="chapter-ST10">十二、等待、异常与恢复</a>
+<a class="toc-level-3" href="#让用户知道哪些内容仍然有效" data-target="让用户知道哪些内容仍然有效">让用户知道哪些内容仍然有效</a>
+<a class="toc-level-3" href="#区分研究结果与不能完成的操作" data-target="区分研究结果与不能完成的操作">区分研究结果与不能完成的操作</a>
+<a class="toc-level-3" href="#恢复后仍属于同一次任务" data-target="恢复后仍属于同一次任务">恢复后仍属于同一次任务</a>
+<a class="toc-level-2" href="#chapter-ST11" data-target="chapter-ST11">十三、窄窗口与长内容适配</a>
+<a class="toc-level-3" href="#空间改变时阅读优先级不变" data-target="空间改变时阅读优先级不变">空间改变时，阅读优先级不变</a>
+<a class="toc-level-3" href="#用完整画面检查重排结果" data-target="用完整画面检查重排结果">用完整画面检查重排结果</a>
+<a class="toc-level-2" href="#chapter-ST12" data-target="chapter-ST12">十四、公共组件与交互反馈</a>
+<a class="toc-level-3" href="#从全站标准组合出研究界面" data-target="从全站标准组合出研究界面">从全站标准组合出研究界面</a>
+<a class="toc-level-3" href="#反馈解释动作是否发生" data-target="反馈解释动作是否发生">反馈解释动作是否发生</a>
+<a class="toc-level-3" href="#动效说明变化不代替运行进度" data-target="动效说明变化不代替运行进度">动效说明变化，不代替运行进度</a>
+<a class="toc-level-2" href="#chapter-ST16" data-target="chapter-ST16">十五、实现顺序与设计验收</a>
+<a class="toc-level-3" href="#先走通研究再扩展视图" data-target="先走通研究再扩展视图">先走通研究，再扩展视图</a>
+<a class="toc-level-3" href="#评审时先判断三个视觉选择" data-target="评审时先判断三个视觉选择">评审时先判断三个视觉选择</a>
+<a class="toc-level-3" href="#跨页状态的具体交接" data-target="跨页状态的具体交接">跨页状态的具体交接</a>
+<a class="toc-level-2" href="#chapter-ST14" data-target="chapter-ST14">附录、设计依据与方案边界</a>
+<a class="toc-level-3" href="#业务依据与视觉依据各司其职" data-target="业务依据与视觉依据各司其职">业务依据与视觉依据各司其职</a>
+<a class="toc-level-3" href="#文档与产品的交付范围" data-target="文档与产品的交付范围">文档与产品的交付范围</a></nav><main id="reader-document" data-document-id="STRATEGY-DESK-V10" data-document-version="1.0" data-document-fingerprint="a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9"><header class="reader-header"><p class="document-status">文档 1.0 · 策略台视觉方案</p><button type="button" id="review-open" class="review-open">评论</button></header><h1 id="策略台视觉设计方案-v10">策略台视觉设计方案 V1.0</h1>
+<p data-comment-block="STRATEGY-DOC-B054" data-chapter="DOC" data-source-line="3">策略台是一处研究投资方法的工作空间。用户把选股、买入与退出的想法整理成策略，在指定的历史起点创建实验，逐日观察策略如何执行，再通过结果与事件证据判断方法的表现。</p>
+<p data-comment-block="STRATEGY-DOC-B055" data-chapter="DOC" data-source-line="5">这套设计围绕一个问题展开：<strong>怎样让用户既看懂策略做了什么，也清楚这些判断是在什么条件、什么时间下形成的？</strong> 因此，策略身份、实验条件和日期始终先于结果出现，图表与原因相邻，计划与实际成交分别呈现。</p>
+<p data-comment-block="STRATEGY-DOC-B056" data-chapter="DOC" data-source-line="7">全文先说明研究背景、目标与取舍，再建立设计理念、完整流程和整体布局；随后按用户的任务展开页面与交互分镜，最后说明异常、窗口适配、公共组件及实现检查。精确规则随对应章节收纳，历史资料集中在附录。图中数据用于说明设计，均为虚构样本。</p>
+<h2 id="chapter-ST01">一、研究背景、设计目标与取舍</h2>
+<h3 id="从一个投资想法到一份可解释的结果">从一个投资想法到一份可解释的结果</h3>
+<p data-comment-block="STRATEGY-DOC-B057" data-chapter="ST01" data-source-line="13">一个投资想法通常同时包含几类判断：哪些标的值得关注，什么条件下买入，什么时候退出，以及如何分配资金。把这些判断变成收益曲线，只能回答“最后怎样”；研究者还需要知道当时有哪些候选、规则为什么触发、计划是否实际成交，以及结果使用了哪些数据。</p>
+<p data-comment-block="STRATEGY-DOC-B058" data-chapter="ST01" data-source-line="15">策略台把这段研究过程组织起来。用户负责选择方法、设定条件和阅读证据，买卖由策略与执行约定决定。它服务于历史条件下的研究，不在候选名单上提供手工买卖入口，也不把目标仓位当成已经发生的持仓。</p>
+<h3 id="本方案要达到什么">本方案要达到什么</h3>
+<p data-comment-block="STRATEGY-DOC-B059" data-chapter="ST01" data-source-line="19">设计需要同时支持三件事，缺少其中任何一项，研究都难以复查。</p>
+<ul>
+<li data-comment-block="STRATEGY-DOC-B060" data-chapter="ST01" data-source-line="21"><strong>方法能够复用。</strong> 用户可以找到、理解并组装策略，明确使用的是哪一份规则和版本。</li>
+<li data-comment-block="STRATEGY-DOC-B061" data-chapter="ST01" data-source-line="22"><strong>过程能够理解。</strong> 创建时看清假设，观察时把日期、走势、成交与原因对应起来，区分当时可知与后来获知的信息。</li>
+<li data-comment-block="STRATEGY-DOC-B062" data-chapter="ST01" data-source-line="23"><strong>结果能够追溯。</strong> 从收益、风险或组合差异回到具体事件，返回后仍找得到原来的研究位置。</li>
+</ul>
+<p data-comment-block="STRATEGY-DOC-B063" data-chapter="ST01" data-source-line="25">方案覆盖策略库、三类包的管理与组装、实验列表、四步创建、观察与回看、阶段结果和组合对比，以及这些任务共用的状态和组件。永久删除、跨页批量归档、团队权限、文件夹、原子条件编排和脚本上传不在V1.0范围。</p>
+<h3 id="为什么作出这些取舍">为什么作出这些取舍</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B064" data-chapter="ST01" data-source-line="29">设计选择</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B065" data-chapter="ST01" data-source-line="29">希望解决的问题</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B066" data-chapter="ST01" data-source-line="29">需要承担的成本</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B067" data-chapter="ST01" data-source-line="31">策略与实验分别保存</td>
+<td data-comment-block="STRATEGY-DOC-B068" data-chapter="ST01" data-source-line="31">复用方法时，历史研究仍使用原来的条件</td>
+<td data-comment-block="STRATEGY-DOC-B069" data-chapter="ST01" data-source-line="31">创建实验时需要明确选择版本</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B070" data-chapter="ST01" data-source-line="32">先确认条件，再开始运行</td>
+<td data-comment-block="STRATEGY-DOC-B071" data-chapter="ST01" data-source-line="32">避免把不同资金、费用或数据条件下的结果直接比较</td>
+<td data-comment-block="STRATEGY-DOC-B072" data-chapter="ST01" data-source-line="32">创建过程保留四步及最后确认</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B073" data-chapter="ST01" data-source-line="33">图表与当日原因相邻</td>
+<td data-comment-block="STRATEGY-DOC-B074" data-chapter="ST01" data-source-line="33">看见一次变化后，可以就近核对原因</td>
+<td data-comment-block="STRATEGY-DOC-B075" data-chapter="ST01" data-source-line="33">检查区占用横向空间，窄屏需要纵向阅读</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B076" data-chapter="ST01" data-source-line="34">保留完整观察信息，允许页面向下滚动</td>
+<td data-comment-block="STRATEGY-DOC-B077" data-chapter="ST01" data-source-line="34">长原因和正常字号不必为单屏压缩</td>
+<td data-comment-block="STRATEGY-DOC-B078" data-chapter="ST01" data-source-line="34">部分内容需要滚动查看</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B079" data-chapter="ST01" data-source-line="35">回看保留已经看过的后续记录</td>
+<td data-comment-block="STRATEGY-DOC-B080" data-chapter="ST01" data-source-line="35">让研究结论包含真实的信息背景</td>
+<td data-comment-block="STRATEGY-DOC-B081" data-chapter="ST01" data-source-line="35">回到早期日期也不能恢复首次盲看的状态</td>
+</tr>
+</tbody></table></div>
+<p data-comment-block="STRATEGY-DOC-B082" data-chapter="ST01" data-source-line="37">策略台沿用全站V2.5的公共视觉与控件标准，并按研究任务分配空间。首页的模块顺序、导航尺寸和固定八行表属于首页布局；策略台采用自己的策略入口、观察舞台和回放工具。后文先解释这些选择如何形成完整流程，再逐步落实到页面。</p>
+<h2 id="chapter-ST13">二、设计理念与完整研究流程</h2>
+<h3 id="用三个对象组织研究">用三个对象组织研究</h3>
+<p data-comment-block="STRATEGY-DOC-B083" data-chapter="ST13" data-source-line="43">策略台先区分方法、研究和研究中的组合，再安排页面。<strong>策略</strong>保存可复用的方法；<strong>实验</strong>保存一次研究的起点、区间、版本和进度；<strong>组合</strong>是在该实验中采用某个完整策略、使用独立本金运行的一组资产。一个实验可以比较多个组合，它们共用研究环境，但各自保留账本。</p>
+<p data-comment-block="STRATEGY-DOC-B084" data-chapter="ST13" data-source-line="45">完整策略由标的筛选、买入信号和止盈止损三个包组成，并包含排序、仓位分配与再平衡配置。包说明用于理解方法，当日原因用于解释一次运行；两种内容分开，用户才能从规则走到证据，而不把说明当成执行结果。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B085" data-chapter="ST13" data-source-line="47">对象</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B086" data-chapter="ST13" data-source-line="47">回答的问题</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B087" data-chapter="ST13" data-source-line="47">主要承载位置</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B088" data-chapter="ST13" data-source-line="49">包与完整策略</td>
+<td data-comment-block="STRATEGY-DOC-B089" data-chapter="ST13" data-source-line="49">用什么方法，规则和版本是什么</td>
+<td data-comment-block="STRATEGY-DOC-B090" data-chapter="ST13" data-source-line="49">策略库、包详情、策略组装</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B091" data-chapter="ST13" data-source-line="50">实验</td>
+<td data-comment-block="STRATEGY-DOC-B092" data-chapter="ST13" data-source-line="50">从哪里开始，在什么条件下研究，进行到哪里</td>
+<td data-comment-block="STRATEGY-DOC-B093" data-chapter="ST13" data-source-line="50">我的实验、创建步骤、工作台页头</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B094" data-chapter="ST13" data-source-line="51">实验中的组合</td>
+<td data-comment-block="STRATEGY-DOC-B095" data-chapter="ST13" data-source-line="51">这套方法怎样使用资金，形成哪些持仓与结果</td>
+<td data-comment-block="STRATEGY-DOC-B096" data-chapter="ST13" data-source-line="51">组合选择、观察图表、结果与对比</td>
+</tr>
+</tbody></table></div>
+<h3 id="从理念拆解到界面">从理念拆解到界面</h3>
+<p data-comment-block="STRATEGY-DOC-B097" data-chapter="ST13" data-source-line="55">信息的安排遵循“先确定上下文，再阅读证据，最后形成判断”。这不是只在页头增加说明，而是贯穿整个研究过程。</p>
+<ul>
+<li data-comment-block="STRATEGY-DOC-B098" data-chapter="ST13" data-source-line="57"><strong>身份清楚。</strong> 库里辨认策略与版本，创建时锁定版本，观察和结果页继续显示来源。修改库中的方法不会改写已经开始的实验。</li>
+<li data-comment-block="STRATEGY-DOC-B099" data-chapter="ST13" data-source-line="58"><strong>时间可信。</strong> 创建时说明数据截止，观察时区分查看日与已经展开的历史，结果中限定统计区间。切换视图不能悄悄揭示新行情。</li>
+<li data-comment-block="STRATEGY-DOC-B100" data-chapter="ST13" data-source-line="59"><strong>原因可查。</strong> 创建预览展示入围依据，观察展示当日信号和成交，结果通过事件回到发生当天。用户可以沿同一条证据链往返。</li>
+</ul>
+<h3 id="一次研究怎样展开">一次研究怎样展开</h3>
+<p data-comment-block="STRATEGY-DOC-B101" data-chapter="ST13" data-source-line="63"><strong>准备方法 → 创建实验 → 逐日观察 → 解释结果 → 比较与继续研究</strong>构成主流程。已有方法可以直接进入创建；缺少方法时，在选择步骤就地组装，保存后回到原处继续。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B102" data-chapter="ST13" data-source-line="65">阶段</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B103" data-chapter="ST13" data-source-line="65">用户的主要问题</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B104" data-chapter="ST13" data-source-line="65">界面的主要响应</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B105" data-chapter="ST13" data-source-line="65">交接到下一步的内容</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B106" data-chapter="ST13" data-source-line="67">准备方法</td>
+<td data-comment-block="STRATEGY-DOC-B122" data-chapter="ST13" data-source-line="67">有什么方法，它适合什么范围</td>
+<td data-comment-block="STRATEGY-DOC-B123" data-chapter="ST13" data-source-line="67">库中先读摘要，再进入包说明与组装</td>
+<td data-comment-block="STRATEGY-DOC-B124" data-chapter="ST13" data-source-line="67">明确的完整策略版本</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B125" data-chapter="ST13" data-source-line="68">创建实验</td>
+<td data-comment-block="STRATEGY-DOC-B126" data-chapter="ST13" data-source-line="68">从哪天开始，按什么条件运行</td>
+<td data-comment-block="STRATEGY-DOC-B127" data-chapter="ST13" data-source-line="68">四步建立时间、策略、预览和确认</td>
+<td data-comment-block="STRATEGY-DOC-B128" data-chapter="ST13" data-source-line="68">锁定条件的未开始实验</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B129" data-chapter="ST13" data-source-line="69">逐日观察</td>
+<td data-comment-block="STRATEGY-DOC-B130" data-chapter="ST13" data-source-line="69">今天发生了什么，为什么</td>
+<td data-comment-block="STRATEGY-DOC-B131" data-chapter="ST13" data-source-line="69">日期、主图、实际持仓与原因一起变化</td>
+<td data-comment-block="STRATEGY-DOC-B132" data-chapter="ST13" data-source-line="69">已完成进度与真实已看记录</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B133" data-chapter="ST13" data-source-line="70">解释结果</td>
+<td data-comment-block="STRATEGY-DOC-B134" data-chapter="ST13" data-source-line="70">表现如何，由哪些事件形成</td>
+<td data-comment-block="STRATEGY-DOC-B135" data-chapter="ST13" data-source-line="70">先读区间表现，再从贡献和事件下钻</td>
+<td data-comment-block="STRATEGY-DOC-B136" data-chapter="ST13" data-source-line="70">可回到来源位置的事件调查</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B339" data-chapter="ST13" data-source-line="71">比较与继续研究</td>
+<td data-comment-block="STRATEGY-DOC-B340" data-chapter="ST13" data-source-line="71">哪些组合可比，下一次要改什么</td>
+<td data-comment-block="STRATEGY-DOC-B341" data-chapter="ST13" data-source-line="71">共同区间比较，基于来源创建新草稿</td>
+<td data-comment-block="STRATEGY-DOC-B342" data-chapter="ST13" data-source-line="71">保留原研究的新实验</td>
+</tr>
+</tbody></table></div>
+<p data-comment-block="STRATEGY-DOC-B343" data-chapter="ST13" data-source-line="73">例如，用户继续一份实验草稿，在选择策略时查看筛选包、组装并保存新版本，再回到原选择确认创建。进入工作台后，先核对起点的目标配置与实际现金，推进到首次成交；随后从阶段结果进入事件日查看原因，最后返回原结果位置。后续各章按这条路径展开，使每个页面都有明确的来处与下一步。</p>
+<p data-comment-block="STRATEGY-DOC-B344" data-chapter="ST13" data-source-line="75">返回也是流程的一部分。看包说明不等于选包，关闭事件详情不等于返回结果；按钮分别描述这些动作的实际结果。需要保存的跨页内容与重开规则集中列在第十五章，便于实现时沿完整路径核对。</p>
+<h2 id="chapter-ST15">三、信息架构、整体布局与视觉层级</h2>
+<h3 id="两个入口承接准备与研究">两个入口承接准备与研究</h3>
+<p data-comment-block="STRATEGY-DOC-B345" data-chapter="ST15" data-source-line="81">策略台在业务层分为“策略库”和“我的实验”。前者整理方法，后者管理研究；新建策略从库开始，新建实验从我的实验开始。观察、阶段结果和组合对比属于同一个实验，不再作为三份互不相干的工作区。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B346" data-chapter="ST15" data-source-line="83">层级</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B347" data-chapter="ST15" data-source-line="83">页面或区域</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B348" data-chapter="ST15" data-source-line="83">用户在这一层完成什么</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B349" data-chapter="ST15" data-source-line="85">应用导航</td>
+<td data-comment-block="STRATEGY-DOC-B350" data-chapter="ST15" data-source-line="85">策略台</td>
+<td data-comment-block="STRATEGY-DOC-B351" data-chapter="ST15" data-source-line="85">进入研究模块</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B352" data-chapter="ST15" data-source-line="86">业务入口</td>
+<td data-comment-block="STRATEGY-DOC-B353" data-chapter="ST15" data-source-line="86">策略库 / 我的实验</td>
+<td data-comment-block="STRATEGY-DOC-B354" data-chapter="ST15" data-source-line="86">选择整理方法或继续研究</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B355" data-chapter="ST15" data-source-line="87">对象页面</td>
+<td data-comment-block="STRATEGY-DOC-B356" data-chapter="ST15" data-source-line="87">策略详情与组装 / 实验创建与工作台</td>
+<td data-comment-block="STRATEGY-DOC-B357" data-chapter="ST15" data-source-line="87">处理一个明确的策略或实验</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B358" data-chapter="ST15" data-source-line="88">局部视图</td>
+<td data-comment-block="STRATEGY-DOC-B359" data-chapter="ST15" data-source-line="88">净值与K线、组合详情、结果、比较</td>
+<td data-comment-block="STRATEGY-DOC-B360" data-chapter="ST15" data-source-line="88">从不同角度理解同一研究</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B361" data-chapter="ST15" data-source-line="89">说明层</td>
+<td data-comment-block="STRATEGY-DOC-B362" data-chapter="ST15" data-source-line="89">包说明、锁定配置、事件详情</td>
+<td data-comment-block="STRATEGY-DOC-B363" data-chapter="ST15" data-source-line="89">补充阅读，关闭后回到原上下文</td>
+</tr>
+</tbody></table></div>
+<h3 id="观察画面的阅读顺序">观察画面的阅读顺序</h3>
+<p data-comment-block="STRATEGY-DOC-B364" data-chapter="ST15" data-source-line="93">观察是策略台最集中的研究场景。画面从上到下先交代实验和组合身份，再给出资产与风险摘要、正在查看的日期，随后进入主图和相邻解释区，回放动作靠近图表。读者先知道“在看什么、看到哪天”，再解释曲线和成交。</p>
+<p data-comment-block="STRATEGY-DOC-B365" data-chapter="ST15" data-source-line="95">桌面主图与320px检查区并排。净值和标的K线共用主舞台，检查区承载概览、调仓和统计。高频的播放、单步、日期与结果入口常驻，配置、复制和派生收进“更多”。这让观察工具位置稳定，同时为曲线和完整原因留出空间。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区"><a class="image-link image-viewer-trigger" href="source/images/06-observe.svg" data-image-viewer="true" aria-label="打开观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区原尺寸图稿（100%）"><img data-comment-image="ST06" data-comment-occurrence="ST06@97" src="source/images/06-observe.svg" alt="观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区" width="1440" height="1080"></a></div><a class="image-action image-viewer-trigger" href="source/images/06-observe.svg" data-image-viewer="true" data-image-viewer-alt="观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区">查看原尺寸</a>
+<figcaption class="caption" data-comment-block="STRATEGY-DOC-B366" data-chapter="ST15" data-source-line="99">图 ST06｜整页图用于理解各区域的关系；第八章说明当日证据如何联动，第九章用分镜解释推进与回看。摘要采用88px连续带，保留四项指标而减少重复卡片边界；页面可纵向延续，图表净绘图区不因长说明而持续缩小。</figcaption>
+</figure>
+<h3 id="视觉语言怎样服务研究">视觉语言怎样服务研究</h3>
+<p data-comment-block="STRATEGY-DOC-B367" data-chapter="ST15" data-source-line="103">深色背景承载工作区，表面和边线区分层级，数字的字号与对齐体现重要程度。蓝色表达动作和选择，盈亏使用绿、红，黄色提示需要关注的限制。版本、日期和普通说明保持中性，避免每条信息都争夺注意力。</p>
+<p data-comment-block="STRATEGY-DOC-B368" data-chapter="ST15" data-source-line="105">全站V2.5提供颜色、文字、间距、圆角和焦点标准。策略台在此基础上组织连续摘要、观察舞台和说明层，不增加一套独立视觉语言。金额使用等宽数字并右对齐，说明和名称左对齐；长内容依靠换行、详情与滚动保持可读，而不持续缩小字号。第十四章将这些原则对应到具体公共控件。</p>
+<p data-comment-block="STRATEGY-DOC-B369" data-chapter="ST15" data-source-line="107">下列尺寸规定整体空间预算。导航与顶栏属于策略台框架；连续摘要及图表分配是本方案的视觉建议，公共控件尺寸的来源另见组件章。</p>
+<details><summary>查看布局尺寸与适用范围</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B370" data-chapter="ST15" data-source-line="112"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">区域</th>
+<th scope="col">本版规则</th>
+<th scope="col">来源/数值性质</th>
+</tr></thead><tbody>
+<tr>
+<td>全局框架 NAV01</td>
+<td>导航展开200px、折叠54px；顶栏48px；折叠状态跨页面保留</td>
+<td>沿用融合契约 H04；非首页72/64</td>
+</tr>
+<tr>
+<td>内容 NAV02</td>
+<td>左右24px、模块间24px、内容最大1240px；工作台不叠加策略库的40px业务标签栏</td>
+<td>历史H04/H07；本版整合</td>
+</tr>
+<tr>
+<td>摘要 OBS02</td>
+<td>四等分连续带88px；28/34主值，14/20标签，12/16说明；中间细分隔</td>
+<td>V2.5组件适配，本次视觉建议</td>
+</tr>
+<tr>
+<td>图表 OBS04</td>
+<td>桌面图+320px检查区、间隔24px；1440画布净图区360px；1280最低320px</td>
+<td>保留H06完整观察重心，尺寸为本版候选</td>
+</tr>
+<tr>
+<td>滚动 NAV03</td>
+<td>观察页面外层纵向滚动；覆盖层独立滚动；结果/比较的长明细在有高度预算的表区滚动</td>
+<td>H06后续决定优先旧固定单屏方案</td>
+</tr>
+<tr>
+<td>低频操作 OBS08</td>
+<td>配置、复制、派生集中“更多”；播放、单步、日期、结果入口常驻</td>
+<td>H04/H05</td>
+</tr>
+</tbody></table></div>
+<p>策略台入口目标为应用导航“策略台”。当前生产入口是否开放不由这份设计确认；设计浏览链接不是正式业务入口。</p></div>
+</details>
+<h2 id="chapter-ST02">四、策略库与方法查找</h2>
+<h3 id="先判断方法再阅读规则">先判断方法，再阅读规则</h3>
+<p data-comment-block="STRATEGY-DOC-B371" data-chapter="ST02" data-source-line="129">策略库帮助用户找到可复用的方法，并判断是否需要进一步了解。默认展示完整策略，标的筛选、买入信号和止盈止损三个目录与其并列。名称、版本、规则摘要和状态构成一行的主要信息；查询工具位于列表上方，便于连续查找和比较。</p>
+<p data-comment-block="STRATEGY-DOC-B372" data-chapter="ST02" data-source-line="131">本方案采用紧凑行，让同一屏可以扫描更多策略。完整规则进入详情阅读，因此摘要应足以说明方法用途，不能只留下一个名称。查询、页码与滚动位置在返回后恢复，用户无需从头寻找刚才的对象。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="策略库的默认目录、查询工具与策略行"><a class="image-link image-viewer-trigger" href="source/images/01-library.svg" data-image-viewer="true" aria-label="打开策略库的默认目录、查询工具与策略行原尺寸图稿（100%）"><img data-comment-image="01-library" data-comment-occurrence="01-library@133" src="source/images/01-library.svg" alt="策略库的默认目录、查询工具与策略行" width="1440" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/01-library.svg" data-image-viewer="true" data-image-viewer-alt="策略库的默认目录、查询工具与策略行">查看原尺寸</a>
+</figure>
+<h3 id="阅读详情与使用方法分开">阅读详情与使用方法分开</h3>
+<p data-comment-block="STRATEGY-DOC-B373" data-chapter="ST02" data-source-line="137">从列表进入详情，用户可以理解方法、版本和数据要求。包目录额外展示使用策略数与版本发布时间，帮助判断依赖关系和新旧程度。查看说明只是阅读，回到选择列表后点击“使用此包”才改变配置；多一步明确选择，能够避免浏览时误改策略。</p>
+<p data-comment-block="STRATEGY-DOC-B374" data-chapter="ST02" data-source-line="139">搜索、筛选和排序只作用于当前列表。完整策略与三类包各有自己的目录，置顶表达个人查找偏好，不改变策略执行顺序。库内的主动作是“新建策略”，保存后进入策略详情；开始一次研究则回到“我的实验”。</p>
+<h3 id="让目录整理不破坏历史引用">让目录整理不破坏历史引用</h3>
+<p data-comment-block="STRATEGY-DOC-B375" data-chapter="ST02" data-source-line="143">标签、备注、置顶和个人顺序用于管理方法，不产生新的执行版本。归档用于从新增选择中收起不再常用的包，旧策略与旧实验仍保留原引用；是否能够继续执行，还需要检查对应版本的能力。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:920px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="包目录管理：引用关系、个人顺序与归档影响"><a class="image-link image-viewer-trigger" href="source/images/01b-package-management.svg" data-image-viewer="true" aria-label="打开包目录管理：引用关系、个人顺序与归档影响原尺寸图稿（100%）"><img data-comment-image="01b-package-management" data-comment-occurrence="01b-package-management@145" src="source/images/01b-package-management.svg" alt="包目录管理：引用关系、个人顺序与归档影响" width="920" height="470"></a></div><a class="image-action image-viewer-trigger" href="source/images/01b-package-management.svg" data-image-viewer="true" data-image-viewer-alt="包目录管理：引用关系、个人顺序与归档影响">查看原尺寸</a>
+</figure>
+<p data-comment-block="STRATEGY-DOC-B376" data-chapter="ST02" data-source-line="147">整理模式提供组内移动和定位，保存后应用个人顺序，取消则回到原查询。归档前说明影响范围，失败保留确认状态。查询、计数及归档的细节列在下方。</p>
+<details><summary>查看查询、引用统计、置顶和归档规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B377" data-chapter="ST02" data-source-line="152"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">元素</th>
+<th scope="col">操作与状态</th>
+<th scope="col">完成/失败后的表现</th>
+</tr></thead><tbody>
+<tr>
+<td>LIB01 查询</td>
+<td>搜索名称/说明/标签/标识；按类型、标签、来源、生命周期筛选；显式显示排序方向</td>
+<td>修改查询回第1页；库与实验各存自己的条件；返回详情恢复查询/页码/滚动/焦点</td>
+</tr>
+<tr>
+<td>LIB02 默认顺序</td>
+<td>默认未归档、最近规则版本发布在前、置顶优先；置顶仅作用匹配结果</td>
+<td>不改变策略执行顺序；空库与无匹配分别说明</td>
+</tr>
+<tr>
+<td>LIB03 计数</td>
+<td>使用策略数按完整策略最新版本引用包身份去重；当前版本数是子集；历史版本与锁定实验另列</td>
+<td>未保存草稿不计；未知用“—”，不显示0；日期区分首次开发、版本发布与导入</td>
+</tr>
+<tr>
+<td>LIB04 管理信息</td>
+<td>标签、备注、置顶属于包身份的管理信息</td>
+<td>不产生执行版本；不改规则发布时间；单次置顶失败回滚</td>
+</tr>
+<tr>
+<td>LIB05 整理顺序</td>
+<td>置顶与手动顺序是个人偏好，三类包分别跨会话保存；独立整理模式暂显本类型全部未归档包，置顶/普通组不可跨组排序；组内上下移动、拖动或到本组第N位，支持跨页</td>
+<td>保存后手动排序；取消恢复原查询/顺序；失败留草稿；冲突提示重新读取，不覆盖别人修改</td>
+</tr>
+<tr>
+<td>LIB06 归档/恢复</td>
+<td>归档覆盖包身份及其全部版本，确认展示引用影响；隐藏新增选择，但旧策略/旧实验引用保留，仍独立检查可执行性</td>
+<td>新增草稿提交时遇到归档需恢复/替换；编辑/复制已有策略可明确沿用原归档版本；恢复原身份，普通组末尾、不自动置顶</td>
+</tr>
+</tbody></table></div>
+<p>归档不是删除，也不是执行禁用。归档失败留在确认层；成功定位邻行，空末页回最近有效页。永久删除、跨页批量归档、团队权限和文件夹不在V1.0范围。</p></div>
+</details>
+<h2 id="chapter-ST03">五、完整策略组装与版本保存</h2>
+<h3 id="把三类判断组合成一份方法">把三类判断组合成一份方法</h3>
+<p data-comment-block="STRATEGY-DOC-B378" data-chapter="ST03" data-source-line="169">策略组装把三个包的职责连接起来：标的筛选确定关注范围，买入信号决定何时形成买入意图，止盈止损规定退出条件。页面按这个顺序展示包名、版本、预设和关键规则，使用户先理解每一部分负责什么，再核对参数与数据要求。</p>
+<p data-comment-block="STRATEGY-DOC-B379" data-chapter="ST03" data-source-line="171">排序、仓位分配和再平衡仍由完整策略配置承担，不能用第三个包代替。缺少必要职责、接口不兼容或执行含义不清楚时，页面指出具体位置，不能将它保存为可运行方法。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="三包组装、包说明与完整策略保存"><a class="image-link image-viewer-trigger" href="source/images/02-compose.svg" data-image-viewer="true" aria-label="打开三包组装、包说明与完整策略保存原尺寸图稿（100%）"><img data-comment-image="02-compose" data-comment-occurrence="02-compose@173" src="source/images/02-compose.svg" alt="三包组装、包说明与完整策略保存" width="1440" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/02-compose.svg" data-image-viewer="true" data-image-viewer-alt="三包组装、包说明与完整策略保存">查看原尺寸</a>
+</figure>
+<h3 id="长说明与当日证据使用不同空间">长说明与当日证据使用不同空间</h3>
+<p data-comment-block="STRATEGY-DOC-B380" data-chapter="ST03" data-source-line="177">用户组装时需要读完整说明，包括用途、输入输出、市场范围、预热与兼容性。包详情采用480px说明层；运行中的320px检查区用于当日证据。两者分工会增加一次打开说明的动作，但避免长配置常驻挤压图表。</p>
+<p data-comment-block="STRATEGY-DOC-B381" data-chapter="ST03" data-source-line="179">在包目录中，详情是对象页面；从选择、组装或锁定配置打开时，详情覆盖当前页面，逐层关闭后恢复原位置与焦点。未保存的输入保留，查看说明不自动选包、升级或保存。</p>
+<h3 id="保存结果必须能被辨认">保存结果必须能被辨认</h3>
+<p data-comment-block="STRATEGY-DOC-B382" data-chapter="ST03" data-source-line="183">“保存新版本”延续当前策略身份，“创建副本”建立独立策略。保存成功后明确显示准确版本，创建实验时再锁定该完整策略和三个包的版本。以后修改方法不会改变原实验的条件；旧版本不能执行时，已经形成的结果仍可阅读。</p>
+<p data-comment-block="STRATEGY-DOC-B383" data-chapter="ST03" data-source-line="185">保存中防止重复提交，失败保留全部输入；版本冲突让用户比较差异或另存。</p>
+<details><summary>查看版本、包详情和可运行性规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B384" data-chapter="ST03" data-source-line="190"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">元素</th>
+<th scope="col">必须展示/保留</th>
+<th scope="col">边界</th>
+</tr></thead><tbody>
+<tr>
+<td>ASM01 三包槽</td>
+<td>类型、包身份、版本、预设、有效参数与单位、来源</td>
+<td>缺一个职责或接口不兼容不能保存为可运行策略</td>
+</tr>
+<tr>
+<td>ASM02 说明</td>
+<td>用途、规则、输入输出、数据依赖、市场范围、预热、脚本标记、兼容性</td>
+<td>未提供明确写未提供，不能补成经验默认值</td>
+</tr>
+<tr>
+<td>ASM03 版本</td>
+<td>编辑产生新版本；实验读取锁定快照</td>
+<td>库升级不自动升级实验；旧包不可执行时旧结果仍可读</td>
+</tr>
+<tr>
+<td>ASM04 详情返回</td>
+<td>包目录进入全页详情；组装/选择/运行配置用覆盖层，嵌套详情按层级返回</td>
+<td>Esc/返回恢复来源焦点；看详情不选择、不保存、不升级</td>
+</tr>
+<tr>
+<td>ASM05 执行说明</td>
+<td>触发条件、退出/再平衡冲突优先级、跳空、未成交、再入场、费用来源</td>
+<td>日线无法推断日内高低先后；不能承诺按止损价成交；包未声明执行语义则阻断运行</td>
+</tr>
+<tr>
+<td>ASM06 保存</td>
+<td>校验→保存中防重复→成功显示准确版本；取消保留原策略</td>
+<td>失败保留完整输入；版本冲突展示差异并允许另存，不静默覆盖</td>
+</tr>
+</tbody></table></div>
+<p>包详情覆盖层宽480px，用于阅读完整说明；运行检查区宽320px，用于当日只读证据。</p></div>
+</details>
+<h2 id="chapter-ST04">六、实验列表与研究进度</h2>
+<h3 id="从上次停下的位置继续">从上次停下的位置继续</h3>
+<p data-comment-block="STRATEGY-DOC-B385" data-chapter="ST04" data-source-line="207">“我的实验”围绕一次研究组织记录。每行把实验名称、状态、日期范围和策略组合放在一起，主要动作靠近这些信息，让用户先判断研究进行到哪里，再决定下一步。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B386" data-chapter="ST04" data-source-line="209">当前状态</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B387" data-chapter="ST04" data-source-line="209">主要动作</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B388" data-chapter="ST04" data-source-line="209">打开后的任务</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B389" data-chapter="ST04" data-source-line="211">草稿</td>
+<td data-comment-block="STRATEGY-DOC-B390" data-chapter="ST04" data-source-line="211">继续编辑</td>
+<td data-comment-block="STRATEGY-DOC-B391" data-chapter="ST04" data-source-line="211">回到保留的创建步骤与输入</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B392" data-chapter="ST04" data-source-line="212">未开始</td>
+<td data-comment-block="STRATEGY-DOC-B393" data-chapter="ST04" data-source-line="212">进入实验</td>
+<td data-comment-block="STRATEGY-DOC-B394" data-chapter="ST04" data-source-line="212">核对起点，主动开始观察</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B395" data-chapter="ST04" data-source-line="213">暂停</td>
+<td data-comment-block="STRATEGY-DOC-B396" data-chapter="ST04" data-source-line="213">继续观察</td>
+<td data-comment-block="STRATEGY-DOC-B397" data-chapter="ST04" data-source-line="213">从已保存进度进入暂停画面</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B398" data-chapter="ST04" data-source-line="214">完成</td>
+<td data-comment-block="STRATEGY-DOC-B399" data-chapter="ST04" data-source-line="214">查看结果</td>
+<td data-comment-block="STRATEGY-DOC-B400" data-chapter="ST04" data-source-line="214">阅读结果，仍可回到观察</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B401" data-chapter="ST04" data-source-line="215">失败</td>
+<td data-comment-block="STRATEGY-DOC-B402" data-chapter="ST04" data-source-line="215">查看原因</td>
+<td data-comment-block="STRATEGY-DOC-B403" data-chapter="ST04" data-source-line="215">在保留的进度上理解问题与恢复方式</td>
+</tr>
+</tbody></table></div>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="实验列表：同一行结构承接不同研究状态"><a class="image-link image-viewer-trigger" href="source/images/03-experiments.svg" data-image-viewer="true" aria-label="打开实验列表：同一行结构承接不同研究状态原尺寸图稿（100%）"><img data-comment-image="03-experiments" data-comment-occurrence="03-experiments@217" src="source/images/03-experiments.svg" alt="实验列表：同一行结构承接不同研究状态" width="1440" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/03-experiments.svg" data-image-viewer="true" data-image-viewer-alt="实验列表：同一行结构承接不同研究状态">查看原尺寸</a>
+</figure>
+<h3 id="用状态说明下一步而不自动推进">用状态说明下一步，而不自动推进</h3>
+<p data-comment-block="STRATEGY-DOC-B404" data-chapter="ST04" data-source-line="221">主要动作的位置保持一致，文字直接说明打开后要完成的任务。重新打开已运行实验时先暂停，由用户主动推进后才揭示新一天，避免进入页面的瞬间获得额外信息。</p>
+<p data-comment-block="STRATEGY-DOC-B405" data-chapter="ST04" data-source-line="223">实验列表与策略库各自保留查询条件。进入实验再返回，恢复原查询、页码、滚动和焦点。编辑中的草稿离开前，提供保存、放弃本次修改或继续编辑的选择；普通切换不应制造一个未确认的新实验。</p>
+<details><summary>查看实验状态与列表恢复规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B406" data-chapter="ST04" data-source-line="228"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">规则</th>
+<th scope="col">设计要求</th>
+<th scope="col">返回与边界</th>
+</tr></thead><tbody>
+<tr>
+<td>EXP01 草稿</td>
+<td>保留步骤、输入和已选版本</td>
+<td>离开给出“保存草稿 / 放弃本次修改 / 继续编辑”，普通切换不隐式保存失败数据</td>
+</tr>
+<tr>
+<td>EXP02 创建后</td>
+<td>确认后有独立运行身份，初态未开始</td>
+<td>一次确认只产生一个运行</td>
+</tr>
+<tr>
+<td>EXP03 暂停/失败</td>
+<td>保存的暂停/失败运行重开后仍暂停</td>
+<td>不因重新打开就继续暴露未来</td>
+</tr>
+<tr>
+<td>EXP04 完成</td>
+<td>保留观察、结果、比较和复制入口</td>
+<td>完成状态仍可查看原上下文</td>
+</tr>
+<tr>
+<td>EXP05 返回</td>
+<td>从详情返回恢复查询、页码、滚动和触发焦点</td>
+<td>返回不会改变列表条件或选中对象</td>
+</tr>
+</tbody></table></div></div>
+</details>
+<h2 id="chapter-ST05">七、四步创建实验</h2>
+<h3 id="先把研究假设说明白">先把研究假设说明白</h3>
+<p data-comment-block="STRATEGY-DOC-B407" data-chapter="ST05" data-source-line="242">创建实验依次回答四个问题：在哪段历史中研究，采用什么方法，预期形成怎样的配置，是否按这些条件开始。先建立共同的时间与数据范围，再选择完整策略并预览，最后一次确认，能够让不一致的条件在运行前被发现。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B408" data-chapter="ST05" data-source-line="244">步骤</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B409" data-chapter="ST05" data-source-line="244">用户要确认什么</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B410" data-chapter="ST05" data-source-line="244">本步完成后得到什么</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B411" data-chapter="ST05" data-source-line="246">1 设置起点</td>
+<td data-comment-block="STRATEGY-DOC-B412" data-chapter="ST05" data-source-line="246">起始时间、市场、证券池与期限</td>
+<td data-comment-block="STRATEGY-DOC-B413" data-chapter="ST05" data-source-line="246">明确的研究范围及名义、实际终点</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B414" data-chapter="ST05" data-source-line="247">2 选择策略</td>
+<td data-comment-block="STRATEGY-DOC-B415" data-chapter="ST05" data-source-line="247">一个或多个完整策略及其版本</td>
+<td data-comment-block="STRATEGY-DOC-B416" data-chapter="ST05" data-source-line="247">需要预检的组合，各自使用独立本金</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B417" data-chapter="ST05" data-source-line="248">3 预览组合</td>
+<td data-comment-block="STRATEGY-DOC-B418" data-chapter="ST05" data-source-line="248">候选、入围原因、目标权重和现金余量</td>
+<td data-comment-block="STRATEGY-DOC-B419" data-chapter="ST05" data-source-line="248">对策略计划的理解，尚无实际成交</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B420" data-chapter="ST05" data-source-line="249">4 确认创建</td>
+<td data-comment-block="STRATEGY-DOC-B421" data-chapter="ST05" data-source-line="249">版本、资金、费用、数据与执行假设</td>
+<td data-comment-block="STRATEGY-DOC-B422" data-chapter="ST05" data-source-line="249">一份条件锁定、尚未开始的实验</td>
+</tr>
+</tbody></table></div>
+<p data-comment-block="STRATEGY-DOC-B423" data-chapter="ST05" data-source-line="251">用户先选择策略，再核对资金、费用与执行条件。上一步输入保留，缺少方法时可以在第二步就地组装；保存后追加准确的新版本并重新预检，取消则原样返回。</p>
+<h3 id="创建过程的交互分镜">创建过程的交互分镜</h3>
+<p data-comment-block="STRATEGY-DOC-B424" data-chapter="ST05" data-source-line="255">下面三幅画面覆盖四个步骤：前两幅展示时间与策略选择，第三幅集中展示组合预览及最终确认。预览先呈现计划，确认动作才创建运行身份。</p>
+<section class="replay-demo" id="state-demo-1" aria-labelledby="state-demo-1-title"><div class="replay-demo-head"><div><p class="demo-kicker">设计状态对照 · 可重播示意</p><h3 id="state-demo-1-title">按步骤读懂状态变化</h3><p class="demo-limit">设计状态对照 · 可重播示意；按钮仅切换设计分镜，不操作真实回测</p></div><div class="replay-controls" role="group" aria-label="分镜控制"><button type="button" data-replay-action="prev">上一步</button><button type="button" data-replay-action="next">下一步</button><button type="button" data-replay-action="play">播放</button><button type="button" data-replay-action="pause" disabled>暂停</button><button type="button" data-replay-action="reset">重播</button></div></div><!-- replay-local-details --><div class="replay-stage" aria-live="polite"><figure class="replay-frame" data-frame="0"><div class="replay-frame-label"><span>步骤1：确定历史起点</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/04-create.svg" data-image-viewer="true" aria-label="打开步骤1：确定历史起点原尺寸图稿（100%）"><img data-comment-image="04-create" data-comment-occurrence="04-create@state-demo-1-1" src="source/images/04-create.svg" alt="步骤1：确定历史起点" loading="lazy"></a><figcaption>填写时间与期限，先辨认业务时区、名义终点和实际覆盖，再进入选择策略。</figcaption></figure><figure class="replay-frame" data-frame="1" hidden><div class="replay-frame-label"><span>步骤2：选择明确版本</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/04b-select-strategies.svg" data-image-viewer="true" aria-label="打开步骤2：选择明确版本原尺寸图稿（100%）"><img data-comment-image="04b-select-strategies" data-comment-occurrence="04b-select-strategies@state-demo-1-2" src="source/images/04b-select-strategies.svg" alt="步骤2：选择明确版本" loading="lazy"></a><figcaption>多选完整策略；缺少方法时就地组装，保存后回到原选择，各组合本金独立。</figcaption></figure><figure class="replay-frame" data-frame="2" hidden><div class="replay-frame-label"><span>步骤3—4：预览并确认</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/05-confirm.svg" data-image-viewer="true" aria-label="打开步骤3—4：预览并确认原尺寸图稿（100%）"><img data-comment-image="05-confirm" data-comment-occurrence="05-confirm@state-demo-1-3" src="source/images/05-confirm.svg" alt="步骤3—4：预览并确认" loading="lazy"></a><figcaption>先看入围依据和目标配置，再核对版本、资金、费用与执行约定；确认成功后进入未开始的工作台。</figcaption></figure></div><p class="replay-progress" data-replay-progress>第 1 / 3 帧</p></section>
+<h3 id="预览怎样避免被误读成成交">预览怎样避免被误读成成交</h3>
+<p data-comment-block="STRATEGY-DOC-B425" data-chapter="ST05" data-source-line="265">候选名单与目标权重来自起点以前可知的数据，表达策略希望如何配置。此时实际持仓为0、现金为100%，页面把“目标”和“实际”分列。多一组字段能够让用户看清计划与事实的距离；没有候选也可能是有效结果，应说明原因并保留现金组合。</p>
+<p data-comment-block="STRATEGY-DOC-B426" data-chapter="ST05" data-source-line="267">时间和执行条件同样需要明确。研究期限显示名义终点与实际完整交易日，数据不足时让用户等待或明确选择部分区间；信号触发与实际成交分开，费用未知不能显示为免费。确认失败留在本步并保留输入，重试也只产生同一个实验。完整算法和字段约定如下。</p>
+<details><summary>查看四步字段、数据边界及失败规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B427" data-chapter="ST05" data-source-line="272"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">步骤/元素</th>
+<th scope="col">字段与规则</th>
+<th scope="col">用户可观察结果</th>
+</tr></thead><tbody>
+<tr>
+<td>WIZ01 设置起点</td>
+<td>绝对时间、业务时区、市场/证券池、历史区间；期限沿用1周、1个月、3个月、半年、1年</td>
+<td>一周为7自然日，其余为1/3/6/12日历月，月末无同日取目标月末；终点取目标之前最后完整交易日，显示名义/实际终点和交易日数；目标超出数据末端时等待补齐，或明确选择部分区间，不静默缩短</td>
+</tr>
+<tr>
+<td>WIZ02 选择策略</td>
+<td>完整策略身份与版本、三包版本、数据适配、可运行说明</td>
+<td>多选不是共享本金；不可用原因就近可查；查看与选择分开</td>
+</tr>
+<tr>
+<td>WIZ03 就地组装</td>
+<td>保存成功返回步骤2追加准确新版本；重新预检</td>
+<td>取消不变；保存失败留表单；已有选择与查询仍在</td>
+</tr>
+<tr>
+<td>WIZ04 预览组合</td>
+<td>候选清单、入围依据、目标权重、现金余量、数据截止与预热覆盖</td>
+<td>目标/实际分列；空候选、数据缺失与策略失败用不同说明</td>
+</tr>
+<tr>
+<td>WIZ05 独立资金</td>
+<td>每个组合本金、币种、费用、滑点及整股/分股约束</td>
+<td>示例10万元仅为样本，不成为默认值；费用未知不能显示免费</td>
+</tr>
+<tr>
+<td>WIZ06 执行约定</td>
+<td>信号截止、最早下一可交易开盘执行、停牌/涨跌停/成交不足、退出与再平衡冲突规则</td>
+<td>触发不等于成交；不从日线假定精确盘中撮合</td>
+</tr>
+<tr>
+<td>WIZ07 锁定确认</td>
+<td>实验名、T0、区间、各版本与参数、数据快照/修订、费用和执行口径</td>
+<td>一次确认产生一个运行；成功进待开始，失败回本步并保留输入</td>
+</tr>
+<tr>
+<td>WIZ08 历史可知</td>
+<td>T0只能用已完整结束的日/周及当时已发布财务信息</td>
+<td>盘中T0不能用当天收盘；未结束周线不能当完整周；缺必需数据明确阻断</td>
+</tr>
+</tbody></table></div></div>
+</details>
+<h2 id="chapter-ST06">八、观察工作台与当日证据</h2>
+<h3 id="先理解一个组合在一天里的状态">先理解一个组合在一天里的状态</h3>
+<p data-comment-block="STRATEGY-DOC-B428" data-chapter="ST06" data-source-line="289">进入工作台后，用户主要回答“这个组合今天发生了什么”。实验名、策略版本和当前组合先确定对象，摘要呈现净资产、累计收益、最大回撤与仓位，日期再限定这些信息属于哪一天。只有这些上下文一致，图表和原因才能互相解释。</p>
+<p data-comment-block="STRATEGY-DOC-B429" data-chapter="ST06" data-source-line="291">净值曲线用于理解组合变化，切换到标的K线后，成交标记说明具体买卖位置。相邻的“组合详情”在概览、调仓记录和统计指标之间切换，始终属于当前组合与查看日。长原因自然换行，阈值、价格和单位保留完整，用户可以沿着规则核对当时的数据。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="观察工作台：当前组合的图表、持仓与原因"><a class="image-link image-viewer-trigger" href="source/images/06-observe.svg" data-image-viewer="true" aria-label="打开观察工作台：当前组合的图表、持仓与原因原尺寸图稿（100%）"><img data-comment-image="06-observe" data-comment-occurrence="06-observe@293" src="source/images/06-observe.svg" alt="观察工作台：当前组合的图表、持仓与原因" width="1440" height="1080"></a></div><a class="image-action image-viewer-trigger" href="source/images/06-observe.svg" data-image-viewer="true" data-image-viewer-alt="观察工作台：当前组合的图表、持仓与原因">查看原尺寸</a>
+</figure>
+<h3 id="一次联动包含哪些信息">一次联动包含哪些信息</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B430" data-chapter="ST06" data-source-line="297">用户动作</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B431" data-chapter="ST06" data-source-line="297">画面怎样响应</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B432" data-chapter="ST06" data-source-line="297">保持的上下文</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B433" data-chapter="ST06" data-source-line="299">选择另一个组合</td>
+<td data-comment-block="STRATEGY-DOC-B434" data-chapter="ST06" data-source-line="299">图、摘要、持仓与原因切到该组合</td>
+<td data-comment-block="STRATEGY-DOC-B435" data-chapter="ST06" data-source-line="299">查看日保持不变，落后组合标明真实完成日</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B436" data-chapter="ST06" data-source-line="300">在净值与K线间切换</td>
+<td data-comment-block="STRATEGY-DOC-B437" data-chapter="ST06" data-source-line="300">改变图表视角，恢复该模式的视野</td>
+<td data-comment-block="STRATEGY-DOC-B438" data-chapter="ST06" data-source-line="300">不推进日期，不改变实验条件</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B439" data-chapter="ST06" data-source-line="301">查看一次调仓或成交</td>
+<td data-comment-block="STRATEGY-DOC-B440" data-chapter="ST06" data-source-line="301">显示计划、执行结果及对应原因</td>
+<td data-comment-block="STRATEGY-DOC-B441" data-chapter="ST06" data-source-line="301">意图、计划与成交分别辨认</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B442" data-chapter="ST06" data-source-line="302">打开锁定配置与包说明</td>
+<td data-comment-block="STRATEGY-DOC-B443" data-chapter="ST06" data-source-line="302">在说明层阅读原版本</td>
+<td data-comment-block="STRATEGY-DOC-B444" data-chapter="ST06" data-source-line="302">主图、查看日与已展开边界保持不变</td>
+</tr>
+</tbody></table></div>
+<p data-comment-block="STRATEGY-DOC-B445" data-chapter="ST06" data-source-line="304">图表旁常驻解释可以减少反复打开详情的动作，同时占用横向空间。工作台将低频配置收进说明层，允许页面纵向滚动，优先保留正常字号和主图净高。播放、单步、速度和回看在图下使用稳定动作槽；组合数量增加时，通过当前项与“更多组合”选择，不继续挤压主图。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:920px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="摘要、正在查看日期与行情展开边界的局部细节"><a class="image-link image-viewer-trigger" href="source/images/06-observe-status-detail.svg" data-image-viewer="true" aria-label="打开摘要、正在查看日期与行情展开边界的局部细节原尺寸图稿（100%）"><img data-comment-image="06-observe-status-detail" data-comment-occurrence="06-observe-status-detail@306" src="source/images/06-observe-status-detail.svg" alt="摘要、正在查看日期与行情展开边界的局部细节" width="920" height="360"></a></div><a class="image-action image-viewer-trigger" href="source/images/06-observe-status-detail.svg" data-image-viewer="true" data-image-viewer-alt="摘要、正在查看日期与行情展开边界的局部细节">查看原尺寸</a>
+</figure>
+<h3 id="用完整原因支持判断">用完整原因支持判断</h3>
+<p data-comment-block="STRATEGY-DOC-B446" data-chapter="ST06" data-source-line="310">“满足条件”只能表达结论，不能帮助研究者复查。说明区应将规则阈值与当时观测值放在一起，例如市值和成交额是否达标，价格相对均线的位置如何。重要价格直接可读，金额可以按万、亿缩写，完整值通过聚焦、详情或复制取得。下面保留原因例文与各观察元素的精确约定。</p>
+<details><summary>查看观察元素、原因示例和空间规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B447" data-chapter="ST06" data-source-line="315"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">分组</th>
+<th scope="col">规则</th>
+</tr></thead><tbody>
+<tr>
+<td>OBS01 身份</td>
+<td>实验/完整策略/版本同时可追溯</td>
+</tr>
+<tr>
+<td>OBS02 摘要</td>
+<td>统一到当前查看日与当前组合；未知用“—”</td>
+</tr>
+<tr>
+<td>OBS03 日期</td>
+<td>显示“正在查看”“行情已展开至”，回看时另保留已看后续提示</td>
+</tr>
+<tr>
+<td>OBS04 图表</td>
+<td>净值与K线共享舞台；切换恢复对应视野</td>
+</tr>
+<tr>
+<td>OBS05 成交</td>
+<td>买卖文字/形状与颜色并用；意图、计划和成交分别展示</td>
+</tr>
+<tr>
+<td>OBS06 检查区</td>
+<td>长原因自然换行；展开详情时主图不换容器、不改变已展开边界</td>
+</tr>
+<tr>
+<td>OBS07 回放</td>
+<td>播放/暂停同槽；下一日永远表示交易日；不在输入法组合输入时触发快捷键</td>
+</tr>
+<tr>
+<td>OBS08 配置</td>
+<td>只读锁定值，修改只能“基于此配置新建实验”</td>
+</tr>
+</tbody></table></div>
+<p><strong>规则原因的完整例文。</strong> 市值¥2,140亿（大于¥200亿）；日成交额¥4,280万（大于¥2,000万）；前周EMA20 ¥111.80，本周¥112.40；收盘¥113.10，较EMA20高0.62%，处于±2%范围。阈值、价格、单位与数据截止需一起可达，不能因排版缩短成“满足条件”。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">可读性</th>
+<th scope="col">约束</th>
+</tr></thead><tbody>
+<tr>
+<td>数值</td>
+<td>价格保留2位小数，重要价格直接可读；金额按万/亿缩写，完整值可通过聚焦、详情、复制/导出取得</td>
+</tr>
+<tr>
+<td>空间</td>
+<td>说明正文14/20；长规则候选使用14/22，不改变共享按钮行高；外层可纵向滚动，不压缩主图</td>
+</tr>
+<tr>
+<td>分工</td>
+<td>480px 包详情层用于阅读；320px 观察检查区用于当日只读证据</td>
+</tr>
+</tbody></table></div></div>
+</details>
+<h2 id="chapter-ST07">九、逐日推进、播放与回看</h2>
+<h3 id="区分展开历史当前查看与已经看过">区分展开历史、当前查看与已经看过</h3>
+<p data-comment-block="STRATEGY-DOC-B448" data-chapter="ST07" data-source-line="340">推进会揭示新行情与执行证据，回看只改变当前阅读位置，已经看过的后续则成为研究记录的一部分。三者分别表达，用户才能复查早期判断，并知道这次复查受到哪些后来信息的影响。</p>
+<p data-comment-block="STRATEGY-DOC-B449" data-chapter="ST07" data-source-line="342">例如，已经看到6月28日，再回到6月14日，图和当日持仓回到起点，但“已看后续至6月28日”继续保留。这接受了无法恢复首次盲看状态的限制，使后续研究有真实的信息背景。“返回最新”只回到已经展开的位置，不产生新的运行进度。</p>
+<h3 id="从起点到首次推进的分镜">从起点到首次推进的分镜</h3>
+<p data-comment-block="STRATEGY-DOC-B450" data-chapter="ST07" data-source-line="346">起点先展示目标配置与实际现金。点击“下一交易日”后，行情、组合执行、估值与日期一起完成，新K线必须在主图中可见。有成交才增加成交标记和实际持仓，没有成交则只揭示当日行情；不能只改日期标签。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="起点、首次推进与回看的同尺度状态关系"><a class="image-link image-viewer-trigger" href="source/images/07-time-states.svg" data-image-viewer="true" aria-label="打开起点、首次推进与回看的同尺度状态关系原尺寸图稿（100%）"><img data-comment-image="07-time-states" data-comment-occurrence="07-time-states@348" src="source/images/07-time-states.svg" alt="起点、首次推进与回看的同尺度状态关系" width="1440" height="1010"></a></div><a class="image-action image-viewer-trigger" href="source/images/07-time-states.svg" data-image-viewer="true" data-image-viewer-alt="起点、首次推进与回看的同尺度状态关系">查看原尺寸</a>
+</figure>
+<section class="replay-demo" id="state-demo-2" aria-labelledby="state-demo-2-title"><div class="replay-demo-head"><div><p class="demo-kicker">设计状态对照 · 可重播示意</p><h3 id="state-demo-2-title">按步骤读懂状态变化</h3><p class="demo-limit">设计状态对照 · 可重播示意；按钮仅切换设计分镜，不操作真实回测</p></div><div class="replay-controls" role="group" aria-label="分镜控制"><button type="button" data-replay-action="prev">上一步</button><button type="button" data-replay-action="next">下一步</button><button type="button" data-replay-action="play">播放</button><button type="button" data-replay-action="pause" disabled>暂停</button><button type="button" data-replay-action="reset">重播</button></div></div><!-- replay-local-details --><div class="replay-stage" aria-live="polite"><figure class="replay-frame" data-frame="0"><div class="replay-frame-label"><span>起点：2024-06-14</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/07a-t0.svg" data-image-viewer="true" aria-label="打开起点：2024-06-14原尺寸图稿（100%）"><img data-comment-image="07a-t0" data-comment-occurrence="07a-t0@state-demo-2-1" src="source/images/07a-t0.svg" alt="起点：2024-06-14" loading="lazy"></a><figcaption>候选是计划，实际持仓0、现金100%；用户核对条件后主动推进。</figcaption></figure><figure class="replay-frame" data-frame="1" hidden><div class="replay-frame-label"><span>点击下一交易日：2024-06-17</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/07b-first-day.svg" data-image-viewer="true" aria-label="打开点击下一交易日：2024-06-17原尺寸图稿（100%）"><img data-comment-image="07b-first-day" data-comment-occurrence="07b-first-day@state-demo-2-2" src="source/images/07b-first-day.svg" alt="点击下一交易日：2024-06-17" loading="lazy"></a><figcaption>新K线进入主图，本示例满足执行条件，因此出现成交和实际持仓；无成交日只更新行情与当日状态。</figcaption></figure><figure class="replay-frame" data-frame="2" hidden><div class="replay-frame-label"><span>从已展开的6月28日回看6月14日</span><span>文档演示</span></div><a class="image-link image-viewer-trigger" href="source/images/07c-lookback.svg" data-image-viewer="true" aria-label="打开从已展开的6月28日回看6月14日原尺寸图稿（100%）"><img data-comment-image="07c-lookback" data-comment-occurrence="07c-lookback@state-demo-2-3" src="source/images/07c-lookback.svg" alt="从已展开的6月28日回看6月14日" loading="lazy"></a><figcaption>查看日和当日数据回到起点，已看后续记录保留。中间交易日未逐帧展示，返回最新也不会再推进一天。</figcaption></figure></div><p class="replay-progress" data-replay-progress>第 1 / 3 帧</p></section>
+<h3 id="连续播放怎样保持可控">连续播放怎样保持可控</h3>
+<p data-comment-block="STRATEGY-DOC-B451" data-chapter="ST07" data-source-line="358">播放按交易日依次揭示，速度控制日与日之间的观看节奏。用户可以暂停，手动回看时也暂停自动播放；取消后停止排队的画面，不能再补播。指定展开到某日之前，先说明将揭示的范围和已看记录的含义，失败时保留最后完整成功的一天。</p>
+<p data-comment-block="STRATEGY-DOC-B452" data-chapter="ST07" data-source-line="360">图表只有在用户处于跟随位置时才跟随新一天。回看、缩放或切换周期不能强行把视野拉回最新，也不能扩大可见数据边界。日期提示、摘要、周线与价格轴使用同一信息范围；独立时间变量和各动作的精确规则列在下方，供实现核对。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:920px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="时间说明与回放工具的局部细节"><a class="image-link image-viewer-trigger" href="source/images/07-time-controls-detail.svg" data-image-viewer="true" aria-label="打开时间说明与回放工具的局部细节原尺寸图稿（100%）"><img data-comment-image="07-time-controls-detail" data-comment-occurrence="07-time-controls-detail@362" src="source/images/07-time-controls-detail.svg" alt="时间说明与回放工具的局部细节" width="920" height="360"></a></div><a class="image-action image-viewer-trigger" href="source/images/07-time-controls-detail.svg" data-image-viewer="true" data-image-viewer-alt="时间说明与回放工具的局部细节">查看原尺寸</a>
+</figure>
+<details><summary>查看每个动作的时间、视野和失败规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B453" data-chapter="ST07" data-source-line="367"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">动作/元素</th>
+<th scope="col">日期与信息变化</th>
+<th scope="col">视野/中断</th>
+</tr></thead><tbody>
+<tr>
+<td>TIME01 进入T0</td>
+<td>查看=T0；实际0、现金100%；候选来自T0前可知数据</td>
+<td>可显示预热历史；T0以后不在图、轴、提示、列表或后台响应中泄露</td>
+</tr>
+<tr>
+<td>TIME02 下一日</td>
+<td>行情、组合执行和估值完成后原子提交；策略意图按约定成交</td>
+<td>用户在右边缘时跟随新bar；手动回看时暂停自动播放；不能只改日期不露新bar</td>
+</tr>
+<tr>
+<td>TIME03 播放/速度</td>
+<td>逐日提交，不跨过未完成日；速度0.5×/1×/2×/4×为本次控件建议</td>
+<td>可立即暂停；停止排队帧，不重复成交；失焦或输入时暂停</td>
+</tr>
+<tr>
+<td>TIME04 指定截止</td>
+<td>先说明即将揭示的目标日与不可撤销的“已看”记录</td>
+<td>取消不推进；执行中保留最后完整日；可暂停于已完成日</td>
+</tr>
+<tr>
+<td>TIME05 回看</td>
+<td>仅改变查看日；所有当日摘要/持仓/事件随之投影</td>
+<td>保留行情/执行截止和已看后续；不显示查看日之后的价格提示</td>
+</tr>
+<tr>
+<td>TIME06 返回最新</td>
+<td>查看日回到当前可用最新已完成日，不新增行情</td>
+<td>图表定位该日；记住各图模式范围</td>
+</tr>
+<tr>
+<td>TIME07 组合/周期/侧栏/缩放</td>
+<td>不改变阶段与任何截止</td>
+<td>图范围/轴/提示均受可见截止限制；周线仅由允许数据形成；显示未完成周时明确标“未完成”，不得用于默认周线信号</td>
+</tr>
+<tr>
+<td>TIME08 失败/重试</td>
+<td>停最后完整提交日，失败组展示真实已完成日；重试不重复写入</td>
+<td>旧图保留，错误槽显示恢复入口；不能靠改标签冒充成功</td>
+</tr>
+</tbody></table></div>
+<p>实现时分别保存：查看日V、行情已展开截止M、每组执行截止E_i、结果截止R、已看后续记录。它们不是一个日期变量。结果/比较不得超过所需组的有效数据交集；打开旧运行、复制或派生时保留已看来源。后续安全验收必须检查Tooltip、列表、摘要、缩放、周线、传输内容和导出。</p></div>
+</details>
+<h2 id="chapter-ST08">十、阶段结果与事件追溯</h2>
+<h3 id="先评价一段过程再追查原因">先评价一段过程，再追查原因</h3>
+<p data-comment-block="STRATEGY-DOC-B454" data-chapter="ST08" data-source-line="386">阶段结果帮助用户理解“这段运行表现怎样、结果由什么形成”。页面先交代统计区间与截止日期，再呈现净值、风险、盈亏与费用，随后通过贡献和调仓事件展开原因。所有数字共享明确范围，用户不会把不同阶段的值当成同一个结论。</p>
+<p data-comment-block="STRATEGY-DOC-B455" data-chapter="ST08" data-source-line="388">净值、回撤和仓位共用图表区域。切换视角节省空间，但不能同时对照三幅图，因此区间和截止说明保持稳定。贡献说明收益来自哪些标的或部分，事件表说明策略做过哪些动作，两者把整体判断接到具体证据。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="阶段结果的阅读顺序：区间、表现、贡献与事件"><a class="image-link image-viewer-trigger" href="source/images/08-results.svg" data-image-viewer="true" aria-label="打开阶段结果的阅读顺序：区间、表现、贡献与事件原尺寸图稿（100%）"><img data-comment-image="08-results" data-comment-occurrence="08-results@390" src="source/images/08-results.svg" alt="阶段结果的阅读顺序：区间、表现、贡献与事件" width="1440" height="1410"></a></div><a class="image-action image-viewer-trigger" href="source/images/08-results.svg" data-image-viewer="true" data-image-viewer-alt="阶段结果的阅读顺序：区间、表现、贡献与事件">查看原尺寸</a>
+</figure>
+<h3 id="从一个事件返回发生当天">从一个事件返回发生当天</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B456" data-chapter="ST08" data-source-line="394">步骤</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B457" data-chapter="ST08" data-source-line="394">用户动作</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B458" data-chapter="ST08" data-source-line="394">可见结果</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B459" data-chapter="ST08" data-source-line="396">阅读结果</td>
+<td data-comment-block="STRATEGY-DOC-B460" data-chapter="ST08" data-source-line="396">选择区间并查看贡献、调仓</td>
+<td data-comment-block="STRATEGY-DOC-B461" data-chapter="ST08" data-source-line="396">图与统计使用同一截止</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B462" data-chapter="ST08" data-source-line="397">追查事件</td>
+<td data-comment-block="STRATEGY-DOC-B463" data-chapter="ST08" data-source-line="397">点击一条事件</td>
+<td data-comment-block="STRATEGY-DOC-B464" data-chapter="ST08" data-source-line="397">进入事件日的观察画面，主图、持仓与原因对应当天</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B465" data-chapter="ST08" data-source-line="398">关闭详情</td>
+<td data-comment-block="STRATEGY-DOC-B466" data-chapter="ST08" data-source-line="398">关闭事件说明层</td>
+<td data-comment-block="STRATEGY-DOC-B467" data-chapter="ST08" data-source-line="398">仍停在事件日，继续检查当日证据</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B468" data-chapter="ST08" data-source-line="399">回到结果</td>
+<td data-comment-block="STRATEGY-DOC-B469" data-chapter="ST08" data-source-line="399">点击“返回阶段结果”</td>
+<td data-comment-block="STRATEGY-DOC-B470" data-chapter="ST08" data-source-line="399">恢复原区间、筛选、滚动与入口焦点</td>
+</tr>
+</tbody></table></div>
+<p data-comment-block="STRATEGY-DOC-B471" data-chapter="ST08" data-source-line="401">关闭详情和返回结果分别承担不同任务，需要清楚的动作名称。两条返回路径分别保留各自的位置，让事件调查和结果阅读都可以连续进行。结果页保留回放工具的位置，但推进和速度不可用，提示返回观察后再推进；阅读结果本身不继续运行。</p>
+<h3 id="让没有数据的结果也能被理解">让没有数据的结果也能被理解</h3>
+<p data-comment-block="STRATEGY-DOC-B472" data-chapter="ST08" data-source-line="405">无平仓交易时，胜率不可计算；没有有效基准时，不给出超额收益。缺失估值不能算成零，贡献图从真实零线展开，真零不画假柱。部分区间持续说明实际覆盖，到期未执行计划保留原状态与原因，不能为了结果完整而补成成交。</p>
+<details><summary>查看结果口径与事件往返</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B473" data-chapter="ST08" data-source-line="410"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">分组</th>
+<th scope="col">规则</th>
+</tr></thead><tbody>
+<tr>
+<td>RES01 截止</td>
+<td>统计、图、账本、事件统一到结果截止 R</td>
+</tr>
+<tr>
+<td>RES02 口径</td>
+<td>本金/净资产/现金/市值/已实现/未实现/费用口径各自说明，收益率分母可查；估值缺失不能当0</td>
+</tr>
+<tr>
+<td>RES03 无交易</td>
+<td>无平仓交易时胜率“不可计算”，没有有效基准时不算超额收益</td>
+</tr>
+<tr>
+<td>RES04 贡献</td>
+<td>正负从真实零线展开，缺估值断开，真零不画假柱；贡献负柱用 #EF7F89，普通亏损数字用 #FF8592</td>
+</tr>
+<tr>
+<td>RES05 事件往返</td>
+<td>事件跳转记录来源区间/过滤/滚动/焦点/R；观察上下文另存；返回恢复来源快照</td>
+</tr>
+<tr>
+<td>RES06 导出</td>
+<td>沿用同一截止、组合、过滤和精度，并带版本/费用/数据质量说明；静态图不冒充已实现导出</td>
+</tr>
+<tr>
+<td>RES07 回放槽</td>
+<td>结果和比较保留回放槽，推进和速度禁用，显示“返回观察后推进”；切换视图不推进</td>
+</tr>
+<tr>
+<td>RES08 到期/覆盖</td>
+<td>到期未执行计划保留原状态和原因，不回填成交；部分区间结果持续标明实际覆盖</td>
+</tr>
+</tbody></table></div></div>
+</details>
+<h2 id="chapter-ST09">十一、组合比较与下一次研究</h2>
+<h3 id="比较从共同条件开始">比较从共同条件开始</h3>
+<p data-comment-block="STRATEGY-DOC-B474" data-chapter="ST09" data-source-line="427">组合比较帮助用户判断方法差异，首先需要回答“这些结果是否在可比条件下形成”。顶部先给出所选组合的共同有效区间，各组合使用独立本金账本，收益计算口径一致，资金、费用与执行差异并列说明。</p>
+<p data-comment-block="STRATEGY-DOC-B475" data-chapter="ST09" data-source-line="429">共同区间取有效数据的交集，会舍去部分组合独有的历史，但避免把半段结果与完整期间排名。缺行情、执行落后或失败的组合仍保留身份、原因与可用范围；不满足条件的组合不参与排名。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="组合比较：共同区间、可辨认曲线与完整账本"><a class="image-link image-viewer-trigger" href="source/images/09-compare.svg" data-image-viewer="true" aria-label="打开组合比较：共同区间、可辨认曲线与完整账本原尺寸图稿（100%）"><img data-comment-image="09-compare" data-comment-occurrence="09-compare@431" src="source/images/09-compare.svg" alt="组合比较：共同区间、可辨认曲线与完整账本" width="1440" height="1460"></a></div><a class="image-action image-viewer-trigger" href="source/images/09-compare.svg" data-image-viewer="true" data-image-viewer-alt="组合比较：共同区间、可辨认曲线与完整账本">查看原尺寸</a>
+</figure>
+<h3 id="曲线突出少量对象表格保留全部对象">曲线突出少量对象，表格保留全部对象</h3>
+<p data-comment-block="STRATEGY-DOC-B476" data-chapter="ST09" data-source-line="435">图上最多同时高亮四条曲线，颜色、名称和线型共同辨认策略；其他组合继续保留在表中。限制同时高亮的数量，可以降低曲线互相遮挡，不限制实验创建的组合总数。图例、曲线与行选择联动，日期保持不变，盈亏颜色仍只表达正负。</p>
+<h3 id="把新假设带到新的实验">把新假设带到新的实验</h3>
+<p data-comment-block="STRATEGY-DOC-B477" data-chapter="ST09" data-source-line="439">需要试验不同配置时，使用“基于此配置新建实验”，在新草稿中修改条件，原运行与结果保留。新草稿携带来源和已看记录，不能被描述成未见历史的盲测。“复制该版本为新策略”则只创建库中的方法，两种动作分别说明各自产物。</p>
+<p data-comment-block="STRATEGY-DOC-B478" data-chapter="ST09" data-source-line="441">比较中的回放工具与结果页一致：先返回观察，再主动推进。这样，阅读差异、查看证据和改变实验进度分别由明确动作触发。</p>
+<details><summary>查看比较与派生规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B479" data-chapter="ST09" data-source-line="446"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">分组</th>
+<th scope="col">规则</th>
+</tr></thead><tbody>
+<tr>
+<td>CMP00 回放</td>
+<td>比较与结果共用只读回放槽，返回观察后才可继续推进</td>
+</tr>
+<tr>
+<td>CMP01 区间</td>
+<td>共同区间为所选组合的起止、行情、执行、估值有效日交集；标题显示实际交集，空交集解释原因</td>
+</tr>
+<tr>
+<td>CMP02 口径</td>
+<td>同一比较视图共用截止和收益计算口径，费用/本金/执行差异并列披露</td>
+</tr>
+<tr>
+<td>CMP03 无效组合</td>
+<td>无效组合不参与排名，未选/失败组合不从表中悄悄消失</td>
+</tr>
+<tr>
+<td>CMP04 身份</td>
+<td>曲线身份用蓝/紫/青/橙加名称/线型；选中行、图例与曲线联动，不重置日期</td>
+</tr>
+<tr>
+<td>CMP05 派生</td>
+<td>“基于此配置新建实验”新建草稿并携带来源与已看记录，不伪装成未见历史的盲测；“复制该版本为新策略”只创建库对象，两者文案与结果不同</td>
+</tr>
+</tbody></table></div></div>
+</details>
+<h2 id="chapter-ST10">十二、等待、异常与恢复</h2>
+<h3 id="让用户知道哪些内容仍然有效">让用户知道哪些内容仍然有效</h3>
+<p data-comment-block="STRATEGY-DOC-B480" data-chapter="ST10" data-source-line="461">等待和异常会打断研究，但不应让用户失去已经确认的条件。提示要说明发生了什么、影响哪一部分，以及可以怎样继续：列表失败保留查询，包不兼容标在对应槽位，执行失败靠近日期与回放工具，其他有效内容继续可读。</p>
+<p data-comment-block="STRATEGY-DOC-B481" data-chapter="ST10" data-source-line="463">首次进入时使用骨架保留区域尺寸；更新已有结果时，保留最后有效内容并标明正在更新。旧内容仍可阅读，也可能被误认成最新结果，因此其对象身份与有效日期必须同时保留。连续切换组合时，迟到请求不能覆盖最后一次仍有效的选择。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="不同研究阶段的等待、空结果、覆盖不足与失败提示"><a class="image-link image-viewer-trigger" href="source/images/10-states.svg" data-image-viewer="true" aria-label="打开不同研究阶段的等待、空结果、覆盖不足与失败提示原尺寸图稿（100%）"><img data-comment-image="10-states" data-comment-occurrence="10-states@465" src="source/images/10-states.svg" alt="不同研究阶段的等待、空结果、覆盖不足与失败提示" width="1440" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/10-states.svg" data-image-viewer="true" data-image-viewer-alt="不同研究阶段的等待、空结果、覆盖不足与失败提示">查看原尺寸</a>
+</figure>
+<h3 id="区分研究结果与不能完成的操作">区分研究结果与不能完成的操作</h3>
+<ul>
+<li data-comment-block="STRATEGY-DOC-B482" data-chapter="ST10" data-source-line="469"><strong>没有匹配方法</strong>是查询结果，可以调整或清空条件。</li>
+<li data-comment-block="STRATEGY-DOC-B483" data-chapter="ST10" data-source-line="470"><strong>没有候选或信号</strong>可能是有效策略结果，保留现金组合并解释原因。</li>
+<li data-comment-block="STRATEGY-DOC-B484" data-chapter="ST10" data-source-line="471"><strong>缺少必需数据</strong>意味着不能按原条件完成评估，需要更换包、区间或明确选择可评估集合。</li>
+<li data-comment-block="STRATEGY-DOC-B485" data-chapter="ST10" data-source-line="472"><strong>执行或保存失败</strong>意味着本次动作没有完整完成，保留最后有效进度与输入，再提供重试。</li>
+</ul>
+<p data-comment-block="STRATEGY-DOC-B486" data-chapter="ST10" data-source-line="474">这些状态不共用一个笼统的“暂无数据”。未知值使用“—”并提供原因，实际零保留为零；正常画面无需常驻成功徽章。重试放在受影响的业务区域，不把首页专用的全局修复入口搬到策略台。</p>
+<h3 id="恢复后仍属于同一次任务">恢复后仍属于同一次任务</h3>
+<p data-comment-block="STRATEGY-DOC-B487" data-chapter="ST10" data-source-line="478">重试执行不能重复成交，重试创建不能产生第二个实验；版本冲突也不能自动改用最新版。失败时保留输入、图表和最后完整日，让用户能够决定重读、另存、更换条件或取消。下面按状态列出具体恢复动作及需要保留的内容。</p>
+<details><summary>查看异常与恢复清单</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B488" data-chapter="ST10" data-source-line="483"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">元素/状态</th>
+<th scope="col">说明与动作</th>
+<th scope="col">保留内容</th>
+</tr></thead><tbody>
+<tr>
+<td>ERR01 加载</td>
+<td>正在读取/更新，提交按钮防重复；允许离开</td>
+<td>输入、旧对象身份、几何与最后有效数据</td>
+</tr>
+<tr>
+<td>ERR02 空库/无匹配</td>
+<td>空库“新建策略”；无匹配由搜索尾部清空恢复</td>
+<td>查询工具；不在空态再堆一组相同清空按钮</td>
+</tr>
+<tr>
+<td>ERR03 无候选/无信号</td>
+<td>显示原因与覆盖范围；允许合法现金组合</td>
+<td>实际0与现金100%；不能称为引擎失败</td>
+</tr>
+<tr>
+<td>ERR04 缺必需数据</td>
+<td>分别披露历史可知数据、证券池和交易模型覆盖；标出包、能力、起止缺口；更换包或区间</td>
+<td>原配置与输入；未知不填0、不显示成功覆盖；部分证券不可评估时，需显式选择剩余集合并永久标注覆盖偏差，不自动排除</td>
+</tr>
+<tr>
+<td>ERR05 执行失败</td>
+<td>停最后完整日；查看原因、重试、返回列表</td>
+<td>不重复成交，不提前推进，保留图表</td>
+</tr>
+<tr>
+<td>ERR06 组合落后</td>
+<td>显示该组已完成日，比较使用交集或不参与</td>
+<td>身份、真实数据日期，不冒充当前结果</td>
+</tr>
+<tr>
+<td>ERR07 版本/归档冲突</td>
+<td>说明被改变对象；重读、另存或显式沿用可用历史版本</td>
+<td>未保存输入；不自动切到最新版</td>
+</tr>
+<tr>
+<td>ERR08 确认/保存失败</td>
+<td>留在原确认界面，显示原因并可重试/取消</td>
+<td>一次提交身份、完整草稿，不制造第二个实验</td>
+</tr>
+</tbody></table></div>
+<p>重试是各业务局部动作，不移植首页专属“唯一修复入口”。无权限或不可用的禁用项旁说明原因；焦点落到可读说明，不能仅用灰色传达。</p></div>
+</details>
+<h2 id="chapter-ST11">十三、窄窗口与长内容适配</h2>
+<h3 id="空间改变时阅读优先级不变">空间改变时，阅读优先级不变</h3>
+<p data-comment-block="STRATEGY-DOC-B489" data-chapter="ST11" data-source-line="502">桌面将图表和解释并排，窄窗口则按摘要、日期、图表、回放和解释纵向排列。重排需要更多滚动，也减少图与原因同时可见的范围，但可以保留正常字号、完整说明和可触达动作。</p>
+<p data-comment-block="STRATEGY-DOC-B490" data-chapter="ST11" data-source-line="504">价格轴始终预留位置，重要价格不省略；长名称、长版本和原因在说明区换行。表格在自身区域横向滚动，页面不左右漂移。覆盖层在桌面从右侧打开，窄屏使用可用全宽，标题和返回入口常驻，正文独立滚动。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="桌面与窄屏的重排关系"><a class="image-link image-viewer-trigger" href="source/images/11-responsive.svg" data-image-viewer="true" aria-label="打开桌面与窄屏的重排关系原尺寸图稿（100%）"><img data-comment-image="11-responsive" data-comment-occurrence="11-responsive@506" src="source/images/11-responsive.svg" alt="桌面与窄屏的重排关系" width="1280" height="1320"></a></div><a class="image-action image-viewer-trigger" href="source/images/11-responsive.svg" data-image-viewer="true" data-image-viewer-alt="桌面与窄屏的重排关系">查看原尺寸</a>
+</figure>
+<h3 id="用完整画面检查重排结果">用完整画面检查重排结果</h3>
+<p data-comment-block="STRATEGY-DOC-B491" data-chapter="ST11" data-source-line="510">1280px画板用于观察紧凑桌面的空间分配，390px画板展示窄屏纵向延续。两者保留同一任务顺序；打开说明层只改变这一层，关闭后仍是原对象、原查看日与原图表位置。</p>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="1280px紧凑桌面的完整观察画面"><a class="image-link image-viewer-trigger" href="source/images/11-compact.svg" data-image-viewer="true" aria-label="打开1280px紧凑桌面的完整观察画面原尺寸图稿（100%）"><img data-comment-image="11-compact" data-comment-occurrence="11-compact@512" src="source/images/11-compact.svg" alt="1280px紧凑桌面的完整观察画面" width="1280" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/11-compact.svg" data-image-viewer="true" data-image-viewer-alt="1280px紧凑桌面的完整观察画面">查看原尺寸</a>
+</figure>
+<figure class="document-image figure plate-figure" style="--plate-width:390px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="390px窄屏的完整观察画面"><a class="image-link image-viewer-trigger" href="source/images/11-narrow.svg" data-image-viewer="true" aria-label="打开390px窄屏的完整观察画面原尺寸图稿（100%）"><img data-comment-image="11-narrow" data-comment-occurrence="11-narrow@514" src="source/images/11-narrow.svg" alt="390px窄屏的完整观察画面" width="390" height="1600"></a></div><a class="image-action image-viewer-trigger" href="source/images/11-narrow.svg" data-image-viewer="true" data-image-viewer-alt="390px窄屏的完整观察画面">查看原尺寸</a>
+</figure>
+<p data-comment-block="STRATEGY-DOC-B492" data-chapter="ST11" data-source-line="516">断点、图表最低净高与命中尺寸是落实上述优先级的参数。画板说明布局意图，真实设备上的触摸、软键盘和中文字形仍需在实现后独立验证，不能由缩放图稿代替。</p>
+<details><summary>查看断点、触控和长内容规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B493" data-chapter="ST11" data-source-line="521"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">范围</th>
+<th scope="col">布局/可达性规则</th>
+<th scope="col">后续实现的检查点</th>
+</tr></thead><tbody>
+<tr>
+<td>≥1024</td>
+<td>主图与检查区并排，检查区320；摘要四列；主区内边距24</td>
+<td>1440×900、1280×720/800，图净高≥320</td>
+</tr>
+<tr>
+<td>≤1023</td>
+<td>图表在前、解释在后；摘要两列；桌面导航折叠或顶端菜单</td>
+<td>1024/1023两侧，不把缩放当重排</td>
+</tr>
+<tr>
+<td>≤759</td>
+<td>日期工具自然换行；菜单跟随锚点并限制屏内；图净高280</td>
+<td>760/759与390×844，动作命中44px</td>
+</tr>
+<tr>
+<td>≤359</td>
+<td>摘要一列；长标题完整换行</td>
+<td>360/359，不挤压数值</td>
+</tr>
+<tr>
+<td>长内容</td>
+<td>正文14/20或规则14/22；表格金额与表头右边界一致；名称可换行</td>
+<td>长中文、巨额、负数、未知、长版本名、错误三行</td>
+</tr>
+</tbody></table></div>
+<p>画板11是设计重排示意。真实设备触摸、软键盘、中文字形与产品断点行为属于后续实现验收，不能由缩放SVG证明。</p></div>
+</details>
+<h2 id="chapter-ST12">十四、公共组件与交互反馈</h2>
+<h3 id="从全站标准组合出研究界面">从全站标准组合出研究界面</h3>
+<p data-comment-block="STRATEGY-DOC-B494" data-chapter="ST12" data-source-line="537">策略台复用全站V2.5的颜色、文字、尺寸、焦点与状态反馈。用户从首页进入后，仍能辨认按钮、选择器、标签、表格和说明层；每个控件再按研究任务声明自己的作用范围。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B495" data-chapter="ST12" data-source-line="539">研究需要</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B496" data-chapter="ST12" data-source-line="539">使用的公共组件</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B497" data-chapter="ST12" data-source-line="539">在策略台中的组合方式</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B498" data-chapter="ST12" data-source-line="541">找到方法与实验</td>
+<td data-comment-block="STRATEGY-DOC-B499" data-chapter="ST12" data-source-line="541">搜索、筛选、标签、数据表</td>
+<td data-comment-block="STRATEGY-DOC-B500" data-chapter="ST12" data-source-line="541">工具只改变所属列表，返回恢复原条件</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B501" data-chapter="ST12" data-source-line="542">选择方法与组合</td>
+<td data-comment-block="STRATEGY-DOC-B502" data-chapter="ST12" data-source-line="542">选择器、浮层、分段标签</td>
+<td data-comment-block="STRATEGY-DOC-B503" data-chapter="ST12" data-source-line="542">当前值常驻，阅读说明与选择分开</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B504" data-chapter="ST12" data-source-line="543">理解当日表现</td>
+<td data-comment-block="STRATEGY-DOC-B505" data-chapter="ST12" data-source-line="543">指标、图表、数据表、说明区</td>
+<td data-comment-block="STRATEGY-DOC-B506" data-chapter="ST12" data-source-line="543">共用组合身份和查看日，数值与原因相邻</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B507" data-chapter="ST12" data-source-line="544">推进与回看</td>
+<td data-comment-block="STRATEGY-DOC-B508" data-chapter="ST12" data-source-line="544">图标按钮、提示、速度选择器</td>
+<td data-comment-block="STRATEGY-DOC-B509" data-chapter="ST12" data-source-line="544">动作槽稳定，播放与暂停共用位置</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B510" data-chapter="ST12" data-source-line="545">处理等待与失败</td>
+<td data-comment-block="STRATEGY-DOC-B511" data-chapter="ST12" data-source-line="545">状态提示、空状态、重试动作</td>
+<td data-comment-block="STRATEGY-DOC-B512" data-chapter="ST12" data-source-line="545">靠近受影响区域，说明有效范围与恢复结果</td>
+</tr>
+</tbody></table></div>
+<figure class="document-image figure plate-figure" style="--plate-width:952px"><span class="image-pan-hint">整体布局图；关键区域另附原尺寸详图，窄窗口可横向查看</span><div class="image-pan" tabindex="0" role="region" aria-label="公共视觉参数与控件状态示例"><a class="image-link image-viewer-trigger" href="source/images/12-components.svg" data-image-viewer="true" aria-label="打开公共视觉参数与控件状态示例原尺寸图稿（100%）"><img data-comment-image="12-components" data-comment-occurrence="12-components@547" src="source/images/12-components.svg" alt="公共视觉参数与控件状态示例" width="1440" height="1000"></a></div><a class="image-action image-viewer-trigger" href="source/images/12-components.svg" data-image-viewer="true" data-image-viewer-alt="公共视觉参数与控件状态示例">查看原尺寸</a>
+</figure>
+<h3 id="反馈解释动作是否发生">反馈解释动作是否发生</h3>
+<p data-comment-block="STRATEGY-DOC-B513" data-chapter="ST12" data-source-line="551">默认、悬停和聚焦帮助用户识别操作边界，按下和加载说明动作正在处理，禁用说明当前为何不可用。空状态属于业务容器，错误状态说明原因和恢复方式；不能要求每一个按钮都拥有“空内容”状态，也不能用按钮文案假装操作已经完成。</p>
+<p data-comment-block="STRATEGY-DOC-B514" data-chapter="ST12" data-source-line="553">焦点清楚可见，关闭覆盖层返回触发器。输入框和中文输入法正在组词时，不触发全局播放快捷键。颜色配合文字与形状，灰色本身不足以解释禁用，红绿色本身也不足以区分买卖。</p>
+<h3 id="动效说明变化不代替运行进度">动效说明变化，不代替运行进度</h3>
+<p data-comment-block="STRATEGY-DOC-B515" data-chapter="ST12" data-source-line="557">轻量过渡用来说明浮层出现、悬停和数据替换，不能推动布局。新行情完成提交后，才呈现新bar或成交标记；播放速度控制交易日间隔，与界面淡入时间分别定义。减少动态效果时直接切换，仍保留逐步状态和可见焦点。</p>
+<p data-comment-block="STRATEGY-DOC-B516" data-chapter="ST12" data-source-line="559">公共尺寸保持跨页面密度。长说明可采用更舒展的行高，窄屏扩大命中区，通过换行与重排容纳内容，而不改变共享按钮的文字排布。下方依次列出组件映射、适用状态、键盘行为与精确参数；公共既定值和本方案的页面分配分别标明来源。</p>
+<details><summary>查看控件映射、八态及动效精确规则</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B517" data-chapter="ST12" data-source-line="564"><h4>控件映射</h4>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">策略台元素</th>
+<th scope="col">复用控件</th>
+<th scope="col">特有语义</th>
+</tr></thead><tbody>
+<tr>
+<td>播放/暂停、下一日、更多</td>
+<td>IconButton / Tooltip</td>
+<td>同槽状态转换；中文可读名称；暂停不回退已展开日</td>
+</tr>
+<tr>
+<td>库/实验、图模式、右侧详情</td>
+<td>SegmentedTabs</td>
+<td>各有独立作用域；箭头移动、Enter确认；不推进日期</td>
+</tr>
+<tr>
+<td>组合/版本/速度</td>
+<td>Select / Popover</td>
+<td>当前值常驻；选项全文与禁用原因；关闭回焦点</td>
+</tr>
+<tr>
+<td>搜索/筛选/标签</td>
+<td>InlineFilter / FilterPopover / Token</td>
+<td>只过滤所属列表；筛选草稿“应用”后生效，取消不变</td>
+</tr>
+<tr>
+<td>摘要/列表/详情</td>
+<td>Metric / DataTable / Drawer</td>
+<td>身份与截止贯穿；金额右齐；480包层与320观察栏分工</td>
+</tr>
+<tr>
+<td>错误/空数据</td>
+<td>StatusBadge / EmptyState / RetryAction</td>
+<td>只在需要时出现；真零、未知与无数据分别表达</td>
+</tr>
+</tbody></table></div>
+<h4>八态与动效</h4>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">公共状态</th>
+<th scope="col">视觉/行为</th>
+</tr></thead><tbody>
+<tr>
+<td>default</td>
+<td>普通边框、可读文字、主动作使用蓝色</td>
+</tr>
+<tr>
+<td>hover</td>
+<td>120ms 反馈；不移动布局</td>
+</tr>
+<tr>
+<td>focus</td>
+<td>2px 焦点环；键盘可见，关闭层回到触发器</td>
+</tr>
+<tr>
+<td>pressed</td>
+<td>明确按下反馈；不把已提交误画成完成</td>
+</tr>
+<tr>
+<td>disabled</td>
+<td>附近说明原因；不只用灰色传达</td>
+</tr>
+<tr>
+<td>loading</td>
+<td>保留原区域尺寸，防重复提交；旧内容可继续读</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>由容器表达；按钮和图标动作没有“空内容”态</td>
+</tr>
+<tr>
+<td>error</td>
+<td>贴近受影响区域，给出恢复动作和保留内容</td>
+</tr>
+</tbody></table></div>
+<p>默认、悬停、聚焦、按下、禁用、加载、空、错误沿用公共合同，并按控件类型采用适用状态。图标动作无“空内容”态，业务空态由容器表达。按钮不得用占位文案假装已完成操作。浮层使用160ms透明度加4px位移，数据替换150ms；减少动态效果时直接切换，仍保留逐步状态和可见焦点。</p>
+<h4>回放动效、键盘与输入</h4>
+<p>策略推进的候选动效为：新bar/成交标记在原子提交后淡入150ms，不横扫整图；跟随模式才移动视野，回看模式不强行拉到右边。播放速度为0.5×/1×/2×/4×，只控制交易日间隔，不等同150ms界面动画。连续点击串行处理，不能补播已取消的过渡。</p>
+<p>覆盖层 Esc 关闭一层，焦点返回触发器，未保存编辑先处理草稿。输入框和中文输入法组合输入期间禁止全局播放快捷键。</p>
+<h4>颜色、排版与尺寸</h4>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">参数组</th>
+<th scope="col">数值</th>
+</tr></thead><tbody>
+<tr>
+<td>背景/层级</td>
+<td>背景 #0B1019；面板 #111A26；抬高 #162233；边框 #283448</td>
+</tr>
+<tr>
+<td>文字</td>
+<td>主文字 #E6EDF7；次文字 #A8B6CB；弱文字 #71829B；动作 #6CA8FF；焦点 #A9C8FF</td>
+</tr>
+<tr>
+<td>语义色</td>
+<td>正 #53D7A0；负 #FF8592；警告 #FFC66D；贡献负柱例外 #EF7F89</td>
+</tr>
+<tr>
+<td>字体</td>
+<td>标题24/32；区块18/24；正文与金额14/20；辅助12/16；指标28/34</td>
+</tr>
+<tr>
+<td>间距与圆角</td>
+<td>间距4/8/12/16/24/32；圆角6/8</td>
+</tr>
+<tr>
+<td>控件尺寸</td>
+<td>操作区控件36px高；视觉图标16px；焦点环2px；按钮文字14px；窄屏命中44px；标签视觉24px、命中36px；表头40px、数据行48px</td>
+</tr>
+<tr>
+<td>动效</td>
+<td>hover 120ms；Tooltip 延迟300ms；浮层160ms透明度+4px位移；数据替换150ms；候选 bar/marker 淡入150ms</td>
+</tr>
+</tbody></table></div>
+<h4>参数来源与适用性质</h4>
+<p>默认参数与八态的唯一公共来源为<a href="../2026-10-22-homepage-v2.5/source/component-manual.html">全站V2.5控件手册</a>。以上颜色、排版和控件尺寸为公共既定参数，具体页面分配与策略推进候选动效属于本次方案；速度0.5×/1×/2×/4×为本次控件建议。</p></div>
+</details>
+<h2 id="chapter-ST16">十五、实现顺序与设计验收</h2>
+<h3 id="先走通研究再扩展视图">先走通研究，再扩展视图</h3>
+<p data-comment-block="STRATEGY-DOC-B518" data-chapter="ST16" data-source-line="618">实现首先完成一条最小而真实的研究路径：确认起点，进入尚未成交的工作台，推进一个交易日，在真实主图中看见新行情和适用成交，再回看并返回最新。日期标签变化或静态分镜切换，都不能证明这条路径已经成立。</p>
+<p data-comment-block="STRATEGY-DOC-B519" data-chapter="ST16" data-source-line="620">随后接入策略组装、完整创建、结果与比较，并检查各次往返。保存后返回列表、重新打开和刷新，读取的仍应是同一版本、条件、进度和已看记录。功能、时间安全、持久化与视觉分别验证，使某一项通过不能掩盖另一项缺口。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col" data-comment-block="STRATEGY-DOC-B520" data-chapter="ST16" data-source-line="622">检查层面</th>
+<th scope="col" data-comment-block="STRATEGY-DOC-B521" data-chapter="ST16" data-source-line="622">需要观察到的结果</th>
+</tr></thead><tbody>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B522" data-chapter="ST16" data-source-line="624">完整任务</td>
+<td data-comment-block="STRATEGY-DOC-B523" data-chapter="ST16" data-source-line="624">选方法、创建、推进、查原因、看结果、返回来源可以连续完成</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B524" data-chapter="ST16" data-source-line="625">信息范围</td>
+<td data-comment-block="STRATEGY-DOC-B525" data-chapter="ST16" data-source-line="625">图、轴、提示、摘要、列表和结果均不越过允许截止，已看记录不会被回看或派生抹除</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B526" data-chapter="ST16" data-source-line="626">保存与恢复</td>
+<td data-comment-block="STRATEGY-DOC-B527" data-chapter="ST16" data-source-line="626">在隔离数据库中保存、返回、重开和刷新后，身份与内容一致，失败不会伪报成功</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B528" data-chapter="ST16" data-source-line="627">视觉与适配</td>
+<td data-comment-block="STRATEGY-DOC-B529" data-chapter="ST16" data-source-line="627">按匹配状态对照1440与1280桌面、390窄屏及断点两侧，检查层级、密度、长内容和动作可达性</td>
+</tr>
+<tr>
+<td data-comment-block="STRATEGY-DOC-B530" data-chapter="ST16" data-source-line="628">可访问操作</td>
+<td data-comment-block="STRATEGY-DOC-B531" data-chapter="ST16" data-source-line="628">鼠标、键盘各自完成核心路径；触摸与软键盘另行记录，不以桌面模拟代替</td>
+</tr>
+</tbody></table></div>
+<h3 id="评审时先判断三个视觉选择">评审时先判断三个视觉选择</h3>
+<p data-comment-block="STRATEGY-DOC-B532" data-chapter="ST16" data-source-line="632">本方案需要重点评审紧凑列表、88px连续摘要，以及480px包说明层与320px观察区的分工。它们分别换来更多同屏方法、清楚的指标层级、完整配置与当日证据各自的阅读空间，也承担进入详情、占用高度和打开说明层的成本。</p>
+<p data-comment-block="STRATEGY-DOC-B533" data-chapter="ST16" data-source-line="634">评审可以沿实际问题判断：列表能否帮助选方法，摘要和日期是否清楚，主图是否仍足够可读，原因能否解释一次成交，查看说明后能否回到原任务。这些判断通过后，再按元素覆盖矩阵落实实现。</p>
+<h3 id="跨页状态的具体交接">跨页状态的具体交接</h3>
+<p data-comment-block="STRATEGY-DOC-B534" data-chapter="ST16" data-source-line="638">草稿、运行进度和视图位置分别保存。下表按每一次往返明确应保留什么；它服务于完整流程，而不是新增页面或控件。</p>
+<details><summary>查看跨页面状态与后续实现接受顺序</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B535" data-chapter="ST16" data-source-line="643"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">路径/元素</th>
+<th scope="col">需保存的上下文</th>
+<th scope="col">返回或重开</th>
+</tr></thead><tbody>
+<tr>
+<td>FLOW01 库→策略→包</td>
+<td>库类型、查询、排序、页码、滚动、焦点、详情版本</td>
+<td>逐层返回；只读不修改</td>
+</tr>
+<tr>
+<td>FLOW02 实验草稿→组装</td>
+<td>草稿身份、步骤、各输入、已选版本、原查询</td>
+<td>保存追加；取消不变；失败留组装</td>
+</tr>
+<tr>
+<td>FLOW03 确认→运行</td>
+<td>配置与版本快照、资金、执行约定、数据版本、幂等提交身份</td>
+<td>一次运行；成功后未开始；失败无半成品</td>
+</tr>
+<tr>
+<td>FLOW04 观察→配置→包</td>
+<td>组合、图模式、日期、视野、展开的检查区</td>
+<td>返回同对象同日、暂停</td>
+</tr>
+<tr>
+<td>FLOW05 结果→事件→返回</td>
+<td>结果截止、过滤、区间、滚动、焦点；观察投影分开存</td>
+<td>关闭详情留事件日；显式返回恢复结果</td>
+</tr>
+<tr>
+<td>FLOW06 比较→观察→返回</td>
+<td>所选组、共同区间、图模式、表格位置</td>
+<td>不把观察日期覆盖比较截止</td>
+</tr>
+<tr>
+<td>FLOW07 派生</td>
+<td>来源策略/实验版本与已看记录、新草稿身份</td>
+<td>原运行不改；新草稿可编辑</td>
+</tr>
+<tr>
+<td>FLOW08 保存→列表→刷新</td>
+<td>草稿/版本/运行进度/成交估值/已看来源真实持久化</td>
+<td>读取同身份同值；失败不伪报成功</td>
+</tr>
+</tbody></table></div>
+<p>实现先接受“确认T0→下一交易日→真实图表新bar/适用成交→回看→返回最新”的最小闭环，再扩展结果与比较。之后在隔离数据库验证保存→返回列表→重新打开→刷新→账本对账；功能正确性、时间安全、视觉对照分别验收。设计图不替代这些运行证据。</p></div>
+</details>
+<h2 id="chapter-ST14">附录、设计依据与方案边界</h2>
+<h3 id="业务依据与视觉依据各司其职">业务依据与视觉依据各司其职</h3>
+<p data-comment-block="STRATEGY-DOC-B536" data-chapter="ST14" data-source-line="662">历史规格和后续用户确认决定策略、实验、版本、时间和观察方式的业务边界；全站V2.5决定公共视觉和控件语言。两者结合形成本方案：完整观察与页面滚动沿用已确认方向，颜色、排版和控件反馈采用当前公共标准。</p>
+<p data-comment-block="STRATEGY-DOC-B537" data-chapter="ST14" data-source-line="664">本方案的版本号V1.0属于策略台模块，不替换历史2.x文档。新尺寸、连续摘要和页面分配属于待评审的视觉建议；历史确认不会自动扩大到这些新方案。以下资料用于追溯当前设计的依据，阅读正文无需先了解历史迭代。</p>
+<h3 id="文档与产品的交付范围">文档与产品的交付范围</h3>
+<p data-comment-block="STRATEGY-DOC-B538" data-chapter="ST14" data-source-line="668">本包包含完整方案、可编辑SVG和交互分镜。分镜按钮用于浏览设计，图中的按钮用于说明预期行为；它们不构成正式业务入口，也不证明生产回放、数据库保存或导出已经实现。产品阶段需按第十五章单独验收。</p>
+<p data-comment-block="STRATEGY-DOC-B539" data-chapter="ST14" data-source-line="670">历史资料、来源字节快照、需求与元素映射，以及本包的接受记录集中列在下方，便于需要实施或追溯时查阅。</p>
+<details><summary>查看历史清单、变更归属与交付边界</summary>
+<div class="details-body" data-comment-block="STRATEGY-DOC-B540" data-chapter="ST14" data-source-line="675"><div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">来源</th>
+<th scope="col">采用内容</th>
+<th scope="col">本版处理</th>
+</tr></thead><tbody>
+<tr>
+<td>H01/H02 9月29日规格</td>
+<td>观察者、四步创建、历史可知、独立组合、回放/结果/比较</td>
+<td>保留；库内入口按后续H03纠正</td>
+</tr>
+<tr>
+<td>H03/H04 9月30日规格与融合契约</td>
+<td>策略库、三类包、版本、管理、实验入口、返回状态</td>
+<td>补入完整方案，不被后期观察截图遗漏</td>
+</tr>
+<tr>
+<td>H05 稳定工作台方案</td>
+<td>固定动作槽、连续空间与状态边界</td>
+<td>保留意图；严格单屏预算不覆盖后续完整观察</td>
+</tr>
+<tr>
+<td>H06/H09/H10 0.7</td>
+<td>用户确认的完整观察与外层滚动，桌面/窄屏参考</td>
+<td>保留阅读顺序；颜色/控件按V2.5适配</td>
+</tr>
+<tr>
+<td>H07/H08 历史文档2.1/2.2</td>
+<td>图文、时序分镜、精确规则与范围边界</td>
+<td>2.2仅两个代表章，本版扩为全模块设计</td>
+</tr>
+<tr>
+<td>聊天记录</td>
+<td>用户要求说人话、理由与取舍、动态过程及整页组合</td>
+<td>正文叙事、展开规则、可浏览图稿；<a href="source/history/chat-findings.md">聊天摘要</a></td>
+</tr>
+<tr>
+<td>全站V2.5</td>
+<td>色彩、文字、尺寸、八态、数值展示与焦点</td>
+<td>公共唯一来源，不复制首页业务限制</td>
+</tr>
+</tbody></table></div>
+<p>来源原件的字节快照与哈希见<a href="source/history/index.json">历史清单</a>，历史相对链接按原目录保存、不作为本版导航。<a href="DESIGN-COVERAGE.md">需求与元素映射</a>、<a href="acceptance.md">接受记录</a>、<a href="README.md">包说明与启动</a>提供实施与维护入口。采用历史VDF-002表达标准，来源见<a href="source/history/H11-VDF-002.md">标准快照</a>。</p>
+<p>本版新画板为可编辑SVG设计稿，全部样本数据虚构；观察、结果、比较与响应式曲线共用 <code>source/example-data.json</code>，净值终点、资产和最大回撤相互核对；画布尺寸不冒充真实浏览器视口。图稿/文档浏览验收与生产回测、数据库、导出、物理触摸的验收分别记录。新画稿是待用户评审方案，历史用户确认范围没有被扩写。</p></div>
+</details></main></div><div class="image-viewer-modal" hidden aria-hidden="true"><div class="image-viewer-dialog" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="image-viewer-title"><div class="image-viewer-head"><strong id="image-viewer-title">原尺寸图稿 · 100%</strong><button type="button" data-image-viewer-close>关闭</button></div><div class="image-viewer-scroll" tabindex="0"><img data-image-viewer-image alt=""></div></div></div><script type="application/json" id="document-manifest">{"schema": "strategy-document-manifest/1", "documentId": "STRATEGY-DESK-V10", "version": "1.0", "fingerprint": "a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9", "sourceFile": "docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/source/visual-design.candidate.md", "documentUrl": "visual-spec.html", "blocks": [{"id": "STRATEGY-DOC-B054", "chapter": "DOC", "kind": "paragraph", "text": "策略台是一处研究投资方法的工作空间。用户把选股、买入与退出的想法整理成策略，在指定的历史起点创建实验，逐日观察策略如何执行，再通过结果与事件证据判断方法的表现。", "sourceLine": 3, "sourceKey": "e19d064ecd10fb281219d9c7"}, {"id": "STRATEGY-DOC-B055", "chapter": "DOC", "kind": "paragraph", "text": "这套设计围绕一个问题展开：怎样让用户既看懂策略做了什么，也清楚这些判断是在什么条件、什么时间下形成的？ 因此，策略身份、实验条件和日期始终先于结果出现，图表与原因相邻，计划与实际成交分别呈现。", "sourceLine": 5, "sourceKey": "3c9e35922a88983b1f24eddf"}, {"id": "STRATEGY-DOC-B056", "chapter": "DOC", "kind": "paragraph", "text": "全文先说明研究背景、目标与取舍，再建立设计理念、完整流程和整体布局；随后按用户的任务展开页面与交互分镜，最后说明异常、窗口适配、公共组件及实现检查。精确规则随对应章节收纳，历史资料集中在附录。图中数据用于说明设计，均为虚构样本。", "sourceLine": 7, "sourceKey": "5fe6b9d4051d79f84959b48b"}, {"id": "STRATEGY-DOC-B057", "chapter": "ST01", "kind": "paragraph", "text": "一个投资想法通常同时包含几类判断：哪些标的值得关注，什么条件下买入，什么时候退出，以及如何分配资金。把这些判断变成收益曲线，只能回答“最后怎样”；研究者还需要知道当时有哪些候选、规则为什么触发、计划是否实际成交，以及结果使用了哪些数据。", "sourceLine": 13, "sourceKey": "08b5693f9c7f64d599fa6ee1"}, {"id": "STRATEGY-DOC-B058", "chapter": "ST01", "kind": "paragraph", "text": "策略台把这段研究过程组织起来。用户负责选择方法、设定条件和阅读证据，买卖由策略与执行约定决定。它服务于历史条件下的研究，不在候选名单上提供手工买卖入口，也不把目标仓位当成已经发生的持仓。", "sourceLine": 15, "sourceKey": "b48325a5dc5d9f89507c6883"}, {"id": "STRATEGY-DOC-B059", "chapter": "ST01", "kind": "paragraph", "text": "设计需要同时支持三件事，缺少其中任何一项，研究都难以复查。", "sourceLine": 19, "sourceKey": "0803b67a95736ccaea148614"}, {"id": "STRATEGY-DOC-B060", "chapter": "ST01", "kind": "listitem", "text": "方法能够复用。 用户可以找到、理解并组装策略，明确使用的是哪一份规则和版本。", "sourceLine": 21, "sourceKey": "ee123920c2af796e7b69f42c"}, {"id": "STRATEGY-DOC-B061", "chapter": "ST01", "kind": "listitem", "text": "过程能够理解。 创建时看清假设，观察时把日期、走势、成交与原因对应起来，区分当时可知与后来获知的信息。", "sourceLine": 22, "sourceKey": "2f8ce41a42bf0a7283723027"}, {"id": "STRATEGY-DOC-B062", "chapter": "ST01", "kind": "listitem", "text": "结果能够追溯。 从收益、风险或组合差异回到具体事件，返回后仍找得到原来的研究位置。", "sourceLine": 23, "sourceKey": "392c926f44c9acb481aaab0e"}, {"id": "STRATEGY-DOC-B063", "chapter": "ST01", "kind": "paragraph", "text": "方案覆盖策略库、三类包的管理与组装、实验列表、四步创建、观察与回看、阶段结果和组合对比，以及这些任务共用的状态和组件。永久删除、跨页批量归档、团队权限、文件夹、原子条件编排和脚本上传不在V1.0范围。", "sourceLine": 25, "sourceKey": "fb627be7ebf606b30e11c41a"}, {"id": "STRATEGY-DOC-B064", "chapter": "ST01", "kind": "tablecell", "text": "设计选择", "sourceLine": 29, "sourceKey": "a492c67d68f1450b244389bf"}, {"id": "STRATEGY-DOC-B065", "chapter": "ST01", "kind": "tablecell", "text": "希望解决的问题", "sourceLine": 29, "sourceKey": "eb8aea3ad66c2a6039cfefd5"}, {"id": "STRATEGY-DOC-B066", "chapter": "ST01", "kind": "tablecell", "text": "需要承担的成本", "sourceLine": 29, "sourceKey": "fa5fa10acbcd54d773109e05"}, {"id": "STRATEGY-DOC-B067", "chapter": "ST01", "kind": "tablecell", "text": "策略与实验分别保存", "sourceLine": 31, "sourceKey": "158d841ad029931cee1ee74b"}, {"id": "STRATEGY-DOC-B068", "chapter": "ST01", "kind": "tablecell", "text": "复用方法时，历史研究仍使用原来的条件", "sourceLine": 31, "sourceKey": "25d2e20cfc54faec83fdc47c"}, {"id": "STRATEGY-DOC-B069", "chapter": "ST01", "kind": "tablecell", "text": "创建实验时需要明确选择版本", "sourceLine": 31, "sourceKey": "0ec20c845763a9355839b6b7"}, {"id": "STRATEGY-DOC-B070", "chapter": "ST01", "kind": "tablecell", "text": "先确认条件，再开始运行", "sourceLine": 32, "sourceKey": "c5bc144376cff9bea699ae99"}, {"id": "STRATEGY-DOC-B071", "chapter": "ST01", "kind": "tablecell", "text": "避免把不同资金、费用或数据条件下的结果直接比较", "sourceLine": 32, "sourceKey": "52034d66a16a1932f9f5aac5"}, {"id": "STRATEGY-DOC-B072", "chapter": "ST01", "kind": "tablecell", "text": "创建过程保留四步及最后确认", "sourceLine": 32, "sourceKey": "0e50352cdb29c4528b72bbd3"}, {"id": "STRATEGY-DOC-B073", "chapter": "ST01", "kind": "tablecell", "text": "图表与当日原因相邻", "sourceLine": 33, "sourceKey": "2911c8b43e2573837f115037"}, {"id": "STRATEGY-DOC-B074", "chapter": "ST01", "kind": "tablecell", "text": "看见一次变化后，可以就近核对原因", "sourceLine": 33, "sourceKey": "471105ae3778cf6e9ca0e315"}, {"id": "STRATEGY-DOC-B075", "chapter": "ST01", "kind": "tablecell", "text": "检查区占用横向空间，窄屏需要纵向阅读", "sourceLine": 33, "sourceKey": "f6c222a41e3744bb324a605d"}, {"id": "STRATEGY-DOC-B076", "chapter": "ST01", "kind": "tablecell", "text": "保留完整观察信息，允许页面向下滚动", "sourceLine": 34, "sourceKey": "4c9fcb66b4352d75c48b534b"}, {"id": "STRATEGY-DOC-B077", "chapter": "ST01", "kind": "tablecell", "text": "长原因和正常字号不必为单屏压缩", "sourceLine": 34, "sourceKey": "ffe1d37d82bf03e872a3e94f"}, {"id": "STRATEGY-DOC-B078", "chapter": "ST01", "kind": "tablecell", "text": "部分内容需要滚动查看", "sourceLine": 34, "sourceKey": "e565a5c5f52e9086199f7db6"}, {"id": "STRATEGY-DOC-B079", "chapter": "ST01", "kind": "tablecell", "text": "回看保留已经看过的后续记录", "sourceLine": 35, "sourceKey": "fdb48f48c3afc01657520a51"}, {"id": "STRATEGY-DOC-B080", "chapter": "ST01", "kind": "tablecell", "text": "让研究结论包含真实的信息背景", "sourceLine": 35, "sourceKey": "45a059370b605e35651f1785"}, {"id": "STRATEGY-DOC-B081", "chapter": "ST01", "kind": "tablecell", "text": "回到早期日期也不能恢复首次盲看的状态", "sourceLine": 35, "sourceKey": "12e3bc6412c0e160f4a57e10"}, {"id": "STRATEGY-DOC-B082", "chapter": "ST01", "kind": "paragraph", "text": "策略台沿用全站V2.5的公共视觉与控件标准，并按研究任务分配空间。首页的模块顺序、导航尺寸和固定八行表属于首页布局；策略台采用自己的策略入口、观察舞台和回放工具。后文先解释这些选择如何形成完整流程，再逐步落实到页面。", "sourceLine": 37, "sourceKey": "732c0b1b26f5ddc7a85352fc"}, {"id": "STRATEGY-DOC-B083", "chapter": "ST13", "kind": "paragraph", "text": "策略台先区分方法、研究和研究中的组合，再安排页面。策略保存可复用的方法；实验保存一次研究的起点、区间、版本和进度；组合是在该实验中采用某个完整策略、使用独立本金运行的一组资产。一个实验可以比较多个组合，它们共用研究环境，但各自保留账本。", "sourceLine": 43, "sourceKey": "9f49c290e22d7f7c2a09f5fd"}, {"id": "STRATEGY-DOC-B084", "chapter": "ST13", "kind": "paragraph", "text": "完整策略由标的筛选、买入信号和止盈止损三个包组成，并包含排序、仓位分配与再平衡配置。包说明用于理解方法，当日原因用于解释一次运行；两种内容分开，用户才能从规则走到证据，而不把说明当成执行结果。", "sourceLine": 45, "sourceKey": "38320e615f19a00991d34cb9"}, {"id": "STRATEGY-DOC-B085", "chapter": "ST13", "kind": "tablecell", "text": "对象", "sourceLine": 47, "sourceKey": "763f5e224aa772445ddae65e"}, {"id": "STRATEGY-DOC-B086", "chapter": "ST13", "kind": "tablecell", "text": "回答的问题", "sourceLine": 47, "sourceKey": "0ff78b1b4706acfdc9331bde"}, {"id": "STRATEGY-DOC-B087", "chapter": "ST13", "kind": "tablecell", "text": "主要承载位置", "sourceLine": 47, "sourceKey": "efe63084ede79925de4e64f3"}, {"id": "STRATEGY-DOC-B088", "chapter": "ST13", "kind": "tablecell", "text": "包与完整策略", "sourceLine": 49, "sourceKey": "0abd0049c19b1b8318aa3b52"}, {"id": "STRATEGY-DOC-B089", "chapter": "ST13", "kind": "tablecell", "text": "用什么方法，规则和版本是什么", "sourceLine": 49, "sourceKey": "60665efe426b930b47daaf3f"}, {"id": "STRATEGY-DOC-B090", "chapter": "ST13", "kind": "tablecell", "text": "策略库、包详情、策略组装", "sourceLine": 49, "sourceKey": "fff18cdc58bd58289f63bf09"}, {"id": "STRATEGY-DOC-B091", "chapter": "ST13", "kind": "tablecell", "text": "实验", "sourceLine": 50, "sourceKey": "168e5930f24498eb1f87e5c6"}, {"id": "STRATEGY-DOC-B092", "chapter": "ST13", "kind": "tablecell", "text": "从哪里开始，在什么条件下研究，进行到哪里", "sourceLine": 50, "sourceKey": "cef83378ccb2c469e85d7e40"}, {"id": "STRATEGY-DOC-B093", "chapter": "ST13", "kind": "tablecell", "text": "我的实验、创建步骤、工作台页头", "sourceLine": 50, "sourceKey": "d5fdf9028434104e5c31f7fa"}, {"id": "STRATEGY-DOC-B094", "chapter": "ST13", "kind": "tablecell", "text": "实验中的组合", "sourceLine": 51, "sourceKey": "f2763feb66df8b0c99160296"}, {"id": "STRATEGY-DOC-B095", "chapter": "ST13", "kind": "tablecell", "text": "这套方法怎样使用资金，形成哪些持仓与结果", "sourceLine": 51, "sourceKey": "bfcf8169bba49d5a986de39c"}, {"id": "STRATEGY-DOC-B096", "chapter": "ST13", "kind": "tablecell", "text": "组合选择、观察图表、结果与对比", "sourceLine": 51, "sourceKey": "302b3923c88239a046d03120"}, {"id": "STRATEGY-DOC-B097", "chapter": "ST13", "kind": "paragraph", "text": "信息的安排遵循“先确定上下文，再阅读证据，最后形成判断”。这不是只在页头增加说明，而是贯穿整个研究过程。", "sourceLine": 55, "sourceKey": "3f00e86e47a18f70f6655474"}, {"id": "STRATEGY-DOC-B098", "chapter": "ST13", "kind": "listitem", "text": "身份清楚。 库里辨认策略与版本，创建时锁定版本，观察和结果页继续显示来源。修改库中的方法不会改写已经开始的实验。", "sourceLine": 57, "sourceKey": "1d253c6132ae8dfee83f4a68"}, {"id": "STRATEGY-DOC-B099", "chapter": "ST13", "kind": "listitem", "text": "时间可信。 创建时说明数据截止，观察时区分查看日与已经展开的历史，结果中限定统计区间。切换视图不能悄悄揭示新行情。", "sourceLine": 58, "sourceKey": "4ac1a5b64d515ce4bbdfb3f3"}, {"id": "STRATEGY-DOC-B100", "chapter": "ST13", "kind": "listitem", "text": "原因可查。 创建预览展示入围依据，观察展示当日信号和成交，结果通过事件回到发生当天。用户可以沿同一条证据链往返。", "sourceLine": 59, "sourceKey": "57f01b8415437346d65cce28"}, {"id": "STRATEGY-DOC-B101", "chapter": "ST13", "kind": "paragraph", "text": "准备方法 → 创建实验 → 逐日观察 → 解释结果 → 比较与继续研究构成主流程。已有方法可以直接进入创建；缺少方法时，在选择步骤就地组装，保存后回到原处继续。", "sourceLine": 63, "sourceKey": "c3bb820310af18a023e7f519"}, {"id": "STRATEGY-DOC-B102", "chapter": "ST13", "kind": "tablecell", "text": "阶段", "sourceLine": 65, "sourceKey": "1d94e4ba27708d78cf6ef529"}, {"id": "STRATEGY-DOC-B103", "chapter": "ST13", "kind": "tablecell", "text": "用户的主要问题", "sourceLine": 65, "sourceKey": "3568092a6a40776fb1dd40b8"}, {"id": "STRATEGY-DOC-B104", "chapter": "ST13", "kind": "tablecell", "text": "界面的主要响应", "sourceLine": 65, "sourceKey": "ab53f1b8df8a55165361e459"}, {"id": "STRATEGY-DOC-B105", "chapter": "ST13", "kind": "tablecell", "text": "交接到下一步的内容", "sourceLine": 65, "sourceKey": "6059405c746b9c45d7ecd92a"}, {"id": "STRATEGY-DOC-B106", "chapter": "ST13", "kind": "tablecell", "text": "准备方法", "sourceLine": 67, "sourceKey": "82b04630e47889d61f0fd59b"}, {"id": "STRATEGY-DOC-B122", "chapter": "ST13", "kind": "tablecell", "text": "有什么方法，它适合什么范围", "sourceLine": 67, "sourceKey": "88ba6890fd5b0a1a3447f73c"}, {"id": "STRATEGY-DOC-B123", "chapter": "ST13", "kind": "tablecell", "text": "库中先读摘要，再进入包说明与组装", "sourceLine": 67, "sourceKey": "3c90c0e336645df437de9e8a"}, {"id": "STRATEGY-DOC-B124", "chapter": "ST13", "kind": "tablecell", "text": "明确的完整策略版本", "sourceLine": 67, "sourceKey": "aacde85866d1b90bbf1737d1"}, {"id": "STRATEGY-DOC-B125", "chapter": "ST13", "kind": "tablecell", "text": "创建实验", "sourceLine": 68, "sourceKey": "8371c1c8123372081c36b178"}, {"id": "STRATEGY-DOC-B126", "chapter": "ST13", "kind": "tablecell", "text": "从哪天开始，按什么条件运行", "sourceLine": 68, "sourceKey": "5d7635abb1f24ae1c9445c48"}, {"id": "STRATEGY-DOC-B127", "chapter": "ST13", "kind": "tablecell", "text": "四步建立时间、策略、预览和确认", "sourceLine": 68, "sourceKey": "9e692a04dde97234d039f89b"}, {"id": "STRATEGY-DOC-B128", "chapter": "ST13", "kind": "tablecell", "text": "锁定条件的未开始实验", "sourceLine": 68, "sourceKey": "50e553bb24d570be89621c10"}, {"id": "STRATEGY-DOC-B129", "chapter": "ST13", "kind": "tablecell", "text": "逐日观察", "sourceLine": 69, "sourceKey": "0317e83c67c32b495d769aad"}, {"id": "STRATEGY-DOC-B130", "chapter": "ST13", "kind": "tablecell", "text": "今天发生了什么，为什么", "sourceLine": 69, "sourceKey": "104ccf86c153f2b506369cfa"}, {"id": "STRATEGY-DOC-B131", "chapter": "ST13", "kind": "tablecell", "text": "日期、主图、实际持仓与原因一起变化", "sourceLine": 69, "sourceKey": "99b53bb2be7dc5282013e46d"}, {"id": "STRATEGY-DOC-B132", "chapter": "ST13", "kind": "tablecell", "text": "已完成进度与真实已看记录", "sourceLine": 69, "sourceKey": "41dc6470db12915b6bbeaf45"}, {"id": "STRATEGY-DOC-B133", "chapter": "ST13", "kind": "tablecell", "text": "解释结果", "sourceLine": 70, "sourceKey": "6db2b2b0084ab362344b66c7"}, {"id": "STRATEGY-DOC-B134", "chapter": "ST13", "kind": "tablecell", "text": "表现如何，由哪些事件形成", "sourceLine": 70, "sourceKey": "1cefcb984710fd78aacd1496"}, {"id": "STRATEGY-DOC-B135", "chapter": "ST13", "kind": "tablecell", "text": "先读区间表现，再从贡献和事件下钻", "sourceLine": 70, "sourceKey": "e5bc905df6d1bde173b03e4d"}, {"id": "STRATEGY-DOC-B136", "chapter": "ST13", "kind": "tablecell", "text": "可回到来源位置的事件调查", "sourceLine": 70, "sourceKey": "77360adb864e3f23bfc8ea11"}, {"id": "STRATEGY-DOC-B339", "chapter": "ST13", "kind": "tablecell", "text": "比较与继续研究", "sourceLine": 71, "sourceKey": "052ea5643c0ae622a1818f70"}, {"id": "STRATEGY-DOC-B340", "chapter": "ST13", "kind": "tablecell", "text": "哪些组合可比，下一次要改什么", "sourceLine": 71, "sourceKey": "af328f9ce6c158c2896d50ad"}, {"id": "STRATEGY-DOC-B341", "chapter": "ST13", "kind": "tablecell", "text": "共同区间比较，基于来源创建新草稿", "sourceLine": 71, "sourceKey": "989f4c8cdf458980e1352b67"}, {"id": "STRATEGY-DOC-B342", "chapter": "ST13", "kind": "tablecell", "text": "保留原研究的新实验", "sourceLine": 71, "sourceKey": "6af9446f2ee13ac9b7382d11"}, {"id": "STRATEGY-DOC-B343", "chapter": "ST13", "kind": "paragraph", "text": "例如，用户继续一份实验草稿，在选择策略时查看筛选包、组装并保存新版本，再回到原选择确认创建。进入工作台后，先核对起点的目标配置与实际现金，推进到首次成交；随后从阶段结果进入事件日查看原因，最后返回原结果位置。后续各章按这条路径展开，使每个页面都有明确的来处与下一步。", "sourceLine": 73, "sourceKey": "98e3520a4139163133811c63"}, {"id": "STRATEGY-DOC-B344", "chapter": "ST13", "kind": "paragraph", "text": "返回也是流程的一部分。看包说明不等于选包，关闭事件详情不等于返回结果；按钮分别描述这些动作的实际结果。需要保存的跨页内容与重开规则集中列在第十五章，便于实现时沿完整路径核对。", "sourceLine": 75, "sourceKey": "d13cbc3dc5470df4623119bd"}, {"id": "STRATEGY-DOC-B345", "chapter": "ST15", "kind": "paragraph", "text": "策略台在业务层分为“策略库”和“我的实验”。前者整理方法，后者管理研究；新建策略从库开始，新建实验从我的实验开始。观察、阶段结果和组合对比属于同一个实验，不再作为三份互不相干的工作区。", "sourceLine": 81, "sourceKey": "50049e037e5ca71f6d3e5ebf"}, {"id": "STRATEGY-DOC-B346", "chapter": "ST15", "kind": "tablecell", "text": "层级", "sourceLine": 83, "sourceKey": "92649db5f110c29dc595ece9"}, {"id": "STRATEGY-DOC-B347", "chapter": "ST15", "kind": "tablecell", "text": "页面或区域", "sourceLine": 83, "sourceKey": "5d4519900ca05c458fefadd5"}, {"id": "STRATEGY-DOC-B348", "chapter": "ST15", "kind": "tablecell", "text": "用户在这一层完成什么", "sourceLine": 83, "sourceKey": "5a3fd83c242c562c1223c3b5"}, {"id": "STRATEGY-DOC-B349", "chapter": "ST15", "kind": "tablecell", "text": "应用导航", "sourceLine": 85, "sourceKey": "b03cfc0f4e6cfb460e9ec2bf"}, {"id": "STRATEGY-DOC-B350", "chapter": "ST15", "kind": "tablecell", "text": "策略台", "sourceLine": 85, "sourceKey": "2befc38e8c37f917f6251d04"}, {"id": "STRATEGY-DOC-B351", "chapter": "ST15", "kind": "tablecell", "text": "进入研究模块", "sourceLine": 85, "sourceKey": "a9556d0c7baaa09147f355ab"}, {"id": "STRATEGY-DOC-B352", "chapter": "ST15", "kind": "tablecell", "text": "业务入口", "sourceLine": 86, "sourceKey": "688639b9675f47588aa05102"}, {"id": "STRATEGY-DOC-B353", "chapter": "ST15", "kind": "tablecell", "text": "策略库 / 我的实验", "sourceLine": 86, "sourceKey": "20e88cc11c802da0aa353fde"}, {"id": "STRATEGY-DOC-B354", "chapter": "ST15", "kind": "tablecell", "text": "选择整理方法或继续研究", "sourceLine": 86, "sourceKey": "d7c64388f72475ad16544d30"}, {"id": "STRATEGY-DOC-B355", "chapter": "ST15", "kind": "tablecell", "text": "对象页面", "sourceLine": 87, "sourceKey": "479e11eb1e4d093921c471ac"}, {"id": "STRATEGY-DOC-B356", "chapter": "ST15", "kind": "tablecell", "text": "策略详情与组装 / 实验创建与工作台", "sourceLine": 87, "sourceKey": "1b81b131b0c1f82acf3abce8"}, {"id": "STRATEGY-DOC-B357", "chapter": "ST15", "kind": "tablecell", "text": "处理一个明确的策略或实验", "sourceLine": 87, "sourceKey": "e4f25da035a95343df18063a"}, {"id": "STRATEGY-DOC-B358", "chapter": "ST15", "kind": "tablecell", "text": "局部视图", "sourceLine": 88, "sourceKey": "deab75194f544ebe3ab956dc"}, {"id": "STRATEGY-DOC-B359", "chapter": "ST15", "kind": "tablecell", "text": "净值与K线、组合详情、结果、比较", "sourceLine": 88, "sourceKey": "afd56e09e1367a1e336fec49"}, {"id": "STRATEGY-DOC-B360", "chapter": "ST15", "kind": "tablecell", "text": "从不同角度理解同一研究", "sourceLine": 88, "sourceKey": "1d04bba8171c1af593e019a3"}, {"id": "STRATEGY-DOC-B361", "chapter": "ST15", "kind": "tablecell", "text": "说明层", "sourceLine": 89, "sourceKey": "8852e2bda4cac910e04cb6fc"}, {"id": "STRATEGY-DOC-B362", "chapter": "ST15", "kind": "tablecell", "text": "包说明、锁定配置、事件详情", "sourceLine": 89, "sourceKey": "93d96ee71995d2a133bb7541"}, {"id": "STRATEGY-DOC-B363", "chapter": "ST15", "kind": "tablecell", "text": "补充阅读，关闭后回到原上下文", "sourceLine": 89, "sourceKey": "f6aa98e1fc9c49f5bb4542b6"}, {"id": "STRATEGY-DOC-B364", "chapter": "ST15", "kind": "paragraph", "text": "观察是策略台最集中的研究场景。画面从上到下先交代实验和组合身份，再给出资产与风险摘要、正在查看的日期，随后进入主图和相邻解释区，回放动作靠近图表。读者先知道“在看什么、看到哪天”，再解释曲线和成交。", "sourceLine": 93, "sourceKey": "696c5eb69a0c602b553a2e5c"}, {"id": "STRATEGY-DOC-B365", "chapter": "ST15", "kind": "paragraph", "text": "桌面主图与320px检查区并排。净值和标的K线共用主舞台，检查区承载概览、调仓和统计。高频的播放、单步、日期与结果入口常驻，配置、复制和派生收进“更多”。这让观察工具位置稳定，同时为曲线和完整原因留出空间。", "sourceLine": 95, "sourceKey": "e58db67479283f10fb7276d2"}, {"id": "STRATEGY-DOC-B366", "chapter": "ST15", "kind": "caption", "text": "图 ST06｜整页图用于理解各区域的关系；第八章说明当日证据如何联动，第九章用分镜解释推进与回看。摘要采用88px连续带，保留四项指标而减少重复卡片边界；页面可纵向延续，图表净绘图区不因长说明而持续缩小。", "sourceLine": 99, "sourceKey": "0d1c4c0826bb3329af43999c"}, {"id": "STRATEGY-DOC-B367", "chapter": "ST15", "kind": "paragraph", "text": "深色背景承载工作区，表面和边线区分层级，数字的字号与对齐体现重要程度。蓝色表达动作和选择，盈亏使用绿、红，黄色提示需要关注的限制。版本、日期和普通说明保持中性，避免每条信息都争夺注意力。", "sourceLine": 103, "sourceKey": "5dce67a577d10b8ce5aa5f2e"}, {"id": "STRATEGY-DOC-B368", "chapter": "ST15", "kind": "paragraph", "text": "全站V2.5提供颜色、文字、间距、圆角和焦点标准。策略台在此基础上组织连续摘要、观察舞台和说明层，不增加一套独立视觉语言。金额使用等宽数字并右对齐，说明和名称左对齐；长内容依靠换行、详情与滚动保持可读，而不持续缩小字号。第十四章将这些原则对应到具体公共控件。", "sourceLine": 105, "sourceKey": "8233ccb3a73c26f5d4d8acbb"}, {"id": "STRATEGY-DOC-B369", "chapter": "ST15", "kind": "paragraph", "text": "下列尺寸规定整体空间预算。导航与顶栏属于策略台框架；连续摘要及图表分配是本方案的视觉建议，公共控件尺寸的来源另见组件章。", "sourceLine": 107, "sourceKey": "eae8a8db626b06b2ed8d8e12"}, {"id": "STRATEGY-DOC-B370", "chapter": "ST15", "kind": "paragraph", "text": "| 区域 | 本版规则 | 来源/数值性质 | | --- | --- | --- | | 全局框架 NAV01 | 导航展开200px、折叠54px；顶栏48px；折叠状态跨页面保留 | 沿用融合契约 H04；非首页72/64 | | 内容 NAV02 | 左右24px、模块间24px、内容最大1240px；工作台不叠加策略库的40px业务标签栏 | 历史H04/H07；本版整合 | | 摘要 OBS02 | 四等分连续带88px；28/34主值，14/20标签，12/16说明；中间细分隔 | V2.5组件适配，本次视觉建议 | | 图表 OBS04 | 桌面图+320px检查区、间隔24px；1440画布净图区360px；1280最低320px | 保留H06完整观察重心，尺寸为本版候选 | | 滚动 NAV03 | 观察页面外层纵向滚动；覆盖层独立滚动；结果/比较的长明细在有高度预算的表区滚动 | H06后续决定优先旧固定单屏方案 | | 低频操作 OBS08 | 配置、复制、派生集中“更多”；播放、单步、日期、结果入口常驻 | H04/H05 | 策略台入口目标为应用导航“策略台”。当前生产入口是否开放不由这份设计确认；设计浏览链接不是正式业务入口。", "sourceLine": 112, "sourceKey": "c27f1595fba35689c6bc1424"}, {"id": "STRATEGY-DOC-B371", "chapter": "ST02", "kind": "paragraph", "text": "策略库帮助用户找到可复用的方法，并判断是否需要进一步了解。默认展示完整策略，标的筛选、买入信号和止盈止损三个目录与其并列。名称、版本、规则摘要和状态构成一行的主要信息；查询工具位于列表上方，便于连续查找和比较。", "sourceLine": 129, "sourceKey": "cc6e4fa5f9afd5fc32acdaa2"}, {"id": "STRATEGY-DOC-B372", "chapter": "ST02", "kind": "paragraph", "text": "本方案采用紧凑行，让同一屏可以扫描更多策略。完整规则进入详情阅读，因此摘要应足以说明方法用途，不能只留下一个名称。查询、页码与滚动位置在返回后恢复，用户无需从头寻找刚才的对象。", "sourceLine": 131, "sourceKey": "369adca1f3a8f22b5ea4c06a"}, {"id": "STRATEGY-DOC-B373", "chapter": "ST02", "kind": "paragraph", "text": "从列表进入详情，用户可以理解方法、版本和数据要求。包目录额外展示使用策略数与版本发布时间，帮助判断依赖关系和新旧程度。查看说明只是阅读，回到选择列表后点击“使用此包”才改变配置；多一步明确选择，能够避免浏览时误改策略。", "sourceLine": 137, "sourceKey": "2c3aca48a9f332a8893f34b9"}, {"id": "STRATEGY-DOC-B374", "chapter": "ST02", "kind": "paragraph", "text": "搜索、筛选和排序只作用于当前列表。完整策略与三类包各有自己的目录，置顶表达个人查找偏好，不改变策略执行顺序。库内的主动作是“新建策略”，保存后进入策略详情；开始一次研究则回到“我的实验”。", "sourceLine": 139, "sourceKey": "bca17e14c19162abb01ca04b"}, {"id": "STRATEGY-DOC-B375", "chapter": "ST02", "kind": "paragraph", "text": "标签、备注、置顶和个人顺序用于管理方法，不产生新的执行版本。归档用于从新增选择中收起不再常用的包，旧策略与旧实验仍保留原引用；是否能够继续执行，还需要检查对应版本的能力。", "sourceLine": 143, "sourceKey": "d63003a968a6da18c46be4f1"}, {"id": "STRATEGY-DOC-B376", "chapter": "ST02", "kind": "paragraph", "text": "整理模式提供组内移动和定位，保存后应用个人顺序，取消则回到原查询。归档前说明影响范围，失败保留确认状态。查询、计数及归档的细节列在下方。", "sourceLine": 147, "sourceKey": "18d8ca3f3d23d2c671be03e3"}, {"id": "STRATEGY-DOC-B377", "chapter": "ST02", "kind": "paragraph", "text": "| 元素 | 操作与状态 | 完成/失败后的表现 | | --- | --- | --- | | LIB01 查询 | 搜索名称/说明/标签/标识；按类型、标签、来源、生命周期筛选；显式显示排序方向 | 修改查询回第1页；库与实验各存自己的条件；返回详情恢复查询/页码/滚动/焦点 | | LIB02 默认顺序 | 默认未归档、最近规则版本发布在前、置顶优先；置顶仅作用匹配结果 | 不改变策略执行顺序；空库与无匹配分别说明 | | LIB03 计数 | 使用策略数按完整策略最新版本引用包身份去重；当前版本数是子集；历史版本与锁定实验另列 | 未保存草稿不计；未知用“—”，不显示0；日期区分首次开发、版本发布与导入 | | LIB04 管理信息 | 标签、备注、置顶属于包身份的管理信息 | 不产生执行版本；不改规则发布时间；单次置顶失败回滚 | | LIB05 整理顺序 | 置顶与手动顺序是个人偏好，三类包分别跨会话保存；独立整理模式暂显本类型全部未归档包，置顶/普通组不可跨组排序；组内上下移动、拖动或到本组第N位，支持跨页 | 保存后手动排序；取消恢复原查询/顺序；失败留草稿；冲突提示重新读取，不覆盖别人修改 | | LIB06 归档/恢复 | 归档覆盖包身份及其全部版本，确认展示引用影响；隐藏新增选择，但旧策略/旧实验引用保留，仍独立检查可执行性 | 新增草稿提交时遇到归档需恢复/替换；编辑/复制已有策略可明确沿用原归档版本；恢复原身份，普通组末尾、不自动置顶 | 归档不是删除，也不是执行禁用。归档失败留在确认层；成功定位邻行，空末页回最近有效页。永久删除、跨页批量归档、团队权限和文件夹不在V1.0范围。", "sourceLine": 152, "sourceKey": "729e1af650591cdb754a0bc7"}, {"id": "STRATEGY-DOC-B378", "chapter": "ST03", "kind": "paragraph", "text": "策略组装把三个包的职责连接起来：标的筛选确定关注范围，买入信号决定何时形成买入意图，止盈止损规定退出条件。页面按这个顺序展示包名、版本、预设和关键规则，使用户先理解每一部分负责什么，再核对参数与数据要求。", "sourceLine": 169, "sourceKey": "69c395b85358b34fa1dcc197"}, {"id": "STRATEGY-DOC-B379", "chapter": "ST03", "kind": "paragraph", "text": "排序、仓位分配和再平衡仍由完整策略配置承担，不能用第三个包代替。缺少必要职责、接口不兼容或执行含义不清楚时，页面指出具体位置，不能将它保存为可运行方法。", "sourceLine": 171, "sourceKey": "66e5aa1478c57a477c64e0c5"}, {"id": "STRATEGY-DOC-B380", "chapter": "ST03", "kind": "paragraph", "text": "用户组装时需要读完整说明，包括用途、输入输出、市场范围、预热与兼容性。包详情采用480px说明层；运行中的320px检查区用于当日证据。两者分工会增加一次打开说明的动作，但避免长配置常驻挤压图表。", "sourceLine": 177, "sourceKey": "7b28b8518c1b1052cc7daf3b"}, {"id": "STRATEGY-DOC-B381", "chapter": "ST03", "kind": "paragraph", "text": "在包目录中，详情是对象页面；从选择、组装或锁定配置打开时，详情覆盖当前页面，逐层关闭后恢复原位置与焦点。未保存的输入保留，查看说明不自动选包、升级或保存。", "sourceLine": 179, "sourceKey": "2aa2d37cab6dc532f6cc84c7"}, {"id": "STRATEGY-DOC-B382", "chapter": "ST03", "kind": "paragraph", "text": "“保存新版本”延续当前策略身份，“创建副本”建立独立策略。保存成功后明确显示准确版本，创建实验时再锁定该完整策略和三个包的版本。以后修改方法不会改变原实验的条件；旧版本不能执行时，已经形成的结果仍可阅读。", "sourceLine": 183, "sourceKey": "987599aac4a89b318167583f"}, {"id": "STRATEGY-DOC-B383", "chapter": "ST03", "kind": "paragraph", "text": "保存中防止重复提交，失败保留全部输入；版本冲突让用户比较差异或另存。", "sourceLine": 185, "sourceKey": "2872aabd39a1359f6f2194b2"}, {"id": "STRATEGY-DOC-B384", "chapter": "ST03", "kind": "paragraph", "text": "| 元素 | 必须展示/保留 | 边界 | | --- | --- | --- | | ASM01 三包槽 | 类型、包身份、版本、预设、有效参数与单位、来源 | 缺一个职责或接口不兼容不能保存为可运行策略 | | ASM02 说明 | 用途、规则、输入输出、数据依赖、市场范围、预热、脚本标记、兼容性 | 未提供明确写未提供，不能补成经验默认值 | | ASM03 版本 | 编辑产生新版本；实验读取锁定快照 | 库升级不自动升级实验；旧包不可执行时旧结果仍可读 | | ASM04 详情返回 | 包目录进入全页详情；组装/选择/运行配置用覆盖层，嵌套详情按层级返回 | Esc/返回恢复来源焦点；看详情不选择、不保存、不升级 | | ASM05 执行说明 | 触发条件、退出/再平衡冲突优先级、跳空、未成交、再入场、费用来源 | 日线无法推断日内高低先后；不能承诺按止损价成交；包未声明执行语义则阻断运行 | | ASM06 保存 | 校验→保存中防重复→成功显示准确版本；取消保留原策略 | 失败保留完整输入；版本冲突展示差异并允许另存，不静默覆盖 | 包详情覆盖层宽480px，用于阅读完整说明；运行检查区宽320px，用于当日只读证据。", "sourceLine": 190, "sourceKey": "449866379c8181b138b9503f"}, {"id": "STRATEGY-DOC-B385", "chapter": "ST04", "kind": "paragraph", "text": "“我的实验”围绕一次研究组织记录。每行把实验名称、状态、日期范围和策略组合放在一起，主要动作靠近这些信息，让用户先判断研究进行到哪里，再决定下一步。", "sourceLine": 207, "sourceKey": "210e52a92ec1b0bd5862de6d"}, {"id": "STRATEGY-DOC-B386", "chapter": "ST04", "kind": "tablecell", "text": "当前状态", "sourceLine": 209, "sourceKey": "254df374d962b3f3bfaeb117"}, {"id": "STRATEGY-DOC-B387", "chapter": "ST04", "kind": "tablecell", "text": "主要动作", "sourceLine": 209, "sourceKey": "811c73ec875b2872b05ac5e2"}, {"id": "STRATEGY-DOC-B388", "chapter": "ST04", "kind": "tablecell", "text": "打开后的任务", "sourceLine": 209, "sourceKey": "18d77d194e7f5c9b756239cc"}, {"id": "STRATEGY-DOC-B389", "chapter": "ST04", "kind": "tablecell", "text": "草稿", "sourceLine": 211, "sourceKey": "0e0d76a45cdc110af25bbdb1"}, {"id": "STRATEGY-DOC-B390", "chapter": "ST04", "kind": "tablecell", "text": "继续编辑", "sourceLine": 211, "sourceKey": "4de25bf1f59c040d149ed8e4"}, {"id": "STRATEGY-DOC-B391", "chapter": "ST04", "kind": "tablecell", "text": "回到保留的创建步骤与输入", "sourceLine": 211, "sourceKey": "35d89820909c3ee7be770767"}, {"id": "STRATEGY-DOC-B392", "chapter": "ST04", "kind": "tablecell", "text": "未开始", "sourceLine": 212, "sourceKey": "d37bb3bf56486be82aefd6cf"}, {"id": "STRATEGY-DOC-B393", "chapter": "ST04", "kind": "tablecell", "text": "进入实验", "sourceLine": 212, "sourceKey": "eb1fa8f6e03d2f261f546346"}, {"id": "STRATEGY-DOC-B394", "chapter": "ST04", "kind": "tablecell", "text": "核对起点，主动开始观察", "sourceLine": 212, "sourceKey": "f823897c6a39f88a7e7e0c47"}, {"id": "STRATEGY-DOC-B395", "chapter": "ST04", "kind": "tablecell", "text": "暂停", "sourceLine": 213, "sourceKey": "2803089500db95fcf7c3d740"}, {"id": "STRATEGY-DOC-B396", "chapter": "ST04", "kind": "tablecell", "text": "继续观察", "sourceLine": 213, "sourceKey": "6e5930c15a1607d0612ac7e3"}, {"id": "STRATEGY-DOC-B397", "chapter": "ST04", "kind": "tablecell", "text": "从已保存进度进入暂停画面", "sourceLine": 213, "sourceKey": "136c5dfc822abe17776636f0"}, {"id": "STRATEGY-DOC-B398", "chapter": "ST04", "kind": "tablecell", "text": "完成", "sourceLine": 214, "sourceKey": "ec43a18862434345a8f374d5"}, {"id": "STRATEGY-DOC-B399", "chapter": "ST04", "kind": "tablecell", "text": "查看结果", "sourceLine": 214, "sourceKey": "b41a891cf29c520628abe7f9"}, {"id": "STRATEGY-DOC-B400", "chapter": "ST04", "kind": "tablecell", "text": "阅读结果，仍可回到观察", "sourceLine": 214, "sourceKey": "00c2e2ab57f868ea97ea6481"}, {"id": "STRATEGY-DOC-B401", "chapter": "ST04", "kind": "tablecell", "text": "失败", "sourceLine": 215, "sourceKey": "1b9f1d9086d7aaf37cc09c97"}, {"id": "STRATEGY-DOC-B402", "chapter": "ST04", "kind": "tablecell", "text": "查看原因", "sourceLine": 215, "sourceKey": "7de6a54e6e9b1d8828aedcbc"}, {"id": "STRATEGY-DOC-B403", "chapter": "ST04", "kind": "tablecell", "text": "在保留的进度上理解问题与恢复方式", "sourceLine": 215, "sourceKey": "c4b5747f66b1ef711fa3adf8"}, {"id": "STRATEGY-DOC-B404", "chapter": "ST04", "kind": "paragraph", "text": "主要动作的位置保持一致，文字直接说明打开后要完成的任务。重新打开已运行实验时先暂停，由用户主动推进后才揭示新一天，避免进入页面的瞬间获得额外信息。", "sourceLine": 221, "sourceKey": "4b312f9aa7e6f8faef6886ca"}, {"id": "STRATEGY-DOC-B405", "chapter": "ST04", "kind": "paragraph", "text": "实验列表与策略库各自保留查询条件。进入实验再返回，恢复原查询、页码、滚动和焦点。编辑中的草稿离开前，提供保存、放弃本次修改或继续编辑的选择；普通切换不应制造一个未确认的新实验。", "sourceLine": 223, "sourceKey": "d37d91499ac3cc878554069b"}, {"id": "STRATEGY-DOC-B406", "chapter": "ST04", "kind": "paragraph", "text": "| 规则 | 设计要求 | 返回与边界 | | --- | --- | --- | | EXP01 草稿 | 保留步骤、输入和已选版本 | 离开给出“保存草稿 / 放弃本次修改 / 继续编辑”，普通切换不隐式保存失败数据 | | EXP02 创建后 | 确认后有独立运行身份，初态未开始 | 一次确认只产生一个运行 | | EXP03 暂停/失败 | 保存的暂停/失败运行重开后仍暂停 | 不因重新打开就继续暴露未来 | | EXP04 完成 | 保留观察、结果、比较和复制入口 | 完成状态仍可查看原上下文 | | EXP05 返回 | 从详情返回恢复查询、页码、滚动和触发焦点 | 返回不会改变列表条件或选中对象 |", "sourceLine": 228, "sourceKey": "ae760cb7c7de6c2268f37a03"}, {"id": "STRATEGY-DOC-B407", "chapter": "ST05", "kind": "paragraph", "text": "创建实验依次回答四个问题：在哪段历史中研究，采用什么方法，预期形成怎样的配置，是否按这些条件开始。先建立共同的时间与数据范围，再选择完整策略并预览，最后一次确认，能够让不一致的条件在运行前被发现。", "sourceLine": 242, "sourceKey": "e95e92ea36284eb4af0d2240"}, {"id": "STRATEGY-DOC-B408", "chapter": "ST05", "kind": "tablecell", "text": "步骤", "sourceLine": 244, "sourceKey": "e16265697154462e5d68fbc6"}, {"id": "STRATEGY-DOC-B409", "chapter": "ST05", "kind": "tablecell", "text": "用户要确认什么", "sourceLine": 244, "sourceKey": "a8f684074d4f0ead014d6ae6"}, {"id": "STRATEGY-DOC-B410", "chapter": "ST05", "kind": "tablecell", "text": "本步完成后得到什么", "sourceLine": 244, "sourceKey": "15282904591ce9da69ecf8dc"}, {"id": "STRATEGY-DOC-B411", "chapter": "ST05", "kind": "tablecell", "text": "1 设置起点", "sourceLine": 246, "sourceKey": "1592aca3d0a011532b3da284"}, {"id": "STRATEGY-DOC-B412", "chapter": "ST05", "kind": "tablecell", "text": "起始时间、市场、证券池与期限", "sourceLine": 246, "sourceKey": "f6a8b7327b5b80c5ae40d79d"}, {"id": "STRATEGY-DOC-B413", "chapter": "ST05", "kind": "tablecell", "text": "明确的研究范围及名义、实际终点", "sourceLine": 246, "sourceKey": "e96078311489735fe88e1714"}, {"id": "STRATEGY-DOC-B414", "chapter": "ST05", "kind": "tablecell", "text": "2 选择策略", "sourceLine": 247, "sourceKey": "4a49698a32f7c66ac283ed0e"}, {"id": "STRATEGY-DOC-B415", "chapter": "ST05", "kind": "tablecell", "text": "一个或多个完整策略及其版本", "sourceLine": 247, "sourceKey": "43c90e82ca56fe9af7dea209"}, {"id": "STRATEGY-DOC-B416", "chapter": "ST05", "kind": "tablecell", "text": "需要预检的组合，各自使用独立本金", "sourceLine": 247, "sourceKey": "2dbabe861947d230ecfd28f8"}, {"id": "STRATEGY-DOC-B417", "chapter": "ST05", "kind": "tablecell", "text": "3 预览组合", "sourceLine": 248, "sourceKey": "3caac2addeff36bdb3f0acd5"}, {"id": "STRATEGY-DOC-B418", "chapter": "ST05", "kind": "tablecell", "text": "候选、入围原因、目标权重和现金余量", "sourceLine": 248, "sourceKey": "6440c4dea23bf54277f933e6"}, {"id": "STRATEGY-DOC-B419", "chapter": "ST05", "kind": "tablecell", "text": "对策略计划的理解，尚无实际成交", "sourceLine": 248, "sourceKey": "20c64136f4460a3a9a267491"}, {"id": "STRATEGY-DOC-B420", "chapter": "ST05", "kind": "tablecell", "text": "4 确认创建", "sourceLine": 249, "sourceKey": "79e54773e9898800fab21013"}, {"id": "STRATEGY-DOC-B421", "chapter": "ST05", "kind": "tablecell", "text": "版本、资金、费用、数据与执行假设", "sourceLine": 249, "sourceKey": "19413e53684317fcce0a62a2"}, {"id": "STRATEGY-DOC-B422", "chapter": "ST05", "kind": "tablecell", "text": "一份条件锁定、尚未开始的实验", "sourceLine": 249, "sourceKey": "8c3d31c8d6c559e62ce2de14"}, {"id": "STRATEGY-DOC-B423", "chapter": "ST05", "kind": "paragraph", "text": "用户先选择策略，再核对资金、费用与执行条件。上一步输入保留，缺少方法时可以在第二步就地组装；保存后追加准确的新版本并重新预检，取消则原样返回。", "sourceLine": 251, "sourceKey": "d354b8b1bc882ed4a2e9d571"}, {"id": "STRATEGY-DOC-B424", "chapter": "ST05", "kind": "paragraph", "text": "下面三幅画面覆盖四个步骤：前两幅展示时间与策略选择，第三幅集中展示组合预览及最终确认。预览先呈现计划，确认动作才创建运行身份。", "sourceLine": 255, "sourceKey": "56a75eda3d7e78d8b235adc2"}, {"id": "STRATEGY-DOC-B425", "chapter": "ST05", "kind": "paragraph", "text": "候选名单与目标权重来自起点以前可知的数据，表达策略希望如何配置。此时实际持仓为0、现金为100%，页面把“目标”和“实际”分列。多一组字段能够让用户看清计划与事实的距离；没有候选也可能是有效结果，应说明原因并保留现金组合。", "sourceLine": 265, "sourceKey": "8e245a001d9623d6eef71663"}, {"id": "STRATEGY-DOC-B426", "chapter": "ST05", "kind": "paragraph", "text": "时间和执行条件同样需要明确。研究期限显示名义终点与实际完整交易日，数据不足时让用户等待或明确选择部分区间；信号触发与实际成交分开，费用未知不能显示为免费。确认失败留在本步并保留输入，重试也只产生同一个实验。完整算法和字段约定如下。", "sourceLine": 267, "sourceKey": "c71573144f4126225cea47ef"}, {"id": "STRATEGY-DOC-B427", "chapter": "ST05", "kind": "paragraph", "text": "| 步骤/元素 | 字段与规则 | 用户可观察结果 | | --- | --- | --- | | WIZ01 设置起点 | 绝对时间、业务时区、市场/证券池、历史区间；期限沿用1周、1个月、3个月、半年、1年 | 一周为7自然日，其余为1/3/6/12日历月，月末无同日取目标月末；终点取目标之前最后完整交易日，显示名义/实际终点和交易日数；目标超出数据末端时等待补齐，或明确选择部分区间，不静默缩短 | | WIZ02 选择策略 | 完整策略身份与版本、三包版本、数据适配、可运行说明 | 多选不是共享本金；不可用原因就近可查；查看与选择分开 | | WIZ03 就地组装 | 保存成功返回步骤2追加准确新版本；重新预检 | 取消不变；保存失败留表单；已有选择与查询仍在 | | WIZ04 预览组合 | 候选清单、入围依据、目标权重、现金余量、数据截止与预热覆盖 | 目标/实际分列；空候选、数据缺失与策略失败用不同说明 | | WIZ05 独立资金 | 每个组合本金、币种、费用、滑点及整股/分股约束 | 示例10万元仅为样本，不成为默认值；费用未知不能显示免费 | | WIZ06 执行约定 | 信号截止、最早下一可交易开盘执行、停牌/涨跌停/成交不足、退出与再平衡冲突规则 | 触发不等于成交；不从日线假定精确盘中撮合 | | WIZ07 锁定确认 | 实验名、T0、区间、各版本与参数、数据快照/修订、费用和执行口径 | 一次确认产生一个运行；成功进待开始，失败回本步并保留输入 | | WIZ08 历史可知 | T0只能用已完整结束的日/周及当时已发布财务信息 | 盘中T0不能用当天收盘；未结束周线不能当完整周；缺必需数据明确阻断 |", "sourceLine": 272, "sourceKey": "6b6f45bd601b5cbc5c21ac88"}, {"id": "STRATEGY-DOC-B428", "chapter": "ST06", "kind": "paragraph", "text": "进入工作台后，用户主要回答“这个组合今天发生了什么”。实验名、策略版本和当前组合先确定对象，摘要呈现净资产、累计收益、最大回撤与仓位，日期再限定这些信息属于哪一天。只有这些上下文一致，图表和原因才能互相解释。", "sourceLine": 289, "sourceKey": "c2e8f677b3ce5e7ea31f2639"}, {"id": "STRATEGY-DOC-B429", "chapter": "ST06", "kind": "paragraph", "text": "净值曲线用于理解组合变化，切换到标的K线后，成交标记说明具体买卖位置。相邻的“组合详情”在概览、调仓记录和统计指标之间切换，始终属于当前组合与查看日。长原因自然换行，阈值、价格和单位保留完整，用户可以沿着规则核对当时的数据。", "sourceLine": 291, "sourceKey": "3d5a2461c5fd96775ab1c770"}, {"id": "STRATEGY-DOC-B430", "chapter": "ST06", "kind": "tablecell", "text": "用户动作", "sourceLine": 297, "sourceKey": "15c2fd5ae7c7f51dbbc5c636"}, {"id": "STRATEGY-DOC-B431", "chapter": "ST06", "kind": "tablecell", "text": "画面怎样响应", "sourceLine": 297, "sourceKey": "9cef9d53ac3aad6761cb2243"}, {"id": "STRATEGY-DOC-B432", "chapter": "ST06", "kind": "tablecell", "text": "保持的上下文", "sourceLine": 297, "sourceKey": "2dcbe08ae0d4f08e73af92a0"}, {"id": "STRATEGY-DOC-B433", "chapter": "ST06", "kind": "tablecell", "text": "选择另一个组合", "sourceLine": 299, "sourceKey": "a4c5f6a68a06272aa09213ff"}, {"id": "STRATEGY-DOC-B434", "chapter": "ST06", "kind": "tablecell", "text": "图、摘要、持仓与原因切到该组合", "sourceLine": 299, "sourceKey": "d79b466d61dbadd8dd5062cf"}, {"id": "STRATEGY-DOC-B435", "chapter": "ST06", "kind": "tablecell", "text": "查看日保持不变，落后组合标明真实完成日", "sourceLine": 299, "sourceKey": "68b6899d9d37b80fb6e57de3"}, {"id": "STRATEGY-DOC-B436", "chapter": "ST06", "kind": "tablecell", "text": "在净值与K线间切换", "sourceLine": 300, "sourceKey": "1bf1a4cc979a785931fbe119"}, {"id": "STRATEGY-DOC-B437", "chapter": "ST06", "kind": "tablecell", "text": "改变图表视角，恢复该模式的视野", "sourceLine": 300, "sourceKey": "56bd97fb6b5487729803b4c4"}, {"id": "STRATEGY-DOC-B438", "chapter": "ST06", "kind": "tablecell", "text": "不推进日期，不改变实验条件", "sourceLine": 300, "sourceKey": "2dfa6612e8fe8ed9a15e0766"}, {"id": "STRATEGY-DOC-B439", "chapter": "ST06", "kind": "tablecell", "text": "查看一次调仓或成交", "sourceLine": 301, "sourceKey": "1f3cad78953a2afae1b796f4"}, {"id": "STRATEGY-DOC-B440", "chapter": "ST06", "kind": "tablecell", "text": "显示计划、执行结果及对应原因", "sourceLine": 301, "sourceKey": "4f98760e800d64951265cb24"}, {"id": "STRATEGY-DOC-B441", "chapter": "ST06", "kind": "tablecell", "text": "意图、计划与成交分别辨认", "sourceLine": 301, "sourceKey": "1927e1d0c20aa4fe33c368e2"}, {"id": "STRATEGY-DOC-B442", "chapter": "ST06", "kind": "tablecell", "text": "打开锁定配置与包说明", "sourceLine": 302, "sourceKey": "247dc6277ca86c7ddd813421"}, {"id": "STRATEGY-DOC-B443", "chapter": "ST06", "kind": "tablecell", "text": "在说明层阅读原版本", "sourceLine": 302, "sourceKey": "1483f1437001f826be97297d"}, {"id": "STRATEGY-DOC-B444", "chapter": "ST06", "kind": "tablecell", "text": "主图、查看日与已展开边界保持不变", "sourceLine": 302, "sourceKey": "f125914b2e509f59fe4d336d"}, {"id": "STRATEGY-DOC-B445", "chapter": "ST06", "kind": "paragraph", "text": "图表旁常驻解释可以减少反复打开详情的动作，同时占用横向空间。工作台将低频配置收进说明层，允许页面纵向滚动，优先保留正常字号和主图净高。播放、单步、速度和回看在图下使用稳定动作槽；组合数量增加时，通过当前项与“更多组合”选择，不继续挤压主图。", "sourceLine": 304, "sourceKey": "8f053f5d7e8090de7812eea3"}, {"id": "STRATEGY-DOC-B446", "chapter": "ST06", "kind": "paragraph", "text": "“满足条件”只能表达结论，不能帮助研究者复查。说明区应将规则阈值与当时观测值放在一起，例如市值和成交额是否达标，价格相对均线的位置如何。重要价格直接可读，金额可以按万、亿缩写，完整值通过聚焦、详情或复制取得。下面保留原因例文与各观察元素的精确约定。", "sourceLine": 310, "sourceKey": "424f1df365a49af7540cee9e"}, {"id": "STRATEGY-DOC-B447", "chapter": "ST06", "kind": "paragraph", "text": "| 分组 | 规则 | | --- | --- | | OBS01 身份 | 实验/完整策略/版本同时可追溯 | | OBS02 摘要 | 统一到当前查看日与当前组合；未知用“—” | | OBS03 日期 | 显示“正在查看”“行情已展开至”，回看时另保留已看后续提示 | | OBS04 图表 | 净值与K线共享舞台；切换恢复对应视野 | | OBS05 成交 | 买卖文字/形状与颜色并用；意图、计划和成交分别展示 | | OBS06 检查区 | 长原因自然换行；展开详情时主图不换容器、不改变已展开边界 | | OBS07 回放 | 播放/暂停同槽；下一日永远表示交易日；不在输入法组合输入时触发快捷键 | | OBS08 配置 | 只读锁定值，修改只能“基于此配置新建实验” | 规则原因的完整例文。 市值¥2,140亿（大于¥200亿）；日成交额¥4,280万（大于¥2,000万）；前周EMA20 ¥111.80，本周¥112.40；收盘¥113.10，较EMA20高0.62%，处于±2%范围。阈值、价格、单位与数据截止需一起可达，不能因排版缩短成“满足条件”。 | 可读性 | 约束 | | --- | --- | | 数值 | 价格保留2位小数，重要价格直接可读；金额按万/亿缩写，完整值可通过聚焦、详情、复制/导出取得 | | 空间 | 说明正文14/20；长规则候选使用14/22，不改变共享按钮行高；外层可纵向滚动，不压缩主图 | | 分工 | 480px 包详情层用于阅读；320px 观察检查区用于当日只读证据 |", "sourceLine": 315, "sourceKey": "46cc5776a213032497761bf7"}, {"id": "STRATEGY-DOC-B448", "chapter": "ST07", "kind": "paragraph", "text": "推进会揭示新行情与执行证据，回看只改变当前阅读位置，已经看过的后续则成为研究记录的一部分。三者分别表达，用户才能复查早期判断，并知道这次复查受到哪些后来信息的影响。", "sourceLine": 340, "sourceKey": "cf38e17bfd76a3b9c340c157"}, {"id": "STRATEGY-DOC-B449", "chapter": "ST07", "kind": "paragraph", "text": "例如，已经看到6月28日，再回到6月14日，图和当日持仓回到起点，但“已看后续至6月28日”继续保留。这接受了无法恢复首次盲看状态的限制，使后续研究有真实的信息背景。“返回最新”只回到已经展开的位置，不产生新的运行进度。", "sourceLine": 342, "sourceKey": "271964e5290399b3069e2d40"}, {"id": "STRATEGY-DOC-B450", "chapter": "ST07", "kind": "paragraph", "text": "起点先展示目标配置与实际现金。点击“下一交易日”后，行情、组合执行、估值与日期一起完成，新K线必须在主图中可见。有成交才增加成交标记和实际持仓，没有成交则只揭示当日行情；不能只改日期标签。", "sourceLine": 346, "sourceKey": "dc2bfb9bfda5f1c01a7e5513"}, {"id": "STRATEGY-DOC-B451", "chapter": "ST07", "kind": "paragraph", "text": "播放按交易日依次揭示，速度控制日与日之间的观看节奏。用户可以暂停，手动回看时也暂停自动播放；取消后停止排队的画面，不能再补播。指定展开到某日之前，先说明将揭示的范围和已看记录的含义，失败时保留最后完整成功的一天。", "sourceLine": 358, "sourceKey": "36f036f11ffa8dee0f3e1a84"}, {"id": "STRATEGY-DOC-B452", "chapter": "ST07", "kind": "paragraph", "text": "图表只有在用户处于跟随位置时才跟随新一天。回看、缩放或切换周期不能强行把视野拉回最新，也不能扩大可见数据边界。日期提示、摘要、周线与价格轴使用同一信息范围；独立时间变量和各动作的精确规则列在下方，供实现核对。", "sourceLine": 360, "sourceKey": "6139be2bb649d0e9e57c0f92"}, {"id": "STRATEGY-DOC-B453", "chapter": "ST07", "kind": "paragraph", "text": "| 动作/元素 | 日期与信息变化 | 视野/中断 | | --- | --- | --- | | TIME01 进入T0 | 查看=T0；实际0、现金100%；候选来自T0前可知数据 | 可显示预热历史；T0以后不在图、轴、提示、列表或后台响应中泄露 | | TIME02 下一日 | 行情、组合执行和估值完成后原子提交；策略意图按约定成交 | 用户在右边缘时跟随新bar；手动回看时暂停自动播放；不能只改日期不露新bar | | TIME03 播放/速度 | 逐日提交，不跨过未完成日；速度0.5×/1×/2×/4×为本次控件建议 | 可立即暂停；停止排队帧，不重复成交；失焦或输入时暂停 | | TIME04 指定截止 | 先说明即将揭示的目标日与不可撤销的“已看”记录 | 取消不推进；执行中保留最后完整日；可暂停于已完成日 | | TIME05 回看 | 仅改变查看日；所有当日摘要/持仓/事件随之投影 | 保留行情/执行截止和已看后续；不显示查看日之后的价格提示 | | TIME06 返回最新 | 查看日回到当前可用最新已完成日，不新增行情 | 图表定位该日；记住各图模式范围 | | TIME07 组合/周期/侧栏/缩放 | 不改变阶段与任何截止 | 图范围/轴/提示均受可见截止限制；周线仅由允许数据形成；显示未完成周时明确标“未完成”，不得用于默认周线信号 | | TIME08 失败/重试 | 停最后完整提交日，失败组展示真实已完成日；重试不重复写入 | 旧图保留，错误槽显示恢复入口；不能靠改标签冒充成功 | 实现时分别保存：查看日V、行情已展开截止M、每组执行截止Ei、结果截止R、已看后续记录。它们不是一个日期变量。结果/比较不得超过所需组的有效数据交集；打开旧运行、复制或派生时保留已看来源。后续安全验收必须检查Tooltip、列表、摘要、缩放、周线、传输内容和导出。", "sourceLine": 367, "sourceKey": "a15bd20916249851d19b9c19"}, {"id": "STRATEGY-DOC-B454", "chapter": "ST08", "kind": "paragraph", "text": "阶段结果帮助用户理解“这段运行表现怎样、结果由什么形成”。页面先交代统计区间与截止日期，再呈现净值、风险、盈亏与费用，随后通过贡献和调仓事件展开原因。所有数字共享明确范围，用户不会把不同阶段的值当成同一个结论。", "sourceLine": 386, "sourceKey": "c282d9da85aa7df4594b105e"}, {"id": "STRATEGY-DOC-B455", "chapter": "ST08", "kind": "paragraph", "text": "净值、回撤和仓位共用图表区域。切换视角节省空间，但不能同时对照三幅图，因此区间和截止说明保持稳定。贡献说明收益来自哪些标的或部分，事件表说明策略做过哪些动作，两者把整体判断接到具体证据。", "sourceLine": 388, "sourceKey": "66a5cdb637133bddc4600711"}, {"id": "STRATEGY-DOC-B456", "chapter": "ST08", "kind": "tablecell", "text": "步骤", "sourceLine": 394, "sourceKey": "e16265697154462e5d68fbc6"}, {"id": "STRATEGY-DOC-B457", "chapter": "ST08", "kind": "tablecell", "text": "用户动作", "sourceLine": 394, "sourceKey": "15c2fd5ae7c7f51dbbc5c636"}, {"id": "STRATEGY-DOC-B458", "chapter": "ST08", "kind": "tablecell", "text": "可见结果", "sourceLine": 394, "sourceKey": "06525c84c57f1bd5275b8f18"}, {"id": "STRATEGY-DOC-B459", "chapter": "ST08", "kind": "tablecell", "text": "阅读结果", "sourceLine": 396, "sourceKey": "c9ad50d1e5e2d9f56ff47c22"}, {"id": "STRATEGY-DOC-B460", "chapter": "ST08", "kind": "tablecell", "text": "选择区间并查看贡献、调仓", "sourceLine": 396, "sourceKey": "00363ea91a301c2cce93fa67"}, {"id": "STRATEGY-DOC-B461", "chapter": "ST08", "kind": "tablecell", "text": "图与统计使用同一截止", "sourceLine": 396, "sourceKey": "2856f7920a075ef04d6cf5ce"}, {"id": "STRATEGY-DOC-B462", "chapter": "ST08", "kind": "tablecell", "text": "追查事件", "sourceLine": 397, "sourceKey": "28fd8b0ef9060d86a5d249fd"}, {"id": "STRATEGY-DOC-B463", "chapter": "ST08", "kind": "tablecell", "text": "点击一条事件", "sourceLine": 397, "sourceKey": "815655a2dd974df99a523473"}, {"id": "STRATEGY-DOC-B464", "chapter": "ST08", "kind": "tablecell", "text": "进入事件日的观察画面，主图、持仓与原因对应当天", "sourceLine": 397, "sourceKey": "1964a0a14bac8073bfbb89ec"}, {"id": "STRATEGY-DOC-B465", "chapter": "ST08", "kind": "tablecell", "text": "关闭详情", "sourceLine": 398, "sourceKey": "98ed4c9ee1430e8bccaa959f"}, {"id": "STRATEGY-DOC-B466", "chapter": "ST08", "kind": "tablecell", "text": "关闭事件说明层", "sourceLine": 398, "sourceKey": "455973240838bcba6ed0878a"}, {"id": "STRATEGY-DOC-B467", "chapter": "ST08", "kind": "tablecell", "text": "仍停在事件日，继续检查当日证据", "sourceLine": 398, "sourceKey": "f091b9e94d3e379c21c70ec8"}, {"id": "STRATEGY-DOC-B468", "chapter": "ST08", "kind": "tablecell", "text": "回到结果", "sourceLine": 399, "sourceKey": "b7936c273532adb6f308b7ea"}, {"id": "STRATEGY-DOC-B469", "chapter": "ST08", "kind": "tablecell", "text": "点击“返回阶段结果”", "sourceLine": 399, "sourceKey": "8622f7ce7a48a9813667c245"}, {"id": "STRATEGY-DOC-B470", "chapter": "ST08", "kind": "tablecell", "text": "恢复原区间、筛选、滚动与入口焦点", "sourceLine": 399, "sourceKey": "1689f4b8fec8bbc14932dc97"}, {"id": "STRATEGY-DOC-B471", "chapter": "ST08", "kind": "paragraph", "text": "关闭详情和返回结果分别承担不同任务，需要清楚的动作名称。两条返回路径分别保留各自的位置，让事件调查和结果阅读都可以连续进行。结果页保留回放工具的位置，但推进和速度不可用，提示返回观察后再推进；阅读结果本身不继续运行。", "sourceLine": 401, "sourceKey": "70773ca70ff303fcabfba897"}, {"id": "STRATEGY-DOC-B472", "chapter": "ST08", "kind": "paragraph", "text": "无平仓交易时，胜率不可计算；没有有效基准时，不给出超额收益。缺失估值不能算成零，贡献图从真实零线展开，真零不画假柱。部分区间持续说明实际覆盖，到期未执行计划保留原状态与原因，不能为了结果完整而补成成交。", "sourceLine": 405, "sourceKey": "4d1f8c867fd27fe61359e0bd"}, {"id": "STRATEGY-DOC-B473", "chapter": "ST08", "kind": "paragraph", "text": "| 分组 | 规则 | | --- | --- | | RES01 截止 | 统计、图、账本、事件统一到结果截止 R | | RES02 口径 | 本金/净资产/现金/市值/已实现/未实现/费用口径各自说明，收益率分母可查；估值缺失不能当0 | | RES03 无交易 | 无平仓交易时胜率“不可计算”，没有有效基准时不算超额收益 | | RES04 贡献 | 正负从真实零线展开，缺估值断开，真零不画假柱；贡献负柱用 #EF7F89，普通亏损数字用 #FF8592 | | RES05 事件往返 | 事件跳转记录来源区间/过滤/滚动/焦点/R；观察上下文另存；返回恢复来源快照 | | RES06 导出 | 沿用同一截止、组合、过滤和精度，并带版本/费用/数据质量说明；静态图不冒充已实现导出 | | RES07 回放槽 | 结果和比较保留回放槽，推进和速度禁用，显示“返回观察后推进”；切换视图不推进 | | RES08 到期/覆盖 | 到期未执行计划保留原状态和原因，不回填成交；部分区间结果持续标明实际覆盖 |", "sourceLine": 410, "sourceKey": "411d81ab06e20df301a40e2d"}, {"id": "STRATEGY-DOC-B474", "chapter": "ST09", "kind": "paragraph", "text": "组合比较帮助用户判断方法差异，首先需要回答“这些结果是否在可比条件下形成”。顶部先给出所选组合的共同有效区间，各组合使用独立本金账本，收益计算口径一致，资金、费用与执行差异并列说明。", "sourceLine": 427, "sourceKey": "4298da4e8798d649e7435d28"}, {"id": "STRATEGY-DOC-B475", "chapter": "ST09", "kind": "paragraph", "text": "共同区间取有效数据的交集，会舍去部分组合独有的历史，但避免把半段结果与完整期间排名。缺行情、执行落后或失败的组合仍保留身份、原因与可用范围；不满足条件的组合不参与排名。", "sourceLine": 429, "sourceKey": "ea762a6d0d97136e30a9a551"}, {"id": "STRATEGY-DOC-B476", "chapter": "ST09", "kind": "paragraph", "text": "图上最多同时高亮四条曲线，颜色、名称和线型共同辨认策略；其他组合继续保留在表中。限制同时高亮的数量，可以降低曲线互相遮挡，不限制实验创建的组合总数。图例、曲线与行选择联动，日期保持不变，盈亏颜色仍只表达正负。", "sourceLine": 435, "sourceKey": "14c66125641d831d9503e287"}, {"id": "STRATEGY-DOC-B477", "chapter": "ST09", "kind": "paragraph", "text": "需要试验不同配置时，使用“基于此配置新建实验”，在新草稿中修改条件，原运行与结果保留。新草稿携带来源和已看记录，不能被描述成未见历史的盲测。“复制该版本为新策略”则只创建库中的方法，两种动作分别说明各自产物。", "sourceLine": 439, "sourceKey": "1a64dcaf1bf30b44620227c5"}, {"id": "STRATEGY-DOC-B478", "chapter": "ST09", "kind": "paragraph", "text": "比较中的回放工具与结果页一致：先返回观察，再主动推进。这样，阅读差异、查看证据和改变实验进度分别由明确动作触发。", "sourceLine": 441, "sourceKey": "ad22a7b131ee9be4b38477a8"}, {"id": "STRATEGY-DOC-B479", "chapter": "ST09", "kind": "paragraph", "text": "| 分组 | 规则 | | --- | --- | | CMP00 回放 | 比较与结果共用只读回放槽，返回观察后才可继续推进 | | CMP01 区间 | 共同区间为所选组合的起止、行情、执行、估值有效日交集；标题显示实际交集，空交集解释原因 | | CMP02 口径 | 同一比较视图共用截止和收益计算口径，费用/本金/执行差异并列披露 | | CMP03 无效组合 | 无效组合不参与排名，未选/失败组合不从表中悄悄消失 | | CMP04 身份 | 曲线身份用蓝/紫/青/橙加名称/线型；选中行、图例与曲线联动，不重置日期 | | CMP05 派生 | “基于此配置新建实验”新建草稿并携带来源与已看记录，不伪装成未见历史的盲测；“复制该版本为新策略”只创建库对象，两者文案与结果不同 |", "sourceLine": 446, "sourceKey": "2005b7f4e6164ab6a3d8ba4e"}, {"id": "STRATEGY-DOC-B480", "chapter": "ST10", "kind": "paragraph", "text": "等待和异常会打断研究，但不应让用户失去已经确认的条件。提示要说明发生了什么、影响哪一部分，以及可以怎样继续：列表失败保留查询，包不兼容标在对应槽位，执行失败靠近日期与回放工具，其他有效内容继续可读。", "sourceLine": 461, "sourceKey": "01073dda7ce0501ed2e6a8a1"}, {"id": "STRATEGY-DOC-B481", "chapter": "ST10", "kind": "paragraph", "text": "首次进入时使用骨架保留区域尺寸；更新已有结果时，保留最后有效内容并标明正在更新。旧内容仍可阅读，也可能被误认成最新结果，因此其对象身份与有效日期必须同时保留。连续切换组合时，迟到请求不能覆盖最后一次仍有效的选择。", "sourceLine": 463, "sourceKey": "28e5904a9d1f0b6758d3d762"}, {"id": "STRATEGY-DOC-B482", "chapter": "ST10", "kind": "listitem", "text": "没有匹配方法是查询结果，可以调整或清空条件。", "sourceLine": 469, "sourceKey": "8689934d156bd589030fb02b"}, {"id": "STRATEGY-DOC-B483", "chapter": "ST10", "kind": "listitem", "text": "没有候选或信号可能是有效策略结果，保留现金组合并解释原因。", "sourceLine": 470, "sourceKey": "90ce654a6f4d7f74276fd3e4"}, {"id": "STRATEGY-DOC-B484", "chapter": "ST10", "kind": "listitem", "text": "缺少必需数据意味着不能按原条件完成评估，需要更换包、区间或明确选择可评估集合。", "sourceLine": 471, "sourceKey": "e2f084a5b1c665c81860ea41"}, {"id": "STRATEGY-DOC-B485", "chapter": "ST10", "kind": "listitem", "text": "执行或保存失败意味着本次动作没有完整完成，保留最后有效进度与输入，再提供重试。", "sourceLine": 472, "sourceKey": "361ca07a755ce675861ea4aa"}, {"id": "STRATEGY-DOC-B486", "chapter": "ST10", "kind": "paragraph", "text": "这些状态不共用一个笼统的“暂无数据”。未知值使用“—”并提供原因，实际零保留为零；正常画面无需常驻成功徽章。重试放在受影响的业务区域，不把首页专用的全局修复入口搬到策略台。", "sourceLine": 474, "sourceKey": "fe096f4b20a562804522ac8c"}, {"id": "STRATEGY-DOC-B487", "chapter": "ST10", "kind": "paragraph", "text": "重试执行不能重复成交，重试创建不能产生第二个实验；版本冲突也不能自动改用最新版。失败时保留输入、图表和最后完整日，让用户能够决定重读、另存、更换条件或取消。下面按状态列出具体恢复动作及需要保留的内容。", "sourceLine": 478, "sourceKey": "9c902ef9934ecc645ce109f8"}, {"id": "STRATEGY-DOC-B488", "chapter": "ST10", "kind": "paragraph", "text": "| 元素/状态 | 说明与动作 | 保留内容 | | --- | --- | --- | | ERR01 加载 | 正在读取/更新，提交按钮防重复；允许离开 | 输入、旧对象身份、几何与最后有效数据 | | ERR02 空库/无匹配 | 空库“新建策略”；无匹配由搜索尾部清空恢复 | 查询工具；不在空态再堆一组相同清空按钮 | | ERR03 无候选/无信号 | 显示原因与覆盖范围；允许合法现金组合 | 实际0与现金100%；不能称为引擎失败 | | ERR04 缺必需数据 | 分别披露历史可知数据、证券池和交易模型覆盖；标出包、能力、起止缺口；更换包或区间 | 原配置与输入；未知不填0、不显示成功覆盖；部分证券不可评估时，需显式选择剩余集合并永久标注覆盖偏差，不自动排除 | | ERR05 执行失败 | 停最后完整日；查看原因、重试、返回列表 | 不重复成交，不提前推进，保留图表 | | ERR06 组合落后 | 显示该组已完成日，比较使用交集或不参与 | 身份、真实数据日期，不冒充当前结果 | | ERR07 版本/归档冲突 | 说明被改变对象；重读、另存或显式沿用可用历史版本 | 未保存输入；不自动切到最新版 | | ERR08 确认/保存失败 | 留在原确认界面，显示原因并可重试/取消 | 一次提交身份、完整草稿，不制造第二个实验 | 重试是各业务局部动作，不移植首页专属“唯一修复入口”。无权限或不可用的禁用项旁说明原因；焦点落到可读说明，不能仅用灰色传达。", "sourceLine": 483, "sourceKey": "87c6d9bb26a43884153e07c3"}, {"id": "STRATEGY-DOC-B489", "chapter": "ST11", "kind": "paragraph", "text": "桌面将图表和解释并排，窄窗口则按摘要、日期、图表、回放和解释纵向排列。重排需要更多滚动，也减少图与原因同时可见的范围，但可以保留正常字号、完整说明和可触达动作。", "sourceLine": 502, "sourceKey": "956e38dea3ac02e0ac471368"}, {"id": "STRATEGY-DOC-B490", "chapter": "ST11", "kind": "paragraph", "text": "价格轴始终预留位置，重要价格不省略；长名称、长版本和原因在说明区换行。表格在自身区域横向滚动，页面不左右漂移。覆盖层在桌面从右侧打开，窄屏使用可用全宽，标题和返回入口常驻，正文独立滚动。", "sourceLine": 504, "sourceKey": "8abe05a7bfb9b9591eaca7c3"}, {"id": "STRATEGY-DOC-B491", "chapter": "ST11", "kind": "paragraph", "text": "1280px画板用于观察紧凑桌面的空间分配，390px画板展示窄屏纵向延续。两者保留同一任务顺序；打开说明层只改变这一层，关闭后仍是原对象、原查看日与原图表位置。", "sourceLine": 510, "sourceKey": "4adcaa602a43fb8f3b988ee1"}, {"id": "STRATEGY-DOC-B492", "chapter": "ST11", "kind": "paragraph", "text": "断点、图表最低净高与命中尺寸是落实上述优先级的参数。画板说明布局意图，真实设备上的触摸、软键盘和中文字形仍需在实现后独立验证，不能由缩放图稿代替。", "sourceLine": 516, "sourceKey": "776bbbec794a2c9969156ce3"}, {"id": "STRATEGY-DOC-B493", "chapter": "ST11", "kind": "paragraph", "text": "| 范围 | 布局/可达性规则 | 后续实现的检查点 | | --- | --- | --- | | ≥1024 | 主图与检查区并排，检查区320；摘要四列；主区内边距24 | 1440×900、1280×720/800，图净高≥320 | | ≤1023 | 图表在前、解释在后；摘要两列；桌面导航折叠或顶端菜单 | 1024/1023两侧，不把缩放当重排 | | ≤759 | 日期工具自然换行；菜单跟随锚点并限制屏内；图净高280 | 760/759与390×844，动作命中44px | | ≤359 | 摘要一列；长标题完整换行 | 360/359，不挤压数值 | | 长内容 | 正文14/20或规则14/22；表格金额与表头右边界一致；名称可换行 | 长中文、巨额、负数、未知、长版本名、错误三行 | 画板11是设计重排示意。真实设备触摸、软键盘、中文字形与产品断点行为属于后续实现验收，不能由缩放SVG证明。", "sourceLine": 521, "sourceKey": "52cee409b0a10911721e7964"}, {"id": "STRATEGY-DOC-B494", "chapter": "ST12", "kind": "paragraph", "text": "策略台复用全站V2.5的颜色、文字、尺寸、焦点与状态反馈。用户从首页进入后，仍能辨认按钮、选择器、标签、表格和说明层；每个控件再按研究任务声明自己的作用范围。", "sourceLine": 537, "sourceKey": "4aef35824a8af525a1e685b3"}, {"id": "STRATEGY-DOC-B495", "chapter": "ST12", "kind": "tablecell", "text": "研究需要", "sourceLine": 539, "sourceKey": "6a34d71d17d94d2695e8275d"}, {"id": "STRATEGY-DOC-B496", "chapter": "ST12", "kind": "tablecell", "text": "使用的公共组件", "sourceLine": 539, "sourceKey": "38daf5c66dd319f99ca7f001"}, {"id": "STRATEGY-DOC-B497", "chapter": "ST12", "kind": "tablecell", "text": "在策略台中的组合方式", "sourceLine": 539, "sourceKey": "e53d97acc00c4234649b7356"}, {"id": "STRATEGY-DOC-B498", "chapter": "ST12", "kind": "tablecell", "text": "找到方法与实验", "sourceLine": 541, "sourceKey": "294c8005e09af21c15ea0c96"}, {"id": "STRATEGY-DOC-B499", "chapter": "ST12", "kind": "tablecell", "text": "搜索、筛选、标签、数据表", "sourceLine": 541, "sourceKey": "5701782fdd8466f293aadcef"}, {"id": "STRATEGY-DOC-B500", "chapter": "ST12", "kind": "tablecell", "text": "工具只改变所属列表，返回恢复原条件", "sourceLine": 541, "sourceKey": "19951226916545376791c6c2"}, {"id": "STRATEGY-DOC-B501", "chapter": "ST12", "kind": "tablecell", "text": "选择方法与组合", "sourceLine": 542, "sourceKey": "34716678ad0427a2f3f10032"}, {"id": "STRATEGY-DOC-B502", "chapter": "ST12", "kind": "tablecell", "text": "选择器、浮层、分段标签", "sourceLine": 542, "sourceKey": "919f547d7c5070bd7d8bf885"}, {"id": "STRATEGY-DOC-B503", "chapter": "ST12", "kind": "tablecell", "text": "当前值常驻，阅读说明与选择分开", "sourceLine": 542, "sourceKey": "f9c1ac165d2fcdec7284ebc8"}, {"id": "STRATEGY-DOC-B504", "chapter": "ST12", "kind": "tablecell", "text": "理解当日表现", "sourceLine": 543, "sourceKey": "a858d0eb71de125de3491d17"}, {"id": "STRATEGY-DOC-B505", "chapter": "ST12", "kind": "tablecell", "text": "指标、图表、数据表、说明区", "sourceLine": 543, "sourceKey": "f1011dd6d3a71a73cd97a8bc"}, {"id": "STRATEGY-DOC-B506", "chapter": "ST12", "kind": "tablecell", "text": "共用组合身份和查看日，数值与原因相邻", "sourceLine": 543, "sourceKey": "cb668dfefef8fa1912a3776a"}, {"id": "STRATEGY-DOC-B507", "chapter": "ST12", "kind": "tablecell", "text": "推进与回看", "sourceLine": 544, "sourceKey": "e49474655205070f76eb89ee"}, {"id": "STRATEGY-DOC-B508", "chapter": "ST12", "kind": "tablecell", "text": "图标按钮、提示、速度选择器", "sourceLine": 544, "sourceKey": "9f1b0bcf804abeb4fff918c3"}, {"id": "STRATEGY-DOC-B509", "chapter": "ST12", "kind": "tablecell", "text": "动作槽稳定，播放与暂停共用位置", "sourceLine": 544, "sourceKey": "df48e324692e7ad15a3acd43"}, {"id": "STRATEGY-DOC-B510", "chapter": "ST12", "kind": "tablecell", "text": "处理等待与失败", "sourceLine": 545, "sourceKey": "534581955c2ef78c259a23a4"}, {"id": "STRATEGY-DOC-B511", "chapter": "ST12", "kind": "tablecell", "text": "状态提示、空状态、重试动作", "sourceLine": 545, "sourceKey": "5db850710e8273a159dbaba4"}, {"id": "STRATEGY-DOC-B512", "chapter": "ST12", "kind": "tablecell", "text": "靠近受影响区域，说明有效范围与恢复结果", "sourceLine": 545, "sourceKey": "3537eb1abaf11203df97bb35"}, {"id": "STRATEGY-DOC-B513", "chapter": "ST12", "kind": "paragraph", "text": "默认、悬停和聚焦帮助用户识别操作边界，按下和加载说明动作正在处理，禁用说明当前为何不可用。空状态属于业务容器，错误状态说明原因和恢复方式；不能要求每一个按钮都拥有“空内容”状态，也不能用按钮文案假装操作已经完成。", "sourceLine": 551, "sourceKey": "696ce32c468304db87a32667"}, {"id": "STRATEGY-DOC-B514", "chapter": "ST12", "kind": "paragraph", "text": "焦点清楚可见，关闭覆盖层返回触发器。输入框和中文输入法正在组词时，不触发全局播放快捷键。颜色配合文字与形状，灰色本身不足以解释禁用，红绿色本身也不足以区分买卖。", "sourceLine": 553, "sourceKey": "e02b5d8d6593455544625de4"}, {"id": "STRATEGY-DOC-B515", "chapter": "ST12", "kind": "paragraph", "text": "轻量过渡用来说明浮层出现、悬停和数据替换，不能推动布局。新行情完成提交后，才呈现新bar或成交标记；播放速度控制交易日间隔，与界面淡入时间分别定义。减少动态效果时直接切换，仍保留逐步状态和可见焦点。", "sourceLine": 557, "sourceKey": "083939c987d78ae1996d4ad1"}, {"id": "STRATEGY-DOC-B516", "chapter": "ST12", "kind": "paragraph", "text": "公共尺寸保持跨页面密度。长说明可采用更舒展的行高，窄屏扩大命中区，通过换行与重排容纳内容，而不改变共享按钮的文字排布。下方依次列出组件映射、适用状态、键盘行为与精确参数；公共既定值和本方案的页面分配分别标明来源。", "sourceLine": 559, "sourceKey": "0046d7de699f51f9aa1b29cd"}, {"id": "STRATEGY-DOC-B517", "chapter": "ST12", "kind": "paragraph", "text": "#### 控件映射 | 策略台元素 | 复用控件 | 特有语义 | | --- | --- | --- | | 播放/暂停、下一日、更多 | IconButton / Tooltip | 同槽状态转换；中文可读名称；暂停不回退已展开日 | | 库/实验、图模式、右侧详情 | SegmentedTabs | 各有独立作用域；箭头移动、Enter确认；不推进日期 | | 组合/版本/速度 | Select / Popover | 当前值常驻；选项全文与禁用原因；关闭回焦点 | | 搜索/筛选/标签 | InlineFilter / FilterPopover / Token | 只过滤所属列表；筛选草稿“应用”后生效，取消不变 | | 摘要/列表/详情 | Metric / DataTable / Drawer | 身份与截止贯穿；金额右齐；480包层与320观察栏分工 | | 错误/空数据 | StatusBadge / EmptyState / RetryAction | 只在需要时出现；真零、未知与无数据分别表达 | #### 八态与动效 | 公共状态 | 视觉/行为 | | --- | --- | | default | 普通边框、可读文字、主动作使用蓝色 | | hover | 120ms 反馈；不移动布局 | | focus | 2px 焦点环；键盘可见，关闭层回到触发器 | | pressed | 明确按下反馈；不把已提交误画成完成 | | disabled | 附近说明原因；不只用灰色传达 | | loading | 保留原区域尺寸，防重复提交；旧内容可继续读 | | empty | 由容器表达；按钮和图标动作没有“空内容”态 | | error | 贴近受影响区域，给出恢复动作和保留内容 | 默认、悬停、聚焦、按下、禁用、加载、空、错误沿用公共合同，并按控件类型采用适用状态。图标动作无“空内容”态，业务空态由容器表达。按钮不得用占位文案假装已完成操作。浮层使用160ms透明度加4px位移，数据替换150ms；减少动态效果时直接切换，仍保留逐步状态和可见焦点。 #### 回放动效、键盘与输入 策略推进的候选动效为：新bar/成交标记在原子提交后淡入150ms，不横扫整图；跟随模式才移动视野，回看模式不强行拉到右边。播放速度为0.5×/1×/2×/4×，只控制交易日间隔，不等同150ms界面动画。连续点击串行处理，不能补播已取消的过渡。 覆盖层 Esc 关闭一层，焦点返回触发器，未保存编辑先处理草稿。输入框和中文输入法组合输入期间禁止全局播放快捷键。 #### 颜色、排版与尺寸 | 参数组 | 数值 | | --- | --- | | 背景/层级 | 背景 #0B1019；面板 #111A26；抬高 #162233；边框 #283448 | | 文字 | 主文字 #E6EDF7；次文字 #A8B6CB；弱文字 #71829B；动作 #6CA8FF；焦点 #A9C8FF | | 语义色 | 正 #53D7A0；负 #FF8592；警告 #FFC66D；贡献负柱例外 #EF7F89 | | 字体 | 标题24/32；区块18/24；正文与金额14/20；辅助12/16；指标28/34 | | 间距与圆角 | 间距4/8/12/16/24/32；圆角6/8 | | 控件尺寸 | 操作区控件36px高；视觉图标16px；焦点环2px；按钮文字14px；窄屏命中44px；标签视觉24px、命中36px；表头40px、数据行48px | | 动效 | hover 120ms；Tooltip 延迟300ms；浮层160ms透明度+4px位移；数据替换150ms；候选 bar/marker 淡入150ms | #### 参数来源与适用性质 默认参数与八态的唯一公共来源为全站V2.5控件手册。以上颜色、排版和控件尺寸为公共既定参数，具体页面分配与策略推进候选动效属于本次方案；速度0.5×/1×/2×/4×为本次控件建议。", "sourceLine": 564, "sourceKey": "7aa8d37ab32b1c7f4c3ebeb6"}, {"id": "STRATEGY-DOC-B518", "chapter": "ST16", "kind": "paragraph", "text": "实现首先完成一条最小而真实的研究路径：确认起点，进入尚未成交的工作台，推进一个交易日，在真实主图中看见新行情和适用成交，再回看并返回最新。日期标签变化或静态分镜切换，都不能证明这条路径已经成立。", "sourceLine": 618, "sourceKey": "15bac272352712cafd09450e"}, {"id": "STRATEGY-DOC-B519", "chapter": "ST16", "kind": "paragraph", "text": "随后接入策略组装、完整创建、结果与比较，并检查各次往返。保存后返回列表、重新打开和刷新，读取的仍应是同一版本、条件、进度和已看记录。功能、时间安全、持久化与视觉分别验证，使某一项通过不能掩盖另一项缺口。", "sourceLine": 620, "sourceKey": "f01bd4233277f92abfc9b390"}, {"id": "STRATEGY-DOC-B520", "chapter": "ST16", "kind": "tablecell", "text": "检查层面", "sourceLine": 622, "sourceKey": "4fa5147d5fbda2948ef8001f"}, {"id": "STRATEGY-DOC-B521", "chapter": "ST16", "kind": "tablecell", "text": "需要观察到的结果", "sourceLine": 622, "sourceKey": "a4177ba2b9c0a8e375b6a35f"}, {"id": "STRATEGY-DOC-B522", "chapter": "ST16", "kind": "tablecell", "text": "完整任务", "sourceLine": 624, "sourceKey": "104d7fb9217c44ece2128f12"}, {"id": "STRATEGY-DOC-B523", "chapter": "ST16", "kind": "tablecell", "text": "选方法、创建、推进、查原因、看结果、返回来源可以连续完成", "sourceLine": 624, "sourceKey": "8c27489b1f986f031d910c9b"}, {"id": "STRATEGY-DOC-B524", "chapter": "ST16", "kind": "tablecell", "text": "信息范围", "sourceLine": 625, "sourceKey": "bdadb46ecbf6cc154520627a"}, {"id": "STRATEGY-DOC-B525", "chapter": "ST16", "kind": "tablecell", "text": "图、轴、提示、摘要、列表和结果均不越过允许截止，已看记录不会被回看或派生抹除", "sourceLine": 625, "sourceKey": "49ddb8f089a1a500e20ff09d"}, {"id": "STRATEGY-DOC-B526", "chapter": "ST16", "kind": "tablecell", "text": "保存与恢复", "sourceLine": 626, "sourceKey": "8537c68e8549a89d595579ac"}, {"id": "STRATEGY-DOC-B527", "chapter": "ST16", "kind": "tablecell", "text": "在隔离数据库中保存、返回、重开和刷新后，身份与内容一致，失败不会伪报成功", "sourceLine": 626, "sourceKey": "cb6a3c68e2334097bdfbbfc4"}, {"id": "STRATEGY-DOC-B528", "chapter": "ST16", "kind": "tablecell", "text": "视觉与适配", "sourceLine": 627, "sourceKey": "4704b6353b80e4840c781505"}, {"id": "STRATEGY-DOC-B529", "chapter": "ST16", "kind": "tablecell", "text": "按匹配状态对照1440与1280桌面、390窄屏及断点两侧，检查层级、密度、长内容和动作可达性", "sourceLine": 627, "sourceKey": "a7264442b60c026ec85c1493"}, {"id": "STRATEGY-DOC-B530", "chapter": "ST16", "kind": "tablecell", "text": "可访问操作", "sourceLine": 628, "sourceKey": "ac722e1d02e991d3ed9a1d3b"}, {"id": "STRATEGY-DOC-B531", "chapter": "ST16", "kind": "tablecell", "text": "鼠标、键盘各自完成核心路径；触摸与软键盘另行记录，不以桌面模拟代替", "sourceLine": 628, "sourceKey": "7e865618fa5ae544b1fb3a29"}, {"id": "STRATEGY-DOC-B532", "chapter": "ST16", "kind": "paragraph", "text": "本方案需要重点评审紧凑列表、88px连续摘要，以及480px包说明层与320px观察区的分工。它们分别换来更多同屏方法、清楚的指标层级、完整配置与当日证据各自的阅读空间，也承担进入详情、占用高度和打开说明层的成本。", "sourceLine": 632, "sourceKey": "26fefe09beb3f98b7c157cf9"}, {"id": "STRATEGY-DOC-B533", "chapter": "ST16", "kind": "paragraph", "text": "评审可以沿实际问题判断：列表能否帮助选方法，摘要和日期是否清楚，主图是否仍足够可读，原因能否解释一次成交，查看说明后能否回到原任务。这些判断通过后，再按元素覆盖矩阵落实实现。", "sourceLine": 634, "sourceKey": "9e30f83c8f390d7d84fc3d41"}, {"id": "STRATEGY-DOC-B534", "chapter": "ST16", "kind": "paragraph", "text": "草稿、运行进度和视图位置分别保存。下表按每一次往返明确应保留什么；它服务于完整流程，而不是新增页面或控件。", "sourceLine": 638, "sourceKey": "0684f6632abc7bcdad41df6f"}, {"id": "STRATEGY-DOC-B535", "chapter": "ST16", "kind": "paragraph", "text": "| 路径/元素 | 需保存的上下文 | 返回或重开 | | --- | --- | --- | | FLOW01 库→策略→包 | 库类型、查询、排序、页码、滚动、焦点、详情版本 | 逐层返回；只读不修改 | | FLOW02 实验草稿→组装 | 草稿身份、步骤、各输入、已选版本、原查询 | 保存追加；取消不变；失败留组装 | | FLOW03 确认→运行 | 配置与版本快照、资金、执行约定、数据版本、幂等提交身份 | 一次运行；成功后未开始；失败无半成品 | | FLOW04 观察→配置→包 | 组合、图模式、日期、视野、展开的检查区 | 返回同对象同日、暂停 | | FLOW05 结果→事件→返回 | 结果截止、过滤、区间、滚动、焦点；观察投影分开存 | 关闭详情留事件日；显式返回恢复结果 | | FLOW06 比较→观察→返回 | 所选组、共同区间、图模式、表格位置 | 不把观察日期覆盖比较截止 | | FLOW07 派生 | 来源策略/实验版本与已看记录、新草稿身份 | 原运行不改；新草稿可编辑 | | FLOW08 保存→列表→刷新 | 草稿/版本/运行进度/成交估值/已看来源真实持久化 | 读取同身份同值；失败不伪报成功 | 实现先接受“确认T0→下一交易日→真实图表新bar/适用成交→回看→返回最新”的最小闭环，再扩展结果与比较。之后在隔离数据库验证保存→返回列表→重新打开→刷新→账本对账；功能正确性、时间安全、视觉对照分别验收。设计图不替代这些运行证据。", "sourceLine": 643, "sourceKey": "695d36502ce388e8fa24a416"}, {"id": "STRATEGY-DOC-B536", "chapter": "ST14", "kind": "paragraph", "text": "历史规格和后续用户确认决定策略、实验、版本、时间和观察方式的业务边界；全站V2.5决定公共视觉和控件语言。两者结合形成本方案：完整观察与页面滚动沿用已确认方向，颜色、排版和控件反馈采用当前公共标准。", "sourceLine": 662, "sourceKey": "5e4b29fa697713ae31667770"}, {"id": "STRATEGY-DOC-B537", "chapter": "ST14", "kind": "paragraph", "text": "本方案的版本号V1.0属于策略台模块，不替换历史2.x文档。新尺寸、连续摘要和页面分配属于待评审的视觉建议；历史确认不会自动扩大到这些新方案。以下资料用于追溯当前设计的依据，阅读正文无需先了解历史迭代。", "sourceLine": 664, "sourceKey": "cc696cc2a42162ad2ec73feb"}, {"id": "STRATEGY-DOC-B538", "chapter": "ST14", "kind": "paragraph", "text": "本包包含完整方案、可编辑SVG和交互分镜。分镜按钮用于浏览设计，图中的按钮用于说明预期行为；它们不构成正式业务入口，也不证明生产回放、数据库保存或导出已经实现。产品阶段需按第十五章单独验收。", "sourceLine": 668, "sourceKey": "c88a1f8dfd7feb864d1a7ed8"}, {"id": "STRATEGY-DOC-B539", "chapter": "ST14", "kind": "paragraph", "text": "历史资料、来源字节快照、需求与元素映射，以及本包的接受记录集中列在下方，便于需要实施或追溯时查阅。", "sourceLine": 670, "sourceKey": "96ac48e968e915b19f5f795d"}, {"id": "STRATEGY-DOC-B540", "chapter": "ST14", "kind": "paragraph", "text": "| 来源 | 采用内容 | 本版处理 | | --- | --- | --- | | H01/H02 9月29日规格 | 观察者、四步创建、历史可知、独立组合、回放/结果/比较 | 保留；库内入口按后续H03纠正 | | H03/H04 9月30日规格与融合契约 | 策略库、三类包、版本、管理、实验入口、返回状态 | 补入完整方案，不被后期观察截图遗漏 | | H05 稳定工作台方案 | 固定动作槽、连续空间与状态边界 | 保留意图；严格单屏预算不覆盖后续完整观察 | | H06/H09/H10 0.7 | 用户确认的完整观察与外层滚动，桌面/窄屏参考 | 保留阅读顺序；颜色/控件按V2.5适配 | | H07/H08 历史文档2.1/2.2 | 图文、时序分镜、精确规则与范围边界 | 2.2仅两个代表章，本版扩为全模块设计 | | 聊天记录 | 用户要求说人话、理由与取舍、动态过程及整页组合 | 正文叙事、展开规则、可浏览图稿；聊天摘要 | | 全站V2.5 | 色彩、文字、尺寸、八态、数值展示与焦点 | 公共唯一来源，不复制首页业务限制 | 来源原件的字节快照与哈希见历史清单，历史相对链接按原目录保存、不作为本版导航。需求与元素映射、接受记录、包说明与启动提供实施与维护入口。采用历史VDF-002表达标准，来源见标准快照。 本版新画板为可编辑SVG设计稿，全部样本数据虚构；观察、结果、比较与响应式曲线共用 source/example-data.json，净值终点、资产和最大回撤相互核对；画布尺寸不冒充真实浏览器视口。图稿/文档浏览验收与生产回测、数据库、导出、物理触摸的验收分别记录。新画稿是待用户评审方案，历史用户确认范围没有被扩写。", "sourceLine": 675, "sourceKey": "b3e44a4245042f89e9cca6db"}], "images": [{"id": "ST06", "occurrenceId": "ST06@97", "sharedImageId": "ST06", "src": "source/images/06-observe.svg", "fingerprint": "c3a19740ff5f56f607b70b6d01e03da5160d0f48d0dfd6121385f9c28b75ebe7", "chapter": "ST15", "sourceLine": 97, "alt": "观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区"}, {"id": "01-library", "occurrenceId": "01-library@133", "sharedImageId": "01-library", "src": "source/images/01-library.svg", "fingerprint": "0c56cb6b6e0ae940fc04adba81e2ad4b39fa69d403f2fc055300da0411afbec2", "chapter": "ST02", "sourceLine": 133, "alt": "策略库的默认目录、查询工具与策略行"}, {"id": "01b-package-management", "occurrenceId": "01b-package-management@145", "sharedImageId": "01b-package-management", "src": "source/images/01b-package-management.svg", "fingerprint": "66c00c066636c50a43c2f291226f252bb9aab58c585c55f8ccfaf7ee9c52d76b", "chapter": "ST02", "sourceLine": 145, "alt": "包目录管理：引用关系、个人顺序与归档影响"}, {"id": "02-compose", "occurrenceId": "02-compose@173", "sharedImageId": "02-compose", "src": "source/images/02-compose.svg", "fingerprint": "1773bae8fdbd65ab6190f318ab7eeb2863834d5d97e03bd185dcc40f2852e385", "chapter": "ST03", "sourceLine": 173, "alt": "三包组装、包说明与完整策略保存"}, {"id": "03-experiments", "occurrenceId": "03-experiments@217", "sharedImageId": "03-experiments", "src": "source/images/03-experiments.svg", "fingerprint": "00ed2256bb242b0fd0b207aef9a532cb0d0ce3f5f846287695aff305c0b0beda", "chapter": "ST04", "sourceLine": 217, "alt": "实验列表：同一行结构承接不同研究状态"}, {"id": "06-observe", "occurrenceId": "06-observe@293", "sharedImageId": "06-observe", "src": "source/images/06-observe.svg", "fingerprint": "c3a19740ff5f56f607b70b6d01e03da5160d0f48d0dfd6121385f9c28b75ebe7", "chapter": "ST06", "sourceLine": 293, "alt": "观察工作台：当前组合的图表、持仓与原因"}, {"id": "06-observe-status-detail", "occurrenceId": "06-observe-status-detail@306", "sharedImageId": "06-observe-status-detail", "src": "source/images/06-observe-status-detail.svg", "fingerprint": "ebc080427911f409cec15fba5907a99a146d7172aa52020bfce49c235a6edd53", "chapter": "ST06", "sourceLine": 306, "alt": "摘要、正在查看日期与行情展开边界的局部细节"}, {"id": "07-time-states", "occurrenceId": "07-time-states@348", "sharedImageId": "07-time-states", "src": "source/images/07-time-states.svg", "fingerprint": "7fe05817f22ca748fa8698f3ce98a703d1ffe4b61fae524292386dd586dd279e", "chapter": "ST07", "sourceLine": 348, "alt": "起点、首次推进与回看的同尺度状态关系"}, {"id": "07-time-controls-detail", "occurrenceId": "07-time-controls-detail@362", "sharedImageId": "07-time-controls-detail", "src": "source/images/07-time-controls-detail.svg", "fingerprint": "a924ce3d53c571c14de5f0cad069fad6110be764f41c956af0b07db558e2ea74", "chapter": "ST07", "sourceLine": 362, "alt": "时间说明与回放工具的局部细节"}, {"id": "08-results", "occurrenceId": "08-results@390", "sharedImageId": "08-results", "src": "source/images/08-results.svg", "fingerprint": "f050ee51e37f63ecc884a74919526df7c8e4b39abda6285931727b567960ad31", "chapter": "ST08", "sourceLine": 390, "alt": "阶段结果的阅读顺序：区间、表现、贡献与事件"}, {"id": "09-compare", "occurrenceId": "09-compare@431", "sharedImageId": "09-compare", "src": "source/images/09-compare.svg", "fingerprint": "d10aad7ff3f68141cfa5cd1cd3bc52bf8d45d8494b4f165666695d4c8aeebb32", "chapter": "ST09", "sourceLine": 431, "alt": "组合比较：共同区间、可辨认曲线与完整账本"}, {"id": "10-states", "occurrenceId": "10-states@465", "sharedImageId": "10-states", "src": "source/images/10-states.svg", "fingerprint": "35136e36a30190e7acf7a5abe3ecb9c5e04eb44160756d9c83ad1a8125dbb519", "chapter": "ST10", "sourceLine": 465, "alt": "不同研究阶段的等待、空结果、覆盖不足与失败提示"}, {"id": "11-responsive", "occurrenceId": "11-responsive@506", "sharedImageId": "11-responsive", "src": "source/images/11-responsive.svg", "fingerprint": "d7ba4e5ec969ff6cab33fe1a3fb3966f9c11207344e33d9594d54fae296a3bd6", "chapter": "ST11", "sourceLine": 506, "alt": "桌面与窄屏的重排关系"}, {"id": "11-compact", "occurrenceId": "11-compact@512", "sharedImageId": "11-compact", "src": "source/images/11-compact.svg", "fingerprint": "793ea7ceaee42c6e9935410952fe1c5d51b47d12ea4142766dd05b63f563e208", "chapter": "ST11", "sourceLine": 512, "alt": "1280px紧凑桌面的完整观察画面"}, {"id": "11-narrow", "occurrenceId": "11-narrow@514", "sharedImageId": "11-narrow", "src": "source/images/11-narrow.svg", "fingerprint": "0a165a0cc4bf96434ff19d353564867a159d08fda8916b6f832d43c006d99053", "chapter": "ST11", "sourceLine": 514, "alt": "390px窄屏的完整观察画面"}, {"id": "12-components", "occurrenceId": "12-components@547", "sharedImageId": "12-components", "src": "source/images/12-components.svg", "fingerprint": "05ad3dfa7ece5030062719f43003c6dda8e31d972324be421886fdb19112fb01", "chapter": "ST12", "sourceLine": 547, "alt": "公共视觉参数与控件状态示例"}, {"id": "04-create", "occurrenceId": "04-create@state-demo-1-1", "sharedImageId": "04-create", "src": "source/images/04-create.svg", "fingerprint": "4262056f8d7f406634cc96192221b3defffd9a49a60c30b8d56344e686d44fc4", "chapter": "ST05", "sourceLine": 257, "alt": "步骤1：确定历史起点"}, {"id": "04b-select-strategies", "occurrenceId": "04b-select-strategies@state-demo-1-2", "sharedImageId": "04b-select-strategies", "src": "source/images/04b-select-strategies.svg", "fingerprint": "a4f862e5760e05dbb7ae6718a868e513716708c22640c26b0e6eecf4aba5198a", "chapter": "ST05", "sourceLine": 257, "alt": "步骤2：选择明确版本"}, {"id": "05-confirm", "occurrenceId": "05-confirm@state-demo-1-3", "sharedImageId": "05-confirm", "src": "source/images/05-confirm.svg", "fingerprint": "4d2e18ca9da8b18d185de5a91c2ee5ee92fea232d0875664e55b4169eafd7570", "chapter": "ST05", "sourceLine": 257, "alt": "步骤3—4：预览并确认"}, {"id": "07a-t0", "occurrenceId": "07a-t0@state-demo-2-1", "sharedImageId": "07a-t0", "src": "source/images/07a-t0.svg", "fingerprint": "59d8b854c89003ab0cfc6ce4846efbb570a636a146b53e3efab98d20ebd8f86a", "chapter": "ST07", "sourceLine": 350, "alt": "起点：2024-06-14"}, {"id": "07b-first-day", "occurrenceId": "07b-first-day@state-demo-2-2", "sharedImageId": "07b-first-day", "src": "source/images/07b-first-day.svg", "fingerprint": "71f6fa26a3a65cfca6d87ec321f5a72707dd1f8f49ead4455bbd16e72609af89", "chapter": "ST07", "sourceLine": 350, "alt": "点击下一交易日：2024-06-17"}, {"id": "07c-lookback", "occurrenceId": "07c-lookback@state-demo-2-3", "sharedImageId": "07c-lookback", "src": "source/images/07c-lookback.svg", "fingerprint": "3e222976f2e04594c62ee6e2d6801692e57abaee8b6a388ed6c0d122dfb807d8", "chapter": "ST07", "sourceLine": 350, "alt": "从已展开的6月28日回看6月14日"}]}</script><script>
+(() => {
+  const modal = document.querySelector('.image-viewer-modal');
+  const modalImage = modal?.querySelector('[data-image-viewer-image]');
+  const scrollBox = modal?.querySelector('.image-viewer-scroll');
+  const closeButton = modal?.querySelector('[data-image-viewer-close]');
+  let lastTrigger = null;
+  let lastScroll = { x: 0, y: 0 };
+  let inertState = [];
+  const focusables = () => [...(modal?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') || [])].filter((node) => !node.disabled && node.offsetParent !== null);
+  const isolateBackground = () => {
+    inertState = [...document.querySelectorAll('.layout, #review-panel')].map((node) => ({ node, inert: node.inert }));
+    inertState.forEach(({ node }) => { node.inert = true; });
+  };
+  const restoreBackground = () => { inertState.forEach(({ node, inert }) => { node.inert = inert; }); inertState = []; };
+  const closeViewer = () => {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true; modal.setAttribute('aria-hidden', 'true'); document.body.classList.remove('image-viewer-open'); restoreBackground();
+    window.scrollTo({ top: lastScroll.y, left: lastScroll.x, behavior: 'auto' });
+    lastTrigger?.focus({ preventScroll: true });
+  };
+  document.querySelectorAll('[data-image-viewer="true"]').forEach((trigger) => trigger.addEventListener('click', (event) => {
+    event.preventDefault(); lastTrigger = trigger; lastScroll = { x: window.scrollX, y: window.scrollY };
+    const source = trigger.querySelector('img'); const sourceUrl = trigger.dataset.imageViewerSrc || source?.currentSrc || source?.src || trigger.href; if (!sourceUrl || !modal || !modalImage) return;
+    const alt = source?.alt || trigger.dataset.imageViewerAlt || trigger.textContent.trim() || '图稿';
+    modalImage.src = sourceUrl; modalImage.alt = alt; modal.querySelector('#image-viewer-title').textContent = `${alt} · 原尺寸 100%`;
+    isolateBackground();
+    modal.hidden = false; modal.setAttribute('aria-hidden', 'false'); document.body.classList.add('image-viewer-open');
+    scrollBox.scrollTop = 0; scrollBox.scrollLeft = 0; closeButton.focus({ preventScroll: true });
+  }));
+  closeButton?.addEventListener('click', closeViewer);
+  modal?.addEventListener('click', (event) => { if (event.target === modal) closeViewer(); });
+  document.addEventListener('keydown', (event) => {
+    if (modal?.hidden) return;
+    if (event.key === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); closeViewer(); return; }
+    if (['Home', 'End', 'PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key) && !scrollBox?.contains(document.activeElement)) { event.preventDefault(); return; }
+    if (event.key !== 'Tab') return;
+    const nodes = focusables(); if (!nodes.length) { event.preventDefault(); modal.querySelector('.image-viewer-dialog')?.focus(); return; }
+    const first = nodes[0]; const last = nodes[nodes.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }, true);
+})();
+</script><script>
+(() => {
+  const links = [...document.querySelectorAll('nav a[data-target]')];
+  const headings = links.map((link) => document.getElementById(link.dataset.target)).filter(Boolean);
+  const mark = () => {
+    let current = headings[0];
+    for (const heading of headings) if (heading.getBoundingClientRect().top <= 120) current = heading;
+    links.forEach((link) => {
+      const active = link.dataset.target === current?.id;
+      link.classList.toggle('is-current', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  document.addEventListener('scroll', mark, { passive: true }); mark();
+})();
+</script><script>
+document.querySelectorAll('.replay-demo').forEach((demo) => {
+  const frames = [...demo.querySelectorAll('.replay-frame')];
+  if (!frames.length) return;
+  const progress = demo.querySelector('[data-replay-progress]');
+  const buttons = Object.fromEntries([...demo.querySelectorAll('[data-replay-action]')].map((button) => [button.dataset.replayAction, button]));
+  const labels = frames.map((frame) => frame.querySelector('.replay-frame-label span')?.textContent || '当前步骤');
+  let index = 0;
+  let timer = null;
+  let lastPlaybackControl = buttons.play;
+  const render = () => {
+    frames.forEach((frame, frameIndex) => { frame.hidden = frameIndex !== index; });
+    progress.textContent = `第 ${index + 1} / ${frames.length} 帧 · ${labels[index]}`;
+    buttons.prev.disabled = index === 0;
+    buttons.next.disabled = index === frames.length - 1;
+    buttons.play.disabled = Boolean(timer) || index === frames.length - 1;
+    buttons.pause.disabled = !timer;
+  };
+  const stop = ({ restoreFocus = false } = {}) => { if (timer) { window.clearInterval(timer); timer = null; } render(); if (restoreFocus) { const control = lastPlaybackControl && !lastPlaybackControl.disabled ? lastPlaybackControl : buttons.play; control?.focus({ preventScroll: true }); } };
+  const move = (nextIndex) => { stop(); index = Math.max(0, Math.min(frames.length - 1, nextIndex)); render(); };
+  demo.__setReplayIndex = (nextIndex) => move(nextIndex);
+  buttons.prev.addEventListener('click', () => move(index - 1));
+  buttons.next.addEventListener('click', () => move(index + 1));
+  buttons.reset.addEventListener('click', () => move(0));
+  buttons.play.addEventListener('click', (event) => { lastPlaybackControl = event.currentTarget; if (index === frames.length - 1) return; timer = window.setInterval(() => { if (index >= frames.length - 1) stop(); else { index += 1; render(); } }, 1800); render(); });
+  buttons.pause.addEventListener('click', (event) => { lastPlaybackControl = event.currentTarget; stop(); });
+  demo.addEventListener('keydown', (event) => { if (event.key === 'ArrowRight') move(index + 1); if (event.key === 'ArrowLeft') move(index - 1); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && timer) { event.preventDefault(); stop({ restoreFocus: true }); } });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+  render();
+});
+</script><script src="review-client.js" defer></script></body></html>

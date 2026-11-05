@@ -1,0 +1,815 @@
+{
+  "version": "V1.2",
+  "frozenAt": "2026-10-23T18:16:10.724461+00:00",
+  "scope": "Static design and document reader only",
+  "capture": "Real in-app browser, explicitly set CSS viewport, natural SVG fullPage; DPR/zoom not measured",
+  "reviewHashChecks": [
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01-library.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01-library.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01b-package-management.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01b-package-management.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/02-compose.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/02-compose.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/03-experiments.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/03-experiments.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04-create.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04-create.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04b-select-strategies.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04b-select-strategies.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-preview.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-preview.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-confirm.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-confirm.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/10-states.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/10-states.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/12-components.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/12-components.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-controls-detail.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-controls-detail.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-states.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-states.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07a-t0.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07a-t0.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07b-first-day.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07b-first-day.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07c-lookback.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07c-lookback.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/08-results.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/08-results.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/09-compare.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/09-compare.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-compact.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-narrow.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-narrow.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-responsive.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-responsive.svg",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-responsive.py",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-time-results.py",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/shared-primitives.py",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/example-data.json",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw01-navigation.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw02-date-time.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw03-steps.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw04-package-slots.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw05-multi-select.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw06-summary-detail.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw07-replay.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw08-recovery.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe.png",
+      "pass": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe-status-detail.png",
+      "pass": true
+    }
+  ],
+  "exampleDataUnchanged": true,
+  "boards": [
+    {
+      "board": "01-library",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01-library.png",
+      "screenshotSha256": "12ab99521aa0254642bbdec6f384ac157297bb76bd51b0182863c4a09e67404d",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01-library.svg",
+      "svgSha256": "b30590f591ce0677f7f9d9e35a914694774dff0d49525f66de3b4afd86aa8c01",
+      "status": "PASS"
+    },
+    {
+      "board": "01b-package-management",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01b-package-management.png",
+      "screenshotSha256": "2df3ecbabd30d4306ad402f743a978cff26e0af14c533fe22819bf1334307172",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01b-package-management.svg",
+      "svgSha256": "c645fe0613080bc74ffbb0dbb43ef0b454ca9c6d4da948d55545069b95fba201",
+      "status": "PASS"
+    },
+    {
+      "board": "02-compose",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/02-compose.png",
+      "screenshotSha256": "5771c976ae1c8e04039acdde96fa5e84e9b8ebc74322aede51eda9b11f78c7ec",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/02-compose.svg",
+      "svgSha256": "7476f7527605538b0a5f613e6ea487100150a31822ff812c8a4e0ae41ec8259b",
+      "status": "PASS"
+    },
+    {
+      "board": "03-experiments",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/03-experiments.png",
+      "screenshotSha256": "f1b5054a76309413162b4054348c735c267d223c1fc9bb237011c9315ec6a3ae",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/03-experiments.svg",
+      "svgSha256": "1d9e215f84144a66b9976d31d321587806f1b0df0ebc8bcf80372fda9b104799",
+      "status": "PASS"
+    },
+    {
+      "board": "04-create",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04-create.png",
+      "screenshotSha256": "fb7361a2d17f6ecdc2d6bea737dfa2b4ac940b5dbc5531e8ea0a06343abd12b5",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04-create.svg",
+      "svgSha256": "960356270c29bade3de214c921e1cb6f1ac910f6f3cf4eaebfab5e0efb7bd720",
+      "status": "PASS"
+    },
+    {
+      "board": "04b-select-strategies",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04b-select-strategies.png",
+      "screenshotSha256": "2ebefe936d351f22b6931e58436d67eb8b11f91d19a11a3178e4a00122234df4",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04b-select-strategies.svg",
+      "svgSha256": "083c050255c032b25df8bf235b4b2bc3c3466de4e803ef152fc0d362f172ecdf",
+      "status": "PASS"
+    },
+    {
+      "board": "05-confirm",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-confirm.png",
+      "screenshotSha256": "866a3546a2c5a7512755f0dd3eed5330b7148be1d7def09f67b2b40f72efecbe",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-confirm.svg",
+      "svgSha256": "d4efa0552d8f5a1f8ba68d079243e7a74228f79d0913f5994b0e3a4fff689c4e",
+      "status": "PASS"
+    },
+    {
+      "board": "05-preview",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-preview.png",
+      "screenshotSha256": "05b471e189a32bb59ea0658467987dbe118af6e6f66fefe037b80f92103e8e2e",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-preview.svg",
+      "svgSha256": "62bfd6337e4e5114ec2381e7d05b29904e8a16b76e95e0012958d1d5e8e88ffc",
+      "status": "PASS"
+    },
+    {
+      "board": "06-observe-status-detail",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe-status-detail.png",
+      "screenshotSha256": "7a11909d74d90c42185c969fbc160419a392523f3767d23ae38fa4d90f4c2b40",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe-status-detail.svg",
+      "svgSha256": "c6f33c48b48408bfeb55664fc7b5f31fda61cef492d3d436dee0f0618564984c",
+      "status": "PASS"
+    },
+    {
+      "board": "06-observe",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe.png",
+      "screenshotSha256": "c95f4b78135cba2f13d4362569c95dcd2ae5d1df864d409cc6942002776d2f2b",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1080
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+      "svgSha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d",
+      "status": "PASS"
+    },
+    {
+      "board": "07-time-controls-detail",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-controls-detail.png",
+      "screenshotSha256": "401b92b43d98301ae048ddd5b63a63f845b2092c6ae82f9c58c30b4d0743ef32",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-controls-detail.svg",
+      "svgSha256": "d3df9c98deb74271635703cbdb42d81cf308b69c1791c7ce348ba2daa72f3852",
+      "status": "PASS"
+    },
+    {
+      "board": "07-time-states",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-states.png",
+      "screenshotSha256": "9be5f03a514174d6e0f779b85a04b573b34dffb97060bf51e24598a7aadc159d",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1010
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-states.svg",
+      "svgSha256": "3a9e31ef549fac126850aab60a89bd713b54171cbfc3399edab7656af9455229",
+      "status": "PASS"
+    },
+    {
+      "board": "07a-t0",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07a-t0.png",
+      "screenshotSha256": "2dbc4a09d0da7aace034beb4dca7c96a108c43da2c54f5dd45ecb530afebfa99",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07a-t0.svg",
+      "svgSha256": "8425b4a2975d05b7abd670e4ecf6da9dc88a0818f8090ce5ed80f3fc808203b4",
+      "status": "PASS"
+    },
+    {
+      "board": "07b-first-day",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07b-first-day.png",
+      "screenshotSha256": "3cd5e67b5fb964d96428a851eab252424f6dec78bec5b3a247f70b7e16c22a1c",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07b-first-day.svg",
+      "svgSha256": "ea1279693f13eaf1c5252925df7613137485a0b87816f1080eb8ce74e34bb548",
+      "status": "PASS"
+    },
+    {
+      "board": "07c-lookback",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07c-lookback.png",
+      "screenshotSha256": "44c915f23529076624c93c1a8a154e9b69bea64ef2070e48d01622487bd0c453",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07c-lookback.svg",
+      "svgSha256": "cc3e04916bc2158bacea4cfc06cec980c53be3a9bcc0ba1b28cc2867778c2052",
+      "status": "PASS"
+    },
+    {
+      "board": "08-results",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/08-results.png",
+      "screenshotSha256": "02955cd1d4744e59dfd4f4a3193b02ec25fbd1708a26dbb7f8f2aa63a63056de",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1410
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/08-results.svg",
+      "svgSha256": "fc68c2f9efcac1b1433e884a15fa5688cd97a38d8beb566da479a21f2849f3e8",
+      "status": "PASS"
+    },
+    {
+      "board": "09-compare",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/09-compare.png",
+      "screenshotSha256": "39d644aabf8266b1e334c623ea94941121fe6cead473e564a380db570098d92a",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1460
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/09-compare.svg",
+      "svgSha256": "7639edf08d7de2637d473efdb0a29e8d6d20cb8382b77ff89d7b1ce56105ee87",
+      "status": "PASS"
+    },
+    {
+      "board": "10-states",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/10-states.png",
+      "screenshotSha256": "1e0b416ff9715118d888bf5ef3069f16111f7e4dc1317f1512da46686ccf7544",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/10-states.svg",
+      "svgSha256": "b0e47986a3e3cfd4c207a35746a94362ea82cc4ed3a8c1732634f604e2b628a9",
+      "status": "PASS"
+    },
+    {
+      "board": "11-compact",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-compact.png",
+      "screenshotSha256": "df8876cadfe484121f3379953ce06e8b858a7d52f7a8d30eb42dd06bf4e7761b",
+      "encoding": "JPEG",
+      "pixels": [
+        1280,
+        1100
+      ],
+      "viewportCSS": [
+        1280,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "svgSha256": "fa96046402f05608d88c315532eeff4d866b89c76cd57c8ea367996d2ac34b9a",
+      "status": "PASS"
+    },
+    {
+      "board": "11-narrow",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-narrow.png",
+      "screenshotSha256": "c1b4571d1e34b20a19db494236493476080a634bc0b1c1f02a4de56bed13adf2",
+      "encoding": "JPEG",
+      "pixels": [
+        390,
+        1910
+      ],
+      "viewportCSS": [
+        390,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-narrow.svg",
+      "svgSha256": "5f74c7fe272aa280a064b69c1e791a216c3e39222f22c00e10ca4d14e9e8970b",
+      "status": "PASS"
+    },
+    {
+      "board": "11-responsive",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-responsive.png",
+      "screenshotSha256": "7f3279ab81a4728336f5159f810668788d8497bfd265db1c267a90fa05b2554d",
+      "encoding": "JPEG",
+      "pixels": [
+        1280,
+        1200
+      ],
+      "viewportCSS": [
+        1280,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-responsive.svg",
+      "svgSha256": "eee63258a251d4468504ee4e30334ea95f794b4993cb7e2eba3ed43556f392af",
+      "status": "PASS"
+    },
+    {
+      "board": "12-components",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/12-components.png",
+      "screenshotSha256": "9d0ac049d2cb223ea8db5ec12e87d46147094d84214bfb8a6b37730f904eeb2e",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/12-components.svg",
+      "svgSha256": "d04f3f93e03289b43717f5e1ea6620982df2db9b64b3f28bbc4f0d6eb9748185",
+      "status": "PASS"
+    },
+    {
+      "board": "sw01-navigation",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw01-navigation.png",
+      "screenshotSha256": "5930b20b0ee6e4d2e7478459f1c30595a183961a526d56d4208f926343cdfb59",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw01-navigation.svg",
+      "svgSha256": "679c479f3c5bddcba64512cce98f6fde9893f53f1897966a30084c88099eca5b",
+      "status": "PASS"
+    },
+    {
+      "board": "sw02-date-time",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw02-date-time.png",
+      "screenshotSha256": "1c0d932a99b9f5850aca36ae6a16c7727df2505444aef0ce493c1f9f7c87b3da",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw02-date-time.svg",
+      "svgSha256": "d9e756361c426a6358947360fb84735804d72e8142e088699d5b469d320e150c",
+      "status": "PASS"
+    },
+    {
+      "board": "sw03-steps",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw03-steps.png",
+      "screenshotSha256": "e116dd1e775846c3ecf425914715aff6134d7e7636b51c8f30f0f8b22b040602",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw03-steps.svg",
+      "svgSha256": "6c1bbb51c957c65d2df02e7062b3e4bc91ea132ba2187da48eed15a51221e172",
+      "status": "PASS"
+    },
+    {
+      "board": "sw04-package-slots",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw04-package-slots.png",
+      "screenshotSha256": "019895b26b987b2705ac490c97135907dc7518f2d6ed31582e6e820b6b3af05c",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw04-package-slots.svg",
+      "svgSha256": "8593cda111e19a6a272710106915ee23e9a4f552877f4bbe78cdd38edf94164e",
+      "status": "PASS"
+    },
+    {
+      "board": "sw05-multi-select",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw05-multi-select.png",
+      "screenshotSha256": "1fa0926255440b0f611eac71a2d98ffe5369b88db73c9658b85819d2745cd0d7",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw05-multi-select.svg",
+      "svgSha256": "0378d181bf929f1adce5b6f08f13400d8c9b8ba3a3c7940dd22c615061e50662",
+      "status": "PASS"
+    },
+    {
+      "board": "sw06-summary-detail",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw06-summary-detail.png",
+      "screenshotSha256": "96375c46125f5011087160973a3e6a6d9b41e15e684e134231c0d98b8944da40",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw06-summary-detail.svg",
+      "svgSha256": "843a7f3a92b16f930a22513cb63587d9bd1acf89f767a73099356c8b69c4d1fc",
+      "status": "PASS"
+    },
+    {
+      "board": "sw07-replay",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw07-replay.png",
+      "screenshotSha256": "34fc84aede0fd532617b3c67d4a8eeda30ae4cb8eb1234ef47d9c92755b954b1",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw07-replay.svg",
+      "svgSha256": "3653d856c97c9b88527d8fd2c25633527e1bbee9be089f3e463916168453d8d2",
+      "status": "PASS"
+    },
+    {
+      "board": "sw08-recovery",
+      "screenshot": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw08-recovery.png",
+      "screenshotSha256": "d7687345b6a5b839141d140f186dca5807c80154fb1f0e0b2559432672020a40",
+      "encoding": "JPEG",
+      "pixels": [
+        1440,
+        1000
+      ],
+      "viewportCSS": [
+        1440,
+        1000
+      ],
+      "svg": "docs/design-system/shared/strategy-workbench-v1.2/sw08-recovery.svg",
+      "svgSha256": "58dd2095f0f88ad8814bbb42e3dcd919457ec001b427badfb4154c363bc8a2bc",
+      "status": "PASS"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-artboards.py",
+      "sha256": "d5e516ad4a0ccc5287e2e5b94b8b73cb8a4dad9d329bb7a1bea308d43a779875"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-responsive.py",
+      "sha256": "b9f37611315fc0fbe56bd175dd8a4b16b42d67b752ebd182af879cbb39d4d1e3"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/shared-primitives.py",
+      "sha256": "29dcf4d37fe1ee5b1d9aa296dd2c6615f41d29ecd456a57eb3cb139bb9faf227"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/test-details-rendering.py",
+      "sha256": "ae2d263b0c1bd7f4663faab531d3f324253a8e4233a4d0bce5f0cc3fdd1a8758"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/verify-document.py",
+      "sha256": "ad95fbe828ff019ab3f8e3b835050a4aaa5dc9b83638a359906f33ac0c2cc4be"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-library-forms.py",
+      "sha256": "547ccc126f6eeedaf99c507bed25dca647b19300c3a19ed26b912c815ebdb652"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-time-results.py",
+      "sha256": "0dfb856df1d2781c8b91843044df0f313cb66df22d9748c608c35e5311f6c692"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "sha256": "c5979e49cf7ef3c678c96fc8cdfeb88da83938cce6404e94b7806efbf43d8546"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-design.py",
+      "sha256": "bb0e6266fa5ef285de3b8eb7e0dbc4cd5037d4ff27fe1b770d7d1607726956ab"
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+      "sha256": "36fdad15f5789255290e8fc95fefaf43d4452093d27fa5332019444d4fd40f1f"
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+      "sha256": "a3a2298069026d52dd1258ef9a0bb525e3c713778480af42e72e6657afca1429"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reader-controls.json",
+      "sha256": "7943df0c246c1ad8299269e66929a9baf14e04968174fbf399291a69f37ac2a9"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "sha256": "c2c0e4d39b11867a8e66d87d05bf1612516c1429d859b1876348695bdaf0f49a"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "sha256": "f794c6a5d1ccd5d6d64c39f4bfaff8f77732d0b768873307ab49e98b499701bf"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "sha256": "753a8646b39ee865700c0361dc69ae9b6a9131ce85661256bb8b2d2fd1b94e94"
+    }
+  ]
+}

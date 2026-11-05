@@ -1,0 +1,286 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "mouse": "expand",
+  "keyboard": "Enter closes",
+  "checks": [
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看布局尺寸与适用范围",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看查询、引用统计、置顶和归档规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看版本、包详情和可运行性规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 0,
+      "summary": "查看实验状态与列表恢复规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 0,
+      "summary": "查看四步字段、数据边界及失败规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看观察元素、原因示例和空间规则",
+      "tables": [
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          2,
+          2
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看每个动作的时间、视野和失败规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 0,
+      "summary": "查看结果口径与事件往返",
+      "tables": [
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 0,
+      "summary": "查看比较与派生规则",
+      "tables": [
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看异常与恢复清单",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看断点、触控和长内容规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 4,
+      "summary": "查看控件映射、八态及动效精确规则",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 1,
+      "summary": "查看跨页面状态与后续实现接受顺序",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    },
+    {
+      "open": true,
+      "paras": 2,
+      "summary": "查看历史清单、变更归属与交付边界",
+      "tables": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "keyboardClosed": true
+    }
+  ]
+}

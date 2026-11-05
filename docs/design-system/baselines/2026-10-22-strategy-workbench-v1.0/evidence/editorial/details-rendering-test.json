@@ -1,0 +1,45 @@
+{
+  "scope": "render_markdown details block behavior",
+  "acceptance": {
+    "DOC-RULES-01": {
+      "status": "PASS",
+      "command": "python3 source/test-details-rendering.py",
+      "checks": [
+        "paragraph -> folded heading -> three list items -> first table -> post-table paragraph -> second table",
+        "all fixture text remains selectable in the rendered HTML",
+        "ordinary Markdown paragraphs and an outside table remain unchanged"
+      ]
+    },
+    "DOC-ANCHOR-01": {
+      "status": "PASS",
+      "command": "python3 source/test-details-rendering.py",
+      "checks": [
+        "the existing single paragraph descriptor is attached once to the details body after summary",
+        "the summary label is excluded from the comment quote target",
+        "folded headings are excluded from the document TOC",
+        "rendered heading IDs are unique"
+      ]
+    }
+  },
+  "before": {
+    "status": "FAIL",
+    "command": "python3 source/test-details-rendering.py",
+    "root_cause": "The details branch joined all non-empty lines into one paragraph and only recognized a table when the first detail line was a table header.",
+    "observed": "paragraph count 1, heading count 0, list count 0, table count 0",
+    "browser_evidence": "evidence/editorial/st12-before.png"
+  },
+  "after": {
+    "status": "PASS",
+    "command": "python3 source/test-details-rendering.py",
+      "implementation": "The details body is parsed through the existing render_markdown block parser; internal heading IDs and TOC entries are suppressed while the original single descriptor is attached once to the details-body wrapper after the summary.",
+    "additional_checks": [
+      "python compile() syntax check",
+      "fixture output contains two details tables with independent boundaries",
+      "no formal page build performed; root owns browser expand/collapse and screenshots"
+    ]
+  },
+  "limits": [
+    "This evidence covers renderer behavior only; it does not claim browser acceptance.",
+    "No identity, comment client, CSS,正文 source,画稿, database, or generated formal page was changed."
+  ]
+}

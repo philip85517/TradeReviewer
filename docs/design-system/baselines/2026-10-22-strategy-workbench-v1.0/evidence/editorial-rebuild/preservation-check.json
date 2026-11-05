@@ -1,0 +1,105 @@
+{
+  "scope": "Preservation checks only; readability/meaning independently reviewed",
+  "sourceSHA256": "a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9",
+  "oldElementCount": 74,
+  "newElementCount": 74,
+  "missingElementIDs": [],
+  "addedElementIDs": [],
+  "originalRuleBlocksVerbatim": true,
+  "details": 14,
+  "originalChapterAnchorsPreserved": true,
+  "newChapterAnchors": [
+    "chapter-ST15",
+    "chapter-ST16"
+  ],
+  "imageOccurrencesPreserved": true,
+  "imageOccurrences": 22,
+  "svg": {
+    "source/images/01-library.svg": {
+      "sha256": "0c56cb6b6e0ae940fc04adba81e2ad4b39fa69d403f2fc055300da0411afbec2",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/01b-package-management.svg": {
+      "sha256": "66c00c066636c50a43c2f291226f252bb9aab58c585c55f8ccfaf7ee9c52d76b",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/02-compose.svg": {
+      "sha256": "1773bae8fdbd65ab6190f318ab7eeb2863834d5d97e03bd185dcc40f2852e385",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/03-experiments.svg": {
+      "sha256": "00ed2256bb242b0fd0b207aef9a532cb0d0ce3f5f846287695aff305c0b0beda",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/04-create.svg": {
+      "sha256": "4262056f8d7f406634cc96192221b3defffd9a49a60c30b8d56344e686d44fc4",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/04b-select-strategies.svg": {
+      "sha256": "a4f862e5760e05dbb7ae6718a868e513716708c22640c26b0e6eecf4aba5198a",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/05-confirm.svg": {
+      "sha256": "4d2e18ca9da8b18d185de5a91c2ee5ee92fea232d0875664e55b4169eafd7570",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/06-observe-status-detail.svg": {
+      "sha256": "ebc080427911f409cec15fba5907a99a146d7172aa52020bfce49c235a6edd53",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/06-observe.svg": {
+      "sha256": "c3a19740ff5f56f607b70b6d01e03da5160d0f48d0dfd6121385f9c28b75ebe7",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/07-time-controls-detail.svg": {
+      "sha256": "a924ce3d53c571c14de5f0cad069fad6110be764f41c956af0b07db558e2ea74",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/07-time-states.svg": {
+      "sha256": "7fe05817f22ca748fa8698f3ce98a703d1ffe4b61fae524292386dd586dd279e",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/07a-t0.svg": {
+      "sha256": "59d8b854c89003ab0cfc6ce4846efbb570a636a146b53e3efab98d20ebd8f86a",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/07b-first-day.svg": {
+      "sha256": "71f6fa26a3a65cfca6d87ec321f5a72707dd1f8f49ead4455bbd16e72609af89",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/07c-lookback.svg": {
+      "sha256": "3e222976f2e04594c62ee6e2d6801692e57abaee8b6a388ed6c0d122dfb807d8",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/08-results.svg": {
+      "sha256": "f050ee51e37f63ecc884a74919526df7c8e4b39abda6285931727b567960ad31",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/09-compare.svg": {
+      "sha256": "d10aad7ff3f68141cfa5cd1cd3bc52bf8d45d8494b4f165666695d4c8aeebb32",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/10-states.svg": {
+      "sha256": "35136e36a30190e7acf7a5abe3ecb9c5e04eb44160756d9c83ad1a8125dbb519",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/11-compact.svg": {
+      "sha256": "793ea7ceaee42c6e9935410952fe1c5d51b47d12ea4142766dd05b63f563e208",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/11-narrow.svg": {
+      "sha256": "0a165a0cc4bf96434ff19d353564867a159d08fda8916b6f832d43c006d99053",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/11-responsive.svg": {
+      "sha256": "d7ba4e5ec969ff6cab33fe1a3fb3966f9c11207344e33d9594d54fae296a3bd6",
+      "matchesAcceptedBaseline": true
+    },
+    "source/images/12-components.svg": {
+      "sha256": "05ad3dfa7ece5030062719f43003c6dda8e31d972324be421886fdb19112fb01",
+      "matchesAcceptedBaseline": true
+    }
+  },
+  "svgHashesUnchanged": true,
+  "stateDemoCount": 2
+}

@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-10-23T17:18:22.680468+00:00",
+  "status": "PASS",
+  "scope": "Complete editorial reconstruction and bounded document-reader presentation; not product acceptance",
+  "worktree": "/Users/zhoulin/.codex/worktrees/b387/TradeReview",
+  "branch": "HEAD",
+  "documentId": "STRATEGY-DESK-V10",
+  "sourceSHA256": "a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9",
+  "files": {
+    "source/visual-design.candidate.md": "a4fdb7157297eaa16248c6638a6bf3420cc7f7c920b194935f85c902e2a81da9",
+    "visual-spec.html": "c29e426a4418cd66fc0a2ab01cc7a72f1c4f21e685ac355b0d3e4ad89272d776",
+    "document-manifest.json": "97c8e5426dfd5181d75c273690e3134ff9de30483db43669fc93137a5795fd49",
+    "document-identity.json": "da2d34c03d0d98b80026d224a6034edfc60961d948d807df79c4d05461f406ca",
+    "source/verify-document.py": "c9bd9f3191ebb86b6cbb1d0e638cef9f6fcd295e068d8d15da76ed1504a03286",
+    "build-visual-spec.py": "c2eed1e8f9a103460464ca0e09ae20ae8aab29335319755a4f65b95ab0a6699d",
+    "source/test-details-rendering.py": "ae2d263b0c1bd7f4663faab531d3f324253a8e4233a4d0bce5f0cc3fdd1a8758",
+    "editorial-rebuild-audit.md": "8ad0be22b0db93363cbe09249b88ae7b1e34ac94d0478fb1de92ab2ac080b908",
+    "editorial-rebuild-review.md": "c279221f9c8e17d69974c21a2f1eede1530c58c206d5be91a07446fd8542abe7",
+    "README.md": "4ce173a46b44c33767c1b8548e9a5840ffe852220b1ea8acb4928f14bc49ba3d",
+    "DESIGN-COVERAGE.md": "685f98fa3d2fd5dfc9333487471d40fd059f9829d7d636b4c16eb1be72e849cf",
+    "acceptance.md": "f260a24e1679863041bd090fbe44b1595a82cc1c8e2ff1172ae2b7900ea8d424",
+    "evidence/validation.json": "744d93a4b22a16dccaeb39d4cdac3e6ffe584b63626be4d7b00a296284aa6b90",
+    "evidence/editorial-rebuild/acceptance.png": "3ab3f85dda31b59288ee0a8f78aa5d16d561255d1fbe36c9318d48bca64205d2",
+    "evidence/editorial-rebuild/before.md": "1790ad2b6045a0c678d6e463ae6d30d128c302fe48658ffbaed13b4fd3d846e4",
+    "evidence/editorial-rebuild/component-rules.png": "cb382fd6389df8e3245991bd102d4680bcaacbe38033a66bbd13e2bb94994e9b",
+    "evidence/editorial-rebuild/components.png": "6c243ece8af0385693394e19fdb520a6bf65736ec29301941c7609c4aa0719bf",
+    "evidence/editorial-rebuild/create-storyboard.png": "8bd73da9d1726f26217122ba2f21a683a07dd1003c04b9767a1e2c83ffd7ef76",
+    "evidence/editorial-rebuild/delivery.png": "c0a30eb13fb121862a5bdab20656182e69f1a9c784c1e9933ac5c25f8be06df3",
+    "evidence/editorial-rebuild/four-steps.png": "5baac5f44c4c739f4d52d417aea3c1cfaef5b4fce68a2c90e1897477d11743d2",
+    "evidence/editorial-rebuild/intro.png": "197bb2dba6d0c48d6bc9e19da0db27159015ca7c56482d478e1c47c23772a93e",
+    "evidence/editorial-rebuild/layout.png": "5dbc9af9357536bc2d4b82db547af72c971577373fcdba69aedb737eec2f97b3",
+    "evidence/editorial-rebuild/manifest-before.json": "f0c0eb48fefe3965880926732424271b47f7d3a2a961e17d65bed0f8925e48fa",
+    "evidence/editorial-rebuild/preservation-check.json": "709fd60faee86cb2993118022a4f86b003da7cfa97beef0b32f98e3a0cede06c",
+    "evidence/editorial-rebuild/reader-delivery.json": "0decccf3799072b5569215366d343e6c5231fa8121adeb3afbf3e49d234f7169",
+    "evidence/editorial-rebuild/reader-details.json": "ed48a382c22343151116a044377c08edfa5f32862421a9eb9877749a7b0b4ebe",
+    "evidence/editorial-rebuild/reader-navigation.json": "a5eff1cd4a5ff988df4b69b30655c9f654548eb58189701cb98b1a33ce96323b",
+    "evidence/editorial-rebuild/reader-storyboards.json": "2e7d66d6c1596b1640af5b77d2d70b59fae27190eccedaf465a9956e7319103e",
+    "evidence/editorial-rebuild/research-flow.png": "da5152aea9edc57731134e3dc5b112092a49a22d02726a76ab33b3f2143349e5",
+    "evidence/editorial-rebuild/research-model.png": "319531ea726ea397c46ed677ffcce6f5555fa21ceff86fd5f924dad2299b4a1c"
+  },
+  "coverage": {
+    "mainChapters": 15,
+    "appendices": 1,
+    "tocMouseClicks": 62,
+    "disclosuresMouseOpen": 14,
+    "disclosuresKeyboardClose": 14,
+    "storyboardFrames": 6,
+    "storyboardBackTransitions": 2,
+    "elementIDs": 74,
+    "verbatimRuleBlocks": 14,
+    "unchangedSVG": 21
+  },
+  "visualComparisonViewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "independentReviewer": "editorial_structure_review",
+  "service": {
+    "command": "bash docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/start-preview.sh",
+    "port": 3094,
+    "url": "http://127.0.0.1:3094/design-system/baselines/2026-10-22-strategy-workbench-v1.0/visual-spec.html",
+    "processId": 69309,
+    "execSession": 75656
+  },
+  "exclusions": [
+    "production UI and real replay",
+    "business database",
+    "physical/emulated touch",
+    "unchanged reader auto-play and comment persistence implementations",
+    "reader responsive breakpoint acceptance"
+  ]
+}

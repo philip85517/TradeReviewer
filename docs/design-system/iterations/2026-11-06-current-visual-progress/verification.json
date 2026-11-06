@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-11-06T10:05:25.678146+08:00",
+  "verified_at": "2026-11-06T10:18:19.362500+08:00",
   "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
   "prior_local_snapshot": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
   "scope": "documentation only; no UI/database/product acceptance inferred",
@@ -259,7 +259,7 @@
     ],
     "active_links": {
       "files": 19,
-      "urls": 847,
+      "urls": 849,
       "missing": []
     },
     "svg_syntax": {
@@ -271,7 +271,7 @@
       "diagnostics": []
     },
     "git_scope": {
-      "changed_paths": 2950,
+      "changed_paths": 2951,
       "outside_document_scope": [],
       "largest_files": [
         {

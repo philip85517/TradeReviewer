@@ -1,6 +1,6 @@
 # 最新完整文档 PR 验收
 
-文档范围结论：**接受**。协调者 root 已直接检查最终静态结果及两份独立报告。远端分支推送与 PR 尚待下节记录；不自动合并。此结论只接受文档整合，不接受产品功能或全部设计细节。
+文档范围结论：**接受**。协调者 root 已直接检查最终静态结果及两份独立报告。独立分支已推送并创建 [PR #43](https://github.com/philip85517/TradeReviewer/pull/43)；PR 保持 open，不自动合并。此结论只接受文档整合，不接受产品功能或全部设计细节。
 
 ## 版本与完整性
 
@@ -41,4 +41,8 @@ STD-01 是生成器误把业务覆盖表指向不存在的 HTML；已改为仅�
 
 ## 远端交付
 
-待执行：提交独立分支 `codex/visual-specs-consolidation-20261106`，push 后创建/复用以 `master` 为 base 的 PR，再核对远端分支 SHA、PR head/base 与状态。当前不宣称远端交付完成。
+- [PR #43](https://github.com/philip85517/TradeReviewer/pull/43)：`codex/visual-specs-consolidation-20261106` → `master`，open、非 draft、未合并；创建时 GitHub 显示可合并。
+- 内容提交 `4b9a327391cc4e9f08e22b4bc8fc21576ea7e993` 已 push。创建时本地 HEAD、`ls-remote` 分支 SHA 和 PR head 一致；base 为 `d95afc37d30f817edbd6daab41e85f485138de0d`。随后仅随分支补充本验收与任务关闭记录。
+- [远端交付检查点](remote-delivery.json)保存创建时的 PR、远端 refs 及 CI 查询。没有 CI 状态或工作流运行记录，不能记为 CI 通过；独立文档审查与本地静态验证见上文。
+- GitHub 连接器创建 PR 返回 403（integration 权限不足）；改用本机已认证 `gh` 成功创建，并已附到当前聊天。网络命令按本机现有代理执行，没有修改全局 Git/代理配置。
+- local master 仍为 `d95afc37`，其未提交内容和全部源 worktree 保留。

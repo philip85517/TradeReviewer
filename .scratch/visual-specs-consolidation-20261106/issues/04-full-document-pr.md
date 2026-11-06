@@ -1,8 +1,8 @@
 # 04 最新完整文档核对、独立分支推送与 PR
 
 - ID: visual-consolidation-04
-- State: open
-- Status: integration-pending
+- State: closed
+- Status: accepted
 - Assignee: root
 - 集成负责人: root
 - Base: origin/master（开始时 d95afc37；提交前重新 fetch）
@@ -18,7 +18,7 @@
 
 ## Blocked by
 
-无。文档检查和独立审查已完成，当前等待本票负责的远端提交与 PR 核验。
+无。文档检查、独立审查、推送和 PR 创建检查点均已完成，见最终验收。
 
 ## Plan / Ownership
 
@@ -34,7 +34,7 @@
 - [x] 最新资料有保存路径，历史有溯源，原 FAIL / NOT VERIFIED 保留，见[类型与来源](../../../docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md)。
 - [x] 当前入口、生成阅读页、评论身份和来源清单检查通过；历史全包空白不作通过声明，见[机器验证](../../../docs/design-system/iterations/2026-11-06-current-visual-progress/verification.json)。
 - [x] 独立 Standards / Spec 复核完成，无未解决的文档范围阻断项，见[最终验收](../../../docs/design-system/iterations/2026-11-06-current-visual-progress/FINAL-ACCEPTANCE.md)。
-- [ ] 远端分支与本地提交一致，PR base 为 master，URL 已附当前聊天。
+- [x] 内容提交的远端分支与本地一致，PR base 为 master，[PR #43](https://github.com/philip85517/TradeReviewer/pull/43) 已附当前聊天，见[远端检查点](../../../docs/design-system/iterations/2026-11-06-current-visual-progress/remote-delivery.json)。
 
 ## Refs / Evidence
 
@@ -45,7 +45,7 @@
 
 ## Verification status
 
-文档范围已由 root 按最新静态结果和独立 Standards / Spec 报告接受；远端交付未完成前本票保持 open / integration-pending。未以旧验收替代本轮检查。未请求默认实现模型 gpt-5.6-luna：本轮仅协调者维护文档及独立只读审查，无产品实现派发。
+文档范围已由 root 按最新静态结果和独立 Standards / Spec 报告接受；内容提交已推送并创建 open PR #43，远端 refs / PR head 一致；root 接受本票文档交付范围。当前仅追加交付记录并随分支同步，不自动合并；没有 CI 运行记录，不宣称 CI 通过。未以旧验收替代本轮检查。未请求默认实现模型 gpt-5.6-luna：本轮仅协调者维护文档及独立只读审查，无产品实现派发。
 
 ## Counterexamples / evidence
 

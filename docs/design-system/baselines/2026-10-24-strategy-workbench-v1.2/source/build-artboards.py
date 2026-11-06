@@ -173,12 +173,13 @@ def make_observe():
     s += pill(x,132,"已完成",BLUE,64,"#172536") + t(x+82,151,"EMA20 v1.4",16,TEXT,600) + t(x+214,151,"独立本金 ¥10.00万",13,MUTED)
     s += pill(x+360,132,"低波动质量 v2.1",PURPLE,104,"#242038") + t(x+480,151,"独立本金 ¥10.00万",13,MUTED)
     s += button(x+w-220,128,"实验列表",88)+_shared.select_control(x+w-120,128,"更多组合",120)
-    # One continuous metric band keeps the primary values aligned without four floating cards.
-    s += rect(x,184,w,88,PANEL,LINE,8)
-    for i,(ttl,val,sub,col) in enumerate([("净资产","¥102,540.84","当前估值",TEXT),("累计收益","+2.54%","合成收益",GREEN),("最大回撤","-3.20%","期间峰值回撤",RED),("仓位","90.0%","当前持仓",TEXT)]):
-        xx=x+i*310
-        if i: s += line(xx,198,xx,258,LINE)
-        s += t(xx+16,211,ttl,14,MUTED) + t(xx+294,244,val.replace("102,540.84", "10.25万"),28,col,600,"end","num") + t(xx+16,264,sub,12,WEAK)
+    # ALIGN-ST-02 revision 2: reuse the homepage metric cards.
+    card_w = (w - 3 * 12) / 4
+    for i,(ttl,val,col) in enumerate([("净资产","¥10.25万",TEXT),("累计收益","+2.54%",GREEN),("最大回撤","-3.20%",RED),("仓位","90.0%",TEXT)]):
+        xx=x+i*(card_w+12)
+        s += rect(xx,184,card_w,88,PANEL,LINE,8)
+        s += t(xx+16,211,ttl,14,MUTED) + t(xx+16,250,val,28,col,600,"start","num")
+        s += t(xx+card_w-20,211,"ⓘ",12,MUTED,400,"middle")
     s += rect(x,284,w,62,PANEL,LINE,8)
     s += pill(x+14,303,"运行已完成",BLUE,80,"#172536") + t(x+112,314,"2024-09-13 · 收盘后",14,TEXT,600) + t(x+112,333,"已展开至 2024-09-13",12,MUTED)
     # Controls have a dedicated lane so the date field never collides with actions.

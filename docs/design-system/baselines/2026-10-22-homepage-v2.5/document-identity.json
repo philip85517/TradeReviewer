@@ -52,7 +52,7 @@
       "sourceLine": 17
     },
     {
-      "id": "HOME-HP01-B001",
+      "id": "HOME-HP01-B031",
       "kind": "tablecell",
       "chapter": "HP01",
       "text": "取舍",
@@ -428,7 +428,7 @@
       "sourceLine": 81
     },
     {
-      "id": "HOME-HP11-B056",
+      "id": "HOME-HP11-B023",
       "kind": "tablecell",
       "chapter": "HP11",
       "text": "用途",
@@ -708,7 +708,7 @@
       "sourceLine": 117
     },
     {
-      "id": "HOME-HP03-B060",
+      "id": "HOME-HP03-B003",
       "kind": "tablecell",
       "chapter": "HP03",
       "text": "操作",
@@ -932,7 +932,7 @@
       "sourceLine": 141
     },
     {
-      "id": "HOME-HP03-B061",
+      "id": "HOME-HP03-B031",
       "kind": "tablecell",
       "chapter": "HP03",
       "text": "查看",
@@ -1212,7 +1212,7 @@
       "sourceLine": 199
     },
     {
-      "id": "HOME-HP02-B040",
+      "id": "HOME-HP02-B007",
       "kind": "tablecell",
       "chapter": "HP02",
       "text": "是",
@@ -1236,7 +1236,7 @@
       "sourceLine": 200
     },
     {
-      "id": "HOME-HP02-B041",
+      "id": "HOME-HP02-B010",
       "kind": "tablecell",
       "chapter": "HP02",
       "text": "是",
@@ -1260,7 +1260,7 @@
       "sourceLine": 201
     },
     {
-      "id": "HOME-HP02-B042",
+      "id": "HOME-HP02-B013",
       "kind": "tablecell",
       "chapter": "HP02",
       "text": "是",
@@ -1596,7 +1596,7 @@
       "sourceLine": 266
     },
     {
-      "id": "HOME-HP04-B066",
+      "id": "HOME-HP04-B016",
       "kind": "tablecell",
       "chapter": "HP04",
       "text": "11%",
@@ -1604,7 +1604,7 @@
       "sourceLine": 266
     },
     {
-      "id": "HOME-HP04-B067",
+      "id": "HOME-HP04-B017",
       "kind": "tablecell",
       "chapter": "HP04",
       "text": "右对齐；两位小数",
@@ -1620,7 +1620,7 @@
       "sourceLine": 267
     },
     {
-      "id": "HOME-HP04-B068",
+      "id": "HOME-HP04-B019",
       "kind": "tablecell",
       "chapter": "HP04",
       "text": "11%",
@@ -1628,7 +1628,7 @@
       "sourceLine": 267
     },
     {
-      "id": "HOME-HP04-B069",
+      "id": "HOME-HP04-B020",
       "kind": "tablecell",
       "chapter": "HP04",
       "text": "右对齐；两位小数",
@@ -1684,7 +1684,7 @@
       "sourceLine": 269
     },
     {
-      "id": "HOME-HP04-B070",
+      "id": "HOME-HP04-B027",
       "kind": "tablecell",
       "chapter": "HP04",
       "text": "查看",
@@ -2068,7 +2068,7 @@
       "sourceLine": 367
     },
     {
-      "id": "HOME-HP05-B031",
+      "id": "HOME-HP05-B010",
       "kind": "tablecell",
       "chapter": "HP05",
       "text": "操作",
@@ -2804,7 +2804,7 @@
       "sourceLine": 511
     },
     {
-      "id": "HOME-HP09-B053",
+      "id": "HOME-HP09-B049",
       "kind": "tablecell",
       "chapter": "HP09",
       "text": "图表提示",
@@ -2852,7 +2852,7 @@
       "sourceLine": 522
     },
     {
-      "id": "HOME-HP08-B043",
+      "id": "HOME-HP08-B003",
       "kind": "tablecell",
       "chapter": "HP08",
       "text": "用途",
@@ -3060,7 +3060,7 @@
       "sourceLine": 531
     },
     {
-      "id": "HOME-HP08-B044",
+      "id": "HOME-HP08-B029",
       "kind": "tablecell",
       "chapter": "HP08",
       "text": "图表提示",
@@ -3172,7 +3172,7 @@
       "sourceLine": 548
     },
     {
-      "id": "HOME-HP08-B045",
+      "id": "HOME-HP08-B043",
       "kind": "paragraph",
       "chapter": "HP08",
       "text": "策略研究需要将原子控件组织成完整任务。策略研究公共扩展 SW01–SW08提供导航、日期时间、四步向导、三包选择、多选列表、摘要与详情、回放和局部恢复的设计样例、状态与使用边界。扩展保留基础控件的视觉语言，同时明确54/200px导航、两行72px列表等业务差异；这些差异不改变首页布局。",
@@ -3180,7 +3180,7 @@
       "sourceLine": 552
     },
     {
-      "id": "HOME-HP08-B046",
+      "id": "HOME-HP08-B044",
       "kind": "paragraph",
       "chapter": "HP08",
       "text": "固定八行表和唯一全局修复入口属于首页实例。其他模块根据数据范围安排列表与恢复动作，不能直接继承这两项业务约束。基础12类/96状态统计与新增组合状态分开记录。",
@@ -3612,7 +3612,7 @@
       "sourceLine": 597
     },
     {
-      "id": "HOME-HP10-B037",
+      "id": "HOME-HP10-B069",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "V2.2修订",
@@ -3732,7 +3732,7 @@
       "sourceLine": 602
     },
     {
-      "id": "HOME-HP10-B106",
+      "id": "HOME-HP10-B072",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "V2.2修订",
@@ -3756,7 +3756,7 @@
       "sourceLine": 603
     },
     {
-      "id": "HOME-HP10-B107",
+      "id": "HOME-HP10-B075",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "V2.2修订",
@@ -3780,7 +3780,7 @@
       "sourceLine": 604
     },
     {
-      "id": "HOME-HP10-B135",
+      "id": "HOME-HP10-B091",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "V2.2修订",
@@ -3908,7 +3908,7 @@
       "sourceLine": 619
     },
     {
-      "id": "HOME-HP10-B136",
+      "id": "HOME-HP10-B139",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "取舍",

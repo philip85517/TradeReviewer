@@ -1,0 +1,26 @@
+{
+  "generator": "docs/backend-design/build-review.py",
+  "clientSource": "docs/design-system/baselines/2026-10-22-homepage-v2.5",
+  "clientModification": "unmodified copies",
+  "documents": [
+    {
+      "documentId": "BACKEND-CURRENT",
+      "fingerprint": "3389492fcd029c6e370462de646c582f9e3fff5d7813241210d619d90e768d3f",
+      "blocks": 310,
+      "headings": 15,
+      "output": "docs/backend-design/review/current/index.html"
+    },
+    {
+      "documentId": "BACKEND-TARGET",
+      "fingerprint": "c1e38c52949dc05e86570f9cc67378eec25054f70eb1a6052267fcfe5f224897",
+      "blocks": 453,
+      "headings": 19,
+      "output": "docs/backend-design/review/target/index.html"
+    }
+  ],
+  "validation": {
+    "pages": 55,
+    "commentBlocks": 763,
+    "localLinks": 331
+  }
+}

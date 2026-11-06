@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-11-06T09:31:30+08:00",
+  "status": "awaiting-user-confirmation",
+  "alignmentId": "ALIGN-ST-07",
+  "sources": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "sha256": "fa96046402f05608d88c315532eeff4d866b89c76cd57c8ea367996d2ac34b9a"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/shared/strategy-workbench-v1.2/sw07-replay.svg",
+      "sha256": "3653d856c97c9b88527d8fd2c25633527e1bbee9be089f3e463916168453d8d2"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "2026761a8546bcf1440ccfbf5a6bc49d6be670ffc63cb52c51e55741b03c30ad"
+    }
+  ],
+  "derivation": "New native SVG composition. Date / play / next-day / speed ordering follows compact SVG children 84:97; shared play/pause slot follows OBS07 and SW07. Uses homepage visual tokens. Not approved source image or product/runtime evidence.",
+  "proposal": "Stable control order and dimensions; play/pause share the same slot. Buttons 36px tall, 14/20px text, 12px action gaps.",
+  "scope": "Local paused / playing toolbar composition only. Other states are omitted from this illustration, not removed from requirements. Full toolbar width/height, speed options, shortcuts, dates, information cutoff semantics, touch and responsive handling remain outside approval."
+}

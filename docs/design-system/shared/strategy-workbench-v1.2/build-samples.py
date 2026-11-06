@@ -87,15 +87,16 @@ def sw05():
     p += [rect(616,84,256,326,PANEL),text(636,114,"排序草稿",16,TEXT,600),shared.button(636,132,"上移",80),shared.button(724,132,"下移",80),shared.select_control(636,184,"位置 2 / 3",168,"select"),text(636,240,"同组位置 2 / 3 · 上下均可",12,MUTED),text(636,272,"保存失败 · 草稿保留",12,RED),shared.button(636,290,"重试保存",100,True),text(636,336,"未选行的移除入口不可用。",12,MUTED),text(636,360,"先勾选，再移除。",12,MUTED)]
     return finish(p)
 def sw06():
-    p=shell("SW06 · 连续摘要、包详情与观察检查栏",920,490)
-    p += [rect(28,66,864,88)]
+    p=shell("SW06 · 四指标卡、包详情与观察检查栏",920,490)
+    card_w=(864-3*12)/4
     for i,(label,value,col) in enumerate([("净资产","¥10.25万",TEXT),("累计收益","+2.54%",GREEN),("最大回撤","-3.20%",RED),("仓位","90.0%",TEXT)]):
-        x=28+i*216;p += [text(x+16,94,label,14,MUTED),text(x+200,134,value,28,col,600,"end")]
+        x=28+i*(card_w+12)
+        p += [rect(x,66,card_w,88),text(x+16,94,label,14,MUTED),text(x+16,132,value,28,col,600),text(x+card_w-20,94,"ⓘ",12,MUTED)]
     p += [rect(28,186,480,252),text(48,216,"包详情",18,TEXT,600),text(488,216,"480px",12,MUTED,500,"end"),text(48,250,"EMA20 买入 · v1.3",14),text(48,280,"用途：趋势买入；输入：收盘价，输出：买入信号。",14,MUTED),text(48,316,"参数 / 单位",14,MUTED),text(488,316,"周期 20 日",14,TEXT,600,"end"),text(48,350,"预热要求",14,MUTED),text(488,350,"至少 20 个交易日",14,TEXT,600,"end"),shared.button(48,378,"关闭",88)]
     p += [rect(532,186,320,252),text(552,216,"观察检查栏",18,TEXT,600),text(832,216,"320px",12,MUTED,500,"end")]
     for i,(label,value) in enumerate([("查看日","2024-09-13"),("未知数据","—"),("费用","¥128.40")]):
         y=260+i*48;p += [text(552,y,label,14,MUTED),text(832,y,value,14,TEXT,600,"end")]
-    p += [text(28,474,"88px 摘要表达当日状态；详情与检查栏分别承接规则阅读和运行证据。",14,MUTED)]
+    p += [text(28,474,"88px独立指标卡表达当日状态；详情与检查栏分别承接规则阅读和运行证据。",14,MUTED)]
     return finish(p)
 
 

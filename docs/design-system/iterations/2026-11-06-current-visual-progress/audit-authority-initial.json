@@ -1,0 +1,256 @@
+{
+  "review": "Independent current authority/conflict audit; read-only repository inspection",
+  "repo": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "reviewed_at": "2026-11-06T09:40:27.569471+08:00",
+  "scope": "Documentation authority, latest recorded design decisions, explicit supersession and version-bound acceptance. No repository mutation, UI or database verification. Not a full-worktree omission audit.",
+  "findings": [
+    {
+      "id": "AUTH-01",
+      "severity": "P1",
+      "title": "Review baseline still presented as authority despite superseded business model",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/README.md",
+          "line": 10,
+          "text": "权威正文：后续编辑入口"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 165,
+          "text": "一个回合从净持仓为零开始，到净持仓回到零结束"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 571,
+          "text": "既有正式完成条件继续有效：回合清仓…"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": "docs/design-system/trading-library-design-spec.md",
+          "line": 65,
+          "text": "一次主动平仓形成一个回合；67–79明确不要求证券持仓清零，已完成回合与已完成复盘分离"
+        }
+      ],
+      "minimal_fix": "Create a current progress/decision contract using the business spec; point top-level index and review README there. Relabel the old review body/HTML as dated rewrite candidate awaiting backfill; prominently enumerate superseded RV04/RV09 meanings. Preserve original source history and evidence; do not invent new review-completion thresholds or silently convert candidate synthetic rounds into real business rounds."
+    },
+    {
+      "id": "AUTH-02",
+      "severity": "P1",
+      "title": "Review old add/reduce forms and node-bound Text contradict later R01–R05 user decisions",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 218,
+          "text": "加仓前置节点先显示该次计划；220部分退出右侧明细展开"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 346,
+          "text": "Text默认展开短卡，最多同时展开两张"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 364,
+          "text": "新建Text归属当前D及选中批次"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 10,
+          "text": "用户选择右侧A，移除持仓判断，只有买入前/结束之后，不拆加仓减仓，持仓自由Text，符号bar同比缩小"
+        },
+        {
+          "path": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 20,
+          "text": "R01同股倒序交易列表；R02两阶段A表单；R03自由多条Text；R04约539×40、916:68比例；R05行情与表单分离"
+        }
+      ],
+      "minimal_fix": "Current contract must extract R01–R05 as latest recorded user directions and distinguish approved directions from unapproved full candidate. Put an explicit supersession table ahead of historical body and at main reader entry; retain candidate45, direct-v5, identity as separate versioned pending proposals. Do not reinstate old independent holding judgement or add/reduce forms."
+    },
+    {
+      "id": "AUTH-03",
+      "severity": "P2",
+      "title": "Active replay visibility contradicted in three current strategy rules",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+          "line": 373,
+          "text": "只有在用户处于跟随位置时才跟随新一天"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+          "line": 385,
+          "text": "TIME02用户在右边缘时跟随新bar"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+          "line": 632,
+          "text": "跟随模式才移动视野"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": "docs/agents/development-workflow.md",
+          "line": 33,
+          "text": "回放推进必须让新增K线或目标成交出现在主图，刷新/resize保留视野"
+        },
+        {
+          "path": ".scratch/visual-specs-consolidation-20261106/issues/03-core-design-alignment.md",
+          "line": 109,
+          "text": "ALIGN-ST05用户暂定采用横向缩放保留、必要平移以使主动推进目标可见"
+        }
+      ],
+      "minimal_fix": "Replace all three with consistent active-vs-passive action distinction, keep bar spacing/zoom and pan minimally only if target out of view; manual lookback pauses playback, passive refresh/resize preserves range. Rebuild generated HTML/identity/manifest. Do not infer new cursor/date semantics or change historical evidence. Exact pan policy remains tentative; target visibility is existing required workflow."
+    },
+    {
+      "id": "AUTH-04",
+      "severity": "P1",
+      "title": "Current strategy summary and SW06 still display rejected continuous right-aligned metric band",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+          "line": 323,
+          "text": "连续摘要与检查区采用公共扩展SW06"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-artboards.py",
+          "line": 176,
+          "text": "one continuous metric band; values right-aligned; helper bottom line"
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+          "line": 90,
+          "text": "连续摘要；single rect and end-aligned values"
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/README.md",
+          "line": 17,
+          "text": "88px metric band"
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+          "line": 28,
+          "text": "SW06金额右对齐scope includes summary"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": ".scratch/visual-specs-consolidation-20261106/issues/03-core-design-alignment.md",
+          "line": 54,
+          "text": "ALIGN-ST02修订2明确确认首页同款独立指标卡"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+          "line": 206,
+          "text": "四卡同时存在，高88，标签14/20，主值28/34；源图同一左起点"
+        }
+      ],
+      "minimal_fix": "For document PR, preserve confirmed revision2 SVG/PNG/source metadata inside repo and use it as authoritative summary reference. Explicitly mark old continuous-band summary in ST06/SW06 obsolete for that component, or update native SVG generators and outputs consistently. Separate metric-card label/value left alignment from table amount-column right alignment. 320/480 widths remain scoped proposals; do not turn them into global defaults. Old static PASS cannot validate revised figures."
+    },
+    {
+      "id": "AUTH-05",
+      "severity": "P2",
+      "title": "Review handoff still refers to historical library V1.0",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 43,
+          "text": "交易库规范链接V1.0 chapter-BT06"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": "docs/design-system/README.md",
+          "line": 7,
+          "text": "交易库视觉V2.0当前，V1.0历史"
+        }
+      ],
+      "minimal_fix": "Use business spec plus library V2.0 in current contract and current handoff entry. Old baseline reference may remain only under explicit historical banner. Avoid changing immutable historical evidence byte snapshots."
+    },
+    {
+      "id": "AUTH-06",
+      "severity": "P2",
+      "title": "Task03 still asks for per-detail confirmation after user changed scope",
+      "locations": [
+        {
+          "path": ".scratch/visual-specs-consolidation-20261106/issues/03-core-design-alignment.md",
+          "line": 134,
+          "text": "Current question ALIGN-ST07;143待用户确认"
+        },
+        {
+          "path": ".scratch/visual-specs-consolidation-20261106/issues/03-core-design-alignment.md",
+          "line": 148,
+          "text": "后续继续逐项确认"
+        }
+      ],
+      "current_authority": [
+        {
+          "path": "current chat",
+          "line": null,
+          "text": "剩余设计相关确认快速推荐，暂时认为暂定；目标merge所有已推进最新文档进展而非细节确认"
+        }
+      ],
+      "minimal_fix": "Record scope change literally; mark ST07 and remaining unconfirmed design recommendations tentative under bulk direction. Retain ST01/ST02 confirmed and ST03–ST06 tentative. Close only scoped decision collection, create separate current full-document PR integration task. Do not manufacture individual confirmation timestamps."
+    },
+    {
+      "id": "AUTH-07",
+      "severity": "P2",
+      "title": "Current-state wording can wrongly inherit historical static PASS",
+      "locations": [
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+          "line": 23,
+          "text": "当前状态：设计包已完成并通过静态视觉与阅读器验收"
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/README.md",
+          "line": 17,
+          "text": "2026-11-05 FAIL is historical but reader must combine banner"
+        }
+      ],
+      "minimal_fix": "Label the strategy acceptance as historical version-bound result and link source manifest/hash; separately state revised doc static verification and product NOT VERIFIED. Review current summary should state automatic overlap handling EXCLUDED, existing movement/width gaps and independent physical-input limits remain; do not derive new PASS by deleting overlap gate."
+    }
+  ],
+  "correct_existing_boundaries": [
+    {
+      "path": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md",
+      "line": 3,
+      "assessment": "Correctly preserves historical FAIL while excluding only the withdrawn Text-overlap requirement; do not rewrite old verdicts."
+    },
+    {
+      "path": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-direct-text-stage/coord-manual-check-20261106-v2/REPORT.md",
+      "line": 7,
+      "assessment": "Correctly states confirmed Text drag did not move, no independent display-width control, textarea vertical resize is not final text range. Keep this limitation."
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 552,
+      "assessment": "Correctly scopes strategy 54/200 navigation and 72 list as business variants; not conflict with homepage base dimensions."
+    },
+    {
+      "path": "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/README.md",
+      "line": 47,
+      "assessment": "Correctly says 21 old block IDs changed; current identity consistency does not prove old external bookmark compatibility."
+    }
+  ],
+  "integration_recommendation": "Preserve full latest document progress and provenance as requested; separate current normative entry, latest pending proposals, and dated archives. Previous 67-file compact-selection recommendation predates latest full-progress scope and is not authority to omit existing preserved progress. Inventory provenance and explicit index boundaries are necessary; preserving an old file does not promote its rules.",
+  "suggested_current_contract_sections": [
+    "Scope and authority order: latest user instruction, current business spec/current project workflow, confirmed component decisions, tentative proposals, historical reference",
+    "Latest document family/type coverage with source HEAD/hash and cutoff",
+    "Confirmed/tentative/superseded design table tied to repository-contained figures",
+    "Review R01–R05 and business round-definition override",
+    "Candidate45/direct-v5/identity separation plus explicit limitations",
+    "Version-bound static verification and independent review reports",
+    "Remote branch/PR status; no local master mutation"
+  ],
+  "limitations": [
+    "No full-worktree completeness conclusion; another reviewer owns source inventory.",
+    "No new direct chat read; latest chat/user decisions taken from inherited task and recorded literal evidence.",
+    "No browser, UI, product test, service or database interaction.",
+    "No changes to repository files. Only this /tmp report written."
+  ]
+}

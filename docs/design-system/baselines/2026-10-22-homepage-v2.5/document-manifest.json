@@ -55,7 +55,7 @@
       "sourceKey": "cb1c502553bcde3be09624be"
     },
     {
-      "id": "HOME-HP01-B001",
+      "id": "HOME-HP01-B031",
       "chapter": "HP01",
       "kind": "tablecell",
       "text": "取舍",
@@ -431,7 +431,7 @@
       "sourceKey": "295df9d33bcb467ab9318c3d"
     },
     {
-      "id": "HOME-HP11-B056",
+      "id": "HOME-HP11-B023",
       "chapter": "HP11",
       "kind": "tablecell",
       "text": "用途",
@@ -711,7 +711,7 @@
       "sourceKey": "888f2ed0aa4b0920b74cea63"
     },
     {
-      "id": "HOME-HP03-B060",
+      "id": "HOME-HP03-B003",
       "chapter": "HP03",
       "kind": "tablecell",
       "text": "操作",
@@ -935,7 +935,7 @@
       "sourceKey": "0fbe3deadc25a4b1c85a1c11"
     },
     {
-      "id": "HOME-HP03-B061",
+      "id": "HOME-HP03-B031",
       "chapter": "HP03",
       "kind": "tablecell",
       "text": "查看",
@@ -1215,7 +1215,7 @@
       "sourceKey": "fe5880688014ad8dc3247ef2"
     },
     {
-      "id": "HOME-HP02-B040",
+      "id": "HOME-HP02-B007",
       "chapter": "HP02",
       "kind": "tablecell",
       "text": "是",
@@ -1239,7 +1239,7 @@
       "sourceKey": "d6fdbad703cf29b774ce0196"
     },
     {
-      "id": "HOME-HP02-B041",
+      "id": "HOME-HP02-B010",
       "chapter": "HP02",
       "kind": "tablecell",
       "text": "是",
@@ -1263,7 +1263,7 @@
       "sourceKey": "79da2d0295c650b4af8e45c4"
     },
     {
-      "id": "HOME-HP02-B042",
+      "id": "HOME-HP02-B013",
       "chapter": "HP02",
       "kind": "tablecell",
       "text": "是",
@@ -1599,7 +1599,7 @@
       "sourceKey": "b50c974a3979263473834f4c"
     },
     {
-      "id": "HOME-HP04-B066",
+      "id": "HOME-HP04-B016",
       "chapter": "HP04",
       "kind": "tablecell",
       "text": "11%",
@@ -1607,7 +1607,7 @@
       "sourceKey": "e6624704355627d97f71fdba"
     },
     {
-      "id": "HOME-HP04-B067",
+      "id": "HOME-HP04-B017",
       "chapter": "HP04",
       "kind": "tablecell",
       "text": "右对齐；两位小数",
@@ -1623,7 +1623,7 @@
       "sourceKey": "c1387fceb3f3f1523c0091fb"
     },
     {
-      "id": "HOME-HP04-B068",
+      "id": "HOME-HP04-B019",
       "chapter": "HP04",
       "kind": "tablecell",
       "text": "11%",
@@ -1631,7 +1631,7 @@
       "sourceKey": "e6624704355627d97f71fdba"
     },
     {
-      "id": "HOME-HP04-B069",
+      "id": "HOME-HP04-B020",
       "chapter": "HP04",
       "kind": "tablecell",
       "text": "右对齐；两位小数",
@@ -1687,7 +1687,7 @@
       "sourceKey": "bf19bdbdf2866761285e0773"
     },
     {
-      "id": "HOME-HP04-B070",
+      "id": "HOME-HP04-B027",
       "chapter": "HP04",
       "kind": "tablecell",
       "text": "查看",
@@ -2071,7 +2071,7 @@
       "sourceKey": "0dc600ef7c7c8f6e2573a306"
     },
     {
-      "id": "HOME-HP05-B031",
+      "id": "HOME-HP05-B010",
       "chapter": "HP05",
       "kind": "tablecell",
       "text": "操作",
@@ -2807,7 +2807,7 @@
       "sourceKey": "9b80473f948408fa4e6fb83b"
     },
     {
-      "id": "HOME-HP09-B053",
+      "id": "HOME-HP09-B049",
       "chapter": "HP09",
       "kind": "tablecell",
       "text": "图表提示",
@@ -2855,7 +2855,7 @@
       "sourceKey": "9c424566fedc5d7ef53ac782"
     },
     {
-      "id": "HOME-HP08-B043",
+      "id": "HOME-HP08-B003",
       "chapter": "HP08",
       "kind": "tablecell",
       "text": "用途",
@@ -3063,7 +3063,7 @@
       "sourceKey": "4e1dcf742f951eefa3e2ec96"
     },
     {
-      "id": "HOME-HP08-B044",
+      "id": "HOME-HP08-B029",
       "chapter": "HP08",
       "kind": "tablecell",
       "text": "图表提示",
@@ -3175,7 +3175,7 @@
       "sourceKey": "171801ec10e9523f1759d2ae"
     },
     {
-      "id": "HOME-HP08-B045",
+      "id": "HOME-HP08-B043",
       "chapter": "HP08",
       "kind": "paragraph",
       "text": "策略研究需要将原子控件组织成完整任务。策略研究公共扩展 SW01–SW08提供导航、日期时间、四步向导、三包选择、多选列表、摘要与详情、回放和局部恢复的设计样例、状态与使用边界。扩展保留基础控件的视觉语言，同时明确54/200px导航、两行72px列表等业务差异；这些差异不改变首页布局。",
@@ -3183,7 +3183,7 @@
       "sourceKey": "ab6ae695c7bdf9b0e8542402"
     },
     {
-      "id": "HOME-HP08-B046",
+      "id": "HOME-HP08-B044",
       "chapter": "HP08",
       "kind": "paragraph",
       "text": "固定八行表和唯一全局修复入口属于首页实例。其他模块根据数据范围安排列表与恢复动作，不能直接继承这两项业务约束。基础12类/96状态统计与新增组合状态分开记录。",
@@ -3615,7 +3615,7 @@
       "sourceKey": "100937d8e70d3ca8bc2d65a2"
     },
     {
-      "id": "HOME-HP10-B037",
+      "id": "HOME-HP10-B069",
       "chapter": "HP10",
       "kind": "tablecell",
       "text": "V2.2修订",
@@ -3735,7 +3735,7 @@
       "sourceKey": "9149700e24fa92f387daf941"
     },
     {
-      "id": "HOME-HP10-B106",
+      "id": "HOME-HP10-B072",
       "chapter": "HP10",
       "kind": "tablecell",
       "text": "V2.2修订",
@@ -3759,7 +3759,7 @@
       "sourceKey": "5c24050816b8edcccad4b3ec"
     },
     {
-      "id": "HOME-HP10-B107",
+      "id": "HOME-HP10-B075",
       "chapter": "HP10",
       "kind": "tablecell",
       "text": "V2.2修订",
@@ -3783,7 +3783,7 @@
       "sourceKey": "b7dda2e51416718bab60659a"
     },
     {
-      "id": "HOME-HP10-B135",
+      "id": "HOME-HP10-B091",
       "chapter": "HP10",
       "kind": "tablecell",
       "text": "V2.2修订",
@@ -3911,7 +3911,7 @@
       "sourceKey": "f804998bea7b89e452435a46"
     },
     {
-      "id": "HOME-HP10-B136",
+      "id": "HOME-HP10-B139",
       "chapter": "HP10",
       "kind": "tablecell",
       "text": "取舍",

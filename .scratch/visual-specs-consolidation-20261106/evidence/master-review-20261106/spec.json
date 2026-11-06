@@ -1,0 +1,192 @@
+{
+  "review": "Independent Spec axis, read-only repository review; no Git/database/service mutation",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "diff": "git diff d95afc37d30f817edbd6daab41e85f485138de0d...7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "finding_count": 3,
+  "findings": [
+    {
+      "id": "SPEC-01",
+      "severity": "P1",
+      "category": "规格错误/业务冲突",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 165,
+      "title": "复盘正文仍以建仓至清零定义回合，冲突于master现行业务规则",
+      "user_requirement": "最新版本核心设计，无过时和矛盾设计；全项目词汇以当前交易库业务规范为准。",
+      "evidence": [
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 161,
+          "detail": "声称已确认的基础是交易回合描述一段持仓过程；165行回合从净持仓零至回到零；571行既有完成条件要求回合清仓。"
+        },
+        {
+          "file": "docs/design-system/trading-library-design-spec.md",
+          "line": 65,
+          "detail": "一次主动平仓形成一个实盘复盘回合；67至79行明确无需证券全部清仓，取代旧解释。"
+        }
+      ],
+      "disposition": "defer整份复盘正式正文/解释图/阅读页；抽取已确定规则时必须引用当前业务规范，不能沿用回合零至零或擅自确定新完成门槛。保留本分支原始历史。"
+    },
+    {
+      "id": "SPEC-02",
+      "severity": "P1",
+      "category": "需求缺失/正文过时",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 218,
+      "title": "正式正文与用户后续已确定的记录区和Text动线不一致",
+      "user_requirement": "先原型确认后回填正式；最新明确反馈应作为后续设计约束，但不得把整个当前候选升级为已批准。",
+      "evidence": [
+        {
+          "file": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 10,
+          "detail": "10/24用户选择右侧A；移除持仓判断；只分买入前/结束之后，不拆加减仓；Text与Bar映射不套买卖节点；缩小工具条。20至24行记录精确R01至R05。"
+        },
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 218,
+          "detail": "正文仍在加仓前显示该次计划；220行部分退出右侧明细；257行入场揭示后右栏显示当前节点和摘要；346行Text默认最多同时展开两卡；144行工具条候选647×48。"
+        },
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js",
+          "line": 887,
+          "detail": "当前候选holding只显示轨道提示，不呈现右侧输入；186行map所有当前可知Text；当前原型不同于正式正文。"
+        },
+        {
+          "file": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 32,
+          "detail": "用户整体视觉确认仍待审阅，正式规范未回填。"
+        }
+      ],
+      "disposition": "只把R01至R05已记录用户选择提炼为决策约束；候选45/direct-v5/identity、精确断点、工具身份、评分算法保持工作分支待审，不用旧正式包冒充最新版本。"
+    },
+    {
+      "id": "SPEC-03",
+      "severity": "P2",
+      "category": "规格错误/过时引用",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 43,
+      "title": "复盘规范交接依据仍指向历史交易库V1.0",
+      "user_requirement": "master保留最新核心设计，删除或隔离过时、矛盾权威入口。",
+      "evidence": [
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 43,
+          "detail": "规范衔接表交易库规范指向2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT06。"
+        },
+        {
+          "file": "docs/design-system/README.md",
+          "line": 7,
+          "detail": "当前交易库视觉V2.0、业务规范均已在master，V1.0标记历史工作版本。"
+        }
+      ],
+      "disposition": "提炼/后续正式稿使用trading-library-design-spec.md与V2.0当前交接规则；保全分支历史引用不改写，但不能原样放入最新规范入口。"
+    }
+  ],
+  "approval_boundary": {
+    "preservation": "资料整合完整性/字节PASS不构成master范围或用户设计批准。当前分支作为完整保全是正确用途。",
+    "strategy": "10/24 01:24:04用户明确要求对齐公共、独有组件纳公共、形成V1.2；可作为最新设计方案进入master。02:16:30是助手交付，不能标已获用户正式批准/产品验收。未发现应整体拒绝V1.2的实质现行业务冲突；54/200/48明确登记为策略业务变体，不能仅凭不同于首页72/64判冲突。",
+    "review": "原型先审阅再回填。已明确选择可以记录，不能据此批准全部候选；11/6取消Text自动避让仅撤销专项验收，不证实手动拖动或显示范围调整可用。identity仍待审。",
+    "review_extractable_rules": [
+      "全幅复盘工作区，关闭回交易库，左右可收缩；继承V2.5公共颜色文字焦点。",
+      "同一股票按时间倒序交易列表；A连续表单仅买入前/结束后，持仓无独立判断/加减仓表单；保留真实图表和成交回放。",
+      "图上多条自由Text不强绑买卖节点；符号条按比例缩小；保留13槽与回放专用参考，但未知工具身份/手势不当成已批准。",
+      "原始成交只读、双截止、未知不填零、计划风险冻结、信息来源与重开可追溯。",
+      "当前实盘回合以一次主动平仓及对应开仓决策定义，不要求剩余持仓清零；模拟练习以导入文件为单位。",
+      "11/6不要求Text/Text或Text/成交专项自动避让，同点可读性不单独阻断；保留历史FAIL语境，其他验收不自动PASS。"
+    ],
+    "review_not_extractable_as_approved": [
+      "identity顶栏补充整案",
+      "候选45/direct-v5完整交互布局",
+      "全部精确像素和响应式断点",
+      "默认评分阈值算法",
+      "TradingView未知槽位身份和完整动作",
+      "真实持久化完成状态和手动Text拖动/调整范围能力"
+    ]
+  },
+  "path_recommendations": [
+    {
+      "decision": "keep",
+      "paths": [
+        "docs/design-system/baselines/2026-10-22-homepage-v2.5/**",
+        "docs/design-system/baselines/2026-10-26-trading-library-v2.0/**",
+        "docs/design-system/trading-library-design-spec.md",
+        "docs/design-system/trading-library-design-spec.html"
+      ],
+      "scope": "保留master已存在当前核心；不重迁历史包。V2.5本次5文件增补与SW一并审核，属于公共作用域澄清和扩展，不等同公共整站重做。"
+    },
+    {
+      "decision": "keep",
+      "paths": [
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/*.py",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build*.py",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/**",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/example-data.json",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-*.json",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/start-preview.sh",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/**",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/**",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final-manifest.json",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/**",
+        "docs/design-system/shared/strategy-workbench-v1.2/**"
+      ],
+      "scope": "作为V1.2最新静态设计方案和可维护生成链；不是已批准当前产品。内部history仅引用溯源，最终验收证据绑定版本；旧失败不可改为通过。其他证据按实际引用最小闭包选取，非全目录自动入。"
+    },
+    {
+      "decision": "exclude",
+      "paths": [
+        "docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/**",
+        "docs/design-system/reviews/STRATEGY-DESK-V10.json",
+        ".scratch/strategy-visual-v1/**",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/0ff3/**",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/**",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/master/**"
+      ],
+      "scope": "从本次master核心设计选集排除，完整保全分支留存。V1.2 DESIGN-COVERAGE.md:19仅文字引用V1.0首表，可迁最小元素映射到V1.2；build-design.py:7–17及SW生成器只依赖本版与SW，V1.0不是runtime依赖，不该为一句引用带入整个203文件旧包。"
+    },
+    {
+      "decision": "defer",
+      "paths": [
+        "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/**",
+        ".scratch/review-workspace-design-map/**",
+        ".scratch/review-visual-v1/**",
+        "docs/design-system/reviews/REVIEW-WORKSPACE-V10.json"
+      ],
+      "scope": "整包在当前工作分支保全；正式正文存在SPEC-01至03，原型仍待审。允许另外制作精简当前用户决策文件入master，逐项引用上列用户确认规则；不把候选代码或旧全量正文视为批准内容。"
+    },
+    {
+      "decision": "exclude",
+      "paths": [
+        ".scratch/homepage-v25-implementation/visual-contract.md",
+        ".scratch/trading-library-v20-development/visual-contract.md",
+        ".scratch/trading-library-v20-development/evidence/source-manifest.json"
+      ],
+      "scope": "从最新核心视觉规范选集排除：执行任务历史非新设计。首页契约:3仍限定旧交易库V1.0局部接线；交易库契约:21–23含旧手机键盘任务范围。若要保留追溯需显式执行历史目录/日期标识，不作为当前范围授权。"
+    },
+    {
+      "decision": "keep",
+      "paths": [
+        "docs/design-system/README.md"
+      ],
+      "scope": "只保留当前核心和最新方案入口；移除本次新增旧策略V1.0导航与整合分支档案的当前规范式入口；复盘只链接精简已确定决策，不链接旧整包为当前规范。"
+    },
+    {
+      "decision": "defer",
+      "paths": [
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/**"
+      ],
+      "scope": "全量迁移台账及大清单主要服务保全分支；master如需来源证据只抽取相关chat_evidence/版本哈希/边界说明，非把全部历史和候选带入。"
+    }
+  ],
+  "limitations": [
+    "只读检查文档、生成器、JS、CSS与provenance中的聊天证据；未启动服务、未做新的浏览器视觉/功能验收。",
+    "未将已有旧验收重复认定为当前master验收；未直接重读聊天，批准判断限于已采集逐字用户决定与明确限制。",
+    "未修复上述问题或选择提交；本报告只给出审查和选集建议。"
+  ]
+}

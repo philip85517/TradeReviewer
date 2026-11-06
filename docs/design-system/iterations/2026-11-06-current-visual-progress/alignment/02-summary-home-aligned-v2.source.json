@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-11-06T08:50:10+08:00",
+  "status": "proposal-awaiting-user-confirmation",
+  "feedback": "视觉排版的方式规范与类似的信息块不一致，建议参考首页设计文档中的排版规范",
+  "referenceRow": "Unchanged home-1440.svg g children 43:55; translation only",
+  "proposalRow": "Derived from home metric geometry; 1240px available width, 4*301px cards, 12px gaps, 88px height; labels and values share 16px left inset; static info icons replace redundant footer explanations",
+  "scope": "Design discussion; no product code or authoritative spec edits; no UI behavior/persistence acceptance",
+  "sources": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg",
+      "sha256": "a1863fc7f0be221b4e6b25a3d5ad97abbe45758b01fbb5471c16a2f34dba3c6a"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "2026761a8546bcf1440ccfbf5a6bc49d6be670ffc63cb52c51e55741b03c30ad"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+      "sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d"
+    }
+  ]
+}

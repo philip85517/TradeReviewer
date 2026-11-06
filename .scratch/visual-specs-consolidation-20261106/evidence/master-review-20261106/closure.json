@@ -1,0 +1,2955 @@
+{
+  "read_only_audit": true,
+  "base": "d95afc37",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "scope": "Strategy V1.2 + shared extensions + five homepage V2.5 changes; static file/reference analysis only, no browser/service/db or build executed",
+  "include": [
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 170189,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 181195,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 67523,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 62772,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 354922,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 8536,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 1308,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 3918,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-design.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 851,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 61060,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-identity.json",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 116503,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-manifest.json",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 120214,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final-manifest.json",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 30117,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reader-controls.json",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 19633,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 7071,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 9126,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 6368,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/validation.json",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 6750,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 1843,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 12141,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/review-client.css",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 8539,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/review-client.js",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 53116,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+      "classes": [
+        "minimal_acceptance_trace"
+      ],
+      "bytes": 4471,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-artboards.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 13260,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-library-forms.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 33333,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-responsive.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 8686,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-time-results.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 15006,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/example-data.json",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 719,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01-library.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 21554,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01b-package-management.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 10559,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/02-compose.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 19554,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/03-experiments.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 13773,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04-create.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 13569,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04b-select-strategies.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 19718,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-confirm.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 12441,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-preview.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 14406,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe-status-detail.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 5969,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 25736,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-controls-detail.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 7237,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-states.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 24065,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07a-t0.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 12010,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07b-first-day.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 12944,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07c-lookback.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 12039,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/08-results.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 25795,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/09-compare.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 24975,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/10-states.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 15858,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 17824,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-narrow.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 15203,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-responsive.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 9180,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/12-components.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 25451,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/shared-primitives.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 6036,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/test-details-rendering.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 3607,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/verify-document.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 2964,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 62018,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/start-preview.sh",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 327,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 251049,
+      "whole_file_safe": false
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/README.md",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 1586,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+      "classes": [
+        "rebuild_required"
+      ],
+      "bytes": 12707,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 7950,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw01-navigation.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 10384,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw02-date-time.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 10420,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw03-steps.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 5673,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw04-package-slots.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 11778,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw05-multi-select.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 6321,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw06-summary-detail.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 4870,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw07-replay.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 4514,
+      "whole_file_safe": true
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/sw08-recovery.svg",
+      "classes": [
+        "reading_required"
+      ],
+      "bytes": 3941,
+      "whole_file_safe": true
+    }
+  ],
+  "requires_edit": [
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 19,
+      "reason": "V1.2 delegates original 74-element exact mapping/state chain to omitted V1.0 DESIGN-COVERAGE first table and history/index.json. Inline/adapt that first table into V1.2 with current chapter/board references; preserve approved rule IDs and business semantics. Do not include entire V1.0 package."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 722,
+      "reason": "Live source links to history/chat-findings.md, index.json, H11-VDF-002.md. Replace history navigation with durable current source references/provenance in V1.2. Do not bring all history snapshots; keep approved contracts unchanged."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 725,
+      "reason": "Live source links to history/chat-findings.md, index.json, H11-VDF-002.md. Replace history navigation with durable current source references/provenance in V1.2. Do not bring all history snapshots; keep approved contracts unchanged."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+      "line": 36,
+      "reason": "Repoint history/index.json and chat-findings.md provenance to compact retained provenance entry; source references H09/H10 must retain source identity without importing historical UI."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 2,
+      "reason": "Outdated V1.0 renderer description; metadata-only correction to V1.2."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 23,
+      "reason": "Optional fallback to ../2026-10-11-strategy-backtest-v2/visual-design.md is not needed for default V1.2 build. Remove legacy fallback or fail clearly if current authoritative source missing; do not import legacy baseline."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+      "line": 23,
+      "reason": "Historic acceptance/version statement and retained V1.0 claim requires precise archival boundary; retain historical fact but remove implication old assets shipped in compact master package."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "line": 37,
+      "reason": "Historical localhost preview service-running claim cannot be carried as current runtime claim; label as 2026-10-24 historical evidence."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 11,
+      "reason": "Historical FAIL/audit/round2 references intentionally excluded from current navigation: retain regression history as commit/archive pointers, not dangling local paths."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 15,
+      "reason": "Reference-home screenshot omitted under screenshot-free scope; replace live local link with homepage V2.5 current source plus hash/provenance, or retain exactly this screenshot if independent visual trace is required."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 45,
+      "reason": "Lines45–47 link omitted initial audit reports. Mark archive references and immutable Git revision instead of active local links; preserve FAIL and reopened history."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "line": 3,
+      "reason": "Evidence package pruning must distinguish historical static acceptance from new compact export; original SHA256 evidence stays immutable and claims must not imply all screenshots retained locally."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final-manifest.json",
+      "line": 1,
+      "reason": "Keep original acceptance manifest immutable as historical fingerprint; its screenshot/source list is not a compact-package inventory. Add/rebuild a separate current compact manifest rather than overwrite old validation as if reaccepted."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "line": 1,
+      "reason": "Generated: rebuild from precisely edited authoritative Markdown; do not hand edit generated links/identity."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-manifest.json",
+      "line": 1,
+      "reason": "Generated: rebuild after source metadata/link changes; preserve block/comment identity semantics."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-identity.json",
+      "line": 1,
+      "reason": "Generated: rebuild with manifest and review identity stability; no arbitrary reset."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/validation.json",
+      "line": 1,
+      "reason": "Historical report lists excluded history and old hashes; retain labelled historical or replace with fresh static-only check under distinct export record, never silently inherit PASS."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+      "line": 10,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+      "line": 10,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 3,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 58,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 59,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 60,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 61,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 62,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 63,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 64,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 65,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 69,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 70,
+      "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "line": 19,
+      "reason": "reader-controls.json is bare text but lives evidence/reader-controls.json. Clarify location while keeping historical evidence scope."
+    }
+  ],
+  "exclude_glob": [
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/**",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/**",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/**",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/**",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/*-review.md (except *-final-review.md)",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/*.png",
+    "**/__pycache__/**",
+    "**/.scratch/**",
+    "docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/**"
+  ],
+  "historical_only_excluded_exact": [
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/01-library.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/01b-package-management.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/02-compose.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/03-experiments.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/04-create.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/04b-select-strategies.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/05-confirm.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/06-observe-status-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/06-observe.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/07-time-controls-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/07-time-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/07a-t0.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/07b-first-day.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/07c-lookback.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/08-results.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/09-compare.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/10-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/11-compact.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/11-narrow.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/11-responsive.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/12-components.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/before/reference-home-1440.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/components.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/shared.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/visual.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/before-artboards.json",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01-library.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01b-package-management.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/02-compose.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/03-experiments.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04-create.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04b-select-strategies.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-confirm.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-preview.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe-status-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-controls-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07-time-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07a-t0.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07b-first-day.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/07c-lookback.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/08-results.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/09-compare.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/10-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-compact.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-narrow.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/11-responsive.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/12-components.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw01-navigation.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw02-date-time.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw03-steps.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw04-package-slots.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw05-multi-select.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw06-summary-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw07-replay.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw08-recovery.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/preview-v12.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/public-manual-desktop.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reference-home-1440.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reference-manifest.json",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review-manifest.json",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-review.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-review.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review-hashmanifest.json",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-review.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/01-library.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/01b-package-management.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/02-compose.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/03-experiments.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/04-create.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/04b-select-strategies.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/05-confirm.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/05-preview.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/06-observe-status-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/06-observe.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/07-time-controls-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/07-time-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/07a-t0.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/07b-first-day.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/07c-lookback.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/08-results.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/09-compare.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/10-states.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/11-compact.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/11-narrow.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/11-responsive.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/12-components.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw01-navigation.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw02-date-time.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw03-steps.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw04-package-slots.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw05-multi-select.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw06-summary-detail.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw07-replay.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/sw08-recovery.png",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H01-2026-09-29-strategy-portfolio-backtesting.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H06-README.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H07-visual-design.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H08-visual-design.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H09-observe-1440.jpg",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H10-observe-390.jpg",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H11-VDF-002.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/chat-findings.md",
+    "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/index.json"
+  ],
+  "statistics": {
+    "include_deduplicated": {
+      "count": 67,
+      "bytes": 2145175
+    },
+    "reading": {
+      "count": 42,
+      "bytes": 1639928
+    },
+    "rebuild": {
+      "count": 14,
+      "bytes": 395273
+    },
+    "trace": {
+      "count": 11,
+      "bytes": 109974
+    },
+    "excluded": {
+      "count": 108,
+      "bytes": 6953714
+    }
+  },
+  "local_html_link_gaps_in_compact_export": [
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "line": 1369,
+      "url": "source/history/chat-findings.md",
+      "target": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/chat-findings.md",
+      "exists_on_branch": true
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "line": 1377,
+      "url": "source/history/index.json",
+      "target": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/index.json",
+      "exists_on_branch": true
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "line": 1377,
+      "url": "source/history/H11-VDF-002.md",
+      "target": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H11-VDF-002.md",
+      "exists_on_branch": true
+    }
+  ],
+  "existing_master_html_dependencies": [
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 111,
+      "url": "review-client.css",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/review-client.css"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 208,
+      "url": "prototypes/round4/index.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round4/index.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 208,
+      "url": "prototypes/round5/index.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/index.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 212,
+      "url": "source/images/home-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 212,
+      "url": "source/images/home-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 212,
+      "url": "source/images/home-history-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 212,
+      "url": "source/images/home-history-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 213,
+      "url": "source/images/home-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 213,
+      "url": "source/images/home-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 213,
+      "url": "source/images/home-history-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 213,
+      "url": "source/images/home-history-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/home-history-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 244,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 245,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 245,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 245,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 310,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 343,
+      "url": "source/images/account.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/account.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 343,
+      "url": "source/images/account.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/account.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 343,
+      "url": "source/images/account.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/account.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search--empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search--empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-motion.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-motion.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-motion.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-overlay-open.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-open.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-overlay-open.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-open.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-overlay-reduced-motion.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-reduced-motion.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 387,
+      "url": "source/images/search-overlay-reduced-motion.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search-overlay-reduced-motion.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 388,
+      "url": "source/images/detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 388,
+      "url": "source/images/detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 388,
+      "url": "source/images/detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/filter.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/filter.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/multi-applied.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/multi-applied.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/multi-applied--reopen.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied--reopen.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/multi-applied--reopen.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/multi-applied--reopen.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/clear-attachments.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/clear-attachments.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/clear-attachments--after-clear.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments--after-clear.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/clear-attachments--after-clear.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/clear-attachments--after-clear.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/reset.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/reset.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/reset--reset.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset--reset.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/reset--reset.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/reset--reset.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/cancel.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/cancel.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/cancel--cancelled.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel--cancelled.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 420,
+      "url": "source/images/cancel--cancelled.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/cancel--cancelled.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 457,
+      "url": "source/images/period.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/period.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 457,
+      "url": "source/images/period.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/period.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 457,
+      "url": "source/images/period.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/period.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-hover.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-hover.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-hover--keyboard.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover--keyboard.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-hover--keyboard.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-hover--keyboard.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-gap.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-gap.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-gap.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--normal.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--normal.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--normal.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--normal.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--wide.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--wide.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--wide.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--wide.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 488,
+      "url": "source/images/chart-scale--extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/chart-scale--extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales--ten-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales--ten-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales--ten-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales--ten-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales--twenty-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales--twenty-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 572,
+      "url": "source/images/count-scales--twenty-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-scales--twenty-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages--one-match.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--one-match.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages--one-match.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--one-match.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages--clear.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--clear.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 576,
+      "url": "source/images/local-search-pages--clear.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/local-search-pages--clear.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 577,
+      "url": "source/images/50-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 577,
+      "url": "source/images/50-items.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 577,
+      "url": "source/images/50-items--page-7.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items--page-7.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 577,
+      "url": "source/images/50-items--page-7.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/50-items--page-7.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return--after.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--after.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 581,
+      "url": "source/images/holding-return--after.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-return--after.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 612,
+      "url": "source/images/empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 612,
+      "url": "source/images/empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 612,
+      "url": "source/images/empty--zero-holdings.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty--zero-holdings.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 612,
+      "url": "source/images/empty--zero-holdings.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty--zero-holdings.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 613,
+      "url": "source/images/count-boundaries.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 613,
+      "url": "source/images/count-boundaries.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 613,
+      "url": "source/images/count-boundaries--nine-items-last-page.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries--nine-items-last-page.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 613,
+      "url": "source/images/count-boundaries--nine-items-last-page.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/count-boundaries--nine-items-last-page.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 614,
+      "url": "source/images/extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 614,
+      "url": "source/images/extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 614,
+      "url": "source/images/extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 652,
+      "url": "prototypes/round5/history.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/history.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-cumulative.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-cumulative.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-cumulative.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-cumulative.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-win.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-win.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-win.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-win.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-rounds.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-rounds.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 653,
+      "url": "source/images/history-stats-rounds.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-rounds.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 655,
+      "url": "prototypes/round5/history.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/history.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/journeys-year.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-year.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/journeys-year.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-year.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-source-missing.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-source-missing.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-source-missing.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-source-missing.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 656,
+      "url": "source/images/history-stats-extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/history-stats-extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 664,
+      "url": "prototypes/round5/contribution.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/contribution.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-states.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-states.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-states.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-states.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-current-a-share.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-current-a-share.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-current-a-share.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-current-a-share.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-historical-a-share.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-historical-a-share.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 665,
+      "url": "source/images/contribution-historical-a-share.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-historical-a-share.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-loading.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-loading.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-loading.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-loading.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-extreme.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-extreme.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-mixed-sign-demo.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-mixed-sign-demo.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 667,
+      "url": "source/images/contribution-mixed-sign-demo.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/contribution-mixed-sign-demo.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 669,
+      "url": "prototypes/round5/contribution.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/contribution.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 673,
+      "url": "../2026-10-22-trading-library-v1.0/visual-spec.html",
+      "target": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 697,
+      "url": "source/images/journeys-library-entry.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-library-entry.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 697,
+      "url": "source/images/journeys-library-entry.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/journeys-library-entry.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 700,
+      "url": "source/images/hcr06-final-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/hcr06-final-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 700,
+      "url": "source/images/hcr06-final-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/hcr06-final-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 700,
+      "url": "source/images/library-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/library-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 700,
+      "url": "source/images/library-return.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/library-return.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 701,
+      "url": "../2026-10-22-trading-library-v1.0/visual-spec.html",
+      "target": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/empty--zero-holdings.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty--zero-holdings.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/empty--zero-holdings.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/empty--zero-holdings.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/loading.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/loading.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/loading--stale-data.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/loading--stale-data.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/loading--stale-data.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/error.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/error--update-failure.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/error--update-failure.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/error--update-failure.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/repair.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/repair.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 748,
+      "url": "source/images/repair.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/repair.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 857,
+      "url": "source/images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 858,
+      "url": "source/images/atoms.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atoms.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 858,
+      "url": "source/images/atoms.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atoms.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 858,
+      "url": "source/images/atoms.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atoms.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 920,
+      "url": "../2026-10-22-homepage-v2.4.2/visual-spec.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/visual-spec.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 930,
+      "url": "../2026-10-22-trading-library-v1.0/visual-spec.html",
+      "target": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 933,
+      "url": "review-records/split-comments.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/review-records/split-comments.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/review-records/2026-10-22-comment-repair/REPORT.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/review-records/2026-10-22-comment-repair/REPORT.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/source/revision-log.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/source/revision-log.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/source/reviews/2026-10-18-source/comments.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/source/reviews/2026-10-18-source/comments.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/source/comment-review.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/source/comment-review.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/review-records/integration-report.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/review-records/integration-report.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/review-records/comments.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/review-records/comments.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1018,
+      "url": "../2026-10-22-homepage-v2.4.2/review-records/integration-report.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.4.2/review-records/integration-report.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1044,
+      "url": "source/images/holding-option-A-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-A-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1046,
+      "url": "source/images/holding-option-B-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-B-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-normal-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-normal-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-normal-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-large-1440.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1440.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1048,
+      "url": "source/images/holding-option-C-large-1280.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/holding-option-C-large-1280.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1116,
+      "url": "source/inherited-contract.current.json",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/inherited-contract.current.json"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1116,
+      "url": "source/boards-index.json",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/boards-index.json"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "line": 1206,
+      "url": "review-client.js",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/review-client.js"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 102,
+      "url": "../../2026-10-22-trading-library-v1.0/visual-spec.html",
+      "target": "docs/design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 103,
+      "url": "../prototypes/round5/index.html",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/prototypes/round5/index.html"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 105,
+      "url": "images/visual-samples-board.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/visual-samples-board.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 112,
+      "url": "images/atom-iconbutton.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-iconbutton.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 112,
+      "url": "images/atom-iconbutton.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-iconbutton.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 112,
+      "url": "images/atom-iconbutton.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-iconbutton.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 199,
+      "url": "images/atom-segmentedtabs.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-segmentedtabs.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 199,
+      "url": "images/atom-segmentedtabs.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-segmentedtabs.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 199,
+      "url": "images/atom-segmentedtabs.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-segmentedtabs.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 286,
+      "url": "images/atom-select.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-select.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 286,
+      "url": "images/atom-select.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-select.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 286,
+      "url": "images/atom-select.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-select.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--detail.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--detail.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 373,
+      "url": "images/search--empty.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/search--empty.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 523,
+      "url": "images/filter.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 523,
+      "url": "images/filter.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 523,
+      "url": "images/filter.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/filter.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 527,
+      "url": "images/atom-token.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-token.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 527,
+      "url": "images/atom-token.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-token.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 527,
+      "url": "images/atom-token.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-token.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 614,
+      "url": "images/atom-metric.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 614,
+      "url": "images/atom-metric.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 614,
+      "url": "images/atom-metric.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-metric.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 701,
+      "url": "images/atom-statusbadge.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-statusbadge.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 701,
+      "url": "images/atom-statusbadge.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-statusbadge.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 701,
+      "url": "images/atom-statusbadge.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-statusbadge.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 788,
+      "url": "images/atom-datatable.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-datatable.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 788,
+      "url": "images/atom-datatable.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-datatable.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 788,
+      "url": "images/atom-datatable.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-datatable.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 875,
+      "url": "images/atom-charttooltip.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 875,
+      "url": "images/atom-charttooltip.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 875,
+      "url": "images/atom-charttooltip.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-charttooltip.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 962,
+      "url": "images/atom-emptystate.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-emptystate.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 962,
+      "url": "images/atom-emptystate.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-emptystate.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 962,
+      "url": "images/atom-emptystate.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-emptystate.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 1049,
+      "url": "images/atom-retryaction.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-retryaction.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 1049,
+      "url": "images/atom-retryaction.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-retryaction.svg"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+      "line": 1049,
+      "url": "images/atom-retryaction.svg",
+      "target": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/images/atom-retryaction.svg"
+    }
+  ],
+  "exact_dependency_lines": [
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 5,
+      "text": "本规范包含全站公共设计原则、基础视觉与共享控件，以及首页的完整设计。交易库内部设计由《交易库视觉设计方案 V1.0》承接；两份文档复用同一套公共标准。文档包含整页设计、模块规则、可切换的交互分镜和可复用控件。设计人员可以按章节阅读，开发人员可以查阅尺寸与状态，验收人员可以用最后的检查表逐项对照。图中的交易数据用于说明设计。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 34,
+      "text": "**操作范围可预测。** 全局范围与局部操作必须分开声明，范围变化让标签和数据一起更新。在首页，市场和账户作用于整页，期间只作用于期间统计，持仓搜索只作用于当前表格；交易库的范围归属由其 V1.0 方案明确。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 438,
+      "text": "交易库内部布局、实盘与练习列表、回合集、统计分布和复盘返回的设计，统一引用[《交易库视觉设计方案 V1.0》](../../2026-10-22-trading-library-v1.0/visual-spec.html)。本章只定义首页看得到的入口、交接内容和回到首页后的状态；目标页的图稿以该固定版本为准。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 459,
+      "text": "images/hcr06-final-return.svg|日期来源返回|恢复首页范围、滚动与日期入口焦点；交易库中间过程见 V1.0 对应分镜。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 463,
+      "text": "日期或筛选参数不合法时，目标页使用明确的默认值并提示，不能静默展示不同范围。传递参数与返回快照的精确约定见附录二；目标页内部如何修正条件、进入回合与复盘，见[交易库 V1.0](../../2026-10-22-trading-library-v1.0/visual-spec.html)。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 469,
+      "text": "状态语义、请求一致性、动效与减弱动效规则适用于全站。本章图稿和表内“四指标、八行槽、全局修复”采用首页实例：子模块按自身布局保留占位，不新增首页已有布局之外的区域；交易库的恢复动作见其 V1.0 异常章节。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "line": 582,
+      "text": "|交易库 V1.0|承接原第七章内部设计；按目标、布局、组件、动线与验收独立组织，引用本版公共规范|[交易库完整方案](../../2026-10-22-trading-library-v1.0/visual-spec.html)|"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 19,
+      "text": "业务元素原始精确来源与状态链按V1.0 DESIGN-COVERAGE.md首表及本版source/history/index.json完整保留；这里覆盖原21张及新增预览画板与本轮公共修复。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 23,
+      "text": "| 01-library.svg | LIB01–06/NAV01–03 | H03 SL01、10–18；H04 LIB01–11；V2.5 atoms.svg、home-1440.svg | Luna/library_forms | evidence/final/01-library.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 24,
+      "text": "| 01b-package-management.svg | LIB03–06 | H03 SL10–18；H04 LIB01–11；V2.5 atoms.svg | Luna/library_forms | evidence/final/01b-package-management.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 25,
+      "text": "| 02-compose.svg | ASM01–06 | H03 SL04–08；H04 IF03–05；V2.5 atoms.svg | Luna/library_forms | evidence/final/02-compose.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 26,
+      "text": "| 03-experiments.svg | EXP01–05 | H04 IF05、09；V2.5 visual-samples-board.svg | Luna/library_forms | evidence/final/03-experiments.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 27,
+      "text": "| 04-create.svg | WIZ01、05–08 | H02 四步A、T0；H04 IF05–06；V2.5 atoms.svg | Luna/library_forms | evidence/final/04-create.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 28,
+      "text": "| 04b-select-strategies.svg | WIZ02、05–08 | H02 四步A；H04 IF05–06；V2.5 atoms.svg | Luna/library_forms | evidence/final/04b-select-strategies.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 29,
+      "text": "| 05-preview.svg | WIZ03、05–08 | H02 四步C；H04 IF05–06；V2.5 atoms.svg | Luna/library_forms | evidence/final/05-preview.png，预览与确认分离 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 30,
+      "text": "| 05-confirm.svg | WIZ04–08 | H02 四步D；H04 IF05–06；V2.5 atoms.svg | Luna/library_forms | evidence/final/05-confirm.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 31,
+      "text": "| 06-observe-status-detail.svg | OBS01–08/NAV01–03 | V2.5 home-1440.svg/atoms.svg；H06–09观察 | Luna/shared_controls | evidence/final/06-observe-status-detail.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 32,
+      "text": "| 06-observe.svg | OBS01–08/NAV01–03 | V2.5 home-1440.svg/atoms.svg；H06–09观察 | Luna/shared_controls | evidence/final/06-observe.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 33,
+      "text": "| 07-time-controls-detail.svg | TIME01–08 | H01 时间规则；H02 DD02–DD16；H08 BT08；V2.5 atoms.svg | Luna/time_responsive | evidence/final/07-time-controls-detail.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 34,
+      "text": "| 07-time-states.svg | TIME01–08 | H01 时间规则；H02 DD02–DD16；H08 BT08；V2.5 atoms.svg | Luna/time_responsive | evidence/final/07-time-states.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 35,
+      "text": "| 07a-t0.svg | TIME01–08 | H01 时间规则；H02 DD02–DD16；H08 BT08；V2.5 atoms.svg | Luna/time_responsive | evidence/final/07a-t0.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 36,
+      "text": "| 07b-first-day.svg | TIME01–08 | H01 时间规则；H02 DD02–DD16；H08 BT08；V2.5 atoms.svg | Luna/time_responsive | evidence/final/07b-first-day.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 37,
+      "text": "| 07c-lookback.svg | TIME01–08 | H01 时间规则；H02 DD02–DD16；H08 BT08；V2.5 atoms.svg | Luna/time_responsive | evidence/final/07c-lookback.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 38,
+      "text": "| 08-results.svg | RES01–08 | H01 R04–06；H02 结果/事件；H04 IF08；V2.5 visual-samples-board.svg | Luna/time_responsive | evidence/final/08-results.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 39,
+      "text": "| 09-compare.svg | CMP00–05 | H02 比较与派生；H04 IF08–09；V2.5 visual-samples-board.svg | Luna/time_responsive | evidence/final/09-compare.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 40,
+      "text": "| 10-states.svg | ERR01–08 | H01/H02 失败恢复；H04 IF07；V2.5 atoms.svg | Luna/library_forms | evidence/final/10-states.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 41,
+      "text": "| 11-compact.svg | RSP01–05/OBS04/TIME06 | H06/H10；正文 ST11 断点表；V2.5 #sitewide-visual | Luna/time_responsive | evidence/final/11-compact.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 42,
+      "text": "| 11-narrow.svg | RSP01–05/OBS04/TIME06 | H06/H10；正文 ST11 断点表；V2.5 #sitewide-visual | Luna/time_responsive | evidence/final/11-narrow.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 43,
+      "text": "| 11-responsive.svg | RSP01–05/OBS04/TIME06 | H06/H10；正文 ST11 断点表；V2.5 #sitewide-visual | Luna/time_responsive | evidence/final/11-responsive.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 44,
+      "text": "| 12-components.svg | CMPNT01–14 | V2.5 #sitewide-visual、#chapter-HP08、atoms.svg、component-manual.html | Luna/library_forms | evidence/final/12-components.png，规范对照与独立复审 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+      "line": 63,
+      "text": "V10确认四步业务不合并。为清楚表达当前步骤，新增05-preview.svg独立第3步，05-confirm.svg只表示第4步。新增画板由library_forms负责，引用WIZ04与H01/H02；证据evidence/final/05-preview.png。此为补齐已批准流程的分镜表达，不改变产品流程。所有原21图继续复核，总计22图。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+      "line": 23,
+      "text": "当前状态：V1.2设计包已完成并通过静态视觉与阅读器验收；22张策略图稿与8张公共样例的三批独立复核结果见acceptance.md。原V1.0及其旧接受证据保留，公共视觉门禁已因本轮发现重开。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "line": 9,
+      "text": "HEAD为5a94ee3ff76e32993fe2c4791a83b40e877a7344，本次未提交/推送。工作内容以[evidence/final-manifest.json](evidence/final-manifest.json)中的SHA-256绑定，源码未提交不等于按HEAD旧内容验收。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+      "line": 33,
+      "text": "前轮FAIL与旧V1.0的回归重开记录保留。后续若修改任一图稿、业务状态或公共规则，必须按最终清单重新验证受影响范围。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 2,
+      "text": "\"\"\"Build the V1.0 strategy workbench design reader and its stable comment manifest."
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 339,
+      "text": "    if \".scratch/\" in parts.path or parts.path.startswith(\".scratch\") or \"/scratch/\" in parts.path:"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 885,
+      "text": "        \"evidence/acceptance.md\","
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+      "line": 963,
+      "text": "    manifest_json = json.dumps(manifest, ensure_ascii=False).replace(\"<\", \"\\\\u003c\").replace(\".scratch/\", \"\\\\u002e\" + \"scratch/\")"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+      "line": 10,
+      "text": "- 输入：root使用真实浏览器新抓取的 `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/*.png` 中指定10张。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+      "line": 12,
+      "text": "- 直接逐张使用view_image观察，并再次直接查看首页参考 `/private/tmp/strategy-audit-visual-evidence/reference-home-1440.png`；规范为首页V2.5 `source/visual-design.candidate.md` 公共章节。首页信息布局不同，比较的是公共层级、密度、颜色/表面、字阶、控件/图标与数值对齐，不将首页特有导航宽度当作策略台硬性规格。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 3,
+      "text": "日期：2026-10-24。审查者：audit_components，未参与实现。审查范围为协调者真实浏览器截图 `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw*.png` 8 张（1440×1000视口、SVG自然尺寸/fullPage），全部通过view_image直接查看；SW03/04/05在本轮协调者修复后再次逐张查看。并读取最终 `docs/design-system/shared/strategy-workbench-v1.2/manual.html`，核对尺寸、只读、键盘和入口定义是否与图一致。对照基线沿用前轮实际查看的V2.5首页公共参考图片及公共规范。另纳入最终06-observe.png新截图直接视觉复看，以及与前轮已查看round2证据SHA256完全相同的06-observe-status-detail.png，共10张。本轮不改源码。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 58,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw01-navigation.png`: `5930b20b0ee6e4d2e7478459f1c30595a183961a526d56d4208f926343cdfb59`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 59,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw02-date-time.png`: `1c0d932a99b9f5850aca36ae6a16c7727df2505444aef0ce493c1f9f7c87b3da`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 60,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw03-steps.png`: `e116dd1e775846c3ecf425914715aff6134d7e7636b51c8f30f0f8b22b040602`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 61,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw04-package-slots.png`: `019895b26b987b2705ac490c97135907dc7518f2d6ed31582e6e820b6b3af05c`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 62,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw05-multi-select.png`: `1fa0926255440b0f611eac71a2d98ffe5369b88db73c9658b85819d2745cd0d7`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 63,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw06-summary-detail.png`: `96375c46125f5011087160973a3e6a6d9b41e15e684e134231c0d98b8944da40`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 64,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw07-replay.png`: `34fc84aede0fd532617b3c67d4a8eeda30ae4cb8eb1234ef47d9c92755b954b1`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 65,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/sw08-recovery.png`: `d7687345b6a5b839141d140f186dca5807c80154fb1f0e0b2559432672020a40`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 69,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe.png`: `c95f4b78135cba2f13d4362569c95dcd2ae5d1df864d409cc6942002776d2f2b`"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+      "line": 70,
+      "text": "- `docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/06-observe-status-detail.png`: `7a11909d74d90c42185c969fbc160419a392523f3767d23ae38fa4d90f4c2b40`（与round2同名文件一致）"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+      "line": 10,
+      "text": "- 真实浏览器截图：同基线 `evidence/final/`；本审阅通过 view_image 逐张直接查看。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+      "line": 11,
+      "text": "- 基准：本会话已直看的 `/private/tmp/strategy-audit-visual-evidence/` 对应before截图、reference-home-1440.png、首页V2.5公共规范，以及策略V1.2的页面/状态契约。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 7,
+      "text": "| audit_visual | 策略库、包管理、组装、实验、四步创建、异常、控件，共10图 | [library](evidence/reviews/strategy-v12-library-final-review.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 8,
+      "text": "| audit_components | SW01–SW08及06观察/局部，共10图 | [shared](evidence/reviews/strategy-v12-shared-final-review.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 9,
+      "text": "| audit_shared | 时间5图、结果、比较、响应式3图，共10图 | [time](evidence/reviews/strategy-v12-time-final-review.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 11,
+      "text": "30/30张最终静态图稿通过。原始审计见evidence/audit，第二轮FAIL报告见evidence/reviews中的非final报告，失败截图见evidence/round2。旧V1.0的接受结论因公共风格问题重开，未回写为通过。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 13,
+      "text": "浏览器明确设置1440×1000 CSS视口；1280稿设置1280×1000、390稿设置390×1000，SVG自然尺寸fullPage截图。DPR与浏览器缩放未单独测量，不据此推断物理尺寸。工具输出截图可能为JPEG编码而以.png保存，解码尺寸以evidence/final-manifest.json为准；原始审查清单的PNG头推断尺寸不作为证据。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 15,
+      "text": "[首页参考截图](evidence/reference-home-1440.png)用于公共风格比较；不将首页72px侧栏、64px顶栏或固定八行当作策略硬性规格。策略保留54/200/48、88摘要、480详情和320检查区的设计契约。对应范围、元素、旅程与责任见[DESIGN-COVERAGE](DESIGN-COVERAGE.md)。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+      "line": 17,
+      "text": "最终接受版本由evidence/final-manifest.json记录源码、SVG和截图SHA-256。静态图稿通过不代表真实产品控件、键盘、回测、数据库或物理触摸通过。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 45,
+      "text": "- [公共规范审查与21图指纹](evidence/audit/shared.md)"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 46,
+      "text": "- [策略组合组件审查与状态样例要求](evidence/audit/components.md)"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 47,
+      "text": "- [独立视觉审查](evidence/audit/visual.md)"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 76,
+      "text": "| R2-L01–L15 | 文字重叠、预览误含提交、表头右界、时区标签、选择器越界、首行挤压、只读详情编辑、模式尺寸、行高、勾选矛盾、空列、表面层级、错误间距、恢复按钮、工程说明 | 15项关闭，见[library逐项表](evidence/reviews/strategy-v12-library-final-review.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 77,
+      "text": "| R2-C01–C07 | 参数缺实际控件、日期边界、排序状态、重复清除、离开草稿缺例、包详情混入本金、最新日仍突出返回 | 7项关闭，见[public与观察页逐项表](evidence/reviews/strategy-v12-shared-final-review.md)；原报告保留SH-01–07编号 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+      "line": 78,
+      "text": "| R2-T01–T09 | 负贡献方向、窄屏回放越界、结构示意压缩、内容删减、日期映射、交集误可编辑、失败原因、结果局部模式、表格行高 | 9项关闭，见[time逐项表](evidence/reviews/strategy-v12-time-final-review.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+      "line": 36,
+      "text": "精确原件路径与SHA-256见 `history/index.json`，聊天读取范围见 `history/chat-findings.md`，需求与图稿逐项对应见上级 `DESIGN-COVERAGE.md`。H03/H04支撑策略库、包管理、版本、四步创建和返回语义；H06/H07/H08支撑观察层级、T0、计划/实际分离及时间安全；H09桌面、H10窄屏用于同态层级对照。共享控件采用首页V2.5规范，全局导航图标与首页同源；策略台54/200/48布局尺寸保留。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+      "line": 54,
+      "text": "真实浏览器截图和独立视觉对照记录见上级 `independent-review.md`；原始FAIL及修订证据保留。最终范围及版本指纹见 `acceptance.md` 与 `evidence/validation.json`。本包不声称生产控件、真实行情图表、数据库持久化、物理触摸已验收。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/verify-document.py",
+      "line": 72,
+      "text": "(ROOT / 'evidence/validation.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n')"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 722,
+      "text": "| 聊天记录 | 用户要求说人话、理由与取舍、动态过程及整页组合 | 正文叙事、展开规则、可浏览图稿；[聊天摘要](history/chat-findings.md) |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 725,
+      "text": "来源原件的字节快照与哈希见[历史清单](history/index.json)，历史相对链接按原目录保存、不作为本版导航。[需求与元素映射](../DESIGN-COVERAGE.md)、[接受记录](../acceptance.md)、[包说明与启动](../README.md)提供实施与维护入口。采用历史VDF-002表达标准，来源见[标准快照](history/H11-VDF-002.md)。"
+    }
+  ],
+  "build_dependencies": {
+    "default": "build-design.py -> build-artboards.py/shared-primitives.py/example-data.json; saves observe two boards -> library/time/responsive layers -> shared/build-samples.py -> build-visual-spec.py -> current Markdown/identity/assets",
+    "requires_v1_0_baseline": false,
+    "history": "No SVG generator reads source/history; reader build resolves links and computes local resource fingerprints. verify-document checks every HTML href/src and therefore excluded live history links cause FAIL.",
+    "server": "start-preview.sh uses tools/document_review/server.py already present in master; document review assets local review-client.js/css included; no business DB",
+    "optional_legacy": "Renderer FALLBACK_SOURCE legacy path and companion relative_name legacy list are generic optional paths; normal current source works without those older packages.",
+    "verify": "source/verify-document.py lines34–45 local-link existence; lines55–58 hashes every non-evidence file under V1.2, so exclusion requires fresh static report. Writes evidence/validation.json lines71–72; not executed."
+  },
+  "decisions": [
+    {
+      "question": "Does screenshot-free export retain historical visual acceptance reports as archival proof only?",
+      "recommendation": "Yes. Preserve immutable hashes/report text and archive-revision pointers; do not claim new visual acceptance. If local screenshot trace required, explicitly add only final 30 screenshots + reference-home, not all history/round2."
+    },
+    {
+      "question": "Approved original business source identities H03/H04 absent on master; can compact provenance/exact adopted mapping replace bundled full old specs?",
+      "recommendation": "Inline exact adopted mappings and stable archive Git paths/hashes without changing any contract; if user requires offline full original specification, selectively include H03/H04 authoritative specs under source provenance, clearly historical. Do not import all source/history."
+    }
+  ],
+  "conclusion": "V1.2 assets/builds need no V1.0 baseline. Clean export is feasible but raw whole-file selection is not self-contained: precise provenance/navigation/acceptance edits and regenerated HTML/manifests are required. Homepage five files form one atomic update with shared extension assets.",
+  "excluded_history_scratch_links": [
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H01-2026-09-29-strategy-portfolio-backtesting.md",
+      "line": 13,
+      "text": "后续视觉与动线决策由[视觉原型决策地图](../../.scratch/strategy-portfolio-backtesting/issues/02-visual-journey-map.md)组织。先完成用户实际体验与反馈，再整理批准后的设计契约并进入实施拆票。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+      "line": 360,
+      "text": "- [本轮设计评审](../../.scratch/strategy-portfolio-backtesting/design-review-2026-09-29.md)：D01–D10 为本稿输入；D11 窄屏明确排除。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+      "line": 361,
+      "text": "- [TradeReview 视觉基线](../../.scratch/strategy-portfolio-backtesting/screenshots/creation-baseline-1440.jpg)、[当前桌面工作台](../../.scratch/strategy-portfolio-backtesting/screenshots/design-review-running-1440.jpg)：用于风格延续与差异核对，不是新布局的批准画板。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+      "line": 363,
+      "text": "- [本地设计规格票](../../.scratch/strategy-portfolio-backtesting/issues/08-desktop-ux-design-spec.md)：已标 ready-for-agent；含后续设计确认与验收清单。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+      "line": 379,
+      "text": "上文“本轮只生成文档/不修改原型代码”描述文档生成阶段；后续实施以 `.scratch/strategy-desktop-ux-v2/TICKET-PLAN.md` 和正式任务为准。功能设计范围不变：合成数据、内存原型、两档桌面；窄屏、真实数据/回测引擎/策略插件运行时和生产持久化继续排除。此授权不替代功能、状态、真实图表及独立视觉验收，也不授权提交远端。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 162,
+      "text": "用户对首版模型表示“整体ok”，追加 SL10/SL11。整体组织按模型 A 继续；本轮补充不等于新功能、最终像素或工作台模型已经验收。详见[修订模型 M11](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md)和[反馈记录](../../.scratch/strategy-portfolio-backtesting/comments/strategy-visual-09/2026-09-30-feedback-resolution.md)。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 172,
+      "text": "用户已要求 SL12–SL15；具体操作取舍见[模型 M12/J4 与 F10–F13](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md)，尚不代表用户已逐项批准默认值。三类目录统一用一行一个包身份的紧凑列表；历史版本在详情。搜索名称/说明/标签/标识，类型/标签/来源/生命周期分组过滤，默认未归档、最近规则版本发布降序、置顶优先。置顶只作用于匹配结果；筛选后分两组、各组内部按当前排序。查询改变回第一页，详情返回保留原查询/页码/焦点；多页/空库/无匹配/失败分别可解释。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 184,
+      "text": "从实验列表进入四步创建：设置起点→选择已有完整策略→预览组合→确认并进入待开始工作台。普通选择页与就地新建成功后态分开；创建策略为次动作，带原实验返回上下文。无实验来源保存只归库；实验来源保存成功追加选择并重新预检，取消保留原选择；已有运行不能因返回或库升级被重建。具体状态和静态样例见[模型M13及F14–F19](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md)。工作台运行仍属任务11，不在此轮替它实现。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 188,
+      "text": "SL17明确要求我的实验及完整策略列表都有顶部搜索、筛选、排序，布局与状态表达保持一致；具体设计见[模型M14](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md)。搜索/筛选/排序组合生效，独立保存各自查询，详情返回恢复来源位置；更改查询回第一页，区分无记录/无匹配/加载失败。排序字段与方向可辨识，不修改实验运行或策略版本。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 190,
+      "text": "卡片先做[专业评估](../../.scratch/strategy-portfolio-backtesting/strategy-library-card-ui-review.md)，记录两档桌面真实尺寸和信息冗余；尺寸压缩、字段整理与动作布局属于建议，须形成后续画板，不能把本次“给出建议”当成全部采纳。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 194,
+      "text": "按[模型M15](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md)及[UI06-01–05契约](../../.scratch/strategy-portfolio-backtesting/strategy-library-wireframes/STYLE-06-CONTRACT.md)统一19板：分段面包屑、同类输入/搜索/筛选和按钮尺寸、有限文字层级、中性边框与语义状态色。保留既有框架与卡片结构，不将密度建议顺带实施。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 257,
+      "text": "- [图 1 原始问题截图](../../.scratch/strategy-portfolio-backtesting/references/2026-09-30-round1-experiment-list.png)：2348×1346 像素；CSS 视口、DPR、缩放未知。顶部“策略实验 / 我的实验 / 实验列表”和中部实验卡说明当前缺口，不是新策略库设计稿，不能把像素尺寸当 CSS 断点。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 261,
+      "text": "- [v2 历史技术验收](../../.scratch/strategy-desktop-ux-v2/FINAL-ACCEPTANCE.md)：证明原合成原型范围，不证明新增策略库。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 265,
+      "text": "1. [09 — 策略库与实验的交互模型](../../.scratch/strategy-portfolio-backtesting/issues/09-strategy-library-interaction-model.md)：先给出关系图、完整操作动线、关键状态和低保真模型，收集用户反馈；不提前实现页面。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+      "line": 266,
+      "text": "2. [11 — 稳定工作台交互模型](../../.scratch/strategy-portfolio-backtesting/issues/11-stable-workbench-interaction-model.md)与 09 可并行；共同导航、策略身份和返回语义先对齐。[10 — 策略库组装与实验创建原型](../../.scratch/strategy-portfolio-backtesting/issues/10-strategy-library-creation-prototype.md)依赖 09 和 11，以确认的模型细化视觉并验证两条完整创建路径。布局目标见[同日稳定工作台方案](2026-09-30-strategy-stable-workbench-design.md)。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 11,
+      "text": "| “策略工作台迭代V1”：[策略库规格](2026-09-30-strategy-library-and-experiments.md)、[模型 M01–M15](../../.scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md) | 三类包、完整策略、历史复制、包规模管理、双列表查询、“我的实验”入口和四步创建、来源返回；M15/SL18/LD13/LT-P已反向引用本共同契约 | F01–F19 是静态画板；不能据其链接宣称真实保存/筛选/运行已接通 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 12,
+      "text": "| V1 当前[修订06契约](../../.scratch/strategy-portfolio-backtesting/strategy-library-wireframes/STYLE-06-CONTRACT.md) | 面包屑、表单尺寸、文字层级、用户文案、演示信息移出产品流 | 正在独立修订；该轮最终验收仍由原任务记录，本文件不提前替它签署通过 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 13,
+      "text": "| 本任务 [A 第三轮契约](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-CONTRACT.md)、[验收](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-ACCEPTANCE.md) | 固定布局、清晰文字操作、真实 K 线及自然间距、回放/回看分组、结果/事件返回、时间安全 | 独立合成内存原型已验收；未与策略库创建共享状态 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 14,
+      "text": "| 本任务 [A 第四轮契约](../../.scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-CONTRACT.md)、[验收](../../.scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-ACCEPTANCE.md) | 原站主题、Geist 字体、品牌、主次按钮、图表颜色 | A 桌面范围已通过；不自动证明融合后的展开导航和跨页布局通过 |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 136,
+      "text": "本轮设计映射与文档审查见[融合覆盖表](../../.scratch/strategy-portfolio-backtesting/v1-integration/DESIGN-COVERAGE.md)。09/11保持各自open状态；本轮解决共同设计契约，不代替新增画板接受或首次用户研究。10继续等待09/11按既有流程完成各自范围，再承担创建到工作台的接线；05/06承接观察/比较验证，生产实现仍归总票。不得新建一套与这些任务重叠的实施队列。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "line": 142,
+      "text": "- [融合记录、来源版本与审查](../../.scratch/strategy-portfolio-backtesting/v1-integration/README.md)。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 5,
+      "text": "当前跨页设计以[策略工作台迭代V1融合契约](2026-09-30-strategy-workbench-v1-integrated-design.md) IF01–10为准，局部尺寸和动作以[A第三轮契约](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-CONTRACT.md)及[第四轮契约](../../.scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-CONTRACT.md)为准。本文保留初始提案及历次决定；下文拟定尺寸、图标方案及当时未验收状态不能覆盖最新修订。融合后的实际导航、创建到工作台接线及视觉尚待验证。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 233,
+      "text": "- [图 1 当前工作台](../../.scratch/strategy-portfolio-backtesting/references/2026-09-30-round1-workbench-current.png)：2460×1498 像素，待开始/T0/单组合/净值；是问题依据，不是新设计目标。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 234,
+      "text": "- [图 2 TradingView 参考](../../.scratch/strategy-portfolio-backtesting/references/2026-09-30-round1-tradingview-reference.png)：2864×1662 像素；重点为图表下方红框内日期、播放、单步与速度控件及连续分区。截图含浏览器界面，CSS 视口、DPR、缩放未知，不能按图片像素冻结断点。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 237,
+      "text": "- [v2 原技术验收](../../.scratch/strategy-desktop-ux-v2/FINAL-ACCEPTANCE.md)：旧范围证据保留，新设计不自动继承 PASS。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 241,
+      "text": "[11 — 稳定工作台交互模型](../../.scratch/strategy-portfolio-backtesting/issues/11-stable-workbench-interaction-model.md)的A局部修复已按第三/四轮接受，09与11共同设计现归入[融合契约](2026-09-30-strategy-workbench-v1-integrated-design.md)。05 工作台原型须承接10的创建路径及11布局，06结果比较延续同一框架，07统一交接。融合后的实际导航、状态接线与视觉仍未接受；正式实现遵循先最小真实图表旅程、再扩展的门槛。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 245,
+      "text": "用户已明确选择 A 的固定主图和右侧详情方向，同时要求独立 UI 评审 K 线间隔、图标按钮和用户动线。见[决定记录](../../.scratch/strategy-portfolio-backtesting/comments/strategy-visual-11/2026-09-30-a-selection-and-clarity-review.md)及[评审 UR01–08](../../.scratch/strategy-portfolio-backtesting/workbench-design/REVIEW-02.md)。A 的选择不代表现有控件、K 线效果及所有尺寸已经批准。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 253,
+      "text": "用户“确认先修复上述问题”授权在独立工作台原型中落实本轮修订，准确尺寸、动作、时间边界与所有权见 [REPAIR-03-CONTRACT](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-CONTRACT.md)。真实图表组件承载独立合成 OHLC，净值仍为合成样本；这项授权不扩展到生产回测、业务数据库或 09 共享导航整合。最小真实 K 线推进已由协调者实际操作后接受，跨图与完整控件修复另行验收。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 255,
+      "text": "当前结论以 [第三轮验收记录](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-ACCEPTANCE.md)为准，第二轮 FAIL 留作历史，不能由新代码存在推定问题已关闭。A 方向已选，B/C 仅留作归档的历史候选，当前工具不提供切换；首次用户任务研究和物理触屏验证仍须独立记录。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 259,
+      "text": "A 方案 UR01–08 已在独立工作台原型中完成桌面修复，详见[修复记录](../../.scratch/strategy-portfolio-backtesting/comments/strategy-visual-11/2026-09-30-a-repair-resolution.md)与[验收记录](../../.scratch/strategy-portfolio-backtesting/workbench-design/REPAIR-03-ACCEPTANCE.md)。本轮使用真实 Lightweight Charts、固定图表/回放/检查区、可读控件名称和来源返回状态；1440×900 与 1280×800 的连续帧证据保存在 `repair-03-evidence/`。独立视觉复核通过桌面修复范围，最终持仓/现金汇总与末尾日期也已完成补充独立复核。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 265,
+      "text": "用户要求“再做一轮风格的修复，与原有的网页风格一致”。按[STYLE-04-CONTRACT](../../.scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-CONTRACT.md)统一原站颜色、Geist字体、BookOpenCheck品牌和主次动作，图表采用原站背景/网格/涨跌与蓝金线色。保留A固定分区、文字动作、12px初始K线间距及全部时间/来源状态。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+      "line": 267,
+      "text": "协调者真实浏览器旅程、状态/布局以及未参与实现者的直接视觉复核分别通过，证据见[第四轮验收](../../.scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-ACCEPTANCE.md)。原站历史截图实际1417×900且缩放未知，因此只比较组件语言，不宣称像素相同。11保持open / integration-pending；本次没有生产应用或数据库变更。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H06-README.md",
+      "line": 22,
+      "text": "截图来自本版本归档目录；原始参考和完整滚动记录仍在 [`observe-scroll-20261010.md`](../../observe-scroll-20261010.md) 及其[证据目录](../../../../../.scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/)中。归档截图不替代真实运行预览。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H06-README.md",
+      "line": 40,
+      "text": "- [完整恢复契约（原始范围）](../../../../../.scratch/strategy-visual-system-20261008/full-restore-contract.md)"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H06-README.md",
+      "line": 41,
+      "text": "- [任务票与 A01–A03 覆盖矩阵](../../../../../.scratch/strategy-visual-system-20261008/issues/06-visual-checkpoint-and-remote.md) · [DESIGN-COVERAGE](../../../../../.scratch/strategy-visual-system-20261008/DESIGN-COVERAGE.md)"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H07-visual-design.md",
+      "line": 30,
+      "text": "BT00 的目标设计与[策略工作台融合契约](../../../specs/2026-09-30-strategy-workbench-v1-integrated-design.md)一致。生产入口、保存和重开仍归旧任务 10（本地任务路径：`.scratch/strategy-portfolio-backtesting/issues/10-strategy-library-creation-prototype.md`）及其依赖；本册保留这个路径作为查找线索，不将其标记为通过。"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H07-visual-design.md",
+      "line": 276,
+      "text": "| BT13–14 · 文档 | 表达、规则准确、资源完整、网页展示四门槛独立 | 2.0网页的历史记录见[验证记录](../2026-10-11-strategy-backtest-v2/verification.md)与[独立审阅](../2026-10-11-strategy-backtest-v2/independent-review.md)；2.1内容边界见本地任务路径 `.scratch/strategy-document-2.1/evidence/content-report.md` |"
+    },
+    {
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/H11-VDF-002.md",
+      "line": 40,
+      "text": "长期内容进入 `docs/design-system/baselines/<日期与功能>/`；实现接受归档进入 `versions/` 或既有有效位置。`.scratch` 仅保存过程记录。必要证据不能只依赖本机服务或临时路径。"
+    }
+  ],
+  "notes": [
+    "Statistics are raw selected HEAD file bytes, not post-edit generated bytes; category counts can overlap, include_deduplicated is authoritative.",
+    "No files modified in repo. Only /tmp audit artifacts written. No service/browser/db/build invoked.",
+    "Precise .scratch line inventory is archival-only; no direct current V1.2 reader .scratch HTML gap detected.",
+    "Existing master tools/document_review dependency is required only for documented review server; plain static reader can load files without backend comments."
+  ]
+}

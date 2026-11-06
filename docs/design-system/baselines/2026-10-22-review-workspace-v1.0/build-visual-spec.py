@@ -278,7 +278,7 @@ def _next_id(chapter: str, used: set[str], next_numbers: dict[str, int]) -> str:
 
 
 def assign_block_ids(descriptors: list[dict[str, Any]], identity: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Attach stable IDs; matching is by explicit marker then unique sourceKey."""
+    """Attach stable IDs; matching is by explicit marker then sourceKey/chapter occurrence order."""
     existing = [entry for entry in identity.get("blocks", []) if isinstance(entry, dict) and entry.get("id")]
     by_explicit = {entry.get("id"): entry for entry in existing}
     by_key: dict[str, list[dict[str, Any]]] = {}
@@ -291,8 +291,9 @@ def assign_block_ids(descriptors: list[dict[str, Any]], identity: dict[str, Any]
         explicit = descriptor.get("explicitId")
         entry = by_explicit.get(explicit) if explicit else None
         if entry is None and not explicit:
-            candidates = [candidate for candidate in by_key.get(descriptor["sourceKey"], []) if candidate.get("id") not in used and str(candidate.get("id", "")).startswith("HOME-")]
-            if len(candidates) == 1:
+            candidates = [candidate for candidate in by_key.get(descriptor["sourceKey"], []) if candidate.get("id") not in used and candidate.get("chapter") == descriptor["chapter"]]
+            # Repeated cells keep their published IDs in document order.
+            if candidates:
                 entry = candidates[0]
         # A source marker is a durable identity declaration.  It is allowed
         # to introduce a new ID on the first build and then remains matched

@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-11-06T09:05:48+08:00",
+  "status": "tentative",
+  "alignmentId": "ALIGN-ST-05",
+  "sources": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/agents/development-workflow.md",
+      "sha256": "43203bdb9915e28c18b479585e1b2ade058aefa8e67dd2f902e64f29eff94146"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "2026761a8546bcf1440ccfbf5a6bc49d6be670ffc63cb52c51e55741b03c30ad"
+    }
+  ],
+  "derivation": "New native SVG behavior diagram using synthetic OHLC values. Not an original approved design image, product screenshot or runtime evidence. Identical bar spacing and price mapping in both panels. Blue dashed highlight is a review annotation.",
+  "existingInvariant": "Active replay advancement must reveal the target bar/trade in the main chart; manual lookback pauses autoplay.",
+  "proposal": "Keep horizontal zoom/bar spacing; minimally pan when the advancement target falls outside the viewport. Do not force a full-range fit on each step.",
+  "scope": "Viewport movement only. Does not define cursor/time-cutoff semantics, speed, vertical autoscaling or responsive layout.",
+  "userQuote": "暂定可以",
+  "decisionRecordedAt": "2026-11-06T09:26:36+08:00"
+}

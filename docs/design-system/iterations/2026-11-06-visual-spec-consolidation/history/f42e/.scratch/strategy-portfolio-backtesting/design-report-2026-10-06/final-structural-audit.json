@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "reference_sha256": "ba1e11258ff52659318a321462a5e598c7bed33cf991329eb91150788fcd1a7b",
+  "final_sha256": "16bc947e562d9bd8603a14de13545ff0ceecddd7ae1289bde88bfe1c7af511ec",
+  "changed_package_parts": [
+    "word/header1.xml",
+    "word/settings.xml",
+    "word/document.xml"
+  ],
+  "preserved_section_geometry": true,
+  "preserved_fields_and_bookmarks": true,
+  "preserved_rich_control_properties": true,
+  "preserved_footer_parts": true,
+  "recommendations": 8,
+  "required_source_paths_exist": true,
+  "ui_source_hashes_unchanged": {
+    ".scratch/strategy-portfolio-backtesting/strategy-library-wireframes/build.py": "b2ef5d51b40109edcd1614090f3707e5a79143d7ead493252c40266a57fa28f8",
+    ".scratch/strategy-portfolio-backtesting/strategy-library-wireframes/index.html": "3255408033915d9f92624ab50d92371739ce53f99958351a20a3e6c241313701"
+  }
+}

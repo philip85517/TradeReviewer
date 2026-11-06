@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-11-06T09:00:51+08:00",
+  "status": "tentative",
+  "alignmentId": "ALIGN-ST-04",
+  "sources": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+      "sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+      "sha256": "fa96046402f05608d88c315532eeff4d866b89c76cd57c8ea367996d2ac34b9a"
+    }
+  ],
+  "derivation": "ST06 children 70:114 unchanged, translated only; plot boundary and dimension guides added as review annotations",
+  "proposal": {
+    "standardPlotHeightPx": 360,
+    "compactMinPlotHeightPx": 320,
+    "exampleCardHeightPx": 510,
+    "scroll": "Outer vertical scrolling; lower replay area can require scrolling on short windows"
+  },
+  "scope": "Static desktop vertical budget proposal, no responsive acceptance, chart/replay behavior or product code changes",
+  "resumeQuote": "继续",
+  "userQuote": "暂定",
+  "decisionRecordedAt": "2026-11-06T09:04:55+08:00"
+}

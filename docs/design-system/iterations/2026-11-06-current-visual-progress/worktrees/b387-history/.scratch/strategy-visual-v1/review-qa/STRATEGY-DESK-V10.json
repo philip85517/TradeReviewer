@@ -1,0 +1,218 @@
+{
+  "comments": [
+    {
+      "actor": {
+        "name": "设计文档验收",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-22T16:21:59Z",
+      "documentId": "STRATEGY-DESK-V10",
+      "fingerprint": "66eb845342267ee6bab4c0fc10d4c118e3ab9005048d09f7f40c01512c3b3eb9",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "设计文档验收",
+            "role": "commenter"
+          },
+          "at": "2026-10-22T16:21:59Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-7d8de61a9fcb4d5998fb21f8b08fbfdc",
+      "image": {
+        "chapter": "DOC",
+        "fingerprint": "d120a3a06af2a32d749dc1bc615f3b01ec3a9a0134a7187c72853c9045920407",
+        "id": "ST06",
+        "occurrenceId": "ST06@5",
+        "src": "source/images/06-observe.svg"
+      },
+      "opinion": "隔离验收 A：验证主图评论保存，非用户设计意见。",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    },
+    {
+      "actor": {
+        "name": "设计文档验收",
+        "role": "commenter"
+      },
+      "anchors": [],
+      "createdAt": "2026-10-22T16:22:33Z",
+      "documentId": "STRATEGY-DESK-V10",
+      "fingerprint": "66eb845342267ee6bab4c0fc10d4c118e3ab9005048d09f7f40c01512c3b3eb9",
+      "history": [
+        {
+          "action": "create",
+          "actor": {
+            "name": "设计文档验收",
+            "role": "commenter"
+          },
+          "at": "2026-10-22T16:22:33Z",
+          "status": "pending-review"
+        }
+      ],
+      "id": "comment-3a16dc9382234c308e6de6ef05835a34",
+      "image": {
+        "chapter": "ST02",
+        "fingerprint": "0d69bed422f4c7f8722e8140b2dbfd11931821774ce8daa24559410bbdebec78",
+        "id": "01-library",
+        "occurrenceId": "01-library@45",
+        "src": "source/images/01-library.svg"
+      },
+      "opinion": "隔离验收 B：策略库图独立定位，刷新后保留。",
+      "quote": "",
+      "replies": [],
+      "revisions": [],
+      "segments": [],
+      "status": "pending-review",
+      "tasks": [],
+      "version": "1.0"
+    }
+  ],
+  "documentId": "STRATEGY-DESK-V10",
+  "operations": {
+    "46929323-2879-401b-9494-bfdcc2331fa8": {
+      "commentId": "comment-7d8de61a9fcb4d5998fb21f8b08fbfdc",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "设计文档验收",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-22T16:21:59Z",
+            "documentId": "STRATEGY-DESK-V10",
+            "fingerprint": "66eb845342267ee6bab4c0fc10d4c118e3ab9005048d09f7f40c01512c3b3eb9",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "设计文档验收",
+                  "role": "commenter"
+                },
+                "at": "2026-10-22T16:21:59Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-7d8de61a9fcb4d5998fb21f8b08fbfdc",
+            "image": {
+              "chapter": "DOC",
+              "fingerprint": "d120a3a06af2a32d749dc1bc615f3b01ec3a9a0134a7187c72853c9045920407",
+              "id": "ST06",
+              "occurrenceId": "ST06@5",
+              "src": "source/images/06-observe.svg"
+            },
+            "opinion": "隔离验收 A：验证主图评论保存，非用户设计意见。",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.0"
+          }
+        ],
+        "revision": 1,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 1
+    },
+    "cdcee606-80ca-4bab-b356-ca59c9b93e38": {
+      "commentId": "comment-3a16dc9382234c308e6de6ef05835a34",
+      "response": {
+        "comments": [
+          {
+            "actor": {
+              "name": "设计文档验收",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-22T16:21:59Z",
+            "documentId": "STRATEGY-DESK-V10",
+            "fingerprint": "66eb845342267ee6bab4c0fc10d4c118e3ab9005048d09f7f40c01512c3b3eb9",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "设计文档验收",
+                  "role": "commenter"
+                },
+                "at": "2026-10-22T16:21:59Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-7d8de61a9fcb4d5998fb21f8b08fbfdc",
+            "image": {
+              "chapter": "DOC",
+              "fingerprint": "d120a3a06af2a32d749dc1bc615f3b01ec3a9a0134a7187c72853c9045920407",
+              "id": "ST06",
+              "occurrenceId": "ST06@5",
+              "src": "source/images/06-observe.svg"
+            },
+            "opinion": "隔离验收 A：验证主图评论保存，非用户设计意见。",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.0"
+          },
+          {
+            "actor": {
+              "name": "设计文档验收",
+              "role": "commenter"
+            },
+            "anchors": [],
+            "createdAt": "2026-10-22T16:22:33Z",
+            "documentId": "STRATEGY-DESK-V10",
+            "fingerprint": "66eb845342267ee6bab4c0fc10d4c118e3ab9005048d09f7f40c01512c3b3eb9",
+            "history": [
+              {
+                "action": "create",
+                "actor": {
+                  "name": "设计文档验收",
+                  "role": "commenter"
+                },
+                "at": "2026-10-22T16:22:33Z",
+                "status": "pending-review"
+              }
+            ],
+            "id": "comment-3a16dc9382234c308e6de6ef05835a34",
+            "image": {
+              "chapter": "ST02",
+              "fingerprint": "0d69bed422f4c7f8722e8140b2dbfd11931821774ce8daa24559410bbdebec78",
+              "id": "01-library",
+              "occurrenceId": "01-library@45",
+              "src": "source/images/01-library.svg"
+            },
+            "opinion": "隔离验收 B：策略库图独立定位，刷新后保留。",
+            "quote": "",
+            "replies": [],
+            "revisions": [],
+            "segments": [],
+            "status": "pending-review",
+            "tasks": [],
+            "version": "1.0"
+          }
+        ],
+        "revision": 2,
+        "service": {
+          "storage": "local-file"
+        }
+      },
+      "revision": 2
+    }
+  },
+  "revision": 2,
+  "storeVersion": 1
+}

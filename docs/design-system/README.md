@@ -2,13 +2,14 @@
 
 |文档|版本与用途|备注|
 |---|---|---|
+|[11/6最新完整文档与决定](iterations/2026-11-06-current-visual-progress/README.md)|**当前进展总入口**|完整worktree核对；已确认/暂定/历史分开；冲突覆盖表与独立PR记录|
 |[交易库设计规范](trading-library-design-spec.html) · [源文档](trading-library-design-spec.md)|**当前业务逻辑规范**|统一领域词汇、练习与回合、导入保护、日期及统计口径|
 |[全站公共规范与首页完整设计](baselines/2026-10-22-homepage-v2.5/visual-spec.html)|**V2.5 · 当前规范**|全站原则、视觉基础和共享控件统一来源；首页保留完整布局及交易库入口|
 |[交易库视觉设计规范](baselines/2026-10-26-trading-library-v2.0/visual-spec.html)|**V2.0 · 当前交易库视觉规范**|依据《交易库设计规范》校正练习、复盘回合、日期、导入保护及统计图例；保留 E 布局|
 |[交易库 V1.1](baselines/2026-10-24-trading-library-v1.1/visual-spec.html)|历史冻结版本|保留 E 定型过程与原评论；逻辑修订见 V2.0|
 |[交易库 V1.0](baselines/2026-10-22-trading-library-v1.0/visual-spec.html)|历史工作版本|保留原评论和布局探索；现行交易库规范见 V2.0|
-|[复盘页视觉规范](baselines/2026-10-22-review-workspace-v1.0/visual-spec.html)|**V1.0 · 设计提案**|仅复盘工作区；三阶段、回放边界、记录、保存、响应式与导出；继承 V2.5 公共规范|
-|[策略台视觉方案](baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html) · [公共扩展 SW01–SW08](shared/strategy-workbench-v1.2/manual.html)|**V1.2 · 最新策略静态设计包**|10/24 聊天要求形成 V1.2；保留原静态验收，不代表用户正式批准或产品功能验收|
+|[复盘页视觉规范](baselines/2026-10-22-review-workspace-v1.0/visual-spec.html)|**V1.0 · 历史改写候选**|旧回合/表单/Text规则待按最新方向回填；先读11/6总入口，candidate45等仍待审|
+|[策略台视觉方案](baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html) · [公共扩展 SW01–SW08](shared/strategy-workbench-v1.2/manual.html)|**V1.2 · 最新策略静态设计包**|含11/6四卡与推进规则修订；仅分区/四卡已确认，其余暂定；原静态验收仅对应旧版本|
 |[策略台 V1.0](baselines/2026-10-22-strategy-workbench-v1.0/visual-spec.html)|历史设计与依赖|保留要素映射、旧验收与原 FAIL；后续视觉表达见 V1.2|
 |[11/6 本地视觉资料整合](iterations/2026-11-06-visual-spec-consolidation/README.md)|来源、聊天时间与 cherry-pick 记录|区分当前规范、未批准原型及历史；不代表已合入 master|
 |[拆分前完整快照](baselines/2026-10-22-homepage-v2.4.2/visual-spec.html)|V2.4.2 · 冻结基线|保存拆分前累计内容、图稿和43条评论；不作为后续新增修订入口|

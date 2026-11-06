@@ -1,0 +1,1019 @@
+{
+  "reviewed_at": "2026-11-06T02:52:03.173284+08:00",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "request": "评审哪些视觉规范设计应该进入master，只保留最新核心设计，不要过时和矛盾设计",
+  "status": "review-complete; normative cleanup not implemented; no design approval or master integration",
+  "selection_authority": "本文件为协调者综合建议；独立原报告原样保留。67文件仅依赖候选，whole_file_safe不是设计批准或可直接合并承诺。与Spec原报告宽泛保留source/history的建议不同，最终建议只迁精确映射/必要决策来源，整包历史不纳入核心。",
+  "recommendations": [
+    {
+      "content": "首页V2.5、交易库V2.0及当前业务规范",
+      "disposition": "retain-existing-master",
+      "reason": "已存在的当前核心；维持公共token与最新业务口径，不复制旧执行任务范围"
+    },
+    {
+      "content": "SW01–08与首页5文件增量",
+      "disposition": "include-after-targeted-cleanup",
+      "reason": "公共业务组合扩展；明确首页固定8行/唯一恢复入口仅首页，策略参数仅策略；提取时保留旧block ID或兼容锚点"
+    },
+    {
+      "content": "策略V1.2正文、22张SVG、生成源、阅读器与最少覆盖/溯源",
+      "disposition": "include-as-latest-design-proposal-after-cleanup",
+      "reason": "10/24有制作授权；新增尺寸/连续摘要/页面分配仍待用户评审，不能列为已批准现行规范"
+    },
+    {
+      "content": "复盘后续已明确方向及11/6Text取舍",
+      "disposition": "extract-current-decision-summary",
+      "reason": "只提取明确方向并遵守当前回合业务定义；不携带旧正文和全套原型；精确参数/未知工具/评分/新identity布局保持待审"
+    },
+    {
+      "content": "复盘V1.0整包、candidate45、direct-v5、identity",
+      "disposition": "defer-entire-pack",
+      "reason": "回合定义和记录动线过时；先原型确认后回填，不升级候选为批准"
+    },
+    {
+      "content": "旧策略V1.0、历史0ff3/f42e/B2、过程截图/日志和旧执行契约",
+      "disposition": "exclude-from-new-core-selection",
+      "reason": "继续留保全分支，必要已采用规则以精确映射及不可变版本引用保留；不是删除既有master历史"
+    }
+  ],
+  "standards_findings": [
+    {
+      "severity": "P2",
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 385,
+      "standard": "docs/agents/development-workflow.md:33；用户AGENTS：每次回放推进必须让新增K线或目标成交出现在可见主图。",
+      "description": "TIME02将跟随新bar限定为用户位于右边缘；正文373及632也只在跟随模式移动视野。用户平移或回看后主动下一日/播放时，此规则允许提交新日但继续停留旧视野，与359“新K线必须在主图中可见”、658最小旅程及项目强制验收契约冲突。这是设计状态合同矛盾，不是本次观察到的运行缺陷。",
+      "remedy": "区分被动布局/回看与主动推进：后者明确定位新增bar/目标成交（或要求先显式返回最新再启用推进），前者保留视野；同步TIME02、373、632及SW07，再以越过初始窗口的推进旅程为未来接受证据。"
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-01",
+      "severity": "P1",
+      "category": "规格错误/业务冲突",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 165,
+      "title": "复盘正文仍以建仓至清零定义回合，冲突于master现行业务规则",
+      "user_requirement": "最新版本核心设计，无过时和矛盾设计；全项目词汇以当前交易库业务规范为准。",
+      "evidence": [
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 161,
+          "detail": "声称已确认的基础是交易回合描述一段持仓过程；165行回合从净持仓零至回到零；571行既有完成条件要求回合清仓。"
+        },
+        {
+          "file": "docs/design-system/trading-library-design-spec.md",
+          "line": 65,
+          "detail": "一次主动平仓形成一个实盘复盘回合；67至79行明确无需证券全部清仓，取代旧解释。"
+        }
+      ],
+      "disposition": "defer整份复盘正式正文/解释图/阅读页；抽取已确定规则时必须引用当前业务规范，不能沿用回合零至零或擅自确定新完成门槛。保留本分支原始历史。"
+    },
+    {
+      "id": "SPEC-02",
+      "severity": "P1",
+      "category": "需求缺失/正文过时",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 218,
+      "title": "正式正文与用户后续已确定的记录区和Text动线不一致",
+      "user_requirement": "先原型确认后回填正式；最新明确反馈应作为后续设计约束，但不得把整个当前候选升级为已批准。",
+      "evidence": [
+        {
+          "file": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 10,
+          "detail": "10/24用户选择右侧A；移除持仓判断；只分买入前/结束之后，不拆加减仓；Text与Bar映射不套买卖节点；缩小工具条。20至24行记录精确R01至R05。"
+        },
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 218,
+          "detail": "正文仍在加仓前显示该次计划；220行部分退出右侧明细；257行入场揭示后右栏显示当前节点和摘要；346行Text默认最多同时展开两卡；144行工具条候选647×48。"
+        },
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js",
+          "line": 887,
+          "detail": "当前候选holding只显示轨道提示，不呈现右侧输入；186行map所有当前可知Text；当前原型不同于正式正文。"
+        },
+        {
+          "file": ".scratch/review-workspace-design-map/evidence/immersive-layout/revision-01/DESIGN-COVERAGE.md",
+          "line": 32,
+          "detail": "用户整体视觉确认仍待审阅，正式规范未回填。"
+        }
+      ],
+      "disposition": "只把R01至R05已记录用户选择提炼为决策约束；候选45/direct-v5/identity、精确断点、工具身份、评分算法保持工作分支待审，不用旧正式包冒充最新版本。"
+    },
+    {
+      "id": "SPEC-03",
+      "severity": "P2",
+      "category": "规格错误/过时引用",
+      "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+      "line": 43,
+      "title": "复盘规范交接依据仍指向历史交易库V1.0",
+      "user_requirement": "master保留最新核心设计，删除或隔离过时、矛盾权威入口。",
+      "evidence": [
+        {
+          "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "line": 43,
+          "detail": "规范衔接表交易库规范指向2026-10-22-trading-library-v1.0/visual-spec.html#chapter-BT06。"
+        },
+        {
+          "file": "docs/design-system/README.md",
+          "line": 7,
+          "detail": "当前交易库视觉V2.0、业务规范均已在master，V1.0标记历史工作版本。"
+        }
+      ],
+      "disposition": "提炼/后续正式稿使用trading-library-design-spec.md与V2.0当前交接规则；保全分支历史引用不改写，但不能原样放入最新规范入口。"
+    }
+  ],
+  "pre_integration_conditions": [
+    "统一策略主动下一日/播放与回看/跟随合同，确保主动推进看见新增K线或目标成交；同步正文TIME02和SW07",
+    "保留V1.2新增参数的待审身份；公共扩展不得把策略业务尺寸改成全站默认",
+    "将旧V1.0覆盖表中74元素精确映射迁入V1.2，并保留已采用规则的原始来源身份；不是导入整个旧包",
+    "删除历史目录后精确修复3处HTML依赖，重建当前Markdown生成页及manifest/identity；保留生成源和SW共享primitive依赖",
+    "首页增量保持旧block ID或兼容锚点；外部旧书签兼容仍未验证，不能继承原封不动的5文件为安全结论",
+    "历史视觉PASS/FAIL与哈希保持原版本意义；精简包重新做适用静态检查，不冒称当前视觉/功能验收",
+    "复盘仅提炼明确后续决策，现行业务一次主动平仓形成回合；不沿用从建仓到清仓定义或擅定完成门槛",
+    "更新master设计入口：当前规范和待审方案分别标识；保全分支历史不作为当前规范入口"
+  ],
+  "compact_dependency_candidate": {
+    "count": 67,
+    "bytes_at_review": 2145175,
+    "groups": {
+      "homepage_modified": 5,
+      "strategy_v1_2": 51,
+      "shared_SW": 11
+    },
+    "excludes_future_decision_summary_and_index_edits": true,
+    "paths": [
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 170189,
+        "whole_file_safe": true,
+        "sha256_at_review": "92daca788c868024667ea120316546c75f8691ce0ee4f0b81ebd3d78d1ee91b6",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 181195,
+        "whole_file_safe": true,
+        "sha256_at_review": "e008652e75d1e363174b3d0a62a0644e390dd235d26d9ebb5fa4cd0353eff534",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/component-manual.html",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 67523,
+        "whole_file_safe": true,
+        "sha256_at_review": "851126c871a27543ec1e067814eb60fbd00a08919581ee9454c7366dddf64a50",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 62772,
+        "whole_file_safe": true,
+        "sha256_at_review": "2026761a8546bcf1440ccfbf5a6bc49d6be670ffc63cb52c51e55741b03c30ad",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 354922,
+        "whole_file_safe": true,
+        "sha256_at_review": "6c2d1c73af6453690002900b24dbebab06ff3acb2789078b4e181c1579e5f42e",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 8536,
+        "whole_file_safe": false,
+        "sha256_at_review": "c2c0e4d39b11867a8e66d87d05bf1612516c1429d859b1876348695bdaf0f49a",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 1308,
+        "whole_file_safe": false,
+        "sha256_at_review": "b60be65dc8870d0c84193393e7d5f7a8252c8c9015c315c03daa4b255681d2b7",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 3918,
+        "whole_file_safe": false,
+        "sha256_at_review": "753a8646b39ee865700c0361dc69ae9b6a9131ce85661256bb8b2d2fd1b94e94",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-design.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 851,
+        "whole_file_safe": true,
+        "sha256_at_review": "bb0e6266fa5ef285de3b8eb7e0dbc4cd5037d4ff27fe1b770d7d1607726956ab",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 61060,
+        "whole_file_safe": false,
+        "sha256_at_review": "0c1036c5bbc57237d396cdc4c2c5055c746a022c6f3d6f8d1e487e513d304fcd",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-identity.json",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 116503,
+        "whole_file_safe": false,
+        "sha256_at_review": "5dfed12f4fb932d902a759138403f705c70d0d2476b1346e01ec5f0ce5f68870",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-manifest.json",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 120214,
+        "whole_file_safe": false,
+        "sha256_at_review": "d1fe15e53a108a2bfad0ee569ca7005ba28f12bd608f311f715133b37806c294",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final-manifest.json",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 30117,
+        "whole_file_safe": false,
+        "sha256_at_review": "600c58a2ab0c7046b28aaa61935bb10d4cdf35a6e8f47dd9285b4b2f2ac273cb",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reader-controls.json",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 19633,
+        "whole_file_safe": true,
+        "sha256_at_review": "7943df0c246c1ad8299269e66929a9baf14e04968174fbf399291a69f37ac2a9",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 7071,
+        "whole_file_safe": false,
+        "sha256_at_review": "f39871ff0a70105332f700e2eb0a6452c86282acbb1845abe90a65c3c8bb0f5c",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 9126,
+        "whole_file_safe": false,
+        "sha256_at_review": "3a2af94eb83b01f7f06c1b548e6673e2e97050f7d5781c1d28c1e960f03a0039",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 6368,
+        "whole_file_safe": false,
+        "sha256_at_review": "299dc0f0299aabdb210f909f2435eb47c7d6ae1c700701f1729fb43abbf3c59c",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/validation.json",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 6750,
+        "whole_file_safe": false,
+        "sha256_at_review": "9bfc9378acf951abc7ee1680f94c4b9c645dfc4312059e3f23d3a23d829464c8",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 1843,
+        "whole_file_safe": false,
+        "sha256_at_review": "d1f35e49f592a37b63aa983a3e555c17981a6ad1f995a60a48d146984e589212",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 12141,
+        "whole_file_safe": false,
+        "sha256_at_review": "f794c6a5d1ccd5d6d64c39f4bfaff8f77732d0b768873307ab49e98b499701bf",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/review-client.css",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 8539,
+        "whole_file_safe": true,
+        "sha256_at_review": "a7f8479ba7d61b74d32c2efe16c78193591d782e7a70d13a3874f0537fe47ab0",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/review-client.js",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 53116,
+        "whole_file_safe": true,
+        "sha256_at_review": "ceac59dbde3050515fa1ce042ea2dc9d092c7069e24e2abbabd94c8d30060551",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+        "classes": [
+          "minimal_acceptance_trace"
+        ],
+        "bytes": 4471,
+        "whole_file_safe": false,
+        "sha256_at_review": "c6bb684923857973dad2d120b5089881ed15eda42d196bccd508d7e17e058413",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-artboards.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 13260,
+        "whole_file_safe": true,
+        "sha256_at_review": "d5e516ad4a0ccc5287e2e5b94b8b73cb8a4dad9d329bb7a1bea308d43a779875",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-library-forms.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 33333,
+        "whole_file_safe": true,
+        "sha256_at_review": "547ccc126f6eeedaf99c507bed25dca647b19300c3a19ed26b912c815ebdb652",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-responsive.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 8686,
+        "whole_file_safe": true,
+        "sha256_at_review": "b9f37611315fc0fbe56bd175dd8a4b16b42d67b752ebd182af879cbb39d4d1e3",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-time-results.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 15006,
+        "whole_file_safe": true,
+        "sha256_at_review": "0dfb856df1d2781c8b91843044df0f313cb66df22d9748c608c35e5311f6c692",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/example-data.json",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 719,
+        "whole_file_safe": true,
+        "sha256_at_review": "733688cc3bd261662891c47cde987bc55774b7a0e1fd9449f41b373241cc055b",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01-library.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 21554,
+        "whole_file_safe": true,
+        "sha256_at_review": "b30590f591ce0677f7f9d9e35a914694774dff0d49525f66de3b4afd86aa8c01",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01b-package-management.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 10559,
+        "whole_file_safe": true,
+        "sha256_at_review": "c645fe0613080bc74ffbb0dbb43ef0b454ca9c6d4da948d55545069b95fba201",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/02-compose.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 19554,
+        "whole_file_safe": true,
+        "sha256_at_review": "7476f7527605538b0a5f613e6ea487100150a31822ff812c8a4e0ae41ec8259b",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/03-experiments.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 13773,
+        "whole_file_safe": true,
+        "sha256_at_review": "1d9e215f84144a66b9976d31d321587806f1b0df0ebc8bcf80372fda9b104799",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04-create.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 13569,
+        "whole_file_safe": true,
+        "sha256_at_review": "960356270c29bade3de214c921e1cb6f1ac910f6f3cf4eaebfab5e0efb7bd720",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04b-select-strategies.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 19718,
+        "whole_file_safe": true,
+        "sha256_at_review": "083c050255c032b25df8bf235b4b2bc3c3466de4e803ef152fc0d362f172ecdf",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-confirm.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 12441,
+        "whole_file_safe": true,
+        "sha256_at_review": "d4efa0552d8f5a1f8ba68d079243e7a74228f79d0913f5994b0e3a4fff689c4e",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-preview.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 14406,
+        "whole_file_safe": true,
+        "sha256_at_review": "62bfd6337e4e5114ec2381e7d05b29904e8a16b76e95e0012958d1d5e8e88ffc",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe-status-detail.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 5969,
+        "whole_file_safe": true,
+        "sha256_at_review": "c6f33c48b48408bfeb55664fc7b5f31fda61cef492d3d436dee0f0618564984c",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 25736,
+        "whole_file_safe": true,
+        "sha256_at_review": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-controls-detail.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 7237,
+        "whole_file_safe": true,
+        "sha256_at_review": "d3df9c98deb74271635703cbdb42d81cf308b69c1791c7ce348ba2daa72f3852",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07-time-states.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 24065,
+        "whole_file_safe": true,
+        "sha256_at_review": "3a9e31ef549fac126850aab60a89bd713b54171cbfc3399edab7656af9455229",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07a-t0.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 12010,
+        "whole_file_safe": true,
+        "sha256_at_review": "8425b4a2975d05b7abd670e4ecf6da9dc88a0818f8090ce5ed80f3fc808203b4",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07b-first-day.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 12944,
+        "whole_file_safe": true,
+        "sha256_at_review": "ea1279693f13eaf1c5252925df7613137485a0b87816f1080eb8ce74e34bb548",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/07c-lookback.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 12039,
+        "whole_file_safe": true,
+        "sha256_at_review": "cc3e04916bc2158bacea4cfc06cec980c53be3a9bcc0ba1b28cc2867778c2052",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/08-results.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 25795,
+        "whole_file_safe": true,
+        "sha256_at_review": "fc68c2f9efcac1b1433e884a15fa5688cd97a38d8beb566da479a21f2849f3e8",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/09-compare.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 24975,
+        "whole_file_safe": true,
+        "sha256_at_review": "7639edf08d7de2637d473efdb0a29e8d6d20cb8382b77ff89d7b1ce56105ee87",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/10-states.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 15858,
+        "whole_file_safe": true,
+        "sha256_at_review": "b0e47986a3e3cfd4c207a35746a94362ea82cc4ed3a8c1732634f604e2b628a9",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-compact.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 17824,
+        "whole_file_safe": true,
+        "sha256_at_review": "fa96046402f05608d88c315532eeff4d866b89c76cd57c8ea367996d2ac34b9a",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-narrow.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 15203,
+        "whole_file_safe": true,
+        "sha256_at_review": "5f74c7fe272aa280a064b69c1e791a216c3e39222f22c00e10ca4d14e9e8970b",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/11-responsive.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 9180,
+        "whole_file_safe": true,
+        "sha256_at_review": "eee63258a251d4468504ee4e30334ea95f794b4993cb7e2eba3ed43556f392af",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/12-components.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 25451,
+        "whole_file_safe": true,
+        "sha256_at_review": "d04f3f93e03289b43717f5e1ea6620982df2db9b64b3f28bbc4f0d6eb9748185",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/shared-primitives.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 6036,
+        "whole_file_safe": true,
+        "sha256_at_review": "29dcf4d37fe1ee5b1d9aa296dd2c6615f41d29ecd456a57eb3cb139bb9faf227",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/test-details-rendering.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 3607,
+        "whole_file_safe": true,
+        "sha256_at_review": "ae2d263b0c1bd7f4663faab531d3f324253a8e4233a4d0bce5f0cc3fdd1a8758",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/verify-document.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 2964,
+        "whole_file_safe": true,
+        "sha256_at_review": "ad95fbe828ff019ab3f8e3b835050a4aaa5dc9b83638a359906f33ac0c2cc4be",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 62018,
+        "whole_file_safe": false,
+        "sha256_at_review": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/start-preview.sh",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 327,
+        "whole_file_safe": true,
+        "sha256_at_review": "360ab88dee36a53d393818a417e4d1a55a45217417935c3c2526128def85c3b7",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 251049,
+        "whole_file_safe": false,
+        "sha256_at_review": "c5979e49cf7ef3c678c96fc8cdfeb88da83938cce6404e94b7806efbf43d8546",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/README.md",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 1586,
+        "whole_file_safe": true,
+        "sha256_at_review": "eb0ac38ac59faf247eb1426534361be1a92e6e9f5ec8747a8e58dfc6342352fb",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+        "classes": [
+          "rebuild_required"
+        ],
+        "bytes": 12707,
+        "whole_file_safe": true,
+        "sha256_at_review": "a3a2298069026d52dd1258ef9a0bb525e3c713778480af42e72e6657afca1429",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 7950,
+        "whole_file_safe": true,
+        "sha256_at_review": "36fdad15f5789255290e8fc95fefaf43d4452093d27fa5332019444d4fd40f1f",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw01-navigation.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 10384,
+        "whole_file_safe": true,
+        "sha256_at_review": "679c479f3c5bddcba64512cce98f6fde9893f53f1897966a30084c88099eca5b",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw02-date-time.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 10420,
+        "whole_file_safe": true,
+        "sha256_at_review": "d9e756361c426a6358947360fb84735804d72e8142e088699d5b469d320e150c",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw03-steps.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 5673,
+        "whole_file_safe": true,
+        "sha256_at_review": "6c1bbb51c957c65d2df02e7062b3e4bc91ea132ba2187da48eed15a51221e172",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw04-package-slots.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 11778,
+        "whole_file_safe": true,
+        "sha256_at_review": "8593cda111e19a6a272710106915ee23e9a4f552877f4bbe78cdd38edf94164e",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw05-multi-select.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 6321,
+        "whole_file_safe": true,
+        "sha256_at_review": "0378d181bf929f1adce5b6f08f13400d8c9b8ba3a3c7940dd22c615061e50662",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw06-summary-detail.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 4870,
+        "whole_file_safe": true,
+        "sha256_at_review": "843a7f3a92b16f930a22513cb63587d9bd1acf89f767a73099356c8b69c4d1fc",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw07-replay.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 4514,
+        "whole_file_safe": true,
+        "sha256_at_review": "3653d856c97c9b88527d8fd2c25633527e1bbee9be089f3e463916168453d8d2",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      },
+      {
+        "path": "docs/design-system/shared/strategy-workbench-v1.2/sw08-recovery.svg",
+        "classes": [
+          "reading_required"
+        ],
+        "bytes": 3941,
+        "whole_file_safe": true,
+        "sha256_at_review": "58dd2095f0f88ad8814bbb42e3dcd919457ec001b427badfb4154c363bc8a2bc",
+        "eligibility": "conditional; exact source candidate, not merge-ready patch"
+      }
+    ],
+    "required_reference_cleanup": [
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/DESIGN-COVERAGE.md",
+        "line": 19,
+        "reason": "V1.2 delegates original 74-element exact mapping/state chain to omitted V1.0 DESIGN-COVERAGE first table and history/index.json. Inline/adapt that first table into V1.2 with current chapter/board references; preserve approved rule IDs and business semantics. Do not include entire V1.0 package."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+        "line": 722,
+        "reason": "Live source links to history/chat-findings.md, index.json, H11-VDF-002.md. Replace history navigation with durable current source references/provenance in V1.2. Do not bring all history snapshots; keep approved contracts unchanged."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+        "line": 725,
+        "reason": "Live source links to history/chat-findings.md, index.json, H11-VDF-002.md. Replace history navigation with durable current source references/provenance in V1.2. Do not bring all history snapshots; keep approved contracts unchanged."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/artboard-notes.md",
+        "line": 36,
+        "reason": "Repoint history/index.json and chat-findings.md provenance to compact retained provenance entry; source references H09/H10 must retain source identity without importing historical UI."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+        "line": 2,
+        "reason": "Outdated V1.0 renderer description; metadata-only correction to V1.2."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+        "line": 23,
+        "reason": "Optional fallback to ../2026-10-11-strategy-backtest-v2/visual-design.md is not needed for default V1.2 build. Remove legacy fallback or fail clearly if current authoritative source missing; do not import legacy baseline."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+        "line": 23,
+        "reason": "Historic acceptance/version statement and retained V1.0 claim requires precise archival boundary; retain historical fact but remove implication old assets shipped in compact master package."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+        "line": 37,
+        "reason": "Historical localhost preview service-running claim cannot be carried as current runtime claim; label as 2026-10-24 historical evidence."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+        "line": 11,
+        "reason": "Historical FAIL/audit/round2 references intentionally excluded from current navigation: retain regression history as commit/archive pointers, not dangling local paths."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/independent-review.md",
+        "line": 15,
+        "reason": "Reference-home screenshot omitted under screenshot-free scope; replace live local link with homepage V2.5 current source plus hash/provenance, or retain exactly this screenshot if independent visual trace is required."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/issues.md",
+        "line": 45,
+        "reason": "Lines45–47 link omitted initial audit reports. Mark archive references and immutable Git revision instead of active local links; preserve FAIL and reopened history."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+        "line": 3,
+        "reason": "Evidence package pruning must distinguish historical static acceptance from new compact export; original SHA256 evidence stays immutable and claims must not imply all screenshots retained locally."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final-manifest.json",
+        "line": 1,
+        "reason": "Keep original acceptance manifest immutable as historical fingerprint; its screenshot/source list is not a compact-package inventory. Add/rebuild a separate current compact manifest rather than overwrite old validation as if reaccepted."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+        "line": 1,
+        "reason": "Generated: rebuild from precisely edited authoritative Markdown; do not hand edit generated links/identity."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-manifest.json",
+        "line": 1,
+        "reason": "Generated: rebuild after source metadata/link changes; preserve block/comment identity semantics."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-identity.json",
+        "line": 1,
+        "reason": "Generated: rebuild with manifest and review identity stability; no arbitrary reset."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/validation.json",
+        "line": 1,
+        "reason": "Historical report lists excluded history and old hashes; retain labelled historical or replace with fresh static-only check under distinct export record, never silently inherit PASS."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-time-final-review.md",
+        "line": 10,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-library-final-review.md",
+        "line": 10,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 3,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 58,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 59,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 60,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 61,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 62,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 63,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 64,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 65,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 69,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/strategy-v12-shared-final-review.md",
+        "line": 70,
+        "reason": "Final screenshot reference omitted by requested compact scope; retain immutable historical hash/reference and label archive-only. Do not claim this export independently reverified visual rendering."
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/acceptance.md",
+        "line": 19,
+        "reason": "reader-controls.json is bare text but lives evidence/reader-controls.json. Clarify location while keeping historical evidence scope."
+      }
+    ],
+    "exclude_glob": [
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/history/**",
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/**",
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/round2/**",
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/audit/**",
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/reviews/*-review.md (except *-final-review.md)",
+      "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/*.png",
+      "**/__pycache__/**",
+      "**/.scratch/**",
+      "docs/design-system/baselines/2026-10-22-strategy-workbench-v1.0/**"
+    ],
+    "not_a_ready_patch": true
+  },
+  "latest_chat_direct_read": {
+    "threadId": "01a16c13-5390-7c20-8813-774eabac4581",
+    "title": "复盘页视觉规范V1.1 （2）｜规范开发中",
+    "page": {
+      "order": "newest_first",
+      "limit": 1,
+      "nextCursor": "{\"requestedThreadId\":\"01a16c13-5390-7c20-8813-774eabac4581\",\"rolloutOrdinal\":35178,\"includeAnchor\":false,\"scope\":{\"kind\":\"turns\"}}",
+      "hasMore": true
+    },
+    "turns": [
+      {
+        "id": "01a1acba-d726-75d3-b500-10f9c6bc3a6c",
+        "startedAt": 1793899288,
+        "completedAt": 1793903178,
+        "messages": [
+          {
+            "type": "userMessage",
+            "text": "这些不要特意去处理，因为标注时我做的，所以假如影响到阅读了，我自己会调整这些文字的控件范围\n"
+          }
+        ]
+      }
+    ],
+    "observedAt": "2026-11-06T02:52:03.146394+08:00"
+  },
+  "scope_limits": [
+    "三个独立Agent为文档/源码静态评审，协调者核对关键原文并直接读取最新复盘用户回合",
+    "旧R01–R05方向来自既存逐项用户反馈覆盖记录，未在本轮逐页重读整份历史聊天",
+    "未运行UI、业务数据库、构建或产品验收；未修改任何规范正文、源worktree或Git引用",
+    "未提交、推送、合并；六个本地评审记录文件是本轮唯一仓库变更"
+  ]
+}

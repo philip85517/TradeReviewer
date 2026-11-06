@@ -1,0 +1,106 @@
+{
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+  "viewports": {
+    "1200x569": {
+      "width": 1200,
+      "height": 569,
+      "docHeight": 569,
+      "scrollY": 0,
+      "workspace": {
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 525,
+        "visible": true,
+        "hit": true
+      },
+      "chart": null,
+      "replay": {
+        "x": 68,
+        "y": 451,
+        "width": 800,
+        "height": 60,
+        "visible": true,
+        "hit": true
+      },
+      "date": {
+        "x": 330,
+        "y": 463,
+        "width": 149.25,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      },
+      "next": {
+        "x": 617.25,
+        "y": 463,
+        "width": 116.703125,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      },
+      "review": {
+        "x": 0,
+        "y": 525,
+        "width": 1200,
+        "height": 44,
+        "visible": true,
+        "hit": true
+      },
+      "records": {
+        "x": 760,
+        "y": 7.5,
+        "width": 44,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      }
+    }
+  },
+  "interactions": [
+    {
+      "dateClick": {
+        "x": 404.625,
+        "y": 481,
+        "rect": {
+          "x": 330,
+          "y": 463,
+          "width": 149.25,
+          "height": 36
+        },
+        "top": "<span>2025-02-02</span>",
+        "isTarget": true
+      },
+      "dateTitle": "选择回放日期",
+      "recordClick": {
+        "x": 782,
+        "y": 25.5,
+        "rect": {
+          "x": 760,
+          "y": 7.5,
+          "width": 44,
+          "height": 36
+        },
+        "top": "<button class=\"top-link\" data-action=\"records\" data-modal-trigger=\"records\">记录</button>",
+        "isTarget": true
+      },
+      "recordTitle": "查看记录",
+      "hidden": true,
+      "restored": true,
+      "sideClick": {
+        "x": 125.5,
+        "y": 487,
+        "rect": {
+          "x": 14,
+          "y": 463,
+          "width": 223,
+          "height": 48
+        },
+        "top": "<button class=\"side-foot\" data-action=\"records\" data-modal-trigger=\"records-left\"><span>记录与快照</span><span class=\"count\">3</span></button>",
+        "isTarget": true
+      },
+      "sideTitle": "查看记录",
+      "sideContents": "查看记录示例股份 / 600000 · 第2次交易当前场景：入场前计划 · 2025-01-05买入前计划：右侧 A 计划表单Text：暂无返回工作区"
+    }
+  ]
+}

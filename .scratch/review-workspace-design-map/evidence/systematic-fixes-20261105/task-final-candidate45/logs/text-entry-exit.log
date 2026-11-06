@@ -1,0 +1,344 @@
+{
+  "target": "C0C13626B7C48ADE075CAE91F71126D9",
+  "failures": [],
+  "steps": [
+    {
+      "name": "entry-before",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "BODY",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-placing",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-mouse-on-candle",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "entry-confirmed",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "DIV",
+        "id": "",
+        "action": "text-edit"
+      }
+    },
+    {
+      "name": "entry-second-placing",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-second-mouse-on-candle",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "entry-second-cancelled",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-final",
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "stage": "入场前计划",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-before",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "BODY",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-placing",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-mouse-on-candle",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 0,
+      "anchors": 0,
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "exit-confirmed",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "DIV",
+        "id": "",
+        "action": "text-edit"
+      }
+    },
+    {
+      "name": "exit-second-placing",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-second-mouse-on-candle",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "exit-second-cancelled",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-final",
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "stage": "结束之后评价",
+      "texts": 1,
+      "anchors": 1,
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,552 @@
+{
+  "note": "Original browser bytes retained. The .png extension does not imply PNG encoding. Historical before-restoration image is not final acceptance evidence. Comparison screenshots use CSS viewport sizes recorded in browser-checks.json, scroll-checks.json and boundary-checks.json.",
+  "created_at": "2026-10-06T09:36:13.304246+00:00",
+  "counts": {
+    "additional-static-journey": 3,
+    "before-restoration": 1,
+    "final-visual-comparison": 55,
+    "preview": 1
+  },
+  "screenshots": [
+    {
+      "file": "screenshots/design-tools-open-1280.png",
+      "group": "additional-static-journey",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 89893,
+      "sha256": "b19760e08a8bdefb0998ba0bb15f93edf80ed8ac386b28d9cedc07f4129ed863"
+    },
+    {
+      "file": "screenshots/f01-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 74045,
+      "sha256": "1ebb68aa210e24bba0827cea34393a418103e10463becb2977aa555f62ba6798"
+    },
+    {
+      "file": "screenshots/f01-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 87042,
+      "sha256": "729c311731764ea7c4592d712bd3ad00c1d66958bb590a4b358413a806261d47"
+    },
+    {
+      "file": "screenshots/f02-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 85616,
+      "sha256": "317a1b01ff1b0aedc4246c3ab33cbffc9afbb832d3adc35ff30a9a3ceaa55ea1"
+    },
+    {
+      "file": "screenshots/f02-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 83446,
+      "sha256": "0f17ea7006ae99c12f83129ea98f1210c5f57535cb08f15fdd5c408b62b6ea7b"
+    },
+    {
+      "file": "screenshots/f02-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 88874,
+      "sha256": "9d0838a580fd85d9802b7e9a666acf1d669b31a79d14236161165f9558bac5bd"
+    },
+    {
+      "file": "screenshots/f03-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 93018,
+      "sha256": "fa30fc74a2565264da68a64853fcd7d8e5a53148097fb4d3c36250135d493f56"
+    },
+    {
+      "file": "screenshots/f03-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 86748,
+      "sha256": "cbb463be1e85867210890da8328fe987b710c94eca4af40f011bda737301eeca"
+    },
+    {
+      "file": "screenshots/f03-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 100870,
+      "sha256": "84a667b55da803d4f8791d1a7b84cb55600fd44e9bb15de6c163dd15dec6f74d"
+    },
+    {
+      "file": "screenshots/f04-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 72085,
+      "sha256": "3ca2488c764af0e3d1883c4176c5414e35b104c6903470a77bae12bc292aee46"
+    },
+    {
+      "file": "screenshots/f04-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 76422,
+      "sha256": "2209e9537a9e2d2a2b4cba8a9d5d9eafacb55d7fab236ffa5da92dbcf12cdf8a"
+    },
+    {
+      "file": "screenshots/f05-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 80207,
+      "sha256": "2b3a2388a0537ac0e5a8071e587d0e895c0a281c7f1194267d558c4d9593f431"
+    },
+    {
+      "file": "screenshots/f05-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 91670,
+      "sha256": "249cee5fed02329a717346c8f2be7a962f549f8a7ea80b746641b571c1f22d07"
+    },
+    {
+      "file": "screenshots/f06-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 85856,
+      "sha256": "9dc6cb0481dddc70d8aff85a6779a24af8f012e2cadd9fecfa0e0fa930a13e8d"
+    },
+    {
+      "file": "screenshots/f06-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 89944,
+      "sha256": "8dd21285f5869c49d823e8694cb50fbc3590b5ce23855e7e80e6a203c80a6264"
+    },
+    {
+      "file": "screenshots/f07-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 85128,
+      "sha256": "6c9127acc71c93608345c9932f551b41d4796ff5553b06dbc889acf95df9dd3d"
+    },
+    {
+      "file": "screenshots/f07-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 88780,
+      "sha256": "ba03fa023de2ac2efb1febe35cb3d562c5b2bc98ec644c1ceaab1deabfd3cc20"
+    },
+    {
+      "file": "screenshots/f08-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 83538,
+      "sha256": "a5472196a36c3d93877d1c977f6369622b9b71682092da8399b86ad23a2de89f"
+    },
+    {
+      "file": "screenshots/f08-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 87858,
+      "sha256": "95415b071c0330a8dc64f811c3b553c54f0343e3217b437bcc9a8def952fa75d"
+    },
+    {
+      "file": "screenshots/f09-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 94584,
+      "sha256": "dbb9a6d042276e4d30ff213d87907551d58b68593a555f14148b49b416af881d"
+    },
+    {
+      "file": "screenshots/f09-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 88711,
+      "sha256": "7df0111a66877b8862889c0dabb9217f3317a5b1fddfd2894cdb34a85d3e820f"
+    },
+    {
+      "file": "screenshots/f09-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 98677,
+      "sha256": "8a38e395e4319d82ba827973ad72b29e061484bfe75007dad5eeec845945bf75"
+    },
+    {
+      "file": "screenshots/f10-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 108776,
+      "sha256": "94fd929148cd4f5695d9908e66a633b95f3aff406258b2d961bb0abcd2193a91"
+    },
+    {
+      "file": "screenshots/f10-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 92151,
+      "sha256": "b1dd1038699a25f400ef711944469948c199a9473184281d16fcc01b50383177"
+    },
+    {
+      "file": "screenshots/f10-1299.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1299,
+      "height": 800,
+      "bytes": 94865,
+      "sha256": "97f190634024bce9e2247e0a0bd2a614be93791f3bbb2c0ae67ce1c65b617a92"
+    },
+    {
+      "file": "screenshots/f10-1301.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1301,
+      "height": 800,
+      "bytes": 98271,
+      "sha256": "1d9e3d7f37e7eea11ad062a0499373b94441d9256ba4c7847dec8b27daeebc94"
+    },
+    {
+      "file": "screenshots/f10-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 112852,
+      "sha256": "f790d2b4ad4f82ef0ddedf61d9e737770e617029d10b9933beae3ff3fd680c18"
+    },
+    {
+      "file": "screenshots/f11-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 77894,
+      "sha256": "e4d73648abab40e1f158dc724e3f0b12db6829f837598a46ce26a724eed9d0ee"
+    },
+    {
+      "file": "screenshots/f11-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 86150,
+      "sha256": "51a25d243d922ba0c3c6a04a89954452935be482110b9e54b2a48e68edddac5e"
+    },
+    {
+      "file": "screenshots/f11-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 97142,
+      "sha256": "5edd21f8ce080507634ad7bed303a299b34d5d7e8c7ba81f929aae0e3b776896"
+    },
+    {
+      "file": "screenshots/f12-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 100788,
+      "sha256": "b885bc7fc0a9cb4e172bd9df49a2660837dcaca796c4ebf39bbbf60bc6173cb6"
+    },
+    {
+      "file": "screenshots/f12-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 109460,
+      "sha256": "65dc0eeeca7024cafe879f926af214ee756e5164acc2bae58a44fe1eac25ae4d"
+    },
+    {
+      "file": "screenshots/f12-1299.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1299,
+      "height": 800,
+      "bytes": 112391,
+      "sha256": "54a6411a8fad71fb46902e1029860e84b4a1fb4c6d230aea1c68b4a84edb25ac"
+    },
+    {
+      "file": "screenshots/f12-1301.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1301,
+      "height": 800,
+      "bytes": 109211,
+      "sha256": "8aed203f427a9988d944eb9fac037b11f386fa9374a508a9b0f1816d404c2243"
+    },
+    {
+      "file": "screenshots/f12-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 116026,
+      "sha256": "8ea25e9fab485f37d518db9e6cddbfc2395026617b1fddc01f9cb66b9f7597a9"
+    },
+    {
+      "file": "screenshots/f13-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 105358,
+      "sha256": "17b5cbb0320431e1e5d40cf4e82ee0d8ea99a1593511c7ed845cef78b55c0b1b"
+    },
+    {
+      "file": "screenshots/f13-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 104553,
+      "sha256": "7cf48ad1c16c57e39c170d39d53bea8b74aa46c66d098638bfb08600851acee0"
+    },
+    {
+      "file": "screenshots/f13-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 113082,
+      "sha256": "3b0e469cb234f633b72626277af685b2f472ba24016c85e8e65515bf652fffd4"
+    },
+    {
+      "file": "screenshots/f14-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 74630,
+      "sha256": "fbb84300c2e0b8fab23476bfb6752c95cf7b181d89fb14f742d640b8a1ce4673"
+    },
+    {
+      "file": "screenshots/f14-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 73529,
+      "sha256": "0f42b04911a756aaada57f65da73a73ccdc3e3c33c9bfcab38a77b19c1a18bd5"
+    },
+    {
+      "file": "screenshots/f14-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 81281,
+      "sha256": "cbfeb83013a61716f0b72b3f5f8b90569de410723f0b2a4c1d09e7a04d739109"
+    },
+    {
+      "file": "screenshots/f15-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 65516,
+      "sha256": "e2b1d1c06f0c4abcb345fe6211c6ac442b6783212ca55044e635f344abf428df"
+    },
+    {
+      "file": "screenshots/f15-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 61936,
+      "sha256": "05fd8cc7b8bf0ecad8fd4e8629c07016ace9b979dcf5f960890633b7fe5d97c4"
+    },
+    {
+      "file": "screenshots/f15-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 71408,
+      "sha256": "e89686e5432b1c82eea4465c0b17f1632aa411767d24a9772c2321cbec4a0131"
+    },
+    {
+      "file": "screenshots/f16-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 76378,
+      "sha256": "74c9b1623b04fe274470658c5178cbd71d98b12b8575c2c02e2aa145bad8bc17"
+    },
+    {
+      "file": "screenshots/f16-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 89904,
+      "sha256": "2435c025960ecfc21b2a74909d7a363b5e90a08bf5a5f17fd98dc5463ee83e22"
+    },
+    {
+      "file": "screenshots/f17-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 97401,
+      "sha256": "70099e910c5c75880a5bf34f9767621436c7841f4c8962de6c4a8f1b150c3fce"
+    },
+    {
+      "file": "screenshots/f17-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 105385,
+      "sha256": "4e4e360bcc06917a4543bfd6be8ee0f1b74269c315ea30149d173a700b7a9419"
+    },
+    {
+      "file": "screenshots/f18-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 89862,
+      "sha256": "f90d28783c71e13260c6a08c73e2bac34682bb0f4941e2be56c78bc6ce01d87c"
+    },
+    {
+      "file": "screenshots/f18-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 87540,
+      "sha256": "29f8bb7c260ef803dd54bdf33b3a86dd57813a76af87c334553c01fb9b4c3089"
+    },
+    {
+      "file": "screenshots/f18-1299.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1299,
+      "height": 800,
+      "bytes": 90273,
+      "sha256": "ee87c858861ef20cd56f2bda31b417021e78d758d69d6b9d9c3b29bbe3929fe0"
+    },
+    {
+      "file": "screenshots/f18-1301.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1301,
+      "height": 800,
+      "bytes": 86676,
+      "sha256": "b739f221585497fc019b7b70428ca90781b3b4bc404300b0aa07b5cb894fd7a5"
+    },
+    {
+      "file": "screenshots/f18-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 93550,
+      "sha256": "7fc7567f1495e0d62caafca4d097ab80ce917aca083fceaa10bbc2cbb7e1ede7"
+    },
+    {
+      "file": "screenshots/f19-1280-scrolled.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 84288,
+      "sha256": "981c682a0b716f853654ffd200efa9d90f8834b363d714953f98f3128e36808d"
+    },
+    {
+      "file": "screenshots/f19-1280.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 82548,
+      "sha256": "23a16fe885242830f6f2cbc70ce5b894d9af91d8002ad63e4bfa0ddc9e9ace71"
+    },
+    {
+      "file": "screenshots/f19-1440.png",
+      "group": "final-visual-comparison",
+      "actual_encoding": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 87386,
+      "sha256": "b3176c9ae03384264c26457586a9f08fe6c6c4fc1a278691d6a99a5e2b53f6aa"
+    },
+    {
+      "file": "screenshots/package-return-1280.png",
+      "group": "additional-static-journey",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 94377,
+      "sha256": "2f7af95c6030ab561b5bc7d6cdc845d42c5ae9f772ebaecb70c1085f1296d9f6"
+    },
+    {
+      "file": "screenshots/preview-final.png",
+      "group": "preview",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 720,
+      "bytes": 66236,
+      "sha256": "273ca199ff0c27d986e5e0ef146f2875f3ac8d01bb01a9fd762171c36d60dc86"
+    },
+    {
+      "file": "screenshots/restored-f14-before-1280.png",
+      "group": "before-restoration",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 71267,
+      "sha256": "9ddf75c32162c7e8c0272f5ccad2067c57699e3449ba6647ec222e9a71fcc262"
+    },
+    {
+      "file": "screenshots/source-return-1280.png",
+      "group": "additional-static-journey",
+      "actual_encoding": "JPEG",
+      "width": 1280,
+      "height": 800,
+      "bytes": 80101,
+      "sha256": "a01f8405ba8764429abfccdb594f6d129e89e9890c30ab40b391200e3e230f6c"
+    }
+  ]
+}

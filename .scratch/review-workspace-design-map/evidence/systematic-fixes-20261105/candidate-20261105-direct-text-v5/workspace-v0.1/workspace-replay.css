@@ -1,0 +1,242 @@
+/* Replay rail visual alignment, scoped to the bottom control strip only. */
+.chrome-replay {
+  gap: 12px;
+  padding: 0 14px;
+  background: #08090b;
+  border: 0;
+  color: #d6d8dc;
+}
+
+.chrome-replay .replay-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.chrome-replay .replay-actions {
+  min-width: 0;
+  gap: 10px;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #44474d transparent;
+}
+
+.chrome-replay .replay-group {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.chrome-replay .replay-actions > .replay-divider {
+  display: block;
+  width: 1px;
+  height: 24px;
+  flex: 0 0 1px;
+  background: #45474b;
+}
+
+.chrome-replay .replay-actions > .replay-group > button,
+.chrome-replay .replay-meta button {
+  display: inline-flex;
+  min-width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #d6d8dc;
+  white-space: nowrap;
+}
+
+.chrome-replay .replay-actions > .replay-group > button:hover:not(:disabled),
+.chrome-replay .replay-meta button:hover {
+  background: #ffffff12;
+  color: #fff;
+}
+
+.chrome-replay .replay-actions > .replay-group > button:focus-visible,
+.chrome-replay .speed-control select:focus-visible,
+.chrome-replay .replay-meta button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.chrome-replay .replay-svg-icon {
+  width: 27px;
+  height: 27px;
+  color: currentColor;
+  stroke-width: 1.9;
+}
+
+.chrome-replay .replay-date-group button {
+  min-width: 0;
+  padding: 0 7px;
+  font-size: 14px;
+}
+
+.chrome-replay .replay-date-group .replay-chevron {
+  margin-left: 2px;
+  color: #9da1a8;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.chrome-replay .replay-icon-button {
+  width: 36px;
+  padding: 0 !important;
+}
+
+.chrome-replay .speed-control select {
+  width: 50px;
+  height: 36px;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #d6d8dc;
+  text-align: center;
+}
+
+.chrome-replay .speed-control select:hover {
+  background: #ffffff12;
+}
+
+.chrome-replay .speed-control option {
+  background: #111318;
+  color: #f1f2f4;
+}
+
+.chrome-replay .replay-actions > .replay-group > .replay-unavailable {
+  min-width: 36px;
+  padding: 0 7px;
+  color: #85888e;
+  cursor: not-allowed;
+}
+
+.chrome-replay .replay-actions > .replay-group > .replay-unavailable:disabled {
+  opacity: 1;
+}
+
+.chrome-replay .replay-actions > .replay-project-group > .replay-next-node {
+  padding: 0 10px;
+  color: #c9d2df;
+  font-size: 13px;
+}
+
+.chrome-replay .replay-actions > .replay-candidate-group {
+  border-left: 1px solid #45474b;
+  padding-left: 8px;
+}
+
+.chrome-replay .replay-meta {
+  z-index: 1;
+  margin-left: auto;
+  flex: 0 0 auto;
+  padding-left: 4px;
+  background: #08090b;
+}
+
+.chrome-replay .replay-meta button {
+  width: 36px;
+  padding: 0;
+  color: #c5c7cb;
+}
+
+@media (max-width: 920px) {
+  .chrome-replay {
+    gap: 4px;
+    padding: 0 6px;
+  }
+
+  .chrome-replay .replay-actions {
+    justify-content: flex-start;
+    gap: 6px;
+    scrollbar-width: thin;
+  }
+
+  .chrome-replay .replay-actions > .replay-divider {
+    height: 20px;
+  }
+
+  .chrome-replay .replay-meta {
+    padding-left: 2px;
+  }
+}
+
+/* Keep replay controls anchored while sidebar widths change. The action viewport
+   stays inside the main work area and scrolls when the full row cannot fit. */
+.workspace {
+  position: relative;
+  --replay-right-rail: 40px;
+  --replay-actions-start: max(calc(50% - 270px), calc(36px + var(--left)));
+}
+
+.workspace.right-open {
+  --replay-right-rail: var(--right);
+}
+
+.chrome-replay {
+  position: static;
+}
+
+.chrome-replay .replay-actions {
+  position: absolute;
+  z-index: 6;
+  left: var(--replay-actions-start);
+  bottom: 26px;
+  width: 540px;
+  max-width: min(540px, max(0px, calc(100% - 36px - var(--replay-right-rail) - var(--replay-actions-start))));
+  min-width: 0;
+  flex: 0 1 auto;
+  justify-content: flex-start;
+  transform: none;
+}
+
+/* Leave a dedicated 8px gap before the right-side hide-replay control. Keep
+   the horizontal scrollbar available so clipped tail controls remain discoverable. */
+.chrome-replay .replay-actions {
+  max-width: min(540px, max(0px, calc(100% - 90px - var(--replay-right-rail) - var(--replay-actions-start))));
+  scrollbar-width: auto;
+  overscroll-behavior-x: contain;
+}
+
+.chrome-replay .replay-actions::-webkit-scrollbar {
+  height: 8px;
+}
+
+.chrome-replay .replay-actions::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #51545b;
+}
+
+.chrome-replay .replay-actions::-webkit-scrollbar-track {
+  background: #202126;
+}
+
+/* Keep the compact action sequence stable across phase-driven sidebar changes. */
+@media (max-width: 1327px) {
+  .chrome-replay .replay-actions {
+    gap: 4px;
+  }
+
+  .chrome-replay .replay-actions > .replay-divider,
+  .chrome-replay .replay-actions > .replay-candidate-group,
+  .chrome-replay .replay-actions > .replay-group.replay-transport-group > button.replay-unavailable {
+    display: none;
+  }
+}

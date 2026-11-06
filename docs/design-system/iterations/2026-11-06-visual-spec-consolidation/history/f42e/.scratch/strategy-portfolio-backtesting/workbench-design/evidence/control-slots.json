@@ -1,0 +1,233 @@
+[
+  {
+    "scenario": "T0",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "running",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "review",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "complete",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "loading",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "error",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  },
+  {
+    "scenario": "pressure",
+    "rects": [
+      {
+        "h": 36,
+        "selector": "#playBtn",
+        "w": 36,
+        "x": 425,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#stepBtn",
+        "w": 36,
+        "x": 465,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#dateSelect",
+        "w": 180,
+        "x": 505,
+        "y": 779
+      },
+      {
+        "h": 36,
+        "selector": "#latestBtn",
+        "w": 36,
+        "x": 745,
+        "y": 779
+      }
+    ]
+  }
+]

@@ -1,0 +1,2530 @@
+{
+  "target": "B549ADA0A2C8A8E8E36C281C5DB1095A",
+  "steps": [
+    {
+      "name": "1440-date-open",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-shift-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-shift-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-confirm",
+        "text": "确认日期",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-shift-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-shift-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-date-escape",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date",
+        "text": "2025-02-02⌄",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-review-hide-replay-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-review-hide-replay-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-review-hide-replay-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-review-hide-replay-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-replay-hide-review-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-replay-hide-review-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-replay-hide-review-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1440-hide-replay-hide-review-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1440",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-open",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-shift-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-shift-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-confirm",
+        "text": "确认日期",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-shift-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-shift-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-date-escape",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date",
+        "text": "2025-02-02⌄",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-review-hide-replay-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-review-hide-replay-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-review-hide-replay-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-review-hide-replay-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-replay-hide-review-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-replay-hide-review-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-replay-hide-review-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1280-hide-replay-hide-review-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1280",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-open",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-shift-tab-0",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-shift-tab-1",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-confirm",
+        "text": "确认日期",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-shift-tab-2",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date-cancel",
+        "text": "取消",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-shift-tab-3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"2025-02-02\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\" hidden=\"\"></p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"pri",
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-date-escape",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "date",
+        "text": "2025-02-02⌄",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-review-hide-replay-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-review-hide-replay-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-review-hide-replay-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-review-hide-replay-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-replay-hide-review-both-hidden",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-review",
+        "text": "恢复审阅条",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-replay-hide-review-show-review-enter",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-review",
+        "text": "隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-replay-hide-review-shift-tab",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "show-replay",
+        "text": "恢复回放",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "1200-hide-replay-hide-review-show-replay-space",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "BUTTON",
+        "action": "hide-replay",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    },
+    {
+      "name": "date-empty-input",
+      "date": {
+        "v": "",
+        "err": ""
+      }
+    },
+    {
+      "name": "date-empty-confirm",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "入场前计划",
+      "scale": [
+        {
+          "value": "quantity",
+          "label": "按数量",
+          "role": "radio",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "label": "按金额",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "label": "按仓位",
+          "role": "radio",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "scaleLabel": "计划规模 · 数量",
+      "quantity": "1000",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "dialog": "<section class=\"records-panel modal-dialog date-panel\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\" tabindex=\"-1\"><h2 id=\"modal-title\">选择回放日期</h2><label for=\"replay-date\">回放日期</label><input id=\"replay-date\" type=\"date\" data-date-input=\"\" value=\"\" min=\"2025-01-06\" max=\"2025-03-08\"><p class=\"dialog-error\" role=\"alert\">请选择样本范围内的有效日期。</p><div class=\"dialog-actions\"><button data-action=\"date-cancel\">取消</button><button class=\"primary\" ",
+      "nodeScroll": 0
+    },
+    {
+      "name": "date-empty-result",
+      "date": {
+        "v": "",
+        "err": "请选择样本范围内的有效日期。",
+        "hidden": false
+      }
+    },
+    {
+      "name": "date-valid-input",
+      "date": {
+        "v": "2025-02-03"
+      }
+    },
+    {
+      "name": "date-valid-confirm",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=holding&task08=1200",
+      "trade": "600000-3",
+      "tradeLabel": "第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中",
+      "scene": "持仓中",
+      "scale": [],
+      "early": [],
+      "active": {
+        "tag": "BUTTON",
+        "action": "date",
+        "text": "2025-02-03⌄",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "nodeScroll": 0
+    }
+  ],
+  "failures": [],
+  "errors": []
+}

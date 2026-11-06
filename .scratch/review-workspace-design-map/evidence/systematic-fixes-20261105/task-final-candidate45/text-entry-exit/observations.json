@@ -1,0 +1,1024 @@
+{
+  "target": "C0C13626B7C48ADE075CAE91F71126D9",
+  "steps": [
+    {
+      "name": "entry-before",
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "false",
+      "texts": [],
+      "anchors": [],
+      "editor": [],
+      "active": {
+        "tag": "BODY",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-placing",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "true",
+      "texts": [],
+      "anchors": [],
+      "editor": [],
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-mouse-on-candle",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "hit": {
+        "tag": "CANVAS",
+        "id": "",
+        "cls": "",
+        "html": "<canvas width=\"758\" height=\"598\" style=\"width: 758px; height: 598px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "true",
+      "texts": [],
+      "anchors": [],
+      "editor": [
+        {
+          "x": 404.59375,
+          "y": 435.5,
+          "width": 255,
+          "height": 167,
+          "centerX": 532.09375,
+          "centerY": 519,
+          "display": "block"
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "entry-confirmed",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：entry confirmed，锚点 2025-01-21 · 48.66",
+          "box": {
+            "x": 683.59375,
+            "y": 491.5,
+            "width": 145.265625,
+            "height": 55,
+            "centerX": 756.2265625,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 667.59375,
+            "y": 515,
+            "width": 8,
+            "height": 8,
+            "centerX": 671.59375,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "DIV",
+        "id": "",
+        "action": "text-edit"
+      }
+    },
+    {
+      "name": "entry-second-placing",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "true",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：entry confirmed，锚点 2025-01-21 · 48.66",
+          "box": {
+            "x": 683.59375,
+            "y": 491.5,
+            "width": 145.265625,
+            "height": 55,
+            "centerX": 756.2265625,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 667.59375,
+            "y": 515,
+            "width": 8,
+            "height": 8,
+            "centerX": 671.59375,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-second-mouse-on-candle",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "hit": {
+        "tag": "CANVAS",
+        "id": "",
+        "cls": "",
+        "html": "<canvas width=\"758\" height=\"598\" style=\"width: 758px; height: 598px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "true",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：entry confirmed，锚点 2025-01-21 · 48.66",
+          "box": {
+            "x": 598.96875,
+            "y": 491.5,
+            "width": 145.265625,
+            "height": 55,
+            "centerX": 671.6015625,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 667.59375,
+            "y": 515,
+            "width": 8,
+            "height": 8,
+            "centerX": 671.59375,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [
+        {
+          "x": 408.59375,
+          "y": 316.5,
+          "width": 255,
+          "height": 167,
+          "centerX": 536.09375,
+          "centerY": 400,
+          "display": "block"
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "entry-second-cancelled",
+      "inputPoint": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：entry confirmed，锚点 2025-01-21 · 48.66",
+          "box": {
+            "x": 683.59375,
+            "y": 491.5,
+            "width": 145.265625,
+            "height": 55,
+            "centerX": 756.2265625,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 667.59375,
+            "y": 515,
+            "width": 8,
+            "height": 8,
+            "centerX": 671.59375,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "entry-final",
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 28,
+      "chosen": {
+        "index": 15,
+        "time": 1737417600,
+        "date": "2025-01-21",
+        "close": 48.598489823953855,
+        "x": 671.6071428571429,
+        "y": 519.9359050084878,
+        "localX": 418.60714285714283,
+        "localY": 365.9359050084878
+      },
+      "mapping": {
+        "timeToCoordinate": 418.60714285714283,
+        "priceToCoordinate": 365.9359050084878
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task=final-c45-text-entry-exit",
+      "stage": "入场前计划",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：entry confirmed，锚点 2025-01-21 · 48.66",
+          "box": {
+            "x": 683.59375,
+            "y": 491.5,
+            "width": 145.265625,
+            "height": 55,
+            "centerX": 756.2265625,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 667.59375,
+            "y": 515,
+            "width": 8,
+            "height": 8,
+            "centerX": 671.59375,
+            "centerY": 519,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-before",
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "false",
+      "texts": [],
+      "anchors": [],
+      "editor": [],
+      "active": {
+        "tag": "BODY",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-placing",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "true",
+      "texts": [],
+      "anchors": [],
+      "editor": [],
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-mouse-on-candle",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "hit": {
+        "tag": "CANVAS",
+        "id": "",
+        "cls": "",
+        "html": "<canvas width=\"758\" height=\"598\" style=\"width: 758px; height: 598px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "true",
+      "texts": [],
+      "anchors": [],
+      "editor": [
+        {
+          "x": 396.875,
+          "y": 392.5,
+          "width": 255,
+          "height": 167,
+          "centerX": 524.375,
+          "centerY": 476,
+          "display": "block"
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "exit-confirmed",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：exit confirmed，锚点 2025-02-01 · 51.28",
+          "box": {
+            "x": 595.3125,
+            "y": 412.5,
+            "width": 144.90625,
+            "height": 55,
+            "centerX": 667.765625,
+            "centerY": 440,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 657.9375,
+            "y": 472,
+            "width": 8,
+            "height": 8,
+            "centerX": 661.9375,
+            "centerY": 476,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "DIV",
+        "id": "",
+        "action": "text-edit"
+      }
+    },
+    {
+      "name": "exit-second-placing",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "true",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：exit confirmed，锚点 2025-02-01 · 51.28",
+          "box": {
+            "x": 595.3125,
+            "y": 412.5,
+            "width": 144.90625,
+            "height": 55,
+            "centerX": 667.765625,
+            "centerY": 440,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 657.9375,
+            "y": 472,
+            "width": 8,
+            "height": 8,
+            "centerX": 661.9375,
+            "centerY": 476,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "INPUT",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-second-mouse-on-candle",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "hit": {
+        "tag": "CANVAS",
+        "id": "",
+        "cls": "",
+        "html": "<canvas width=\"758\" height=\"598\" style=\"width: 758px; height: 598px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "true",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：exit confirmed，锚点 2025-02-01 · 51.28",
+          "box": {
+            "x": 609.3125,
+            "y": 433.359375,
+            "width": 144.90625,
+            "height": 55,
+            "centerX": 681.765625,
+            "centerY": 460.859375,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 657.9375,
+            "y": 472,
+            "width": 8,
+            "height": 8,
+            "centerX": 661.9375,
+            "centerY": 476,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [
+        {
+          "x": 346.3125,
+          "y": 392.5,
+          "width": 255,
+          "height": 167,
+          "centerX": 473.8125,
+          "centerY": 476,
+          "display": "block"
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "id": "textInput"
+      }
+    },
+    {
+      "name": "exit-second-cancelled",
+      "inputPoint": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：exit confirmed，锚点 2025-02-01 · 51.28",
+          "box": {
+            "x": 595.3125,
+            "y": 412.5,
+            "width": 144.90625,
+            "height": 55,
+            "centerX": 667.765625,
+            "centerY": 440,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 657.9375,
+            "y": 472,
+            "width": 8,
+            "height": 8,
+            "centerX": 661.9375,
+            "centerY": 476,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    },
+    {
+      "name": "exit-final",
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "bars": 49,
+      "chosen": {
+        "index": 26,
+        "time": 1738368000,
+        "date": "2025-02-01",
+        "close": 51.273485527780075,
+        "x": 661.9387755102041,
+        "y": 476.0782273544577,
+        "localX": 408.9387755102041,
+        "localY": 322.0782273544577
+      },
+      "mapping": {
+        "timeToCoordinate": 408.9387755102041,
+        "priceToCoordinate": 322.0782273544577
+      },
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=final-c45-text-entry-exit",
+      "stage": "结束之后评价",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "toolActive": "false",
+      "texts": [
+        {
+          "id": "0",
+          "aria": "编辑图上文字：exit confirmed，锚点 2025-02-01 · 51.28",
+          "box": {
+            "x": 595.3125,
+            "y": 412.5,
+            "width": 144.90625,
+            "height": 55,
+            "centerX": 667.765625,
+            "centerY": 440,
+            "display": "block"
+          }
+        }
+      ],
+      "anchors": [
+        {
+          "id": "0",
+          "box": {
+            "x": 657.9375,
+            "y": 472,
+            "width": 8,
+            "height": 8,
+            "centerX": 661.9375,
+            "centerY": 476,
+            "display": "block"
+          }
+        }
+      ],
+      "editor": [],
+      "active": {
+        "tag": "BUTTON",
+        "id": ""
+      }
+    }
+  ],
+  "failures": [],
+  "errors": [],
+  "note": "NOT VERIFIED until coordinator runs this script. Results are limited to the captured entry/exit scenes and selected visible candle."
+}

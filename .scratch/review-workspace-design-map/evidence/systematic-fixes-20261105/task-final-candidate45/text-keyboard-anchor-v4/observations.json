@@ -1,0 +1,58 @@
+{
+  "target": "3E981E4EE1A694073C5E81C78DA690D7",
+  "baseUrl": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes",
+  "out": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/text-keyboard-anchor-v4",
+  "steps": [],
+  "failures": [],
+  "notVerified": [],
+  "errors": [
+    "Error: {\"exceptionId\":2,\"text\":\"Uncaught\",\"lineNumber\":0,\"columnNumber\":930,\"scriptId\":\"8\",\"stackTrace\":{\"callFrames\":[{\"functionName\":\"\",\"scriptId\":\"8\",\"url\":\"\",\"lineNumber\":0,\"columnNumber\":930},{\"functionName\":\"\",\"scriptId\":\"8\",\"url\":\"\",\"lineNumber\":0,\"columnNumber\":1069}]},\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"ReferenceError\",\"description\":\"ReferenceError: active is not defined\\n    at <anonymous>:1:931\\n    at <anonymous>:1:1070\",\"objectId\":\"1479267087609763272.2.3\"}}\n    at evaluate (file:///private/tmp/tradereview-final-candidate45-text-keyboard-anchor-v4.mjs:15:152)\n    at async record (file:///private/tmp/tradereview-final-candidate45-text-keyboard-anchor-v4.mjs:22:68)\n    at async file:///private/tmp/tradereview-final-candidate45-text-keyboard-anchor-v4.mjs:32:885",
+    {
+      "timestamp": 1793835385237.605,
+      "exceptionDetails": {
+        "exceptionId": 1,
+        "text": "Uncaught",
+        "lineNumber": 0,
+        "columnNumber": 356,
+        "scriptId": "3",
+        "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task=candidate45-text-keyboard-anchor-v4",
+        "exception": {
+          "type": "object",
+          "subtype": "error",
+          "className": "SyntaxError",
+          "description": "SyntaxError: Unexpected end of input",
+          "objectId": "1479267087609763272.2.1",
+          "preview": {
+            "type": "object",
+            "subtype": "error",
+            "description": "SyntaxError: Unexpected end of input",
+            "overflow": false,
+            "properties": [
+              {
+                "name": "stack",
+                "type": "string",
+                "value": "SyntaxError: Unexpected end of input"
+              },
+              {
+                "name": "message",
+                "type": "string",
+                "value": "Unexpected end of input"
+              }
+            ]
+          }
+        },
+        "executionContextId": 2
+      }
+    }
+  ],
+  "scope": [
+    "I18 two Text cards selected/edited independently by Tab+Enter",
+    "I19 source date/price and anchor geometry under pan/price-axis drag",
+    "I40 anchor remains attached to its source point"
+  ],
+  "notes": [
+    "Preserves candidate45 v3 observations; this is a new run directory.",
+    "Ctrl+A is intentionally not used: text is cleared by End plus repeated Backspace.",
+    "Second placement first scans for a genuine chart/canvas hit outside existing cards; a duplicate ID is a failure, not a pass."
+  ]
+}

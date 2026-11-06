@@ -1,0 +1,2944 @@
+{
+  "schema": "strategy-document-manifest/1",
+  "documentId": "REVIEW-WORKSPACE-V10",
+  "version": "1.0",
+  "fingerprint": "ea28437fdb4cd56cc2a5a1697ff9158942cda5ae3ba374eb3870eeafeb21016b",
+  "sourceFile": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+  "documentUrl": "visual-spec.html",
+  "blocks": [
+    {
+      "id": "HOME-DOC-B001",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "2026-10-22 · 复盘工作区 · 设计提案",
+      "sourceLine": 3,
+      "sourceKey": "771c6b324ea0f4dc7a758f17"
+    },
+    {
+      "id": "HOME-DOC-B002",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "本规范仅限定复盘工作区，依据用户本轮修正的范围整理。目标是让用户始终围绕主图观察行情、记录当时判断、核对计划与执行，并能理解正在看的时间和正在编辑的记录。首页、历史列表、交易库内部页面不在本轮改版范围。",
+      "sourceLine": 5,
+      "sourceKey": "b126851674ece9acf4596892"
+    },
+    {
+      "id": "HOME-DOC-B003",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "本版交付视觉方案与可实施的状态契约。图稿使用合成数据，图内控件为静态示意；不证明真实行情回放、数据库保存或导出已经实现。新视觉提案待审阅确认，旧版已确认的三阶段、数据边界和原始成交只读规则继续有效。",
+      "sourceLine": 7,
+      "sourceKey": "8553f8383f1e74cdc21579d2"
+    },
+    {
+      "id": "HOME-DOC-B004",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "来源",
+      "sourceLine": 13,
+      "sourceKey": "26e5ef13460dfcafeddf846e"
+    },
+    {
+      "id": "HOME-DOC-B005",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "本版继承",
+      "sourceLine": 13,
+      "sourceKey": "94272de5dddbe356043be09c"
+    },
+    {
+      "id": "HOME-DOC-B006",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "本版更新",
+      "sourceLine": 13,
+      "sourceKey": "aabfc99d7f839b7f1b34caea"
+    },
+    {
+      "id": "HOME-DOC-B007",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "全站公共规范与首页 V2.5",
+      "sourceLine": 15,
+      "sourceKey": "4f451ad96230e7e7f6c1d1a8"
+    },
+    {
+      "id": "HOME-DOC-B008",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "操作作用域清晰、位置稳定、来源可解释；公共颜色、文字、间距、焦点和共享控件",
+      "sourceLine": 15,
+      "sourceKey": "49491b72f251a0cc503e4b82"
+    },
+    {
+      "id": "HOME-DOC-B009",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "在复盘工作区落地，不照搬首页指标卡或八行列表",
+      "sourceLine": 15,
+      "sourceKey": "010f5c1aa4752ec02761731d"
+    },
+    {
+      "id": "HOME-DOC-B010",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "2026-09-25 主图复盘需求",
+      "sourceLine": 16,
+      "sourceKey": "6991438866609188eab31218"
+    },
+    {
+      "id": "HOME-DOC-B011",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "主图优先、三阶段、双截止、Text、计划与评价分离、保存版本、三图一表",
+      "sourceLine": 16,
+      "sourceKey": "281f1db0282c517acc687869"
+    },
+    {
+      "id": "HOME-DOC-B012",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "细化信息密度、区域职责、异常位置及响应式预算",
+      "sourceLine": 16,
+      "sourceKey": "5959ad309bae3d02adfe0ac8"
+    },
+    {
+      "id": "HOME-DOC-B013",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "原 E01–E22 元素规范",
+      "sourceLine": 17,
+      "sourceKey": "042f7574712b2f358c383d35"
+    },
+    {
+      "id": "HOME-DOC-B014",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "侧栏300–320px、价格轴84–108px、14px沟槽、36/44px命中、全部元素与行为",
+      "sourceLine": 17,
+      "sourceKey": "367c1c0e77e5b27c15639940"
+    },
+    {
+      "id": "HOME-DOC-B015",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "公共色值与界面字体对齐V2.5；本版逐项追踪，不删元素",
+      "sourceLine": 17,
+      "sourceKey": "005a6e565f47c2896dbd9a88"
+    },
+    {
+      "id": "HOME-DOC-B016",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "旧版画板及说明",
+      "sourceLine": 18,
+      "sourceKey": "b641324bd6201b7171998e56"
+    },
+    {
+      "id": "HOME-DOC-B017",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "入场、持仓、事后、导出与小屏场景",
+      "sourceLine": 18,
+      "sourceKey": "7581324397f9dcb6d6b9573f"
+    },
+    {
+      "id": "HOME-DOC-B018",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "移除演示标题/图外说明对产品空间的影响，补充新规范画板",
+      "sourceLine": 18,
+      "sourceKey": "eec2c6dd87412caef2f2ff32"
+    },
+    {
+      "id": "HOME-DOC-B019",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "交易库 V1.0",
+      "sourceLine": 19,
+      "sourceKey": "aa24708a41fc796d57f967c5"
+    },
+    {
+      "id": "HOME-DOC-B020",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "回合身份、必要开仓上下文、返回来源恢复",
+      "sourceLine": 19,
+      "sourceKey": "318bd2a5a1e62739b84abb16"
+    },
+    {
+      "id": "HOME-DOC-B021",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "仅作为工作区边界，不重设计来源页面",
+      "sourceLine": 19,
+      "sourceKey": "5c6423d2bf1d3075d12f2016"
+    },
+    {
+      "id": "HOME-DOC-B022",
+      "chapter": "RV01",
+      "kind": "paragraph",
+      "text": "当前源码 app/components/recall/recall-workspace.tsx 已包含阶段来源、双截止、回放、记录/快照与完成入口。这是能力盘点依据，未在本轮做产品运行审计；源码存在不等同于功能验收通过。本版所称优化点是设计组织问题，不将未经复现的行为标成产品故障。",
+      "sourceLine": 21,
+      "sourceKey": "42389482cb0ddca290f10913"
+    },
+    {
+      "id": "HOME-DOC-B023",
+      "chapter": "RV01",
+      "kind": "paragraph",
+      "text": "采用“保留主图＋阶段侧栏，统一视觉和状态”。它延续已经批准的边看图边记录体验。全屏图表加覆盖抽屉会遮挡价格轴；三阶段纵向表单会挤压主图，均不采用。",
+      "sourceLine": 25,
+      "sourceKey": "0bb67c388700f1f62620e1e6"
+    },
+    {
+      "id": "HOME-DOC-B024",
+      "chapter": "RV01",
+      "kind": "paragraph",
+      "text": "四个设计目标：主图在观察与编辑期间持续可见；行情截止、成交截止和记录归属分别可辨；每阶段只展示当时适用的字段；保存、留存和完成三种动作可区分。",
+      "sourceLine": 27,
+      "sourceKey": "b53f9fa101334e83d6b80485"
+    },
+    {
+      "id": "HOME-DOC-B025",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "本版候选优化",
+      "sourceLine": 29,
+      "sourceKey": "0b8f52a9d3655a7870ebf2eb"
+    },
+    {
+      "id": "HOME-DOC-B026",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "用户可见变化",
+      "sourceLine": 29,
+      "sourceKey": "5dba5ea79a361b90aac0da9f"
+    },
+    {
+      "id": "HOME-DOC-B027",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "保持的约束",
+      "sourceLine": 29,
+      "sourceKey": "4849b3ed865b601506547f5b"
+    },
+    {
+      "id": "HOME-DOC-B028",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "紧凑顶栏、独立截止行、底部回放条",
+      "sourceLine": 31,
+      "sourceKey": "a7dceacebf487d276acb6263"
+    },
+    {
+      "id": "HOME-DOC-B029",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "身份、阶段、时间与动作各有固定位置",
+      "sourceLine": 31,
+      "sourceKey": "9a7a3c14e51a5fec93751cfa"
+    },
+    {
+      "id": "HOME-DOC-B030",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "不会用顶部大标题或常驻阶段卡占满首屏",
+      "sourceLine": 31,
+      "sourceKey": "7c156ba3743c8724a5ac4b12"
+    },
+    {
+      "id": "HOME-DOC-B031",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "统一阶段侧栏与记录列表视图",
+      "sourceLine": 32,
+      "sourceKey": "fc64881ee5216716e2f0e6dd"
+    },
+    {
+      "id": "HOME-DOC-B032",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "计划、评价、快照列表共享一个侧栏位置，明确返回当前阶段",
+      "sourceLine": 32,
+      "sourceKey": "30790f73854f644e4220ee1e"
+    },
+    {
+      "id": "HOME-DOC-B033",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "记录不被删减；切换布局不推进双游标",
+      "sourceLine": 32,
+      "sourceKey": "c4b7c8faba47fc52dc610bca"
+    },
+    {
+      "id": "HOME-DOC-B034",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "按需展开次要内容",
+      "sourceLine": 33,
+      "sourceKey": "b34881ac4bfcdba0a0c653d9"
+    },
+    {
+      "id": "HOME-DOC-B035",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "资金来源、全量成交、完整快照和导出细项默认收起",
+      "sourceLine": 33,
+      "sourceKey": "af434bdc7c6aa0216900b120"
+    },
+    {
+      "id": "HOME-DOC-B036",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "字段仍可达；当前阶段的核心输入首屏可见",
+      "sourceLine": 33,
+      "sourceKey": "785a5129cf8a405822e8ee30"
+    },
+    {
+      "id": "HOME-DOC-B037",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "固定错误入口与区域内说明",
+      "sourceLine": 34,
+      "sourceKey": "504f429e1c9ad48544d25da8"
+    },
+    {
+      "id": "HOME-DOC-B038",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "顶栏保存状态提示异常，详细恢复操作在侧栏",
+      "sourceLine": 34,
+      "sourceKey": "c6fea41a25af805da4e181b9"
+    },
+    {
+      "id": "HOME-DOC-B039",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "本地输入不丢失，不能因错误状态把图表挤出视口",
+      "sourceLine": 34,
+      "sourceKey": "9cae21eb6eeb3c79df6335ea"
+    },
+    {
+      "id": "HOME-DOC-B040",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "V2.5公共视觉映射",
+      "sourceLine": 35,
+      "sourceKey": "3036cda6e1f75995f401775f"
+    },
+    {
+      "id": "HOME-DOC-B041",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "统一深色表面、蓝色选中、文字层级与数值对齐",
+      "sourceLine": 35,
+      "sourceKey": "2627efb6d901018236c77f7f"
+    },
+    {
+      "id": "HOME-DOC-B042",
+      "chapter": "RV01",
+      "kind": "tablecell",
+      "text": "K线仍继承用户图表配色，不被财务盈亏色替换",
+      "sourceLine": 35,
+      "sourceKey": "adae356bad71ea51f1b68cad"
+    },
+    {
+      "id": "HOME-DOC-B043",
+      "chapter": "RV01",
+      "kind": "paragraph",
+      "text": "本文件是独立的《复盘页视觉规范 V1.0》，不是将9月复盘文档原样改名。旧需求与元素表保留为行为依据，本版记录新增视觉决定。两者出现冲突时，以已确认业务契约为底线；新尺寸和信息编排在批准前保持提案身份。本文未批准新的业务功能，也不改变回合完成规则。",
+      "sourceLine": 39,
+      "sourceKey": "d291b71fbe9d0b5cda11ac3d"
+    },
+    {
+      "id": "HOME-DOC-B044",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "从上到下为身份与阶段顶栏、可知截止与来源行、主图/阶段侧栏、回放条。左侧沿用应用导航；主图内工具列与价格轴独立占位。默认焦点在图表观察区，编辑计划后焦点留在该字段，不自动抢回图表。",
+      "sourceLine": 45,
+      "sourceKey": "04d3fc7280344f8836ce9f29"
+    },
+    {
+      "id": "HOME-DOC-B045",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "图稿是100%尺寸的设计画板。应用导航仅表示工作区可用宽度的上下文，其页面内容与交互不在本轮改版范围。",
+      "sourceLine": 49,
+      "sourceKey": "d220d3c12df7e78d73e8f7db"
+    },
+    {
+      "id": "HOME-DOC-B046",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "区域",
+      "sourceLine": 51,
+      "sourceKey": "a9abc9da7830e10fd6975ee5"
+    },
+    {
+      "id": "HOME-DOC-B047",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "候选尺寸",
+      "sourceLine": 51,
+      "sourceKey": "b7fa8ca249995b1c5a80745d"
+    },
+    {
+      "id": "HOME-DOC-B048",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "默认内容与顺序",
+      "sourceLine": 51,
+      "sourceKey": "dcb36fc84055dd6810094985"
+    },
+    {
+      "id": "HOME-DOC-B049",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "允许变化/禁止变化",
+      "sourceLine": 51,
+      "sourceKey": "e264f529251f9c11dcfbefb9"
+    },
+    {
+      "id": "HOME-DOC-B050",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "工作区外边距",
+      "sourceLine": 53,
+      "sourceKey": "9477492d7c04571da51c9245"
+    },
+    {
+      "id": "HOME-DOC-B051",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "桌面16px",
+      "sourceLine": 53,
+      "sourceKey": "21775e4e090cb3fe5743770e"
+    },
+    {
+      "id": "HOME-DOC-B052",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "与应用壳分离，内层不重复套大卡",
+      "sourceLine": 53,
+      "sourceKey": "c4881198acac3f006f2dffc2"
+    },
+    {
+      "id": "HOME-DOC-B053",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "不继承首页24px边距来重复扣宽",
+      "sourceLine": 53,
+      "sourceKey": "999fdc992e331fd0b73bff1c"
+    },
+    {
+      "id": "HOME-DOC-B054",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "顶栏 E01/E02/E20",
+      "sourceLine": 54,
+      "sourceKey": "40ec40f02632910752340cf2"
+    },
+    {
+      "id": "HOME-DOC-B055",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "56px；不足时按内容换行",
+      "sourceLine": 54,
+      "sourceKey": "532396c1b82fb07fc75c20fc"
+    },
+    {
+      "id": "HOME-DOC-B056",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "返回、证券/代码、周期；三阶段；保存状态、导出/更多",
+      "sourceLine": 54,
+      "sourceKey": "8c49b495c4382ae92084fd78"
+    },
+    {
+      "id": "HOME-DOC-B057",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "阶段不能被长证券名挤掉；名字可省略并可查全名",
+      "sourceLine": 54,
+      "sourceKey": "33cef8cf5b5a0569f3ae9ce3"
+    },
+    {
+      "id": "HOME-DOC-B058",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "截止/来源行",
+      "sourceLine": 55,
+      "sourceKey": "608d5767cf9ad4c6517009ba"
+    },
+    {
+      "id": "HOME-DOC-B059",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "32px起",
+      "sourceLine": 55,
+      "sourceKey": "360b2bdd8a675830511fdc6a"
+    },
+    {
+      "id": "HOME-DOC-B060",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "行情截止、成交截止、记录对象、补记来源",
+      "sourceLine": 55,
+      "sourceKey": "48164cb02fa6a2d34b65a40f"
+    },
+    {
+      "id": "HOME-DOC-B061",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "长文换行时明确占高；不得隐去成交边界或已看后续来源",
+      "sourceLine": 55,
+      "sourceKey": "084c5ae162f309ae83f38718"
+    },
+    {
+      "id": "HOME-DOC-B062",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "主区",
+      "sourceLine": 56,
+      "sourceKey": "82899850cfff2849a6201369"
+    },
+    {
+      "id": "HOME-DOC-B063",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "占据剩余高度",
+      "sourceLine": 56,
+      "sourceKey": "e414acfa06a6a4f72d26f008"
+    },
+    {
+      "id": "HOME-DOC-B064",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "48px工具、主绘图区、96px轴、14px沟槽、304px侧栏",
+      "sourceLine": 56,
+      "sourceKey": "1fabd1968327050add86d6e4"
+    },
+    {
+      "id": "HOME-DOC-B065",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "轴不入表单；侧栏内部滚动不拉长主图",
+      "sourceLine": 56,
+      "sourceKey": "895bfa242571dce33f6f5a31"
+    },
+    {
+      "id": "HOME-DOC-B066",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "回放条 E19",
+      "sourceLine": 57,
+      "sourceKey": "d28618621523363a0ed642dd"
+    },
+    {
+      "id": "HOME-DOC-B067",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "56px起",
+      "sourceLine": 57,
+      "sourceKey": "f19e3f248b6aa391465a5e85"
+    },
+    {
+      "id": "HOME-DOC-B068",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "上一根、播放/暂停、下一根、下一决策、留存快照、当前阶段侧栏入口",
+      "sourceLine": 57,
+      "sourceKey": "deacc13bbdfd1dd75429f772"
+    },
+    {
+      "id": "HOME-DOC-B069",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "次要动作入更多；窄屏可换行但不缩字或命中区",
+      "sourceLine": 57,
+      "sourceKey": "c1ba1d071ca0f710c9f33606"
+    },
+    {
+      "id": "HOME-DOC-B070",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "阶段侧栏",
+      "sourceLine": 58,
+      "sourceKey": "83d5c6337b77754eaa30fa92"
+    },
+    {
+      "id": "HOME-DOC-B071",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "304px，沿用300–320px范围",
+      "sourceLine": 58,
+      "sourceKey": "a4528c48b02ea58e2591a81e"
+    },
+    {
+      "id": "HOME-DOC-B072",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "当前阶段标题、核心字段、次级折叠、来源",
+      "sourceLine": 58,
+      "sourceKey": "b04ddfa744add4036f4a33d5"
+    },
+    {
+      "id": "HOME-DOC-B073",
+      "chapter": "RV02",
+      "kind": "tablecell",
+      "text": "可内部滚动；不覆盖图表，开合不改变观察时间/价格窗口",
+      "sourceLine": 58,
+      "sourceKey": "c3979319f01150037d99ac68"
+    },
+    {
+      "id": "HOME-DOC-B074",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "左右布局最低工作区宽度为 1102px = 48工具 + 640绘图区 + 96价格轴 + 14沟槽 + 304侧栏。按工作区容器宽判断，不把整个浏览器宽度当工作区宽度。以72px导航和两侧16px为例，1440/1280视口分别给1336/1176px工作区，主绘图区分别874/714px。导航展开为240px时，1280视口仅余1008px，必须进入上下布局；不能缩至小于640px硬塞侧栏。",
+      "sourceLine": 60,
+      "sourceKey": "42e41cdd7c75e9358e7ee5a5"
+    },
+    {
+      "id": "HOME-DOC-B075",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "在1440×900画板中，工作区可用高868px，常驻56+32+56共144px，主区余724px；1280×800对应624px。此预算是同一默认状态下的候选目标；长来源行或窄屏顶栏换行应重新扣除实际高度，不将这些场景虚报为同高。",
+      "sourceLine": 62,
+      "sourceKey": "d72a2c23b5eb31fb2ac2ba00"
+    },
+    {
+      "id": "HOME-DOC-B076",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "悬停只改变表面，不改变边框厚度或盒尺寸。加载保留主图/侧栏槽位；字段错误占用该字段的说明行，侧栏内部滚动。保存错误不额外插入全宽大横幅。开合侧栏允许图表宽度变化，禁止隐式fitContent、推进时间、改动价格范围或把标签画进侧栏。",
+      "sourceLine": 68,
+      "sourceKey": "0a2d4a15278f2f6e27ee1696"
+    },
+    {
+      "id": "HOME-DOC-B077",
+      "chapter": "RV02",
+      "kind": "paragraph",
+      "text": "记录列表打开时替换当前侧栏内容，提供“返回当前阶段”；关闭列表不关闭整个工作区。列表内部滚动和阶段切换不推动底部回放条。这个“同槽视图”是本版信息组织提案，须与旧实现底部详情的行为逐项迁移，不以移动容器删掉功能。",
+      "sourceLine": 70,
+      "sourceKey": "cfedd26cc2934094d5d0aa24"
+    },
+    {
+      "id": "HOME-DOC-B078",
+      "chapter": "RV03",
+      "kind": "paragraph",
+      "text": "公共控件仍以V2.5视觉基础和控件状态手册为单一来源。下表是复盘角色映射，不建立一套同名不同值的全局token。",
+      "sourceLine": 74,
+      "sourceKey": "dcd6129b11856b644de905db"
+    },
+    {
+      "id": "HOME-DOC-B079",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "角色",
+      "sourceLine": 76,
+      "sourceKey": "ff325929c63dcc1be263640e"
+    },
+    {
+      "id": "HOME-DOC-B080",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "V2.5取值/规则",
+      "sourceLine": 76,
+      "sourceKey": "50dda0283695e753ed8b854e"
+    },
+    {
+      "id": "HOME-DOC-B081",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "复盘使用位置",
+      "sourceLine": 76,
+      "sourceKey": "7b2d7d9e65ec506e3ec04e25"
+    },
+    {
+      "id": "HOME-DOC-B082",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "页面/面板/浮层",
+      "sourceLine": 78,
+      "sourceKey": "0e8b6569327cddd51f5f9e1a"
+    },
+    {
+      "id": "HOME-DOC-B083",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#0B1019 / #111A26 / #162233",
+      "sourceLine": 78,
+      "sourceKey": "c0ad7610baf0794fc5fd6764"
+    },
+    {
+      "id": "HOME-DOC-B084",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "主工作面、侧栏、工具菜单与Text编辑",
+      "sourceLine": 78,
+      "sourceKey": "357a27ef2594932d3e483956"
+    },
+    {
+      "id": "HOME-DOC-B085",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "边线",
+      "sourceLine": 79,
+      "sourceKey": "89c370538a6657784d12274d"
+    },
+    {
+      "id": "HOME-DOC-B086",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#283448",
+      "sourceLine": 79,
+      "sourceKey": "569311f68d992d1c4b592184"
+    },
+    {
+      "id": "HOME-DOC-B087",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "表面分隔、输入边界；网格用低对比，不能抢过K线",
+      "sourceLine": 79,
+      "sourceKey": "dce8119268479a5236b445ce"
+    },
+    {
+      "id": "HOME-DOC-B088",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "正文/次要/弱提示",
+      "sourceLine": 80,
+      "sourceKey": "5c941499775da4750ab851a8"
+    },
+    {
+      "id": "HOME-DOC-B089",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#E6EDF7 / #A8B6CB / #71829B",
+      "sourceLine": 80,
+      "sourceKey": "dbbe2c7515dffae1194d27d6"
+    },
+    {
+      "id": "HOME-DOC-B090",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "身份与数据、来源与单位、非核心辅助",
+      "sourceLine": 80,
+      "sourceKey": "06c40d8ef33b7756f68deec0"
+    },
+    {
+      "id": "HOME-DOC-B091",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "操作/焦点",
+      "sourceLine": 81,
+      "sourceKey": "ac4e140113588ea714a12564"
+    },
+    {
+      "id": "HOME-DOC-B092",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#6CA8FF / #A9C8FF",
+      "sourceLine": 81,
+      "sourceKey": "86990ba7ce8d49b694fcb532"
+    },
+    {
+      "id": "HOME-DOC-B093",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "当前阶段、选择态、2px焦点环",
+      "sourceLine": 81,
+      "sourceKey": "a58826cf70bd7c059aa51dc8"
+    },
+    {
+      "id": "HOME-DOC-B094",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "财务盈利/亏损",
+      "sourceLine": 82,
+      "sourceKey": "bcd8c445551fc9d24734d032"
+    },
+    {
+      "id": "HOME-DOC-B095",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#53D7A0 / #FF8592",
+      "sourceLine": 82,
+      "sourceKey": "30a11deff0dfc7ac8be589f3"
+    },
+    {
+      "id": "HOME-DOC-B096",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "净盈亏，必须同时有正负号及币种",
+      "sourceLine": 82,
+      "sourceKey": "01cc08323dee374e81d54b07"
+    },
+    {
+      "id": "HOME-DOC-B097",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "提醒/计划线",
+      "sourceLine": 83,
+      "sourceKey": "028182659b37cd7ecfaaa15c"
+    },
+    {
+      "id": "HOME-DOC-B098",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#FFC66D",
+      "sourceLine": 83,
+      "sourceKey": "1749f768167c4a1c4f104b41"
+    },
+    {
+      "id": "HOME-DOC-B099",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "补记或缺项提示、带名称的计划虚线；线型与标签区分角色",
+      "sourceLine": 83,
+      "sourceKey": "45a077d988a67993fdf6d4ba"
+    },
+    {
+      "id": "HOME-DOC-B100",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "悬停/按下",
+      "sourceLine": 84,
+      "sourceKey": "dceaf3cc70803147d3fa7e56"
+    },
+    {
+      "id": "HOME-DOC-B101",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#1C2B42 / #243B5C",
+      "sourceLine": 84,
+      "sourceKey": "7548b0106ce8cee981f29c88"
+    },
+    {
+      "id": "HOME-DOC-B102",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "按钮、选项；不承担盈亏含义",
+      "sourceLine": 84,
+      "sourceKey": "3f90c7f74f7752d5fec18dc3"
+    },
+    {
+      "id": "HOME-DOC-B103",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "禁用文字/边线",
+      "sourceLine": 85,
+      "sourceKey": "b6c6e23694309e721af00e83"
+    },
+    {
+      "id": "HOME-DOC-B104",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "#53647B / #202B3A",
+      "sourceLine": 85,
+      "sourceKey": "bb7dc1c614e6543203e653cf"
+    },
+    {
+      "id": "HOME-DOC-B105",
+      "chapter": "RV03",
+      "kind": "tablecell",
+      "text": "末尾/无数据动作；旁边保留可读禁用原因",
+      "sourceLine": 85,
+      "sourceKey": "1eb6c86a0883eb32f17a3a82"
+    },
+    {
+      "id": "HOME-DOC-B106",
+      "chapter": "RV03",
+      "kind": "paragraph",
+      "text": "K线保留用户的 colorScheme：默认青涨红跌 #26A69A/#EF5350；其他已保存方案照旧。计划为带名称的琥珀虚线，实际成交为菱形及“买入/减仓/清仓”文字，判断为蓝色Text/连接线。买卖方向、计划和净盈亏是不同语义，不能仅用颜色让用户猜。",
+      "sourceLine": 87,
+      "sourceKey": "b03c0c8038d04ec8eb5c2b90"
+    },
+    {
+      "id": "HOME-DOC-B107",
+      "chapter": "RV03",
+      "kind": "paragraph",
+      "text": "界面用系统无衬线中文后备，与V2.5一致；数字启用tabular-nums，避免整页等宽中文。若产品继续加载Geist，使用既有字体变量承接，不新增下载依赖。工作区证券身份18/24px、侧栏标题16/24px、正文/输入/按钮14/20px、辅助/坐标轴12/16px；工作区不使用28px绩效卡作为常驻主视觉。Text默认14px，保留用户原12/14/16/18/24/32px样式。",
+      "sourceLine": 89,
+      "sourceKey": "408507e2c6e774b16948b634"
+    },
+    {
+      "id": "HOME-DOC-B108",
+      "chapter": "RV03",
+      "kind": "paragraph",
+      "text": "控件高至少36px，触控命中至少44px；小控件圆角6px、面板8px，间距4/8/12/16/24/32px。输入左对齐且留12px内边距；单位独立；摘要金额右对齐，不以缩字塞入长值。图标沿用Lucide线性风格，18–19px，图标按钮必须有名称与焦点态。",
+      "sourceLine": 91,
+      "sourceKey": "9b0a6ce25151a2250f393022"
+    },
+    {
+      "id": "HOME-DOC-B109",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "默认显示买入前计划侧栏，顺序为方向/币种语境、计划入场、初始止损与目标、规模输入、折叠的资金基数与来源、派生风险。规模保留数量/金额/仓位比例三个模式，一次只有一个主输入；切换换算不偷偷归零。资金来源摘要显示“参考资金”及金额，展开后显示币种、时点、手填/可信快照来源。",
+      "sourceLine": 97,
+      "sourceKey": "8ca056297deb01d31fb7dbc8"
+    },
+    {
+      "id": "HOME-DOC-B110",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "主图只到首次入场前已完成行情；不显示真实买入菱形、退出、最终盈亏、已平仓状态或未来范围。画面显示“复盘补记”。若此前已经看过结果，改为“已看后续后补记”，切回早期不能擦掉这个来源。",
+      "sourceLine": 99,
+      "sourceKey": "f71e4011b3c9435aa16c05e3"
+    },
+    {
+      "id": "HOME-DOC-B111",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "缺计划仍可看图和推进；不为了算出完整R强迫用户填写虚构数字。有效多头满足止损<入场<目标，空头相反；错误就近解释，计划线不画无效值。",
+      "sourceLine": 101,
+      "sourceKey": "21f7ea9183e54457e44de766"
+    },
+    {
+      "id": "HOME-DOC-B112",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "进入持仓后侧栏默认收起以让主图变宽；本图展示用户展开侧栏后的状态，便于核对字段。展开顺序为当前已知仓位与成交、只读初始计划、计划修订入口。普通逐根推进不切换Text的记录归属；选择“下一决策”才明确改变当前记录对象。图上Text是判断正文，侧栏不再要求把相同心态复制一遍。",
+      "sourceLine": 107,
+      "sourceKey": "1f6670597de9c70545ac619b"
+    },
+    {
+      "id": "HOME-DOC-B113",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "新判断可继承旧标注，旧快照保持原文。计划调整必须生成带时点和原因的新修订，不覆盖初始风险基准。阶段二不出现最终执行评分或未揭示退出结果。",
+      "sourceLine": 109,
+      "sourceKey": "0328d6875073e77d49fae228"
+    },
+    {
+      "id": "HOME-DOC-B114",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "用户主动展开结果后进入事后阶段，侧栏默认打开：原计划与风险基准摘要、实际成交与结果、退出决策选择、是否提前、原因与执行符合度。全量成交和评价标签作为可展开后续内容；不得把评价输入推到几屏只读摘要之后。",
+      "sourceLine": 115,
+      "sourceKey": "689554fae0dbaa9845effeb7"
+    },
+    {
+      "id": "HOME-DOC-B115",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "退出选择显示日期、动作、数量、价格；同一回合每次减仓/清仓各有独立评价。是否提前有“是/否/不确定”，未填写显示“未评价”，不能当作“否”。原因与执行符合度分开，原因可为计划内分批、结构失效、风险收缩、情绪影响、资金需求、其他；“其他”需说明。符合度为按计划/偏离/无原计划/未评价，系统不凭盈利替用户判对错。",
+      "sourceLine": 117,
+      "sourceKey": "40ef12b791c46a114f5e1aa7"
+    },
+    {
+      "id": "HOME-DOC-B116",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "原计划与真实成交使用只读行和来源标识，不画成可编辑输入。切换退出决策先保留本地草稿，再显示该决策的数据，不能串值。",
+      "sourceLine": 119,
+      "sourceKey": "acbcb76884219b9bb1e93a36"
+    },
+    {
+      "id": "HOME-DOC-B117",
+      "chapter": "RV04",
+      "kind": "paragraph",
+      "text": "未平仓可主动查看截至当前可用行情的事后观察，明确“尚未平仓”；已实现部分与持仓浮动分开，没有最终回合净额和最终R。已完成成果进入时显示成果版本与“查看成果/继续编辑”的语境，重新开始回放为明确次级动作。重新开始只重置游标和视野到约定起点，不能清除已看后续来源、快照、原计划或正式成果。",
+      "sourceLine": 123,
+      "sourceKey": "d01af45c52ee965f2567e24d"
+    },
+    {
+      "id": "HOME-DOC-B118",
+      "chapter": "RV05",
+      "kind": "paragraph",
+      "text": "用M表示行情可知截止，用X表示成交可知截止，用D表示当前记录归属。M和X分别保存，D不能仅由当前K线推导。阶段、M、X、所选决策/快照与相应画面应一次更新；侧栏、工具菜单和焦点是独立的界面状态。",
+      "sourceLine": 127,
+      "sourceKey": "03be9075486d9ef95e96d7e9"
+    },
+    {
+      "id": "HOME-DOC-B119",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "前态/动作",
+      "sourceLine": 129,
+      "sourceKey": "8f6d056c303e3b55417c15ec"
+    },
+    {
+      "id": "HOME-DOC-B120",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "M与X变化",
+      "sourceLine": 129,
+      "sourceKey": "953e64977713f036031b7c49"
+    },
+    {
+      "id": "HOME-DOC-B121",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "阶段/记录归属",
+      "sourceLine": 129,
+      "sourceKey": "e9e15ba4f64ebdae5bed1988"
+    },
+    {
+      "id": "HOME-DOC-B122",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "可见与不可见内容",
+      "sourceLine": 129,
+      "sourceKey": "59a962e9ea20fd02f8970cc4"
+    },
+    {
+      "id": "HOME-DOC-B123",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "视野与保存规则",
+      "sourceLine": 129,
+      "sourceKey": "21983a7b22a674619ac8cfce"
+    },
+    {
+      "id": "HOME-DOC-B124",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "首次进入入场前",
+      "sourceLine": 131,
+      "sourceKey": "7276a217b8922d38f1f59e24"
+    },
+    {
+      "id": "HOME-DOC-B125",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "M到首次入场前已知完成K；X在首次成交前",
+      "sourceLine": 131,
+      "sourceKey": "19e9b5feb9e8cb950142ce71"
+    },
+    {
+      "id": "HOME-DOC-B126",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "入场前；D为约定初始记录对象",
+      "sourceLine": 131,
+      "sourceKey": "7675861f063b76de2ba10ca0"
+    },
+    {
+      "id": "HOME-DOC-B127",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "可见计划；不可见真实入场、退出和最终结果",
+      "sourceLine": 131,
+      "sourceKey": "32059609dc79d4bf38f79882"
+    },
+    {
+      "id": "HOME-DOC-B128",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "以已知行情定轴，保存双截止",
+      "sourceLine": 131,
+      "sourceKey": "a783fcdb52a3d4e828a40368"
+    },
+    {
+      "id": "HOME-DOC-B129",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "下一根/播放",
+      "sourceLine": 132,
+      "sourceKey": "1c6553ea0eace2ee76a5ac1b"
+    },
+    {
+      "id": "HOME-DOC-B130",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "M推进一个完成K；X只揭示不晚于实际观察边界的事实",
+      "sourceLine": 132,
+      "sourceKey": "f32b48c9069fbf003f03693c"
+    },
+    {
+      "id": "HOME-DOC-B131",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "跨首次入场进入持仓；D保持",
+      "sourceLine": 132,
+      "sourceKey": "8da560b1bf523c06267f03ee"
+    },
+    {
+      "id": "HOME-DOC-B132",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "新增K/已知成交出现；不要求先留存",
+      "sourceLine": 132,
+      "sourceKey": "c6aafbfb38c3c3d39d2daf62"
+    },
+    {
+      "id": "HOME-DOC-B133",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "新增K必须进入可见主图，越过初始窗口也如此",
+      "sourceLine": 132,
+      "sourceKey": "d58b18a3059f9d3ac2ded723"
+    },
+    {
+      "id": "HOME-DOC-B134",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "上一根",
+      "sourceLine": 133,
+      "sourceKey": "88dab47c20309b6e973cd352"
+    },
+    {
+      "id": "HOME-DOC-B135",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "恢复上一个可知行情边界及对应X",
+      "sourceLine": 133,
+      "sourceKey": "61962fefd43490ea11804383"
+    },
+    {
+      "id": "HOME-DOC-B136",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "恢复该时点阶段；D不被隐式换绑",
+      "sourceLine": 133,
+      "sourceKey": "a9be4f5a5f1936f5157a1cfb"
+    },
+    {
+      "id": "HOME-DOC-B137",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "隐藏越界事实；已看后续来源仍在",
+      "sourceLine": 133,
+      "sourceKey": "3c03b295e75a8df4ed69dd2f"
+    },
+    {
+      "id": "HOME-DOC-B138",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "显示目标K，保留记录与来源",
+      "sourceLine": 133,
+      "sourceKey": "e48b3075a4ef7b4a0966bbb7"
+    },
+    {
+      "id": "HOME-DOC-B139",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "下一决策",
+      "sourceLine": 134,
+      "sourceKey": "0b88010d0dda8db918b7408a"
+    },
+    {
+      "id": "HOME-DOC-B140",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "到下一笔决策约定M/X，不能取该阶段旧的更晚游标",
+      "sourceLine": 134,
+      "sourceKey": "15546ce5b9bfca251d63d842"
+    },
+    {
+      "id": "HOME-DOC-B141",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "D切到目标决策；同K多决策仍分别可达",
+      "sourceLine": 134,
+      "sourceKey": "ab73c8cd1609eb70e621a0e4"
+    },
+    {
+      "id": "HOME-DOC-B142",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "成交可见但其所在K未收盘时不伪造完整K",
+      "sourceLine": 134,
+      "sourceKey": "d506d199bbcc28b614ab2581"
+    },
+    {
+      "id": "HOME-DOC-B143",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "目标成交在视野内；原输入已保留",
+      "sourceLine": 134,
+      "sourceKey": "52cece27a53a9703fc6b30ec"
+    },
+    {
+      "id": "HOME-DOC-B144",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "点击阶段回看",
+      "sourceLine": 135,
+      "sourceKey": "21b870cd33e8307d55d7eab0"
+    },
+    {
+      "id": "HOME-DOC-B145",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "恢复该阶段保存的M/X与快照语境",
+      "sourceLine": 135,
+      "sourceKey": "f492ac200fb9bbe1742dea45"
+    },
+    {
+      "id": "HOME-DOC-B146",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "阶段切换；恢复其D",
+      "sourceLine": 135,
+      "sourceKey": "b9181df3cc1fe1bd2e47ac20"
+    },
+    {
+      "id": "HOME-DOC-B147",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "早期仍隐藏最终结果；保留已看后续来源",
+      "sourceLine": 135,
+      "sourceKey": "f955f9ba64b344cacb75d84b"
+    },
+    {
+      "id": "HOME-DOC-B148",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "恢复对应快照窗口，不混成“下一决策”",
+      "sourceLine": 135,
+      "sourceKey": "4a03c50d104019e40770f69b"
+    },
+    {
+      "id": "HOME-DOC-B149",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "选择成交/快照",
+      "sourceLine": 136,
+      "sourceKey": "49c1d7c3b41d59aad8256a1c"
+    },
+    {
+      "id": "HOME-DOC-B150",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "选择成交按其边界；快照按冻结M/X",
+      "sourceLine": 136,
+      "sourceKey": "a71e830a47267fadeeda8bba"
+    },
+    {
+      "id": "HOME-DOC-B151",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "明确选中对象；编辑快照有“返回工作图”",
+      "sourceLine": 136,
+      "sourceKey": "8e6682cd4be1411452e06fe8"
+    },
+    {
+      "id": "HOME-DOC-B152",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "预览不能暗中替换另一个决策的草稿",
+      "sourceLine": 136,
+      "sourceKey": "9ca59b8598f2c76c28194ae2"
+    },
+    {
+      "id": "HOME-DOC-B153",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "定位目标；“恢复工作进度”单独命名",
+      "sourceLine": 136,
+      "sourceKey": "d904954a2b9cb7759a821a62"
+    },
+    {
+      "id": "HOME-DOC-B154",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "展开结果/完整历史",
+      "sourceLine": 137,
+      "sourceKey": "28ee483eb9e3dfbec593398a"
+    },
+    {
+      "id": "HOME-DOC-B155",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "M/X到允许的完整边界",
+      "sourceLine": 137,
+      "sourceKey": "11cbb01406db938b0a835507"
+    },
+    {
+      "id": "HOME-DOC-B156",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "主动揭示；记录来源类型与时间",
+      "sourceLine": 137,
+      "sourceKey": "c6b8a0622aeff8b1c8adce85"
+    },
+    {
+      "id": "HOME-DOC-B157",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "可见结果；未平仓仍不称最终平仓结果",
+      "sourceLine": 137,
+      "sourceKey": "cd7e62916e38943fcf3f6f02"
+    },
+    {
+      "id": "HOME-DOC-B158",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "返回回放恢复原边界，不能抹去已看来源",
+      "sourceLine": 137,
+      "sourceKey": "29af623ea2b400c801c2daf2"
+    },
+    {
+      "id": "HOME-DOC-B159",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "切周期/侧栏开合/刷新",
+      "sourceLine": 138,
+      "sourceKey": "1ce0f1f660dfe566a62d1ba8"
+    },
+    {
+      "id": "HOME-DOC-B160",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "M、X均不推进",
+      "sourceLine": 138,
+      "sourceKey": "4e18362173334041a1776ec4"
+    },
+    {
+      "id": "HOME-DOC-B161",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "阶段/D不改变",
+      "sourceLine": 138,
+      "sourceKey": "a3b55962724ad5090fb1779e"
+    },
+    {
+      "id": "HOME-DOC-B162",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "只呈现新周期中已完成且可知的K",
+      "sourceLine": 138,
+      "sourceKey": "401b828d9bc87df8db10ba35"
+    },
+    {
+      "id": "HOME-DOC-B163",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "保留时间/价格窗口；不调用全量fitContent",
+      "sourceLine": 138,
+      "sourceKey": "5d51c9f3d0c3b678b2cbb417"
+    },
+    {
+      "id": "HOME-DOC-B164",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "重新开始回放",
+      "sourceLine": 139,
+      "sourceKey": "714c86b759ef9a1add9366d4"
+    },
+    {
+      "id": "HOME-DOC-B165",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "回到首次观察起点",
+      "sourceLine": 139,
+      "sourceKey": "21fce6f8a193f9b937410d6a"
+    },
+    {
+      "id": "HOME-DOC-B166",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "入场前；明确重新开始语境",
+      "sourceLine": 139,
+      "sourceKey": "80bcccce483fa46fc9ea4fd5"
+    },
+    {
+      "id": "HOME-DOC-B167",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "仍标已看后续后补记",
+      "sourceLine": 139,
+      "sourceKey": "efb456cf59cbc24190cd7d99"
+    },
+    {
+      "id": "HOME-DOC-B168",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "保留正式版本/快照与曝光来源",
+      "sourceLine": 139,
+      "sourceKey": "1fb88c471d8b0672433ecba8"
+    },
+    {
+      "id": "HOME-DOC-B169",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "保存与重开",
+      "sourceLine": 140,
+      "sourceKey": "999deffdd59e2174fab024f6"
+    },
+    {
+      "id": "HOME-DOC-B170",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "恢复持久化的M/X、阶段、D、窗口",
+      "sourceLine": 140,
+      "sourceKey": "2e582b244dba6b13da2953dd"
+    },
+    {
+      "id": "HOME-DOC-B171",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "回到所选工作状态",
+      "sourceLine": 140,
+      "sourceKey": "ffc3370fa0df3cf6befe8811"
+    },
+    {
+      "id": "HOME-DOC-B172",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "来源、草稿与已留存版本可区分",
+      "sourceLine": 140,
+      "sourceKey": "e3673b4c43b2fb99a750b24c"
+    },
+    {
+      "id": "HOME-DOC-B173",
+      "chapter": "RV05",
+      "kind": "tablecell",
+      "text": "不得重开到另一阶段默认游标",
+      "sourceLine": 140,
+      "sourceKey": "1d797f46ef79115368872dc4"
+    },
+    {
+      "id": "HOME-DOC-B174",
+      "chapter": "RV05",
+      "kind": "paragraph",
+      "text": "播放默认每秒一根，编辑Text、输入数字或中文IME组词期间暂停且屏蔽回放快捷键。切周期不意味着可以把未完成的当日K全部展示。未来区不画淡化K、不用未来高低点定轴、不放未来交易提示；不能只遮住蜡烛却从摘要、tooltip或轴范围泄露结果。",
+      "sourceLine": 142,
+      "sourceKey": "4d61c01c95ffd01b2380a688"
+    },
+    {
+      "id": "HOME-DOC-B175",
+      "chapter": "RV05",
+      "kind": "paragraph",
+      "text": "末尾时下一根/播放不可用并显示“已到最后可用行情”；若还有可定位决策则单独说明可用动作。无行情显示缺失原因和重试入口，不画零值曲线。回放前进必须实际使新增K或目标成交可见；游标文字改变不等于播放通过。",
+      "sourceLine": 144,
+      "sourceKey": "a59429619452a321d347a54a"
+    },
+    {
+      "id": "HOME-DOC-B176",
+      "chapter": "RV06",
+      "kind": "paragraph",
+      "text": "Text默认一张展开短卡，最多两张同时展开；长文显示摘要和明确展开动作，全文仍可编辑。锚点可为时间/价格或归一化画布位置，拖移不改变归属；优先避开当前K与价格轴。按T再点图进入编辑；Enter用于文本换行时不触发播放，Esc取消当前编辑按既有保存规则保留可恢复内容。",
+      "sourceLine": 150,
+      "sourceKey": "603d3ca1ed487d92b4fd0963"
+    },
+    {
+      "id": "HOME-DOC-B177",
+      "chapter": "RV06",
+      "kind": "paragraph",
+      "text": "文字显示记录对象与来源；从后期回到早期补记保留“已看后续”标识。后续编辑生成修订，历史快照引用原修订。Text、计划数值、评价和标签分别结构化，不能只存成图片。",
+      "sourceLine": 152,
+      "sourceKey": "6d023d337396853d176029f1"
+    },
+    {
+      "id": "HOME-DOC-B178",
+      "chapter": "RV06",
+      "kind": "paragraph",
+      "text": "按三阶段归组，但每笔加仓、减仓、清仓与多个快照仍可访问。行至少显示决策身份、观察时点、快照版本/次数与补记来源。当前选中和正在编辑为不同状态；编辑已有快照时显示“更新此快照”和“返回工作图”。删除保留原撤销入口；不可因重新排序改变稳定身份。完整功能迁移到侧栏后，阶段代表图选择和全部记录列表仍是不同概念。",
+      "sourceLine": 158,
+      "sourceKey": "50a13fa076768930d801ff16"
+    },
+    {
+      "id": "HOME-DOC-B179",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "展示内容",
+      "sourceLine": 162,
+      "sourceKey": "ed738302342661fb155f816e"
+    },
+    {
+      "id": "HOME-DOC-B180",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "合成样例与规则",
+      "sourceLine": 162,
+      "sourceKey": "fffd866c26105edd1755cc80"
+    },
+    {
+      "id": "HOME-DOC-B181",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "计划",
+      "sourceLine": 164,
+      "sourceKey": "a4d098b356b4bd6a208708f7"
+    },
+    {
+      "id": "HOME-DOC-B182",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "入场56.00、止损52.00、目标68.00、1,000股；计划名义金额56,000 CNY",
+      "sourceLine": 164,
+      "sourceKey": "ada373fb8997ec3a36af0e10"
+    },
+    {
+      "id": "HOME-DOC-B183",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "参考资金",
+      "sourceLine": 165,
+      "sourceKey": "f3cc86cb5b1e3f255bec33f9"
+    },
+    {
+      "id": "HOME-DOC-B184",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "200,000 CNY，手填参考资金，计划仓位28.0%；不是实际账户净值",
+      "sourceLine": 165,
+      "sourceKey": "2c2686a8ecd2037301b039a2"
+    },
+    {
+      "id": "HOME-DOC-B185",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "初始风险",
+      "sourceLine": 166,
+      "sourceKey": "e7fba8804303ed90334d8491"
+    },
+    {
+      "id": "HOME-DOC-B186",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "4,000 CNY、参考资金的2.0%，未计费用；留存后冻结风险基准",
+      "sourceLine": 166,
+      "sourceKey": "b9ec0bd44cb07ffdf86128f4"
+    },
+    {
+      "id": "HOME-DOC-B187",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "预期R",
+      "sourceLine": 167,
+      "sourceKey": "120f28c1c91b427a0eabdf31"
+    },
+    {
+      "id": "HOME-DOC-B188",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "3.00R，同时解释收益:风险=3:1",
+      "sourceLine": 167,
+      "sourceKey": "6d09bc1a35c80914b32d4e9e"
+    },
+    {
+      "id": "HOME-DOC-B189",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "实际成交",
+      "sourceLine": 168,
+      "sourceKey": "3bc60e982fa8a4e5158ba1eb"
+    },
+    {
+      "id": "HOME-DOC-B353",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "D61买入1,000@56，D68减仓600@64，D74清仓400@61；退出均价62.80",
+      "sourceLine": 168,
+      "sourceKey": "9aeb63ab30d02b4caf7de9e4"
+    },
+    {
+      "id": "HOME-DOC-B354",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "画板时点",
+      "sourceLine": 169,
+      "sourceKey": "a4dd69b7a44179709499c2e3"
+    },
+    {
+      "id": "HOME-DOC-B355",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "入场前M60/X在首次买入前；持仓M69/X69、剩余400股；事后M80/X80。D为合成时间序号，不对应真实交易日历",
+      "sourceLine": 169,
+      "sourceKey": "7cc03876268d96edf52c4b96"
+    },
+    {
+      "id": "HOME-DOC-B191",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "结果",
+      "sourceLine": 170,
+      "sourceKey": "f35dc0cce2819084004caa5d"
+    },
+    {
+      "id": "HOME-DOC-B192",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "毛盈亏6,800、完整费用40、净盈亏+6,760 CNY、实际R+1.69R",
+      "sourceLine": 170,
+      "sourceKey": "80a6ad4adc73dc188580a908"
+    },
+    {
+      "id": "HOME-DOC-B193",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "未知与异常",
+      "sourceLine": 171,
+      "sourceKey": "2275207aad4b5ebc42daf2e2"
+    },
+    {
+      "id": "HOME-DOC-B194",
+      "chapter": "RV06",
+      "kind": "tablecell",
+      "text": "资金缺失时比例待计算；费用缺失时净额/净R待核算；无效方向或零风险不计算R",
+      "sourceLine": 171,
+      "sourceKey": "80552dcbbf1b3ec8d487a539"
+    },
+    {
+      "id": "HOME-DOC-B195",
+      "chapter": "RV06",
+      "kind": "paragraph",
+      "text": "实际R引用冻结风险基准，不因事后修改止损重算分母。加仓基准、部分已实现费用分配、跨币种、缺失输入与更正版本沿用原需求第5–8节，本版不重定义财务公式。字段留空是null，不能渲染成0、false或“否”。金额显示原币、价格精度按证券报价单位；长数字保留数值可读性，摘要可用万/亿并可查全值，输入和复制保留完整精度。",
+      "sourceLine": 173,
+      "sourceKey": "932760b08496e2f267633785"
+    },
+    {
+      "id": "HOME-DOC-B196",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "动作/状态",
+      "sourceLine": 179,
+      "sourceKey": "39b1d44ded82821945f660f9"
+    },
+    {
+      "id": "HOME-DOC-B197",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "用户看到什么",
+      "sourceLine": 179,
+      "sourceKey": "2bd21ceaa547500be829a7f1"
+    },
+    {
+      "id": "HOME-DOC-B198",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "必须真实发生什么",
+      "sourceLine": 179,
+      "sourceKey": "8c820b2efdc594c82ad0b9c1"
+    },
+    {
+      "id": "HOME-DOC-B199",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "自动保存草稿",
+      "sourceLine": 181,
+      "sourceKey": "a37d9005b6bb6a9b169f9283"
+    },
+    {
+      "id": "HOME-DOC-B200",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "顶栏“保存中/已保存/保存失败/版本冲突”",
+      "sourceLine": 181,
+      "sourceKey": "c8d3c1d8e974a02e75dd6d24"
+    },
+    {
+      "id": "HOME-DOC-B201",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "服务端确认后才显示已保存；草稿不等于正式成果",
+      "sourceLine": 181,
+      "sourceKey": "1ec81144c967738dde868c7b"
+    },
+    {
+      "id": "HOME-DOC-B202",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "留存当前快照",
+      "sourceLine": 182,
+      "sourceKey": "889a2e28830e559ae7db8d37"
+    },
+    {
+      "id": "HOME-DOC-B203",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "当前记录新增可追溯版本",
+      "sourceLine": 182,
+      "sourceKey": "8078f98b70d0c802d8a4ea27"
+    },
+    {
+      "id": "HOME-DOC-B204",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "冻结图、Text、计划/评价/成交/指标引用组合",
+      "sourceLine": 182,
+      "sourceKey": "5d6f26ef3d4c39c4bce824ee"
+    },
+    {
+      "id": "HOME-DOC-B205",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "保存并完成回合复盘",
+      "sourceLine": 183,
+      "sourceKey": "09111e0100bf3ab10c656ffd"
+    },
+    {
+      "id": "HOME-DOC-B206",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "完成条件与缺项清单；成功后正式成果版本",
+      "sourceLine": 183,
+      "sourceKey": "b64f28d8125bbe6cb31114d9"
+    },
+    {
+      "id": "HOME-DOC-B207",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "每决策快照及清仓后全局成果等既有条件满足；三张阶段图齐全不自动完成",
+      "sourceLine": 183,
+      "sourceKey": "3e32f97af1b52d1c43824a5c"
+    },
+    {
+      "id": "HOME-DOC-B208",
+      "chapter": "RV07",
+      "kind": "paragraph",
+      "text": "保存状态来自真实请求，不能用定时动画假装成功。保存失败保留输入和当前观察点，提供重试；冲突先保留本地内容，提供比较与显式重新载入。重新载入需明确提示将替换当前未保存输入，取消保持本地；确认后字段、派生数值和保存状态同步到服务器版本，再编辑可继续保存。行情重试与重新载入复盘文档是不同动作。",
+      "sourceLine": 185,
+      "sourceKey": "45b585b8d9d200951b4b39a5"
+    },
+    {
+      "id": "HOME-DOC-B209",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "状态ID",
+      "sourceLine": 191,
+      "sourceKey": "179f90878c1a02d21269648a"
+    },
+    {
+      "id": "HOME-DOC-B210",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "触发与区域",
+      "sourceLine": 191,
+      "sourceKey": "a794c61e7758f94999837ad1"
+    },
+    {
+      "id": "HOME-DOC-B211",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "可见反馈与空间",
+      "sourceLine": 191,
+      "sourceKey": "c74f890dc40338e41c2bfbdc"
+    },
+    {
+      "id": "HOME-DOC-B212",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "恢复/取消与反例",
+      "sourceLine": 191,
+      "sourceKey": "c8b23c29f3c3de2925caaf37"
+    },
+    {
+      "id": "HOME-DOC-B213",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S01 normal/selected",
+      "sourceLine": 193,
+      "sourceKey": "b481488afd4cc6fb20f91640"
+    },
+    {
+      "id": "HOME-DOC-B214",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "阶段或当前决策选中",
+      "sourceLine": 193,
+      "sourceKey": "0ba943053b5c4a7326766d5b"
+    },
+    {
+      "id": "HOME-DOC-B215",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "蓝色背景+文字；主区尺寸不变",
+      "sourceLine": 193,
+      "sourceKey": "596c362b8e6002e2a685a39a"
+    },
+    {
+      "id": "HOME-DOC-B216",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "不能用绿色暗示决策正确",
+      "sourceLine": 193,
+      "sourceKey": "fe97c74c0aea1041ff4f3fa4"
+    },
+    {
+      "id": "HOME-DOC-B217",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S02 expanded",
+      "sourceLine": 194,
+      "sourceKey": "9f8d3c2b821a78e38155ed91"
+    },
+    {
+      "id": "HOME-DOC-B218",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "资金来源/全量成交/Text长文",
+      "sourceLine": 194,
+      "sourceKey": "549b9aeff2102ca4a89ea9da"
+    },
+    {
+      "id": "HOME-DOC-B219",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "侧栏局部滚动或图上摘要展开",
+      "sourceLine": 194,
+      "sourceKey": "54ecb28cb04fde071b0b4443"
+    },
+    {
+      "id": "HOME-DOC-B220",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "收起保留草稿；不遮轴",
+      "sourceLine": 194,
+      "sourceKey": "d9f321363edeaf6dbf65f0d4"
+    },
+    {
+      "id": "HOME-DOC-B221",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S03 loading",
+      "sourceLine": 195,
+      "sourceKey": "ce554e2563a7e943f51bd45b"
+    },
+    {
+      "id": "HOME-DOC-B222",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "首次加载/行情重试",
+      "sourceLine": 195,
+      "sourceKey": "ffe791004b9daa0b3b87cb1e"
+    },
+    {
+      "id": "HOME-DOC-B223",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "主区保留占位，明确正在加载；无伪造曲线",
+      "sourceLine": 195,
+      "sourceKey": "7f4cbb1bf13345020e5a3d7f"
+    },
+    {
+      "id": "HOME-DOC-B224",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "失败进入S04，不清空本地记录",
+      "sourceLine": 195,
+      "sourceKey": "00162968dc6a2c9786583fe4"
+    },
+    {
+      "id": "HOME-DOC-B225",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S04 empty/error",
+      "sourceLine": 196,
+      "sourceKey": "d428e2b5f16732f4bd5b13e1"
+    },
+    {
+      "id": "HOME-DOC-B226",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "无行情/请求失败",
+      "sourceLine": 196,
+      "sourceKey": "c635d153e85d1af3d6d9a27f"
+    },
+    {
+      "id": "HOME-DOC-B227",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "说明范围和原因，提供真实可用的重试或已有快照入口",
+      "sourceLine": 196,
+      "sourceKey": "164cbe483d6ea15f340ac118"
+    },
+    {
+      "id": "HOME-DOC-B228",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "没有快照时不显示假入口；无效播放禁用",
+      "sourceLine": 196,
+      "sourceKey": "1d914ec940b1623fd136b053"
+    },
+    {
+      "id": "HOME-DOC-B229",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S05 end",
+      "sourceLine": 197,
+      "sourceKey": "9f0d373a7fa53183e940c159"
+    },
+    {
+      "id": "HOME-DOC-B230",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "最后一根或最后决策",
+      "sourceLine": 197,
+      "sourceKey": "f489699d8095fa6a97c665be"
+    },
+    {
+      "id": "HOME-DOC-B231",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "末尾原因紧邻回放动作",
+      "sourceLine": 197,
+      "sourceKey": "28e6753adf034d706d4e99b4"
+    },
+    {
+      "id": "HOME-DOC-B232",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "不能保留能点但毫无变化的播放按钮",
+      "sourceLine": 197,
+      "sourceKey": "a420f59028691e25ad97f8c0"
+    },
+    {
+      "id": "HOME-DOC-B233",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S06 ambiguous",
+      "sourceLine": 198,
+      "sourceKey": "8d950877e78108059597675b"
+    },
+    {
+      "id": "HOME-DOC-B234",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "同K多个成交/多快照",
+      "sourceLine": 198,
+      "sourceKey": "ad3175bd1a192aa538449e2d"
+    },
+    {
+      "id": "HOME-DOC-B235",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "候选列出时间、动作、数量、价格与稳定身份",
+      "sourceLine": 198,
+      "sourceKey": "9ff0b03b3b69e2266caf3743"
+    },
+    {
+      "id": "HOME-DOC-B236",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "hover只预览，click/Enter才选择；Esc取消回原焦点",
+      "sourceLine": 198,
+      "sourceKey": "94039dd389f74143a3dd2896"
+    },
+    {
+      "id": "HOME-DOC-B237",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S07 longtext/longvalue",
+      "sourceLine": 199,
+      "sourceKey": "b75432faa61f3d04a50260ff"
+    },
+    {
+      "id": "HOME-DOC-B238",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "长证券、中文、金额",
+      "sourceLine": 199,
+      "sourceKey": "d8991f73ede19a65bda07757"
+    },
+    {
+      "id": "HOME-DOC-B239",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "身份省略可查全名；侧栏换行；数值不缩字",
+      "sourceLine": 199,
+      "sourceKey": "d1c52860f91ec088e8098fa2"
+    },
+    {
+      "id": "HOME-DOC-B240",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "说明不得挤掉核心动作，价格标签不跨沟槽",
+      "sourceLine": 199,
+      "sourceKey": "374a24be4bed62aa11e2febe"
+    },
+    {
+      "id": "HOME-DOC-B241",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S08 missing/invalid",
+      "sourceLine": 200,
+      "sourceKey": "e90d52839351f0d3f88b631a"
+    },
+    {
+      "id": "HOME-DOC-B242",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "缺止损/资金/费用；方向无效",
+      "sourceLine": 200,
+      "sourceKey": "c8930f2891d56723a0ec74da"
+    },
+    {
+      "id": "HOME-DOC-B243",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "字段级原因；依赖指标待计算/待核算",
+      "sourceLine": 200,
+      "sourceKey": "46df8489e68e795a47efee1c"
+    },
+    {
+      "id": "HOME-DOC-B244",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "不替换成0，不画无效计划线",
+      "sourceLine": 200,
+      "sourceKey": "9e5b37a3c6cfe7e194d6e6f1"
+    },
+    {
+      "id": "HOME-DOC-B245",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S09 saving/failed/conflict",
+      "sourceLine": 201,
+      "sourceKey": "ce3f26850c1e82b595e5d2e1"
+    },
+    {
+      "id": "HOME-DOC-B246",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "异步保存",
+      "sourceLine": 201,
+      "sourceKey": "6dd2d939a5a414ac02da0afc"
+    },
+    {
+      "id": "HOME-DOC-B247",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "顶栏状态稳定，详情在侧栏",
+      "sourceLine": 201,
+      "sourceKey": "2518b990c96374c9a66ccc6c"
+    },
+    {
+      "id": "HOME-DOC-B248",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "输入可继续编辑；重试/比较/重载分开",
+      "sourceLine": 201,
+      "sourceKey": "f0b17258befb3e722329495f"
+    },
+    {
+      "id": "HOME-DOC-B249",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "S10 history/snapshot-edit",
+      "sourceLine": 202,
+      "sourceKey": "defec43b15c44d16b52e7fec"
+    },
+    {
+      "id": "HOME-DOC-B250",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "看完整历史/编辑旧快照",
+      "sourceLine": 202,
+      "sourceKey": "e187f1a9b8afa4b4610348d0"
+    },
+    {
+      "id": "HOME-DOC-B251",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "模式标题、已看来源、返回工作图动作",
+      "sourceLine": 202,
+      "sourceKey": "1fc3628daa0ce87eca69da56"
+    },
+    {
+      "id": "HOME-DOC-B252",
+      "chapter": "RV07",
+      "kind": "tablecell",
+      "text": "不能把查看历史计作完成，也不能把快照编辑当新决策",
+      "sourceLine": 202,
+      "sourceKey": "813925a7d4aaec4d5b21e62e"
+    },
+    {
+      "id": "HOME-DOC-B253",
+      "chapter": "RV07",
+      "kind": "paragraph",
+      "text": "状态板是局部视觉说明，不是业务错误注入测试。图内按钮的运行接线仍需未来实现验收。",
+      "sourceLine": 206,
+      "sourceKey": "6c78b8f50e32664e4ea91e4a"
+    },
+    {
+      "id": "HOME-DOC-B254",
+      "chapter": "RV08",
+      "kind": "paragraph",
+      "text": "工作区宽不足1102px时采用上图下表单。编辑态顶部趋势区220px，容许200–240px按实际视口分配；价格轴与当前/入场/止损/目标价格语境保留。表单独立滚动。工具保留选择、Text、更多；其余工具仍在更多中，不删能力。触屏命中44px适用于宽屏触控设备，不能只在手机断点增加命中区。",
+      "sourceLine": 212,
+      "sourceKey": "54cb4be09901d8073ed153a6"
+    },
+    {
+      "id": "HOME-DOC-B255",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "对照场景",
+      "sourceLine": 216,
+      "sourceKey": "8dc843cd0126efef4fae07fe"
+    },
+    {
+      "id": "HOME-DOC-B256",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "预期",
+      "sourceLine": 216,
+      "sourceKey": "844d3e861a5ba33b31752622"
+    },
+    {
+      "id": "HOME-DOC-B257",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "1440×900 / 1280×800，导航72px",
+      "sourceLine": 218,
+      "sourceKey": "b7ee1ae835379191a05834de"
+    },
+    {
+      "id": "HOME-DOC-B258",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "左右布局，主绘图区至少640px，文字与命中不缩小",
+      "sourceLine": 218,
+      "sourceKey": "fbb45bbc9424107eaf38a270"
+    },
+    {
+      "id": "HOME-DOC-B259",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "导航240px，1280×800",
+      "sourceLine": 219,
+      "sourceKey": "9cdf234d1b1412e706a782ec"
+    },
+    {
+      "id": "HOME-DOC-B260",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "工作区1008px，上下布局；导航展开不推进回放",
+      "sourceLine": 219,
+      "sourceKey": "e0e3de65006a2343ab356e1d"
+    },
+    {
+      "id": "HOME-DOC-B261",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "工作区1101 / 1103px",
+      "sourceLine": 220,
+      "sourceKey": "f44ae539afbc96e10321fbb5"
+    },
+    {
+      "id": "HOME-DOC-B262",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "边界两侧分别上下/左右布局，轴与侧栏不碰撞",
+      "sourceLine": 220,
+      "sourceKey": "bca940ae9357c246bfa0b6b7"
+    },
+    {
+      "id": "HOME-DOC-B263",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "390×844",
+      "sourceLine": 221,
+      "sourceKey": "d2f2d3529f4957f46fbe293d"
+    },
+    {
+      "id": "HOME-DOC-B264",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "趋势220px、44px动作、下方字段可达，无页面横向溢出",
+      "sourceLine": 221,
+      "sourceKey": "a18b9b9a26a9d80a79842a20"
+    },
+    {
+      "id": "HOME-DOC-B265",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "软件键盘出现",
+      "sourceLine": 222,
+      "sourceKey": "d2b9186d751e37f2fcffbee0"
+    },
+    {
+      "id": "HOME-DOC-B266",
+      "chapter": "RV08",
+      "kind": "tablecell",
+      "text": "按visual viewport保留当前字段与趋势上下文；不能用全屏表单遮掉图表",
+      "sourceLine": 222,
+      "sourceKey": "830ae6eff9968f718d796f66"
+    },
+    {
+      "id": "HOME-DOC-B267",
+      "chapter": "RV08",
+      "kind": "paragraph",
+      "text": "Tab按顶栏→阶段→工具→当前侧栏→回放顺序；图标有名称，选中有aria-pressed/current语义，保存状态有适当live region。Esc关闭当前菜单或编辑层并回到触发点，不级联退出工作区。输入、IME和Text编辑拦截回放快捷键。支持减弱动效，状态过渡不依赖动画才能理解。",
+      "sourceLine": 224,
+      "sourceKey": "97060d6b3117bfaa48058f27"
+    },
+    {
+      "id": "HOME-DOC-B268",
+      "chapter": "RV08",
+      "kind": "paragraph",
+      "text": "窄屏设计稿只说明预期，不证明真机软件键盘或物理触控通过；正式实现必须分别记录鼠标、键盘、模拟触控与真机证据。",
+      "sourceLine": 226,
+      "sourceKey": "eae18ae315e752cc035a1843"
+    },
+    {
+      "id": "HOME-DOC-B269",
+      "chapter": "RV09",
+      "kind": "paragraph",
+      "text": "导出入口使用现有对话框模式，三张已留存阶段图加一张总结表，默认16:9。导出中去掉绘图工具、录入侧栏、回放条与焦点框，保留轴、已揭示行情、Text、计划和成交。前三图尽量同周期同观察窗口，但不得以最终高低价重算早期轴；不能同窗的旧快照保留原构图并注明范围差异。",
+      "sourceLine": 232,
+      "sourceKey": "8586a49ea7bedfba0679701e"
+    },
+    {
+      "id": "HOME-DOC-B270",
+      "chapter": "RV09",
+      "kind": "paragraph",
+      "text": "缺阶段显示缺失，不从最终图伪造早期；未留存修改提示“导出不含当前未留存编辑”。图片可高分辨率，文字和总结表在PPTX中可编辑，不承诺K线逐点编辑。导出不自动完成回合，失败不改数据，既有Markdown+图片方式继续可用。额外决策放附录，不被四页叙事删掉。",
+      "sourceLine": 234,
+      "sourceKey": "480a09a0ca87fe1ab2725667"
+    },
+    {
+      "id": "HOME-DOC-B271",
+      "chapter": "RV09",
+      "kind": "paragraph",
+      "text": "工作区返回原回合集时携带回合/练习身份，恢复所选行、筛选、排序、页码、滚动与焦点。来源已失效时回到来源容器标题并说明原因。离开时若保存仍未完成，提供等待/重试或明确保留本地草稿的路径，不显示虚假已保存。本规范只定义工作区的交接合同，不改首页或历史列表布局。",
+      "sourceLine": 236,
+      "sourceKey": "42ab2c3df939aab6d734fb4d"
+    },
+    {
+      "id": "HOME-DOC-B272",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "原ID",
+      "sourceLine": 240,
+      "sourceKey": "85191de2b7e2e905cc5b54af"
+    },
+    {
+      "id": "HOME-DOC-B273",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "V1.0元素/主要画板",
+      "sourceLine": 240,
+      "sourceKey": "962f2c6248d5e4097f1661a2"
+    },
+    {
+      "id": "HOME-DOC-B274",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "核心检查",
+      "sourceLine": 240,
+      "sourceKey": "bcf8ad8e406a1853151a628f"
+    },
+    {
+      "id": "HOME-DOC-B275",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E01",
+      "sourceLine": 242,
+      "sourceKey": "4cbbc0d7629edc7cd36f0648"
+    },
+    {
+      "id": "HOME-DOC-B276",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "紧凑身份顶栏/01",
+      "sourceLine": 242,
+      "sourceKey": "27156912813cc484042f2d46"
+    },
+    {
+      "id": "HOME-DOC-B277",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "长名、返回、周期、保存与导出可达",
+      "sourceLine": 242,
+      "sourceKey": "db18e1f105afd7b4f1c83bf7"
+    },
+    {
+      "id": "HOME-DOC-B278",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E02",
+      "sourceLine": 243,
+      "sourceKey": "b4aaa6f14d2e6d69c4bba53e"
+    },
+    {
+      "id": "HOME-DOC-B279",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "三阶段/01–03",
+      "sourceLine": 243,
+      "sourceKey": "6e6674da97502a00af0eba22"
+    },
+    {
+      "id": "HOME-DOC-B280",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "选中清晰；回看恢复双截止，不等于下一决策",
+      "sourceLine": 243,
+      "sourceKey": "8f29260741139dbfcd1c65c2"
+    },
+    {
+      "id": "HOME-DOC-B281",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E03",
+      "sourceLine": 244,
+      "sourceKey": "4817a553321314a49178d5a7"
+    },
+    {
+      "id": "HOME-DOC-B282",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "绘图工具/01",
+      "sourceLine": 244,
+      "sourceKey": "36b24e7f42d86d47dca8be5c"
+    },
+    {
+      "id": "HOME-DOC-B283",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "Text优先、更多保留旧工具、36/44px",
+      "sourceLine": 244,
+      "sourceKey": "204334d3848b1d923bbef994"
+    },
+    {
+      "id": "HOME-DOC-B284",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E04",
+      "sourceLine": 245,
+      "sourceKey": "e773b597bae4647fd1fb9013"
+    },
+    {
+      "id": "HOME-DOC-B285",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "行情/01–03",
+      "sourceLine": 245,
+      "sourceKey": "e399931020c025a610cb007d"
+    },
+    {
+      "id": "HOME-DOC-B286",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "未揭示为空，轴不利用未来价格",
+      "sourceLine": 245,
+      "sourceKey": "f8b85ff581ba986483a8c859"
+    },
+    {
+      "id": "HOME-DOC-B287",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E05",
+      "sourceLine": 246,
+      "sourceKey": "195ad1701a0cfb3492fe4d93"
+    },
+    {
+      "id": "HOME-DOC-B288",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "价格轴/01、06、07",
+      "sourceLine": 246,
+      "sourceKey": "e0161909107032c2933a563a"
+    },
+    {
+      "id": "HOME-DOC-B289",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "96px独立区域，14px沟槽不被跨越",
+      "sourceLine": 246,
+      "sourceKey": "751adae3d3c05deeb429e6ca"
+    },
+    {
+      "id": "HOME-DOC-B290",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E06",
+      "sourceLine": 247,
+      "sourceKey": "60d155b266e1e2491b4428b5"
+    },
+    {
+      "id": "HOME-DOC-B291",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "计划线/01",
+      "sourceLine": 247,
+      "sourceKey": "2e0f1a08e0553bdbd0a6fd85"
+    },
+    {
+      "id": "HOME-DOC-B292",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "琥珀虚线带名称，拖动与输入同对象",
+      "sourceLine": 247,
+      "sourceKey": "75506b9aa7bc6ce4934fbb0e"
+    },
+    {
+      "id": "HOME-DOC-B293",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E07",
+      "sourceLine": 248,
+      "sourceKey": "7e7fd8580e750d217ec03059"
+    },
+    {
+      "id": "HOME-DOC-B294",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "成交标记/02–03",
+      "sourceLine": 248,
+      "sourceKey": "f4d282b3fed732da40ac00dd"
+    },
+    {
+      "id": "HOME-DOC-B295",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "菱形+动作文字，受成交截止与设置约束",
+      "sourceLine": 248,
+      "sourceKey": "f7ee2cf92c236650b84d1c52"
+    },
+    {
+      "id": "HOME-DOC-B296",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E08",
+      "sourceLine": 249,
+      "sourceKey": "febdad184bd7d9d329133496"
+    },
+    {
+      "id": "HOME-DOC-B297",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "Text/01–03",
+      "sourceLine": 249,
+      "sourceKey": "ae6d1bd5e80aa3a50ba0a2cb"
+    },
+    {
+      "id": "HOME-DOC-B298",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "14px、锚点、长文摘要、来源与IME",
+      "sourceLine": 249,
+      "sourceKey": "6a0ba0f7241fe690c2585a3b"
+    },
+    {
+      "id": "HOME-DOC-B299",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E09",
+      "sourceLine": 250,
+      "sourceKey": "b9ad8ef77b330e701585dc7b"
+    },
+    {
+      "id": "HOME-DOC-B300",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "侧栏开关/01–03",
+      "sourceLine": 250,
+      "sourceKey": "f337ddd59ff2e144a61e839e"
+    },
+    {
+      "id": "HOME-DOC-B301",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "保留输入/窗口/双截止，焦点回入口",
+      "sourceLine": 250,
+      "sourceKey": "652c787f5b21c1694f424b90"
+    },
+    {
+      "id": "HOME-DOC-B302",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E10",
+      "sourceLine": 251,
+      "sourceKey": "9729f6168704772912a606f3"
+    },
+    {
+      "id": "HOME-DOC-B303",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "价格组/01",
+      "sourceLine": 251,
+      "sourceKey": "a5dfc8af35ac56a1fa412412"
+    },
+    {
+      "id": "HOME-DOC-B304",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "精度、方向、单位、无效值",
+      "sourceLine": 251,
+      "sourceKey": "18b10c081504c004e87c61ca"
+    },
+    {
+      "id": "HOME-DOC-B305",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E11",
+      "sourceLine": 252,
+      "sourceKey": "333abf92fa5b6c89cbaf3b02"
+    },
+    {
+      "id": "HOME-DOC-B306",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "计划规模/01",
+      "sourceLine": 252,
+      "sourceKey": "85889814944be8cec0d9d3da"
+    },
+    {
+      "id": "HOME-DOC-B307",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "三模式单一主输入、换算不清零",
+      "sourceLine": 252,
+      "sourceKey": "2da1a0ed6b9053081106c2c9"
+    },
+    {
+      "id": "HOME-DOC-B308",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E12",
+      "sourceLine": 253,
+      "sourceKey": "c9ff7a224d9a95f7ba4e84c3"
+    },
+    {
+      "id": "HOME-DOC-B309",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "资金来源/01",
+      "sourceLine": 253,
+      "sourceKey": "789f75fa624f65d3ca30cf2f"
+    },
+    {
+      "id": "HOME-DOC-B310",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "默认折叠，时点/币种/来源可达",
+      "sourceLine": 253,
+      "sourceKey": "48e0f80b30daedb4c5ffe8a5"
+    },
+    {
+      "id": "HOME-DOC-B311",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E13",
+      "sourceLine": 254,
+      "sourceKey": "8d139a00ffea92b887022ca6"
+    },
+    {
+      "id": "HOME-DOC-B312",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "派生指标/01",
+      "sourceLine": 254,
+      "sourceKey": "0217923eab8911e35c4e2288"
+    },
+    {
+      "id": "HOME-DOC-B313",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "风险/R口径、缺项说明",
+      "sourceLine": 254,
+      "sourceKey": "2e6c74f487a3243d2e9f3f79"
+    },
+    {
+      "id": "HOME-DOC-B314",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E14",
+      "sourceLine": 255,
+      "sourceKey": "8e884ced0be8f5fc6f90353d"
+    },
+    {
+      "id": "HOME-DOC-B315",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "持仓侧栏/02",
+      "sourceLine": 255,
+      "sourceKey": "7ff828911860563063fe790f"
+    },
+    {
+      "id": "HOME-DOC-B316",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "只读原计划，计划修订不覆盖",
+      "sourceLine": 255,
+      "sourceKey": "a667ef7f75c28055eb8fde30"
+    },
+    {
+      "id": "HOME-DOC-B317",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E15",
+      "sourceLine": 256,
+      "sourceKey": "d57b4d79976a3f2b40b66bca"
+    },
+    {
+      "id": "HOME-DOC-B318",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "事后摘要/03",
+      "sourceLine": 256,
+      "sourceKey": "e2a41bd19d4f0f0bbe9166c4"
+    },
+    {
+      "id": "HOME-DOC-B319",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "计划、成交只读；未平仓拆分",
+      "sourceLine": 256,
+      "sourceKey": "78ddb6013df65b7b2ead2c05"
+    },
+    {
+      "id": "HOME-DOC-B320",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E16",
+      "sourceLine": 257,
+      "sourceKey": "7be6b09ead296e621f085e4c"
+    },
+    {
+      "id": "HOME-DOC-B321",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "退出选择/03",
+      "sourceLine": 257,
+      "sourceKey": "bc5fad8a3d81a1301bcf9f54"
+    },
+    {
+      "id": "HOME-DOC-B322",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "每次退出独立，切换不串值",
+      "sourceLine": 257,
+      "sourceKey": "51137d0072ec68ec65768542"
+    },
+    {
+      "id": "HOME-DOC-B323",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E17",
+      "sourceLine": 258,
+      "sourceKey": "7e44c7fb51611823a29f0783"
+    },
+    {
+      "id": "HOME-DOC-B324",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "提前三态/03",
+      "sourceLine": 258,
+      "sourceKey": "d9c275082ae547e9d91091df"
+    },
+    {
+      "id": "HOME-DOC-B325",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "不确定与未评价区别于否",
+      "sourceLine": 258,
+      "sourceKey": "87c80a853295101419198fc8"
+    },
+    {
+      "id": "HOME-DOC-B326",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E18",
+      "sourceLine": 259,
+      "sourceKey": "baa4b1966d21d79612533c5d"
+    },
+    {
+      "id": "HOME-DOC-B327",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "原因/符合度/03",
+      "sourceLine": 259,
+      "sourceKey": "2448b90dbba1888c762897ef"
+    },
+    {
+      "id": "HOME-DOC-B328",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "独立枚举、其他说明、证据来源",
+      "sourceLine": 259,
+      "sourceKey": "4342358bd148eaf3abaee080"
+    },
+    {
+      "id": "HOME-DOC-B329",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E19",
+      "sourceLine": 260,
+      "sourceKey": "8ed9823134ae7b80f6aea391"
+    },
+    {
+      "id": "HOME-DOC-B330",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "回放条/01、08",
+      "sourceLine": 260,
+      "sourceKey": "31ac47a60e4bd8a9fd41df10"
+    },
+    {
+      "id": "HOME-DOC-B331",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "新增K/目标成交可见，末尾有原因",
+      "sourceLine": 260,
+      "sourceKey": "8d5e817036999d27dc1340de"
+    },
+    {
+      "id": "HOME-DOC-B332",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E20",
+      "sourceLine": 261,
+      "sourceKey": "ebedfc6f92fa281d47568906"
+    },
+    {
+      "id": "HOME-DOC-B333",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "保存状态/05",
+      "sourceLine": 261,
+      "sourceKey": "a2142b5dab1e8fff0cc10254"
+    },
+    {
+      "id": "HOME-DOC-B334",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "真实状态、失败保留、冲突恢复",
+      "sourceLine": 261,
+      "sourceKey": "be2986024893f7fdc36a2699"
+    },
+    {
+      "id": "HOME-DOC-B335",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E21",
+      "sourceLine": 262,
+      "sourceKey": "b933da05b675bfa601c587c4"
+    },
+    {
+      "id": "HOME-DOC-B336",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "导出/09",
+      "sourceLine": 262,
+      "sourceKey": "9e4e257c467717568cb8d838"
+    },
+    {
+      "id": "HOME-DOC-B337",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "冻结版本、缺阶段、三图一表",
+      "sourceLine": 262,
+      "sourceKey": "7bc5c33fef8326d354ef939c"
+    },
+    {
+      "id": "HOME-DOC-B338",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "E22",
+      "sourceLine": 263,
+      "sourceKey": "2714767b8ff6e5cb8f3ed91b"
+    },
+    {
+      "id": "HOME-DOC-B339",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "记录/04",
+      "sourceLine": 263,
+      "sourceKey": "709949a6f3707a710a49e550"
+    },
+    {
+      "id": "HOME-DOC-B340",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "全部决策与多快照可达，预览/编辑/恢复区分",
+      "sourceLine": 263,
+      "sourceKey": "f7ee4b3b700904ade90c0cb1"
+    },
+    {
+      "id": "HOME-DOC-B341",
+      "chapter": "RV10",
+      "kind": "paragraph",
+      "text": "功能、状态安全/持久化、视觉是三道独立门槛。第一条真实图表旅程应先验证“遮未来→下一根/播放/下一决策→Text→回看早期→保存/重开”，再扩展依赖它的功能。侧栏、快照和导出遵守同一版本与来源合同。",
+      "sourceLine": 267,
+      "sourceKey": "c16eff5672e0824e6a73a8d1"
+    },
+    {
+      "id": "HOME-DOC-B342",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "门槛",
+      "sourceLine": 269,
+      "sourceKey": "7427b984d5d19bbe3d3f92b5"
+    },
+    {
+      "id": "HOME-DOC-B343",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "必须取得的证据",
+      "sourceLine": 269,
+      "sourceKey": "b528a3b31962850cffd03833"
+    },
+    {
+      "id": "HOME-DOC-B344",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "真实功能",
+      "sourceLine": 271,
+      "sourceKey": "b0a7777470d5db998af7296f"
+    },
+    {
+      "id": "HOME-DOC-B345",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "新增K和目标成交出现在可见主图；同K多决策、末尾、缺行情、输入/IME等反例",
+      "sourceLine": 271,
+      "sourceKey": "e5783f302837d8278a8a4f74"
+    },
+    {
+      "id": "HOME-DOC-B346",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "持久化",
+      "sourceLine": 272,
+      "sourceKey": "9530913c3796e48f497b8356"
+    },
+    {
+      "id": "HOME-DOC-B347",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "隔离数据库中实际保存→返回→重新读取→reload；失败/冲突保留并可再次保存；原交易不变",
+      "sourceLine": 272,
+      "sourceKey": "c950a74251db62632dc04212"
+    },
+    {
+      "id": "HOME-DOC-B348",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "独立视觉",
+      "sourceLine": 273,
+      "sourceKey": "76113b151b9d109cf4627ca7"
+    },
+    {
+      "id": "HOME-DOC-B349",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "非实现者在1440/1280/390及容器断点两侧、导航展开、长文/错误等匹配状态直接对照截图",
+      "sourceLine": 273,
+      "sourceKey": "def7c0441f7d16a08b7ef3a8"
+    },
+    {
+      "id": "HOME-DOC-B350",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "控件审查",
+      "sourceLine": 274,
+      "sourceKey": "ab34c1be2af95920c0ee2dc5"
+    },
+    {
+      "id": "HOME-DOC-B351",
+      "chapter": "RV10",
+      "kind": "tablecell",
+      "text": "版本绑定的完整工作区清单，含条件出现、候选、更多/导出/快照项；执行覆盖与通过率分开",
+      "sourceLine": 274,
+      "sourceKey": "41083ac5940036b5edc8f0d9"
+    },
+    {
+      "id": "HOME-DOC-B352",
+      "chapter": "RV10",
+      "kind": "paragraph",
+      "text": "本轮是静态设计文档交付，上述业务运行门槛不适用本轮，不标PASS。当前可审查的是规范完整性、图稿与V2.5及旧契约的一致性、文档图链和真实浏览器可读性。具体证据和限制见本版验收记录。",
+      "sourceLine": 276,
+      "sourceKey": "4683a87b278c5b1a78afc971"
+    }
+  ],
+  "images": [
+    {
+      "id": "01-entry-1440",
+      "occurrenceId": "01-entry-1440@47",
+      "sharedImageId": "01-entry-1440",
+      "src": "source/images/01-entry-1440.svg",
+      "fingerprint": "a41c9d918405569a337058c78b89ae62a2dd510001b25b2b3fd137249de1ca52",
+      "chapter": "RV02",
+      "sourceLine": 47,
+      "alt": "入场前 · 1440×900完整工作区"
+    },
+    {
+      "id": "06-entry-1280",
+      "occurrenceId": "06-entry-1280@64",
+      "sharedImageId": "06-entry-1280",
+      "src": "source/images/06-entry-1280.svg",
+      "fingerprint": "f96b313d5add633f977b32254db3d107b00f6faf0dfca14b63dda8d1d3a3b880",
+      "chapter": "RV02",
+      "sourceLine": 64,
+      "alt": "紧凑桌面 · 1280×800"
+    },
+    {
+      "id": "02-holding-1440",
+      "occurrenceId": "02-holding-1440@105",
+      "sharedImageId": "02-holding-1440",
+      "src": "source/images/02-holding-1440.svg",
+      "fingerprint": "fb8ec2667e9c1a00e709a40d89a29a8b04d15a1f1f36f1649644ec0e153b1ed3",
+      "chapter": "RV04",
+      "sourceLine": 105,
+      "alt": "持仓过程 · 只展示当前已知事实"
+    },
+    {
+      "id": "03-final-1440",
+      "occurrenceId": "03-final-1440@113",
+      "sharedImageId": "03-final-1440",
+      "src": "source/images/03-final-1440.svg",
+      "fingerprint": "a3d5ae997170c3684a108f4e867f1ce513c3fb76f6cf3265cd6875b47396d553",
+      "chapter": "RV04",
+      "sourceLine": 113,
+      "alt": "事后复盘 · 原计划与实际只读，逐次评价退出"
+    },
+    {
+      "id": "04-records-1440",
+      "occurrenceId": "04-records-1440@156",
+      "sharedImageId": "04-records-1440",
+      "src": "source/images/04-records-1440.svg",
+      "fingerprint": "7f2e82693f2a1682778c6519257807436a2c0948af787ff51f68f422b4fb57ec",
+      "chapter": "RV06",
+      "sourceLine": 156,
+      "alt": "记录与快照 · 同一侧栏位置的独立视图"
+    },
+    {
+      "id": "05-conflict-1440",
+      "occurrenceId": "05-conflict-1440@187",
+      "sharedImageId": "05-conflict-1440",
+      "src": "source/images/05-conflict-1440.svg",
+      "fingerprint": "7cf6a097c1e0a7d8964b26b28124608b8dbba7a61473650c59de98fa61906ded",
+      "chapter": "RV07",
+      "sourceLine": 187,
+      "alt": "保存冲突 · 图表保持，侧栏展示本地保留与恢复"
+    },
+    {
+      "id": "08-boundaries",
+      "occurrenceId": "08-boundaries@204",
+      "sharedImageId": "08-boundaries",
+      "src": "source/images/08-boundaries.svg",
+      "fingerprint": "aa7bae8ac5534071d322df94ce67c9a9f9425908d322f034802878c3fb46b440",
+      "chapter": "RV07",
+      "sourceLine": 204,
+      "alt": "边界状态局部稿 · 加载、无行情、末尾、缺项和候选"
+    },
+    {
+      "id": "07-entry-390",
+      "occurrenceId": "07-entry-390@210",
+      "sharedImageId": "07-entry-390",
+      "src": "source/images/07-entry-390.svg",
+      "fingerprint": "14ecc071ec8d606e9e95112df2fe279a3b355cf4e1a4a38c555b5b126398fbaa",
+      "chapter": "RV08",
+      "sourceLine": 210,
+      "alt": "窄屏 · 390×844，趋势和当前字段同屏"
+    },
+    {
+      "id": "10-nav-expanded",
+      "occurrenceId": "10-nav-expanded@214",
+      "sharedImageId": "10-nav-expanded",
+      "src": "source/images/10-nav-expanded.svg",
+      "fingerprint": "e1313cd20fcc8a33fe1c454c84fc6ac4f4ae1da0d8c22a3445f514fddd75fe52",
+      "chapter": "RV08",
+      "sourceLine": 214,
+      "alt": "导航展开 · 工作区不足并排宽度时下置侧栏"
+    },
+    {
+      "id": "09-export",
+      "occurrenceId": "09-export@230",
+      "sharedImageId": "09-export",
+      "src": "source/images/09-export.svg",
+      "fingerprint": "ed8adaaa07c8f1a9645a8ef5829513fd44d64fc94e5e871622d575b42d42bf89",
+      "chapter": "RV09",
+      "sourceLine": 230,
+      "alt": "导出 · 三张阶段图与可编辑总结表"
+    }
+  ]
+}

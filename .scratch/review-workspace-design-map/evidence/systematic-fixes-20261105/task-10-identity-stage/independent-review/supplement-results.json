@@ -1,0 +1,287 @@
+{
+  "at": "2026-11-05T18:02:12.377Z",
+  "all": [
+    {
+      "view": {
+        "width": 1280,
+        "height": 800
+      },
+      "target": "D06BAC819D85153CF890DEBE860239CC",
+      "actions": [
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-trade=\"600000-2\"]",
+          "x": 125.5,
+          "y": 280.5,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 205,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        }
+      ],
+      "steps": [
+        {
+          "name": "collapsed",
+          "file": "supplement-1280-collapsed.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace  ",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        },
+        {
+          "name": "reopened",
+          "file": "supplement-1280-reopened.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace left-open ",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        }
+      ],
+      "logs": []
+    },
+    {
+      "view": {
+        "width": 1291,
+        "height": 800
+      },
+      "target": "7BD1FB802BC1AE924C01DB651BCA2D1B",
+      "actions": [
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-trade=\"600000-2\"]",
+          "x": 125.5,
+          "y": 280.5,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 205,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        }
+      ],
+      "steps": [
+        {
+          "name": "collapsed",
+          "file": "supplement-1291-collapsed.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace  ",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        },
+        {
+          "name": "reopened",
+          "file": "supplement-1291-reopened.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace left-open ",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        }
+      ],
+      "logs": []
+    },
+    {
+      "view": {
+        "width": 1292,
+        "height": 800
+      },
+      "target": "6EE9E623806DD488924110D7429F92D0",
+      "actions": [
+        {
+          "selector": "[data-trade=\"600000-2\"]",
+          "x": 125.5,
+          "y": 280.5,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 205,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        }
+      ],
+      "steps": [
+        {
+          "name": "collapsed",
+          "file": "supplement-1292-collapsed.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace  right-open",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        },
+        {
+          "name": "reopened",
+          "file": "supplement-1292-reopened.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace left-open right-open",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        }
+      ],
+      "logs": []
+    },
+    {
+      "view": {
+        "width": 1440,
+        "height": 900
+      },
+      "target": "0E875FF06D6E393567A251C8332DFA46",
+      "actions": [
+        {
+          "selector": "[data-trade=\"600000-2\"]",
+          "x": 125.5,
+          "y": 280.5,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 205,
+          "y": 36,
+          "hit": true
+        },
+        {
+          "selector": "[data-action=toggle-left]",
+          "x": 33.5,
+          "y": 36,
+          "hit": true
+        }
+      ],
+      "steps": [
+        {
+          "name": "collapsed",
+          "file": "supplement-1440-collapsed.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace  right-open",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        },
+        {
+          "name": "reopened",
+          "file": "supplement-1440-reopened.png",
+          "subtitle": "日线 · 第2次交易 · 合成演示行情",
+          "workspace": "workspace left-open right-open",
+          "scene": "入场前计划",
+          "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+          "note": "已揭示 28 根 · 未来信息已隐藏"
+        }
+      ],
+      "logs": []
+    }
+  ],
+  "manifestHash": "581db3bea88ce7d15bbe6c731dc4d38cb4bd1df7219e23bc2a7c1ac124cf2de4",
+  "items": [
+    {
+      "path": "workspace-v0.1/index.html",
+      "expected": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026",
+      "disk": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026",
+      "http": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/chrome.js",
+      "expected": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd",
+      "disk": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd",
+      "http": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace.js",
+      "expected": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+      "disk": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+      "http": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace.css",
+      "expected": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+      "disk": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+      "http": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-overrides.css",
+      "expected": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644",
+      "disk": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644",
+      "http": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-replay.css",
+      "expected": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1",
+      "disk": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1",
+      "http": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-layout-followup.css",
+      "expected": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe",
+      "disk": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe",
+      "http": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe",
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/vendor/lightweight-charts.standalone.production.js",
+      "expected": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+      "disk": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+      "http": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+      "pass": true
+    },
+    {
+      "path": "tradingview-alignment-v0.1/icons.svg",
+      "expected": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054",
+      "disk": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054",
+      "http": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054",
+      "pass": true
+    }
+  ]
+}

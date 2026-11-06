@@ -1,0 +1,67 @@
+.reader-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: -12px 0 28px; padding: 10px 0; border-bottom: 1px solid #263650; }
+.reader-header .document-status { margin: 0; color: #adbbcf; font-size: 13px; }
+.review-tool-strip { position: sticky; top: 12px; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: min(100%, 952px); margin: -12px 0 24px; padding: 6px 10px; border: 1px solid #263650; border-radius: 5px; color: #8292a8; background: rgb(17 26 43 / 94%); backdrop-filter: blur(6px); font-size: 12px; }
+.review-tool-strip button { min-width: 36px; min-height: 36px; border: 1px solid #4b6c99; border-radius: 4px; padding: 4px 9px; color: #e7edf6; background: #182d4c; font: inherit; cursor: pointer; }
+.review-tool-strip button:hover { background: #234773; }
+.review-open, .image-comment-button, .review-save, .review-cancel { min-width: 36px; min-height: 36px; border: 1px solid #4b6c99; border-radius: 5px; padding: 7px 12px; color: #e7edf6; background: #182d4c; font: inherit; cursor: pointer; }
+.review-open:hover, .image-comment-button:hover, .review-save:hover { background: #234773; }
+.image-comment-button { margin: 7px 0 18px; font-size: 13px; }
+.review-panel { position: fixed; z-index: 20; inset: 0 0 0 auto; display: flex; width: min(360px, 100vw); flex-direction: column; overflow-y: auto; padding: 20px; color: #e7edf6; background: #111a2b; border-left: 1px solid #385275; box-shadow: -16px 0 36px rgb(0 0 0 / 22%); transform: translateX(100%); transition: transform .18s ease; }
+.review-panel[aria-hidden="false"] { transform: translateX(0); }
+.review-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 18px; }
+.review-close { min-width: 36px; min-height: 36px; border: 0; color: #adbbcf; background: transparent; font-size: 24px; line-height: 1; cursor: pointer; }
+.review-selection { margin-bottom: 16px; padding: 12px; border-left: 3px solid #5f9de2; background: #182337; }
+.review-selection-label { display: block; margin-bottom: 4px; color: #9ecaff; font-size: 12px; }
+.review-quote { display: block; color: #e7edf6; font-size: 16px; line-height: 1.7; }
+.review-editor label, .review-list-wrap h2 { display: block; margin-bottom: 7px; color: #adbbcf; font-size: 13px; }
+#review-opinion { display: block; width: 100%; resize: vertical; border: 1px solid #385275; border-radius: 4px; padding: 10px; color: #e7edf6; background: #0b1220; font: inherit; line-height: 1.6; }
+#review-opinion:focus { border-color: #7bb5ee; outline: 2px solid rgb(123 181 238 / 22%); }
+.review-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.review-cancel { color: #adbbcf; background: transparent; }
+.review-save:disabled, .review-cancel:disabled, .review-tool-strip button:disabled { cursor: wait; opacity: .55; }
+.review-status { min-height: 1.5em; margin: 10px 0 20px; color: #adbbcf; font-size: 12px; line-height: 1.5; }
+.review-status[data-kind="ok"] { color: #83d6ac; }
+.review-status[data-kind="error"] { color: #ffad9e; }
+.review-list-wrap { border-top: 1px solid #263650; padding-top: 18px; }
+.review-list-wrap h2 { margin: 0 0 8px; font-size: 15px; }
+.review-empty { color: #8292a8; font-size: 13px; }
+.review-item { display: block; width: 100%; margin: 7px 0; border: 1px solid #263650; border-radius: 4px; padding: 9px 10px; text-align: left; color: #e7edf6; background: #182337; font: inherit; cursor: pointer; }
+.review-item:hover { border-color: #5f9de2; background: #1d3453; }
+.review-item-meta { display: block; margin-bottom: 3px; color: #9ecaff; font-size: 12px; }
+.review-identity, .review-detail, .review-revision, .review-export { margin: 0 0 16px; border: 1px solid #263650; border-radius: 5px; padding: 12px; background: #101b2d; }
+.review-identity h2, .review-detail h2, .review-detail h3, .review-revision h3, .review-export h2 { margin: 0 0 9px; color: #dce9f8; font-size: 14px; }
+.review-identity label, .review-detail label, .review-revision label { display: block; margin: 9px 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.review-identity input, .review-identity select, .review-detail input, .review-detail select, .review-revision input, .review-revision select { display: block; width: 100%; min-height: 36px; margin-top: 4px; border: 1px solid #385275; border-radius: 4px; padding: 7px 8px; color: #e7edf6; background: #0b1220; font: inherit; }
+.review-identity p, .review-muted, .review-detail-meta, .review-identity small { margin: 7px 0 0; color: #8292a8; font-size: 11px; line-height: 1.5; }
+.review-detail-head, .review-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.review-filter-label { display: flex !important; align-items: center; gap: 5px; margin: 0 !important; color: #adbbcf; font-size: 12px !important; white-space: nowrap; }
+.review-filter-label select, .review-filter-label + #review-filter { width: auto; min-width: 92px; min-height: 32px; margin: 0; padding: 5px 7px; }
+.review-detail-head button, .review-list-heading button, .review-detail button, .review-revision button, .review-state-actions button { min-width: 36px; min-height: 36px; border: 1px solid #4b6c99; border-radius: 4px; padding: 6px 9px; color: #e7edf6; background: #182d4c; font: inherit; cursor: pointer; }
+.review-detail-head button:hover, .review-list-heading button:hover, .review-detail button:hover, .review-revision button:hover, .review-state-actions button:hover { background: #234773; }
+.review-detail blockquote { margin: 10px 0; border-left: 3px solid #5f9de2; padding: 8px 10px; color: #e7edf6; background: #182337; font-size: 16px; line-height: 1.7; }
+.review-detail-fields textarea, .review-revision textarea { display: block; width: 100%; resize: vertical; border: 1px solid #385275; border-radius: 4px; padding: 8px; color: #e7edf6; background: #0b1220; font: inherit; line-height: 1.5; }
+.review-task-summary, .review-verification { margin: 10px 0; border-top: 1px solid #263650; padding-top: 10px; }
+.review-task-summary h3, .review-verification b { color: #dce9f8; font-size: 14px; }
+.review-task-summary li, .review-verification p { color: #e7edf6; font-size: 16px; line-height: 1.7; }
+.review-detail-fields > button, .review-revision > button { margin-bottom: 10px; }
+.review-detail-actions, .review-state-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
+.review-detail ul, .review-history ol { margin: 6px 0 12px; padding-left: 19px; color: #adbbcf; font-size: 12px; line-height: 1.6; }
+.review-history { border-top: 1px solid #263650; padding-top: 10px; }
+.review-compare-row { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 10px 0; border-top: 1px solid #263650; padding-top: 10px; }
+.review-compare-row > div { min-width: 0; }
+.review-compare-row p { margin: 5px 0; color: #e7edf6; font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; }
+.review-compare-row small { color: #8292a8; line-height: 1.45; }
+.review-candidate-list { margin-top: 8px; border: 1px solid #263650; border-radius: 4px; padding: 6px 8px; color: #adbbcf; }
+.review-candidate-list summary { cursor: pointer; color: #9ecaff; font-size: 13px; }
+.review-candidate-list p, .review-evidence li { margin: 7px 0; color: #e7edf6; font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; }
+.review-evidence { margin-top: 10px; color: #e7edf6; font-size: 16px; line-height: 1.7; }
+.review-evidence ul { margin-top: 7px; }
+.review-warning { color: #ffcf8b !important; }
+.review-delete { color: #ffad9e !important; }
+.review-export { display: flex; flex-wrap: wrap; gap: 10px; }
+.review-export h2 { flex-basis: 100%; }
+.review-export a { color: #9ecaff; font-size: 12px; }
+.review-quote-highlight { border-radius: 2px; color: #fff; background: #315f8d; box-shadow: 0 0 0 1px #65a8e7; }
+@media (min-width: 1280px) { body.review-panel-open main { padding-right: 400px; } .review-panel { width: 360px; } }
+@media (max-width: 1279px) { .review-panel { width: 100%; } .reader-header { align-items: flex-start; } .review-open, .image-comment-button, .review-save, .review-cancel, .review-close, .review-tool-strip button, .review-detail-head button, .review-list-heading button, .review-detail button, .review-revision button, .review-state-actions button, .review-filter-label select, .review-filter-label + #review-filter { min-width: 44px; min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .review-panel { transition: none; } }

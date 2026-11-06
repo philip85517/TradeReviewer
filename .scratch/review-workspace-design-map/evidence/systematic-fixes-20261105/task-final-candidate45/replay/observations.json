@@ -1,0 +1,343 @@
+{
+  "target": "9F0CEF2553F6D96E93728FDE848AC762",
+  "steps": [
+    {
+      "name": "replay-entry-original",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 41.8,
+        "to": 68
+      },
+      "autoScale": true,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 743.4642857142857,
+        "highY": 277.3163331388555,
+        "lowY": 362.958906117073
+      },
+      "markers": [],
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "manual-zoom-entry",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 27
+      },
+      "price": {
+        "from": 50.1367136978248,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 28,
+      "last": {
+        "open": 50.58006485644075,
+        "high": 54.003631790115435,
+        "low": 48.780064856440745,
+        "close": 52.603631790115436,
+        "time": 1738454400,
+        "x": 743.4642857142857,
+        "highY": 303.0378862881053,
+        "lowY": 538.5722705014406
+      },
+      "markers": [],
+      "scene": "entry",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "reveal": "已揭示 28 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    },
+    {
+      "name": "manual-replay-29",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 30
+      },
+      "price": {
+        "from": 49.82013297527064,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 29,
+      "last": {
+        "open": 52.223460117378295,
+        "high": 53.87346011737829,
+        "low": 50.201195879444654,
+        "close": 51.40119587944466,
+        "time": 1738540800,
+        "x": 938.5806451612904,
+        "highY": 300.5108315254381,
+        "lowY": 460.7702294701055
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        }
+      ],
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-03 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 29 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "manual-replay-33",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 34
+      },
+      "price": {
+        "from": 49.59804882623414,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 33,
+      "last": {
+        "open": 51.3571930139713,
+        "high": 53.257193013971296,
+        "low": 49.99177495931033,
+        "close": 51.19177495931033,
+        "time": 1738886400,
+        "x": 948,
+        "highY": 321.2365730523994,
+        "lowY": 460.59672058126046
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        }
+      ],
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-07 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 33 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "manual-replay-34",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 0,
+        "to": 35
+      },
+      "price": {
+        "from": 49.509550686678125,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 34,
+      "last": {
+        "open": 52.327221803892634,
+        "high": 53.72722180389263,
+        "low": 49.91216018571577,
+        "close": 51.312160185715776,
+        "time": 1738972800,
+        "x": 950.0277777777778,
+        "highY": 298.9688418806667,
+        "lowY": 460.3673587184351
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        }
+      ],
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-08 · 成交截止：持仓中 · 后续成交尚未揭示",
+      "reveal": "已揭示 34 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "manual-replay-41",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 1118,
+        "height": 627
+      },
+      "time": {
+        "from": 6,
+        "to": 42
+      },
+      "price": {
+        "from": 44.30186052207505,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 41,
+      "last": {
+        "open": 46.761336920612344,
+        "high": 48.41133692061234,
+        "low": 44.708009946694936,
+        "close": 45.90800994669494,
+        "time": 1739577600,
+        "x": 951.9459459459459,
+        "highY": 362.48445068670117,
+        "lowY": 466.0426202009369
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "scene": "holding",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-15 · 成交截止：部分退出已显示 · 最终退出仍隐藏",
+      "reveal": "已揭示 41 根 · 未来信息已隐藏",
+      "left": true,
+      "right": false
+    },
+    {
+      "name": "manual-replay-49",
+      "width": 1440,
+      "height": 900,
+      "dpr": 1,
+      "chart": {
+        "x": 253,
+        "y": 154,
+        "width": 854,
+        "height": 627
+      },
+      "time": {
+        "from": 14,
+        "to": 50
+      },
+      "price": {
+        "from": 44.30186052207505,
+        "to": 59.663286302175194
+      },
+      "autoScale": false,
+      "dataCount": 49,
+      "last": {
+        "open": 47.53837974513544,
+        "high": 48.938379745135435,
+        "low": 45.245851911076954,
+        "close": 46.44585191107696,
+        "time": 1740268800,
+        "x": 705.7837837837837,
+        "highY": 347.7464622380362,
+        "lowY": 451.00264946337467
+      },
+      "markers": [
+        {
+          "time": 1738540800,
+          "position": "belowBar",
+          "color": "#6ca8ff",
+          "shape": "arrowUp"
+        },
+        {
+          "time": 1738972800,
+          "position": "aboveBar",
+          "color": "#d7ae64",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1739577600,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        },
+        {
+          "time": 1740268800,
+          "position": "aboveBar",
+          "color": "#ff8592",
+          "shape": "arrowDown"
+        }
+      ],
+      "scene": "exit",
+      "market": "复盘起点 2025-01-06 · 行情截止 2025-02-23 · 成交截止：退出后 · 结果与评价可见",
+      "reveal": "已揭示 49 根 · 未来信息已隐藏",
+      "left": true,
+      "right": true
+    }
+  ],
+  "errors": []
+}

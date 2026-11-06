@@ -1,0 +1,3101 @@
+{
+  "target": "B7F06D5051E7E8FFDF2DAA7AACAC327A",
+  "steps": [
+    {
+      "name": "01-initial",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BODY",
+        "label": null,
+        "html": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open right-open\"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\"eyebrow\">R"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D10-point",
+      "point": {
+        "x": 756.21875,
+        "y": 190,
+        "hit": true,
+        "hitTag": "BUTTON",
+        "hitHtml": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D10\" data-toolbar-slot=\"D10\" aria-label=\"旋转矩形\" title=\"旋转矩形 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"tru",
+        "disabled": true
+      }
+    },
+    {
+      "name": "D10-disabled-mouse",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BODY",
+        "label": null,
+        "html": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open right-open\"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\"eyebrow\">R"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D11-point",
+      "point": {
+        "x": 795.640625,
+        "y": 190,
+        "hit": true,
+        "hitTag": "BUTTON",
+        "hitHtml": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D11\" data-toolbar-slot=\"D11\" aria-label=\"多节点线（待核名）\" title=\"多节点线（待核名） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-dis",
+        "disabled": true
+      }
+    },
+    {
+      "name": "D11-disabled-mouse",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BODY",
+        "label": null,
+        "html": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open right-open\"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\"eyebrow\">R"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D12-point",
+      "point": {
+        "x": 834.46875,
+        "y": 190,
+        "hit": true,
+        "hitTag": "BUTTON",
+        "hitHtml": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D12\" data-toolbar-slot=\"D12\" aria-label=\"框内文字（待核名）\" title=\"框内文字（待核名） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-dis",
+        "disabled": true
+      }
+    },
+    {
+      "name": "D12-disabled-mouse",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BODY",
+        "label": null,
+        "html": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open right-open\"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\"eyebrow\">R"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "true",
+          "class": "tv-hotspot is-selected is-placing"
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "INPUT",
+        "label": "图表时间位置，可在 K 线之间",
+        "html": "<input type=\"range\" min=\"0\" max=\"27\" step=\"0.1\" value=\"27\" data-keyboard-logical=\"\" aria-label=\"图表时间位置，可在 K 线之间\">"
+      },
+      "placing": true,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "chart-point",
+      "point": {
+        "x": 577.52,
+        "y": 542.74,
+        "hit": "CANVAS"
+      }
+    },
+    {
+      "name": "D02-mouse-editor",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "true",
+          "class": "tv-hotspot is-selected "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "图上 Text 内容",
+        "html": "<textarea id=\"textInput\" aria-label=\"图上 Text 内容\"></textarea>"
+      },
+      "placing": false,
+      "editor": true,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-mouse-cancel",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "tool": "D02",
+        "label": "Text（可演示）",
+        "html": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D02\" data-toolbar-slot=\"D02\" aria-label=\"Text（可演示）\" title=\"点击后在图上定位 Text\" aria-pressed=\"false\" style=\"--slot-x:15.7205%\"></button>"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-keyboard-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "true",
+          "class": "tv-hotspot is-selected is-placing"
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "INPUT",
+        "label": "图表时间位置，可在 K 线之间",
+        "html": "<input type=\"range\" min=\"0\" max=\"27\" step=\"0.1\" value=\"27\" data-keyboard-logical=\"\" aria-label=\"图表时间位置，可在 K 线之间\">"
+      },
+      "placing": true,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "keyboard-prompt-tab-0",
+      "active": {
+        "tag": "INPUT",
+        "label": "图表时间位置，可在 K 线之间",
+        "html": "<input type=\"range\" min=\"0\" max=\"27\" step=\"0.1\" value=\"27\" data-keyboard-logical=\"\" aria-label=\"图表时间位置，可在 K 线之间\">"
+      }
+    },
+    {
+      "name": "keyboard-prompt-tab-1",
+      "active": {
+        "tag": "INPUT",
+        "label": "图表价格",
+        "html": "<input type=\"number\" step=\"0.01\" value=\"52.60\" data-keyboard-price=\"\" aria-label=\"图表价格\">"
+      }
+    },
+    {
+      "name": "keyboard-prompt-tab-2",
+      "active": {
+        "tag": "BUTTON",
+        "action": "text-place-confirm",
+        "label": null,
+        "html": "<button data-action=\"text-place-confirm\">定位并编辑</button>"
+      }
+    },
+    {
+      "name": "D02-keyboard-editor",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "true",
+          "class": "tv-hotspot is-selected "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "图上 Text 内容",
+        "html": "<textarea id=\"textInput\" aria-label=\"图上 Text 内容\"></textarea>"
+      },
+      "placing": false,
+      "editor": true,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-keyboard-cancel",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "tool": "D02",
+        "label": "Text（可演示）",
+        "html": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D02\" data-toolbar-slot=\"D02\" aria-label=\"Text（可演示）\" title=\"点击后在图上定位 Text\" aria-pressed=\"false\" style=\"--slot-x:15.7205%\"></button>"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "keyboard-next-after-D02",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "action": "date",
+        "label": "选择日期",
+        "html": "<button type=\"button\" data-action=\"date\" aria-label=\"选择日期\"><svg class=\"replay-svg-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"4.5\" width=\"18\" height=\"16\" rx=\"2\"></rect><path d=\"M7 3v4M"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "keyboard-shift-tab-back-to-D02",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "tool": "D02",
+        "label": "Text（可演示）",
+        "html": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D02\" data-toolbar-slot=\"D02\" aria-label=\"Text（可演示）\" title=\"点击后在图上定位 Text\" aria-pressed=\"false\" style=\"--slot-x:15.7205%\"></button>"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-space-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "true",
+          "class": "tv-hotspot is-selected is-placing"
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "INPUT",
+        "label": "图表时间位置，可在 K 线之间",
+        "html": "<input type=\"range\" min=\"0\" max=\"27\" step=\"0.1\" value=\"27\" data-keyboard-logical=\"\" aria-label=\"图表时间位置，可在 K 线之间\">"
+      },
+      "placing": true,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    },
+    {
+      "name": "D02-space-cancel",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "toolbar": {
+        "x": 354.5,
+        "y": 169,
+        "width": 541,
+        "height": 42
+      },
+      "art": {
+        "x": 355.5,
+        "y": 170,
+        "width": 539,
+        "height": 40
+      },
+      "svgHref": "../tradingview-alignment-v0.1/icons.svg#toolbar-icons",
+      "slots": [
+        {
+          "id": "GRIP",
+          "rect": {
+            "x": 349.859375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D01",
+          "rect": {
+            "x": 382.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D02",
+          "rect": {
+            "x": 422.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": false,
+          "ariaDisabled": null,
+          "pressed": "false",
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D03",
+          "rect": {
+            "x": 462.234375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D04",
+          "rect": {
+            "x": 501.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D05",
+          "rect": {
+            "x": 540.5,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D06",
+          "rect": {
+            "x": 579.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D07",
+          "rect": {
+            "x": 619.34375,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D08",
+          "rect": {
+            "x": 658.78125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D09",
+          "rect": {
+            "x": 698.203125,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D10",
+          "rect": {
+            "x": 738.21875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D11",
+          "rect": {
+            "x": 777.640625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D12",
+          "rect": {
+            "x": 816.46875,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        },
+        {
+          "id": "D13",
+          "rect": {
+            "x": 857.65625,
+            "y": 170,
+            "width": 36,
+            "height": 40
+          },
+          "disabled": true,
+          "ariaDisabled": "true",
+          "pressed": null,
+          "class": "tv-hotspot  "
+        }
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "tool": "D02",
+        "label": "Text（可演示）",
+        "html": "<button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D02\" data-toolbar-slot=\"D02\" aria-label=\"Text（可演示）\" title=\"点击后在图上定位 Text\" aria-pressed=\"false\" style=\"--slot-x:15.7205%\"></button>"
+      },
+      "placing": false,
+      "editor": false,
+      "cards": 0,
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task05=16",
+      "historyLength": 2
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,133 @@
+{
+  "reviewer": "audit_visual (not implementer)",
+  "reviewed_at": "2026-10-24T02:03:13.887310+08:00",
+  "viewport": "1440x1000 CSS, explicitly set by root; 01b SVG native920x470",
+  "head": "5a94ee3ff76e32993fe2c4791a83b40e877a7344",
+  "source_binding_note": "PNG supplied by root from real browser. Current source hash recorded after direct visual review; root must verify against capture-time frozen manifest.",
+  "files": [
+    {
+      "board": "01-library",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01-library.png",
+      "png_sha256": "12ab99521aa0254642bbdec6f384ac157297bb76bd51b0182863c4a09e67404d",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01-library.svg",
+      "svg_sha256": "b30590f591ce0677f7f9d9e35a914694774dff0d49525f66de3b4afd86aa8c01",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "01b-package-management",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/01b-package-management.png",
+      "png_sha256": "2df3ecbabd30d4306ad402f743a978cff26e0af14c533fe22819bf1334307172",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/01b-package-management.svg",
+      "svg_sha256": "c645fe0613080bc74ffbb0dbb43ef0b454ca9c6d4da948d55545069b95fba201",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "02-compose",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/02-compose.png",
+      "png_sha256": "5771c976ae1c8e04039acdde96fa5e84e9b8ebc74322aede51eda9b11f78c7ec",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/02-compose.svg",
+      "svg_sha256": "7476f7527605538b0a5f613e6ea487100150a31822ff812c8a4e0ae41ec8259b",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "03-experiments",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/03-experiments.png",
+      "png_sha256": "f1b5054a76309413162b4054348c735c267d223c1fc9bb237011c9315ec6a3ae",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/03-experiments.svg",
+      "svg_sha256": "1d9e215f84144a66b9976d31d321587806f1b0df0ebc8bcf80372fda9b104799",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "04-create",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04-create.png",
+      "png_sha256": "fb7361a2d17f6ecdc2d6bea737dfa2b4ac940b5dbc5531e8ea0a06343abd12b5",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04-create.svg",
+      "svg_sha256": "960356270c29bade3de214c921e1cb6f1ac910f6f3cf4eaebfab5e0efb7bd720",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "04b-select-strategies",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/04b-select-strategies.png",
+      "png_sha256": "2ebefe936d351f22b6931e58436d67eb8b11f91d19a11a3178e4a00122234df4",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/04b-select-strategies.svg",
+      "svg_sha256": "083c050255c032b25df8bf235b4b2bc3c3466de4e803ef152fc0d362f172ecdf",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "05-preview",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-preview.png",
+      "png_sha256": "05b471e189a32bb59ea0658467987dbe118af6e6f66fefe037b80f92103e8e2e",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-preview.svg",
+      "svg_sha256": "62bfd6337e4e5114ec2381e7d05b29904e8a16b76e95e0012958d1d5e8e88ffc",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "05-confirm",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/05-confirm.png",
+      "png_sha256": "866a3546a2c5a7512755f0dd3eed5330b7148be1d7def09f67b2b40f72efecbe",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/05-confirm.svg",
+      "svg_sha256": "d4efa0552d8f5a1f8ba68d079243e7a74228f79d0913f5994b0e3a4fff689c4e",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "10-states",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/10-states.png",
+      "png_sha256": "1e0b416ff9715118d888bf5ef3069f16111f7e4dc1317f1512da46686ccf7544",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/10-states.svg",
+      "svg_sha256": "b0e47986a3e3cfd4c207a35746a94362ea82cc4ed3a8c1732634f604e2b628a9",
+      "visual_result": "PASS"
+    },
+    {
+      "board": "12-components",
+      "png": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/evidence/final/12-components.png",
+      "png_sha256": "9d0ac049d2cb223ea8db5ec12e87d46147094d84214bfb8a6b37730f904eeb2e",
+      "png_pixel_dimensions": [
+        65536,
+        4292542531
+      ],
+      "svg": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/12-components.svg",
+      "svg_sha256": "d04f3f93e03289b43717f5e1ea6620982df2db9b64b3f28bbc4f0d6eb9748185",
+      "visual_result": "PASS"
+    }
+  ],
+  "reference": {
+    "path": "/private/tmp/strategy-audit-visual-evidence/reference-home-1440.png",
+    "sha256": "c3079e620d2bf4d0d3ce360f1360d610ec06ddc06dcc8a84e33d8f0b506b32f1"
+  }
+}

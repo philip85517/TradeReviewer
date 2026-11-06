@@ -1,0 +1,746 @@
+{
+  "references": [
+    {
+      "path": ".scratch/backend-design-wayfinder/evidence/source-snapshot.json",
+      "fingerprint": "a2d5f888d351fe1bac1b76c690053b1ee4139185e4f59f3210ba03631ce21270",
+      "url": "evidence/7da595cf210f5e1d.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/00-map.md",
+      "fingerprint": "d9b04d94745f12863cdfffccbb325449e8b65384ca5aa3a1dd7b13173094a175",
+      "url": "evidence/598c02c5eef4eef6.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/01-evidence-scope.md",
+      "fingerprint": "020f07b2cccd30a2d009b21aec82ca096963d9e191acee0bb98454782002328c",
+      "url": "evidence/5dba1e84aed16453.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/02-read-protocol.md",
+      "fingerprint": "3a3bbcdb888161c13ba11db6c9a841d92b7c7ede59cd874c107beaf1549997e2",
+      "url": "evidence/632b7220153ee361.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/03-qualification.md",
+      "fingerprint": "91c2328b92ba82fa82c7b6bd9b83a2d4457b9830c051b1aec110cebad4272999",
+      "url": "evidence/8845a7abed5f69bb.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/04-publication.md",
+      "fingerprint": "3d46661757b8ab21419c576fd7703797559f992b45b1b699125e25787a63e56c",
+      "url": "evidence/2dc259c46f80e841.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/05-module-ownership.md",
+      "fingerprint": "77022ac95083b8768f48cf386f950e2a84a8cdb82a980de7aff4313f4c9065d8",
+      "url": "evidence/0033da4d53ec908d.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/backend-design-wayfinder/issues/06-verification.md",
+      "fingerprint": "78a9950c9be85759d35fefce7ed3925be70a3ea58c351e5da2b43e961ff58821",
+      "url": "evidence/c840c192dd2cf9fc.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/homepage-design-logic-review-2026-10-24/REVIEW.md",
+      "fingerprint": "cbc9c465de0764f66c19009d023145b4d99156e5468662a6386244a67b269a8d",
+      "url": "evidence/8ffa1f3188aa2fd8.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/homepage-design-logic-review-2026-10-24/questions/Q02-LEGACY-HOMEPAGE-DIFF.md",
+      "fingerprint": "98582a7d28991120d09b0430a8766d416392e7d16fa2a71c39ad37b717a98afc",
+      "url": "evidence/96349c27f565f291.html",
+      "requestedLines": []
+    },
+    {
+      "path": ".scratch/homepage-one-second-wayfinder/issues/00-map.md",
+      "fingerprint": "a2999b58b262f352b64da6ed6e6c2ff7b9b8dacbd27644c23aced5d5268a2a5b",
+      "url": "evidence/80215f0a4daa7810.html",
+      "requestedLines": []
+    },
+    {
+      "path": "CONTEXT.md",
+      "fingerprint": "569d300b8d4892df6d6c545232eabf16ccb346ff82922c3e38561a195f8f670d",
+      "url": "evidence/86fee53c33308768.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/api/storage/homepage-source/route.ts",
+      "fingerprint": "e10db039109fa682f2bdfc700958ebe0408c408309806302d62e5fe370fab932",
+      "url": "evidence/973c1f54317aa67d.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/homepage-v25/financial-acquisition.ts",
+      "fingerprint": "2dd467cf06625d68fd0c02b4abca472b94f70d9b3baee2bf46108208c3a7f73a",
+      "url": "evidence/e41a153b203a1b9f.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/homepage-v25/financial-source-model.ts",
+      "fingerprint": "e7dcd33a5d856f13274d0157355fe1c1472e889eaa77c69f6b76f7ed6702ec05",
+      "url": "evidence/0d68c9ba2877479a.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/homepage-v25/financial-view-model.ts",
+      "fingerprint": "9202b4942ee68ed981a17e8c85b93222853f257a1879e4ff9cfacbe4ff98f72c",
+      "url": "evidence/7775da2e3652859d.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/homepage-v25/holdings-model.ts",
+      "fingerprint": "8b0acbb1dbf7bb0bdee5ce75f28290a911d022eec0017779eb090ee5ec7dbd22",
+      "url": "evidence/a5c2f4835829394e.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/homepage-v25/use-homepage-host.ts",
+      "fingerprint": "f200749a69cf45620c9f59700d4b65e1b4faeeb898a17da981b95e98a0fdf0b9",
+      "url": "evidence/a133dfbefa2515b8.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/components/trade-review-workspace.tsx",
+      "fingerprint": "b9c7e37d68269d49276b2e529bb0c0d435ebc47e07a073d91ecc614c4c60a11b",
+      "url": "evidence/cd56bf3d4d5238b3.html",
+      "requestedLines": [
+        2286
+      ]
+    },
+    {
+      "path": "app/lib/cash/cash-model.ts",
+      "fingerprint": "3e77466d3eef4552058ccc3e89b4ed612b7b97672a133e7e3c0b279f4590c9c1",
+      "url": "evidence/042d5f6789f4bcbd.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/fx/room-contracts.ts",
+      "fingerprint": "bd45cde7331b8a9e8e9ff48002a7a0a2c888e011bd3b948025644a5ee7a96dc4",
+      "url": "evidence/dc1835afa6272b72.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/contracts.ts",
+      "fingerprint": "9e830f9ea9fea785ad2eea250adfc0522fe638c0a8002c7688fce6ccb19705b2",
+      "url": "evidence/9419bb5f3adf782d.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/dispatcher.ts",
+      "fingerprint": "ffa5bb21706b12caab18d6150c318b345033b062b0e7670b2da634bf236b5945",
+      "url": "evidence/a63ecaff506a1afb.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/execution-reconciliation.ts",
+      "fingerprint": "e82b1749bd9ea068b88ede17caeb2876328b2835c57158e4bdc0d5da84eddbc2",
+      "url": "evidence/15ef2ae2c97deb7d.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/monthly-reimport.ts",
+      "fingerprint": "ab3969f76f4dbba83307a83b17527fdb2fe2444d76491104ac3ac85cc783a084",
+      "url": "evidence/274e40e2fb5d3795.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/monthly-statement.ts",
+      "fingerprint": "56732b949fb0b65c7af203723ff24df38dfeed6406be11420f7495ea5dc188cb",
+      "url": "evidence/db8475cc5da58940.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/statement-evidence.ts",
+      "fingerprint": "0a37316553c5c43bc3edf8bb193ca047fec8b3b59e0f67c7c3ffe21e8f497755",
+      "url": "evidence/254c5b6c6849bd61.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/import/statement-time.ts",
+      "fingerprint": "4e5be0d82c7987f780f7daf211e3ca271e03b986fc607d7a22d6773745812a10",
+      "url": "evidence/8533553d1604a97b.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/insights/insight-engine.ts",
+      "fingerprint": "935fba6534dc65b16685c7e3e9c13c5f29a04b4c7d13a3840ff8f854123dad70",
+      "url": "evidence/114d4dfd603c15db.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/market/market-data-service.ts",
+      "fingerprint": "2d319c44e35941123fe7e651309413ae1a4d031a613837c60108f631a951552d",
+      "url": "evidence/52112fb75ea8c298.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/principal/reference-capital-model.ts",
+      "fingerprint": "b582892c8e9f31dac1d98ce28483a1665b4505fb122c7c16071e40997727bd9d",
+      "url": "evidence/10cec9141f3c8121.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/recall-export/export.ts",
+      "fingerprint": "78770540a44fbb91253c88273e0d5431d223ada7322d5beb2e4d6c296851c493",
+      "url": "evidence/e79ee69fb81e0770.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/recall/server-repository.ts",
+      "fingerprint": "bfd9cdf1a417d82bb7750199295e6c9d0ae4fae6528b67c2529b217ca776446b",
+      "url": "evidence/65135f9fee1762e3.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/replay/position-ledger.ts",
+      "fingerprint": "860771538373cbfa69c91e80cb6a5504078a470e7156c38127e2eb3300de87d0",
+      "url": "evidence/b0ce047a4cd0e0a4.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/replay/replay-engine.ts",
+      "fingerprint": "b70df161edb4c918165b3bda63aa18870a87e408d06d7bf6f3ac4f73a50b3ea8",
+      "url": "evidence/879c1cd9fa56f558.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-performance.ts",
+      "fingerprint": "7d6b2c7617d97b4fedf26bf6bd2d8df63d7a56078dad3ddc4c5b12ff45b8cfb1",
+      "url": "evidence/92eec3fb9ec1b1ed.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/reviews/homepage-v25-state.ts",
+      "fingerprint": "fd8f36e859fca9567f52fbd17acebc6f403af733ff4ff3e2ac0144073f9f643e",
+      "url": "evidence/58cc925c66a4f567.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/homepage-source-contract.ts",
+      "fingerprint": "cb6573aa22a5075c855e9141126098e246136bcbaa058875d17e0c242782c629",
+      "url": "evidence/d8e2e52ea151e17f.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/homepage-source-snapshot.ts",
+      "fingerprint": "96bd3fa1e782e46ef7a8792248a0063e8fba331693b1ecc81780eaf98658e183",
+      "url": "evidence/073fb929bb29dee6.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/sqlite-contracts.ts",
+      "fingerprint": "bba026e9394f958e30f31d3e28aa2211ea435a84446db547d1eaf0a32edd4635",
+      "url": "evidence/b4d243cadef80bbc.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/sqlite-http-client.ts",
+      "fingerprint": "9df447e07dcc05f0a625debdaccc1bad711d8d037203220deae8a06e4403a5e9",
+      "url": "evidence/79119fbb3580789f.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/sqlite-store.ts",
+      "fingerprint": "95249464037d0a44a04c35175fa069ba6ac27c614ef561c558fc50f80712d948",
+      "url": "evidence/4ef672919752f2fb.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/storage/trade-revisions.ts",
+      "fingerprint": "fe06d7ed6a9cae414ffee7a45c66cb61339fd729688c510b23230f36c67aa050",
+      "url": "evidence/e5da8da2ac41f4e9.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/trades/episodes.ts",
+      "fingerprint": "5a9689c07807e23b00ba70ba32974edc86d3b8f5791ebb6870618676f8b7bbeb",
+      "url": "evidence/a05081d0c59a84a2.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/trades/library.ts",
+      "fingerprint": "3b6c166cb14231ed43af7ad1b70c3842b165fe8de13badbfc35bca9c8fc5cfcc",
+      "url": "evidence/8b3814cfc3a9fa22.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/trades/nature-resolution.ts",
+      "fingerprint": "598227718aa6707716ade909009e130d81bf43ae7e4309bece40c7347636942a",
+      "url": "evidence/5de54244053269fd.html",
+      "requestedLines": []
+    },
+    {
+      "path": "app/lib/trades/types.ts",
+      "fingerprint": "a7c7ba341a5f566c4e851dfe2a033c35cc4f7584205f3ab86cb82269546470a1",
+      "url": "evidence/1a7773c67008ca82.html",
+      "requestedLines": []
+    },
+    {
+      "path": "conf/README.md",
+      "fingerprint": "400017e79b8a8b26678d262a0d3024eb871a7d6341eca18c9594eb6fa0756eaf",
+      "url": "evidence/a718ca268a3d29eb.html",
+      "requestedLines": []
+    },
+    {
+      "path": "db/sqlite.ts",
+      "fingerprint": "20b1b5fcf117e400914bf4fa3b56e5df3f45919b17489cc94228530f04d9d7dc",
+      "url": "evidence/ef3601d9ba23be1b.html",
+      "requestedLines": []
+    },
+    {
+      "path": "docs/adr/0001-current-architecture.md",
+      "fingerprint": "c5fd3d79fe0d6faf5cf588e9eb355ee78f2a31d39390f861065996a6ad400674",
+      "url": "evidence/bdd01c4a2117ba89.html",
+      "requestedLines": []
+    },
+    {
+      "path": "docs/specs/2026-09-29-strategy-portfolio-backtesting.md",
+      "fingerprint": "d4ac1e678337799a9798381a84659e9a8c81feae082a0e8dd068512c86a1aa5d",
+      "url": "evidence/ff189daf02f9f809.html",
+      "requestedLines": []
+    },
+    {
+      "path": "docs/superpowers/specs/2026-09-07-monthly-statement-import-design.md",
+      "fingerprint": "59daa72821dcd13fe2762fcdf26f9da8425d02172229f91a637a967b816cda2b",
+      "url": "evidence/93e92f6d4e5be70b.html",
+      "requestedLines": []
+    }
+  ],
+  "links": [
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 5,
+      "original": "target-design.candidate.md",
+      "resolved": "../target/index.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 10,
+      "original": "../../.scratch/backend-design-wayfinder/evidence/source-snapshot.json",
+      "resolved": "../evidence/7da595cf210f5e1d.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 57,
+      "original": "../superpowers/specs/2026-09-07-monthly-statement-import-design.md",
+      "resolved": "../evidence/93e92f6d4e5be70b.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 57,
+      "original": "../../CONTEXT.md",
+      "resolved": "../evidence/86fee53c33308768.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 59,
+      "original": "../design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "resolved": "../../../design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 59,
+      "original": "../design-system/baselines/2026-10-22-trading-library-v1.0/source/visual-design.candidate.md",
+      "resolved": "../../../design-system/baselines/2026-10-22-trading-library-v1.0/visual-spec.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 104,
+      "original": "../specs/2026-09-29-strategy-portfolio-backtesting.md",
+      "resolved": "../evidence/ff189daf02f9f809.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 109,
+      "original": "../adr/0001-current-architecture.md",
+      "resolved": "../evidence/bdd01c4a2117ba89.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 129,
+      "original": "../../.scratch/homepage-design-logic-review-2026-10-24/questions/Q02-LEGACY-HOMEPAGE-DIFF.md",
+      "resolved": "../evidence/96349c27f565f291.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 163,
+      "original": "../../app/lib/import/dispatcher.ts",
+      "resolved": "../evidence/a63ecaff506a1afb.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 163,
+      "original": "../../app/lib/import/statement-time.ts",
+      "resolved": "../evidence/8533553d1604a97b.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 163,
+      "original": "../../app/lib/import/execution-reconciliation.ts",
+      "resolved": "../evidence/15ef2ae2c97deb7d.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 163,
+      "original": "../../app/lib/import/monthly-reimport.ts",
+      "resolved": "../evidence/274e40e2fb5d3795.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 163,
+      "original": "../../app/lib/import/contracts.ts",
+      "resolved": "../evidence/9419bb5f3adf782d.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 165,
+      "original": "../../app/lib/import/monthly-statement.ts",
+      "resolved": "../evidence/db8475cc5da58940.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 180,
+      "original": "../../app/lib/trades/nature-resolution.ts",
+      "resolved": "../evidence/5de54244053269fd.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 180,
+      "original": "../../app/lib/trades/episodes.ts",
+      "resolved": "../evidence/a05081d0c59a84a2.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 180,
+      "original": "../../app/lib/trades/library.ts",
+      "resolved": "../evidence/8b3814cfc3a9fa22.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 180,
+      "original": "../../app/lib/storage/trade-revisions.ts",
+      "resolved": "../evidence/e5da8da2ac41f4e9.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 182,
+      "original": "../../app/lib/trades/types.ts",
+      "resolved": "../evidence/1a7773c67008ca82.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 197,
+      "original": "../../app/lib/storage/sqlite-store.ts",
+      "resolved": "../evidence/4ef672919752f2fb.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 197,
+      "original": "../../db/sqlite.ts",
+      "resolved": "../evidence/ef3601d9ba23be1b.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 197,
+      "original": "../../app/lib/storage/homepage-source-snapshot.ts",
+      "resolved": "../evidence/073fb929bb29dee6.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 197,
+      "original": "../../app/lib/storage/sqlite-http-client.ts",
+      "resolved": "../evidence/79119fbb3580789f.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 197,
+      "original": "../../app/api/storage/homepage-source/route.ts",
+      "resolved": "../evidence/973c1f54317aa67d.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 199,
+      "original": "../../app/lib/storage/sqlite-contracts.ts",
+      "resolved": "../evidence/b4d243cadef80bbc.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 199,
+      "original": "../../app/lib/storage/homepage-source-contract.ts",
+      "resolved": "../evidence/d8e2e52ea151e17f.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 201,
+      "original": "../../conf/README.md",
+      "resolved": "../evidence/a718ca268a3d29eb.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 211,
+      "original": "../../.scratch/homepage-design-logic-review-2026-10-24/questions/Q02-LEGACY-HOMEPAGE-DIFF.md",
+      "resolved": "../evidence/96349c27f565f291.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 216,
+      "original": "../../app/lib/import/statement-evidence.ts",
+      "resolved": "../evidence/254c5b6c6849bd61.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 216,
+      "original": "../../app/components/homepage-v25/financial-acquisition.ts",
+      "resolved": "../evidence/e41a153b203a1b9f.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 216,
+      "original": "../../app/components/homepage-v25/financial-source-model.ts",
+      "resolved": "../evidence/0d68c9ba2877479a.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 233,
+      "original": "../../app/lib/replay/position-ledger.ts",
+      "resolved": "../evidence/b0ce047a4cd0e0a4.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 233,
+      "original": "../../app/lib/reviews/homepage-v25-performance.ts",
+      "resolved": "../evidence/92eec3fb9ec1b1ed.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 233,
+      "original": "../../app/components/homepage-v25/financial-view-model.ts",
+      "resolved": "../evidence/7775da2e3652859d.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 233,
+      "original": "../../app/components/homepage-v25/holdings-model.ts",
+      "resolved": "../evidence/a5c2f4835829394e.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 243,
+      "original": "../../.scratch/homepage-design-logic-review-2026-10-24/REVIEW.md",
+      "resolved": "../evidence/8ffa1f3188aa2fd8.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 243,
+      "original": "../../.scratch/homepage-design-logic-review-2026-10-24/questions/Q02-LEGACY-HOMEPAGE-DIFF.md",
+      "resolved": "../evidence/96349c27f565f291.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 250,
+      "original": "../../app/components/trade-review-workspace.tsx",
+      "resolved": "../evidence/cd56bf3d4d5238b3.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 250,
+      "original": "../../app/lib/reviews/homepage-v25-state.ts",
+      "resolved": "../evidence/58cc925c66a4f567.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 250,
+      "original": "../../app/components/homepage-v25/use-homepage-host.ts",
+      "resolved": "../evidence/a133dfbefa2515b8.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 252,
+      "original": "../../app/components/trade-review-workspace.tsx:2286",
+      "resolved": "../evidence/cd56bf3d4d5238b3.html#L2286"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 273,
+      "original": "../../app/lib/market/market-data-service.ts",
+      "resolved": "../evidence/52112fb75ea8c298.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 273,
+      "original": "../../app/lib/fx/room-contracts.ts",
+      "resolved": "../evidence/dc1835afa6272b72.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 274,
+      "original": "../../app/lib/principal/reference-capital-model.ts",
+      "resolved": "../evidence/10cec9141f3c8121.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 274,
+      "original": "../../app/lib/cash/cash-model.ts",
+      "resolved": "../evidence/042d5f6789f4bcbd.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 275,
+      "original": "../../app/lib/recall/server-repository.ts",
+      "resolved": "../evidence/65135f9fee1762e3.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 275,
+      "original": "../../app/lib/replay/replay-engine.ts",
+      "resolved": "../evidence/879c1cd9fa56f558.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 276,
+      "original": "../../app/lib/insights/insight-engine.ts",
+      "resolved": "../evidence/114d4dfd603c15db.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 276,
+      "original": "../../app/lib/recall-export/export.ts",
+      "resolved": "../evidence/e79ee69fb81e0770.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 327,
+      "original": "target-design.candidate.md",
+      "resolved": "../target/index.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 327,
+      "original": "../../.scratch/backend-design-wayfinder/issues/00-map.md",
+      "resolved": "../evidence/598c02c5eef4eef6.html"
+    },
+    {
+      "source": "docs/backend-design/current-state.md",
+      "sourceLine": 332,
+      "original": "../../.scratch/homepage-design-logic-review-2026-10-24/questions/Q02-LEGACY-HOMEPAGE-DIFF.md",
+      "resolved": "../evidence/96349c27f565f291.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 5,
+      "original": "current-state.md",
+      "resolved": "../current/index.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 5,
+      "original": "../../.scratch/backend-design-wayfinder/issues/00-map.md",
+      "resolved": "../evidence/598c02c5eef4eef6.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 41,
+      "original": "../design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "resolved": "../../../design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 146,
+      "original": "../../.scratch/backend-design-wayfinder/issues/01-evidence-scope.md",
+      "resolved": "../evidence/5dba1e84aed16453.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 180,
+      "original": "../../.scratch/backend-design-wayfinder/issues/02-read-protocol.md",
+      "resolved": "../evidence/632b7220153ee361.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 197,
+      "original": "../../.scratch/backend-design-wayfinder/issues/01-evidence-scope.md",
+      "resolved": "../evidence/5dba1e84aed16453.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 197,
+      "original": "../../.scratch/backend-design-wayfinder/issues/03-qualification.md",
+      "resolved": "../evidence/8845a7abed5f69bb.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 248,
+      "original": "../../.scratch/backend-design-wayfinder/issues/03-qualification.md",
+      "resolved": "../evidence/8845a7abed5f69bb.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 265,
+      "original": "../../.scratch/backend-design-wayfinder/issues/04-publication.md",
+      "resolved": "../evidence/2dc259c46f80e841.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 375,
+      "original": "../../.scratch/backend-design-wayfinder/issues/04-publication.md",
+      "resolved": "../evidence/2dc259c46f80e841.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 386,
+      "original": "../../.scratch/homepage-one-second-wayfinder/issues/00-map.md",
+      "resolved": "../evidence/80215f0a4daa7810.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 399,
+      "original": "../../conf/README.md",
+      "resolved": "../evidence/a718ca268a3d29eb.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 424,
+      "original": "../../.scratch/backend-design-wayfinder/issues/01-evidence-scope.md",
+      "resolved": "../evidence/5dba1e84aed16453.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 425,
+      "original": "../../.scratch/backend-design-wayfinder/issues/02-read-protocol.md",
+      "resolved": "../evidence/632b7220153ee361.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 426,
+      "original": "../../.scratch/backend-design-wayfinder/issues/03-qualification.md",
+      "resolved": "../evidence/8845a7abed5f69bb.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 427,
+      "original": "../../.scratch/backend-design-wayfinder/issues/04-publication.md",
+      "resolved": "../evidence/2dc259c46f80e841.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 428,
+      "original": "../../.scratch/backend-design-wayfinder/issues/05-module-ownership.md",
+      "resolved": "../evidence/0033da4d53ec908d.html"
+    },
+    {
+      "source": "docs/backend-design/target-design.candidate.md",
+      "sourceLine": 429,
+      "original": "../../.scratch/backend-design-wayfinder/issues/06-verification.md",
+      "resolved": "../evidence/c840c192dd2cf9fc.html"
+    }
+  ]
+}

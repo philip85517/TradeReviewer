@@ -1,0 +1,565 @@
+{
+  "axis": "Spec",
+  "reviewer": "audit_current_authority",
+  "read_only_repository": true,
+  "captured_at": "2026-11-06T10:00:59.281862+08:00",
+  "baseline": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "historical_commits": [
+    "ff82d354",
+    "265ee123",
+    "7588bc57",
+    "45ee60c7",
+    "be219d55",
+    "7a9a46cc"
+  ],
+  "scope_commands": [
+    "git diff d95afc37 (full cumulative working-tree scope, selected text files read; giant generated diff not printed)",
+    "git diff --cached (current staged scope and selected diffs)",
+    "git diff d95afc37...HEAD (historical scope and commit list)"
+  ],
+  "staged_index_sha256": "117ea69645f1c991638ce803ab52731da5b3ea0863412d603541f845d50f4ca3",
+  "full_diff_file_count": 2943,
+  "staged_diff_summary": "769 files changed, 377803 insertions(+), 5129 deletions(-) at first capture; coordinator validation may add later evidence",
+  "verdict": "PASS for document Spec scope; 0 actionable findings",
+  "findings": [],
+  "finding_count": 0,
+  "requirements": [
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:12",
+      "quote": "先确认当前完整版的文档类型/内容的最新性，没有矛盾冲突，没有worktree设计文档等的遗漏",
+      "result": "PASS within the explicitly frozen inventory scope",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:5",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:9",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:27",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:12"
+      ],
+      "details": "All 11 registered worktrees have source HEAD, branch, document types, decisions, exclusions and cutoff. Original complete package plus 565 other-worktree and 120 review/strategy supplemental files are retained; focused supplementary manifest hashes independently matched 685/685 destinations."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:12",
+      "quote": "剩余一些设计相关的确认我们快速推荐，暂时认为是暂定的",
+      "result": "PASS",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:29",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:38",
+        ".scratch/visual-specs-consolidation-20261106/issues/03-core-design-alignment.md"
+      ],
+      "details": "ST01 and ST02 revision2 retain confirmed status; ST03–07 and remaining details remain recommended/tentative. No further question or implicit full design approval is introduced."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:14",
+      "quote": "区分当前规范、最新暂定方案、被取代历史",
+      "result": "PASS",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:5",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:40",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:46",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:58",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:3",
+        "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/visual-design.candidate.md:3",
+        "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md:3"
+      ],
+      "details": "Current business text synchronizes confirmed later decisions. V2 old business body and review zero-to-zero/flat-finish body are explicitly superseded, retained as history. Latest architecture/model proposals remain candidates."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:28",
+      "quote": "当前入口不把旧回合定义、旧摘要排版或旧跟随规则作为现行规范",
+      "result": "PASS",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:31",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:46",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:48",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md:120",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md:375",
+        "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md:387"
+      ],
+      "details": "Homepage four 88px cards with common left origin supersede the continuous band; table amounts remain right aligned. Active advance must reveal the target; tentative minimal pan preserves horizontal zoom, manual review pauses, passive refresh/sidebar resize preserves viewport. R01–R05, free multiple Text and current real close-action rounds are explicit."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:14",
+      "quote": "不删除旧 FAIL，不把历史 PASS 外推给本轮",
+      "result": "PASS",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:60",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:67",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:16",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:26"
+      ],
+      "details": "candidate45 remains default; direct-v5 and identity remain isolated. Nov6 only removes special Text/mark automatic avoidance requirement; placed Text drag/width and real-input gaps remain. Homepage Round5 whole-product FAIL/paused and library viewport/layout incompleteness are retained."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:16",
+      "quote": "本轮不做产品实现、业务数据修改或 UI/数据库验收",
+      "result": "PASS",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md:73",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:46",
+        "docs/design-system/trading-library-design-spec.md:135"
+      ],
+      "details": "Full cumulative diff is documentation/artifacts under docs/ and .scratch/ plus CONTEXT.md only; no product or DB path changes. Generator changes preserve stable document block IDs, update approved visuals and repair a current business-override link; no product feature is introduced."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:30",
+      "quote": "当前入口本地链接、生成阅读页、评论身份、来源清单及差异检查通过",
+      "result": "Spec subset PASS; coordinator owns final generation/identity static checks",
+      "evidence": [
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/README.md",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md"
+      ],
+      "details": "103 local link target occurrences in current entry, coverage/business tables, design-system index, business body and CONTEXT resolve after stripping query/fragment; no missing current target. Independent byte hashes for 565+120 supplements match. No claim of closing all historical transitive dependencies."
+    },
+    {
+      "requirement": ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:32",
+      "quote": "远端分支与本地提交一致，PR base 为 master，URL 已附当前聊天",
+      "result": "PENDING coordinator integration, not a document Spec defect",
+      "evidence": [
+        ".scratch/visual-specs-consolidation-20261106/issues/04-full-document-pr.md:23",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/WORKTREE-COVERAGE.md:54"
+      ],
+      "details": "This review does not push or merge. User authorizes independent-branch push + PR, not automatic PR merge; remote delivery remains to be verified by coordinator."
+    }
+  ],
+  "business_override_checks": [
+    {
+      "id": "LIB-01-single-scope",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:9",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          25
+        ]
+      },
+      "source_record_date": "2026-10-26",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/comments/TL20-D04/2026-10-26-resolution.md",
+          "lines": [
+            7,
+            13,
+            15,
+            17,
+            39
+          ]
+        }
+      ],
+      "current_status": "confirmed override; runtime NOT VERIFIED",
+      "boundary_preserved": "单标的不等于单方向；保留候选数组为历史研究，不能作为当前接口。"
+    },
+    {
+      "id": "LIB-02-filename-date",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:10",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          31,
+          57,
+          59
+        ]
+      },
+      "source_record_date": "2026-10-26",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-26-resolution.md",
+          "lines": [
+            9,
+            10,
+            11,
+            18,
+            26
+          ]
+        },
+        {
+          "path": ".scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-26-single-filename-date-confirmation.md",
+          "lines": [
+            9,
+            13,
+            17,
+            18,
+            20,
+            25,
+            27
+          ]
+        }
+      ],
+      "current_status": "confirmed override; historical text retained",
+      "boundary_preserved": "YYYYMMDD/YYYY-MM-DD 是记录中的实施格式约定，不冒称用户逐字正则；不借旧人工日期绕过本次文件名校验。"
+    },
+    {
+      "id": "LIB-03-resolved-date-edge-cases",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:11",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          59,
+          61
+        ]
+      },
+      "source_record_date": "2026-10-26",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v11-design-decisions/comments/TL11-D02/2026-10-26-resolution.md",
+          "lines": [
+            10,
+            11,
+            12,
+            13
+          ]
+        }
+      ],
+      "current_status": "confirmed decisions; production chain NOT VERIFIED",
+      "boundary_preserved": "保留身份、作品、编号历史；导入/保存/返回/reload 未因决策接受而通过。"
+    },
+    {
+      "id": "LIB-04-changed-file-deferred",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:12",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          37,
+          39,
+          43,
+          45,
+          47
+        ]
+      },
+      "source_record_date": "2026-10-27 record, with later additions through 2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            6
+          ]
+        }
+      ],
+      "current_status": "deferred in this iteration; protection invariant valid",
+      "boundary_preserved": "异常交互未定；不授权覆盖、删除、自动合并或丢弃人工成果。10/26接受的完整差异流程仅作后续设计历史。"
+    },
+    {
+      "id": "LIB-05-initial-capital",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:13",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          113
+        ]
+      },
+      "source_record_date": "2026-10-27, 2026-10-28, 2026-11-05 as explicitly embedded",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            5,
+            14
+          ]
+        }
+      ],
+      "current_status": "confirmed current defaults; product not accepted",
+      "boundary_preserved": "其他市场不纳入；未知币种行为尚未定；不能套用账户历史参考现金为已核实练习资本。"
+    },
+    {
+      "id": "LIB-06-bar-scope",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:14",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          93
+        ]
+      },
+      "source_record_date": "2026-10-29 / 2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            10
+          ]
+        }
+      ],
+      "current_status": "confirmed scope; hourly deferred",
+      "boundary_preserved": "日期记录不能补造日内时间；同bar顺序需要来源证据；不新增产品实现结论。"
+    },
+    {
+      "id": "LIB-07-pending-human-actions",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:15",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          79
+        ]
+      },
+      "source_record_date": "2026-10-28",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            9
+          ]
+        },
+        {
+          "path": ".scratch/trading-library-v11-design-decisions/issues/07-action-identification.md",
+          "lines": [
+            45,
+            47,
+            49
+          ]
+        }
+      ],
+      "current_status": "partially confirmed; ticket still open",
+      "boundary_preserved": "同账户同标的同委托编号是提问中的候选，方向/跨情境/开仓资格/入口与迁移仍未定；纯资格门测试不等于生产接线。"
+    },
+    {
+      "id": "LIB-08-ending-valuation",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:16",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          93,
+          97
+        ]
+      },
+      "source_record_date": "2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            12,
+            15
+          ]
+        }
+      ],
+      "current_status": "confirmed current definition; implemented/accepted separately",
+      "boundary_preserved": "不以当前行情替代该历史结束价；原文字缺少结束价显示未知仍有效，不是冲突全部删除。"
+    },
+    {
+      "id": "LIB-09-fees",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:17",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          95
+        ]
+      },
+      "source_record_date": "2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            13
+          ]
+        }
+      ],
+      "current_status": "confirmed simulation-specific override",
+      "boundary_preserved": "不扩大到实盘或任意来源损坏费用字段；显式非法数据与来源无费用信息不能混为一谈。"
+    },
+    {
+      "id": "LIB-10-market-currency",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:18",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          113
+        ]
+      },
+      "source_record_date": "2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            5,
+            11,
+            14
+          ]
+        }
+      ],
+      "current_status": "confirmed current market scope; missing-currency behavior open",
+      "boundary_preserved": "不能保留早先‘无法判断就选港股/港股通’为无条件必需步骤；导出币种缺失与方式选择是否必要待实际数据确认。"
+    },
+    {
+      "id": "LIB-11-mixed-currency-total",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:19",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          115
+        ]
+      },
+      "source_record_date": "2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            16
+          ]
+        }
+      ],
+      "current_status": "confirmed limited new rule; fallback UI open",
+      "boundary_preserved": "仅此总盈亏；不扩到其他指标/实盘/单练习历史结束价。兜底入口、初始值、未设置行为仍待设计。"
+    },
+    {
+      "id": "LIB-12-mixed-direction-deferred",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:20",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          25,
+          135
+        ]
+      },
+      "source_record_date": "2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            17
+          ]
+        },
+        {
+          "path": ".scratch/trading-library-v11-design-decisions/issues/04-list-sort-review-direction.md",
+          "lines": [
+            21,
+            23
+          ]
+        }
+      ],
+      "current_status": "mixed directions confirmed; practice direction filtering deferred",
+      "boundary_preserved": "不从任一内部配对推出整份方向；复盘状态/实盘方向等原票其他范围不自动关闭。"
+    },
+    {
+      "id": "LIB-13-complete-TV-source",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:21",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          95
+        ]
+      },
+      "source_record_date": "2026-10-29",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            21,
+            23,
+            25,
+            27
+          ]
+        }
+      ],
+      "current_status": "confirmed source-specific correction",
+      "boundary_preserved": "字段仍需有效/成对；不保证其他来源；历史样本计数不应反过来覆盖一次文件一次练习。"
+    },
+    {
+      "id": "LIB-14-migration-and-check-limits",
+      "result": "PASS",
+      "coverage_table": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md:22",
+      "current_body": {
+        "path": "docs/design-system/trading-library-design-spec.md",
+        "lines": [
+          135
+        ]
+      },
+      "source_record_date": "2026-10-27 record, amendments through 2026-11-05",
+      "source_time_basis": "Dated decision record / embedded user quotation; exact originating chat-message timestamp not independently verified in this audit. File mtime is not approval time.",
+      "original_sources": [
+        {
+          "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+          "lines": [
+            7,
+            8,
+            19
+          ]
+        }
+      ],
+      "current_status": "migration required, execution not thereby accepted; explicit scope exclusions",
+      "boundary_preserved": "迁移方案/目标启用/缺身份处理需要证据；不把测试归档或未审迁移升级完成。暂缓触屏不删除完整视觉历史。"
+    }
+  ],
+  "independent_checks": {
+    "supplement_other_worktrees": {
+      "entries": 565,
+      "hash_matches": 565,
+      "mismatches": 0,
+      "missing": 0
+    },
+    "supplement_review_strategy": {
+      "entries": 120,
+      "hash_matches": 120,
+      "mismatches": 0,
+      "missing": 0
+    },
+    "current_local_links": {
+      "target_occurrences": 103,
+      "missing": 0
+    },
+    "full_diff_document_scope": {
+      "files": 2943,
+      "outside_documentation_paths": []
+    }
+  },
+  "version_notes": [
+    "Coordinator was rebuilding static docs during review. The two then-unstaged trading-library generator/HTML edits were inspected: links map Markdown to HTML only when a corresponding HTML file exists, preserving the current BUSINESS-UPDATES.md target. These edits introduce no business-rule change. Coordinator should stage the validated final artifacts before commit.",
+    "Source worktree selection stays frozen at the recorded inventory/audit/copy times. No post-cutoff source changes were chased. Source record dates are not asserted to be raw chat message timestamps."
+  ],
+  "remaining_coordinator_work": [
+    "Finish current generation/comment identity/source consistency validation and record final results.",
+    "Stage any validation fixes/evidence, commit the independent task branch, push it, create/reuse a master-base PR, verify remote commit and report URL."
+  ],
+  "not_applicable": [
+    "UI/browser/product interaction acceptance",
+    "database access or migration",
+    "runtime correctness or new implementation acceptance"
+  ],
+  "limitations": [
+    "Not a live mirror of source worktrees; ignored/external/future files are explicitly excluded.",
+    "Historical archived task links to omitted product logs/code may remain open and are documented; these archives are not standalone runnable acceptance bundles.",
+    "This Spec review is independent of the coordinator Standards/generation checks and does not substitute for future product acceptance."
+  ],
+  "diff_summaries": {
+    "historical": {
+      "files": 2199,
+      "added": 423064,
+      "deleted": 490,
+      "binary": 1453
+    },
+    "staged": {
+      "files": 772,
+      "added": 378547,
+      "deleted": 5130,
+      "binary": 96
+    },
+    "cumulative_working_tree": {
+      "files": 2946,
+      "added": 797521,
+      "deleted": 1530,
+      "binary": 1549
+    }
+  }
+}

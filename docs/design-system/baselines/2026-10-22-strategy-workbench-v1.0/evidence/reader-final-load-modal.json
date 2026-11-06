@@ -1,0 +1,123 @@
+{
+  "modalClosed": true,
+  "frameLoads": [
+    {
+      "loaded": true,
+      "src": "source/images/04-create.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/04b-select-strategies.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/05-confirm.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07a-t0.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07b-first-day.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07c-lookback.svg"
+    }
+  ],
+  "images": [
+    {
+      "loaded": true,
+      "src": "source/images/06-observe.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/01-library.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/01b-package-management.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/02-compose.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/03-experiments.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/04-create.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/04b-select-strategies.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/05-confirm.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/06-observe.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/06-observe-status-detail.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07-time-states.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07-time-controls-detail.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07a-t0.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07b-first-day.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/07c-lookback.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/08-results.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/09-compare.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/10-states.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/11-responsive.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/11-compact.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/11-narrow.svg"
+    },
+    {
+      "loaded": true,
+      "src": "source/images/12-components.svg"
+    },
+    {
+      "loaded": true,
+      "src": "http://127.0.0.1:3094/design-system/baselines/2026-10-22-strategy-workbench-v1.0/source/images/06-observe.svg"
+    }
+  ]
+}

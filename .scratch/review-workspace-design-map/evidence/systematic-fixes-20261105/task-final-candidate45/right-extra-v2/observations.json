@@ -1,0 +1,1061 @@
+{
+  "target": "9236CBA9E6D99B0EF6F1322B5B02B727",
+  "steps": [
+    {
+      "name": "I30-trade3-short-legal",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-3",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "false"
+        },
+        {
+          "value": "short",
+          "pressed": "true"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.0056",
+      "stop": "52.0068",
+      "target": "68.0052",
+      "ratings": [],
+      "errors": [
+        "价格顺序与方向不一致；做多需止损＜入场＜目标，做空相反。"
+      ],
+      "active": {
+        "tag": "INPUT",
+        "value": "68.0052",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I30-trade2-long",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-2",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "true"
+        },
+        {
+          "value": "short",
+          "pressed": "false"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.00",
+      "stop": "52.00",
+      "target": "68.00",
+      "ratings": [],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I30-trade3-return-short",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-3",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "false"
+        },
+        {
+          "value": "short",
+          "pressed": "true"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.0056",
+      "stop": "52.0068",
+      "target": "68.0052",
+      "ratings": [],
+      "errors": [
+        "价格顺序与方向不一致；做多需止损＜入场＜目标，做空相反。"
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "trade": "600000-3",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I30-trade2-return-long",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-2",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "true"
+        },
+        {
+          "value": "short",
+          "pressed": "false"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.00",
+      "stop": "52.00",
+      "target": "68.00",
+      "ratings": [],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "trade": "600000-2",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I30-direction-keyboard",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-2",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "false"
+        },
+        {
+          "value": "short",
+          "pressed": "true"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.00",
+      "stop": "52.00",
+      "target": "68.00",
+      "ratings": [],
+      "errors": [
+        "价格顺序与方向不一致；做多需止损＜入场＜目标，做空相反。"
+      ],
+      "active": {
+        "tag": "INPUT",
+        "value": "56.00",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "replay-to-exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I35-mouse-unrated",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "early": "unrated",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I35-mouse-yes",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "early": "yes",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I35-mouse-no",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "early": "no",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I35-mouse-uncertain",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "early": "uncertain",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I35-keyboard-no",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "early": "no",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I36-reason-typed",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "c31-reason-v2",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "TEXTAREA",
+        "value": "c31-reason-v2",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I36-adherence-native-select-attempt",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "c31-reason-v2",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "SELECT",
+        "value": "unrated",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I37-rating-native-select-attempt",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "c31-reason-v2",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "SELECT",
+        "value": "unrated",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I36-I37-trade2-entry-after-trade3",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=entry&task-final-c45-right-extra-v2=1",
+      "scene": "入场前计划",
+      "trade": "600000-2",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "false"
+        },
+        {
+          "value": "short",
+          "pressed": "true"
+        }
+      ],
+      "scale": [
+        {
+          "value": "quantity",
+          "text": "按数量",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "amount",
+          "text": "按金额",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "percent",
+          "text": "按仓位",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "early": [],
+      "entry": "56.00",
+      "stop": "52.00",
+      "target": "68.00",
+      "ratings": [],
+      "errors": [
+        "价格顺序与方向不一致；做多需止损＜入场＜目标，做空相反。"
+      ],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "trade": "600000-2",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "replay-to-exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "c31-reason-v2",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true,
+        "inert": false
+      }
+    },
+    {
+      "name": "I36-I37-trade3-exit-return",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&scene=exit&task-final-c45-right-extra-v2=1",
+      "scene": "结束之后评价",
+      "trade": "600000-3",
+      "direction": [],
+      "scale": [],
+      "early": [
+        {
+          "value": "unrated",
+          "text": "未评价",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "yes",
+          "text": "是",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        },
+        {
+          "value": "no",
+          "text": "否",
+          "checked": "true",
+          "tabindex": 0,
+          "selected": true
+        },
+        {
+          "value": "uncertain",
+          "text": "不确定",
+          "checked": "false",
+          "tabindex": -1,
+          "selected": false
+        }
+      ],
+      "reason": "c31-reason-v2",
+      "adherence": "unrated",
+      "ratings": [
+        {
+          "key": "discipline",
+          "value": "unrated"
+        },
+        {
+          "key": "opportunity",
+          "value": "unrated"
+        },
+        {
+          "key": "position",
+          "value": "unrated"
+        },
+        {
+          "key": "experience",
+          "value": "unrated"
+        }
+      ],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true,
+        "inert": false
+      }
+    }
+  ],
+  "failures": [
+    "legal short fields still show validation error",
+    "replay next-stop path did not reach exit",
+    "replay next-stop path did not reach exit"
+  ],
+  "notVerified": [
+    {
+      "step": "I36-adherence-native-select-attempt",
+      "reason": "native select did not reliably commit in this channel"
+    },
+    {
+      "step": "I37-rating-native-select-attempt",
+      "reason": "native rating select commit is not reliable in this channel"
+    }
+  ],
+  "errors": []
+}

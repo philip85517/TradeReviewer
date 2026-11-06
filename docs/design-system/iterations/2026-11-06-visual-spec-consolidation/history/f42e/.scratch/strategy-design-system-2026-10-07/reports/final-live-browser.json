@@ -1,0 +1,14 @@
+{
+  "context": "买入前判断\n行情截止 2024-02-11 15:00:00 · Asia/Shanghai\n成交截止 成交尚未揭示\n回放模式\n补记来源：本地复盘状态",
+  "heading": "示例科技 TRD",
+  "prototypeBanner": "TradeReview 原生组件样板\n样板内存保存，刷新重置\n合成日 K：首笔买入 · 持仓减仓 · 最终退出\n现状基线\n推荐样板\n推荐样板",
+  "readout": "当前 K 线\n开 55.33\n高 56.19\n低 54.75\n收 55.57",
+  "scrollY": 0,
+  "stage": 360,
+  "title": "TradeReview — 历史交易复盘",
+  "url": "http://127.0.0.1:3064/?prototype=review-design&mode=recommended",
+  "viewport": [
+    1280,
+    720
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "steps": [
+    {
+      "name": "exit-before-date",
+      "dataCount": 49,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "draft-date-28",
+      "value": "2025-02-02",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-back-28",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "draft-date-29",
+      "value": "2025-02-03",
+      "error": "",
+      "shown": true,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-29",
+      "dataCount": 29,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "draft-date-41",
+      "value": "2025-02-15",
+      "error": "",
+      "shown": true,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-41",
+      "dataCount": 41,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "draft-date-49",
+      "value": "2025-02-23",
+      "error": "",
+      "shown": true,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "date-forward-49",
+      "dataCount": 49,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "invalid-year-draft",
+      "value": "",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "invalid-confirm",
+      "value": "",
+      "error": "请选择样本范围内的有效日期。",
+      "shown": true,
+      "dataCount": 49,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "invalid-cancel-unchanged",
+      "dataCount": 49,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "valid-cancel-draft",
+      "value": "2025-02-22",
+      "error": "",
+      "shown": true,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "historyLength": 2
+    },
+    {
+      "name": "valid-cancel-unchanged",
+      "dataCount": 49,
+      "scene": "exit",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=exit#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 2
+    },
+    {
+      "name": "scene-select-end",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 3
+    },
+    {
+      "name": "scene-select-holding",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 3
+    },
+    {
+      "name": "matrix-entry-600000-1",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-1",
+      "historyLength": 4
+    },
+    {
+      "name": "matrix-entry-600000-2",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-2",
+      "historyLength": 5
+    },
+    {
+      "name": "matrix-entry-600000-3",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 6
+    },
+    {
+      "name": "matrix-holding-600000-1",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-1",
+      "historyLength": 7
+    },
+    {
+      "name": "matrix-holding-600000-2",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-2",
+      "historyLength": 8
+    },
+    {
+      "name": "matrix-holding-600000-3",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 9
+    },
+    {
+      "name": "matrix-exit-600000-1",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-1",
+      "historyLength": 10
+    },
+    {
+      "name": "matrix-exit-600000-2",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-2",
+      "historyLength": 11
+    },
+    {
+      "name": "matrix-exit-600000-3",
+      "dataCount": 28,
+      "scene": "entry",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=entry#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 12
+    },
+    {
+      "name": "history-workspace-before-leave",
+      "dataCount": 29,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 14
+    },
+    {
+      "name": "history-back-to-workspace",
+      "dataCount": 29,
+      "scene": "holding",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "trade": "600000-3",
+      "historyLength": 15
+    },
+    {
+      "name": "history-forward-to-spec",
+      "url": "http://127.0.0.1:3091/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html#chapter-RV02"
+    }
+  ],
+  "errors": []
+}

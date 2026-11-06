@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-11-06T09:28:03+08:00",
+  "status": "tentative",
+  "alignmentId": "ALIGN-ST-06",
+  "sources": [
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+      "sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab"
+    },
+    {
+      "path": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md",
+      "sha256": "2026761a8546bcf1440ccfbf5a6bc49d6be670ffc63cb52c51e55741b03c30ad"
+    }
+  ],
+  "derivation": "ST06 root children 114:146 unchanged, translated only. Right-side explanatory text is a review annotation, not additional product UI.",
+  "proposal": "Inspector information hierarchy: overview / rebalance records / statistics tabs; apply homepage shared typography and column alignment; preserve complete reasons with wrapping and details.",
+  "scope": "Information organization and presentation only. Width remains tentative; excludes field formulas, height, scrolling, full interactions and runtime acceptance.",
+  "userQuote": "暂定",
+  "decisionRecordedAt": "2026-11-06T09:30:09+08:00"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "review-decision-clarifications",
+  "captured_at": "2026-11-06T02:27:19.287685+08:00",
+  "source_root": "/Users/zhoulin/.codex/worktrees/80b0/TradeReview",
+  "base": "45ee60c7093d78919cc5f6e304be718681d4d4bf",
+  "tree": "29b0820ee6c9109594d337129c5123c5faa2f9d2",
+  "snapshot_commit": "1cefa26776e3d30a2726ad659ef84dfb84c9f603",
+  "snapshot_ref": "refs/codex/snapshots/visual-specs-20261106/review-decision-clarifications",
+  "files": [
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/80b0/TradeReview/.scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+      "destination": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+      "bytes": 19824,
+      "sha256": "b28e99311dac9987d83ddcc6c14f84acc6266b4ec086cfb0b305db612326cbc6",
+      "git_blob": "f7c6692e3d6d806a0bfa6635155e0530586f3470",
+      "mode": "100644",
+      "source_mtime_ns": 1793902831566079941
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/80b0/TradeReview/.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/independent-trade2-20261106/REPORT.md",
+      "destination": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/independent-trade2-20261106/REPORT.md",
+      "bytes": 8229,
+      "sha256": "960d81eada7cc04630a429a8f831d3769daf04157d0e8235f843afb4d30c7936",
+      "git_blob": "ef7c93d013814572dcc370fd3edeb4f5c06eed9c",
+      "mode": "100644",
+      "source_mtime_ns": 1793903050252815286
+    },
+    {
+      "source": "/Users/zhoulin/.codex/worktrees/80b0/TradeReview/.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-10-identity-stage/coordinator-review/REPORT.md",
+      "destination": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-10-identity-stage/coordinator-review/REPORT.md",
+      "bytes": 5000,
+      "sha256": "01b5a13525c7828278b54f77e82a398862e8149c6957581c580acf76c531041e",
+      "git_blob": "7c42721b482dff61b79a2f99c5f039e5ce6ab118",
+      "mode": "100644",
+      "source_mtime_ns": 1793902831565049675
+    }
+  ],
+  "message": "docs(review): retain latest acceptance input-method and Text-scope clarifications\n\nA bounded follow-up of three source documents changed during capture. Distinguish CDP simulated input from computer-use evidence and preserve the observed Text-drag limitation. No prototype code changed; no candidate promoted. This supersedes only the three earlier report bytes, with both snapshots retained in provenance.\n\nCaptured-At: 2026-11-06T02:27:19.287685+08:00\nSource-Worktree: /Users/zhoulin/.codex/worktrees/80b0/TradeReview\n"
+}

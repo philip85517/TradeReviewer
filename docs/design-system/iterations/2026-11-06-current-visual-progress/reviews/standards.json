@@ -1,0 +1,202 @@
+{
+  "axis": "Standards",
+  "independent": true,
+  "read_only": true,
+  "reviewed_at": "2026-11-06T10:00:41.224991+08:00",
+  "repo": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "branch": "codex/visual-specs-consolidation-20261106",
+  "diff_commands": [
+    "git diff d95afc37d30f817edbd6daab41e85f485138de0d",
+    "git diff d95afc37d30f817edbd6daab41e85f485138de0d...HEAD",
+    "git diff --cached"
+  ],
+  "commits": [
+    "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d docs(design): index local visual consolidation and independent acceptance",
+    "be219d555f5d2a9236b3e3c69de6d4ae6ffe70d5 docs(review): retain latest acceptance input-method and Text-scope clarifications",
+    "45ee60c7093d78919cc5f6e304be718681d4d4bf docs(design): preserve visual execution contracts and dated historical references",
+    "7588bc5783bcabd91056f4b00d487567671023a6 docs(review): preserve current workspace and isolated visual candidates",
+    "265ee123c69f1af11533385cd535d7e43d92ab1b docs(strategy): preserve V1.2 design, V1.0 history and shared visual extensions",
+    "ff82d354b3f999ff01f9a532acd25d887be3f782 docs: establish review workspace visual specification v1.0"
+  ],
+  "changed_path_counts": {
+    "full": 2943,
+    "committed": 2199,
+    "staged": 769
+  },
+  "index_snapshot_sha256": "c691a68920944460fcbf944cb2eb83da89758ea93bf99de15f444577e8fc4811",
+  "standards_sources": [
+    {
+      "file": "docs/agents/development-workflow.md",
+      "lines": [
+        12,
+        19,
+        62,
+        76,
+        81,
+        83,
+        84,
+        85,
+        119,
+        171
+      ]
+    },
+    {
+      "file": "docs/agents/issue-tracker.md",
+      "lines": [
+        7,
+        8,
+        10,
+        22,
+        24,
+        25,
+        26,
+        27,
+        29,
+        31
+      ]
+    },
+    {
+      "file": "AGENTS.md / current user authorization",
+      "rule": "Documentation-only consolidation; preserve source worktrees, business data, original artifacts and FAIL/NOT VERIFIED; push isolated branch and PR, no automatic merge."
+    }
+  ],
+  "findings": [
+    {
+      "id": "STD-01",
+      "priority": "P2",
+      "kind": "documented-standard breach",
+      "status": "resolved",
+      "file": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/visual-spec.html",
+      "line": 145,
+      "generator_file": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/build-visual-spec.py",
+      "generator_line": 345,
+      "standard_file": "docs/agents/development-workflow.md",
+      "standard_line": 83,
+      "standard_rule": "纯文档修改按链接、内容一致性及差异审查验证。",
+      "problem": "新增当前覆盖表链接原被 rebase_url 无条件转换为不存在的 BUSINESS-UPDATES.html，阻断从交易库阅读页访问覆盖当前旧条款的14项决定。",
+      "resolution": "协调者将转换条件改为目标 .html.is_file() 后重建；独立复核 HTML 145 行现为存在的 BUSINESS-UPDATES.md。",
+      "preserved_first_failure": "Coordinator records verification-first-check.json; independent scan also observed failure before correction.",
+      "verification": "5 reviewed generated readers now have 0 missing local targets; Markdown current entry scan 130/130 local paths exist."
+    }
+  ],
+  "summary": {
+    "findings_total": 1,
+    "resolved": 1,
+    "unresolved": 0,
+    "heuristic_findings": 0,
+    "result": "PASS for reviewed documentation Standards scope after correction; no permission to merge."
+  },
+  "checks": {
+    "current_markdown_navigation": {
+      "files": 12,
+      "relative_links": 130,
+      "missing": []
+    },
+    "generated_readers": [
+      {
+        "file": "docs/design-system/trading-library-design-spec.html",
+        "missing_relative_targets": [],
+        "duplicate_dom_ids": []
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+        "missing_relative_targets": [],
+        "duplicate_dom_ids": []
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+        "missing_relative_targets": [],
+        "duplicate_dom_ids": []
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+        "missing_relative_targets": [],
+        "duplicate_dom_ids": []
+      },
+      {
+        "file": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/visual-spec.html",
+        "missing_relative_targets": [],
+        "duplicate_dom_ids": []
+      }
+    ],
+    "supplement_manifest_hashes": {
+      "count": 713,
+      "mismatches": []
+    },
+    "authority": "Current entry separates ST01/ST02 approval, ST03-07 tentative, old summary supersession, historical review body vs candidate45/direct-v5/identity, latest Text scope and remaining actual-input limitations. BUSINESS-UPDATES maps 14 current decisions to preserved sources and keeps unresolved rules open.",
+    "task_lifecycle": "Accepted content-review ticket 02 is bounded to review evidence; alignment03 and PR04 stay open/in-progress while remaining work is pending. FINAL-ACCEPTANCE placeholder not treated as a finding during coordinator verification.",
+    "identity": "Against fixed master baseline, original homepage530 and trading-library V2.0 322 block IDs remain with unchanged semantic identities; review HEAD929 identities retained. Strategy changed12 paragraph IDs correspond to revised content; no semantic retargeting of retained IDs observed. Document IDs unchanged."
+  },
+  "smell_baseline": [
+    {
+      "name": "Mysterious Name",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Duplicated Code",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Feature Envy",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Data Clumps",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Primitive Obsession",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Repeated Switches",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Shotgun Surgery",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Divergent Change",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Speculative Generality",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Message Chains",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Middle Man",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    },
+    {
+      "name": "Refused Bequest",
+      "classification": "judgement heuristic only",
+      "result": "no new actionable finding in reviewed active generator changes"
+    }
+  ],
+  "heuristic_notes": "Preexisting independent frozen document generators intentionally remain separate; do not impose refactoring of archived generators. Repository and preservation requirements override baseline heuristics. Tool-enforced whitespace and syntax findings are not duplicated as heuristics.",
+  "limitations": [
+    "Read-only static review; no browser, preview service, product implementation, database, persistence or physical-input acceptance performed.",
+    "Historical raw snapshots and 225 previously documented missing legacy Markdown targets are not runnable standalone bundles; current documentation explicitly states this limit.",
+    "Two review V1.0 historical image comments (06-entry-1280,01-entry-1440) already absent from the source/HEAD five-image identity table remain preserved as historical comments; not a newly introduced retarget or claim of successful rebinding.",
+    "Final coordinator acceptance and push/PR results were still in progress; this report does not claim completion of those actions.",
+    "Latest exact original-chat timestamps for every trading-library decision were not independently re-read; BUSINESS-UPDATES labels recorded dates and this limitation rather than using mtime as decision time."
+  ]
+}

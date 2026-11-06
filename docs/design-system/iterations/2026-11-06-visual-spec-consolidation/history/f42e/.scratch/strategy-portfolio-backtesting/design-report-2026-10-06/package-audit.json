@@ -1,0 +1,26 @@
+{
+  "reference_sha256": "ba1e11258ff52659318a321462a5e598c7bed33cf991329eb91150788fcd1a7b",
+  "output_sha256": "16bc947e562d9bd8603a14de13545ff0ceecddd7ae1289bde88bfe1c7af511ec",
+  "changed_parts": [
+    "word/header1.xml",
+    "word/settings.xml",
+    "word/document.xml"
+  ],
+  "preserved_parts": [
+    "word/footer1.xml",
+    "word/footer2.xml",
+    "word/numbering.xml",
+    "word/fontTable.xml",
+    "word/_rels/fontTable.xml.rels",
+    "word/styles.xml",
+    "word/_rels/document.xml.rels",
+    "_rels/.rels",
+    "word/fonts/HelveticaNeue-bold.ttf",
+    "word/fonts/HelveticaNeue-regular.ttf",
+    "word/theme/theme1.xml",
+    "word/media/image1.png",
+    "word/fonts/HelveticaNeue-boldItalic.ttf",
+    "word/fonts/HelveticaNeue-italic.ttf",
+    "[Content_Types].xml"
+  ]
+}

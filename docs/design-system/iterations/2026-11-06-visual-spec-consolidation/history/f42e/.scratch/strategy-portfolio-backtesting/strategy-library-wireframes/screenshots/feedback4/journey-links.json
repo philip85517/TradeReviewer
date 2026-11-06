@@ -1,0 +1,151 @@
+{
+  "scope": "静态图示链接；不证明草稿、选择、焦点、保存或运行状态",
+  "viewport": {
+    "dpr": 1,
+    "height": 800,
+    "visualScale": 1,
+    "width": 1280
+  },
+  "checks": [
+    {
+      "action": "策略库",
+      "expected": "f01",
+      "active": "策略库",
+      "id": "f01",
+      "pass": true
+    },
+    {
+      "action": "＋ 新建策略",
+      "expected": "f19",
+      "active": "策略库",
+      "id": "f19",
+      "pass": true
+    },
+    {
+      "action": "取消并返回策略库",
+      "expected": "f01",
+      "active": "策略库",
+      "id": "f01",
+      "pass": true
+    },
+    {
+      "action": "我的实验",
+      "expected": "f14",
+      "active": "我的实验",
+      "id": "f14",
+      "pass": true
+    },
+    {
+      "action": "＋ 新建实验",
+      "expected": "f15",
+      "active": "我的实验",
+      "id": "f15",
+      "pass": true
+    },
+    {
+      "action": "下一步：选择策略 →",
+      "expected": "f16",
+      "active": "我的实验",
+      "id": "f16",
+      "pass": true
+    },
+    {
+      "action": "下一步：预览组合 →",
+      "expected": "f17",
+      "active": "我的实验",
+      "id": "f17",
+      "pass": true
+    },
+    {
+      "action": "继续确认 →",
+      "expected": "f18",
+      "active": "我的实验",
+      "id": "f18",
+      "pass": true
+    },
+    {
+      "action": "← 返回预览",
+      "expected": "f17",
+      "active": "我的实验",
+      "id": "f17",
+      "pass": true
+    },
+    {
+      "action": "← 修改策略",
+      "expected": "f16",
+      "active": "我的实验",
+      "id": "f16",
+      "pass": true
+    },
+    {
+      "action": "新建策略 →",
+      "expected": "f02",
+      "active": "我的实验",
+      "id": "f02",
+      "pass": true
+    },
+    {
+      "action": "更换包 →",
+      "expected": "f03",
+      "active": "我的实验",
+      "id": "f03",
+      "pass": true
+    },
+    {
+      "action": "预设详情与有效参数 →",
+      "expected": "f09",
+      "active": "我的实验",
+      "id": "f09",
+      "pass": true
+    },
+    {
+      "action": "← 返回止盈止损包列表",
+      "expected": "f03",
+      "active": "我的实验",
+      "id": "f03",
+      "pass": true
+    },
+    {
+      "action": "预设详情与有效参数 →",
+      "expected": "f09",
+      "active": "我的实验",
+      "id": "f09",
+      "pass": true
+    },
+    {
+      "action": "返回选择列表",
+      "expected": "f03",
+      "active": "我的实验",
+      "id": "f03",
+      "pass": true
+    },
+    {
+      "action": "取消",
+      "expected": "f02",
+      "active": "我的实验",
+      "id": "f02",
+      "pass": true
+    },
+    {
+      "action": "取消并返回选择",
+      "expected": "f16",
+      "active": "我的实验",
+      "id": "f16",
+      "pass": true
+    },
+    {
+      "action": "← 上一步",
+      "expected": "f15",
+      "active": "我的实验",
+      "id": "f15",
+      "pass": true
+    },
+    {
+      "action": "取消并返回我的实验",
+      "expected": "f14",
+      "active": "我的实验",
+      "id": "f14",
+      "pass": true
+    }
+  ]
+}

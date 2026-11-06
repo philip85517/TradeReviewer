@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-10-24T05:21:22.360635+00:00",
+  "baseCommit": "270aad42cb807773e716249deb04b03bf53a1e4e",
+  "status": "REVIEW_READY_DESKTOP_PROTOTYPE",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "dpr": 1
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "dpr": 1
+    }
+  ],
+  "protectedFilesUnchanged": {
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/README.md": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/contract.md": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/data.json": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/icons.svg": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/index.html": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/prototype.css": true,
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/tradingview-alignment-v0.1/prototype.js": true
+  },
+  "files": {
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/CONTROL-INVENTORY.md": "9588a1405bd5e93fecd1b915a78dc0f0e0650f941e50c0d8ce1ac2749b75052c",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/IMPLEMENTATION-NOTES.md": "5c2648917f55291bf71f113ce4a7e7aa1fc05b0474c4ee0bda8665da9d9f83e2",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/README.md": "7497886fe29981ca3ca123c859037d26ea49845d492d3b50ea44b7c2321eb3a9",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/chrome.js": "a259d0c539ed7d764e0100c38c2c7f21e525fa36f7fa63c97740a96fd041582f",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html": "8a057a76d22f8d9283ff5c0a93b5eb105ae6d4478db3740f6f6c46d767bb7029",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/vendor/LICENSE": "70c9d5382506dd184465425c08a99ad9bd6d9ac1313c252968ba0b585e5ef823",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/vendor/README.md": "aa23a350135c82919fdd9b004ac3dd66fe3dcd263295f17b5561269983a37e9e",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/vendor/lightweight-charts.standalone.production.js": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace-overrides.css": "e1c1b32d6dd5659441bd80fc0118c0d5fcd04ae8b1c711f092e42ced71bc181f",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.css": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+    "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js": "475b4c5cdb3f6c9459cd7ff002f04fdaa9239dd44dd585adc801fdb89da2de8c"
+  },
+  "screenshots": {
+    "final-390-fallback.png": "a6b17c770b5908ec290076e2b1678f664d448ff15bd2258018b7032219dd767e",
+    "final-A-entry-1280.png": "fc38c5d7270cc68bc05e234464f31155aee17834090199eee4d0bcbee32f7abb",
+    "final-A-entry-1440.png": "f45d57e1df542128e79f51c768640154498be68525f5e48437a179e9e10f340e",
+    "final-A-exit-1280.png": "63e3971f444737458342b24936b4dfa2a9c6dcfcc45525ce2475d8f763e0a290",
+    "final-A-exit-1440.png": "9a5ff9c497c40f88b683536a140df6e27e62b2856c0659036af358703f264b24",
+    "final-A-holding-1280.png": "2c84ae09b48d60979c9474befbc9465d93e0638ffb41bbe5c7a4344db5f55b86",
+    "final-A-holding-1440.png": "6f9799d336bc393a2203124877aab3e466db30d5832c714e376b82959363f69d",
+    "final-B-entry-1280.png": "8468ccfa56341d3f487b51c2aa4ec66105f916f42076c3daf59a17879098bbe7",
+    "final-B-entry-1440.png": "a4e4ee8db17320e179d27d8b0db506847a0cd9e3d0fd135b09d6d7bc2b2c08b3",
+    "final-C-entry-1280.png": "0b1458f86d080948d0d050ae0952ca25a4f9ac63359c8227ffa6b061c9e00dc9",
+    "final-C-entry-1440.png": "6175eccfd695ff6caa64593f5269a0f0f6bde4c7eec4884ca4b025fe91522d3b",
+    "final-replay-exit.png": "ebe1630b027892d0a128641e364e9f24365d7425589daec74fc085db6e09b6c0",
+    "final-replay-journey.png": "3271aa306bb25135b680a2fd6134ad33d6e59b2dfe28d83cacffbb91a77f8801",
+    "final-step-holding.png": "20db6513004bea57f7fa3083096cb26623894de8ba56a7df8963f740c6dec9e7"
+  },
+  "limits": [
+    "synthetic market data",
+    "memory only",
+    "full TradingView parity not verified",
+    "mobile and physical touch not verified",
+    "formal design approval pending"
+  ],
+  "staticChecks": {
+    "javascriptSyntax": "PASS",
+    "gitDiffWhitespace": "PASS",
+    "utf8": "PASS",
+    "localLinks": 24,
+    "servicePort": 3091
+  }
+}

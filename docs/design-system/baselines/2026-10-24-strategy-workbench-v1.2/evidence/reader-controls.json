@@ -1,0 +1,822 @@
+{
+  "details": [
+    {
+      "label": "查看布局尺寸与适用范围",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看查询、引用统计、置顶和归档规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看版本、包详情和可运行性规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看实验状态与列表恢复规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看四步字段、数据边界及失败规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看观察元素、原因示例和空间规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看每个动作的时间、视野和失败规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看结果口径与事件往返",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看比较与派生规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看异常与恢复清单",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看断点、触控和长内容规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看控件映射、八态及动效精确规则",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看跨页面状态与后续实现接受顺序",
+      "mouseOpen": true,
+      "keyboardClose": true
+    },
+    {
+      "label": "查看历史清单、变更归属与交付边界",
+      "mouseOpen": true,
+      "keyboardClose": true
+    }
+  ],
+  "nav": [
+    {
+      "label": "策略台视觉设计方案 V1.2",
+      "pass": true,
+      "bottom": 105.59375,
+      "exists": true,
+      "height": 1000,
+      "top": 64
+    },
+    {
+      "label": "一、研究背景、设计目标与取舍",
+      "pass": true,
+      "bottom": 106.875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.875
+    },
+    {
+      "label": "从一个投资想法到一份可解释的结果",
+      "pass": true,
+      "bottom": 91.953125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.875
+    },
+    {
+      "label": "本方案要达到什么",
+      "pass": true,
+      "bottom": 92.21875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.140625
+    },
+    {
+      "label": "为什么作出这些取舍",
+      "pass": true,
+      "bottom": 92.078125,
+      "exists": true,
+      "height": 1000,
+      "top": 64
+    },
+    {
+      "label": "二、设计理念与完整研究流程",
+      "pass": true,
+      "bottom": 106.96875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.96875
+    },
+    {
+      "label": "用三个对象组织研究",
+      "pass": true,
+      "bottom": 92.046875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.96875
+    },
+    {
+      "label": "从理念拆解到界面",
+      "pass": true,
+      "bottom": 92.3125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.234375
+    },
+    {
+      "label": "一次研究怎样展开",
+      "pass": true,
+      "bottom": 92.078125,
+      "exists": true,
+      "height": 1000,
+      "top": 64
+    },
+    {
+      "label": "三、信息架构、整体布局与视觉层级",
+      "pass": true,
+      "bottom": 107.15625,
+      "exists": true,
+      "height": 1000,
+      "top": 64.15625
+    },
+    {
+      "label": "两个入口承接准备与研究",
+      "pass": true,
+      "bottom": 92.234375,
+      "exists": true,
+      "height": 1000,
+      "top": 64.15625
+    },
+    {
+      "label": "观察画面的阅读顺序",
+      "pass": true,
+      "bottom": 92,
+      "exists": true,
+      "height": 1000,
+      "top": 63.921875
+    },
+    {
+      "label": "视觉语言怎样服务研究",
+      "pass": true,
+      "bottom": 92.0546875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9765625
+    },
+    {
+      "label": "四、策略库与方法查找",
+      "pass": true,
+      "bottom": 106.9296875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9296875
+    },
+    {
+      "label": "先判断方法，再阅读规则",
+      "pass": true,
+      "bottom": 92.0078125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9296875
+    },
+    {
+      "label": "阅读详情与使用方法分开",
+      "pass": true,
+      "bottom": 91.984375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.90625
+    },
+    {
+      "label": "让目录整理不破坏历史引用",
+      "pass": true,
+      "bottom": 92.25,
+      "exists": true,
+      "height": 1000,
+      "top": 64.171875
+    },
+    {
+      "label": "五、完整策略组装与版本保存",
+      "pass": true,
+      "bottom": 106.796875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.796875
+    },
+    {
+      "label": "把三类判断组合成一份方法",
+      "pass": true,
+      "bottom": 91.875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.796875
+    },
+    {
+      "label": "长说明与当日证据使用不同空间",
+      "pass": true,
+      "bottom": 91.8515625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.7734375
+    },
+    {
+      "label": "保存结果必须能被辨认",
+      "pass": true,
+      "bottom": 92.1171875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.0390625
+    },
+    {
+      "label": "六、实验列表与研究进度",
+      "pass": true,
+      "bottom": 107.1015625,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1015625
+    },
+    {
+      "label": "从上次停下的位置继续",
+      "pass": true,
+      "bottom": 92.1796875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1015625
+    },
+    {
+      "label": "用状态说明下一步，而不自动推进",
+      "pass": true,
+      "bottom": 92.0625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.984375
+    },
+    {
+      "label": "七、四步创建实验",
+      "pass": true,
+      "bottom": 106.84375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.84375
+    },
+    {
+      "label": "先把研究假设说明白",
+      "pass": true,
+      "bottom": 91.921875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.84375
+    },
+    {
+      "label": "创建过程的交互分镜",
+      "pass": true,
+      "bottom": 92.1875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.109375
+    },
+    {
+      "label": "预览怎样避免被误读成成交",
+      "pass": true,
+      "bottom": 92.3203125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.2421875
+    },
+    {
+      "label": "八、观察工作台与当日证据",
+      "pass": true,
+      "bottom": 107.1015625,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1015625
+    },
+    {
+      "label": "先理解一个组合在一天里的状态",
+      "pass": true,
+      "bottom": 92.1796875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1015625
+    },
+    {
+      "label": "一次联动包含哪些信息",
+      "pass": true,
+      "bottom": 91.9375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.859375
+    },
+    {
+      "label": "用完整原因支持判断",
+      "pass": true,
+      "bottom": 92.0234375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9453125
+    },
+    {
+      "label": "九、逐日推进、播放与回看",
+      "pass": true,
+      "bottom": 107.0078125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.0078125
+    },
+    {
+      "label": "区分展开历史、当前查看与已经看过",
+      "pass": true,
+      "bottom": 92.0859375,
+      "exists": true,
+      "height": 1000,
+      "top": 64.0078125
+    },
+    {
+      "label": "从起点到首次推进的分镜",
+      "pass": true,
+      "bottom": 91.8515625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.7734375
+    },
+    {
+      "label": "连续播放怎样保持可控",
+      "pass": true,
+      "bottom": 92.2890625,
+      "exists": true,
+      "height": 1000,
+      "top": 64.2109375
+    },
+    {
+      "label": "十、阶段结果与事件追溯",
+      "pass": true,
+      "bottom": 106.7734375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.7734375
+    },
+    {
+      "label": "先评价一段过程，再追查原因",
+      "pass": true,
+      "bottom": 91.8515625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.7734375
+    },
+    {
+      "label": "从一个事件返回发生当天",
+      "pass": true,
+      "bottom": 92.3125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.234375
+    },
+    {
+      "label": "让没有数据的结果也能被理解",
+      "pass": true,
+      "bottom": 91.984375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.90625
+    },
+    {
+      "label": "十一、组合比较与下一次研究",
+      "pass": true,
+      "bottom": 107.171875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.171875
+    },
+    {
+      "label": "比较从共同条件开始",
+      "pass": true,
+      "bottom": 92.25,
+      "exists": true,
+      "height": 1000,
+      "top": 64.171875
+    },
+    {
+      "label": "曲线突出少量对象，表格保留全部对象",
+      "pass": true,
+      "bottom": 92.1953125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1171875
+    },
+    {
+      "label": "把新假设带到新的实验",
+      "pass": true,
+      "bottom": 91.8671875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.7890625
+    },
+    {
+      "label": "十二、等待、异常与恢复",
+      "pass": true,
+      "bottom": 106.8515625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.8515625
+    },
+    {
+      "label": "让用户知道哪些内容仍然有效",
+      "pass": true,
+      "bottom": 91.9296875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.8515625
+    },
+    {
+      "label": "区分研究结果与不能完成的操作",
+      "pass": true,
+      "bottom": 91.90625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.828125
+    },
+    {
+      "label": "恢复后仍属于同一次任务",
+      "pass": true,
+      "bottom": 92.265625,
+      "exists": true,
+      "height": 1000,
+      "top": 64.1875
+    },
+    {
+      "label": "十三、窄窗口与长内容适配",
+      "pass": true,
+      "bottom": 106.953125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.953125
+    },
+    {
+      "label": "空间改变时，阅读优先级不变",
+      "pass": true,
+      "bottom": 92.03125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.953125
+    },
+    {
+      "label": "用完整画面检查重排结果",
+      "pass": true,
+      "bottom": 91.9765625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.8984375
+    },
+    {
+      "label": "十四、公共组件与交互反馈",
+      "pass": true,
+      "bottom": 106.9921875,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9921875
+    },
+    {
+      "label": "从全站标准组合出研究界面",
+      "pass": true,
+      "bottom": 92.0703125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.9921875
+    },
+    {
+      "label": "反馈解释动作是否发生",
+      "pass": true,
+      "bottom": 91.953125,
+      "exists": true,
+      "height": 1000,
+      "top": 63.875
+    },
+    {
+      "label": "在公共部分登记策略组合组件",
+      "pass": true,
+      "bottom": 92.21875,
+      "exists": true,
+      "height": 1000,
+      "top": 64.140625
+    },
+    {
+      "label": "动效说明变化，不代替运行进度",
+      "pass": true,
+      "bottom": 92.28125,
+      "exists": true,
+      "height": 1000,
+      "top": 64.203125
+    },
+    {
+      "label": "十五、实现顺序与设计验收",
+      "pass": true,
+      "bottom": 106.765625,
+      "exists": true,
+      "height": 1000,
+      "top": 63.765625
+    },
+    {
+      "label": "先走通研究，再扩展视图",
+      "pass": true,
+      "bottom": 91.84375,
+      "exists": true,
+      "height": 1000,
+      "top": 63.765625
+    },
+    {
+      "label": "评审时先判断三个视觉选择",
+      "pass": true,
+      "bottom": 107.609375,
+      "exists": true,
+      "height": 1000,
+      "top": 79.53125
+    },
+    {
+      "label": "跨页状态的具体交接",
+      "pass": true,
+      "bottom": 310.875,
+      "exists": true,
+      "height": 1000,
+      "top": 282.796875
+    },
+    {
+      "label": "附录、设计依据与方案边界",
+      "pass": true,
+      "bottom": 487.46875,
+      "exists": true,
+      "height": 1000,
+      "top": 444.46875
+    },
+    {
+      "label": "业务依据与视觉依据各司其职",
+      "pass": true,
+      "bottom": 547.546875,
+      "exists": true,
+      "height": 1000,
+      "top": 519.46875
+    },
+    {
+      "label": "文档与产品的交付范围",
+      "pass": true,
+      "bottom": 750.8125,
+      "exists": true,
+      "height": 1000,
+      "top": 722.734375
+    }
+  ],
+  "stories": [
+    {
+      "group": 1,
+      "frames": 4,
+      "sequence": [
+        "第 1 / 4 帧 · 步骤1：确定历史起点",
+        "第 2 / 4 帧 · 步骤2：选择明确版本",
+        "第 3 / 4 帧 · 步骤3：预览组合",
+        "第 4 / 4 帧 · 步骤4：确认创建"
+      ],
+      "controls": {
+        "prevAtStart": true,
+        "nextAtEnd": true,
+        "prev": "第 3 / 4 帧 · 步骤3：预览组合",
+        "reset": "第 1 / 4 帧 · 步骤1：确定历史起点",
+        "playDisablesPlay": true,
+        "pauseRestoresPlay": true,
+        "autoplayReachedEnd": true
+      }
+    },
+    {
+      "group": 2,
+      "frames": 3,
+      "sequence": [
+        "第 1 / 3 帧 · 起点：2024-06-14",
+        "第 2 / 3 帧 · 点击下一交易日：2024-06-17",
+        "第 3 / 3 帧 · 从已展开的6月28日回看6月14日"
+      ],
+      "controls": {
+        "prevAtStart": true,
+        "nextAtEnd": true,
+        "prev": "第 2 / 3 帧 · 点击下一交易日：2024-06-17",
+        "reset": "第 1 / 3 帧 · 起点：2024-06-14",
+        "playDisablesPlay": true,
+        "pauseRestoresPlay": true,
+        "autoplayReachedEnd": true
+      }
+    }
+  ],
+  "imageViewer": {
+    "visibleFigures": [
+      {
+        "label": "打开观察工作台的整体布局：身份、摘要、日期、主图与相邻解释区原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开策略库的默认目录、查询工具与策略行原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开包目录管理：引用关系、个人顺序与归档影响原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开三包组装、包说明与完整策略保存原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开实验列表：同一行结构承接不同研究状态原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开步骤4：确认创建原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开观察工作台：当前组合的图表、持仓与原因原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开摘要、正在查看日期与行情展开边界的局部细节原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开起点、首次推进与回看的同尺度状态关系原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开从已展开的6月28日回看6月14日原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开时间说明与回放工具的局部细节原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开阶段结果的阅读顺序：区间、表现、贡献与事件原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开组合比较：共同区间、可辨认曲线与完整账本原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开不同研究阶段的等待、空结果、覆盖不足与失败提示原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开桌面与窄屏的重排关系原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开1280px紧凑桌面的完整观察画面原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开390px窄屏的完整观察画面原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开公共视觉参数与控件状态示例原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      }
+    ],
+    "storyFrames": [
+      {
+        "label": "打开步骤1：确定历史起点原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开步骤2：选择明确版本原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开步骤3：预览组合原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开步骤4：确认创建原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开起点：2024-06-14原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开点击下一交易日：2024-06-17原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      },
+      {
+        "label": "打开从已展开的6月28日回看6月14日原尺寸图稿（100%）",
+        "open": true,
+        "closed": true
+      }
+    ],
+    "escapeClose": true
+  },
+  "publicManual": {
+    "openedFromDocument": true,
+    "anchors": [
+      {
+        "exists": true,
+        "id": "SW01"
+      },
+      {
+        "exists": true,
+        "id": "SW02"
+      },
+      {
+        "exists": true,
+        "id": "SW03"
+      },
+      {
+        "exists": true,
+        "id": "SW04"
+      },
+      {
+        "exists": true,
+        "id": "SW05"
+      },
+      {
+        "exists": true,
+        "id": "SW06"
+      },
+      {
+        "exists": true,
+        "id": "SW07"
+      },
+      {
+        "exists": true,
+        "id": "SW08"
+      }
+    ],
+    "images": [
+      {
+        "loaded": true,
+        "src": "sw01-navigation.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw02-date-time.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw03-steps.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw04-package-slots.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw05-multi-select.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw06-summary-detail.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw07-replay.svg"
+      },
+      {
+        "loaded": true,
+        "src": "sw08-recovery.svg"
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "out": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/text-keyboard-anchor-v5",
+  "failures": [],
+  "notVerified": [],
+  "steps": [
+    "initial-exit",
+    "text-one-point",
+    "text-one-tab-confirm",
+    "text-one-confirmed",
+    "text-two-point",
+    "text-two-tab-confirm",
+    "text-two-confirmed",
+    "edit-0-tab",
+    "edit-0-confirmed",
+    "edit-1-tab",
+    "edit-1-confirmed",
+    "after-pan",
+    "after-price-axis-drag"
+  ],
+  "errors": 0
+}

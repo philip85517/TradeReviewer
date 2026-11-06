@@ -1,0 +1,61 @@
+{
+  "review_axis": "Standards",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "head": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "scope": "只读审查最新核心设计进入master的标准符合性；非迁移完整性复验，非产品验收",
+  "findings": [
+    {
+      "severity": "P2",
+      "file": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+      "line": 385,
+      "standard": "docs/agents/development-workflow.md:33；用户AGENTS：每次回放推进必须让新增K线或目标成交出现在可见主图。",
+      "description": "TIME02将跟随新bar限定为用户位于右边缘；正文373及632也只在跟随模式移动视野。用户平移或回看后主动下一日/播放时，此规则允许提交新日但继续停留旧视野，与359“新K线必须在主图中可见”、658最小旅程及项目强制验收契约冲突。这是设计状态合同矛盾，不是本次观察到的运行缺陷。",
+      "remedy": "区分被动布局/回看与主动推进：后者明确定位新增bar/目标成交（或要求先显式返回最新再启用推进），前者保留视野；同步TIME02、373、632及SW07，再以越过初始窗口的推进旅程为未来接受证据。"
+    }
+  ],
+  "judgement_calls": [
+    {
+      "topic": "V2.5 SW公共增补",
+      "assessment": "未发现直接违反已批准首页/交易库规则。增补在source/visual-design.candidate.md的业务组合节明确54/200导航与72行仅策略差异；component-manual.html:1138明确固定八行与唯一恢复入口仅首页实例，交易库V2.0包在diff中未变。可单独提取增补，不能把整套首页当新版本重新批准。",
+      "risk": "5文件重建涉及21个旧block ID变化，外部书签兼容NOT VERIFIED已被整合README和FINAL-ACCEPTANCE如实记录；适合在master提取时保持原ID或提供兼容锚点，不将其升级为已证实断链。"
+    },
+    {
+      "topic": "策略V1.2旧稿与地位",
+      "assessment": "正文附录698–727明确历史选择、候选尺寸与待用户评审，未把旧V1.0当当前推荐；72px两行列表、88摘要、480包层/320检查栏与正文自身分工一致。README末段静态包已完成仅限定静态，不构成产品接受。其静态包可进master的“待审设计”区，尚无证据允许标成用户批准的现行产品规范。"
+    },
+    {
+      "topic": "复盘V1.0正文和最新原型",
+      "assessment": "正文仍是10/24候选（source第3/9行）；README第3/7/19行明确11/6Text排除、先审原型再回填，故候选45/轻量v5/identity不同不能自动构成违反已批准设计。但若用户要master只保留最新核心，README第10行“权威正文”与source:346最多两张短卡属于需要重整的权威导航风险；不得将其直接升为当前批准Text行为。11/6取消自动避让也不等于批准v5或identity；应保留日期及待审标签，归档旧FAIL且不改PASS。"
+    },
+    {
+      "topic": "精简删除后的依赖闭包",
+      "assessment": "当前包并未失链，风险发生在拟议的删减。策略DESIGN-COVERAGE.md:19将原始精确映射委托给V1.0；正文725依赖source/history/index.json与快照，删除历史前必须迁入当前coverage必要映射与决策依据。复盘README:7–19直接链接.scratch计划、覆盖与候选45/v5接受；若去掉.scratch，应移动最少当前证据到正式目录并重定向README，原始档案留归档分支/提交。共享build-samples.py:6–8导入策略V1.2/source/shared-primitives.py，build-design.py也调用共享构建；不能只留SW手册或SVG而丢生成源。"
+    }
+  ],
+  "master_groups": {
+    "keep_existing_master": [
+      "首页V2.5现有基线与公共原子规范",
+      "交易库业务规范trading-library-design-spec.md/html",
+      "交易库视觉V2.0（本次未改）"
+    ],
+    "eligible_after_scoped_cleanup": [
+      "策略V1.2正文、当前22图、example-data.json、生成器/共享primitives、阅读器/评论身份、当前coverage与必要接受证据，明确待审；先修TIME02冲突",
+      "SW01–08手册、8样例、build-samples.py及其策略源依赖；V2.5的5文件仅提取公共组合链接增补并保锚点",
+      "复盘最新已确认方向与11/6Text范围决策摘要；只能作为待审方案，保留候选45/default与其他探索区别"
+    ],
+    "exclude_from_current_core": [
+      "iterations/2026-11-06-visual-spec-consolidation/history/0ff3、f42e、master整批旧设计与截图",
+      "策略V1.0完整旧包及V1.2重复历史正文；先迁移仍需的元素映射与来源摘要",
+      "复盘candidate1–44等中间冻结、direct-v5/identity试验和大批.scratch操作截图；不删除档案分支的原始FAIL/NOT VERIFIED",
+      "整合分支的全量provenance逐文件迁移清单及快照不是产品规范核心；可保留简短来源索引/提交哈希"
+    ]
+  },
+  "not_verified": [
+    "未运行构建与校验脚本（部分脚本会写源树，遵守只读限制）",
+    "未浏览器比图或操作产品；文档审查无UI/DB接受要求",
+    "未逐读1453截图及所有历史链接；未证明删减后的新包已具备依赖闭包",
+    "未直接重新读取来源聊天；使用该HEAD的selection/provenance与README所记录决定",
+    "未验证旧V2.5外部书签兼容；未把已记录NOT VERIFIED报成确定缺陷"
+  ],
+  "finding_count": 1
+}

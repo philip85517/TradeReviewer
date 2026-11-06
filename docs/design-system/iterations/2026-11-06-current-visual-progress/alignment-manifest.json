@@ -1,0 +1,173 @@
+{
+  "captured_at": "2026-11-06T09:40:20.044950+08:00",
+  "files": [
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-band.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-band.html",
+      "sha256": "9cac29b1dc2b38de7cb8b66fdab64fc2ea28e43cfbf3cbc9253847593f702229",
+      "status": "superseded; historical"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-band.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-band.png",
+      "sha256": "90f4faece08cf6d342b98358da9c5bb4e6c9af60176ef492e4e22643ea9b47cf",
+      "status": "superseded; historical"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-band.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-band.source.json",
+      "sha256": "34bbe4e503e602d07eec4ce57c7482fcce4c6c2c866e8604be88ff5ba0f1249e",
+      "status": "superseded; historical"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-band.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-band.svg",
+      "sha256": "86caf0e4c7461b57a0022e5a08bad44df5e8c6bbf59b0fc0d4424da79e159604",
+      "status": "superseded; historical"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-home-aligned-v2.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-home-aligned-v2.html",
+      "sha256": "baf275091f923436ada4176c44831aefd6ddb9a2decd7bb5f603646a4bc66e33",
+      "status": "confirmed ST02 only"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-home-aligned-v2.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-home-aligned-v2.png",
+      "sha256": "3944ff0fa86cef6adc616b75c843f07b1438e42285f37f08509ecf640377dd7f",
+      "status": "confirmed ST02 only"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-home-aligned-v2.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-home-aligned-v2.source.json",
+      "sha256": "25b914436b950c0536c2a499bf7ff82b45a0aa8d4b9cf51b32b96cd43a893432",
+      "status": "confirmed ST02 only"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/02-summary-home-aligned-v2.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/02-summary-home-aligned-v2.svg",
+      "sha256": "c722f58bc15dcae7e5978fd27535672139760fdbd78e62a2466ac89aa3a62a29",
+      "status": "confirmed ST02 only"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/03-chart-inspector-space.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/03-chart-inspector-space.html",
+      "sha256": "f209c21d46a27d1f611bfa1b77a30875ebf2da119f16d70dbc6606d0587987f5",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/03-chart-inspector-space.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/03-chart-inspector-space.png",
+      "sha256": "42eec10626fa105f0a524bbeb10da80554ef5565b6cecafe33f495d07675bda5",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/03-chart-inspector-space.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/03-chart-inspector-space.source.json",
+      "sha256": "66dd94bb699c6b5659e518d1574cd7619db4895b16a0b82b0b495fa1701a1751",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/03-chart-inspector-space.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/03-chart-inspector-space.svg",
+      "sha256": "7e59dd52b2963362b86ab9c54af351bd0ae967c666649857d7767a8d77cb2bba",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/04-chart-height.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/04-chart-height.html",
+      "sha256": "e68a15f0dc7b069e23e8737c9466590957557056d2a7212c79d363a49049fa3c",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/04-chart-height.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/04-chart-height.png",
+      "sha256": "b8641ad1140466c8a070b814ec558699f89772d616d2bb92b5066f2620dacbc5",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/04-chart-height.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/04-chart-height.source.json",
+      "sha256": "2072581090ab83e0279ceac89d5c270bfb4974320f0a71cad0b4d71302a7d5e6",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/04-chart-height.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/04-chart-height.svg",
+      "sha256": "42a3cf8ffedb5cbf5179d270b0c8a024aab0b28e524be9d0fd28868ee7b67ff8",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/05-replay-viewport.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/05-replay-viewport.html",
+      "sha256": "86fc8b058bcade50d403bd0a66837c346933adbb1e6181816de66b56fb9453d7",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/05-replay-viewport.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/05-replay-viewport.png",
+      "sha256": "bece750a61882a6ffd764d89e0f4fea942b8e3e7249a4d0dc4dfe9ebc71b7ea2",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/05-replay-viewport.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/05-replay-viewport.source.json",
+      "sha256": "98a4cf0621baef905fd37fb06f00f561d64b5ede7f959564d0ed506c4ec60b61",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/05-replay-viewport.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/05-replay-viewport.svg",
+      "sha256": "6fc1af2fece4ccf2aed5788f2bd5eedb793d23e458fcc19b5c6c7d285b0f34cd",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/06-inspector-hierarchy.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/06-inspector-hierarchy.html",
+      "sha256": "8282edb244c3ae1ff6a51d69adda82433e58357fb357ba7eea57c0ce733b4ccf",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/06-inspector-hierarchy.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/06-inspector-hierarchy.png",
+      "sha256": "d11ca8ada62641f33e551e35d30b4aeb08c4a59580913b02c8a58234fb587f4f",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/06-inspector-hierarchy.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/06-inspector-hierarchy.source.json",
+      "sha256": "10f8350c5f3e59195ff81df74336434fa33bbc7f43055cb2a94f49f615ce1f54",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/06-inspector-hierarchy.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/06-inspector-hierarchy.svg",
+      "sha256": "8e5d460234c66281644388374e0d4a758d885c14d8c46aeb1a0fec923aaf1782",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/07-replay-toolbar.html",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/07-replay-toolbar.html",
+      "sha256": "14db1e837a7482ac07e1a3f5f61dc9aea5a6f70336858133ab5f2f664e962f32",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/07-replay-toolbar.png",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/07-replay-toolbar.png",
+      "sha256": "dfeb5e6cf84321a071ec189f3d3f932598f4501c769894c58a1dfc9018140855",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/07-replay-toolbar.source.json",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/07-replay-toolbar.source.json",
+      "sha256": "544019e45b58db9218cb04fc70184f27fce9022e438ce1bc24ee205a260d4bbe",
+      "status": "tentative illustration; not product acceptance"
+    },
+    {
+      "source": "/Users/zhoulin/.codex/visualizations/2026/11/05/01a1a960-6760-73d3-bea1-2e5e727cc6a4/visual-master-alignment-20261106/07-replay-toolbar.svg",
+      "destination": "docs/design-system/iterations/2026-11-06-current-visual-progress/alignment/07-replay-toolbar.svg",
+      "sha256": "6b053d9c129cf0a306a45674cbe32cd52a0dea0eb961e497c8c0e923ba83aea9",
+      "status": "tentative illustration; not product acceptance"
+    }
+  ]
+}

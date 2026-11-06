@@ -1,0 +1,11 @@
+{
+  "recorded_at": "2026-11-06T08:42:49.137424+08:00",
+  "source": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+  "sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d",
+  "render_scope": "unchanged source SVG summary nodes 34..49 with translated framing, no bitmap editing",
+  "decision_1": {
+    "user_quote": "确认",
+    "scope": "ALIGN-ST-01 overall spatial arrangement only"
+  },
+  "decision_2": "ALIGN-ST-02 continuous summary style and dimensions pending"
+}

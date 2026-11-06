@@ -1,0 +1,61 @@
+{
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+  "viewports": {
+    "1280x800": {
+      "width": 1280,
+      "height": 800,
+      "docHeight": 800,
+      "scrollY": 0,
+      "workspace": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 756,
+        "visible": true,
+        "hit": true
+      },
+      "chart": null,
+      "replay": {
+        "x": 68,
+        "y": 682,
+        "width": 880,
+        "height": 60,
+        "visible": true,
+        "hit": true
+      },
+      "date": {
+        "x": 370,
+        "y": 694,
+        "width": 149.25,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      },
+      "next": {
+        "x": 657.25,
+        "y": 694,
+        "width": 116.703125,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      },
+      "review": {
+        "x": 0,
+        "y": 756,
+        "width": 1280,
+        "height": 44,
+        "visible": true,
+        "hit": true
+      },
+      "records": {
+        "x": 840,
+        "y": 7.5,
+        "width": 44,
+        "height": 36,
+        "visible": true,
+        "hit": true
+      }
+    }
+  },
+  "interactions": []
+}

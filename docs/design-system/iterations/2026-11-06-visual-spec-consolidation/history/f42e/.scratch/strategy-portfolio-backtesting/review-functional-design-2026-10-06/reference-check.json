@@ -1,0 +1,46 @@
+{
+  "scope": "documentation-only, functional design proposal",
+  "checked_local_links": 58,
+  "missing_links": [],
+  "requirement_headings": {
+    "DR01": 39,
+    "DR02": 55,
+    "DR03": 72,
+    "DR04": 99,
+    "DR05": 107,
+    "DR06": 123,
+    "DR07": 137,
+    "DR08": 145
+  },
+  "all_eight_requirements_present": true,
+  "coverage_rows_not_verified": 27,
+  "ui_sha256": {
+    ".scratch/strategy-portfolio-backtesting/strategy-library-wireframes/build.py": "b2ef5d51b40109edcd1614090f3707e5a79143d7ead493252c40266a57fa28f8",
+    ".scratch/strategy-portfolio-backtesting/strategy-library-wireframes/index.html": "3255408033915d9f92624ab50d92371739ce53f99958351a20a3e6c241313701"
+  },
+  "ui_unchanged_from_pre_design_record": true,
+  "tracker_current_metadata": {
+    "02-visual-journey-map.md": {
+      "State": "open",
+      "Status": "ready-for-agent",
+      "Assignee": "unassigned"
+    },
+    "09-strategy-library-interaction-model.md": {
+      "State": "open",
+      "Status": "prototype-feedback",
+      "Assignee": "当前聊天 root（Codex 主协调者）"
+    },
+    "10-strategy-library-creation-prototype.md": {
+      "State": "open",
+      "Status": "ready-for-agent",
+      "Assignee": "unassigned"
+    },
+    "11-stable-workbench-interaction-model.md": {
+      "State": "open",
+      "Status": "integration-pending",
+      "Assignee": "root"
+    }
+  },
+  "spec_sha256": "c697afa1e60fd6396d4221e4a25f9e570caba90832af022850ebe51e37e5f38b",
+  "product_ui_database_acceptance": "NOT APPLICABLE for this documentation scope; downstream NOT VERIFIED"
+}

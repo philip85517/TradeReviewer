@@ -1,0 +1,30 @@
+{
+  "documentFingerprint": "10f454f689da2234a4267d90889e97e8ac40a4a3dbc96e687fb98c92f9068a9a",
+  "viewport": [
+    1280,
+    720
+  ],
+  "scope": "ST12 rule rendering",
+  "mouseOpen": true,
+  "paragraphCount": 0,
+  "tableBodyCellCounts": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    1,
+    1,
+    1
+  ],
+  "finding": "Three prose blocks incorrectly rendered as one-cell table rows",
+  "openRect": {
+    "x": 288,
+    "y": 345.453125,
+    "width": 952,
+    "height": 993.796875
+  },
+  "keyboardEnterClosed": true,
+  "screenshot": "st12-before.png"
+}

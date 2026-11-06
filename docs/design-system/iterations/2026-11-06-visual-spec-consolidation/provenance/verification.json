@@ -1,0 +1,118 @@
+{
+  "checked_at": "2026-11-06T02:28:11.829322+08:00",
+  "head": "be219d555f5d2a9236b3e3c69de6d4ae6ffe70d5",
+  "scope": "Document migration integrity only; no UI, functional, visual-rendering or database acceptance.",
+  "captures": [
+    {
+      "name": "strategy",
+      "files": 392,
+      "bytes": 17285815,
+      "captured_at": "2026-11-06T02:16:27.922082+08:00",
+      "superseded_by_later_snapshot": [],
+      "errors": []
+    },
+    {
+      "name": "review-current",
+      "files": 1110,
+      "bytes": 126506356,
+      "captured_at": "2026-11-06T02:20:01.005985+08:00",
+      "superseded_by_later_snapshot": [
+        ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+        ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/independent-trade2-20261106/REPORT.md",
+        ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-10-identity-stage/coordinator-review/REPORT.md"
+      ],
+      "errors": []
+    },
+    {
+      "name": "supporting-history",
+      "files": 647,
+      "bytes": 50619182,
+      "captured_at": "2026-11-06T02:22:20.520537+08:00",
+      "superseded_by_later_snapshot": [],
+      "errors": []
+    },
+    {
+      "name": "review-decision-clarifications",
+      "files": 3,
+      "bytes": 33053,
+      "captured_at": "2026-11-06T02:27:19.287685+08:00",
+      "superseded_by_later_snapshot": [],
+      "errors": []
+    }
+  ],
+  "effective_preserved_files": 2184,
+  "effective_hash_errors": [],
+  "source_changes_after_capture": [],
+  "strategy_final_hashes": {
+    "total": 76,
+    "errors": []
+  },
+  "variants": {
+    "candidate-20261105-45": {
+      "frozen_files": 9,
+      "snapshot_hash_errors": [],
+      "current_source_matches": 9,
+      "current_source_differs": []
+    },
+    "candidate-20261105-direct-text-v5": {
+      "frozen_files": 9,
+      "snapshot_hash_errors": [],
+      "current_source_matches": 7,
+      "current_source_differs": [
+        "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace-overrides.css",
+        "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/workspace.js"
+      ]
+    },
+    "identity": {
+      "frozen_files": 9,
+      "snapshot_hash_errors": []
+    }
+  },
+  "html_local_references": [
+    {
+      "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+      "refs": 146,
+      "missing": [],
+      "duplicate_ids": []
+    },
+    {
+      "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+      "refs": 10,
+      "missing": [],
+      "duplicate_ids": []
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+      "refs": 110,
+      "missing": [],
+      "duplicate_ids": []
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+      "refs": 255,
+      "missing": [],
+      "duplicate_ids": []
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/prototypes/workspace-v0.1/index.html",
+      "refs": 7,
+      "missing": [],
+      "duplicate_ids": []
+    }
+  ],
+  "strategy_svg_parse_errors": [],
+  "new_document_link_errors": [],
+  "changed_paths": 2185,
+  "out_of_scope_paths": [],
+  "master": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "origin_master": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "trading_library_v20_changed": [],
+  "source_head_changes": [],
+  "preservation_pass": true,
+  "historical_whitespace_check": {
+    "status": "WARN: source bytes preserved",
+    "exit_code": 2,
+    "output": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md:9: trailing whitespace.\n+日期：2026-11-05  \n.scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/INDEPENDENT-VISUAL.md:32: new blank line at EOF.\n.scratch/review-workspace-design-map/evidence/tradingview-research/research.md:46: trailing whitespace.\n+|R05|天|周期/更新间隔候选，身份未唯一确认；不能直接写成“切换图表周期”| \ndocs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/visual-iteration-07/reports/workbench-worker.md:3: trailing whitespace.\n+Model: `gpt-5.6-luna`  \n",
+    "action": "No rewrite of captured historical evidence; new wrapper files checked separately."
+  }
+}

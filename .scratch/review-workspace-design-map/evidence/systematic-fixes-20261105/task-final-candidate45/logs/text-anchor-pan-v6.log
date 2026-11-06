@@ -1,0 +1,15 @@
+{
+  "out": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/text-anchor-pan-v6",
+  "failures": [
+    "text-two: candidate failed pre-click hit-test"
+  ],
+  "notVerified": [
+    "Two-text prerequisite incomplete; pan/price assertions are not applicable"
+  ],
+  "steps": [
+    "initial",
+    "text-one-click",
+    "text-one-confirmed"
+  ],
+  "errors": 0
+}

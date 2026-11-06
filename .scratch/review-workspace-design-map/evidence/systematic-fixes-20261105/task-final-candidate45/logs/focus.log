@@ -1,0 +1,394 @@
+{
+  "failures": [],
+  "errors": 0,
+  "steps": [
+    {
+      "name": "1440-initial",
+      "active": {
+        "tag": "BODY",
+        "text": "REVIEW QUEUE交易列表\n      ‹\n    清除第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中第2次交易示例股份 / 600000 · 买入 2025-01-06已记录第1次交易示例股份 / 600000 · 买入 2024-12-02已记录\n    记录与快照3\n  ‹示例股份 / 600000日线 · 合成演示行情入场前计划● 内存草稿导出更多记录×复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息记录对象：入场前计划MARKET / SYNTHETIC FIXTURE示例股份 / 600000·日线止损 ¥52入场 ¥56目标 ¥68已揭示 28 根 · 未来信息已隐藏\n    a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}\n    \n      \n        \n      \n      \n        \n      \n    \n    \n      \n      \n    \n    \n      回放首次成交前 · 计划信息\n      \n        \n          2025-02-02⌄\n        \n        \n        \n          \n          \n          播放速度0.5x1x2x\n          天\n        \n        \n          \n        \n        \n        \n          下一回放停点 →跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\n        \n      \n      \n    \n    NODE / A入场前计划↓ 可继续向下查看›\n    首次成交前 · 计划信息 · 连续表单交易计划方向做多做空计划入场CNY初始止损止盈目标计划规模 · 数量按数量按金额按仓位计划数量股参考资金与来源 ¥200000资金值来源币种 CNY · 手填参考初始风险¥4000.00预期收益 / 风险3.00R · 3.00:1未知信息保持未揭示，不使用零值代替。\n    T图上 Text点击工具条 T 后先在图上定位›\n  \n      审阅结构 A内存刷新会重置本轮动作\n      \n      审阅场景买入前持仓中结束之后\n      隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1440-side-open",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1440-modal-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1440-modal-shift-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1440-side-closed",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "trigger": "records-left",
+        "text": "记录与快照3",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1440-scale-arrow",
+      "active": {
+        "tag": "BUTTON",
+        "scale": "amount",
+        "text": "按金额",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1440-scale-tab",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1292-initial",
+      "active": {
+        "tag": "BODY",
+        "text": "REVIEW QUEUE交易列表\n      ‹\n    清除第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中第2次交易示例股份 / 600000 · 买入 2025-01-06已记录第1次交易示例股份 / 600000 · 买入 2024-12-02已记录\n    记录与快照3\n  ‹示例股份 / 600000日线 · 合成演示行情入场前计划● 内存草稿导出更多记录×复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息记录对象：入场前计划MARKET / SYNTHETIC FIXTURE示例股份 / 600000·日线止损 ¥52入场 ¥56目标 ¥68已揭示 28 根 · 未来信息已隐藏\n    a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}\n    \n      \n        \n      \n      \n        \n      \n    \n    \n      \n      \n    \n    \n      回放首次成交前 · 计划信息\n      \n        \n          2025-02-02⌄\n        \n        \n        \n          \n          \n          播放速度0.5x1x2x\n          天\n        \n        \n          \n        \n        \n        \n          下一回放停点 →跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\n        \n      \n      \n    \n    NODE / A入场前计划↓ 可继续向下查看›\n    首次成交前 · 计划信息 · 连续表单交易计划方向做多做空计划入场CNY初始止损止盈目标计划规模 · 数量按数量按金额按仓位计划数量股参考资金与来源 ¥200000资金值来源币种 CNY · 手填参考初始风险¥4000.00预期收益 / 风险3.00R · 3.00:1未知信息保持未揭示，不使用零值代替。\n    T图上 Text点击工具条 T 后先在图上定位›\n  \n      审阅结构 A内存刷新会重置本轮动作\n      \n      审阅场景买入前持仓中结束之后\n      隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1292-side-open",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1292-modal-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1292-modal-shift-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1292-side-closed",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "trigger": "records-left",
+        "text": "记录与快照3",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1292-scale-arrow",
+      "active": {
+        "tag": "BUTTON",
+        "scale": "amount",
+        "text": "按金额",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1292-scale-tab",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1291-initial",
+      "active": {
+        "tag": "BODY",
+        "text": "REVIEW QUEUE交易列表\n      ›\n    清除第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中第2次交易示例股份 / 600000 · 买入 2025-01-06已记录第1次交易示例股份 / 600000 · 买入 2024-12-02已记录\n    记录与快照3\n  ‹示例股份 / 600000日线 · 合成演示行情入场前计划● 内存草稿导出更多记录×复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息记录对象：入场前计划MARKET / SYNTHETIC FIXTURE示例股份 / 600000·日线止损 ¥52入场 ¥56目标 ¥68已揭示 28 根 · 未来信息已隐藏\n    a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}\n    \n      \n        \n      \n      \n        \n      \n    \n    \n      \n      \n    \n    \n      回放首次成交前 · 计划信息\n      \n        \n          2025-02-02⌄\n        \n        \n        \n          \n          \n          播放速度0.5x1x2x\n          天\n        \n        \n          \n        \n        \n        \n          下一回放停点 →跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\n        \n      \n      \n    \n    NODE / A入场前计划↓ 可继续向下查看›\n    首次成交前 · 计划信息 · 连续表单交易计划方向做多做空计划入场CNY初始止损止盈目标计划规模 · 数量按数量按金额按仓位计划数量股参考资金与来源 ¥200000资金值来源币种 CNY · 手填参考初始风险¥4000.00预期收益 / 风险3.00R · 3.00:1未知信息保持未揭示，不使用零值代替。\n    T图上 Text点击工具条 T 后先在图上定位›\n  \n      审阅结构 A内存刷新会重置本轮动作\n      \n      审阅场景买入前持仓中结束之后\n      隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1291-side-open",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1291-modal-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1291-modal-shift-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1291-side-closed",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "trigger": "records-left",
+        "text": "记录与快照3",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1291-scale-arrow",
+      "active": {
+        "tag": "BUTTON",
+        "scale": "amount",
+        "text": "按金额",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1291-scale-tab",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1200-initial",
+      "active": {
+        "tag": "BODY",
+        "text": "REVIEW QUEUE交易列表\n      ›\n    清除第3次交易示例股份 / 600000 · 买入 2025-02-03复盘中第2次交易示例股份 / 600000 · 买入 2025-01-06已记录第1次交易示例股份 / 600000 · 买入 2024-12-02已记录\n    记录与快照3\n  ‹示例股份 / 600000日线 · 合成演示行情入场前计划● 内存草稿导出更多记录×复盘起点 2025-01-06 · 行情截止 2025-02-02 · 成交截止：首次成交前 · 计划信息记录对象：入场前计划MARKET / SYNTHETIC FIXTURE示例股份 / 600000·日线止损 ¥52入场 ¥56目标 ¥68已揭示 28 根 · 未来信息已隐藏\n    a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}\n    \n      \n        \n      \n      \n        \n      \n    \n    \n      \n      \n    \n    \n      回放首次成交前 · 计划信息\n      \n        \n          2025-02-02⌄\n        \n        \n        \n          \n          \n          播放速度0.5x1x2x\n          天\n        \n        \n          \n        \n        \n        \n          下一回放停点 →跳转到下一个回放停点；第 33 根停在下一笔成交之前，之后停点在目标 K 线已揭示时到达；不会提前显示未来成交类型或价格。\n        \n      \n      \n    \n    NODE / A入场前计划↓ 可继续向下查看›\n    首次成交前 · 计划信息 · 连续表单交易计划方向做多做空计划入场CNY初始止损止盈目标计划规模 · 数量按数量按金额按仓位计划数量股参考资金与来源 ¥200000资金值来源币种 CNY · 手填参考初始风险¥4000.00预期收益 / 风险3.00R · 3.00:1未知信息保持未揭示，不使用零值代替。\n    T图上 Text点击工具条 T 后先在图上定位›\n  \n      审阅结构 A内存刷新会重置本轮动作\n      \n      审阅场景买入前持仓中结束之后\n      隐藏",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1200-side-open",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1200-modal-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1200-modal-shift-tab",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "text": "返回工作区",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1200-side-closed",
+      "active": {
+        "tag": "BUTTON",
+        "action": "records",
+        "trigger": "records-left",
+        "text": "记录与快照3",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "quantity"
+      ]
+    },
+    {
+      "name": "1200-scale-arrow",
+      "active": {
+        "tag": "BUTTON",
+        "scale": "amount",
+        "text": "按金额",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    },
+    {
+      "name": "1200-scale-tab",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "connected": true,
+        "visible": true,
+        "inert": false
+      },
+      "checked": [
+        "amount"
+      ]
+    }
+  ]
+}

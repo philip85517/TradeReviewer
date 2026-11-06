@@ -1,0 +1,16 @@
+{
+  "scope": "Planning documents only; not UI/product acceptance",
+  "markdown_files": 11,
+  "local_link_occurrences": 243,
+  "html_fragments": 2,
+  "protected_source_files": 9,
+  "old_inline_boards": 10,
+  "current_inline_explanatory_figures": 5,
+  "tickets": 13,
+  "closed_tickets": [
+    "02-tradingview-research.md"
+  ],
+  "dependency_graph": "PASS",
+  "git_diff_check": "PASS",
+  "errors": []
+}

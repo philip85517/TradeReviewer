@@ -1,0 +1,25 @@
+{
+  "checked_at_utc": "2026-11-06 02:17:39 UTC",
+  "scope": "Creation checkpoint before documentation-only delivery-record follow-up commit",
+  "repository": "philip85517/TradeReviewer",
+  "pr": {
+    "url": "https://github.com/philip85517/TradeReviewer/pull/43",
+    "number": 43,
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "mergeable": true,
+    "base": "master",
+    "base_sha": "d95afc37d30f817edbd6daab41e85f485138de0d",
+    "head": "codex/visual-specs-consolidation-20261106",
+    "head_sha": "4b9a327391cc4e9f08e22b4bc8fc21576ea7e993"
+  },
+  "remote_refs": "4b9a327391cc4e9f08e22b4bc8fc21576ea7e993\trefs/heads/codex/visual-specs-consolidation-20261106\nd95afc37d30f817edbd6daab41e85f485138de0d\trefs/heads/master\n",
+  "statuses": {
+    "statuses": []
+  },
+  "workflow_runs": {
+    "workflow_runs": []
+  },
+  "verification_note": "No CI status or workflow runs were reported at this checkpoint; absence is not a CI pass."
+}

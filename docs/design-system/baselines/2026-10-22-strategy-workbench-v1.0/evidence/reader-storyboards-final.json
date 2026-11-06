@@ -1,0 +1,52 @@
+[
+  {
+    "action": "reset",
+    "previousDisabled": true
+  },
+  {
+    "action": "next",
+    "visible": "第二步：选择策略\n文档演示\n选择明确版本，各组合本金独立；就地组装新策略后带回原选择。\n评论这张图"
+  },
+  {
+    "action": "previous",
+    "visible": "第一步：设置起点\n文档演示\n先确定在哪段历史里研究，保留绝对时间、业务时区、名义与实际终点。\n评论这张图"
+  },
+  {
+    "action": "play",
+    "pauseEnabled": true
+  },
+  {
+    "action": "pause",
+    "playEnabled": true
+  },
+  {
+    "action": "end",
+    "nextDisabled": true,
+    "visible": "预览组合，再确认创建\n文档演示\n目标配置与实际持仓分开；每组资金独立，最终确认锁定版本和执行假设。\n评论这张图"
+  },
+  {
+    "action": "reset",
+    "previousDisabled": true
+  },
+  {
+    "action": "next",
+    "visible": "下一交易日：2024-06-17\n文档演示\n主图揭示新K线；本示例信号满足执行条件，因此同时出现成交与实际持仓。其他交易日可以没有成交。\n评论这张图"
+  },
+  {
+    "action": "previous",
+    "visible": "起点：2024-06-14，尚未成交\n文档演示\n先核对目标与实际：候选只是计划，实际持仓0、现金100%。\n评论这张图"
+  },
+  {
+    "action": "play",
+    "pauseEnabled": true
+  },
+  {
+    "action": "pause",
+    "playEnabled": true
+  },
+  {
+    "action": "end",
+    "nextDisabled": true,
+    "visible": "已看到6月28日，再回看6月14日\n文档演示\n图与实际持仓回到起点，已看后续至6月28日仍保留。此为三种关键状态示意，中间交易日未逐帧展示。\n评论这张图"
+  }
+]

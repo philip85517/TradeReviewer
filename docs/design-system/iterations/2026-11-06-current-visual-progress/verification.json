@@ -1,0 +1,366 @@
+{
+  "verified_at": "2026-11-06T10:18:19.362500+08:00",
+  "base": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "prior_local_snapshot": "7a9a46cc3daaf36d98b7f79235eb1f0d841f7f9d",
+  "scope": "documentation only; no UI/database/product acceptance inferred",
+  "checks": {
+    "supplement_hashes": {
+      "files": 713,
+      "mismatches": []
+    },
+    "original_preservation": {
+      "unique_paths": 2149,
+      "byte_exact": 2128,
+      "intentional_derivatives": [
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/README.md",
+          "snapshot_sha256": "b60be65dc8870d0c84193393e7d5f7a8252c8c9015c315c03daa4b255681d2b7",
+          "current_sha256": "4ed6d731ae1e0a5d2b18b56fd004226d8a9ef6f58221a123cdf3e1671ccadbb4",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/build-visual-spec.py",
+          "snapshot_sha256": "0c1036c5bbc57237d396cdc4c2c5055c746a022c6f3d6f8d1e487e513d304fcd",
+          "current_sha256": "57466fe64303685d6eb80840e317473282581f99b7683762ce21ee82d2fd94b3",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-identity.json",
+          "snapshot_sha256": "5dfed12f4fb932d902a759138403f705c70d0d2476b1346e01ec5f0ce5f68870",
+          "current_sha256": "9e3bb505a610d10103be57fd0eb05c8164de1cbc1c0fe7de5aef6d6e09c90773",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/document-manifest.json",
+          "snapshot_sha256": "d1fe15e53a108a2bfad0ee569ca7005ba28f12bd608f311f715133b37806c294",
+          "current_sha256": "16156a0f48353f4538e9dca7f4ffef69f0506775c3a65a11a2201b1b05b96e90",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/build-artboards.py",
+          "snapshot_sha256": "d5e516ad4a0ccc5287e2e5b94b8b73cb8a4dad9d329bb7a1bea308d43a779875",
+          "current_sha256": "0f6b3a2c8cfb77c526fc9c4a5c6e56dc1fc53ff24e4b9662010282be453ecd9d",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+          "snapshot_sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d",
+          "current_sha256": "14119d8bbe1c9c5da3460d5b65815df8488435c0d30a4fb78180afd778621dba",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md",
+          "snapshot_sha256": "658df6a0ca6e81815f5a89da60347c18afd065e06c27d89bb9133c43847939ab",
+          "current_sha256": "270a9a3470081f924e91edcdbe3de6c6bfe813955a0a09ef369eb85b485aed50",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/visual-spec.html",
+          "snapshot_sha256": "c5979e49cf7ef3c678c96fc8cdfeb88da83938cce6404e94b7806efbf43d8546",
+          "current_sha256": "bdc18a964a067236946be7db22eb8f6adc6d1c3d966e1c9729f36ca08de04a91",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/README.md",
+          "snapshot_sha256": "eb0ac38ac59faf247eb1426534361be1a92e6e9f5ec8747a8e58dfc6342352fb",
+          "current_sha256": "ffdcd0bf25fa4d7c1029dcff711c86822a8e64397d9ac149068c8843cd0d6334",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/build-samples.py",
+          "snapshot_sha256": "a3a2298069026d52dd1258ef9a0bb525e3c713778480af42e72e6657afca1429",
+          "current_sha256": "04188b5d785033d9f5589c6cde7823a15ce7c05762c206cd83f06b8f08283061",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/manual.html",
+          "snapshot_sha256": "36fdad15f5789255290e8fc95fefaf43d4452093d27fa5332019444d4fd40f1f",
+          "current_sha256": "7fd6ad0e0b2f43498d7659ab41db6b802f7006c05af54ef6ccba44b79f4309a8",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/shared/strategy-workbench-v1.2/sw06-summary-detail.svg",
+          "snapshot_sha256": "843a7f3a92b16f930a22513cb63587d9bd1acf89f767a73099356c8b69c4d1fc",
+          "current_sha256": "cfabb2a8dbd749bd1c96c070ae7ba15d5334629f4c482799b3ed70c7c3349b42",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-identity.json",
+          "snapshot_sha256": "92daca788c868024667ea120316546c75f8691ce0ee4f0b81ebd3d78d1ee91b6",
+          "current_sha256": "4ec2644615b833e9494de04f4dd1353f9371bec1560ef460528656df12144e37",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/document-manifest.json",
+          "snapshot_sha256": "e008652e75d1e363174b3d0a62a0644e390dd235d26d9ebb5fa4cd0353eff534",
+          "current_sha256": "10fa0439a828d2b593e6c5bf9f766cc32bdf1dc620b6bbdb1fdb8e659c255a37",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/visual-spec.html",
+          "snapshot_sha256": "6c2d1c73af6453690002900b24dbebab06ff3acb2789078b4e181c1579e5f42e",
+          "current_sha256": "8a63b82d551661e641a0e2ab2c70b1fb96a7179f4dffc7de8e8243159725636c",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/README.md",
+          "snapshot_sha256": "dcc5ffc8ab4ff5f16d536a279bc530268c1f3abb67a96b567a5d412c8c92eb57",
+          "current_sha256": "d2e1154bb147b76e03ac2e0404113dc3d6a41091c8d558b1fdc4179f20275450",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/build-visual-spec.py",
+          "snapshot_sha256": "cc9edb0a243ff4b406012e31debd49ec87280599b96bd4c5864c57af2fdaa3da",
+          "current_sha256": "a1c42443c47916d140657f1e4d65a74206b03499ad81dbebcd57109233cd54f3",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/document-identity.json",
+          "snapshot_sha256": "7df3bb58496b5a3fc481752a5da2d7d8be9a9c1cb1e1f576179442eecd74de29",
+          "current_sha256": "8a820b870d934e411d3a806b6c5d27d71ba659feaa3f6c94560b908a0416fe79",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/document-manifest.json",
+          "snapshot_sha256": "8b27093d0818810248ac214a52cb9f51e0ba8681c8be61d8f884725333e825db",
+          "current_sha256": "a6e5c770e7da5ade6014d3e02941faa1314a57ee331e9626ca68f5f66cb4ed1c",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/source/visual-design.candidate.md",
+          "snapshot_sha256": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+          "current_sha256": "46be8e54d4ad975e884fe9eb200dc7224ab057a32e6395f770c80c7994bd50be",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        },
+        {
+          "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/visual-spec.html",
+          "snapshot_sha256": "b8ea6d7920f621c65528e82296c183b1cd9cb505f6f6de96cc841566cd39dd8b",
+          "current_sha256": "b9f61439ba43d8051a8d77e80e3426efe57a79d3dd1466f3509ef99a0e380466",
+          "reason": "Current authority banner, approved summary/replay update, stable identity regeneration or associated document index; original snapshot remains in Git provenance."
+        }
+      ],
+      "missing": [],
+      "unexpected": []
+    },
+    "inventory": {
+      "worktrees": 11,
+      "captured_at": "2026-11-06T09:38:38.351820+08:00",
+      "gzip_sha256": "49c4a12be9508243a00e2e1a6731812c8af23719abf266ffe9ecc765be8f2700",
+      "summary_hash_matches": true
+    },
+    "reader_identity": [
+      {
+        "reader": "2026-10-22-homepage-v2.5",
+        "documentId": "SITE-HOME-V25",
+        "old_blocks": 530,
+        "current_blocks": 532,
+        "retired_after_text_revision": [],
+        "same_id_changed_meaning": [],
+        "comment_files": [
+          {
+            "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/comment-migration.json",
+            "unchanged": true
+          },
+          {
+            "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/comment-migration.source.json",
+            "unchanged": true
+          },
+          {
+            "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5/comments-snapshot.json",
+            "unchanged": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "reader": "2026-10-22-review-workspace-v1.0",
+        "documentId": "REVIEW-WORKSPACE-V10",
+        "old_blocks": 929,
+        "current_blocks": 930,
+        "retired_after_text_revision": [],
+        "same_id_changed_meaning": [],
+        "comment_files": [
+          {
+            "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/comment-migration.json",
+            "unchanged": true
+          },
+          {
+            "path": "docs/design-system/baselines/2026-10-22-review-workspace-v1.0/comments-snapshot.json",
+            "unchanged": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "reader": "2026-10-24-strategy-workbench-v1.2",
+        "documentId": "STRATEGY-DESK-V12",
+        "old_blocks": 310,
+        "current_blocks": 311,
+        "retired_after_text_revision": [
+          "STRATEGY-DOC-B082",
+          "STRATEGY-DOC-B367",
+          "STRATEGY-DOC-B369",
+          "STRATEGY-DOC-B370",
+          "STRATEGY-DOC-B371",
+          "STRATEGY-DOC-B452",
+          "STRATEGY-DOC-B458",
+          "STRATEGY-DOC-B460",
+          "STRATEGY-DOC-B586",
+          "STRATEGY-DOC-B597",
+          "STRATEGY-DOC-B612",
+          "STRATEGY-DOC-B617"
+        ],
+        "same_id_changed_meaning": [],
+        "comment_files": [],
+        "errors": []
+      },
+      {
+        "reader": "2026-10-26-trading-library-v2.0",
+        "documentId": "TRADING-LIBRARY-V20",
+        "old_blocks": 322,
+        "current_blocks": 323,
+        "retired_after_text_revision": [],
+        "same_id_changed_meaning": [],
+        "comment_files": [],
+        "errors": []
+      }
+    ],
+    "published_comment_stores": [
+      {
+        "path": "docs/design-system/reviews/STRATEGY-DESK-V10.json",
+        "comments": 1,
+        "unchanged": true
+      },
+      {
+        "path": "docs/design-system/reviews/REVIEW-WORKSPACE-V10.json",
+        "comments": 4,
+        "unchanged": true
+      },
+      {
+        "path": "docs/design-system/reviews/HOME-DOC-V23.json",
+        "comments": 43,
+        "unchanged": true
+      },
+      {
+        "path": "docs/design-system/reviews/SITE-HOME-V25.json",
+        "comments": 0,
+        "unchanged": true
+      },
+      {
+        "path": "docs/design-system/reviews/TRADING-LIBRARY-V10.json",
+        "comments": 11,
+        "unchanged": true
+      },
+      {
+        "path": "docs/design-system/reviews/TRADING-LIBRARY-V11.json",
+        "comments": 5,
+        "unchanged": true
+      }
+    ],
+    "active_links": {
+      "files": 19,
+      "urls": 849,
+      "missing": []
+    },
+    "svg_syntax": {
+      "files": 9,
+      "errors": []
+    },
+    "current_document_whitespace": {
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    "git_scope": {
+      "changed_paths": 2951,
+      "outside_document_scope": [],
+      "largest_files": [
+        {
+          "path": "docs/design-system/iterations/2026-11-06-current-visual-progress/audit-review-strategy.json",
+          "bytes": 8695915
+        },
+        {
+          "path": "docs/design-system/iterations/2026-11-06-current-visual-progress/worktree-inventory.json.gz",
+          "bytes": 6459129
+        },
+        {
+          "path": "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/design-report-2026-10-06/策略工作台设计评审.docx",
+          "bytes": 2924517
+        },
+        {
+          "path": "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/design-report-2026-10-06/qa-03/b_render/page-1.png",
+          "bytes": 2251218
+        },
+        {
+          "path": "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/master/docs/specs/2026年9月25日 22_20_49_首页设计.png",
+          "bytes": 1607510
+        }
+      ]
+    },
+    "reader_rebuild_stability": {
+      "builds": [
+        {
+          "reader": "2026-10-22-homepage-v2.5",
+          "returncode": 0
+        },
+        {
+          "reader": "2026-10-22-review-workspace-v1.0",
+          "returncode": 0
+        },
+        {
+          "reader": "2026-10-24-strategy-workbench-v1.2",
+          "returncode": 0
+        },
+        {
+          "reader": "2026-10-26-trading-library-v2.0",
+          "returncode": 0
+        }
+      ],
+      "changes": []
+    },
+    "whole_package_whitespace": {
+      "exit_code": 2,
+      "diagnostics": [
+        ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/preview-server-diagnosis.md:3: trailing whitespace.",
+        ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/ACCEPTANCE.md:9: trailing whitespace.",
+        ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate45/INDEPENDENT-VISUAL.md:32: new blank line at EOF.",
+        ".scratch/review-workspace-design-map/evidence/tradingview-research/research.md:46: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/CURRENT-STATUS.md:153: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/FINAL-ACCEPTANCE.md:383: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/README.md:340: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/15-import-history-duplicate-count.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/15-import-history-duplicate-count.md:4: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/15-import-history-duplicate-count.md:5: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/15-import-history-duplicate-count.md:6: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/16-import-confirm-duplicate-preview.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/16-import-confirm-duplicate-preview.md:4: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/16-import-confirm-duplicate-preview.md:6: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/database-b-development-2026-10-26/issues/16-import-confirm-duplicate-preview.md:7: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/desktop-home-db-diagnosis-2026-10-24/RUNTIME-AUDIT.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/desktop-home-db-diagnosis-2026-10-24/RUNTIME-AUDIT.md:4: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0dc6/.scratch/desktop-home-db-diagnosis-2026-10-24/RUNTIME-AUDIT.md:5: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/0ff3/.scratch/holdings-history-diagnosis-20261006/history-flow.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/25db/.scratch/trading-library-v20-development/evidence/decisions/TL20-D06/runtime-field-mapping-20261028.md:131: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/25db/.scratch/trading-library-v20-development/issues/12-first-chart-journey.md:178: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/25db/.scratch/trading-library-v20-development/issues/14-simulation-entry-date.md:256: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/25db/.scratch/trading-library-v20-development/issues/17-simulation-distribution.md:113: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/group-results/luna-review.md:62: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/write-precompute/luna-backend-review.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/write-precompute/luna-desktop-review.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/write-precompute/luna-desktop-review.md:4: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/write-precompute/luna-full-suite-triage.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/38a0/.scratch/homepage-db-optimization-20261105/write-precompute/luna-full-suite-triage.md:4: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/home-read-mvp/.scratch/display-cache-restart-experiment/COORDINATOR-ACCEPTANCE.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/home-read-mvp/.scratch/update-publication-experiment/INDEPENDENT-REVIEW-01.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/home-read-mvp/.scratch/view-model-design-2026-10-31/flow-review.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-current-visual-progress/worktrees/home-read-mvp/.scratch/view-model-design-2026-10-31/independent-review-round3.md:46: new blank line at EOF.",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/design-report-2026-10-06/flow-review.md:3: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/strategy-library-wireframes/build.py:7: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/strategy-library-wireframes/index.html:2: trailing whitespace.",
+        "docs/design-system/iterations/2026-11-06-visual-spec-consolidation/history/f42e/.scratch/strategy-portfolio-backtesting/visual-iteration-07/reports/workbench-worker.md:3: trailing whitespace."
+      ],
+      "classification": "Original-source whitespace retained byte-exact in preserved archival materials; not silently reformatted."
+    }
+  },
+  "status": "PASS",
+  "failed_checks": []
+}

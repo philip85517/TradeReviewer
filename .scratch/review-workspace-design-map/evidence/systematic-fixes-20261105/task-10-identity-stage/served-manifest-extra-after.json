@@ -1,0 +1,95 @@
+{
+  "at": "2026-11-05T18:01:14.318Z",
+  "files": [
+    {
+      "path": "workspace-v0.1/index.html",
+      "expected": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026",
+      "status": 200,
+      "hashes": {
+        "disk": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026",
+        "http": "7c4140e0361214247c6e26152083a63dafc2e6b70ad7cdab3475bb379bdf2026"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/chrome.js",
+      "expected": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd",
+      "status": 200,
+      "hashes": {
+        "disk": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd",
+        "http": "4fdb6b266e0c5b6117cd298b8bcb78beeb92df4a9ed9c96e94ab3a999b3647fd"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace.js",
+      "expected": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+      "status": 200,
+      "hashes": {
+        "disk": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e",
+        "http": "71803b71b4e69d3fe35eee66e26f7198e802d8c1cc4dd4c2f3d29f92f54c274e"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace.css",
+      "expected": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+      "status": 200,
+      "hashes": {
+        "disk": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab",
+        "http": "6d9dba1cd896f720890ccc91b48ce437ab1eee46293017098f4d5f03aae377ab"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-overrides.css",
+      "expected": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644",
+      "status": 200,
+      "hashes": {
+        "disk": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644",
+        "http": "4e98a315483a617bd83f295a56f65fd2372de04ad10718881022c668cde88644"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-replay.css",
+      "expected": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1",
+      "status": 200,
+      "hashes": {
+        "disk": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1",
+        "http": "b1dc068c88992ae009f14411382e1e66ec9bf9d493cb38b998791e65b1a52ab1"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/workspace-layout-followup.css",
+      "expected": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe",
+      "status": 200,
+      "hashes": {
+        "disk": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe",
+        "http": "d6aa53ce19e96c789e0826154ef4db9341a1d6760cbfc3d6f5e4679dc5a86cbe"
+      },
+      "pass": true
+    },
+    {
+      "path": "workspace-v0.1/vendor/lightweight-charts.standalone.production.js",
+      "expected": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+      "status": 200,
+      "hashes": {
+        "disk": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+        "http": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7"
+      },
+      "pass": true
+    },
+    {
+      "path": "tradingview-alignment-v0.1/icons.svg",
+      "expected": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054",
+      "status": 200,
+      "hashes": {
+        "disk": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054",
+        "http": "47b3da3c3bb26c099189cafd42a50baaf8b0ee82f7655dddfac0e348ff910054"
+      },
+      "pass": true
+    }
+  ]
+}

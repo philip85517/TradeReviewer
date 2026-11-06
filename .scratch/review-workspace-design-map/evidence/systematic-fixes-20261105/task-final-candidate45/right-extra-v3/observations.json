@@ -1,0 +1,281 @@
+{
+  "target": "F9987F4B8D40A3ACF910E8788E85F5D9",
+  "steps": [
+    {
+      "name": "I30-trade3-short-legal",
+      "scene": "入场前计划",
+      "isExit": false,
+      "trade": "600000-3",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "false"
+        },
+        {
+          "value": "short",
+          "pressed": "true"
+        }
+      ],
+      "entry": "56",
+      "stop": "68",
+      "target": "52",
+      "early": [],
+      "errors": [],
+      "active": {
+        "tag": "INPUT",
+        "value": "52",
+        "visible": true
+      }
+    },
+    {
+      "name": "replay-to-exit",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-3",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "true",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "false",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "",
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true
+      }
+    },
+    {
+      "name": "I35-I36-trade3-set",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-3",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "false",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "true",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "c31-reason-v3",
+      "errors": [],
+      "active": {
+        "tag": "TEXTAREA",
+        "value": "c31-reason-v3",
+        "visible": true
+      }
+    },
+    {
+      "name": "I36-trade2-entry-clean",
+      "scene": "入场前计划",
+      "isExit": false,
+      "trade": "600000-2",
+      "direction": [
+        {
+          "value": "long",
+          "pressed": "true"
+        },
+        {
+          "value": "short",
+          "pressed": "false"
+        }
+      ],
+      "entry": "56.00",
+      "stop": "52.00",
+      "target": "68.00",
+      "early": [],
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "trade": "600000-2",
+        "visible": true
+      }
+    },
+    {
+      "name": "replay-to-exit",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-2",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "true",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "false",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "",
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true
+      }
+    },
+    {
+      "name": "I35-I36-trade2-exit-clean",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-2",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "true",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "false",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "",
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true
+      }
+    },
+    {
+      "name": "replay-to-exit",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-3",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "false",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "true",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "c31-reason-v3",
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true
+      }
+    },
+    {
+      "name": "I35-I36-trade3-exit-retained",
+      "scene": "结束之后评价",
+      "isExit": true,
+      "trade": "600000-3",
+      "direction": [],
+      "early": [
+        {
+          "value": "unrated",
+          "checked": "false",
+          "text": "未评价"
+        },
+        {
+          "value": "yes",
+          "checked": "true",
+          "text": "是"
+        },
+        {
+          "value": "no",
+          "checked": "false",
+          "text": "否"
+        },
+        {
+          "value": "uncertain",
+          "checked": "false",
+          "text": "不确定"
+        }
+      ],
+      "reason": "c31-reason-v3",
+      "errors": [],
+      "active": {
+        "tag": "BUTTON",
+        "value": "",
+        "action": "next-node",
+        "visible": true
+      }
+    }
+  ],
+  "failures": [],
+  "errors": []
+}

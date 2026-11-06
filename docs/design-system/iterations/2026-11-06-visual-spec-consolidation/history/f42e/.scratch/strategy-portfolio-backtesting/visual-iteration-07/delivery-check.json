@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-06T21:33:41.784421+08:00",
+  "source_matches_freeze": {
+    "strategy-library-wireframes/build.py": true,
+    "strategy-library-wireframes/index.html": true,
+    "workbench-design/index.html": true
+  },
+  "selected_images": 72,
+  "image_bytes_match": true,
+  "missing_local_links": [],
+  "http": {
+    "http://127.0.0.1:3063/strategy-library-wireframes/": 200,
+    "http://127.0.0.1:3063/workbench-design/?variant=A": 200
+  },
+  "diff_check": {
+    "exit": 0,
+    "output": ""
+  }
+}

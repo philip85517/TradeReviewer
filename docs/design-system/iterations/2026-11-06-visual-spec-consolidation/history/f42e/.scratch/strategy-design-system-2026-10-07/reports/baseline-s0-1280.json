@@ -1,0 +1,1184 @@
+{
+  "document": {
+    "height": 804,
+    "width": 1280
+  },
+  "fontStatus": "loaded",
+  "items": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "class": "",
+      "clientHeight": 24,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "24.3px",
+      "name": "示例科技 TRD",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 24.296875,
+        "width": 101.0390625,
+        "x": 410.4765625,
+        "y": 43.8515625
+      },
+      "scrollHeight": 24,
+      "size": "18px",
+      "svg": null,
+      "tag": "H1",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "icon-button",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "搜索标的",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 12,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "\"Geist Mono\", sans-serif",
+      "line": "normal",
+      "name": "切换到 15m",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "radius": "5px",
+      "rect": {
+        "height": 36,
+        "width": 33.6015625,
+        "x": 46,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "12px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "\"Geist Mono\", sans-serif",
+      "line": "normal",
+      "name": "切换到 1h",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "radius": "5px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 81.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "12px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "\"Geist Mono\", sans-serif",
+      "line": "normal",
+      "name": "切换到 4h",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "radius": "5px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 114.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "12px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.14)",
+      "border": "rgb(157, 204, 255)",
+      "class": "active",
+      "clientHeight": 36,
+      "color": "rgb(157, 204, 255)",
+      "font": "\"Geist Mono\", sans-serif",
+      "line": "normal",
+      "name": "切换到 1D",
+      "outline": "rgb(157, 204, 255) none 3px",
+      "padding": "0px 6px",
+      "radius": "5px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 147.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "12px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "\"Geist Mono\", sans-serif",
+      "line": "normal",
+      "name": "切换到 1W",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "radius": "5px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 180.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "12px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(156, 172, 194)",
+      "class": "local-data-badge",
+      "clientHeight": 36,
+      "color": "rgb(156, 172, 194)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "0px",
+      "name": "行情数据详情",
+      "outline": "rgb(156, 172, 194) none 3px",
+      "padding": "6px",
+      "radius": "0px",
+      "rect": {
+        "height": 36,
+        "width": 26,
+        "x": 214.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "0px",
+      "svg": {
+        "stroke": "2",
+        "width": 14
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "icon-button",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "图层",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 247.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "icon-button",
+      "clientHeight": 36,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "图表设置",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 281.6015625,
+        "y": 91
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "class": "recall-main",
+      "clientHeight": 616,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "复盘补记 · 买入事实尚未揭示更多绘图工具当前 K 线开 55.33高 56.19低 54.75收 55.57a#tv-attr-",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px 14px 6px",
+      "radius": "0px",
+      "rect": {
+        "height": 616,
+        "width": 1280,
+        "x": 0,
+        "y": 184
+      },
+      "scrollHeight": 616,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "DIV",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(16, 23, 34)",
+      "border": "rgb(36, 49, 69)",
+      "class": "recall-chart-shell",
+      "clientHeight": 498,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "更多绘图工具当前 K 线开 55.33高 56.19低 54.75收 55.57a#tv-attr-logo{--fill:#13",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "radius": "8px",
+      "rect": {
+        "height": 500,
+        "width": 918,
+        "x": 14,
+        "y": 213
+      },
+      "scrollHeight": 498,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "DIV",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(33, 50, 73)",
+      "border": "rgb(139, 194, 255)",
+      "class": "active",
+      "clientHeight": 36,
+      "color": "rgb(139, 194, 255)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "选择",
+      "outline": "rgb(139, 194, 255) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 221
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "文字标注",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 260
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "趋势线",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 299
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "水平线",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 338
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "平行通道",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 377
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "做多盈亏比",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 416
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 19
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "锁定全部图形",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 506
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 18
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "撤销绘图",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 545
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 18
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "重做绘图",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 584
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 18
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(127, 143, 165)",
+      "class": "",
+      "clientHeight": 36,
+      "color": "rgb(127, 143, 165)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "清空绘图",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 20.5,
+        "y": 623
+      },
+      "scrollHeight": 36,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 18
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": "rgb(36, 49, 69)",
+      "class": "recall-plan-sidebar",
+      "clientHeight": 498,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "阶段计划",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "14px",
+      "radius": "8px",
+      "rect": {
+        "height": 500,
+        "width": 320,
+        "x": 946,
+        "y": 213
+      },
+      "scrollHeight": 613,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 18
+      },
+      "tag": "ASIDE",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "class": "",
+      "clientHeight": 24,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "24px",
+      "name": "买入前计划",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 24,
+        "width": 80,
+        "x": 961,
+        "y": 234
+      },
+      "scrollHeight": 24,
+      "size": "16px",
+      "svg": null,
+      "tag": "H2",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-primary-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "计划入场",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 290,
+        "x": 961,
+        "y": 282
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "计划入场",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 961,
+        "y": 308
+      },
+      "scrollHeight": 34,
+      "size": "14px",
+      "svg": null,
+      "tag": "INPUT",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-price-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "初始止损",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 141,
+        "x": 961,
+        "y": 356
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "初始止损",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 961,
+        "y": 382
+      },
+      "scrollHeight": 34,
+      "size": "14px",
+      "svg": null,
+      "tag": "INPUT",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-price-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "止盈目标",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 141,
+        "x": 1110,
+        "y": 356
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "止盈目标",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 1110,
+        "y": 382
+      },
+      "scrollHeight": 34,
+      "size": "14px",
+      "svg": null,
+      "tag": "INPUT",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-primary-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "计划数量",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 290,
+        "x": 961,
+        "y": 501
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "计划数量",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 961,
+        "y": 527
+      },
+      "scrollHeight": 34,
+      "size": "14px",
+      "svg": null,
+      "tag": "INPUT",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-compact-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "方向待选择做多做空",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 112,
+        "x": 961,
+        "y": 575
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "class": "recall-plan-compact-field",
+      "clientHeight": 62,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "数量单位股单位",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 62,
+        "width": 112,
+        "x": 1081,
+        "y": 575
+      },
+      "scrollHeight": 62,
+      "size": "14px",
+      "svg": null,
+      "tag": "LABEL",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(16, 23, 34)",
+      "border": "rgb(36, 49, 69)",
+      "class": "recall-replay-bar",
+      "clientHeight": 73,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "逐步 · 决策 1行情时间 02-11 15:00成交尚未揭示计划 · 3R / 风险 4000 CNY上一根播放下一根 K 线下",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "4px 8px",
+      "radius": "7px",
+      "rect": {
+        "height": 75,
+        "width": 1252,
+        "x": 14,
+        "y": 719
+      },
+      "scrollHeight": 73,
+      "size": "14px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "DIV",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "class": "",
+      "clientHeight": 18,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "18px",
+      "name": "逐步 · 决策 1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 18,
+        "width": 140,
+        "x": 41,
+        "y": 724
+      },
+      "scrollHeight": 18,
+      "size": "12px",
+      "svg": null,
+      "tag": "STRONG",
+      "weight": "700"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(156, 172, 194)",
+      "class": "",
+      "clientHeight": 21,
+      "color": "rgb(156, 172, 194)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "行情时间 02-11 15:00",
+      "outline": "rgb(156, 172, 194) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 21,
+        "width": 140.2265625,
+        "x": 41,
+        "y": 743
+      },
+      "scrollHeight": 21,
+      "size": "14px",
+      "svg": null,
+      "tag": "SPAN",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(156, 172, 194)",
+      "class": "",
+      "clientHeight": 21,
+      "color": "rgb(156, 172, 194)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "成交尚未揭示",
+      "outline": "rgb(156, 172, 194) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 21,
+        "width": 84,
+        "x": 41,
+        "y": 768
+      },
+      "scrollHeight": 21,
+      "size": "14px",
+      "svg": null,
+      "tag": "SPAN",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "class": "recall-replay-summary",
+      "clientHeight": 21,
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "21px",
+      "name": "计划 · 3R / 风险 4000 CNY",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "radius": "0px",
+      "rect": {
+        "height": 21,
+        "width": 190,
+        "x": 189,
+        "y": 746
+      },
+      "scrollHeight": 21,
+      "size": "14px",
+      "svg": null,
+      "tag": "SPAN",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 27, 41)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "上一根 K 线",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 81,
+        "x": 389,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 27, 41)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "播放",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 46,
+        "x": 476,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 27, 41)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "下一根 K 线",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 108.8203125,
+        "x": 528,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.15)",
+      "border": "rgba(47, 128, 237, 0.55)",
+      "class": "primary",
+      "clientHeight": 34,
+      "color": "rgb(183, 211, 255)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "下一笔决策",
+      "outline": "rgb(183, 211, 255) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 107,
+        "x": 642.8203125,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": {
+        "stroke": "2",
+        "width": 17
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(47, 128, 237, 0.15)",
+      "border": "rgba(47, 128, 237, 0.55)",
+      "class": "primary",
+      "clientHeight": 34,
+      "color": "rgb(183, 211, 255)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "留存当前快照",
+      "outline": "rgb(183, 211, 255) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 118,
+        "x": 755.8203125,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": {
+        "stroke": "2",
+        "width": 15
+      },
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 27, 41)",
+      "border": "rgb(36, 49, 69)",
+      "class": "",
+      "clientHeight": 34,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "计划侧栏",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 72,
+        "x": 879.8203125,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(17, 27, 41)",
+      "border": "rgb(36, 49, 69)",
+      "class": "recall-replay-more__summary",
+      "clientHeight": 34,
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "line": "19.5px",
+      "name": "更多 / 记录",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "radius": "6px",
+      "rect": {
+        "height": 36,
+        "width": 84.7421875,
+        "x": 1172.2578125,
+        "y": 738.5
+      },
+      "scrollHeight": 34,
+      "size": "13px",
+      "svg": null,
+      "tag": "BUTTON",
+      "weight": "400"
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 800,
+    "width": 1280
+  }
+}

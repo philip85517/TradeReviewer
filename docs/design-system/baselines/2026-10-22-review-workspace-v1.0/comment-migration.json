@@ -1,0 +1,58 @@
+{
+  "fromVersion": "1.0 before 2026-10-24 rewrite",
+  "toVersion": "1.0 candidate 2026-10-24",
+  "sourceFingerprint": "cdce2f77ae98dc435ea989fd030b0198da003cd4f245dcd02e25eeeaa6b9cbb5",
+  "targetFingerprint": "b192586ae0e1814eb62d2009fa99bb241fdb914f0a9f64ad616a711c3014fae7",
+  "entries": [
+    {
+      "commentId": "comment-43d41134f6d84b51ae365b8c47bd74ea",
+      "kind": "text",
+      "target": {
+        "blockIdBySource": {
+          "HOME-DOC-B039": "HOME-DOC-B039"
+        }
+      },
+      "status": "pending-review",
+      "originalComment": "evidence/full-rewrite-20261024/before/comments.json",
+      "note": "语义承接而非逐字引用；原评论状态不变，不表示用户确认解决。"
+    },
+    {
+      "commentId": "comment-008a5711d29a4d3a865817ede35e45bf",
+      "kind": "image",
+      "sourceOccurrenceId": "06-entry-1280@82",
+      "sourceUrl": "source/images/06-entry-1280.svg",
+      "target": {
+        "occurrenceId": "A@73",
+        "chapter": "RV02"
+      },
+      "status": "pending-review",
+      "originalComment": "evidence/full-rewrite-20261024/before/comments.json",
+      "note": "仅关联新章节及解释图，原图与评论原文保留；不表示用户确认解决。"
+    },
+    {
+      "commentId": "comment-a0b107f6b69049249cbe82d45ccfc299",
+      "kind": "text",
+      "target": {
+        "blockIdBySource": {
+          "HOME-DOC-B383": "HOME-DOC-B383"
+        }
+      },
+      "status": "pending-review",
+      "originalComment": "evidence/full-rewrite-20261024/before/comments.json",
+      "note": "语义承接而非逐字引用；原评论状态不变，不表示用户确认解决。"
+    },
+    {
+      "commentId": "comment-2afcebadf41146fda27cda35948d8d54",
+      "kind": "image",
+      "sourceOccurrenceId": "01-entry-1440@61",
+      "sourceUrl": "source/images/01-entry-1440.svg",
+      "target": {
+        "occurrenceId": "A@73",
+        "chapter": "RV02"
+      },
+      "status": "pending-review",
+      "originalComment": "evidence/full-rewrite-20261024/before/comments.json",
+      "note": "仅关联新章节及解释图，原图与评论原文保留；不表示用户确认解决。"
+    }
+  ]
+}

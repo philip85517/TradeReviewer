@@ -1,0 +1,3814 @@
+[
+  {
+    "variant": "candidate",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "dpr": 1,
+    "zoom": 1,
+    "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+    "method": "Chrome headless CDP input, synthetic mouse/keyboard. DOM read only; no DOM event dispatch, handler invocation or state injection. Not physical input or independent visual acceptance.",
+    "target": "6BAE8282ADAC801B4A377E71464AFD00",
+    "actions": [
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=toggle-left]",
+        "x": 33.5,
+        "y": 36
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".topbar [data-action=records]",
+        "x": 1126,
+        "y": 25.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".records-dialog [data-action=records]",
+        "x": 473,
+        "y": 484
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".topbar .back",
+        "x": 284,
+        "y": 25.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".exit-dialog [data-action=resume-workspace]",
+        "x": 622,
+        "y": 434
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=toggle-right]",
+        "x": 1246.5,
+        "y": 36
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=step]",
+        "x": 579.5,
+        "y": 712
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 714.1171875,
+        "y": 712
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 711.6953125,
+        "y": 712
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 711.8203125,
+        "y": 712
+      }
+    ],
+    "steps": [
+      {
+        "name": "entry-right",
+        "screenshot": "ax-candidate-1280-entry-right.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 132,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n↓ 可继续向下查看\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 68,
+            "y": 0,
+            "width": 880,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 880,
+            "clientWidth": 880,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 132,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 132,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 549.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 647.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 82,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 898,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 90,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 68,
+            "y": 101,
+            "width": 880,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 878,
+            "clientWidth": 878,
+            "visible": true
+          },
+          "#chart": {
+            "x": 69,
+            "y": 154,
+            "width": 878,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 878,
+            "clientWidth": 878,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 68,
+            "y": 682,
+            "width": 880,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 880,
+            "clientWidth": 880,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.5,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.5,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 614,
+            "width": 39,
+            "height": 128,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 37,
+            "clientWidth": 37,
+            "visible": false
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 782,
+            "height": 498,
+            "sha256": "edb57937e9029f03f8a2090ca489a88471b8aaa1ed0c1474e67910d112c43131"
+          },
+          {
+            "width": 782,
+            "height": 498,
+            "sha256": "649a28ee9ed4ccfdc002df2edfd8248296fb50ed5325f95241999efd15e6c373"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "954eb8b2ba08268a298446c6575440cbf9711844200eb5bab65473fc43351ee6"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "455a442409abe168ab381f724ef6c9099d1baabd5574b176d04ec57a4f8f9e49"
+          },
+          {
+            "width": 782,
+            "height": 28,
+            "sha256": "e90900dd4a153a8c403eef1f5302f221a30cd2dc4bc50e5c7dfc6b2a97ff9576"
+          },
+          {
+            "width": 782,
+            "height": 28,
+            "sha256": "a8d03b3582976c38e9566ff33e7bae7a514242e029e7ceea61d12a13f536fd2f"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "entry-left",
+        "screenshot": "ax-candidate-1280-entry-left.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed ",
+          "body": "‹",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 960,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 813.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 911.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1162,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 84,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 960,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 958,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 682,
+            "width": 960,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.5,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.5,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 694,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "f77b2fefc34de518b6967f84f43a8cea5c8eb0356615399eca847df1e2e14908"
+          },
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "84037c3481b5870d1774f6f60c066ac2f8755817e1612f4dd9694977f6153b5f"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "954eb8b2ba08268a298446c6575440cbf9711844200eb5bab65473fc43351ee6"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "10f810cde7088710705153ac733726429baedfc4d2241ddcea9fafe7981870ba"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "34374d45e5fd8d54d1342fedf44812a2ac62fc71ae71c0d603a850dd2f5d60e3"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "7ae010ea6319d3e7291b6d76c6b1dc46ab477a3ae1f6798011c79cbdf06b5ff4"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "records-open",
+        "screenshot": "ax-candidate-1280-records-open.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed ",
+          "body": "‹",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 960,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 813.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 911.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1162,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 84,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 960,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 958,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 682,
+            "width": 960,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.5,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.5,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 694,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "f77b2fefc34de518b6967f84f43a8cea5c8eb0356615399eca847df1e2e14908"
+          },
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "84037c3481b5870d1774f6f60c066ac2f8755817e1612f4dd9694977f6153b5f"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "954eb8b2ba08268a298446c6575440cbf9711844200eb5bab65473fc43351ee6"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "10f810cde7088710705153ac733726429baedfc4d2241ddcea9fafe7981870ba"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "34374d45e5fd8d54d1342fedf44812a2ac62fc71ae71c0d603a850dd2f5d60e3"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "7ae010ea6319d3e7291b6d76c6b1dc46ab477a3ae1f6798011c79cbdf06b5ff4"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "exit-dialog",
+        "screenshot": "ax-candidate-1280-exit-dialog.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed ",
+          "body": "‹",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 960,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 813.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 911.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1162,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 84,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 960,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 958,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 958,
+            "clientWidth": 958,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 682,
+            "width": 960,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 960,
+            "clientWidth": 960,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.5,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.5,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 694,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "f77b2fefc34de518b6967f84f43a8cea5c8eb0356615399eca847df1e2e14908"
+          },
+          {
+            "width": 862,
+            "height": 498,
+            "sha256": "84037c3481b5870d1774f6f60c066ac2f8755817e1612f4dd9694977f6153b5f"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "954eb8b2ba08268a298446c6575440cbf9711844200eb5bab65473fc43351ee6"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "10f810cde7088710705153ac733726429baedfc4d2241ddcea9fafe7981870ba"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "34374d45e5fd8d54d1342fedf44812a2ac62fc71ae71c0d603a850dd2f5d60e3"
+          },
+          {
+            "width": 862,
+            "height": 28,
+            "sha256": "7ae010ea6319d3e7291b6d76c6b1dc46ab477a3ae1f6798011c79cbdf06b5ff4"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "holding",
+        "screenshot": "ax-candidate-1280-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 132,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "notice": "已揭示 2025-01-06 · 持仓中",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "workspace": "workspace  ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 68,
+            "y": 0,
+            "width": 1144,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1144,
+            "clientWidth": 1144,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 132,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 132,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 837.52,
+            "y": 7.5,
+            "width": 60,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 58,
+            "clientWidth": 58,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 911.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 82,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1162,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 90,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1226,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 39,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 68,
+            "y": 101,
+            "width": 1144,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1142,
+            "clientWidth": 1142,
+            "visible": true
+          },
+          "#chart": {
+            "x": 69,
+            "y": 154,
+            "width": 1142,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1142,
+            "clientWidth": 1142,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 68,
+            "y": 682,
+            "width": 1144,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1144,
+            "clientWidth": 1144,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.77,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.77,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 614,
+            "width": 39,
+            "height": 128,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 37,
+            "clientWidth": 37,
+            "visible": false
+          }
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1001.64,
+              "y": 472.89,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {},
+        "canvas": [
+          {
+            "width": 1046,
+            "height": 498,
+            "sha256": "374522674b8d1102d4e8c17a75b6853a9163cff2be01d1453b6ad6c479825fa8"
+          },
+          {
+            "width": 1046,
+            "height": 498,
+            "sha256": "fb23dc5280db120122a36681731dd3b0aa815c0bfb133e6ea9be3b6aa9ff40bc"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "77692068d4ad43faffd63a82c615126d1de76213f0fc644d27f1081dfa2bfe1a"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "10f810cde7088710705153ac733726429baedfc4d2241ddcea9fafe7981870ba"
+          },
+          {
+            "width": 1046,
+            "height": 28,
+            "sha256": "574d8424d037314d74efabba841503fcf9ebfb463d2d5b72e8dacc3e066d5e98"
+          },
+          {
+            "width": 1046,
+            "height": 28,
+            "sha256": "e4197961eba22198aef6d4a58faac2a691c77c5795fb29d56fed3cf6ff546cb8"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "exit",
+        "screenshot": "ax-candidate-1280-exit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=exit",
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scrollWidth": 1280,
+          "scrollHeight": 800,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 132,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "notice": "已到达已揭示的回放停点 · 2025-01-26",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "workspace": "workspace  right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n结束之后评价\n↓ 可继续向下查看\n›\n\n退出后 · 结果与评价可见 · 结果与评价\n\n原计划（只读）\n\n方向：做多 · 入场 ¥56.00 · 止损 ¥52.00 · 目标 ¥68.00\n\n数量 1000.00 股 · 金额 56000.00 · 仓位 31.11%\n\n已完成交易事实\n\n首次买入：2025-01-06 · ¥51.40 · 800 股\n\n最终平仓：2025-01-26 · ¥46.45 · 600 股\n\n是否提前退出\n未评价\n是\n否\n不确定\n退出原因\n计划符合度\n未评价\n符合\n部分符合\n不符合\n纪律\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n机会\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n仓位\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n体验\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 756,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 68,
+            "y": 0,
+            "width": 880,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 880,
+            "clientWidth": 880,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 132,
+            "y": 5,
+            "width": 171.88,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 132,
+            "y": 30,
+            "width": 171.88,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 172,
+            "clientWidth": 172,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 537.52,
+            "y": 7.5,
+            "width": 96,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 94,
+            "clientWidth": 94,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 647.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 82,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 898,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 40,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 90,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 962,
+            "y": 0,
+            "width": 304,
+            "height": 742,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 68,
+            "y": 101,
+            "width": 880,
+            "height": 581,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 878,
+            "clientWidth": 878,
+            "visible": true
+          },
+          "#chart": {
+            "x": 69,
+            "y": 154,
+            "width": 878,
+            "height": 527,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 878,
+            "clientWidth": 878,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 68,
+            "y": 682,
+            "width": 880,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 880,
+            "clientWidth": 880,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 561.39,
+            "y": 694,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 655.39,
+            "y": 694,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 614,
+            "width": 39,
+            "height": 128,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 37,
+            "clientWidth": 37,
+            "visible": false
+          }
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 346.45,
+              "y": 471.84,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 463.13,
+              "y": 347.83,
+              "width": 34,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 32,
+              "clientWidth": 32,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 600.08,
+              "y": 423.17,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 729.63,
+              "y": 415.14,
+              "width": 34,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 32,
+              "clientWidth": 32,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {},
+        "canvas": [
+          {
+            "width": 782,
+            "height": 498,
+            "sha256": "0d5c90bb04357b3fe103adfbd058de38f7aaa13de70a5b8dd84848d842c55730"
+          },
+          {
+            "width": 782,
+            "height": 498,
+            "sha256": "e80e16f6e389df631cdd1c616d5150b034137985e3fd6b2cbdc0eee8a9844193"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "151fc00ca8130259a949351041c72563abe123d78e9438a6d4f2f250793e2e64"
+          },
+          {
+            "width": 96,
+            "height": 498,
+            "sha256": "10f810cde7088710705153ac733726429baedfc4d2241ddcea9fafe7981870ba"
+          },
+          {
+            "width": 782,
+            "height": 28,
+            "sha256": "95137f792a581332ce7d069211000d2a01db69ccae075f4e6c1cffceab9502f4"
+          },
+          {
+            "width": 782,
+            "height": 28,
+            "sha256": "9d83aa63ba4ebdc8a24d54f5256d9ee5f2c076f98d48cb892eb61a552caebacf"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      }
+    ],
+    "exceptions": [],
+    "consoleEvents": [],
+    "networkFailures": []
+  },
+  {
+    "variant": "candidate",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1,
+    "zoom": 1,
+    "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+    "method": "Chrome headless CDP input, synthetic mouse/keyboard. DOM read only; no DOM event dispatch, handler invocation or state injection. Not physical input or independent visual acceptance.",
+    "target": "7A922FA71AC7949129DF055471C91536",
+    "actions": [
+      {
+        "type": "CDP mouse",
+        "selector": "[data-trade=\"600000-2\"]",
+        "x": 125.5,
+        "y": 280.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".topbar [data-action=records]",
+        "x": 1022,
+        "y": 25.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".records-dialog [data-action=records]",
+        "x": 553,
+        "y": 534
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".topbar .back",
+        "x": 284,
+        "y": 25.5
+      },
+      {
+        "type": "CDP mouse",
+        "selector": ".exit-dialog [data-action=resume-workspace]",
+        "x": 702,
+        "y": 484
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=step]",
+        "x": 676.5,
+        "y": 812
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 928.1171875,
+        "y": 812
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 925.6953125,
+        "y": 812
+      },
+      {
+        "type": "CDP mouse",
+        "selector": "[data-action=next-node]",
+        "x": 925.8203125,
+        "y": 812
+      }
+    ],
+    "steps": [
+      {
+        "name": "entry-right",
+        "screenshot": "ax-candidate-1440-entry-right.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 856,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 709.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 807.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1058,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 856,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 854,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 856,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.5,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.5,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "fd4585174e54678bc6470ee0e231ce081bb83a9661651ca50de7fadef50df137"
+          },
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "dbe9f82b223838631adb06fb328f68a60ab961903fb42a0d2dd8b652635ac53a"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "def6c9fc31d5ab0195b3d39c6ec4e965f7e487d5565b7167a7067e8fcc4dc2ca"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "efc508a6e86823eb85f8232297ca74b41da839e08b61a54393ed0705d518fe13"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "3a6e2d2e090387702187dc34c1a96a2995987f504f39109d450d42e36f6f9d2d"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "entry-left",
+        "screenshot": "ax-candidate-1440-entry-left.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 856,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 709.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 807.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1058,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 856,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 854,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 856,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.5,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.5,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "fd4585174e54678bc6470ee0e231ce081bb83a9661651ca50de7fadef50df137"
+          },
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "dbe9f82b223838631adb06fb328f68a60ab961903fb42a0d2dd8b652635ac53a"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "def6c9fc31d5ab0195b3d39c6ec4e965f7e487d5565b7167a7067e8fcc4dc2ca"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "efc508a6e86823eb85f8232297ca74b41da839e08b61a54393ed0705d518fe13"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "3a6e2d2e090387702187dc34c1a96a2995987f504f39109d450d42e36f6f9d2d"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "records-open",
+        "screenshot": "ax-candidate-1440-records-open.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 856,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 709.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 807.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1058,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 856,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 854,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 856,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.5,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.5,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "fd4585174e54678bc6470ee0e231ce081bb83a9661651ca50de7fadef50df137"
+          },
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "dbe9f82b223838631adb06fb328f68a60ab961903fb42a0d2dd8b652635ac53a"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "def6c9fc31d5ab0195b3d39c6ec4e965f7e487d5565b7167a7067e8fcc4dc2ca"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "efc508a6e86823eb85f8232297ca74b41da839e08b61a54393ed0705d518fe13"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "3a6e2d2e090387702187dc34c1a96a2995987f504f39109d450d42e36f6f9d2d"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "exit-dialog",
+        "screenshot": "ax-candidate-1440-exit-dialog.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=entry",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "入场前计划",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-05 · 成交截止：首次成交前 · 计划信息",
+        "notice": "已切换回合：第2次交易 · 入场截止",
+        "note": "已揭示 28 根 · 未来信息已隐藏",
+        "date": "2025-01-05\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n入场前计划\n›\n\n首次成交前 · 计划信息 · 连续表单\n\n交易计划\n方向\n做多\n做空\n计划入场\nCNY\n初始止损\n止盈目标\n计划规模 · 数量\n按数量\n按金额\n按仓位\n计划数量\n股\n参考资金与来源\n¥180000\n初始风险\n¥4000.00\n预期收益 / 风险\n3.00R · 3.00:1\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 856,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 709.52,
+            "y": 7.5,
+            "width": 84,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 807.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1058,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 856,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 854,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 856,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.5,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.5,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [],
+        "fields": {
+          "entry": "56.00",
+          "stop": "52.00",
+          "target": "68.00",
+          "quantity": "1000"
+        },
+        "canvas": [
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "fd4585174e54678bc6470ee0e231ce081bb83a9661651ca50de7fadef50df137"
+          },
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "dbe9f82b223838631adb06fb328f68a60ab961903fb42a0d2dd8b652635ac53a"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "def6c9fc31d5ab0195b3d39c6ec4e965f7e487d5565b7167a7067e8fcc4dc2ca"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "efc508a6e86823eb85f8232297ca74b41da839e08b61a54393ed0705d518fe13"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "3a6e2d2e090387702187dc34c1a96a2995987f504f39109d450d42e36f6f9d2d"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "holding",
+        "screenshot": "ax-candidate-1440-holding.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=holding",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "持仓中",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-06 · 成交截止：持仓中 · 后续成交尚未揭示",
+        "notice": "已揭示 2025-01-06 · 持仓中",
+        "note": "已揭示 29 根 · 未来信息已隐藏",
+        "date": "2025-01-06\n⌄",
+        "workspace": "workspace left-open ",
+        "right": {
+          "className": "sidebar right-panel is-collapsed holding-rail",
+          "body": "",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 1120,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1120,
+            "clientWidth": 1120,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 997.52,
+            "y": 7.5,
+            "width": 60,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 58,
+            "clientWidth": 58,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 1071.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1322,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1386,
+            "y": 0,
+            "width": 40,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 39,
+            "clientWidth": 39,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 1120,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1118,
+            "clientWidth": 1118,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 1118,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1118,
+            "clientWidth": 1118,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 1120,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1120,
+            "clientWidth": 1120,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.77,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.77,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 1163.58,
+              "y": 526.48,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {},
+        "canvas": [
+          {
+            "width": 1022,
+            "height": 598,
+            "sha256": "e956b01972763b939a55b4f1f05656b83b88aba4e7cd3d9948a7b91385303670"
+          },
+          {
+            "width": 1022,
+            "height": 598,
+            "sha256": "0c04134ce1011723f4a286f54299d904b4ff0de297f571ee5875be2d16d54b5f"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "1b7ed35975f9b5429b131faca6a608fe28bc86e560824909a34db4ed94002a06"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 1022,
+            "height": 28,
+            "sha256": "f6b5c6fcde942af8e3206986ad3a561df504fa0b80878748258e8ac96ba55e38"
+          },
+          {
+            "width": 1022,
+            "height": 28,
+            "sha256": "18dd9d095be2b04417db938d328208271574a70fbdb0babb3d8ded0bc728c959"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      },
+      {
+        "name": "exit",
+        "screenshot": "ax-candidate-1440-exit.png",
+        "url": "http://127.0.0.1:3099/workspace-v0.1/index.html?variant=A&scene=exit",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scrollWidth": 1440,
+          "scrollHeight": 900,
+          "scrollX": 0,
+          "scrollY": 0
+        },
+        "title": "示例股份 / 600000\n日线 · 第2次交易 · 合成演示行情",
+        "subtitle": "日线 · 第2次交易 · 合成演示行情",
+        "subtitleTextRects": [
+          {
+            "x": 316,
+            "y": 30,
+            "width": 171.875,
+            "height": 15
+          }
+        ],
+        "selected": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+        "rounds": [
+          {
+            "id": "600000-3",
+            "text": "第3次交易\n示例股份 / 600000 · 买入 2025-02-03\n复盘中",
+            "hidden": false
+          },
+          {
+            "id": "600000-2",
+            "text": "第2次交易\n示例股份 / 600000 · 买入 2025-01-06\n已记录",
+            "hidden": false
+          },
+          {
+            "id": "600000-1",
+            "text": "第1次交易\n示例股份 / 600000 · 买入 2024-12-02\n已记录",
+            "hidden": false
+          }
+        ],
+        "filter": "",
+        "stage": "结束之后评价",
+        "market": "复盘起点 2024-12-09 · 行情截止 2025-01-26 · 成交截止：退出后 · 结果与评价可见",
+        "notice": "已到达已揭示的回放停点 · 2025-01-26",
+        "note": "已揭示 49 根 · 未来信息已隐藏",
+        "date": "2025-01-26\n⌄",
+        "workspace": "workspace left-open right-open",
+        "right": {
+          "className": "sidebar right-panel  ",
+          "body": "NODE / A\n结束之后评价\n↓ 可继续向下查看\n›\n\n退出后 · 结果与评价可见 · 结果与评价\n\n原计划（只读）\n\n方向：做多 · 入场 ¥56.00 · 止损 ¥52.00 · 目标 ¥68.00\n\n数量 1000.00 股 · 金额 56000.00 · 仓位 31.11%\n\n已完成交易事实\n\n首次买入：2025-01-06 · ¥51.40 · 800 股\n\n最终平仓：2025-01-26 · ¥46.45 · 600 股\n\n是否提前退出\n未评价\n是\n否\n不确定\n退出原因\n计划符合度\n未评价\n符合\n部分符合\n不符合\n纪律\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n机会\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n仓位\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n体验\n未评分\n资料不足\n1 / 5\n2 / 5\n3 / 5\n4 / 5\n5 / 5\n未知信息保持未揭示，不使用零值代替。\nT\n图上 Text\n点击工具条 T 后先在图上定位\n›",
+          "scrollTop": 0
+        },
+        "rects": {
+          ".workspace": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 856,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "visible": true
+          },
+          ".topbar": {
+            "x": 252,
+            "y": 0,
+            "width": 856,
+            "height": 52,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          ".instrument": {
+            "x": 316,
+            "y": 5,
+            "width": 176,
+            "height": 41,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".instrument small": {
+            "x": 316,
+            "y": 30,
+            "width": 176,
+            "height": 16,
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "overflow": "visible",
+            "scrollWidth": 176,
+            "clientWidth": 176,
+            "visible": true
+          },
+          ".stage-label": {
+            "x": 697.52,
+            "y": 7.5,
+            "width": 96,
+            "height": 36,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 94,
+            "clientWidth": 94,
+            "visible": true
+          },
+          ".save-state": {
+            "x": 807.52,
+            "y": 15.5,
+            "width": 62.48,
+            "height": 20,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 62,
+            "clientWidth": 62,
+            "visible": true
+          },
+          ".back": {
+            "x": 266,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "26px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".close": {
+            "x": 1058,
+            "y": 7.5,
+            "width": 36,
+            "height": 36,
+            "fontSize": "21px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          ".left-panel": {
+            "x": 14,
+            "y": 0,
+            "width": 224,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 223,
+            "clientWidth": 223,
+            "visible": true
+          },
+          ".right-panel": {
+            "x": 1122,
+            "y": 0,
+            "width": 304,
+            "height": 842,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "hidden",
+            "scrollWidth": 303,
+            "clientWidth": 303,
+            "visible": true
+          },
+          ".chart-panel": {
+            "x": 252,
+            "y": 101,
+            "width": 856,
+            "height": 681,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          "#chart": {
+            "x": 253,
+            "y": 154,
+            "width": 854,
+            "height": 627,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 854,
+            "clientWidth": 854,
+            "visible": true
+          },
+          ".replay-bar": {
+            "x": 252,
+            "y": 782,
+            "width": 856,
+            "height": 60,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 856,
+            "clientWidth": 856,
+            "visible": true
+          },
+          "[data-action=step]": {
+            "x": 658.39,
+            "y": 794,
+            "width": 36,
+            "height": 36,
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "visible": true
+          },
+          "[data-action=next-node]": {
+            "x": 869.39,
+            "y": 794,
+            "width": 116.7,
+            "height": 36,
+            "fontSize": "13px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 117,
+            "clientWidth": 117,
+            "visible": true
+          },
+          "[data-action=records]": {
+            "x": 14,
+            "y": 794,
+            "width": 223,
+            "height": 48,
+            "fontSize": "12px",
+            "lineHeight": "20px",
+            "overflow": "visible",
+            "scrollWidth": 221,
+            "clientWidth": 221,
+            "visible": true
+          }
+        },
+        "markers": [
+          {
+            "label": "首次买入",
+            "type": "buy",
+            "rect": {
+              "x": 521.05,
+              "y": 534.42,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          },
+          {
+            "label": "加仓",
+            "type": "add",
+            "rect": {
+              "x": 634.48,
+              "y": 400.66,
+              "width": 34,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 32,
+              "clientWidth": 32,
+              "visible": true
+            }
+          },
+          {
+            "label": "部分退出",
+            "type": "partial",
+            "rect": {
+              "x": 766.89,
+              "y": 482.19,
+              "width": 56,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 54,
+              "clientWidth": 54,
+              "visible": true
+            }
+          },
+          {
+            "label": "退出",
+            "type": "exit",
+            "rect": {
+              "x": 892.13,
+              "y": 477.78,
+              "width": 34,
+              "height": 21,
+              "fontSize": "11px",
+              "lineHeight": "15px",
+              "overflow": "visible",
+              "scrollWidth": 32,
+              "clientWidth": 32,
+              "visible": true
+            }
+          }
+        ],
+        "fields": {},
+        "canvas": [
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "8cf2f3bd2d68fcc5a0aa006b65b1009a6ac4c2299e94b964bd8b01af10e042aa"
+          },
+          {
+            "width": 758,
+            "height": 598,
+            "sha256": "dbe9f82b223838631adb06fb328f68a60ab961903fb42a0d2dd8b652635ac53a"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "148bb8fc38edeb2ee21cf93bc6af2ad4dd0eb09571c21cbc009fb6ae33b9f969"
+          },
+          {
+            "width": 96,
+            "height": 598,
+            "sha256": "d6290c8e2d69758fb5eb0bc867252d6f9192874a773992588780ccc0a82876c6"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "59167a73b3108fdcb9d9c3bbb1ecfee72d5ad61bfe9643625a55a78daf3856bd"
+          },
+          {
+            "width": 758,
+            "height": 28,
+            "sha256": "3a6e2d2e090387702187dc34c1a96a2995987f504f39109d450d42e36f6f9d2d"
+          },
+          {
+            "width": 96,
+            "height": 28,
+            "sha256": "d6bd4f7563582e504fb8d0c0265646817ab8e50dfdcb5cf69bdb1316797a608b"
+          }
+        ]
+      }
+    ],
+    "exceptions": [],
+    "consoleEvents": [],
+    "networkFailures": []
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-06 Asia/Shanghai",
+  "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&scene=holding",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "dpr": 1
+  },
+  "steps": [
+    {
+      "name": "01-initial",
+      "state": {
+        "chart": {
+          "x": 253,
+          "y": 154,
+          "width": 1118,
+          "height": 627
+        },
+        "text": null,
+        "editor": null,
+        "active": "<body>\n  <div id=\"app\" data-variant=\"A\"><main class=\"workspace left-open \"><aside class=\"sidebar left-panel \" aria-label=\"示例股份交易回合列表\">\n    <div class=\"side-head\"><div><span class=\""
+      }
+    }
+  ],
+  "errors": [
+    "Error: chart placement not hittable {\"x\":722.56,\"y\":342.1,\"chart\":false,\"tag\":\"DIV\"}\n    at file:///private/tmp/tradereview-text-manual-check-20261106.mjs:24:20"
+  ]
+}

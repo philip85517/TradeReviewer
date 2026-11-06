@@ -1,0 +1,361 @@
+{
+  "target": "970AD123161C2698FCEF358435644E7F",
+  "steps": [
+    {
+      "name": "buy-before",
+      "chart": {
+        "x": 69,
+        "y": 154,
+        "width": 1062,
+        "height": 296
+      },
+      "bars": 31,
+      "markers": [
+        {
+          "key": "buy",
+          "time": 1738540800,
+          "bar": 28,
+          "x": 956.0967741935484,
+          "y": 322.84681064816044,
+          "relative": {
+            "x": 887.0967741935484,
+            "y": 168.84681064816044
+          },
+          "price": 47.88092082214105,
+          "extent": 15
+        }
+      ],
+      "anchors": [],
+      "badges": [],
+      "conflictLeaders": [],
+      "markerLabels": [
+        {
+          "x": 928.09375,
+          "y": 338,
+          "width": 56,
+          "height": 21,
+          "display": "block",
+          "html": "<span class=\"chart-trade-marker-label marker-buy\" data-trade-marker=\"buy\" aria-label=\"已揭示成交：首次买入\" style=\"left: 859.097px; top: 184.005px;\">首次买入</span>"
+        }
+      ],
+      "toolbars": [
+        {
+          "x": 274.5,
+          "y": 169,
+          "width": 541,
+          "height": 42,
+          "display": "block",
+          "html": "<div class=\"tv-toolbar \" role=\"toolbar\" aria-label=\"图表绘图工具收藏条\">\n      <svg class=\"tv-toolbar-art\" viewBox=\"0 0 916 68\" preserveAspectRatio=\"xMinYMid meet\" aria-hidden=\"true\">\n        <use href=\"../tradingview-alignment-v0.1/icons.svg#toolbar-icons\"></use>\n      </svg>\n      <div class=\"tv-toolbar-hotspots\">\n        <button class=\"tv-hotspot  \" type=\"button\" data-tool=\"GRIP\" data-toolbar-slot=\"GRIP\" aria-label=\"工具条拖拽点（未实现）\" title=\"工具条拖拽点（未实现） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" style=\"--slot-x:2.2926%\"></button><button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D01\" data-toolbar-slot=\"D01\" aria-label=\"斐波那契回撤\" title=\"斐波那契回撤 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" sty"
+        }
+      ],
+      "cards": [],
+      "editor": [],
+      "leaders": [],
+      "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "scene": "holding",
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-05 · 成交截止：持仓中 · 后续成交尚未揭示"
+    },
+    {
+      "name": "buy-conflict-A-clicked",
+      "hit": {
+        "tag": "CANVAS",
+        "cls": "",
+        "id": "",
+        "html": "<canvas width=\"966\" height=\"268\" style=\"width: 966px; height: 268px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "chart": {
+        "x": 69,
+        "y": 154,
+        "width": 1062,
+        "height": 296
+      },
+      "bars": 31,
+      "markers": [
+        {
+          "key": "buy",
+          "time": 1738540800,
+          "bar": 28,
+          "x": 956.0967741935484,
+          "y": 322.84681064816044,
+          "relative": {
+            "x": 887.0967741935484,
+            "y": 168.84681064816044
+          },
+          "price": 47.88092082214105,
+          "extent": 15
+        }
+      ],
+      "anchors": [
+        {
+          "x": 952.09375,
+          "y": 318,
+          "width": 8,
+          "height": 8,
+          "display": "block",
+          "html": "<span class=\"chart-text-anchor\" data-text-editor-anchor=\"\" aria-hidden=\"true\" style=\"left: 883.097px; top: 164px;\"></span>"
+        }
+      ],
+      "badges": [],
+      "conflictLeaders": [],
+      "markerLabels": [
+        {
+          "x": 928.09375,
+          "y": 338,
+          "width": 56,
+          "height": 21,
+          "display": "block",
+          "html": "<span class=\"chart-trade-marker-label marker-buy\" data-trade-marker=\"buy\" aria-label=\"已揭示成交：首次买入\" style=\"left: 859.097px; top: 184.005px;\">首次买入</span>"
+        }
+      ],
+      "toolbars": [
+        {
+          "x": 274.5,
+          "y": 169,
+          "width": 541,
+          "height": 42,
+          "display": "block",
+          "html": "<div class=\"tv-toolbar \" role=\"toolbar\" aria-label=\"图表绘图工具收藏条\">\n      <svg class=\"tv-toolbar-art\" viewBox=\"0 0 916 68\" preserveAspectRatio=\"xMinYMid meet\" aria-hidden=\"true\">\n        <use href=\"../tradingview-alignment-v0.1/icons.svg#toolbar-icons\"></use>\n      </svg>\n      <div class=\"tv-toolbar-hotspots\">\n        <button class=\"tv-hotspot  \" type=\"button\" data-tool=\"GRIP\" data-toolbar-slot=\"GRIP\" aria-label=\"工具条拖拽点（未实现）\" title=\"工具条拖拽点（未实现） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" style=\"--slot-x:2.2926%\"></button><button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D01\" data-toolbar-slot=\"D01\" aria-label=\"斐波那契回撤\" title=\"斐波那契回撤 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" sty"
+        }
+      ],
+      "cards": [],
+      "editor": [
+        {
+          "x": 79,
+          "y": 191.390625,
+          "width": 255,
+          "height": 167,
+          "display": "block",
+          "html": "<div class=\"text-callout\" data-text-editor=\"\" style=\"left: 10px; top: 37.4px; width: 255px; max-width: 866px; max-height: 194.4px; overflow-y: auto;\"><b>Text · 2025-02-03 · 48.00</b><textarea id=\"textInput\" aria-label=\"图上 Text 内容\"></textarea><div><button data-action=\"text-cancel\">取消</button><button class=\"primary\" data-action=\"text-confirm\">确认</button></div></div>"
+        }
+      ],
+      "leaders": [
+        {
+          "x": 69,
+          "y": 154,
+          "width": 1062,
+          "height": 296,
+          "display": "block",
+          "html": "<svg class=\"chart-text-leader\" data-text-editor-leader=\"\" aria-hidden=\"true\" style=\"left: 0px; top: 0px; width: 100%; height: 100%; transform: none;\"><path d=\"M 887.0967741935484 168 L 265 168\"></path></svg>"
+        }
+      ],
+      "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "scene": "holding",
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-05 · 成交截止：持仓中 · 后续成交尚未揭示"
+    },
+    {
+      "name": "buy-conflict-A-confirmed",
+      "chart": {
+        "x": 69,
+        "y": 154,
+        "width": 1062,
+        "height": 296
+      },
+      "bars": 31,
+      "markers": [
+        {
+          "key": "buy",
+          "time": 1738540800,
+          "bar": 28,
+          "x": 956.0967741935484,
+          "y": 322.84681064816044,
+          "relative": {
+            "x": 887.0967741935484,
+            "y": 168.84681064816044
+          },
+          "price": 47.88092082214105,
+          "extent": 15
+        }
+      ],
+      "anchors": [],
+      "badges": [],
+      "conflictLeaders": [],
+      "markerLabels": [
+        {
+          "x": 928.09375,
+          "y": 347.390625,
+          "width": 56,
+          "height": 21,
+          "display": "block",
+          "html": "<span class=\"chart-trade-marker-label marker-buy\" data-trade-marker=\"buy\" aria-label=\"已揭示成交：首次买入\" style=\"left: 859.097px; top: 193.4px;\">首次买入</span>"
+        }
+      ],
+      "toolbars": [
+        {
+          "x": 274.5,
+          "y": 169,
+          "width": 541,
+          "height": 42,
+          "display": "block",
+          "html": "<div class=\"tv-toolbar \" role=\"toolbar\" aria-label=\"图表绘图工具收藏条\">\n      <svg class=\"tv-toolbar-art\" viewBox=\"0 0 916 68\" preserveAspectRatio=\"xMinYMid meet\" aria-hidden=\"true\">\n        <use href=\"../tradingview-alignment-v0.1/icons.svg#toolbar-icons\"></use>\n      </svg>\n      <div class=\"tv-toolbar-hotspots\">\n        <button class=\"tv-hotspot  \" type=\"button\" data-tool=\"GRIP\" data-toolbar-slot=\"GRIP\" aria-label=\"工具条拖拽点（未实现）\" title=\"工具条拖拽点（未实现） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" style=\"--slot-x:2.2926%\"></button><button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D01\" data-toolbar-slot=\"D01\" aria-label=\"斐波那契回撤\" title=\"斐波那契回撤 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" sty"
+        }
+      ],
+      "cards": [
+        {
+          "x": 925.90625,
+          "y": 322,
+          "width": 104.09375,
+          "height": 24,
+          "display": "block",
+          "html": "<div class=\"chart-text\" style=\"left: 856.906px; top: 168px; max-width: 280px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabindex=\"0\" aria-label=\"编辑图上文字：buy-conflict-A，锚点 2025-02-03 · 48.00\" title=\"点击或按 Enter、空格编辑\"><b>buy-conflict-A</b></div>"
+        }
+      ],
+      "editor": [],
+      "leaders": [],
+      "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "scene": "holding",
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-05 · 成交截止：持仓中 · 后续成交尚未揭示"
+    },
+    {
+      "name": "buy-conflict-B-clicked",
+      "hit": {
+        "tag": "DIV",
+        "cls": "chart-text",
+        "id": "",
+        "html": "<div class=\"chart-text\" style=\"left: 856.906px; top: 168px; max-width: 280px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabindex=\"0\" aria-label=\"编辑图上文字：buy-conflict-A，锚点 2025-02-03 · 48.00\" title=\"点击或按 Enter、空格编辑\"><b>buy-conflict-A</b></div>"
+      },
+      "chart": {
+        "x": 69,
+        "y": 154,
+        "width": 1062,
+        "height": 296
+      },
+      "bars": 31,
+      "markers": [
+        {
+          "key": "buy",
+          "time": 1738540800,
+          "bar": 28,
+          "x": 956.0967741935484,
+          "y": 322.84681064816044,
+          "relative": {
+            "x": 887.0967741935484,
+            "y": 168.84681064816044
+          },
+          "price": 47.88092082214105,
+          "extent": 15
+        }
+      ],
+      "anchors": [
+        {
+          "x": 952.09375,
+          "y": 318,
+          "width": 8,
+          "height": 8,
+          "display": "block",
+          "html": "<span class=\"chart-text-anchor\" data-text-editor-anchor=\"\" aria-hidden=\"true\" style=\"left: 883.097px; top: 164px;\"></span>"
+        }
+      ],
+      "badges": [],
+      "conflictLeaders": [],
+      "markerLabels": [
+        {
+          "x": 928.09375,
+          "y": 338,
+          "width": 56,
+          "height": 21,
+          "display": "block",
+          "html": "<span class=\"chart-trade-marker-label marker-buy\" data-trade-marker=\"buy\" aria-label=\"已揭示成交：首次买入\" style=\"left: 859.097px; top: 184.005px;\">首次买入</span>"
+        }
+      ],
+      "toolbars": [
+        {
+          "x": 274.5,
+          "y": 169,
+          "width": 541,
+          "height": 42,
+          "display": "block",
+          "html": "<div class=\"tv-toolbar \" role=\"toolbar\" aria-label=\"图表绘图工具收藏条\">\n      <svg class=\"tv-toolbar-art\" viewBox=\"0 0 916 68\" preserveAspectRatio=\"xMinYMid meet\" aria-hidden=\"true\">\n        <use href=\"../tradingview-alignment-v0.1/icons.svg#toolbar-icons\"></use>\n      </svg>\n      <div class=\"tv-toolbar-hotspots\">\n        <button class=\"tv-hotspot  \" type=\"button\" data-tool=\"GRIP\" data-toolbar-slot=\"GRIP\" aria-label=\"工具条拖拽点（未实现）\" title=\"工具条拖拽点（未实现） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" style=\"--slot-x:2.2926%\"></button><button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D01\" data-toolbar-slot=\"D01\" aria-label=\"斐波那契回撤\" title=\"斐波那契回撤 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" sty"
+        }
+      ],
+      "cards": [],
+      "editor": [
+        {
+          "x": 79,
+          "y": 191.390625,
+          "width": 255,
+          "height": 167,
+          "display": "block",
+          "html": "<div class=\"text-callout\" data-text-editor=\"\" style=\"left: 10px; top: 37.4px; width: 255px; max-width: 866px; max-height: 194.4px; overflow-y: auto;\"><b>Text · 2025-02-03 · 48.00</b><textarea id=\"textInput\" aria-label=\"图上 Text 内容\">buy-conflict-A</textarea><div><button data-action=\"text-cancel\">取消</button><button class=\"primary\" data-action=\"text-confirm\">确认</button></div></div>"
+        }
+      ],
+      "leaders": [
+        {
+          "x": 69,
+          "y": 154,
+          "width": 1062,
+          "height": 296,
+          "display": "block",
+          "html": "<svg class=\"chart-text-leader\" data-text-editor-leader=\"\" aria-hidden=\"true\" style=\"left: 0px; top: 0px; width: 100%; height: 100%; transform: none;\"><path d=\"M 887.0967741935484 168 L 265 168\"></path></svg>"
+        }
+      ],
+      "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "scene": "holding",
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-05 · 成交截止：持仓中 · 后续成交尚未揭示"
+    },
+    {
+      "name": "buy-conflict-B-confirmed",
+      "chart": {
+        "x": 69,
+        "y": 154,
+        "width": 1062,
+        "height": 296
+      },
+      "bars": 31,
+      "markers": [
+        {
+          "key": "buy",
+          "time": 1738540800,
+          "bar": 28,
+          "x": 956.0967741935484,
+          "y": 322.84681064816044,
+          "relative": {
+            "x": 887.0967741935484,
+            "y": 168.84681064816044
+          },
+          "price": 47.88092082214105,
+          "extent": 15
+        }
+      ],
+      "anchors": [],
+      "badges": [],
+      "conflictLeaders": [],
+      "markerLabels": [
+        {
+          "x": 928.09375,
+          "y": 347.390625,
+          "width": 56,
+          "height": 21,
+          "display": "block",
+          "html": "<span class=\"chart-trade-marker-label marker-buy\" data-trade-marker=\"buy\" aria-label=\"已揭示成交：首次买入\" style=\"left: 859.097px; top: 193.4px;\">首次买入</span>"
+        }
+      ],
+      "toolbars": [
+        {
+          "x": 274.5,
+          "y": 169,
+          "width": 541,
+          "height": 42,
+          "display": "block",
+          "html": "<div class=\"tv-toolbar \" role=\"toolbar\" aria-label=\"图表绘图工具收藏条\">\n      <svg class=\"tv-toolbar-art\" viewBox=\"0 0 916 68\" preserveAspectRatio=\"xMinYMid meet\" aria-hidden=\"true\">\n        <use href=\"../tradingview-alignment-v0.1/icons.svg#toolbar-icons\"></use>\n      </svg>\n      <div class=\"tv-toolbar-hotspots\">\n        <button class=\"tv-hotspot  \" type=\"button\" data-tool=\"GRIP\" data-toolbar-slot=\"GRIP\" aria-label=\"工具条拖拽点（未实现）\" title=\"工具条拖拽点（未实现） · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" style=\"--slot-x:2.2926%\"></button><button class=\"tv-hotspot  \" type=\"button\" data-tool=\"D01\" data-toolbar-slot=\"D01\" aria-label=\"斐波那契回撤\" title=\"斐波那契回撤 · 本轮未实现，仅保留候选槽位\" disabled=\"\" aria-disabled=\"true\" sty"
+        }
+      ],
+      "cards": [
+        {
+          "x": 829.90625,
+          "y": 322,
+          "width": 200.09375,
+          "height": 24,
+          "display": "block",
+          "html": "<div class=\"chart-text\" style=\"left: 760.906px; top: 168px; max-width: 280px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabindex=\"0\" aria-label=\"编辑图上文字：buy-conflict-Abuy-conflict-B，锚点 2025-02-03 · 48.00\" title=\"点击或按 Enter、空格编辑\"><b>buy-conflict-Abuy-conflict-B</b></div>"
+        }
+      ],
+      "editor": [],
+      "leaders": [],
+      "url": "http://127.0.0.1:3098/workspace-v0.1/index.html?variant=A&probe=kept&scene=holding#audit-anchor",
+      "scene": "holding",
+      "notice": "复盘起点 2025-01-06 · 行情截止 2025-02-05 · 成交截止：持仓中 · 后续成交尚未揭示"
+    }
+  ],
+  "errors": [],
+  "error": "Error: Not clickable [data-text-id=\"1\"]: null\n    at click (file:///private/tmp/tradereview-direct-text-same-point-v2.mjs:12:495)\n    at async file:///private/tmp/tradereview-direct-text-same-point-v2.mjs:30:2"
+}

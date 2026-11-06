@@ -1,0 +1,2396 @@
+[
+  {
+    "name": "complete-1440",
+    "data": {
+      "chart": "截至 2025-02-06 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2025-02-06 · 已运行至 2025-02-06已到示意范围末尾只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "complete-1280",
+    "data": {
+      "chart": "截至 2025-02-06 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2025-02-06 · 已运行至 2025-02-06已到示意范围末尾只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "t0-1280",
+    "data": {
+      "chart": "截至 2024-06-14 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-14 · 已运行至 2024-06-14单步推进 1 日只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "first-step-1280",
+    "data": {
+      "chart": "截至 2024-06-17 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-17 · 已运行至 2024-06-17单步推进 1 日只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "first-trade-1280",
+    "data": {
+      "chart": "截至 2024-06-18 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-18 · 已运行至 2024-06-18单步推进 1 日只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "running-1280",
+    "data": {
+      "chart": "截至 2024-06-18 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "暂停",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-18 · 已运行至 2024-06-18单步推进 1 日只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "played-paused-1280",
+    "data": {
+      "chart": "截至 2024-08-01 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-08-01 · 已运行至 2024-08-01单步推进 1 日只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "result-1280",
+    "data": {
+      "chart": "结果截止 2024-08-01 · 当前组合",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "结果截止 2024-08-01 · 已运行至 2024-08-01返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "compare-1280",
+    "data": {
+      "chart": "结果截止 2024-06-19 · 共同有效范围",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "结果截止 2024-06-19 · 已运行至 2024-08-01返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "event-1280",
+    "data": {
+      "chart": "事件日 2024-06-18 · 全工作区同步投影",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "事件日 2024-06-18 · 已运行至 2024-08-01返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "review-t0-1440",
+    "data": {
+      "chart": "截至 2024-06-14 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-14 · 已运行至 2025-02-06回看中 · 先返回最新再推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "result-1440",
+    "data": {
+      "chart": "结果截止 2025-02-06 · 当前组合",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "结果截止 2025-02-06 · 已运行至 2025-02-06返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "compare-1440",
+    "data": {
+      "chart": "结果截止 2024-06-19 · 共同有效范围",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "结果截止 2024-06-19 · 已运行至 2025-02-06返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "event-1440",
+    "data": {
+      "chart": "事件日 2024-06-18 · 全工作区同步投影",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "事件日 2024-06-18 · 已运行至 2025-02-06返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "config-1440",
+    "data": {
+      "chart": "结果截止 2024-06-19 · 共同有效范围",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1386,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 702,
+          "w": 320,
+          "x": 1110,
+          "y": 190
+        },
+        ".plot": {
+          "h": 584,
+          "w": 1036,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 900,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 1036,
+          "x": 65,
+          "y": 819
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 1036,
+          "x": 65,
+          "y": 863
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1386,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 702,
+          "w": 1038,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "结果截止 2024-06-19 · 已运行至 2025-02-06返回观察后推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      }
+    }
+  },
+  {
+    "name": "failure-1280",
+    "data": {
+      "chart": "截至 2024-06-19 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-19 · 已运行至 2024-06-19组合数据截至 2024-06-19 · 暂不能推进失败组已保留 · 最后完整日可查看",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "pressure-1280",
+    "data": {
+      "chart": "截至 2024-06-20 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1226,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 950,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 876,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 876,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 876,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1226,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 878,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-20 · 已运行至 2024-06-21回看中 · 先返回最新再推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      }
+    }
+  },
+  {
+    "name": "boundary-1299",
+    "data": {
+      "chart": "截至 2024-06-20 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1245,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1245,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 969,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 895,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 895,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 895,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1245,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1245,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 897,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-20 · 已运行至 2024-06-21回看中 · 先返回最新再推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1299
+      }
+    }
+  },
+  {
+    "name": "boundary-1301",
+    "data": {
+      "chart": "截至 2024-06-20 16:00 · 当前查看日",
+      "controls": [
+        {
+          "height": 36,
+          "name": "显示组合净值",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "显示标的 K 线",
+          "width": 73.8203125
+        },
+        {
+          "height": 36,
+          "name": "图表视野说明",
+          "width": 72
+        },
+        {
+          "height": 36,
+          "name": "回看上一日",
+          "width": 83
+        },
+        {
+          "height": 36,
+          "name": "查看日期",
+          "width": 130
+        },
+        {
+          "height": 36,
+          "name": "回到最新",
+          "width": 96
+        },
+        {
+          "height": 36,
+          "name": "播放",
+          "width": 44
+        },
+        {
+          "height": 36,
+          "name": "推进下一日",
+          "width": 109
+        },
+        {
+          "height": 36,
+          "name": "播放速度",
+          "width": 58
+        }
+      ],
+      "fonts": {
+        "body": "Geist, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "number": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace"
+      },
+      "overflow": false,
+      "rects": {
+        ".design-strip": {
+          "h": 38,
+          "w": 1247,
+          "x": 54,
+          "y": 144
+        },
+        ".identity": {
+          "h": 48,
+          "w": 1247,
+          "x": 54,
+          "y": 48
+        },
+        ".inspect": {
+          "h": 602,
+          "w": 320,
+          "x": 971,
+          "y": 190
+        },
+        ".plot": {
+          "h": 484,
+          "w": 897,
+          "x": 65,
+          "y": 235
+        },
+        ".rail": {
+          "h": 800,
+          "w": 54,
+          "x": 0,
+          "y": 0
+        },
+        ".replay": {
+          "h": 44,
+          "w": 897,
+          "x": 65,
+          "y": 719
+        },
+        ".status-line": {
+          "h": 28,
+          "w": 897,
+          "x": 65,
+          "y": 763
+        },
+        ".summary": {
+          "h": 48,
+          "w": 1247,
+          "x": 54,
+          "y": 96
+        },
+        ".topbar": {
+          "h": 48,
+          "w": 1247,
+          "x": 54,
+          "y": 0
+        },
+        ".workspace": {
+          "h": 602,
+          "w": 899,
+          "x": 64,
+          "y": 190
+        }
+      },
+      "status": "当前查看日 2024-06-20 · 已运行至 2024-06-21回看中 · 先返回最新再推进只读合成数据",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1301
+      }
+    }
+  }
+]

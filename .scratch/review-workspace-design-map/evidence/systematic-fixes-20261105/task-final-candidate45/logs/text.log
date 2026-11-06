@@ -1,0 +1,165 @@
+CHECKPOINT buy-before 171 ms
+CHECKPOINT buy-conflict-A-confirmed 163 ms
+CHECKPOINT buy-conflict-B-confirmed 159 ms
+CHECKPOINT edit-second-before-cancel 173 ms
+CHECKPOINT edit-second-cancel 178 ms
+CHECKPOINT date-back-28 165 ms
+CHECKPOINT date-forward-31 196 ms
+CHECKPOINT pan-after 165 ms
+CHECKPOINT price-zoom-after 171 ms
+{
+  "steps": [
+    {
+      "name": "buy-before",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 0,
+      "badges": [],
+      "cards": [],
+      "editor": 0
+    },
+    {
+      "name": "buy-conflict-A-clicked",
+      "hit": {
+        "tag": "CANVAS",
+        "cls": "",
+        "id": "",
+        "html": "<canvas width=\"966\" height=\"268\" style=\"width: 966px; height: 268px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 1,
+      "badges": [],
+      "cards": [],
+      "editor": 1
+    },
+    {
+      "name": "buy-conflict-A-confirmed",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 1,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"left: 715.675px; top: 116px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde"
+      ],
+      "editor": 0
+    },
+    {
+      "name": "buy-conflict-B-clicked",
+      "hit": {
+        "tag": "CANVAS",
+        "cls": "",
+        "id": "",
+        "html": "<canvas width=\"966\" height=\"268\" style=\"width: 966px; height: 268px; position: absolute; z-index: 2; left: 0px; top: 0px;\"></canvas>"
+      },
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"left: 715.675px; top: 116px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde"
+      ],
+      "editor": 1
+    },
+    {
+      "name": "buy-conflict-B-confirmed",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"left: 715.675px; top: 116px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde",
+        "<div class=\"chart-text\" style=\"left: 559.253px; top: 140.5px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"1\" role=\"button\" tabin"
+      ],
+      "editor": 0
+    },
+    {
+      "name": "edit-second-before-cancel",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"left: 715.675px; top: 116px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde"
+      ],
+      "editor": 1
+    },
+    {
+      "name": "edit-second-cancel",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"left: 715.675px; top: 116px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde",
+        "<div class=\"chart-text\" style=\"left: 559.253px; top: 140.5px; max-width: 280px; max-height: 194.4px; overflow-y: auto;\" data-action=\"text-edit\" data-text-id=\"1\" role=\"button\" tabin"
+      ],
+      "editor": 0
+    },
+    {
+      "name": "date-back-draft",
+      "draft": "2025-02-02"
+    },
+    {
+      "name": "date-back-28",
+      "bars": 28,
+      "scene": "entry",
+      "markers": 0,
+      "anchors": 0,
+      "badges": [],
+      "cards": [],
+      "editor": 0
+    },
+    {
+      "name": "date-forward-draft",
+      "draft": "2025-02-05"
+    },
+    {
+      "name": "date-forward-31",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 661.851px; top: 116px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabinde",
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 505.429px; top: 140.5px;\" data-action=\"text-edit\" data-text-id=\"1\" role=\"button\" tabin"
+      ],
+      "editor": 0
+    },
+    {
+      "name": "pan-after",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 727.578px; top: 149.4px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tabin",
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 571.156px; top: 117.804px;\" data-action=\"text-edit\" data-text-id=\"1\" role=\"button\" tab"
+      ],
+      "editor": 0
+    },
+    {
+      "name": "price-zoom-after",
+      "bars": 31,
+      "scene": "holding",
+      "markers": 1,
+      "anchors": 2,
+      "badges": [],
+      "cards": [
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 727.578px; top: 142.852px;\" data-action=\"text-edit\" data-text-id=\"0\" role=\"button\" tab",
+        "<div class=\"chart-text\" style=\"max-width: 280px; max-height: 194.4px; overflow-y: auto; left: 571.156px; top: 101.352px;\" data-action=\"text-edit\" data-text-id=\"1\" role=\"button\" tab"
+      ],
+      "editor": 0
+    }
+  ],
+  "errors": []
+}

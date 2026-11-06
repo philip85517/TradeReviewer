@@ -1,0 +1,69 @@
+{
+  "status": "PASS",
+  "iteration": "qa-03",
+  "page_count": 6,
+  "reviewed_by": "root coordinator",
+  "all_pages_viewed_at_original_detail": true,
+  "cjk_glyphs_clipping_tables_headers_footers": "PASS",
+  "cached_toc_matches_footer_numbering": "PASS",
+  "reference_retained": "PASS",
+  "content_independent_review": "PASS",
+  "live_Word_field_refresh": "DEFERRED; updateFields true; cached contents verified",
+  "ui_persistence_and_full_business_acceptance": "NOT VERIFIED; consultation only",
+  "previous_iterations": {
+    "qa-01": "FAIL: missing CJK glyphs",
+    "qa-02": "FAIL: short trailing page and stale appendix TOC page",
+    "font_probe_without_config": "FAIL: Chinese absent in all 3 samples",
+    "font_probe_with_config": "PASS: process-local fontconfig repairs all 3 samples"
+  },
+  "pages": [
+    {
+      "page": "page-1.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "309ac340d0b4ff03941b86fa2c3e9e367ab4829759b7c450f78ee9cb0c324f87"
+    },
+    {
+      "page": "page-2.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "70581c18da89fdba112cfc4a4e75cbd20c144f1e31beb2647954872c2ce7193c"
+    },
+    {
+      "page": "page-3.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "202bbe378c36e0fd94a45771b7caac51f476b023c7d14fc2cf6d3aaa8908e025"
+    },
+    {
+      "page": "page-4.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "46fa8c9bd234f8992e2b3fb3656e52609c5d121521ca555af1c14de32fff6d05"
+    },
+    {
+      "page": "page-5.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "504d8e75ac49a34148aacd8f6048afa49144ce76c15b9567da6f56c814832248"
+    },
+    {
+      "page": "page-6.png",
+      "dimensions": [
+        1547,
+        2002
+      ],
+      "sha256": "5fcf7ae048ab991972766dfc79fb1d5d5d5a1637122bf18ed4073fbf8df78ca0"
+    }
+  ]
+}

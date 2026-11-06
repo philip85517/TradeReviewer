@@ -1,0 +1,51 @@
+{
+  "checked_at": "2026-09-30T14:44:24.580672+08:00",
+  "scope": "design documentation only; no browser/UI/database acceptance",
+  "documents_checked": 9,
+  "local_link_targets_checked": 101,
+  "missing_links": [],
+  "reference_images_checked": [
+    "screenshots/creation-baseline-1440.jpg",
+    "strategy-library-wireframes/screenshots/feedback4/f18-1280.png",
+    "strategy-library-wireframes/screenshots/feedback5/f01-1280.png",
+    "strategy-library-wireframes/screenshots/feedback5/f14-1440.png",
+    "workbench-design/style-04-evidence/compare-1440.png",
+    "workbench-design/style-04-evidence/complete-1280.png",
+    "workbench-design/style-04-evidence/complete-1440.png",
+    "workbench-design/style-04-evidence/config-1440.png",
+    "workbench-design/style-04-evidence/delivery-default.png",
+    "workbench-design/style-04-evidence/event-1440.png",
+    "workbench-design/style-04-evidence/first-trade-1280.png",
+    "workbench-design/style-04-evidence/pressure-1280.png",
+    "workbench-design/style-04-evidence/t0-1280.png"
+  ],
+  "missing_reference_images": [],
+  "requirements_checked": [
+    "IF01",
+    "IF02",
+    "IF03",
+    "IF04",
+    "IF05",
+    "IF06",
+    "IF07",
+    "IF08",
+    "IF09",
+    "IF10"
+  ],
+  "missing_requirement_mapping": [],
+  "peer_backlink_files_checked": [
+    ".scratch/strategy-portfolio-backtesting/issues/09-strategy-library-interaction-model.md",
+    ".scratch/strategy-portfolio-backtesting/issues/10-strategy-library-creation-prototype.md",
+    ".scratch/strategy-portfolio-backtesting/strategy-library-interaction-model.md",
+    "docs/specs/2026-09-30-strategy-library-and-experiments.md",
+    ".scratch/strategy-portfolio-backtesting/strategy-library-wireframes/README.md",
+    ".scratch/strategy-portfolio-backtesting/README.md"
+  ],
+  "missing_peer_backlinks": [],
+  "git_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "workbench_index_sha256": "15d53141389bb3ec615100083a412f88fbbedddaf18636562d2171c87be8c2a7",
+  "mechanical_checks_pass": true
+}

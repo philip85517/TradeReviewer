@@ -1,0 +1,1352 @@
+[
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate14/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate14/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate13/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate13/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate12/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate12/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate11/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate11/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-03-select-independent/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-03-select-independent/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-03-final/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-03-final/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-01-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-01-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-01a/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-01a/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-02-coordinator-final/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-coordinator-final/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-02-final-independent-visual/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-final-independent-visual/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/independent-acceptance-20261104/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/PLAN.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/PLAN.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/final-review-v10/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v10/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/candidate-v10/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v10/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/candidate-v11/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v11/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/final-review-v12/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v12/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/coordinator/v12-edge-editor.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v12-edge-editor.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/coordinator/v13-1280-text-edit.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v13-1280-text-edit.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/coordinator/v13-1280-text-49.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v13-1280-text-49.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/final-review-v13/v13-1280-edit-line-crop.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v13/v13-1280-edit-line-crop.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/REPORT-DRAFT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/REPORT-DRAFT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/review-fixes-20261028/final-review-v37-interaction-2/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37-interaction-2/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate06/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate06/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate07/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate07/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate08/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate08/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate09/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate09/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate10/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate10/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate15/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate15/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-06-candidate17/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-06-candidate17/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-07-candidate18/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-07-candidate18/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-08-candidate20/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-08-candidate20/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-09-candidate31/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-09-candidate31/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate38-stress-scrolled/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate38-stress-scrolled/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-03-native-select-isolation/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-03-native-select-isolation/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-final-candidate31/USER-SUMMARY.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/USER-SUMMARY.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/README.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-contract-review.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-contract-review.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/independent-acceptance-20261104/visual/reproduce-anchor-overlap.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/reproduce-anchor-overlap.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate15-stress/exit-confirmed.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate15-stress/exit-confirmed.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-contract-review.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-contract-review.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-contract-review.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-contract-review.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-final-candidate31/text/buy-conflict-B-confirmed.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/text/buy-conflict-B-confirmed.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate41-scrolled/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate41-scrolled/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-contract-review.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-contract-review.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-04-candidate43-stage/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate43-stage/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/DESIGN-COVERAGE.md",
+    "url": "evidence/systematic-fixes-20261105/task-final-candidate31/text-coordinate-diagnosis/observations.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/text-coordinate-diagnosis/observations.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/04-immersive-layout.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/06-plan-and-notes.md",
+    "url": "../evidence/systematic-fixes-20261105/task-09-candidate29/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-09-candidate29/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/06-plan-and-notes.md",
+    "url": "../evidence/systematic-fixes-20261105/task-09-candidate31/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-09-candidate31/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/independent-acceptance-20261104/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/systematic-fixes-20261105/PLAN.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/PLAN.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37-interaction-2/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37-interaction-2/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/ACCEPTANCE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/12-integrated-acceptance.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate44-stage/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate44-stage/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/PLAN.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/PLAN.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-01/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-01/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-01-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-01-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-01-independent/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-01-independent/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v11-1291-retest-initial.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v11-1291-retest-initial.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v11-1291-entry-retest.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v11-1291-entry-retest.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v11/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v11/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v11/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v11/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v11-1291-retest-initial.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v11-1291-retest-initial.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v11-1291-entry-retest.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v11-1291-entry-retest.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v12-1291-entry.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v12-1291-entry.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v33/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v33/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v33-1280-phase-before.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v33-1280-phase-before.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v33-1280-phase-after.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v33-1280-phase-after.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v34-1108-entry-right.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v34-1108-entry-right.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v34/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v34/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v35-1108-entry-before-scroll.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v35-1108-entry-before-scroll.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v35-1108-entry-after-mouse-scroll.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v35-1108-entry-after-mouse-scroll.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-timeaxis-before.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-timeaxis-before.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-timeaxis-after.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-timeaxis-after.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/23-side-overlap-before.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/23-side-overlap-before.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/23-side-overlap-center-click.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/23-side-overlap-center-click.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/23-side-overlap-edge-click.ax.txt",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/23-side-overlap-edge-click.ax.txt"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/23-side-overlap-geometry.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/23-side-overlap-geometry.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/21-records-side-return.ax.txt",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/21-records-side-return.ax.txt"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/default-date-dialog.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/default-date-dialog.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/default-date-modal-open.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/default-date-modal-open.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/39-1280-center-click.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/39-1280-center-click.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/39-1280-side-geometry.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/39-1280-side-geometry.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/40-1440-price-axis-measurements.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/40-1440-price-axis-measurements.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/40-1440-left-open.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/40-1440-left-open.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/40-1440-both-open.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/40-1440-both-open.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/40-1440-right-open.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/40-1440-right-open.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-02-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-02-independent-visual/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-independent-visual/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-02-manual-replay/observations.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-manual-replay/observations.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-02-coordinator-final/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-coordinator-final/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/14-review-responsive-collision.md",
+    "url": "../evidence/systematic-fixes-20261105/task-02-final-independent-visual/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-02-final-independent-visual/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/15-review-replay-date-state.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/15-review-replay-date-state.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/15-review-replay-date-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/15-review-replay-date-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-date-open.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-date-open.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/16-review-direction-selection.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/16-review-direction-selection.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/16-review-direction-selection.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/16-review-direction-selection.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v10/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v10/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v10/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v10/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v11/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v11/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v12/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v12/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v12-edge-editor.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v12-edge-editor.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v12/v12-edge-editor-conflict-crop.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v12/v12-edge-editor-conflict-crop.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v13-1280-text-edit.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v13-1280-text-edit.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v13/v13-1280-edit-line-crop.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v13/v13-1280-edit-line-crop.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-text-two-confirmed.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-text-two-confirmed.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-text-after-pan.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-text-after-pan.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-text-after-price-zoom.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-text-after-price-zoom.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/reproduce-anchor-overlap.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/reproduce-anchor-overlap.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/reproduce-anchor-detail.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/reproduce-anchor-detail.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-05/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-05/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-coordinator/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-06/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-06/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate06/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate06/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate06-independent/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate06-independent/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-07/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-07/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate07/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate07/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-08/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-08/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate08/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate08/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-performance-diagnosis.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-performance-diagnosis.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-09/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-09/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate09/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate09/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-10/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-10/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate10/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate10/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate10-independent/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate10-independent/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-11/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-11/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate11/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate11/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-12/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-12/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate12/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate12/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-13/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-13/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate13/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate13/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-14/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-14/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate14/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate14/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate14-static-review.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate14-static-review.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate15/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate15/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/candidate-20261105-37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/candidate-20261105-37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate37-stress/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate38-stress-scrolled/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate38-stress-scrolled/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate38-independent/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate38-independent/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate39-initial/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate39-initial/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate40-initial/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate40-initial/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate41-scrolled/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate41-scrolled/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-final-candidate31/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate43-stage/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate43-stage/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate43-stage/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate43-stage/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate44-stage/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate44-stage/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate44-stage/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-final-candidate31/text-coordinate-diagnosis/observations.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-final-candidate31/text-coordinate-diagnosis/observations.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/17-review-text-overlay-state.md",
+    "url": "../evidence/systematic-fixes-20261105/task-04-candidate45-stage/INDEPENDENT-VISUAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-04-candidate45-stage/INDEPENDENT-VISUAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/18-review-text-keyboard.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/18-review-text-keyboard.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/18-review-text-keyboard.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/18-review-text-keyboard.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/tv-reference-toolbar-crop.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/tv-reference-toolbar-crop.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/candidate-toolbar-crop.png",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/candidate-toolbar-crop.png"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/independent-acceptance-20261104/visual/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/visual/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/19-review-tradingview-replay-alignment.md",
+    "url": "../evidence/systematic-fixes-20261105/task-05-candidate16/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-05-candidate16/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v10/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v10/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v10/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v10/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v11/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v11/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v33-play-start.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v33-play-start.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v33-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v33-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v33/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v33/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-journey-33.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-journey-33.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-journey-34.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-journey-34.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-journey-41.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-journey-41.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-journey-49.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-journey-49.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/20-review-next-trade-node-contract.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/21-review-dialog-keyboard-focus.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/21-review-dialog-keyboard-focus.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/21-review-dialog-keyboard-focus.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/21-review-dialog-keyboard-focus.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/22-review-control-hit-areas.md",
+    "url": "../evidence/independent-design-review-20261028/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-design-review-20261028/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/22-review-control-hit-areas.md",
+    "url": "../evidence/review-fixes-20261028/candidate-v37/manifest.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/candidate-v37/manifest.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/22-review-control-hit-areas.md",
+    "url": "../evidence/review-fixes-20261028/coordinator/v37-audit-ax.json",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/coordinator/v37-audit-ax.json"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/22-review-control-hit-areas.md",
+    "url": "../evidence/review-fixes-20261028/final-review-v37/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/final-review-v37/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/23-review-selection-accessibility.md",
+    "url": "../evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/23-review-selection-accessibility.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/23-review-selection-accessibility.md",
+    "url": "../evidence/systematic-fixes-20261105/task-06-candidate17/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-06-candidate17/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/24-review-narrow-return.md",
+    "url": "../evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/DESIGN-COVERAGE.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/24-review-narrow-return.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/43-390-return-link.ax.txt",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/43-390-return-link.ax.txt"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/24-review-narrow-return.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/43-390-return-link.jpg",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/43-390-return-link.jpg"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/24-review-narrow-return.md",
+    "url": "../evidence/systematic-fixes-20261105/task-07-candidate18/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-07-candidate18/REPORT.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/25-review-scene-url-sync.md",
+    "url": "../evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/review-fixes-20261028/CONTROL-INVENTORY-FINAL.md"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/25-review-scene-url-sync.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/42-1291-trade2.ax.txt",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/42-1291-trade2.ax.txt"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/25-review-scene-url-sync.md",
+    "url": "../evidence/independent-acceptance-20261104/workspace/42-1291-trade3.ax.txt",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/independent-acceptance-20261104/workspace/42-1291-trade3.ax.txt"
+  },
+  {
+    "document": ".scratch/review-workspace-design-map/issues/25-review-scene-url-sync.md",
+    "url": "../evidence/systematic-fixes-20261105/task-03-final/REPORT.md",
+    "source_exists": true,
+    "source_relative": ".scratch/review-workspace-design-map/evidence/systematic-fixes-20261105/task-03-final/REPORT.md"
+  }
+]

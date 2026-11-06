@@ -1,0 +1,178 @@
+{
+  "failures": [],
+  "errors": 0,
+  "steps": [
+    {
+      "name": "quantity--1-via-amount-percent",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。"
+    },
+    {
+      "name": "amount--1-via-percent-quantity",
+      "mode": "amount",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。"
+    },
+    {
+      "name": "percent--1-via-amount-quantity",
+      "mode": "percent",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "-1"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。"
+    },
+    {
+      "name": "quantity-empty-via-amount-percent",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": ""
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "规模无法安全计算 · 未计算（已保留原输入）。"
+    },
+    {
+      "name": "trade3-amount",
+      "mode": "amount",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "70000"
+      },
+      "metrics": [
+        "¥5000.00",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "trade2-default",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "trade2-percent",
+      "mode": "percent",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "25"
+      },
+      "metrics": [
+        "¥3214.29",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "trade3-return",
+      "mode": "amount",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "70000"
+      },
+      "metrics": [
+        "¥5000.00",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "trade2-return",
+      "mode": "percent",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "25"
+      },
+      "metrics": [
+        "¥3214.29",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "new-valid-source-amount",
+      "mode": "amount",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "56000"
+      },
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "new-valid-source-percent",
+      "mode": "percent",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "28.00"
+      },
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ]
+    },
+    {
+      "name": "new-valid-source-quantity",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000.00"
+      },
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ]
+    }
+  ]
+}

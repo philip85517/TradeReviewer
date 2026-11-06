@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Strategy Workbench V1.2 · shared component manual</title>
+<style>
+  :root{color-scheme:dark;background:#0b1019;color:#e6edf7;font:14px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+  body{margin:0;padding:32px;max-width:1180px;background:#0b1019} h1{font-size:24px} h2{margin-top:32px;font-size:18px} p,li{color:#a8b6cb;line-height:1.6} a{color:#6ca8ff} code{color:#a9c8ff} .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px} figure{margin:0;padding:16px;background:#111a26;border:1px solid #202b3a;border-radius:8px;overflow:auto} img{width:920px;max-width:none;height:auto;display:block} figcaption{padding-top:10px;color:#a8b6cb} table{border-collapse:collapse;width:100%;background:#111a26}th,td{text-align:left;padding:10px;border-bottom:1px solid #283448;vertical-align:top}th{color:#a9c8ff;font-weight:600} .note{padding:12px 16px;border-left:3px solid #6ca8ff;background:#162233}
+</style>
+<h1>策略台 V1.2 · 共享组合手册</h1>
+<p class="note">本页以 <a href="../../baselines/2026-10-22-homepage-v2.5/source/component-manual.html">V2.5 公共控件手册</a>为基础，补充策略台 V1.2 的组合职责与状态。完整业务规则见 <a href="../../baselines/2026-10-24-strategy-workbench-v1.2/source/visual-design.candidate.md">V1.2 视觉设计正文</a>；本页不把首页业务规则扩展为全站规则。</p>
+<h2>SW01–SW08 样例</h2>
+<div class="grid">
+  <figure id="SW01"><img src="sw01-navigation.svg" alt="SW01 紧凑导航两种宽度"><figcaption><b>SW01</b> · 折叠 54 / 展开 200 / 顶栏 48；策略台当前项使用同源 SVG 图标。</figcaption></figure>
+  <figure id="SW02"><img src="sw02-date-time.svg" alt="SW02 日期时间组合"><figcaption><b>SW02</b> · 日历、业务时区、范围不足与保留原值的错误态。</figcaption></figure>
+  <figure id="SW03"><img src="sw03-steps.svg" alt="SW03 四步向导"><figcaption><b>SW03</b> · 已完成、当前、未到达、提交加载和离开草稿。</figcaption></figure>
+  <figure id="SW04"><img src="sw04-package-slots.svg" alt="SW04 三包选择槽"><figcaption><b>SW04</b> · 空槽、精确版本、锁定、参数覆盖与不兼容。</figcaption></figure>
+  <figure id="SW05"><img src="sw05-multi-select.svg" alt="SW05 多选与排序"><figcaption><b>SW05</b> · 两行策略行，选择和详情分开；边界排序与失败保留草稿。</figcaption></figure>
+  <figure id="SW06"><img src="sw06-summary-detail.svg" alt="SW06 摘要详情检查栏"><figcaption><b>SW06</b> · 88px 指标、480px 详情层、320px 检查栏分别承担职责。</figcaption></figure>
+  <figure id="SW07"><img src="sw07-replay.svg" alt="SW07 回放控制带"><figcaption><b>SW07</b> · 推进新增 K 线，播放/暂停，回看来源与末尾禁用。</figcaption></figure>
+  <figure id="SW08"><img src="sw08-recovery.svg" alt="SW08 局部恢复"><figcaption><b>SW08</b> · 局部重试、输入保留、冲突与失败恢复。</figcaption></figure>
+</div>
+<h2>尺寸、状态、入口与引用</h2>
+<table><thead><tr><th>组件</th><th>准确尺寸</th><th>样例状态</th><th>入口与返回</th><th>引用页面</th></tr></thead><tbody>
+<tr><td>SW01 导航</td><td>折叠 54px、展开 200px、顶栏 48px；入口命中区 36px</td><td>默认、悬停、当前、键盘焦点</td><td>应用导航进入策略台；收起/展开保留当前入口</td><td>V1.2 ST02，V2.5 公共导航</td></tr>
+<tr><td>SW02 日期时间</td><td>日期本体 260×36px；焦点外框 266×42px；日历面板 300×324px</td><td>日历展开、禁用日期、错误保留值、只读截止</td><td>日期字段打开日历；Esc 返回日期字段；截止只读，不进入 Tab 编辑序列</td><td>V1.2 ST05 / ST07，V2.5 日期/选择器</td></tr>
+<tr><td>SW03 四步向导</td><td>步骤卡 204×72px；按钮高度 36px；离开确认层 364×280px</td><td>已完成、当前、未到达、提交加载、未保存草稿确认</td><td>完成步骤可返回；只有第 4 步确认创建提交；继续编辑回到草稿字段</td><td>V1.2 ST05</td></tr>
+<tr><td>SW04 三包组装</td><td>三槽各 280×392px；不兼容提示 864×146px</td><td>空槽、已选、锁定只读、不兼容；参数值/单位/覆盖入口可见</td><td>选择包、查看详情、换包；详情关闭回原触发器，修改锁定实验需派生新实验</td><td>V1.2 ST03 ASM01–ASM06</td></tr>
+<tr><td>SW05 多选排序</td><td>列表 560×250px；行高 72px；排序栏 256×326px</td><td>已选、禁用、未选、位置 2/3 上下均可、未选不可移除、保存失败</td><td>勾选后才可移除；详情独立打开；排序草稿可重试保存</td><td>V1.2 ST04 / CMP03</td></tr>
+<tr><td>SW06 摘要与详情</td><td>摘要 88px；包详情 480×252px；检查栏 320×252px</td><td>指标卡标签/主值左齐；表格金额右齐；参数/单位、预热要求、未知值“—”</td><td>从包槽打开说明层；关闭返回触发器；检查栏只读承载当日证据</td><td>V1.2 ASM02、OBS02–OBS04</td></tr>
+<tr><td>SW07 回放</td><td>动作卡 420×174px；动作按钮高度 36px</td><td>暂停、播放、回看、完成禁用</td><td>播放/单步从图表动作带进入；返回最新只在回看时可用</td><td>V1.2 ST07</td></tr>
+<tr><td>SW08 局部恢复</td><td>查询行 620×36px；状态卡 400×132px</td><td>加载、无匹配、请求失败、版本冲突</td><td>清除只在原查询行尾；重试/另存只放受影响卡片；空态不重复放清除</td><td>V1.2 ST10 ERR01–ERR08</td></tr>
+</tbody></table>
+<h2>状态与键盘契约</h2>
+<table><thead><tr><th>扩展</th><th>触发 / 反馈</th><th>退出 / 键盘</th><th>失败恢复与适用/N/A</th></tr></thead><tbody>
+<tr><td>SW01 导航</td><td>点击入口切换页面；选中使用表面与线图标</td><td>Tab 经过五入口；折叠保留 36px 命中区</td><td>页面加载失败保留当前入口；不适用 empty button 状态</td></tr>
+<tr><td>SW02 日期时间</td><td>日历/选择器展开；错误外置且保留原值</td><td>Esc 关闭并回焦点；Tab 到日期、日历和时区；只读截止不进入编辑 Tab 序列</td><td>范围不足说明原因；禁用日期不进入 Tab</td></tr>
+<tr><td>SW03 四步向导</td><td>完成步骤可返回；当前步骤突出；确认显示 loading</td><td>Enter 仅在第 4 步提交一次；离开草稿先选保留/放弃/继续编辑</td><td>校验失败保留草稿；未到达步骤 N/A 不可进入</td></tr>
+<tr><td>SW04 三包组装</td><td>选择/换包/版本与参数覆盖均有独立控件</td><td>详情关闭回触发器；锁定版本仍可阅读</td><td>不兼容保留已选值并给换包入口；空槽显示选择器</td></tr>
+<tr><td>SW05 多选/排序</td><td>Checkbox 选择与详情分开；排序上移/下移有边界</td><td>Space 切换勾选；位置选择器保留 Tab 顺序</td><td>保存失败保留排序草稿；禁用行说明原因</td></tr>
+<tr><td>SW06 摘要/详情/检查栏</td><td>88px 指标、480px 详情、320px 检查栏各自展开</td><td>详情滚动；关闭恢复焦点；指标卡左齐、表格金额右齐</td><td>未知显示 —；局部错误不挤占主图；指标无交互时 N/A</td></tr>
+<tr><td>SW07 回放控制</td><td>播放/暂停/下一日改变真实可见 K 线；末尾禁用</td><td>Space 播放暂停；输入和 IME 期间快捷键暂停</td><td>推进失败保留最后完整步；回看记录已看后续来源</td></tr>
+<tr><td>SW08 局部恢复</td><td>加载、无匹配、失败、冲突只影响所属区域</td><td>Esc 关闭说明；局部重试不重复提交</td><td>输入、日期、身份完整保留；无真实动作的状态不画按钮</td></tr>
+</tbody></table>
+<p>文本输入和中文输入法组词期间，回放快捷键暂停；回放推进必须让目标 K 线或成交标记进入真实主图。公共扩展不改变 V2.5 的 12 类 / 96 基础状态统计。</p>

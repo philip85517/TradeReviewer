@@ -1,0 +1,68 @@
+[
+  {
+    "id": "H01",
+    "original": "/Users/zhoulin/.codex/worktrees/b387/TradeReview/docs/specs/2026-09-29-strategy-portfolio-backtesting.md",
+    "snapshot": "source/history/H01-2026-09-29-strategy-portfolio-backtesting.md",
+    "sha256": "d4ac1e678337799a9798381a84659e9a8c81feae082a0e8dd068512c86a1aa5d"
+  },
+  {
+    "id": "H02",
+    "original": "/Users/zhoulin/.codex/worktrees/b387/TradeReview/docs/specs/2026-09-29-strategy-desktop-ux-design.md",
+    "snapshot": "source/history/H02-2026-09-29-strategy-desktop-ux-design.md",
+    "sha256": "fff4d72af3e5d0abb331901f4e2a0e49a9995beba8eb189ef580d93f4dfec7a3"
+  },
+  {
+    "id": "H03",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/specs/2026-09-30-strategy-library-and-experiments.md",
+    "snapshot": "source/history/H03-2026-09-30-strategy-library-and-experiments.md",
+    "sha256": "e0a7b537b85d86841e0a13ecd0fdf04ba0c8d03bf3898b2a57919f3780b22ba9"
+  },
+  {
+    "id": "H04",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/specs/2026-09-30-strategy-workbench-v1-integrated-design.md",
+    "snapshot": "source/history/H04-2026-09-30-strategy-workbench-v1-integrated-design.md",
+    "sha256": "34d47a33cde3840971a866d1464c768c28ec634f563ae5465cf8a5a8e88a95fa"
+  },
+  {
+    "id": "H05",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/specs/2026-09-30-strategy-stable-workbench-design.md",
+    "snapshot": "source/history/H05-2026-09-30-strategy-stable-workbench-design.md",
+    "sha256": "2439b2c5de667c07575dcc98023b497c2aa7a40b6583f836ccd6a307396e9aa3"
+  },
+  {
+    "id": "H06",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/README.md",
+    "snapshot": "source/history/H06-README.md",
+    "sha256": "ce8154d856818a1af227693bcc59e715e8f9fa7f88a461f5c8f50439da1eaa80"
+  },
+  {
+    "id": "H07",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/design-system/baselines/2026-10-11-strategy-backtest-v2.1/visual-design.md",
+    "snapshot": "source/history/H07-visual-design.md",
+    "sha256": "a6921c2b8b793b6a00963be4f0818a2558316f441c50965da96ac8a3b491c2d9"
+  },
+  {
+    "id": "H08",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/design-system/baselines/2026-10-15-strategy-backtest-v2.2/visual-design.md",
+    "snapshot": "source/history/H08-visual-design.md",
+    "sha256": "9bf76b91228d194e4cff39a261d41b5688d4807d17215f1788fd5ca34baa2666"
+  },
+  {
+    "id": "H09",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/screenshots/observe-1440.jpg",
+    "snapshot": "source/history/H09-observe-1440.jpg",
+    "sha256": "a6fb563bbc8215b82a258cd8177430f84be3331c8c45c84bd3763e278aa2e677"
+  },
+  {
+    "id": "H10",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/screenshots/observe-390.jpg",
+    "snapshot": "source/history/H10-observe-390.jpg",
+    "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655"
+  },
+  {
+    "id": "H11",
+    "original": "/Users/zhoulin/.codex/worktrees/f922/TradeReview/docs/design-system/standards/VDF-002-visual-documentation-v2.0.md",
+    "snapshot": "source/history/H11-VDF-002.md",
+    "sha256": "8638eeb399ee5f7a192ccd45ba3710197451f7c39092db42f6cda985e46281a1"
+  }
+]

@@ -1,5 +1,7 @@
 # 交易库视觉设计方案 V2.0
 
+> 当前业务已更新：见[14 项后续决定](../../iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md)。本包原正文、图稿与旧静态验收按原版本保存；几何基础继续沿用，冲突业务条款已被覆盖，不代表最新产品验收。
+
 V2.0 是交易库视觉文档的独立设计包，身份为 `TRADING-LIBRARY-V20`，版本为 `2.0`。正文、fixture、生成器、当前 SVG 和 reader 都在本目录内，状态为**静态设计文档已验收**。两名独立 Luna 已完成语义、数字和实际渲染比对，协调者完成集成检查；见[最终验收记录](../../../../.scratch/trading-library-v20-spec-sync/FINAL-ACCEPTANCE.md)。此状态不代表产品功能已实现。
 
 权威业务和视觉规则是[《交易库设计规范》](../../trading-library-design-spec.md)。规范阅读页由仓库根目录的 `python3 docs/design-system/build-trading-library-spec.py` 同步生成，Markdown 规范仍是权威源。正文源文件为 [`source/visual-design.candidate.md`](source/visual-design.candidate.md)，它按 BT01–BT10 组织十章内容，并明确模拟练习、实盘回合、内部配对、费用、残余估值、统计分母和返回上下文。E 参考图只用于布局、密度、层级和颜色比较；它们不替代 V2.0 语义。

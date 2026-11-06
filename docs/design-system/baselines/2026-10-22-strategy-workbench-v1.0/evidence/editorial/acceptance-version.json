@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-22T17:27:37.670656+00:00",
+  "status": "PASS",
+  "scope": "Editorial rewrite and bounded document reader disclosure rendering; not product acceptance",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "sourceSHA256": "1790ad2b6045a0c678d6e463ae6d30d128c302fe48658ffbaed13b4fd3d846e4",
+  "files": {
+    "source/visual-design.candidate.md": "1790ad2b6045a0c678d6e463ae6d30d128c302fe48658ffbaed13b4fd3d846e4",
+    "visual-spec.html": "f2a68990bbdf235f3cded7eeb8401f387ec47c8debd0272f3176f3945c733563",
+    "build-visual-spec.py": "c2eed1e8f9a103460464ca0e09ae20ae8aab29335319755a4f65b95ab0a6699d",
+    "document-manifest.json": "f0c0eb48fefe3965880926732424271b47f7d3a2a961e17d65bed0f8925e48fa",
+    "document-identity.json": "e650eeac36b05bace886536ac1b774c12235b2be9217fd5457849ea0567019b2",
+    "source/test-details-rendering.py": "ae2d263b0c1bd7f4663faab531d3f324253a8e4233a4d0bce5f0cc3fdd1a8758",
+    "evidence/editorial/reader-details.json": "56ec5bd0587118cfecac7038397826de55220d44eb3e7d8a1c4557e656bf8b59",
+    "evidence/editorial/reader-navigation.json": "921030a7b0ff6a72f841dd30a14c5e4ff0b7f2139eabfbf9380eb3f336c06d7e",
+    "editorial-review.md": "d4980cec50cccdf454dfedf848010ce4baf464b6a13689fcf79f268af681bdb2"
+  },
+  "coverage": {
+    "chaptersIncludingIntro": 15,
+    "disclosuresMouseOpen": 14,
+    "disclosuresKeyboardClose": 14,
+    "tocLinks": 17,
+    "uniqueSVGUnchanged": 21,
+    "elementIDsPreserved": 74
+  },
+  "independentReviewer": "design_review",
+  "exclusions": [
+    "production UI",
+    "business database",
+    "physical or emulated touch",
+    "unchanged storyboard/comment persistence implementations"
+  ]
+}

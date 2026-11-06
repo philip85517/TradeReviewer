@@ -1,0 +1,1630 @@
+{
+  "bodyText": [
+    {
+      "clientHeight": 22,
+      "clientWidth": 171,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 171,
+        "x": 14,
+        "y": 81.5
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 171,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "11px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "7px 0px 0px"
+      },
+      "tag": "SMALL",
+      "text": "历史交易复盘"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 442,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 442,
+        "x": 220,
+        "y": 185
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 442,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "从实验起点开始，选择策略并确认后进入待开始工作台。策略库只提供定义。"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 81,
+      "cls": "toolbar-count",
+      "rect": {
+        "height": 16.5,
+        "width": 80.671875,
+        "x": 1179.328125,
+        "y": 234.75
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 81,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "5 个实验 · 示例"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 146,
+      "cls": "",
+      "rect": {
+        "height": 16.5,
+        "width": 146.0859375,
+        "x": 1096.9140625,
+        "y": 302.75
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 146,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "最后更新 2026-09-30 14:10"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 1006,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 1006,
+        "x": 237,
+        "y": 338
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 1006,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "尚未完成起点设置；可继续填写研究日期、时区、集合与本金。"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 267,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 266.8515625,
+        "x": 249,
+        "y": 373
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 267,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究起点"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 537.8515625,
+        "y": 373
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "策略 / 组合"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 780.234375,
+        "y": 373
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "状态"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 1022.6171875,
+        "y": 373
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "来源"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 146,
+      "cls": "",
+      "rect": {
+        "height": 16.5,
+        "width": 146.0859375,
+        "x": 1096.9140625,
+        "y": 517.546875
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 146,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "最后更新 2026-09-29 18:24"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 1006,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 1006,
+        "x": 237,
+        "y": 552.796875
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 1006,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "起点与策略已锁定，等待进入工作台；确认页不会自动开始计算。"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 267,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 266.8515625,
+        "x": 249,
+        "y": 587.796875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 267,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究起点"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 537.8515625,
+        "y": 587.796875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "策略 / 组合"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 780.234375,
+        "y": 587.796875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "状态"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 1022.6171875,
+        "y": 587.796875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "区间"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 169,
+      "cls": "note",
+      "rect": {
+        "height": 20,
+        "width": 169,
+        "x": 377,
+        "y": 651.59375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 169,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "SPAN",
+      "text": "重开原运行并保持待开始状态"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 145,
+      "cls": "",
+      "rect": {
+        "height": 16.5,
+        "width": 145.1953125,
+        "x": 1097.8046875,
+        "y": 732.34375
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 145,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "最后更新 2026-09-22 11:08"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 1006,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 1006,
+        "x": 237,
+        "y": 767.59375
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 1006,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "保留两个独立组合与已锁定版本；恢复后从暂停位置继续。"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 267,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 266.8515625,
+        "x": 249,
+        "y": 802.59375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 267,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究起点"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 537.8515625,
+        "y": 802.59375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究区间"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 780.234375,
+        "y": 802.59375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "策略 / 组合"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 1022.6171875,
+        "y": 802.59375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "状态"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 146,
+      "cls": "",
+      "rect": {
+        "height": 16.5,
+        "width": 146.0859375,
+        "x": 1096.9140625,
+        "y": 947.140625
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 146,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "最后更新 2026-08-31 09:40"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 1006,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 1006,
+        "x": 237,
+        "y": 982.390625
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 1006,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "已完成的实验保留研究快照、成交与引用版本，可只读查看。"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 267,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 266.8515625,
+        "x": 249,
+        "y": 1017.390625
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 267,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究起点"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 537.8515625,
+        "y": 1017.390625
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究区间"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 780.234375,
+        "y": 1017.390625
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "策略 / 组合"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 1022.6171875,
+        "y": 1017.390625
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "状态"
+    },
+    {
+      "clientHeight": 17,
+      "clientWidth": 146,
+      "cls": "",
+      "rect": {
+        "height": 16.5,
+        "width": 146.0859375,
+        "x": 1096.9140625,
+        "y": 1161.9375
+      },
+      "scrollHeight": 17,
+      "scrollWidth": 146,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "最后更新 2026-08-12 15:12"
+    },
+    {
+      "clientHeight": 22,
+      "clientWidth": 1006,
+      "cls": "",
+      "rect": {
+        "height": 22,
+        "width": 1006,
+        "x": 237,
+        "y": 1197.1875
+      },
+      "scrollHeight": 22,
+      "scrollWidth": 1006,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(169, 185, 206)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "失败原因与输入保留；可复制起点重新预检，原记录不覆盖。"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 267,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 266.8515625,
+        "x": 249,
+        "y": 1232.1875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 267,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究起点"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 537.8515625,
+        "y": 1232.1875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "研究区间"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 780.234375,
+        "y": 1232.1875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "策略 / 组合"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 220,
+      "cls": "",
+      "rect": {
+        "height": 20.3984375,
+        "width": 220.3828125,
+        "x": 1022.6171875,
+        "y": 1232.1875
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 220,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "20.4px",
+        "padding": "0px"
+      },
+      "tag": "SMALL",
+      "text": "状态"
+    },
+    {
+      "clientHeight": 20,
+      "clientWidth": 1040,
+      "cls": "statuscaption",
+      "rect": {
+        "height": 20,
+        "width": 1040,
+        "x": 220,
+        "y": 1356.984375
+      },
+      "scrollHeight": 20,
+      "scrollWidth": 1040,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(147, 163, 185)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "P",
+      "text": "状态、策略/组合数与更新时间为示例；新建入口唯一指向设置起点。列表筛选只改变展示，不改变实验快照。"
+    }
+  ],
+  "controls": [
+    {
+      "clientHeight": 34,
+      "clientWidth": 95,
+      "cls": "action primary",
+      "rect": {
+        "height": 36,
+        "width": 96.6171875,
+        "x": 1163.3828125,
+        "y": 158.5
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 95,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "A",
+      "text": "＋ 新建实验"
+    },
+    {
+      "clientHeight": 38,
+      "clientWidth": 438,
+      "cls": "search",
+      "rect": {
+        "height": 40,
+        "width": 440,
+        "x": 220,
+        "y": 223
+      },
+      "scrollHeight": 38,
+      "scrollWidth": 438,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(182, 197, 217)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "9px 12px"
+      },
+      "tag": "DIV",
+      "text": "⌕ 搜索实验名称或稳定标识"
+    },
+    {
+      "clientHeight": 38,
+      "clientWidth": 107,
+      "cls": "select",
+      "rect": {
+        "height": 40,
+        "width": 108.8359375,
+        "x": 670,
+        "y": 223
+      },
+      "scrollHeight": 38,
+      "scrollWidth": 107,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(182, 197, 217)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "9px 12px"
+      },
+      "tag": "SPAN",
+      "text": "状态：全部 ▾"
+    },
+    {
+      "clientHeight": 38,
+      "clientWidth": 146,
+      "cls": "select",
+      "rect": {
+        "height": 40,
+        "width": 147.7265625,
+        "x": 788.8359375,
+        "y": 223
+      },
+      "scrollHeight": 38,
+      "scrollWidth": 146,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(182, 197, 217)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "9px 12px"
+      },
+      "tag": "SPAN",
+      "text": "排序：最近更新 ↓ ▾"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 78,
+      "cls": "action primary",
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 237,
+        "y": 428.796875
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 78,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "A",
+      "text": "继续设置"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 78,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 325,
+        "y": 428.796875
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 78,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "删除草稿"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 130,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 132,
+        "x": 237,
+        "y": 643.59375
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 130,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "进入待开始工作台"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 78,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 237,
+        "y": 858.390625
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 78,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "查看配置"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 104,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 106,
+        "x": 325,
+        "y": 858.390625
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 104,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "打开原工作台"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 78,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 237,
+        "y": 1073.1875
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 78,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "查看结果"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 78,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 325,
+        "y": 1073.1875
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 78,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "查看配置"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 104,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 106,
+        "x": 237,
+        "y": 1287.984375
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 104,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "查看失败说明"
+    },
+    {
+      "clientHeight": 34,
+      "clientWidth": 104,
+      "cls": "action",
+      "rect": {
+        "height": 36,
+        "width": 106,
+        "x": 351,
+        "y": 1287.984375
+      },
+      "scrollHeight": 34,
+      "scrollWidth": 104,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(217, 228, 242)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "20px",
+        "padding": "8px 13px"
+      },
+      "tag": "SPAN",
+      "text": "复制为新实验"
+    }
+  ],
+  "crumbs": {
+    "gap": "8px",
+    "items": [
+      {
+        "clientHeight": 19,
+        "clientWidth": 26,
+        "cls": "crumb",
+        "rect": {
+          "height": 18.5,
+          "width": 26,
+          "x": 220,
+          "y": 54.25
+        },
+        "scrollHeight": 19,
+        "scrollWidth": 26,
+        "style": {
+          "borderRadius": "0px",
+          "borderWidth": "0px",
+          "color": "rgb(169, 185, 206)",
+          "fontSize": "13px",
+          "fontWeight": "400",
+          "lineHeight": "normal",
+          "padding": "0px"
+        },
+        "tag": "SPAN",
+        "text": "策略"
+      },
+      {
+        "clientHeight": 16,
+        "clientWidth": 4,
+        "cls": "crumb-sep",
+        "rect": {
+          "height": 15.5,
+          "width": 3.6171875,
+          "x": 254,
+          "y": 55.75
+        },
+        "scrollHeight": 16,
+        "scrollWidth": 4,
+        "style": {
+          "borderRadius": "0px",
+          "borderWidth": "0px",
+          "color": "rgb(112, 129, 154)",
+          "fontSize": "13px",
+          "fontWeight": "400",
+          "lineHeight": "normal",
+          "padding": "0px"
+        },
+        "tag": "SPAN",
+        "text": "/"
+      },
+      {
+        "clientHeight": 19,
+        "clientWidth": 52,
+        "cls": "crumb current",
+        "rect": {
+          "height": 18.5,
+          "width": 52,
+          "x": 265.6171875,
+          "y": 54.25
+        },
+        "scrollHeight": 19,
+        "scrollWidth": 52,
+        "style": {
+          "borderRadius": "0px",
+          "borderWidth": "0px",
+          "color": "rgb(220, 229, 240)",
+          "fontSize": "13px",
+          "fontWeight": "600",
+          "lineHeight": "normal",
+          "padding": "0px"
+        },
+        "tag": "SPAN",
+        "text": "我的实验"
+      }
+    ],
+    "scrollWidth": 1040,
+    "text": "策略\n/\n我的实验",
+    "width": 1040
+  },
+  "document": {
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "headings": [
+    {
+      "clientHeight": 30,
+      "clientWidth": 442,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 442,
+        "x": 220,
+        "y": 146
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 442,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "22px",
+        "fontWeight": "600",
+        "lineHeight": "30px",
+        "padding": "0px"
+      },
+      "tag": "H1",
+      "text": "我的实验"
+    },
+    {
+      "clientHeight": 30,
+      "clientWidth": 132,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 132,
+        "x": 237,
+        "y": 296
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 132,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "H3",
+      "text": "回撤对照实验\n草稿"
+    },
+    {
+      "clientHeight": 30,
+      "clientWidth": 143,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 143,
+        "x": 237,
+        "y": 510.796875
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 143,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "H3",
+      "text": "趋势回撤演示\n待开始"
+    },
+    {
+      "clientHeight": 30,
+      "clientWidth": 186,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 186.4453125,
+        "x": 237,
+        "y": 725.59375
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 186,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "H3",
+      "text": "回撤对照实验 · 双策略\n暂停"
+    },
+    {
+      "clientHeight": 30,
+      "clientWidth": 160,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 160,
+        "x": 237,
+        "y": 940.390625
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 160,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "H3",
+      "text": "财务质量区间实验\n完成"
+    },
+    {
+      "clientHeight": 30,
+      "clientWidth": 132,
+      "cls": "",
+      "rect": {
+        "height": 30,
+        "width": 132,
+        "x": 237,
+        "y": 1155.1875
+      },
+      "scrollHeight": 30,
+      "scrollWidth": 132,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "22px",
+        "padding": "0px"
+      },
+      "tag": "H3",
+      "text": "财务质量试验\n失败"
+    }
+  ],
+  "links": [
+    {
+      "rect": {
+        "height": 39,
+        "width": 39,
+        "x": 220,
+        "y": 88
+      },
+      "text": "策略库"
+    },
+    {
+      "rect": {
+        "height": 39,
+        "width": 52,
+        "x": 287,
+        "y": 88
+      },
+      "text": "我的实验"
+    },
+    {
+      "rect": {
+        "height": 36,
+        "width": 96.6171875,
+        "x": 1163.3828125,
+        "y": 158.5
+      },
+      "text": "＋ 新建实验"
+    },
+    {
+      "rect": {
+        "height": 36,
+        "width": 80,
+        "x": 237,
+        "y": 428.796875
+      },
+      "text": "继续设置"
+    }
+  ],
+  "panels": [
+    {
+      "clientHeight": 201,
+      "clientWidth": 1038,
+      "cls": "experiment-card",
+      "rect": {
+        "height": 202.796875,
+        "width": 1040,
+        "x": 220,
+        "y": 279
+      },
+      "scrollHeight": 201,
+      "scrollWidth": 1038,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "16px"
+      },
+      "tag": "DIV",
+      "text": "回撤对照实验\n草稿\n最后更新 2026-09-30 14:10\n\n尚未完成起点设置；可继续填写研究日期、时区、集合与本金。\n\n研究起点\n未设置\n策略 / 组合\n0 / 0\n状态\n草稿\n来源\n手动新建\n继续设置\n删除草稿"
+    },
+    {
+      "clientHeight": 201,
+      "clientWidth": 1038,
+      "cls": "experiment-card",
+      "rect": {
+        "height": 202.796875,
+        "width": 1040,
+        "x": 220,
+        "y": 493.796875
+      },
+      "scrollHeight": 201,
+      "scrollWidth": 1038,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "16px"
+      },
+      "tag": "DIV",
+      "text": "趋势回撤演示\n待开始\n最后更新 2026-09-29 18:24\n\n起点与策略已锁定，等待进入工作台；确认页不会自动开始计算。\n\n研究起点\n2024-06-14 16:00 · Asia/Shanghai\n策略 / 组合\n1 / 1\n状态\n待开始\n区间\n一周\n进入待开始工作台\n重开原运行并保持待开始状态"
+    },
+    {
+      "clientHeight": 201,
+      "clientWidth": 1038,
+      "cls": "experiment-card",
+      "rect": {
+        "height": 202.796875,
+        "width": 1040,
+        "x": 220,
+        "y": 708.59375
+      },
+      "scrollHeight": 201,
+      "scrollWidth": 1038,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "16px"
+      },
+      "tag": "DIV",
+      "text": "回撤对照实验 · 双策略\n暂停\n最后更新 2026-09-22 11:08\n\n保留两个独立组合与已锁定版本；恢复后从暂停位置继续。\n\n研究起点\n2024-06-14 16:00\n研究区间\n2024-06-14 16:00 起 · 一周\n策略 / 组合\n2 / 2\n状态\n暂停\n查看配置\n打开原工作台"
+    },
+    {
+      "clientHeight": 201,
+      "clientWidth": 1038,
+      "cls": "experiment-card",
+      "rect": {
+        "height": 202.796875,
+        "width": 1040,
+        "x": 220,
+        "y": 923.390625
+      },
+      "scrollHeight": 201,
+      "scrollWidth": 1038,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "16px"
+      },
+      "tag": "DIV",
+      "text": "财务质量区间实验\n完成\n最后更新 2026-08-31 09:40\n\n已完成的实验保留研究快照、成交与引用版本，可只读查看。\n\n研究起点\n2025-01-01 09:30\n研究区间\n2025-01-01 09:30 起 · 一个月\n策略 / 组合\n1 / 1\n状态\n完成\n查看结果\n查看配置"
+    },
+    {
+      "clientHeight": 201,
+      "clientWidth": 1038,
+      "cls": "experiment-card",
+      "rect": {
+        "height": 202.796875,
+        "width": 1040,
+        "x": 220,
+        "y": 1138.1875
+      },
+      "scrollHeight": 201,
+      "scrollWidth": 1038,
+      "style": {
+        "borderRadius": "6px",
+        "borderWidth": "1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "16px"
+      },
+      "tag": "DIV",
+      "text": "财务质量试验\n失败\n最后更新 2026-08-12 15:12\n\n失败原因与输入保留；可复制起点重新预检，原记录不覆盖。\n\n研究起点\n2025-02-01 09:30\n研究区间\n2025-02-01 09:30 起 · 一个月\n策略 / 组合\n1 / 1\n状态\n失败\n查看失败说明\n复制为新实验"
+    }
+  ],
+  "screen": "f14",
+  "shell": [
+    {
+      "clientHeight": 760,
+      "clientWidth": 199,
+      "cls": "sidebar",
+      "rect": {
+        "height": 760,
+        "width": 200,
+        "x": 0,
+        "y": 40
+      },
+      "scrollHeight": 760,
+      "scrollWidth": 199,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px 1px 0px 0px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "22px 14px"
+      },
+      "tag": "ASIDE",
+      "text": "▣ TradeReview\n历史交易复盘\n▦ 我的交易室\n▤ 交易库\n◴ 分析\n▥ 数据\n♧ 策略\n⚙ 设置"
+    },
+    {
+      "clientHeight": 47,
+      "clientWidth": 1080,
+      "cls": "identity",
+      "rect": {
+        "height": 48,
+        "width": 1080,
+        "x": 200,
+        "y": 40
+      },
+      "scrollHeight": 47,
+      "scrollWidth": 1080,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px 0px 1px",
+        "color": "rgb(163, 178, 199)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px 20px"
+      },
+      "tag": "HEADER",
+      "text": "策略\n/\n我的实验"
+    },
+    {
+      "clientHeight": 39,
+      "clientWidth": 1080,
+      "cls": "globaltabs",
+      "rect": {
+        "height": 40,
+        "width": 1080,
+        "x": 200,
+        "y": 88
+      },
+      "scrollHeight": 39,
+      "scrollWidth": 1080,
+      "style": {
+        "borderRadius": "0px",
+        "borderWidth": "0px 0px 1px",
+        "color": "rgb(220, 229, 240)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "normal",
+        "padding": "0px 20px"
+      },
+      "tag": "DIV",
+      "text": "策略库\n我的实验"
+    }
+  ],
+  "text": "▣ TradeReview\n历史交易复盘\n▦ 我的交易室\n▤ 交易库\n◴ 分析\n▥ 数据\n♧ 策略\n⚙ 设置\n策略\n/\n我的实验\n策略库\n我的实验\n我的实验\n\n从实验起点开始，选择策略并确认后进入待开始工作台。策略库只提供定义。\n\n＋ 新建实验\n⌕ 搜索实验名称或稳定标识\n状态：全部 ▾\n排序：最近更新 ↓ ▾\n5 个实验 · 示例\n回撤对照实验\n草稿\n最后更新 2026-09-30 14:10\n\n尚未完成起点设置；可继续填写研究日期、时区、集合与本金。\n\n研究起点\n未设置\n策略 / 组合\n0 / 0\n状态\n草稿\n来源\n手动新建\n继续设置\n删除草稿\n趋势回撤演示\n待开始\n最后更新 2026-09-29 18:24\n\n起点与策略已锁定，等待进入工作台；确认页不会自动开始计算。\n\n研究起点\n2024-06-14 16:00 · Asia/Shanghai\n策略 / 组合\n1 / 1\n状态\n待开始\n区间\n一周\n进入待开始工作台\n重开原运行并保持待开始状态\n回撤对照实验 · 双策略\n暂停\n最后更新 2026-09-22 11:08\n\n保留两个独立组合与已锁定版本；恢复后从暂停位置继续。\n\n研究起点\n2024-06-14 16:00\n研究区间\n2024-06-14 16:00 起 · 一周\n策略 / 组合\n2 / 2\n状态\n暂停\n查看配置\n打开原工作台\n财务质量区间实验\n完成\n最后更新 2026-08-31 09:40\n\n已完成的实验保留研究快照、成交与引用版本，可只读查看。\n\n研究起点\n2025-01-01 09:30\n研究区间\n2025-01-01 09:30 起 · 一个月\n策略 / 组合\n1 / 1\n状态\n完成\n查看结果\n查看配置\n财务质量试验\n失败\n最后更新 2026-08-12 15:12\n\n失败原因与输入保留；可复制起点重新预检，原记录不覆盖。\n\n研究起点\n2025-02-01 09:30\n研究区间\n2025-02-01 09:30 起 · 一个月\n策略 / 组合\n1 / 1\n状态\n失败\n查看失败说明\n复制为新实验\n\n状态、策略/组合数与更新时间为示例；新建入口唯一指向设置起点。列表筛选只改变展示，不改变实验快照。",
+  "toolsOpen": false,
+  "viewport": {
+    "dpr": 1,
+    "height": 800,
+    "width": 1280
+  }
+}

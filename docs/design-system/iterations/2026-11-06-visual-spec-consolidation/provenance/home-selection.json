@@ -1,0 +1,171 @@
+{
+  "date": "2026-11-06",
+  "scope": "Read-only home/public/library execution-contract selection; no source or Git writes.",
+  "master": "d95afc37d30f817edbd6daab41e85f485138de0d",
+  "selected": [
+    {
+      "kind": "subordinate-execution-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/0dc6/TradeReview/.scratch/homepage-v25-implementation/visual-contract.md",
+      "relative": ".scratch/homepage-v25-implementation/visual-contract.md",
+      "bytes": 6480,
+      "sha256": "83c6f85de6d034488e897d64e86a007c83e3910fa1b10bae8d590ea9b527bd51",
+      "blob": "d2604134e50d783664b97d133c1d3044b4b42bb0",
+      "HEAD_blob": "d2604134e50d783664b97d133c1d3044b4b42bb0",
+      "master_blob": null,
+      "git_status": "",
+      "reason": "Approved home V2.5 execution index; no new design authorization; same disk content in 38a0."
+    },
+    {
+      "kind": "subordinate-execution-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/25db/TradeReview/.scratch/trading-library-v20-development/visual-contract.md",
+      "relative": ".scratch/trading-library-v20-development/visual-contract.md",
+      "bytes": 5287,
+      "sha256": "e488460f68cec873fa0fcc303bae24d85327f6c57502db2c7d1a2a62841256a2",
+      "blob": "1caa58232c4e4d1e6c0ae12909ff9d44534b3ee6",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/trading-library-v20-development/visual-contract.md",
+      "reason": "Explicit execution index subordinate to approved V2.0 and V2.5. Touch/narrow scope in this historical execution plan must not override latest user exclusions."
+    },
+    {
+      "kind": "subordinate-source-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/25db/TradeReview/.scratch/trading-library-v20-development/evidence/source-manifest.json",
+      "relative": ".scratch/trading-library-v20-development/evidence/source-manifest.json",
+      "bytes": 17970,
+      "sha256": "818af4cf1ec6ec6ab08a60a61c7cfa1f34b9f9af172e6add28da80dbbb9d106a",
+      "blob": "e309d5939919304133b9348e4aa1f8edfc82ad55",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/trading-library-v20-development/evidence/source-manifest.json",
+      "reason": "Precise image/version hashes directly referenced by the execution contract."
+    },
+    {
+      "kind": "historical-unapproved-candidate",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/docs/design-system/TradeReview-设计规范-v0.1.md",
+      "relative": "docs/design-system/TradeReview-设计规范-v0.1.md",
+      "bytes": 16284,
+      "sha256": "6b3bfec7b98878e73fb569564e2dab7cb0f3505a7f671c11add377aa00d378d6",
+      "blob": "47dcebe99e744c51e1ba53db1b7ad67d0af1c7b5",
+      "HEAD_blob": "47dcebe99e744c51e1ba53db1b7ad67d0af1c7b5",
+      "master_blob": null,
+      "git_status": "",
+      "reason": "Old 10/7 candidate; old home recommendation withdrawn 10/8; not current approved baseline."
+    },
+    {
+      "kind": "historical-unapproved-candidate",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/docs/design-system/TradeReview-首页拉齐-v0.2.md",
+      "relative": "docs/design-system/TradeReview-首页拉齐-v0.2.md",
+      "bytes": 12193,
+      "sha256": "3d9e8b335c356f2d1c51b654376fec15163ea06c0c1418fb31105dbb952cd648",
+      "blob": "25d3c01137f93e15dbc3828b5583996cb042606a",
+      "HEAD_blob": "25d3c01137f93e15dbc3828b5583996cb042606a",
+      "master_blob": null,
+      "git_status": "",
+      "reason": "10/7-10/10 candidate using master 7a5d137; not formally solidified; superseded by later home V2.5."
+    },
+    {
+      "kind": "historical-execution-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/design-system-calibration-20261007/visual-contract.md",
+      "relative": ".scratch/design-system-calibration-20261007/visual-contract.md",
+      "bytes": 4064,
+      "sha256": "2fbd6724c9f53a2207929b2904c4a1d964a5d1091873f052d0d95add54166593",
+      "blob": "0df010f44e65037b429683fb29dc683354183318",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/design-system-calibration-20261007/visual-contract.md",
+      "reason": "Untracked former candidate geometry/state contract."
+    },
+    {
+      "kind": "historical-status-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/design-system-calibration-20261007/README.md",
+      "relative": ".scratch/design-system-calibration-20261007/README.md",
+      "bytes": 3258,
+      "sha256": "913cf98c5adc944722f7f1e73e6897d52c6643adb0f0e4fa8450b45203aab004",
+      "blob": "73c6e936bcc01ee1e1870c442ab212949d9af41b",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/design-system-calibration-20261007/README.md",
+      "reason": "Records 10/8 withdrawal and acceptance-failed; essential status context."
+    },
+    {
+      "kind": "historical-execution-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/homepage-master-alignment-20261007/visual-contract.md",
+      "relative": ".scratch/homepage-master-alignment-20261007/visual-contract.md",
+      "bytes": 5768,
+      "sha256": "42c4a570c2fee6bf59808b750cd7e23c4f72266db1dd6764e0390c3dfb5a35b7",
+      "blob": "dd63fe5d9f64ff90203b816976bcac6d2832aa3a",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/homepage-master-alignment-20261007/visual-contract.md",
+      "reason": "Untracked historical whole-home alignment contract; not current standard."
+    },
+    {
+      "kind": "historical-status-reference",
+      "source": "/Users/zhoulin/.codex/worktrees/0ff3/TradeReview/.scratch/homepage-master-alignment-20261007/FINAL-ACCEPTANCE.md",
+      "relative": ".scratch/homepage-master-alignment-20261007/FINAL-ACCEPTANCE.md",
+      "bytes": 9933,
+      "sha256": "54d40a4b99d20b42908cb8325efeaf9e10dbf09bee31c31596b0c84cfc06f088",
+      "blob": "969de99f9c3bbd80335c380e4359b470bf877dbc",
+      "HEAD_blob": null,
+      "master_blob": null,
+      "git_status": "?? .scratch/homepage-master-alignment-20261007/FINAL-ACCEPTANCE.md",
+      "reason": "Latest HA09 limited acceptance, overall OPEN, candidate has not replaced approved visual baseline."
+    }
+  ],
+  "exclude_current": [
+    {
+      "path": ".scratch/homepage-v25-implementation/DESIGN-COVERAGE.md",
+      "reason": "Historical execution matrix mixes product/data/acceptance; retain source ref, optional archive only."
+    },
+    {
+      "path": ".scratch/homepage-v25-implementation/CONTROL-STATE-COVERAGE.md",
+      "reason": "Control inventory is execution/acceptance mapping; optional archive only."
+    },
+    {
+      "path": ".scratch/trading-library-v20-development/DESIGN-COVERAGE.md",
+      "reason": "260KB historical implementation coverage, large mixed product/data scope; optional archive only."
+    },
+    {
+      "path": ".scratch/trading-library-v20-development/USER-DECISIONS-2026-10-27.md",
+      "reason": "Latest product/business decisions, not new approved visual design; cite only for scope precedence and do not import as current visual standard."
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-22-homepage-v2.5",
+      "reason": "Already byte-identical in master; no duplicate import."
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0",
+      "reason": "Already integrated in master; preserve master version/index."
+    },
+    {
+      "path": "0ff3 application CSS / preview implementation / screenshot trees",
+      "reason": "Implementation/evidence, outside visual-spec integration."
+    }
+  ],
+  "chat_evidence": [
+    {
+      "threadId": "01a1a757-3109-77f2-a7de-7b118f47189f",
+      "title": "首页数据库优化 ｜ 开发中",
+      "latest": "2026-11-05",
+      "conclusion": "Latest scope DB/performance; no new approved visual change. 11/4 user requested correcting stale visual references in backend docs."
+    },
+    {
+      "threadId": "01a18814-7717-7c42-963f-210cf0b61bbb",
+      "title": "首页读取的性能优化方案 (2)",
+      "latest": "2026-11-05",
+      "conclusion": "Latest scope business/data design. 11/4 user identified old visual references; text source rules supersede stale badge artwork."
+    },
+    {
+      "threadId": "01a1919c-5e22-7a63-b9c0-4eed2ff7abff",
+      "title": "交易库V2.0 开发 ｜ 开发中",
+      "latest": "2026-11-05",
+      "conclusion": "Latest user requested daily replay and bounded bug localization. Formal matching-state V2 visual comparison still not accepted; 11/4-11/5 currency/fees/endbar decisions are product semantics, not a new visual version."
+    }
+  ],
+  "import_conditions": [
+    "Raw snapshots retain source bytes/hash; any relocated live links require a separate wrapper or adapted presentation with provenance, not a claim that edited file is byte-identical.",
+    "Clearly separate current approved baselines, subordinate execution references, and historical unapproved candidates.",
+    "No implementation completion or UI acceptance inferred from preserved contracts.",
+    "Review the final local branch once root has imported files."
+  ]
+}

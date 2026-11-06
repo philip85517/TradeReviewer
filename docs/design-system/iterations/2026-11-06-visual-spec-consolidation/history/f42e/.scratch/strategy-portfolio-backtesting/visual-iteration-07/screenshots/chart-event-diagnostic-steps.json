@@ -1,0 +1,74 @@
+[
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCandle-data] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.823Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwNet-data] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.823Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCompare-data] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.823Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCandle-detach] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":78.72000000000003,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.823Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwNet-detach] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"net-inactive\"},\"compare\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":-69.14098000000001,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.844Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCompare-detach] {\"logical\":{\"from\":-0.4901960784313726,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"net-inactive\"},\"compare\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":-69.14098000000001,\"timeCoord\":609}}",
+    "timestamp": "2026-10-06T12:55:24.845Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCandle-data] {\"logical\":{\"from\":-0.5,\"to\":2.5},\"range\":{\"from\":\"2024-06-14\",\"to\":\"2024-06-18\"},\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":54.72000000000003,\"timeCoord\":609.5}}",
+    "timestamp": "2026-10-06T12:55:25.108Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwNet-data] {\"logical\":null,\"range\":null,\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null}}",
+    "timestamp": "2026-10-06T12:55:25.108Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCompare-data] {\"logical\":null,\"range\":null,\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null}}",
+    "timestamp": "2026-10-06T12:55:25.108Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCandle-detach] {\"logical\":null,\"range\":null,\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":true,\"priceScaleId\":\"right\"},\"compare\":{\"data\":0,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null}}",
+    "timestamp": "2026-10-06T12:55:25.109Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwNet-detach] {\"logical\":null,\"range\":null,\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"net-inactive\"},\"compare\":{\"data\":0,\"visible\":true,\"priceScaleId\":\"right\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null}}",
+    "timestamp": "2026-10-06T12:55:25.109Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  },
+  {
+    "level": "debug",
+    "message": "[WB-STEP lwCompare-detach] {\"logical\":null,\"range\":null,\"width\":814,\"series\":{\"candle\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"candle-inactive\"},\"net\":{\"data\":3,\"visible\":false,\"priceScaleId\":\"net-inactive\"},\"compare\":{\"data\":0,\"visible\":false,\"priceScaleId\":\"compare-inactive\"}},\"scale\":{\"netPriceCoord\":null,\"timeCoord\":null}}",
+    "timestamp": "2026-10-06T12:55:25.110Z",
+    "url": "http://127.0.0.1:3063/workbench-design/?variant=A"
+  }
+]

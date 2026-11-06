@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-11-06T08:53:51+08:00",
+  "approvedAlignment02": {
+    "userQuote": "确认",
+    "version": "02-summary-home-aligned-v2",
+    "scope": "首页同款独立指标卡排版；不含统计公式、时间投影或窄屏重排"
+  },
+  "alignment03": "pending-user-confirmation",
+  "source": "/Users/zhoulin/.codex/worktrees/e7e8/TradeReview/docs/design-system/baselines/2026-10-24-strategy-workbench-v1.2/source/images/06-observe.svg",
+  "sha256": "459075f74f228a00721776d00409bd03a911db3d38f6ec6eb24d329182e83e9d",
+  "nodes": "Unchanged SVG children 70:146, translated only; dimension annotations outside product artwork",
+  "scope": "Desktop horizontal allocation: remaining-width chart, 24px gap, 320px inspector. No product behavior or runtime acceptance."
+}

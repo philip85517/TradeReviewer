@@ -1,9 +1,12 @@
 # 设计迭代记录
 
+- [2026-11-06 最新完整文档与决定](2026-11-06-current-visual-progress/README.md)：完整性核对、冲突覆盖、暂定参数及独立分支PR。
+
 当前规范为 [全站公共规范与首页 V2.5](../baselines/2026-10-22-homepage-v2.5/visual-spec.html) 与 [交易库视觉 V2.0](../baselines/2026-10-26-trading-library-v2.0/visual-spec.html)，业务口径以 [交易库设计规范](../trading-library-design-spec.md) 为准；拆分前内容保存在 [V2.4.2](../baselines/2026-10-22-homepage-v2.4.2/visual-spec.html)。用户已确认第五轮的完整历史曲线与贡献原型；下列冻结记录中的“待确认／待整合”仅反映当时状态。
 
 |日期|记录|用途与后续状态|
 |---|---|---|
+|2026-11-06|[跨 worktree 视觉资料本地整合](2026-11-06-visual-spec-consolidation/README.md)|依据真实聊天和版本时间选择；保留策略 V1.2、复盘 candidate45 与隔离候选、旧稿历史及逐文件来源，不改变 master|
 |2026-10-26|[交易库 V2.0 规范同步](2026-10-26-trading-library-v2.0/README.md)|独立扫描、规则裁决、图文修订与验收记录；保留 E 布局和 V1.1 历史|
 |2026-10-24|[交易库 V1.1 定型](../baselines/2026-10-24-trading-library-v1.1/review-records/README.md)|E 原型定型，V1.0 与旧评论原状态保留|
 |2026-10-22|[首页统一交易库入口](2026-10-22-homepage-library-entry/README.md)|取消独立待复盘入口，入口及返回分镜同步验收|

@@ -1,0 +1,768 @@
+{
+  "errors": 0,
+  "steps": [
+    {
+      "name": "01-initial",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "52.00",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥4000.00",
+        "3.00R · 3.00:1"
+      ],
+      "lines": [
+        {
+          "price": 52,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 56,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 68,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-stop-51",
+      "mode": "quantity",
+      "fields": {
+        "entry": "56.00",
+        "stop": "51",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥5000.00",
+        "2.40R · 2.40:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 56,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 68,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-entry-57",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "68.00",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥6000.00",
+        "1.83R · 1.83:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 68,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-target-64",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥6000.00",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-stop-empty",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "请填写有限正数；空值不绘制计划线。",
+      "lines": [
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-stop-restored",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥6000.00",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-entry-empty",
+      "mode": "quantity",
+      "fields": {
+        "entry": "",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "请填写有限正数；空值不绘制计划线。",
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-entry-restored",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥6000.00",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-target-empty",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "请填写有限正数；空值不绘制计划线。",
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-target-restored",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "¥6000.00",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-stop-offscreen",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "9999",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "价格顺序与方向不一致；做多需止损＜入场＜目标，做空相反。",
+      "lines": [
+        {
+          "price": 9999,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "price-stop-imprecise",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51.0000000000000000001",
+        "target": "64",
+        "quantity": "1000"
+      },
+      "metrics": [
+        "待补齐 · 未计算",
+        "待补齐 · 未计算"
+      ],
+      "error": "价格超出图表数值精度，已保留原输入但不绘制对应计划线，也不计算计划金额与风险。",
+      "lines": [
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "quantity-30-digits",
+      "mode": "quantity",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "123456789012345678901234567890"
+      },
+      "metrics": [
+        "¥740740734074074073407407407340.00",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "amount-input",
+      "mode": "amount",
+      "fields": {
+        "entry": "57",
+        "stop": "51",
+        "target": "64",
+        "quantity": "56000"
+      },
+      "metrics": [
+        "¥5894.74",
+        "1.17R · 1.17:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 57,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "amount-entry-changed",
+      "mode": "amount",
+      "fields": {
+        "entry": "60",
+        "stop": "51",
+        "target": "64",
+        "quantity": "56000"
+      },
+      "metrics": [
+        "¥8400.00",
+        "0.44R · 0.44:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 60,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "amount-to-quantity",
+      "mode": "quantity",
+      "fields": {
+        "entry": "60",
+        "stop": "51",
+        "target": "64",
+        "quantity": "933.33"
+      },
+      "metrics": [
+        "¥8399.97",
+        "0.44R · 0.44:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 60,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "amount-return",
+      "mode": "amount",
+      "fields": {
+        "entry": "60",
+        "stop": "51",
+        "target": "64",
+        "quantity": "55999.80"
+      },
+      "metrics": [
+        "¥8399.97",
+        "0.44R · 0.44:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 60,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "amount-30-digits",
+      "mode": "amount",
+      "fields": {
+        "entry": "60",
+        "stop": "51",
+        "target": "64",
+        "quantity": "700000000000000000000000000000"
+      },
+      "metrics": [
+        "¥105000000000000000000000000000.00",
+        "0.44R · 0.44:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 60,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "percent-input",
+      "mode": "percent",
+      "fields": {
+        "entry": "60",
+        "stop": "51",
+        "target": "64",
+        "quantity": "28"
+      },
+      "metrics": [
+        "¥8400.00",
+        "0.44R · 0.44:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 60,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "percent-entry-changed",
+      "mode": "percent",
+      "fields": {
+        "entry": "58",
+        "stop": "51",
+        "target": "64",
+        "quantity": "28"
+      },
+      "metrics": [
+        "¥6758.62",
+        "0.86R · 0.86:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 58,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "percent-to-quantity",
+      "mode": "quantity",
+      "fields": {
+        "entry": "58",
+        "stop": "51",
+        "target": "64",
+        "quantity": "965.52"
+      },
+      "metrics": [
+        "¥6758.64",
+        "0.86R · 0.86:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 58,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "percent-return",
+      "mode": "percent",
+      "fields": {
+        "entry": "58",
+        "stop": "51",
+        "target": "64",
+        "quantity": "28.00"
+      },
+      "metrics": [
+        "¥6758.62",
+        "0.86R · 0.86:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 58,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    },
+    {
+      "name": "percent-30-digits",
+      "mode": "percent",
+      "fields": {
+        "entry": "58",
+        "stop": "51",
+        "target": "64",
+        "quantity": "123456789012345678901234567890"
+      },
+      "metrics": [
+        "¥29799914589186888010642826732068.97",
+        "0.86R · 0.86:1"
+      ],
+      "lines": [
+        {
+          "price": 51,
+          "lineStyle": 2,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 58,
+          "lineStyle": 0,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        },
+        {
+          "price": 64,
+          "lineStyle": 1,
+          "color": "#d7ae64",
+          "axisLabelVisible": false
+        }
+      ]
+    }
+  ]
+}

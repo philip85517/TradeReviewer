@@ -1,0 +1,15 @@
+{
+  "target": "F9987F4B8D40A3ACF910E8788E85F5D9",
+  "failures": [],
+  "errors": 0,
+  "steps": [
+    "I30-trade3-short-legal",
+    "replay-to-exit",
+    "I35-I36-trade3-set",
+    "I36-trade2-entry-clean",
+    "replay-to-exit",
+    "I35-I36-trade2-exit-clean",
+    "replay-to-exit",
+    "I35-I36-trade3-exit-retained"
+  ]
+}

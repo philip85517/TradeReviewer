@@ -1,0 +1,9 @@
+{
+  "observation": "After viewport resize and fresh accessibility snapshot; earlier boundary-checks.json sampled before responsive render settled.",
+  "result": {
+    "height": 844,
+    "overflow": false,
+    "text": "当前窗口较窄\n\n请返回桌面宽度继续审阅 TradeReview 工作区。\n\n返回阅读页",
+    "width": 390
+  }
+}

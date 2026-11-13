@@ -1,3 +1,4 @@
+import { flushSync } from 'react-dom';
 import { render, screen, fireEvent, waitFor, cleanup, act } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { LibraryPreview } from './library-preview';
@@ -148,4 +149,33 @@ it('opens a list row into its detail and returns to the list', async () => {
   await waitFor(() => expect(screen.getByText(/A ·/)).toBeTruthy());
   fireEvent.click(screen.getByRole('button', { name: '返回模拟练习列表' }));
   await waitFor(() => expect(document.getElementById('practice-row-A')).toBeTruthy());
+});
+
+it('restores the most recently opened row across consecutive returns', async () => {
+  const add = window.addEventListener.bind(window);
+  const remove = window.removeEventListener.bind(window);
+  const wrapped = new Map<EventListenerOrEventListenerObject, EventListener>();
+  let popRegistration = 0;
+  const addSpy = vi.spyOn(window, 'addEventListener').mockImplementation(((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => {
+    if (type !== 'popstate') return add(type, listener, options);
+    const isHost = ++popRegistration === 2;
+    const invoke = (event: Event) => flushSync(() => { if (typeof listener === 'function') listener.call(window, event); else listener.handleEvent(event); });
+    const wrapper: EventListener = event => { if (isHost && options !== true) setTimeout(() => invoke(event), 0); else invoke(event); };
+    wrapped.set(listener, wrapper); add(type, wrapper, options);
+  }) as typeof window.addEventListener);
+  const removeSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => remove(type, wrapped.get(listener) ?? listener, options)) as typeof window.removeEventListener);
+  window.history.replaceState({}, '', '/library-preview');
+  const port = createMockReadPort('reference');
+  render(<LibraryPreview port={port} initialLocation="" />);
+  const openAndReturn = async (id: string) => {
+    await waitFor(() => expect(document.getElementById(`practice-row-${id}`)).toBeTruthy());
+    fireEvent.click(document.getElementById(`practice-row-${id}`)!);
+    await screen.findByRole('button', { name: '返回模拟练习列表' });
+    await waitFor(() => expect(screen.getByText(new RegExp(`${id} · revision-`))).toBeTruthy());
+    fireEvent.click(screen.getByRole('button', { name: '返回模拟练习列表' }));
+    await waitFor(() => expect(document.activeElement?.id).toBe(`practice-row-${id}`));
+  };
+  await openAndReturn('A');
+  await openAndReturn('E');
+  cleanup(); addSpy.mockRestore(); removeSpy.mockRestore();
 });

@@ -11,4 +11,9 @@ describe('applied location', () => {
     expect(state.request).toEqual(DEFAULT_REQUEST);
     expect(state.scenario).toBe('normal');
   });
+  it('rejects a one-sided date range with a correctable notice', () => {
+    const state = parseLocation('?from=2026-02-01');
+    expect(state.request.period).toEqual(DEFAULT_REQUEST.period);
+    expect(state.notices).toContain('日期不完整或无效，已恢复本年期间');
+  });
 });

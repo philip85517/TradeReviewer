@@ -11,6 +11,7 @@ function verifyIdentity(result: { stamp: Stamp }, stamp: Stamp, actual: string, 
 export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
   const [view, setView] = useState<HomeView | null>(null);
   const [pending, setPending] = useState(false), [error, setError] = useState<string | null>(null);
+  const [notices, setNotices] = useState<string[]>([]);
   const [detail, setDetail] = useState<HoldingDetail | null>(null), [trades, setTrades] = useState<TradeCollection | null>(null);
   const committed = useRef<HomeView | null>(null), location = useRef<PreviewLocation>({ request: DEFAULT_REQUEST, scenario });
   const active = useRef<AbortController | null>(null), generation = useRef(0);
@@ -34,6 +35,7 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
   const load = useCallback((request: HomeRequest, restore?: PreviewLocation, replace = false) => run(signal => source.readHome(request, signal), result => {
     const scope = JSON.stringify([request.market, request.accountId, request.period]);
     if (result.stamp.scope !== scope) { setError('结果范围不匹配，已保留原视图'); return; }
+    if (restore) setNotices(restore.notices ?? []);
     committed.current = result; setView(result); setDetail(null); setTrades(null);
     const next: PreviewLocation = { request: result.request, scenario, ...(restore?.holdingId ? { holdingId: restore.holdingId, panel: restore.panel } : {}) };
     store(next, replace);
@@ -42,7 +44,7 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
   useEffect(() => {
     const initial = parseLocation(window.location.search);
     void load(initial.request, initial, true);
-    const pop = () => { const next = parseLocation(window.location.search); void load(next.request, next, true); };
+    const pop = () => { const next = parseLocation(window.location.search); setNotices(next.notices ?? []); void load(next.request, next, true); };
     window.addEventListener('popstate', pop);
     return () => { window.removeEventListener('popstate', pop); invalidate(); };
   }, [load, invalidate]);
@@ -56,10 +58,10 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
       if (restored.panel === 'trades') void run(signal => source.readTrades(view.stamp, id, signal), result => { verifyIdentity(result, view.stamp, result.holdingId, id); setTrades(result); });
     });
   }, [view, run, source]);
-  const change = (patch: Partial<HomeRequest>) => {
+  const change = useCallback((patch: Partial<HomeRequest>) => {
     const base = committed.current?.request ?? DEFAULT_REQUEST;
     void load({ ...base, ...patch, page: patch.page ?? 1 });
-  };
+  }, [load]);
   const openHolding = (id: string, trigger: HTMLElement) => {
     const current = committed.current; if (!current) return;
     origin.current = trigger;
@@ -69,14 +71,14 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
     });
   };
   const close = () => {
-    ++generation.current; active.current?.abort(); setPending(false); setDetail(null); setTrades(null);
+    ++generation.current; active.current?.abort(); setPending(false); setError(null); setDetail(null); setTrades(null);
     if (committed.current) store({ request: committed.current.request, scenario });
     requestAnimationFrame(() => {
       if (origin.current?.isConnected) origin.current.focus({ preventScroll: true });
       else document.getElementById('holdings-heading')?.focus({ preventScroll: true });
     });
   };
-  return { view, pending, error, detail, trades, change, close,
+  return { view, pending, error, notices, detail, trades, change, close,
     cancel: () => { ++generation.current; active.current?.abort(); setPending(false); setError(null); },
     openHolding,
     openTrades: () => { if (!detail) return; void run(signal => source.readTrades(detail.stamp, detail.holding.id, signal), result => { verifyIdentity(result, detail.stamp, result.holdingId, detail.holding.id); setTrades(result); store({ ...location.current, panel: 'trades' }); }); },

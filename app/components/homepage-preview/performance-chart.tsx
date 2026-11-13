@@ -66,7 +66,7 @@ function coverageReasons(point: HomepageBoundaryPointDisplay): string[] {
 function entriesFor({ series, reportCurrency, pointStatus }: PerformanceChartProps): DateEntry[] {
   return (series?.points ?? []).map((point, index) => {
     const override = pointStatus?.[point.key];
-    const read = readAmount(point.net, reportCurrency);
+    const read = readAmount(point.periodNet, reportCurrency);
     const state = override?.state ?? point.state;
     const amount = state === "value" && point.plottable ? read.decimal : null;
     const reasons = state === "future" ? ["未来未覆盖，金额未知"]
@@ -459,7 +459,7 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
 export function PerformanceChart(props: PerformanceChartProps) {
   // A controlled generation/date/read-status change also cancels obsolete timers and pins.
   const key = JSON.stringify([props.series?.version, props.series?.boundary,
-    props.series?.points.map(point => [point.key, point.state, point.plottable, point.net.value]),
+    props.series?.points.map(point => [point.key, point.state, point.plottable, point.periodNet.value]),
     props.reportCurrency, props.pointStatus, props.unavailableReason]);
   return <ChartContent key={key} {...props} />;
 }

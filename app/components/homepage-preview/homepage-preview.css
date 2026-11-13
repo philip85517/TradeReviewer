@@ -34,18 +34,18 @@
 .hp-holdings-title p { margin-left:auto; color:#a8b6cb; font-size:12px; white-space:nowrap; }
 .hp-holdings-title p strong { color:#e6edf7; font-size:14px; font-weight:500; padding-left:6px; }
 .hp-holdings-title p>span { margin-left:16px; }
-.hp-search { height:32px; width:190px; display:flex; align-items:center; gap:8px; border:1px solid #283448; border-radius:6px; color:#a8b6cb; padding:0 8px; flex-shrink:0; }
-.hp-search input { width:100%; min-width:0; background:transparent; border:0; font-size:12px; outline:none; }
+.hp-search { height:36px; width:190px; display:flex; align-items:center; gap:8px; border:1px solid #283448; border-radius:6px; color:#a8b6cb; padding:0 12px; flex-shrink:0; }
+.hp-search input { width:100%; min-width:0; background:transparent; border:0; font-size:14px; outline:none; }
 .hp-search input::-webkit-search-cancel-button { display:none; }
 .hp-search:focus-within { outline:2px solid #a9c8ff; outline-offset:2px; }
 .hp-search button { display:flex; background:none; border:0; padding:2px; }
-.hp-export { height:32px; display:flex; align-items:center; gap:6px; color:#a8b6cb!important; background:none; border:1px solid #283448; padding:0 10px; border-radius:6px; font-size:12px!important; }
+.hp-export { height:36px; display:flex; align-items:center; gap:6px; color:#a8b6cb!important; background:none; border:1px solid #283448; padding:0 10px; border-radius:6px; font-size:14px!important; }
 .hp-preview table { border-collapse:collapse; width:100%; table-layout:fixed; }
 .hp-holdings th { height:40px; color:#a8b6cb; font-weight:500; font-size:12px; }
 .hp-holdings td { height:48px; font-size:14px; border-top:1px solid #202d3e; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .hp-holdings th,.hp-holdings td { text-align:right; padding:0 8px; }
 .hp-holdings th:first-child,.hp-holdings td:first-child { text-align:left; padding-left:0; }
-.hp-holdings th:nth-child(2),.hp-holdings td:nth-child(2),.hp-holdings td:last-child { text-align:center; }
+.hp-holdings td:last-child { text-align:center; }
 .hp-holdings th button { display:inline-flex; align-items:center; justify-content:flex-end; gap:4px; padding:0; border:0; background:transparent; max-width:100%; }
 .hp-holding-name { display:block; overflow:hidden; text-overflow:ellipsis; font-weight:500; }
 .hp-holdings small { display:block; color:#71829b; font-size:12px; line-height:16px; }
@@ -55,7 +55,7 @@
 .hp-holdings footer { height:48px; display:flex; align-items:center; justify-content:space-between; color:#a8b6cb; font-size:12px; border-top:1px solid #283448; }
 .hp-holdings footer>div { display:flex; align-items:center; gap:12px; }
 .hp-holdings footer>div span { min-width:56px; text-align:center; }
-.hp-holdings footer button { display:grid; place-items:center; height:28px; width:28px; border:1px solid #283448; border-radius:4px; background:transparent; }
+.hp-holdings footer button { display:grid; place-items:center; height:36px; width:36px; border:1px solid #283448; border-radius:4px; background:transparent; }
 .hp-preview .positive { color:#53d7a0!important; }
 .hp-preview .negative { color:#ff8592!important; }
 .hp-page-note { color:#71829b; font-size:12px; padding-top:16px; }
@@ -84,3 +84,7 @@
 .hp-performance-chart { margin-top:16px; }
 
 .hp-full-readout { position:fixed; z-index:150; width:max-content; max-width:360px; padding:10px 12px; background:#162233; border:1px solid #365c8c; border-radius:6px; overflow-wrap:anywhere; white-space:normal; box-shadow:0 8px 24px #0006; font-size:12px; }
+
+.hp-link-notice { color:#ffc66d; padding:8px 24px; }
+.hp-dialog-status { min-height:24px; margin-top:16px; color:#ffc66d; }
+.hp-dialog-status button { margin-left:12px; min-height:36px; border:1px solid #365c8c; border-radius:6px; padding:0 12px; background:#162233; }

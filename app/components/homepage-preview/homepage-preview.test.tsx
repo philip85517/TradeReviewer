@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HomepagePreview } from './homepage-preview';
 import { createMockSource, DEFAULT_REQUEST } from './mock-source';
 import type { HomepageSource, HomeView } from './display-contract';
@@ -118,5 +118,92 @@ describe('homepage mock journey', () => {
     window.history.replaceState(null, '', '/preview/homepage?holding=account-1%3ASSE%3A600519%3A0&panel=detail');
     render(<HomepagePreview />);
     expect(await screen.findByRole('dialog', { name: '贵州茅台 · 持仓详情' })).toBeTruthy();
+  });
+  it('uses the approved holding-days column and module title', async () => {
+    render(<HomepagePreview />);
+    const origin = await ready();
+    expect(screen.getByRole('heading', { name: '当前持仓（最新）' })).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: '持仓天数' })).toBeTruthy();
+    expect(within(origin.closest('tr')!).getAllByRole('cell')[1]).toHaveTextContent('288');
+  });
+  it('does not restart a cancelled uncommitted search', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const readHome = vi.fn((request, signal) => request.query ? new Promise<HomeView>(() => {}) : base.readHome(request, signal));
+    render(<HomepagePreview source={{ ...base, readHome }} />);
+    await ready();
+    await userEvent.type(screen.getByRole('searchbox', { name: '搜索持仓' }), '腾讯');
+    await screen.findByRole('button', { name: '取消读取' });
+    await userEvent.click(screen.getByRole('button', { name: '取消读取' }));
+    const count = readHome.mock.calls.length;
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 400)); });
+    expect(readHome).toHaveBeenCalledTimes(count);
+    expect(screen.queryByRole('button', { name: '取消读取' })).toBeNull();
+  });
+  it('shows trade errors and retry inside the active dialog', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    let fail = true;
+    const source: HomepageSource = { ...base, readTrades: (stamp, id, signal) => fail ? (fail = false, Promise.reject(new Error('交易读取失败'))) : base.readTrades(stamp, id, signal) };
+    render(<HomepagePreview source={source} />);
+    await userEvent.click(await ready());
+    const dialog = await screen.findByRole('dialog');
+    await userEvent.click(within(dialog).getByRole('button', { name: '查看交易' }));
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('交易读取失败');
+    await userEvent.click(within(dialog).getByRole('button', { name: '重试读取交易' }));
+    expect(await screen.findByRole('heading', { name: '贵州茅台 · 交易集合' })).toBeTruthy();
+  });
+  it('leaves a failed search dormant until another user action', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const readHome = vi.fn((request, signal) => request.query ? Promise.reject(new Error('搜索读取失败')) : base.readHome(request, signal));
+    render(<HomepagePreview source={{ ...base, readHome }} />);
+    await ready();
+    await userEvent.type(screen.getByRole('searchbox'), '腾讯');
+    await screen.findByRole('alert');
+    const count = readHome.mock.calls.length;
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 400)); });
+    expect(readHome).toHaveBeenCalledTimes(count);
+  });
+  it('times out a trade read with accessible manual recovery inside the dialog', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    render(<HomepagePreview source={{ ...base, readTrades: () => new Promise(() => {}) }} />);
+    await userEvent.click(await ready());
+    const dialog = await screen.findByRole('dialog');
+    vi.useFakeTimers();
+    try {
+      fireEvent.click(within(dialog).getByRole('button', { name: '查看交易' }));
+      expect(within(dialog).getByRole('button', { name: '取消读取' })).toBeTruthy();
+      await act(async () => { await vi.advanceTimersByTimeAsync(15001); });
+      expect(within(dialog).getByRole('alert')).toHaveTextContent('15秒');
+      expect(within(dialog).getByRole('button', { name: '重试读取交易' })).toBeEnabled();
+    } finally { vi.useRealTimers(); }
+  });
+  it('shows full detail precision on keyboard focus and locks background scrolling', async () => {
+    render(<HomepagePreview initialScenario="extreme" />);
+    await userEvent.click(await screen.findByRole('button', { name: /查看贵州茅台.*详情/ }));
+    const dialog = await screen.findByRole('dialog');
+    expect(document.body.style.overflow).toBe('hidden');
+    const card = within(dialog).getByRole('heading', { name: '市值(CNY)' }).parentElement!;
+    fireEvent.focus(card.querySelector('p')!);
+    expect(within(dialog).getByRole('tooltip')).toHaveTextContent('123456789012.3456789');
+    await userEvent.keyboard('{Escape}');
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+  it('plots period net separately from cumulative net', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const source: HomepageSource = { ...base, readHome: async (request, signal) => {
+      const view = await base.readHome(request, signal);
+      return { ...view, series: { ...view.series, points: view.series.points.map(point => ({ ...point, net: { ...point.net, value: '999999' }, periodNet: { ...point.periodNet, value: '12' } })) } };
+    } };
+    render(<HomepagePreview source={source} />);
+    await ready();
+    expect(screen.getAllByTestId('hp-chart-money-tick').map(tick => tick.textContent).join(' ')).not.toContain('万');
+    fireEvent.focus(screen.getByRole('group', { name: /当前表现｜/ }));
+    expect(screen.getByTestId('hp-chart-value-net')).toHaveTextContent('999,999.00');
+    expect(screen.getByTestId('hp-chart-value-periodNet')).toHaveTextContent('12.00');
+  });
+  it('explains normalized invalid URL values', async () => {
+    window.history.replaceState(null, '', '/preview/homepage?market=invalid&page=-5&from=bad');
+    render(<HomepagePreview />);
+    await ready();
+    expect(screen.getByRole('status', { name: '链接参数说明' })).toHaveTextContent('已恢复有效范围');
   });
 });

@@ -61,3 +61,70 @@ describe('reference identities', () => {
     expect((await port.readPracticePage({ ...query, ...options.defaultScope, search:'2026-10-15 #02' }, context())).rows.map(r => r.key.practiceId)).toEqual(['E']);
   });
 });
+
+describe('mock detail port', () => {
+  it('returns A financial decomposition and its first pair page', async () => {
+    const detail = await createMockReadPort('reference').readPracticeDetail({ practiceId: 'A' }, context());
+    expect(detail.financial.realizedGross).toEqual({ state: 'known', value: { amount: '1900', currency: 'CNY' } });
+    expect(detail.financial.practiceNet.state).toBe('unknown');
+    expect(detail.pairs.rows.map(row => row.pairId)).toEqual(['A-1', 'A-2']);
+    expect(detail.pairs.rows.map(row => row.net)).toEqual(['990', '894'].map(amount => ({ state: 'known', value: { amount, currency: 'CNY' } })));
+  });
+  it('keeps same-day practice identities distinct', async () => {
+    const port = createMockReadPort('reference');
+    const a = await port.readPracticeDetail({ practiceId: 'A' }, context());
+    const e = await port.readPracticeDetail({ practiceId: 'E' }, context());
+    expect(a.source.name).not.toBe(e.source.name);
+    expect(e.practice.sequence).toBe(2);
+    expect(e.financial.practiceNet).toEqual({ state: 'known', value: { amount: '98', currency: 'CNY' } });
+  });
+});
+
+describe('detail edge scenarios', () => {
+  it('paginates seven pairs for P1 without mixing identities', async () => {
+    const port = createMockReadPort('pagination');
+    const detail = await port.readPracticeDetail({ practiceId: 'P1' }, context());
+    expect(detail.practice.executionCount).toBe(14);
+    expect(detail.practice.pairCount).toEqual({ state: 'known', value: 7 });
+    expect(detail.pairs.rows).toHaveLength(6);
+    const second = await port.readPairPage(detail.practice.key, { pageIndex: 2, pageSize: 6 }, context());
+    expect([second.totalCount, second.pageIndex, second.rows.length, second.rows[0].pairId]).toEqual([7, 2, 1, 'P1-7']);
+    expect(second.rows[0].key).toEqual(detail.practice.key);
+  });
+  it('preserves extreme known zero and missing facts', async () => {
+    const port = createMockReadPort('extreme');
+    const b = await port.readPracticeDetail({ practiceId: 'B' }, context());
+    const c = await port.readPracticeDetail({ practiceId: 'C' }, context());
+    const d = await port.readPracticeDetail({ practiceId: 'D' }, context());
+    expect(b.practice.instrument.name.length).toBeGreaterThan(20);
+    expect(b.practice.net).toEqual({ state: 'known', value: { amount: '12345678901234567890', currency: 'CNY' } });
+    expect(c.practice.net).toEqual({ state: 'known', value: { amount: '0', currency: 'CNY' } });
+    expect(d.practice.pairCount.state).toBe('unknown');
+    expect(d.practice.openQuantity.state).toBe('unknown');
+    expect(d.pairs.completeness).toMatchObject({ state: 'unknown', reasonCode: 'missing-pairs' });
+    expect(d.pairs.rows).toEqual([]);
+  });
+  it('honors abort, version, not found and independent retry', async () => {
+    const slow = createMockReadPort('slow');
+    const controller = new AbortController();
+    const pending = slow.readPracticeDetail({ practiceId: 'A' }, { signal: controller.signal });
+    controller.abort();
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(slow.readPracticeDetail({ practiceId: 'A' }, { ...context(), snapshotVersion: 'old' })).rejects.toMatchObject({ code: 'version-expired', retryable: false });
+    await expect(createMockReadPort('version-expired').readPracticeDetail({ practiceId: 'A' }, context())).rejects.toMatchObject({ code: 'version-expired' });
+    await expect(createMockReadPort('not-found').readPracticeDetail({ practiceId: 'A' }, context())).rejects.toMatchObject({ code: 'not-found' });
+    const retry = createMockReadPort('retry');
+    await expect(retry.readPracticePage(query, context())).rejects.toMatchObject({ code: 'network' });
+    await expect(retry.readPracticeDetail({ practiceId: 'A' }, context())).rejects.toMatchObject({ code: 'network' });
+    expect((await retry.readPracticeDetail({ practiceId: 'A' }, context())).practice.key.practiceId).toBe('A');
+  });
+  it('delays stale A longer than B and permits cancellation', async () => {
+    const port = createMockReadPort('stale');
+    const controller = new AbortController();
+    const a = port.readPracticeDetail({ practiceId: 'A' }, { signal: controller.signal });
+    const b = await port.readPracticeDetail({ practiceId: 'B' }, context());
+    expect(b.practice.key.practiceId).toBe('B');
+    controller.abort();
+    await expect(a).rejects.toMatchObject({ name: 'AbortError' });
+  });
+});

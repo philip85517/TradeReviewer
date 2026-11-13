@@ -16,15 +16,16 @@ export function fixtures(scenario: ScenarioId): readonly PracticeRow[] {
   const entries: readonly (readonly [string, string, string, string, number, number, number, string, string | null])[] = scenario === 'pagination'
     ? [...samples, ...Array.from({length: 7}, (_, i) => [`P${i + 1}`, `测试${i + 1}`, `90000${i}`, String(15 + i % 5), i + 3, 2, 1, '0', '10'] as const)] : samples;
   return entries.map(([id, name, symbol, day, sequence, executions, pairs, open, original]) => {
-    const amount = id === 'A' && scenario === 'explicit-end-price' ? '4677' : scenario === 'extreme' && id === 'B' ? '12345678901234567890' : original;
+    const missingPairs = { state: 'unknown', reasonCode: 'missing-pairs', reason: '配对数据缺失' } as const;
+    const amount = scenario === 'extreme' && id === 'C' ? '0' : id === 'A' && scenario === 'explicit-end-price' ? '4677' : scenario === 'extreme' && id === 'B' ? '12345678901234567890' : original;
     const net = amount === null ? unknown : known({ amount, currency: 'CNY' });
     return {
       key: { practiceId: id, revisionId: `revision-${id}`, practiceVersion: '1' },
-      instrument: { id: symbol, symbol, name, market: 'CN' },
+      instrument: { id: symbol, symbol, name: scenario === 'extreme' && id === 'B' ? '贵州茅台超长中文证券名称用于验证完整展示和极端数值布局测试' : name, market: 'CN' },
       account: { id: 'simulation', label: '模拟账户' }, sequence,
       practiceDate: `2026-10-${day}`, practiceDateSource: 'filename',
       historicalFrom: '2022-01-01', historicalTo: '2023-01-01', importedAt: '2026-10-31T00:00:00Z', displayTimezone: 'Asia/Shanghai',
-      executionCount: executions, pairCount: known(pairs), openQuantity: known(open), net,
+      executionCount: scenario === 'pagination' && id === 'P1' ? 14 : executions, pairCount: scenario === 'extreme' && id === 'D' ? missingPairs : known(scenario === 'pagination' && id === 'P1' ? 7 : pairs), openQuantity: scenario === 'extreme' && id === 'D' ? missingPairs : known(open), net,
       returnRate: amount === null ? unknown : known(new Decimal(amount).div(100000).toFixed()),
     };
   });

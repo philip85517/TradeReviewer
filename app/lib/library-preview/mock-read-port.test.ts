@@ -128,3 +128,16 @@ describe('detail edge scenarios', () => {
     await expect(a).rejects.toMatchObject({ name: 'AbortError' });
   });
 });
+
+describe('historical time semantics', () => {
+  it('keeps pair dates within source history and valuation on the last transaction day', async () => {
+    const detail = await createMockReadPort('explicit-end-price').readPracticeDetail({ practiceId: 'A' }, context());
+    expect(detail.pairs.rows.map(row => [row.openedAt, row.closedAt])).toEqual([
+      ['2022-10-05', '2023-01-01'], ['2022-01-01', '2023-01-01'],
+    ]);
+    for (const pair of detail.pairs.rows) {
+      expect(pair.openedAt >= detail.practice.historicalFrom && pair.closedAt <= detail.practice.historicalTo).toBe(true);
+    }
+    expect(detail.endValuation).toMatchObject({ state: 'known', value: { barEnd: detail.practice.historicalTo } });
+  });
+});

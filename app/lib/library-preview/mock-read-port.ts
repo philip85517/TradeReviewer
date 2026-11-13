@@ -32,7 +32,7 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
   }
   function pairs(row: PracticeRow, pageIndex: number): PairPage {
     const id = row.key.practiceId;
-    const values = scenario === 'extreme' && id === 'D' ? [] : scenario === 'pagination' && id === 'P1' ? Array.from({ length: 7 }, (_, i) => ['2026-10-01', '2026-10-15', '1', i === 6 ? '4' : '1']) : id === 'A' ? [['2026-10-05', '2026-10-15', '50', '990'], ['2026-10-01', '2026-10-15', '30', '894']] : [['2026-10-01', '2026-10-15', '1', row.net.state === 'known' ? row.net.value.amount : '0']];
+    const values = scenario === 'extreme' && id === 'D' ? [] : scenario === 'pagination' && id === 'P1' ? Array.from({ length: 7 }, (_, i) => ['2022-01-01', '2023-01-01', '1', i === 6 ? '4' : '1']) : id === 'A' ? [['2022-10-05', '2023-01-01', '50', '990'], ['2022-01-01', '2023-01-01', '30', '894']] : [['2022-01-01', '2023-01-01', '1', row.net.state === 'known' ? row.net.value.amount : '0']];
     const all = values.map(([openedAt, closedAt, quantity, net], index) => ({ pairId: `${id}-${index + 1}`, key: row.key, openedAt, closedAt, quantity, net: money(net) }));
     const pageCount = Math.max(1, Math.ceil(all.length / 6));
     const current = Math.min(pageCount, Math.max(1, Math.floor(pageIndex) || 1));
@@ -73,7 +73,7 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
           closedNet: money(isA ? '1884' : amount), closedFees: money(isA ? '16' : '2'), retainedOpenFees: money(isA ? '7' : '0'), returnRate: practice.returnRate,
         },
         capital: { value: money('100000'), origin: 'default', version: '1' },
-        endValuation: isA ? (explicit ? known({ price: '140', currency: 'CNY', barEnd: '2026-10-15' }) : missing) : noValuation,
+        endValuation: isA ? (explicit ? known({ price: '140', currency: 'CNY', barEnd: '2023-01-01' }) : missing) : noValuation,
         pairs: pairs(practice, 1),
         actions: [
           { id: 'import', label: '导入', available: false, reasonCode: 'not-connected', reason: '当前阶段尚未接入导入' },

@@ -1,0 +1,4 @@
+import { it, expect, vi } from 'vitest';
+import { saveReturnContext, readReturnContext } from './return-context';
+it('handles absent storage and exceptions', () => { vi.stubGlobal('sessionStorage', undefined); expect(readReturnContext('x')).toBeNull(); saveReturnContext('x',{scrollTop:1,focusId:null}); vi.unstubAllGlobals(); });
+it('isolates keys and rejects corrupt values', () => { const m=new Map<string,string>(); vi.stubGlobal('sessionStorage',{getItem:(k:string)=>m.get(k) ?? null,setItem:(k:string,v:string)=>m.set(k,v)}); saveReturnContext('scenario=a',{scrollTop:4,focusId:'id'}); expect(readReturnContext('scenario=b')).toBeNull(); saveReturnContext('scenario=a',{scrollTop:-1,focusId:null}); expect(readReturnContext('scenario=a')?.scrollTop).toBe(4); for(const k of m.keys()) m.set(k,'{'); expect(readReturnContext('scenario=a')).toBeNull(); vi.unstubAllGlobals(); });

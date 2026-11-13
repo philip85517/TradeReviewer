@@ -12,9 +12,9 @@
 .practice-detail td { height:48px; border-top:1px solid #344357; }
 .practice-detail nav { display:flex; gap:8px; justify-content:flex-end; }
 .practice-detail__metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:20px; }
-.practice-detail__metrics > div { box-sizing:border-box; min-height:104px; padding:12px 16px; background:#182434; border:1px solid #344357; border-radius:8px; }
+.practice-detail__metrics > div { box-sizing:border-box; height:104px; padding:12px 16px; background:#182434; border:1px solid #344357; border-radius:8px; }
 .practice-detail__metrics > div > span { display:flex; align-items:center; min-height:36px; color:#a8b6cb; font-size:12px; line-height:16px; }
-.practice-detail__metrics strong { font-size:28px; line-height:32px; }
+.practice-detail__metrics strong { font-size:28px; line-height:32px; display:flex; align-items:center; min-width:0; }
 .practice-detail__grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
 .practice-detail__grid dt { color:#a8b6cb; font-size:12px; }
 .practice-detail__grid dd { margin:4px 0 0; overflow-wrap:anywhere; }

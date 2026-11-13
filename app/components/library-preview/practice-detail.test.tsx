@@ -58,4 +58,15 @@ describe('practice detail', () => {
     expect(screen.queryByText('无内部配对')).not.toBeInTheDocument();
   });
 
+  it('formats known return ratios as percentages and preserves unknown reasons', async () => {
+    const detail = await load(); const props = callbacks();
+    const withRate = (returnRate: typeof detail.financial.returnRate) => ({ ...detail, financial: { ...detail.financial, returnRate } });
+    const { rerender } = render(<PracticeDetailView detail={withRate({ state: 'known', value: '0.125' })} pairs={detail.pairs} status="ready" error="" {...props} />);
+    expect(screen.getByText('12.5%')).toBeInTheDocument();
+    rerender(<PracticeDetailView detail={withRate({ state: 'known', value: '0' })} pairs={detail.pairs} status="ready" error="" {...props} />);
+    expect(screen.getByText('0%')).toBeInTheDocument();
+    rerender(<PracticeDetailView detail={withRate({ state: 'unknown', reasonCode: 'missing', reason: '收益率缺失' })} pairs={detail.pairs} status="ready" error="" {...props} />);
+    expect(screen.getByText('收益率缺失')).toBeInTheDocument();
+  });
+
 });

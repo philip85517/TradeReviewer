@@ -21,6 +21,7 @@ function DateFilter({ value, onChange, now = () => new Date("2026-10-15T04:00:00
   const trigger = useRef<HTMLButtonElement | null>(null);
   const root = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const error = panel === "day" ? (!draft.from ? "请选择日期" : validateDateRange({ from: draft.from, to: draft.from })) : validateDateRange(draft);
   useLayoutEffect(() => {
     if (previousValueKey.current === valueKey) return;
     previousValueKey.current = valueKey;
@@ -46,7 +47,7 @@ function DateFilter({ value, onChange, now = () => new Date("2026-10-15T04:00:00
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
     };
-  }, [panel]);
+  }, [panel, error]);
   useEffect(() => {
     if (panel) panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
   }, [Boolean(panel)]);
@@ -58,21 +59,20 @@ function DateFilter({ value, onChange, now = () => new Date("2026-10-15T04:00:00
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
   }, [panel]);
-  const error = panel === "day" ? (!draft.from ? "请选择日期" : validateDateRange({ from: draft.from, to: draft.from })) : validateDateRange(draft);
   function open(which: "day" | "range", button: HTMLButtonElement) { trigger.current = button; setDraft(value); setPanel(which); }
   function close() { setPanel(null); trigger.current?.focus(); }
   function selectPreset(preset: PracticeDatePreset) { close(); onChange(presetRange(preset, now())); }
   const label = !value.from && !value.to ? "全部日期" : `${value.from || "不限"} 至 ${value.to || "不限"}`;
-  return <div ref={root} className="preview-date-filter" onBlur={event => {
+  return <div ref={root} className="preview-date-filter" onKeyDown={event => {
+    if (panel && event.key === "Escape") { event.stopPropagation(); close(); }
+  }} onBlur={event => {
     if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget) && !panelRef.current?.contains(event.relatedTarget)) setPanel(null);
   }}>
     <span className="preview-date-filter-label">练习日期</span>
     <div className="preview-date-filter-controls" aria-label="练习日期筛选">
       <button type="button" aria-label={`练习日期：${label}`} aria-expanded={panel !== null} onClick={event => panel ? close() : open("range", event.currentTarget)}>{label}<CalendarDays size={16} aria-hidden="true" /></button>
     </div>
-    {panel && createPortal(<div ref={panelRef} className="preview-date-filter-panel" style={position} onKeyDown={event => {
-      if (event.key === "Escape") { event.stopPropagation(); close(); }
-    }} onBlur={event => {
+    {panel && createPortal(<div ref={panelRef} className="preview-date-filter-panel" style={position} onBlur={event => {
       if (event.relatedTarget instanceof Node && !panelRef.current?.contains(event.relatedTarget) && !root.current?.contains(event.relatedTarget)) setPanel(null);
     }} role="dialog" aria-label={panel === "day" ? "选择单日" : "自定义日期"}>
       <div className="preview-date-filter-presets">

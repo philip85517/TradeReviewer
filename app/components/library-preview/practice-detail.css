@@ -22,3 +22,13 @@
 .practice-detail__actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
 @media(max-width:899px) { .practice-detail__metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:599px) { .practice-detail__metrics { grid-template-columns:1fr; } .practice-detail__header { align-items:flex-start; flex-direction:column; } }
+.practice-detail, .practice-detail__panel, .practice-detail__metrics, .practice-detail__metrics > div { min-width:0; }
+.practice-detail h2 { font-size:18px; line-height:24px; }
+.practice-detail__pair-status { min-height:36px; display:flex; align-items:center; gap:8px; }
+.practice-detail th:nth-child(3), .practice-detail th:nth-child(4), .practice-detail td:nth-child(3), .practice-detail td:nth-child(4) { text-align:right; }
+.practice-detail td:nth-child(2) { white-space:nowrap; }
+.practice-detail__metrics strong { line-height:34px; }
+.practice-detail__value, .metric-value { display:inline-flex; align-items:center; min-width:0; max-width:100%; vertical-align:middle; }
+.practice-detail__value-text, .metric-value__text { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.practice-detail__value > button, .metric-value > button { flex:0 0 36px; }
+.practice-detail button[aria-disabled="true"] { border:1px solid #405e85; background:#253e60; color:#a9c8ee; border-radius:4px; }

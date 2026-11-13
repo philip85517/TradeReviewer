@@ -7,5 +7,5 @@ export function MetricValue({ value }: { value: Money }) {
   const { display, fullValue } = formatMoney(value);
   const number = value.state === 'known' ? new Decimal(value.value.amount) : null;
   const color = number?.isZero() ? undefined : number?.isPositive() ? '#53D7A0' : number ? '#FF8592' : undefined;
-  return <span style={{ color, whiteSpace: 'nowrap' }}>{display}<InfoPopover label={value.state === 'unknown' ? '查看未知原因' : '查看完整数值'}>{fullValue}</InfoPopover></span>;
+  return <span className="metric-value" style={{ color }}><span className="metric-value__text">{display}</span><InfoPopover label={value.state === 'unknown' ? '查看未知原因' : '查看完整数值'}>{fullValue}</InfoPopover></span>;
 }

@@ -10,10 +10,10 @@ import './practice-detail.css';
 type Props = { detail: PracticeDetail | null; pairs: PairPage | null; status: 'loading' | 'ready' | 'error'; error: string; onBack: () => void; onPairPage: (pageIndex: number) => void; onRetry: () => void; pairPending?: boolean; pairError?: string; onPairRetry?: () => void; retryable?: boolean };
 function NeutralMoney({ value, inlineReason = true }: { value: Money; inlineReason?: boolean }) {
   const formatted = formatMoney(value);
-  return <span>{formatted.display.replace(/^\+/, '')}<InfoPopover label={value.state === 'unknown' ? '查看未知原因' : '查看完整数值'}>{formatted.fullValue.replace(/^\+/, '')}</InfoPopover>{inlineReason && value.state === 'unknown' && <span className="practice-detail__reason">{value.reason}</span>}</span>;
+  return <span className="practice-detail__value"><span className="practice-detail__value-text">{formatted.display.replace(/^\+/, '')}</span><InfoPopover label={value.state === 'unknown' ? '查看未知原因' : '查看完整数值'}>{formatted.fullValue.replace(/^\+/, '')}</InfoPopover>{inlineReason && value.state === 'unknown' && <span className="practice-detail__reason">{value.reason}</span>}</span>;
 }
 function FactValue({ value, inlineReason = true }: { value: Fact<string>; inlineReason?: boolean }) {
-  return value.state === 'known' ? <span>{value.value}</span> : <span>—<InfoPopover label="查看未知原因">{value.reason}</InfoPopover>{inlineReason && <span className="practice-detail__reason">{value.reason}</span>}</span>;
+  return value.state === 'known' ? <span className="practice-detail__value"><span className="practice-detail__value-text" title={value.value}>{value.value}</span></span> : <span>—<InfoPopover label="查看未知原因">{value.reason}</InfoPopover>{inlineReason && <span className="practice-detail__reason">{value.reason}</span>}</span>;
 }
 function DisabledAction({ label, reason }: { label: string; reason: string }) {
   const id = useId();
@@ -29,7 +29,7 @@ export function PracticeDetailView({ detail, pairs, status, error, onBack, onPai
     <div role="status" aria-live="polite">{status === 'loading' ? '正在读取练习详情…' : status === 'error' ? <>{error || '读取详情失败'} {retryable && <button type="button" onClick={onRetry}>重试</button>}</> : ''}</div>
     {visible && <>
       <div className="practice-detail__panel"><div className="practice-detail__heading"><h2>内部配对</h2><span>{page ? page.completeness.state === 'unknown' ? <>— <InfoPopover label="查看配对数未知原因">{page.completeness.reason}</InfoPopover></> : `${page.totalCount} 个内部配对` : '—'}</span></div>
-        <div role="status" aria-live="polite">{pairPending ? '正在读取内部配对…' : pairError ? <>{pairError} {onPairRetry && <button type="button" onClick={onPairRetry}>重试配对</button>}</> : ''}</div>
+        <div className="practice-detail__pair-status" data-testid="pair-status" role="status" aria-live="polite">{pairPending ? '正在读取内部配对…' : pairError ? <>{pairError} {onPairRetry && <button type="button" onClick={onPairRetry}>重试配对</button>}</> : ''}</div>
         <div className="practice-detail__table-wrap"><table aria-label="内部配对"><thead><tr><th>内部配对</th><th>开仓 → 平仓</th><th>配对数量</th><th>净盈亏</th><th>操作</th></tr></thead><tbody>{page?.rows.length ? page.rows.slice(0, 6).filter(row => sameKey(row.key, page.key)).map((row, index) => <tr key={row.pairId}><td>内部配对 {(page.pageIndex - 1) * 6 + index + 1}</td><td>{row.openedAt} → {row.closedAt}</td><td>{row.quantity}</td><td><MetricValue value={row.net} /> {row.net.state === 'known' && row.net.value.currency}</td><td><DisabledAction label="进入回放" reason="回放暂未接入" /></td></tr>) : <tr><td colSpan={5}>{page?.completeness.state === 'unknown' ? page.completeness.reason : page ? '无内部配对' : '配对数据不可用'}</td></tr>}</tbody></table></div>
         {page && page.pageCount > 1 && <nav aria-label="内部配对分页"><button type="button" disabled={page.pageIndex <= 1 || pairPending} onClick={() => onPairPage(page.pageIndex - 1)}>上一页</button>{Array.from({ length: page.pageCount }, (_, i) => <button type="button" key={i} aria-current={page.pageIndex === i + 1 ? 'page' : undefined} disabled={pairPending} onClick={() => onPairPage(i + 1)}>{i + 1}</button>)}<button type="button" disabled={page.pageIndex >= page.pageCount || pairPending} onClick={() => onPairPage(page.pageIndex + 1)}>下一页</button></nav>}
       </div>

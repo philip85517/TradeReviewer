@@ -8,6 +8,29 @@ const callbacks = () => ({ onBack: vi.fn(), onPairPage: vi.fn(), onRetry: vi.fn(
 afterEach(cleanup);
 
 describe('practice detail', () => {
+  it('retains pair rows through pending and error and retries the failed request', async () => {
+    const detail = await load('pagination', 'P1'); const retry = vi.fn();
+    const props = { detail, pairs: detail.pairs, status: 'ready' as const, error: '', ...callbacks(), onPairRetry: retry };
+    const { rerender } = render(<PracticeDetailView {...props} />);
+    const table = screen.getByRole('table', { name: '内部配对' });
+    const row = table.querySelector('tbody tr');
+    const slot = screen.getByTestId('pair-status');
+    rerender(<PracticeDetailView {...props} pairPending />);
+    expect(screen.getByTestId('pair-status')).toBe(slot);
+    expect(table.querySelector('tbody tr')).toBe(row);
+    expect(slot).toHaveTextContent('正在读取内部配对');
+    rerender(<PracticeDetailView {...props} pairError="配对读取失败" />);
+    expect(table.querySelector('tbody tr')).toBe(row);
+    fireEvent.click(screen.getByRole('button', { name: '重试配对' }));
+    expect(retry).toHaveBeenCalledOnce();
+  });
+  it('exposes the full extreme amount through a focusable disclosure', async () => {
+    const detail = await load('extreme', 'B');
+    render(<PracticeDetailView detail={detail} pairs={detail.pairs} status="ready" error="" {...callbacks()} />);
+    const trigger = screen.getAllByRole('button', { name: '查看完整数值' })[0];
+    fireEvent.focus(trigger);
+    expect(screen.getByRole('tooltip')).toHaveTextContent(detail.financial.closedNet.state === 'known' ? detail.financial.closedNet.value.amount : '');
+  });
   it('keeps closed metrics distinct from the unknown whole practice net', async () => {
     const detail = await load();
     render(<PracticeDetailView detail={detail} pairs={detail.pairs} status="ready" error="" {...callbacks()} />);

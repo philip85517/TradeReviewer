@@ -26,9 +26,19 @@ it('passes a date range applied in the real date control', () => {
   fireEvent.click(screen.getByRole('button', { name: '应用' }));
   expect(change).toHaveBeenCalledWith({ ...query, from: '2026-10-01', to: '2026-10-02', pageIndex: 1 });
 });
-it('hides filters in detail while retaining navigation', () => {
-  render(<PreviewShell isDetail>内容</PreviewShell>);
-  expect(screen.queryByLabelText('市场')).toBeNull(); expect(screen.getByRole('navigation', { name: '交易库视图' })).toBeInTheDocument();
+it('retains readonly filter context and navigation in detail', () => {
+  // The host suppresses its callback when rendering the detail shell.
+  render(<PreviewShell isDetail query={query} options={options} onQueryChange={undefined}>内容</PreviewShell>);
+  const date = screen.getByRole('button', { name: /练习日期/ });
+  expect(date).toHaveAttribute('aria-disabled', 'true');
+  expect(date).toHaveAccessibleDescription('返回列表后修改筛选');
+  expect(screen.getByLabelText('市场')).toBeDisabled();
+  expect(screen.getByLabelText('账户 / 身份')).toBeDisabled();
+  const clear = screen.getByRole('button', { name: '清除筛选' });
+  expect(clear).toBeDisabled();
+  expect(screen.getByRole('navigation', { name: '交易库视图' })).toBeInTheDocument();
+  fireEvent.click(date); fireEvent.click(clear);
+  expect(screen.queryByLabelText('开始日期')).toBeNull();
 });
 it('supports the existing host without a callback', () => {
   render(<PreviewShell>内容</PreviewShell>);

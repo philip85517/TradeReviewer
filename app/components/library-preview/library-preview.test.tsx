@@ -155,12 +155,10 @@ it('restores the most recently opened row across consecutive returns', async () 
   const add = window.addEventListener.bind(window);
   const remove = window.removeEventListener.bind(window);
   const wrapped = new Map<EventListenerOrEventListenerObject, EventListener>();
-  let popRegistration = 0;
   const addSpy = vi.spyOn(window, 'addEventListener').mockImplementation(((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => {
     if (type !== 'popstate') return add(type, listener, options);
-    const isHost = ++popRegistration === 2;
     const invoke = (event: Event) => flushSync(() => { if (typeof listener === 'function') listener.call(window, event); else listener.handleEvent(event); });
-    const wrapper: EventListener = event => { if (isHost) setTimeout(() => invoke(event), 0); else invoke(event); };
+    const wrapper: EventListener = event => invoke(event);
     wrapped.set(listener, wrapper); add(type, wrapper, options);
   }) as typeof window.addEventListener);
   const removeSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => remove(type, wrapped.get(listener) ?? listener, options)) as typeof window.removeEventListener);
@@ -179,4 +177,32 @@ it('restores the most recently opened row across consecutive returns', async () 
   await openAndReturn('A');
   await openAndReturn('E');
   } finally { cleanup(); addSpy.mockRestore(); removeSpy.mockRestore(); }
+});
+
+
+it('restores distinct page contexts after detail round trips', async () => {
+  sessionStorage.clear();
+  window.history.replaceState({}, '', '/library-preview?scenario=pagination&page=1');
+  const port = createMockReadPort('pagination');
+  const { container } = render(<LibraryPreview port={port} initialLocation="?scenario=pagination&page=1" />);
+  const scroller = container.querySelector<HTMLElement>('.library-preview')!;
+  const roundTrip = async (id: string, scroll: number) => {
+    await waitFor(() => expect(document.getElementById(`practice-row-${id}`)).toBeTruthy());
+    scroller.scrollTop = scroll; fireEvent.scroll(scroller);
+    fireEvent.click(document.getElementById(`practice-row-${id}`)!);
+    await waitFor(() => expect(screen.getByText(new RegExp(`${id} · revision-`))).toBeTruthy());
+    fireEvent.click(screen.getByRole('button', { name: '返回模拟练习列表' }));
+    await waitFor(() => expect(document.activeElement?.id).toBe(`practice-row-${id}`));
+    expect(scroller.scrollTop).toBe(scroll);
+  };
+  await roundTrip('A', 73);
+  fireEvent.click(screen.getByRole('button', { name: '2' }));
+  await waitFor(() => expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page'));
+  const pageTwoRow = container.querySelector<HTMLButtonElement>('[id^="practice-row-"]')!;
+  const pageTwoId = pageTwoRow.id.replace('practice-row-', '');
+  await roundTrip(pageTwoId, 150);
+  window.history.replaceState({}, '', '/library-preview?scenario=pagination&page=1');
+  act(() => window.dispatchEvent(new PopStateEvent('popstate')));
+  await waitFor(() => expect(document.activeElement?.id).toBe('practice-row-A'));
+  expect(scroller.scrollTop).toBe(73);
 });

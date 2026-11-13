@@ -10,10 +10,11 @@ const items = [
 export function PreviewShell({ children }: { children: ReactNode }) {
   return <div className="library-preview">
     <span id="preview-stage-reason" className="sr-only">此功能将在下一阶段接入</span>
+    <span id="preview-account-reason" className="sr-only">模拟练习身份，不显示实盘账户；此功能将在下一阶段接入</span>
     <span id="preview-detail-reason" className="sr-only">详情正在下一步骤接入</span>
     <aside><strong>TR</strong>{items.map(([label, icon]) => <button key={label} type="button" aria-disabled={label === '交易库' ? undefined : true} aria-current={label === '交易库' ? 'page' : undefined} aria-describedby={label === '交易库' ? undefined : 'preview-stage-reason'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">{icon}</svg><span>{label}</span></button>)}</aside>
     <main><header>交易库</header><nav aria-label="交易库视图"><div className="mode-group"><button aria-disabled="true" aria-describedby="preview-stage-reason">实盘</button><button className="active" aria-current="true">模拟盘</button></div><button className="selected" aria-current="page">列表</button><button aria-disabled="true" aria-describedby="preview-stage-reason">统计</button></nav>
-      <section><div className="filters"><label>练习日期<button aria-disabled="true" aria-describedby="preview-stage-reason">2026-10-15 至 2026-10-19 <span aria-hidden="true">⌄</span></button></label><label>市场<button aria-disabled="true" aria-describedby="preview-stage-reason">全部市场</button></label><label>账户 / 身份<button aria-disabled="true" aria-describedby="preview-stage-reason">模拟练习身份 · 不显示实盘账户</button></label></div>{children}</section>
+      <section><div className="filters"><label>练习日期<button aria-disabled="true" aria-describedby="preview-stage-reason">2026-10-15 至 2026-10-19 <span aria-hidden="true">⌄</span></button></label><label>市场<button aria-disabled="true" aria-describedby="preview-stage-reason">全部市场</button></label><label>账户 / 身份<button aria-disabled="true" aria-describedby="preview-account-reason">全部模拟账户</button></label></div>{children}</section>
     </main>
   </div>;
 }

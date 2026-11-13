@@ -73,7 +73,7 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
           closedNet: money(isA ? '1884' : amount), closedFees: money(isA ? '16' : '2'), retainedOpenFees: money(isA ? '7' : '0'), returnRate: practice.returnRate,
         },
         capital: { value: money('100000'), origin: 'default', version: '1' },
-        endValuation: isA ? (explicit ? known({ price: '140', currency: 'CNY', barEnd: '2023-01-01' }) : missing) : noValuation,
+        endValuation: isA ? (explicit ? known({ price: '140', currency: 'CNY', barEnd: '2023-01-01' }) : missing) : practice.openQuantity.state === 'unknown' ? { state: 'unknown', reasonCode: 'missing-open-quantity', reason: '缺少剩余持仓数量，无法判断估值需求' } : noValuation,
         pairs: pairs(practice, 1),
         actions: [
           { id: 'import', label: '导入', available: false, reasonCode: 'not-connected', reason: '当前阶段尚未接入导入' },

@@ -101,6 +101,7 @@ describe('detail edge scenarios', () => {
     expect(c.practice.net).toEqual({ state: 'known', value: { amount: '0', currency: 'CNY' } });
     expect(d.practice.pairCount.state).toBe('unknown');
     expect(d.practice.openQuantity.state).toBe('unknown');
+    expect(d.endValuation).toMatchObject({ state: 'unknown', reasonCode: 'missing-open-quantity' });
     expect(d.pairs.completeness).toMatchObject({ state: 'unknown', reasonCode: 'missing-pairs' });
     expect(d.pairs.rows).toEqual([]);
   });

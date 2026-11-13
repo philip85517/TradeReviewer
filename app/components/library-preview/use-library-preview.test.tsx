@@ -334,3 +334,27 @@ it('returns directly to the list after detail-to-detail navigation', async () =>
   expect(decodePreviewLocation(window.location.search).detail).toBeUndefined();
   expect(window.history.state.preserved).toBe('yes');
 });
+
+it('leaves detail on an invalid list pop and restores the accepted list URL', async () => {
+  window.history.replaceState({}, '', '/library-preview');
+  const port = createMockReadPort('reference');
+  const { result } = renderHook(() => useLibraryPreview(port));
+  await waitFor(() => expect(result.current.page).not.toBeNull());
+  const page = result.current.page;
+  const listUrl = window.location.href;
+  const key = page!.rows[0].key;
+  act(() => result.current.openDetail(key));
+  await waitFor(() => expect(result.current.detailStatus).toBe('ready'));
+  const invalid = { ...result.current.appliedLocation, query: { ...result.current.appliedLocation.query, from: 'invalid' } };
+  act(() => {
+    window.history.replaceState({}, '', encodePreviewLocation(invalid));
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  });
+  expect(result.current.desiredLocation.detail).toBeUndefined();
+  expect(result.current.detail).toBeNull();
+  expect(result.current.pairs).toBeNull();
+  expect(result.current.detailStatus).toBe('idle');
+  expect(result.current.page).toBe(page);
+  expect(result.current.error).toBeTruthy();
+  expect(window.location.href).toBe(listUrl);
+});

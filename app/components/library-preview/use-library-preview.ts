@@ -78,7 +78,7 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
     if (validation) {
       failedTarget.current = { target, intent };
       if (intent === 'pop' && stateRef.current.page) write(stateRef.current.appliedLocation, 'replace');
-      update({ ...stateRef.current, pending: false, error: `${stateRef.current.page ? '新范围未应用：' : ''}${validation}` });
+      update({ ...stateRef.current, desiredLocation: intent === 'pop' && stateRef.current.page ? stateRef.current.appliedLocation : target, detail: null, pairs: null, detailStatus: 'idle', detailError: null, pairPending: false, pairError: null, pending: false, listReadError: null, error: `${stateRef.current.page ? '新范围未应用：' : ''}${validation}` });
       return;
     }
     update({ ...stateRef.current, desiredLocation: target, detail: null, pairs: null, detailStatus: 'idle', detailError: null, pairPending: false, pairError: null, pending: true, error: '', listReadError: null });

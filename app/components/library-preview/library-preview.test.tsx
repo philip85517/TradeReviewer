@@ -137,3 +137,15 @@ it('restores scroll and row focus on history navigation, falling back for missin
   await waitFor(() => { expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page'); expect(screen.getByRole('status')).not.toHaveTextContent('加载中'); });
   expect(document.activeElement?.id).toBe('practice-list-heading');
 });
+
+it('opens a list row into its detail and returns to the list', async () => {
+  const port = createMockReadPort('reference');
+  render(<LibraryPreview port={port} initialLocation="" />);
+  await waitFor(() => expect(document.getElementById('practice-row-A')).toBeTruthy());
+  const row = document.getElementById('practice-row-A')!;
+  fireEvent.click(row);
+  expect(await screen.findByRole('button', { name: '返回模拟练习列表' })).toBeTruthy();
+  await waitFor(() => expect(screen.getByText(/A ·/)).toBeTruthy());
+  fireEvent.click(screen.getByRole('button', { name: '返回模拟练习列表' }));
+  await waitFor(() => expect(document.getElementById('practice-row-A')).toBeTruthy());
+});

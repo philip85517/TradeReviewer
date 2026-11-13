@@ -7,6 +7,7 @@ import { saveReturnContext, readReturnContext } from '../../lib/library-preview/
 import { useLibraryPreview } from './use-library-preview';
 import { PreviewShell } from './preview-shell';
 import { PracticeList } from './practice-list';
+import { PracticeDetailView } from './practice-detail';
 import './preview.css';
 
 export function LibraryPreviewEntry({ initialSearch }: { initialSearch: string }) {
@@ -17,7 +18,7 @@ export function LibraryPreviewEntry({ initialSearch }: { initialSearch: string }
 }
 export function LibraryPreview({ port, initialLocation }: { port: LibraryReadPort; initialLocation?: PreviewLocation | string }) {
  const initial = typeof initialLocation === 'string' ? decodePreviewLocation(initialLocation) : initialLocation;
- const { page, error, refresh, retry, pending, options, appliedLocation, notice, changeQuery } = useLibraryPreview(port, initial);
+ const { page, error, listReadError, refresh, retry, pending, options, appliedLocation, desiredLocation, detail, pairs, detailStatus, detailError, pairPending, pairError, openDetail, backToList, changePairPage, retryDetail, retryPairs, notice, changeQuery } = useLibraryPreview(port, initial);
  const host = useRef<HTMLDivElement>(null);
  const restore = useRef(true);
  const ready = useRef(false);
@@ -25,7 +26,8 @@ export function LibraryPreview({ port, initialLocation }: { port: LibraryReadPor
  const keyRef = useRef(key); keyRef.current = key;
  const save = useCallback(() => { if (!ready.current) return; const container = host.current?.querySelector<HTMLElement>('.library-preview'); if (!container) return; const active = document.activeElement; const focusId = active instanceof HTMLButtonElement && active.id.startsWith('practice-row-') ? active.id : null; saveReturnContext(keyRef.current, { scrollTop: container.scrollTop, focusId }); }, []);
  useEffect(() => { const pop = () => { save(); restore.current = true; ready.current = false; }; window.addEventListener('popstate', pop); window.addEventListener('pagehide', save); const container = host.current?.querySelector<HTMLElement>('.library-preview'); container?.addEventListener('scroll', save); return () => { window.removeEventListener('popstate', pop); window.removeEventListener('pagehide', save); container?.removeEventListener('scroll', save); }; }, [save]);
- useLayoutEffect(() => { if (!page || pending || !restore.current) return; const container = host.current?.querySelector<HTMLElement>('.library-preview'); if (!container) return; const stored = readReturnContext(key); container.scrollTop = stored?.scrollTop ?? 0; const target = stored?.focusId ? document.getElementById(stored.focusId) : null; (target ?? document.getElementById('practice-list-heading'))?.focus({ preventScroll: true }); restore.current = false; ready.current = true; }, [page, pending, key]);
+ useLayoutEffect(() => { if (desiredLocation.detail || !page || pending || !restore.current) return; const container = host.current?.querySelector<HTMLElement>('.library-preview'); if (!container) return; const stored = readReturnContext(key); container.scrollTop = stored?.scrollTop ?? 0; const target = stored?.focusId ? document.getElementById(stored.focusId) : null; (target ?? document.getElementById('practice-list-heading'))?.focus({ preventScroll: true }); restore.current = false; ready.current = true; }, [page, pending, key, desiredLocation.detail]);
  const change = (query: PracticeQuery) => { save(); changeQuery(query); };
- return <div ref={host}><PreviewShell query={appliedLocation.query} options={options} onQueryChange={change}><PracticeList page={page} error={error} onRefresh={refresh} onRetry={retry} pending={pending} notice={notice} options={options} appliedQuery={appliedLocation.query} onQueryChange={change} /></PreviewShell></div>;
+ const isDetail = !!desiredLocation.detail;
+ return <div ref={host}><PreviewShell query={isDetail ? desiredLocation.query : appliedLocation.query} options={options} onQueryChange={isDetail ? undefined : change} isDetail={isDetail}>{isDetail ? <PracticeDetailView detail={detail} pairs={pairs} status={detailStatus === 'idle' ? 'loading' : detailStatus} error={detailError?.message ?? ''} retryable={detailError?.retryable} onBack={backToList} onPairPage={changePairPage} onRetry={retryDetail} pairPending={pairPending} pairError={pairError?.message} onPairRetry={pairError?.retryable ? retryPairs : undefined} /> : <PracticeList page={page} error={error} onRefresh={refresh} onRetry={listReadError?.retryable === false ? undefined : retry} pending={pending} notice={notice} options={options} appliedQuery={appliedLocation.query} onQueryChange={change} onOpen={(key, target) => { target.focus(); save(); restore.current = true; ready.current = false; openDetail(key); }} />}</PreviewShell></div>;
 }

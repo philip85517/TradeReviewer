@@ -168,3 +168,169 @@ describe('library request state', () => {
   });
 
 });
+
+describe('detail request state', () => {
+  it('loads a direct detail without list or pair requests', async () => {
+    const port = createMockReadPort('reference');
+    port.readPracticeDetail = vi.fn(port.readPracticeDetail);
+    port.readOptions = vi.fn(port.readOptions);
+    port.readPracticePage = vi.fn(port.readPracticePage);
+    port.readPairPage = vi.fn(port.readPairPage);
+    const initial = decodePreviewLocation('?practice=A');
+    window.history.replaceState({}, '', encodePreviewLocation(initial));
+    const { result } = renderHook(() => useLibraryPreview(port, initial));
+    await waitFor(() => expect(result.current.detail?.practice.key.practiceId).toBe('A'));
+    expect(port.readPracticeDetail).toHaveBeenCalledTimes(1);
+    expect(port.readOptions).not.toHaveBeenCalled();
+    expect(port.readPracticePage).not.toHaveBeenCalled();
+    expect(port.readPairPage).not.toHaveBeenCalled();
+  });
+
+  it('ignores an old noncooperative detail response after opening B', async () => {
+    const port = createMockReadPort('reference');
+    const original = port.readPracticeDetail;
+    let resolveA!: (value: Awaited<ReturnType<typeof original>>) => void;
+    const a = await original({ practiceId: 'A' }, { signal: new AbortController().signal });
+    port.readPracticeDetail = vi.fn((key, context) => key.practiceId === 'A'
+      ? new Promise<Awaited<ReturnType<typeof original>>>(resolve => { resolveA = resolve; }) : original(key, context));
+    const { result } = renderHook(() => useLibraryPreview(port));
+    await waitFor(() => expect(result.current.page).not.toBeNull());
+    act(() => result.current.openDetail(a.practice.key));
+    await waitFor(() => expect(resolveA).toBeDefined());
+    const b = await original({ practiceId: 'B' }, { signal: new AbortController().signal });
+    act(() => result.current.openDetail(b.practice.key));
+    await waitFor(() => expect(result.current.detail?.practice.key.practiceId).toBe('B'));
+    await act(async () => { resolveA(a); });
+    expect(result.current.detail?.practice.key.practiceId).toBe('B');
+  });
+});
+
+it('retains the applied list and URL when page snapshot differs from options', async () => {
+  const port = createMockReadPort('reference');
+  const original = port.readPracticePage;
+  port.readPracticePage = vi.fn(async (query, context) => {
+    const page = await original(query, context);
+    return query.search === 'mismatch' ? { ...page, snapshotVersion: 'other' } : page;
+  });
+  const { result } = renderHook(() => useLibraryPreview(port));
+  await waitFor(() => expect(result.current.page).not.toBeNull());
+  const old = result.current.page; const url = window.location.href;
+  act(() => result.current.changeQuery({ ...result.current.appliedLocation.query, search: 'mismatch' }));
+  await waitFor(() => expect(result.current.error).toBeTruthy());
+  expect(result.current.page).toBe(old);
+  expect(result.current.appliedLocation.query.search).toBe('');
+  expect(window.location.href).toBe(url);
+});
+
+it('opens exact A and E identities and clears the previous detail immediately', async () => {
+  const port = createMockReadPort('reference');
+  const a = await port.readPracticeDetail({ practiceId: 'A' }, { signal: new AbortController().signal });
+  const e = await port.readPracticeDetail({ practiceId: 'E' }, { signal: new AbortController().signal });
+  const { result } = renderHook(() => useLibraryPreview(port));
+  await waitFor(() => expect(result.current.page).not.toBeNull());
+  act(() => result.current.openDetail(a.practice.key));
+  await waitFor(() => expect(result.current.detail?.practice.key).toEqual(a.practice.key));
+  act(() => result.current.openDetail(e.practice.key));
+  expect(result.current.detail).toBeNull();
+  expect(result.current.desiredLocation.detail).toEqual(e.practice.key);
+  await waitFor(() => expect(result.current.detail?.practice.key).toEqual(e.practice.key));
+});
+
+it.each(['practice', 'pair-key', 'pair-row', 'snapshot'] as const)('rejects mismatched detail %s', async mismatch => {
+  const port = createMockReadPort('reference'); const original = port.readPracticeDetail;
+  port.readPracticeDetail = vi.fn(async (key, context) => {
+    const detail = await original(key, context);
+    const badKey = { ...detail.practice.key, practiceVersion: 'bad' };
+    if (mismatch === 'practice') return { ...detail, practice: { ...detail.practice, key: badKey } };
+    if (mismatch === 'pair-key') return { ...detail, pairs: { ...detail.pairs, key: badKey } };
+    if (mismatch === 'pair-row') return { ...detail, pairs: { ...detail.pairs, rows: detail.pairs.rows.map(row => ({ ...row, key: badKey })) } };
+    return { ...detail, pairs: { ...detail.pairs, snapshotVersion: 'bad' } };
+  });
+  const key = (await original({ practiceId: 'A' }, { signal: new AbortController().signal })).practice.key;
+  const initial = { ...decodePreviewLocation(''), detail: key };
+  const { result } = renderHook(() => useLibraryPreview(port, initial));
+  await waitFor(() => expect(result.current.detailStatus).toBe('error'));
+  expect(result.current.detail).toBeNull(); expect(result.current.detailError).toBeTruthy();
+});
+
+it('retries the failed pair target with the detail key and snapshot', async () => {
+  const port = createMockReadPort('pagination'); const original = port.readPairPage; let fail = true;
+  port.readPairPage = vi.fn(async (key, page, context) => { if (fail) { fail = false; throw new Error('offline'); } return original(key, page, context); });
+  const initial = { ...decodePreviewLocation('?scenario=pagination'), detail: { practiceId: 'P1' } };
+  const { result } = renderHook(() => useLibraryPreview(port, initial));
+  await waitFor(() => expect(result.current.detailStatus).toBe('ready'));
+  const old = result.current.pairs;
+  act(() => { void result.current.changePairPage(2); });
+  await waitFor(() => expect(result.current.pairError).toBeTruthy());
+  expect(result.current.pairs).toBe(old);
+  act(() => result.current.retryPairs());
+  await waitFor(() => expect(result.current.pairs?.pageIndex).toBe(2));
+  expect(vi.mocked(port.readPairPage).mock.calls[1][0]).toEqual(result.current.detail!.practice.key);
+  expect(vi.mocked(port.readPairPage).mock.calls[1][1]).toEqual({ pageIndex: 2, pageSize: 6 });
+  expect(vi.mocked(port.readPairPage).mock.calls[1][2].snapshotVersion).toBe(result.current.detail!.snapshotVersion);
+});
+
+it('returns from a directly opened missing detail to a canonical list', async () => {
+  const port = createMockReadPort('reference'); const initial = decodePreviewLocation('?practice=missing&search=abc');
+  window.history.replaceState({}, '', encodePreviewLocation(initial));
+  const { result } = renderHook(() => useLibraryPreview(port, initial));
+  await waitFor(() => expect(result.current.detailError?.code).toBe('not-found'));
+  act(() => result.current.backToList());
+  await waitFor(() => expect(result.current.page).not.toBeNull());
+  expect(decodePreviewLocation(window.location.search).detail).toBeUndefined();
+  expect(result.current.appliedLocation.query.search).toBe('abc');
+});
+
+it('ignores a late pair response after opening another detail', async () => {
+  const port = createMockReadPort('pagination'); const originalPair = port.readPairPage;
+  let resolveOld!: (value: Awaited<ReturnType<typeof originalPair>>) => void;
+  let old!: Awaited<ReturnType<typeof originalPair>>;
+  port.readPairPage = vi.fn(async (key, page, context) => {
+    old = await originalPair(key, page, context);
+    return new Promise<Awaited<ReturnType<typeof originalPair>>>(resolve => { resolveOld = resolve; });
+  });
+  const initial = { ...decodePreviewLocation('?scenario=pagination'), detail: { practiceId: 'P1' } };
+  const { result } = renderHook(() => useLibraryPreview(port, initial));
+  await waitFor(() => expect(result.current.detailStatus).toBe('ready'));
+  act(() => { void result.current.changePairPage(2); });
+  await waitFor(() => expect(resolveOld).toBeDefined());
+  const next = await port.readPracticeDetail({ practiceId: 'P2' }, { signal: new AbortController().signal });
+  act(() => result.current.openDetail(next.practice.key));
+  await waitFor(() => expect(result.current.detail?.practice.key.practiceId).toBe('P2'));
+  await act(async () => { resolveOld(old); });
+  expect(result.current.pairs?.key).toEqual(next.practice.key);
+});
+
+it.each(['key', 'row', 'snapshot'] as const)('rejects pair page with mismatched %s', async mismatch => {
+  const port = createMockReadPort('pagination'); const original = port.readPairPage;
+  port.readPairPage = vi.fn(async (key, page, context) => {
+    const pairs = await original(key, page, context); const badKey = { ...key, revisionId: 'bad' };
+    if (mismatch === 'key') return { ...pairs, key: badKey };
+    if (mismatch === 'row') return { ...pairs, rows: pairs.rows.map(row => ({ ...row, key: badKey })) };
+    return { ...pairs, snapshotVersion: 'bad' };
+  });
+  const initial = { ...decodePreviewLocation('?scenario=pagination'), detail: { practiceId: 'P1' } };
+  const { result } = renderHook(() => useLibraryPreview(port, initial));
+  await waitFor(() => expect(result.current.detailStatus).toBe('ready'));
+  const old = result.current.pairs;
+  act(() => { void result.current.changePairPage(2); });
+  await waitFor(() => expect(result.current.pairError).toBeTruthy());
+  expect(result.current.pairError?.retryable).toBe(false); expect(result.current.pairs).toBe(old);
+});
+
+it('returns directly to the list after detail-to-detail navigation', async () => {
+  window.history.replaceState({ preserved: 'yes' }, '', '/library-preview');
+  const port = createMockReadPort('reference');
+  const a = await port.readPracticeDetail({ practiceId: 'A' }, { signal: new AbortController().signal });
+  const b = await port.readPracticeDetail({ practiceId: 'B' }, { signal: new AbortController().signal });
+  const { result } = renderHook(() => useLibraryPreview(port));
+  await waitFor(() => expect(result.current.page).not.toBeNull());
+  act(() => result.current.openDetail(a.practice.key));
+  await waitFor(() => expect(result.current.detailStatus).toBe('ready'));
+  act(() => result.current.openDetail(b.practice.key));
+  await waitFor(() => expect(result.current.detail?.practice.key.practiceId).toBe('B'));
+  act(() => result.current.backToList());
+  await waitFor(() => expect(result.current.desiredLocation.detail).toBeUndefined());
+  expect(decodePreviewLocation(window.location.search).detail).toBeUndefined();
+  expect(window.history.state.preserved).toBe('yes');
+});

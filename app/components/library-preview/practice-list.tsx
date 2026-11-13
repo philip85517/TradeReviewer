@@ -47,7 +47,7 @@ export function PracticeList({ page, error, onRefresh, pending = false, notice =
       {!onQueryChange && <span id="practice-query-reason" className="practice-list-reason">当前阶段搜索和分页尚不可用</span>}
       {!onOpen && <span id="practice-open-reason" className="practice-list-reason">当前阶段练习详情尚不可用</span>}
       <div className="practice-list-status" role="status">
-        {error ? <>{error}，新范围未应用。 <button type="button" onClick={onRetry ?? onRefresh}>重试</button></> : pending ? '加载中…' : notice || (!page ? '加载中…' : !page.rows.length ? (query.search ? '没有匹配的练习' : '暂无练习') : '')}
+        {error ? <>{error}，新范围未应用。 {onRetry && <button type="button" onClick={onRetry}>重试</button>}</> : pending ? '加载中…' : notice || (!page ? '加载中…' : !page.rows.length ? (query.search ? '没有匹配的练习' : '暂无练习') : '')}
       </div>
       <div className="table-scroll practice-list-scroll">
         <table>

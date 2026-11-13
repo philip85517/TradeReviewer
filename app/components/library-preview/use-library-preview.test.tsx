@@ -2,7 +2,7 @@ import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createMockReadPort } from '../../lib/library-preview/mock-read-port';
 import { decodePreviewLocation } from '../../lib/library-preview/preview-url';
-import type { PracticePage } from '../../lib/library-preview/contracts';
+import type { LibraryOptions, PracticePage } from '../../lib/library-preview/contracts';
 import { useLibraryPreview } from './use-library-preview';
 
 afterEach(cleanup);
@@ -53,6 +53,36 @@ describe('library request state', () => {
     const current = result.current.page!;
     await act(async () => { resolveOld({ ...current, query: { ...current.query, search: 'old' } }); });
     expect(result.current.appliedLocation.query.search).toBe('new');
+  });
+
+  it('does not request a page after stale options resolve', async () => {
+    const port = createMockReadPort('reference');
+    const originalOptions = port.readOptions;
+    const originalPage = port.readPracticePage;
+    let resolveOld!: (options: LibraryOptions) => void;
+    let oldOptions!: LibraryOptions;
+    port.readOptions = vi.fn(async (input, context) => {
+      const options = await originalOptions(input, context);
+      if (input.from === '2026-10-16') {
+        oldOptions = options;
+        return new Promise<LibraryOptions>(resolve => { resolveOld = resolve; });
+      }
+      return options;
+    });
+    port.readPracticePage = vi.fn(originalPage);
+    const { result } = renderHook(() => useLibraryPreview(port));
+    await waitFor(() => expect(result.current.page).not.toBeNull());
+    act(() => result.current.changeQuery({ ...result.current.appliedLocation.query, from: '2026-10-16' }));
+    await waitFor(() => expect(resolveOld).toBeDefined());
+    act(() => result.current.changeQuery({ ...result.current.appliedLocation.query, search: 'new' }));
+    await waitFor(() => expect(result.current.appliedLocation.query.search).toBe('new'));
+    const committed = { options: result.current.options, page: result.current.page, location: result.current.appliedLocation };
+    const calls = vi.mocked(port.readPracticePage).mock.calls.length;
+    await act(async () => { resolveOld(oldOptions); });
+    expect(port.readPracticePage).toHaveBeenCalledTimes(calls);
+    expect(result.current.options).toBe(committed.options);
+    expect(result.current.page).toBe(committed.page);
+    expect(result.current.appliedLocation).toBe(committed.location);
   });
 
   it('rejects invalid dates without calls and normalizes unknown options', async () => {

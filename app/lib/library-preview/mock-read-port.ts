@@ -5,7 +5,7 @@ import { fixtures } from './fixtures';
 const version = 'mock-2026-10';
 const known = <T>(value: T): Fact<T> => ({ state: 'known', value });
 const noSamples = { state: 'unknown', reasonCode: 'no-calculable-practices', reason: '没有可计算的练习' } as const;
-const defaultScope = { from: '2026-10-01', to: '2026-10-31', market: '', accountId: '', search: '' };
+const defaultScope = { from: '2026-10-15', to: '2026-10-19', market: 'all', accountId: 'all', search: '' };
 function abortError() { return new DOMException('Aborted', 'AbortError'); }
 async function ready(context: ReadContext, delay = 0) {
   if (context.signal.aborted) throw abortError();
@@ -29,8 +29,8 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
       await ready(context, scenario === 'slow' ? 300 : 0);
       if (scenario === 'retry' && attempts++ === 0) throw new LibraryReadError('network', '暂时无法加载', true);
       const search = query.search.trim().toLowerCase();
-      const filtered = rows.filter(row => row.practiceDate >= query.from && row.practiceDate <= query.to && (!query.market || row.instrument.market === query.market) && (!query.accountId || row.account.id === query.accountId) && (!search || `${row.instrument.name} ${row.instrument.symbol} ${row.key.practiceId}`.toLowerCase().includes(search)));
-      filtered.sort ( (a, b) => (a.practiceDate.localeCompare(b.practiceDate) || a.sequence - b.sequence || a.key.practiceId.localeCompare(b.key.practiceId)) * (query.sort === 'date-asc' ? 1 : -1));
+      const filtered = rows.filter(row => (!query.from || row.practiceDate >= query.from) && (!query.to || row.practiceDate <= query.to) && (!query.market || query.market === 'all' || row.instrument.market === query.market) && (!query.accountId || query.accountId === 'all' || row.account.id === query.accountId) && (!search || `${row.instrument.name} ${row.instrument.symbol} ${row.key.practiceId} ${row.practiceDate} #${String(row.sequence).padStart(2, '0')}`.toLowerCase().includes(search)));
+      filtered.sort ( (a, b) => a.practiceDate.localeCompare(b.practiceDate) * (query.sort === 'date-asc' ? 1 : -1) || a.sequence - b.sequence || a.key.practiceId.localeCompare(b.key.practiceId));
       const calculated = filtered.filter(row => row.net.state === 'known');
       const total = calculated.reduce((sum, row) => sum.plus(row.net.state === 'known' ? row.net.value.amount : 0), new Decimal(0));
       const winners = calculated.filter(row => row.net.state === 'known' && new Decimal(row.net.value.amount).greaterThan(0)).length;

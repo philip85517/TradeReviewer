@@ -1,23 +1,31 @@
+import Decimal from 'decimal.js';
 import type { Fact, PracticeRow, ScenarioId } from './contracts';
 
 const known = <T>(value: T): Fact<T> => ({ state: 'known', value });
 const unknown = { state: 'unknown', reasonCode: 'missing-end-price', reason: '缺少结束时点价格' } as const;
-const amounts = [null, '-104', '354', '-78', '98', '118'];
+const samples = [
+  ['A', '贵州茅台', '600519', '15', 1, 3, 2, '70', null],
+  ['E', '贵州茅台', '600519', '15', 2, 2, 1, '0', '98'],
+  ['C', '平安银行', '000001', '16', 1, 2, 1, '0', '354'],
+  ['D', '宁德时代', '300750', '17', 1, 2, 1, '0', '-78'],
+  ['B', '贵州茅台', '600519', '18', 1, 2, 1, '0', '-104'],
+  ['F', '招商银行', '600036', '19', 1, 2, 1, '0', '118'],
+] as const;
 export function fixtures(scenario: ScenarioId): readonly PracticeRow[] {
   if (scenario === 'empty') return [];
-  const count = scenario === 'pagination' ? 13 : 6;
-  return Array.from({ length: count }, (_, i) => {
-    const id = String.fromCharCode(65 + i);
-    const amount = i === 0 && scenario === 'explicit-end-price' ? '0' : amounts[i % 6];
-    const net = amount === null ? unknown : known({ amount: scenario === 'extreme' && i === 1 ? '12345678901234567890' : amount, currency: 'CNY' });
+  const entries: readonly (readonly [string, string, string, string, number, number, number, string, string | null])[] = scenario === 'pagination'
+    ? [...samples, ...Array.from({length: 7}, (_, i) => [`P${i + 1}`, `测试${i + 1}`, `90000${i}`, String(15 + i % 5), i + 3, 2, 1, '0', '10'] as const)] : samples;
+  return entries.map(([id, name, symbol, day, sequence, executions, pairs, open, original]) => {
+    const amount = id === 'A' && scenario === 'explicit-end-price' ? '4677' : scenario === 'extreme' && id === 'B' ? '12345678901234567890' : original;
+    const net = amount === null ? unknown : known({ amount, currency: 'CNY' });
     return {
       key: { practiceId: id, revisionId: `revision-${id}`, practiceVersion: '1' },
-      instrument: { id: `instrument-${id}`, symbol: `60000${i}`, name: `练习 ${id}`, market: 'CN' },
-      account: { id: 'simulation', label: '模拟账户' }, sequence: i + 1,
-      practiceDate: `2026-10-${String(i + 1).padStart(2, '0')}`, practiceDateSource: 'filename',
+      instrument: { id: symbol, symbol, name, market: 'CN' },
+      account: { id: 'simulation', label: '模拟账户' }, sequence,
+      practiceDate: `2026-10-${day}`, practiceDateSource: 'filename',
       historicalFrom: '2022-01-01', historicalTo: '2023-01-01', importedAt: '2026-10-31T00:00:00Z', displayTimezone: 'Asia/Shanghai',
-      executionCount: 2, pairCount: known(1), openQuantity: known(i === 0 ? '70' : '0'), net,
-      returnRate: net.state === 'known' ? known(String(Number(net.value.amount) / 100000)) : unknown,
+      executionCount: executions, pairCount: known(pairs), openQuantity: known(open), net,
+      returnRate: amount === null ? unknown : known(new Decimal(amount).div(100000).toFixed()),
     };
   });
 }

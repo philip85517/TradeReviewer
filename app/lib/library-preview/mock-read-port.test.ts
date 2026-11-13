@@ -22,7 +22,8 @@ describe('mock list port', () => {
     expect([empty.totalCount, empty.pageCount, empty.query.pageIndex, empty.scopeWinRate.state]).toEqual([0, 1, 1, 'unknown']);
     const asc = await port.readPracticePage(query, context());
     const desc = await port.readPracticePage({ ...query, sort: 'date-desc', pageIndex: 3 }, context());
-    expect(asc.rows[0].key.practiceId).toBe(desc.rows[0].key.practiceId);
+    expect(asc.rows[0].key.practiceId).toBe('A');
+    expect(desc.rows[0].practiceDate).toBe('2026-10-15');
   });
   it('honors cancellation and rejects mismatched versions', async () => {
     const port = createMockReadPort('slow');
@@ -36,5 +37,27 @@ describe('mock list port', () => {
     const port = createMockReadPort('retry');
     await expect(port.readPracticePage(query, context())).rejects.toMatchObject({ code: 'network', retryable: true });
     expect((await port.readPracticePage(query, context())).totalCount).toBe(6);
+  });
+});
+
+describe('reference identities', () => {
+  it('preserves the approved practices and explicit valuation', async () => {
+    const port = createMockReadPort('reference');
+    const options = await port.readOptions({ mode: 'simulation', from: '', to: '' }, context());
+    expect(options.defaultScope).toEqual({ from: '2026-10-15', to: '2026-10-19', market: 'all', accountId: 'all', search: '' });
+    const page = await port.readPracticePage({ ...query, ...options.defaultScope }, context());
+    expect(page.rows.map(r => [r.key.practiceId, r.instrument.name, r.instrument.symbol, r.practiceDate, r.sequence, r.executionCount, r.pairCount])).toEqual([
+      ['A', '贵州茅台', '600519', '2026-10-15', 1, 3, {state:'known',value:2}],
+      ['E', '贵州茅台', '600519', '2026-10-15', 2, 2, {state:'known',value:1}],
+      ['C', '平安银行', '000001', '2026-10-16', 1, 2, {state:'known',value:1}],
+      ['D', '宁德时代', '300750', '2026-10-17', 1, 2, {state:'known',value:1}],
+      ['B', '贵州茅台', '600519', '2026-10-18', 1, 2, {state:'known',value:1}],
+      ['F', '招商银行', '600036', '2026-10-19', 1, 2, {state:'known',value:1}],
+    ]);
+    const explicit = await createMockReadPort('explicit-end-price').readPracticePage({ ...query, from:'', to:'', market:'all', accountId:'all' }, context());
+    expect(explicit.rows.find(r => r.key.practiceId === 'A')?.net).toEqual({state:'known',value:{amount:'4677',currency:'CNY'}});
+    const descending = await port.readPracticePage({ ...query, ...options.defaultScope, sort:'date-desc' }, context());
+    expect(descending.rows.slice(-2).map(r => r.key.practiceId)).toEqual(['A','E']);
+    expect((await port.readPracticePage({ ...query, ...options.defaultScope, search:'2026-10-15 #02' }, context())).rows.map(r => r.key.practiceId)).toEqual(['E']);
   });
 });

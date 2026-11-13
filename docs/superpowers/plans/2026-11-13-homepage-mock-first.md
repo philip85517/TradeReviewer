@@ -43,11 +43,11 @@
 - Produces: `createMockSource({scenario, delayMs?, failNext?}): HomepageSource`；`scenario`为`normal/empty/one/five/nine/ten/twenty/fifty-pages/extreme/gaps/unknown/partial`。默认today固定2026-10-15；场景控件在产品画布外。
 - HTTP数量、URL与数据库表不由这些读取方法决定；不导入候选财务模型、proof或storage。
 
-- [ ] 写测试：过滤只返回匹配结果；9条末页1条；导出包含完整9条而不是当前页；本月/本年期间结果不同但当前市值和持仓不变；未知为null，零为`"0"`；同代码不同交易所详情不串；AbortSignal停止读取。
-- [ ] Run: `npx vitest run app/components/homepage-preview/mock-source.test.ts`。Expected: FAIL（新模块尚不存在）。保存RED日志。
-- [ ] 实现上述类型和读取方法，8行分页、确定场景、稳定身份、范围/版本/时点；Mock数据预先给定财务结果，仅进行样例选择、表格筛选排序及CSV格式化。
-- [ ] Run同一命令。Expected: 全部PASS。记录Mock仅证明接口/模拟行为的边界。
-- [ ] 仅提交该任务文件：`feat: define homepage presentation source and mock scenarios`。
+- [x] 写测试：过滤只返回匹配结果；9条末页1条；导出包含完整9条而不是当前页；本月/本年期间结果不同但当前市值和持仓不变；未知为null，零为`"0"`；同代码不同交易所详情不串；AbortSignal停止读取。
+- [x] Run: `npx vitest run app/components/homepage-preview/mock-source.test.ts`。Expected: FAIL（新模块尚不存在）。保存RED日志。
+- [x] 实现上述类型和读取方法，8行分页、确定场景、稳定身份、范围/版本/时点；Mock数据预先给定财务结果，仅进行样例选择、表格筛选排序及CSV格式化。
+- [x] Run同一命令。Expected: 全部PASS。记录Mock仅证明接口/模拟行为的边界。
+- [x] 仅提交该任务文件：`feat: define homepage presentation source and mock scenarios`。
 
 ### Task 2: 首页核心旅程、正式展示与状态恢复
 
@@ -71,16 +71,18 @@
 - Produces: `parseLocation(search: string): PreviewLocation`、`serializeLocation(state: PreviewLocation): string`，仅恢复已应用市场/账户/期间/搜索/排序/页码/详情或集合身份/场景；校验不合法值并给确定默认，不读取localStorage或DB。
 - Produces: `MetricCards({view,status})`、`PerformanceChart({series,reportCurrency,unavailableReason?})`、`PeriodSelector`受控草稿/应用/取消；持仓操作最终改变读取请求与可见行，不只触发callback。
 
-- [ ] 写真实组件行为测试：加载四卡和八槽→查看指定对象→查看其集合→返回恢复来源；readHome失败保留旧市场/金额；晚到旧响应不覆盖新视图；取消请求；日期取消不应用；查询/排序回页1；无数据禁导出；键盘图表六字段及缺口不造零；URL合法/非法、refresh/直达恢复。
-- [ ] Run: `npx vitest run app/components/homepage-preview`。Expected: 新组件/位置模块缺失导致FAIL；保留RED。
-- [ ] 从冻结候选提取账本中的六个卡片/曲线/期间文件，适配Task1小合同，删除旧stamp/proof/逐标的证据依赖；保留图形算法及受控交互，修正浮层不得推动页面。
-- [ ] 实现新宿主、持仓与焦点锁定详情/模拟集合、取消/15秒手动恢复、完整CSV下载；新请求Abort上一条并以generation/identity拒绝迟到响应。期间仅成功后原子替换，返回及popstate恢复；详情外点不关闭。
-- [ ] 新增独立route和外置Mock控制（场景、慢读、下一次失败），不挂旧workspace或改根入口。标明暂缓功能，无假装可用的按钮。
-- [ ] Run: `npx vitest run app/components/homepage-preview`、`npm run typecheck`。Expected: PASS；已有基线失败单独保留。
-- [ ] 第一个完整画面出现即在真实浏览器对照规范，保存1440/1280正常态及详情、期间、末页/空/缺口/极值截图与尺寸。先修关键展示差异再扩状态。
-- [ ] 提交本任务文件：`feat: add isolated homepage mock preview journey`。
+- [x] 写真实组件行为测试：加载四卡和八槽→查看指定对象→查看其集合→返回恢复来源；readHome失败保留旧市场/金额；晚到旧响应不覆盖新视图；取消请求；日期取消不应用；查询/排序回页1；无数据禁导出；键盘图表六字段及缺口不造零；URL合法/非法、refresh/直达恢复。
+- [x] Run: `npx vitest run app/components/homepage-preview`。Expected: 新组件/位置模块缺失导致FAIL；保留RED。
+- [x] 从冻结候选提取账本中的六个卡片/曲线/期间文件，适配Task1小合同，删除旧stamp/proof/逐标的证据依赖；保留图形算法及受控交互，修正浮层不得推动页面。
+- [x] 实现新宿主、持仓与焦点锁定详情/模拟集合、取消/15秒手动恢复、完整CSV下载；新请求Abort上一条并以generation/identity拒绝迟到响应。期间仅成功后原子替换，返回及popstate恢复；详情外点不关闭。
+- [x] 新增独立route和外置Mock控制（场景、慢读、下一次失败），不挂旧workspace或改根入口。标明暂缓功能，无假装可用的按钮。
+- [x] Run: `npx vitest run app/components/homepage-preview`、`npm run typecheck`。Expected: PASS；已有基线失败单独保留。
+- [x] 第一个完整画面出现即在真实浏览器对照规范，保存1440/1280正常态及详情、期间、末页/空/缺口/极值截图与尺寸。先修关键展示差异再扩状态。
+- [x] 提交本任务文件：`feat: add isolated homepage mock preview journey`。
 
 ### Task 3: 全范围操作核对、独立审查和交付记录
+
+状态：整阶段未完成，open / acceptance-failed。产品6ddbeca0之后的D01–D06视觉与切换防闪已独立接受；用户于2026-11-14确认保存首页Mock开发分支，见[封版记录与剩余限制](../../milestones/2026-11-14-homepage-mock/README.md)。完整动态输入/CSV/触控等原NOT VERIFIED保留；原逐项验收仍在[本地任务记录](../../../.scratch/code-reuse-value-20261113/frontend-mock/FINAL-ACCEPTANCE.md)。
 
 **Files:**
 - Modify: `.scratch/code-reuse-value-20261113/frontend-mock/DESIGN-COVERAGE.md`
@@ -93,11 +95,11 @@
 - Consumes: Task2运行页面、Task1接口、37需求/41控件模板/既有公共状态登记及正式参考。
 - Produces: 最终内容manifest、版本绑定的实际控件全集与操作结果、独立直接视觉对照、接口消费者/字段/状态/后端待答表、实际提取改造成本账本、仍运行的预览链接与启动命令。
 
-- [ ] Run: `npx vitest run app/components/homepage-preview`、`npm run typecheck`、`npm test`、针对新目录eslint。Expected: PASS；保留基线和新增警告。
+- [x] Run: `npx vitest run app/components/homepage-preview`、`npm run typecheck`、`npm test`、针对新目录eslint。Expected: PASS；保留基线和新增警告。
 - [ ] 真实鼠标/键盘操作全部本轮适用控件和条件项，动态实例按固定Mock集合完整登记；保存前中后尺寸、scope/身份/URL/返回/refresh结果。鼠标、键盘与触控证据分开。
-- [ ] 创建最终源码SHA清单，冻结服务/浏览器环境和场景。独立reviewer检查整个新增模块并直接将运行截图与正式图对照；允许其读取/操作浏览器，不写实现。
+- [x] 创建最终源码SHA清单，冻结服务/浏览器环境和场景。独立reviewer检查整个新增模块并直接将运行截图与正式图对照；允许其读取/操作浏览器，不写实现。
 - [ ] 重要问题由root修复，新增反例RED→GREEN，复跑受影响旅程；UI视觉问题仍需独立视觉复验，不能自签。
-- [ ] 更新验收/覆盖/成本/接口文档；只有全部适用门槛有证据才标Mock阶段accepted。真实财务、后端、持久化与真实性能保持NOT VERIFIED。
+- [x] 更新验收/覆盖/成本/接口文档；只有全部适用门槛有证据才标Mock阶段accepted。真实财务、后端、持久化与真实性能保持NOT VERIFIED。
 - [ ] 最后真实浏览器新鲜打开预览，确认服务仍在运行；交付可点击URL及`npm run dev`启动说明。没有用户请求不推送、合并或发布。
 
 ## Self-review

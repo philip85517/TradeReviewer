@@ -9,6 +9,76 @@ beforeEach(() => { window.history.replaceState(null, '', '/preview/homepage'); }
 afterEach(cleanup);
 const ready = () => screen.findByRole('button', { name: /查看贵州茅台详情/ });
 describe('homepage mock journey', () => {
+  it('does not flash updating feedback for a market read completed within 250ms', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const hk = await base.readHome({ ...DEFAULT_REQUEST, market: 'HK' }, new AbortController().signal);
+    let finish!: (view: HomeView) => void;
+    render(<HomepagePreview source={{ ...base, readHome: (request, signal) => request.market === 'HK' ? new Promise(resolve => { finish = resolve; }) : base.readHome(request, signal) }} />);
+    await ready();
+    vi.useFakeTimers();
+    try {
+      fireEvent.click(screen.getByRole('button', { name: '港股' }));
+      expect(screen.queryAllByText(/更新中/)).toHaveLength(0);
+      expect(screen.queryByRole('button', { name: '取消读取' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '全部' })).toHaveAttribute('aria-pressed', 'true');
+      await act(async () => { await vi.advanceTimersByTimeAsync(30); finish(hk); });
+      expect(screen.getByRole('button', { name: '港股' })).toHaveAttribute('aria-pressed', 'true');
+      await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+      expect(screen.queryAllByText(/更新中/)).toHaveLength(0);
+    } finally { vi.useRealTimers(); }
+  });
+  it('resets delayed feedback for a replacement request and clears it on cancel and failure', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    render(<HomepagePreview source={{ ...base, readHome: (request, signal) => request.market === 'HK' || request.market === 'US' ? new Promise(() => {}) : request.market === 'CN' ? Promise.reject(new Error('范围读取失败')) : base.readHome(request, signal) }} />);
+    await ready();
+    vi.useFakeTimers();
+    try {
+      fireEvent.click(screen.getByRole('button', { name: '港股' }));
+      await act(async () => { await vi.advanceTimersByTimeAsync(250); });
+      expect(screen.getByRole('button', { name: '取消读取' })).toBeEnabled();
+      fireEvent.click(screen.getByRole('button', { name: '美股' }));
+      expect(screen.queryAllByText(/更新中/)).toHaveLength(0);
+      await act(async () => { await vi.advanceTimersByTimeAsync(249); });
+      expect(screen.queryByRole('button', { name: '取消读取' })).not.toBeInTheDocument();
+      await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+      fireEvent.click(screen.getByRole('button', { name: '取消读取' }));
+      await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+      expect(screen.queryAllByText(/更新中/)).toHaveLength(0);
+      fireEvent.click(screen.getByRole('button', { name: 'A股' }));
+      await act(async () => {});
+      expect(screen.getByRole('alert')).toHaveTextContent('范围读取失败');
+      expect(screen.queryAllByText(/更新中/)).toHaveLength(0);
+      expect(screen.getByRole('button', { name: '全部' })).toHaveAttribute('aria-pressed', 'true');
+    } finally { vi.useRealTimers(); }
+  });
+  it('identifies native unit prices independently of report-currency amounts', async () => {
+    render(<HomepagePreview />);
+    await ready();
+    const row = screen.getByRole('row', { name: /腾讯控股/ });
+    expect(within(row).getByText('HKEX:00700')).toBeInTheDocument();
+    expect(within(row).getByRole('cell', { name: /305.50 HKD/ })).toHaveTextContent('305.50 HKD');
+    expect(within(row).getByRole('cell', { name: /338.20 HKD/ })).toHaveTextContent('338.20 HKD');
+    expect(screen.getByRole('columnheader', { name: '成本价(原币)' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /持仓市值.CNY/ })).toBeInTheDocument();
+  });
+  it('uses named SVG navigation and marks deferred destinations unavailable', async () => {
+    render(<HomepagePreview />);
+    await ready();
+    const nav = screen.getByRole('navigation', { name: '预览导航' });
+    expect(within(nav).getByRole('link', { name: '首页' })).toHaveAttribute('aria-current', 'page');
+    for (const label of ['交易库', '分析', '数据', '策略', '设置']) {
+      expect(within(nav).getByRole('button', { name: `${label}，本轮未开放` })).toBeDisabled();
+    }
+    expect(nav).not.toHaveTextContent('◫');
+  });
+  it('explains an unsuccessful scope change and an empty holding scope', async () => {
+    const base = createMockSource({ scenario: 'empty', delayMs: 0 });
+    render(<HomepagePreview source={{ ...base, readHome: (request, signal) => request.market === 'US' ? Promise.reject(new Error('读取失败')) : base.readHome(request, signal) }} />);
+    await screen.findByText('暂无持仓');
+    expect(screen.getByText('可切换市场或实盘账户，查看其他范围的持仓。')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: '美股' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('新选择未应用，仍显示原范围');
+  });
   it('shows four cards, eight slots, accurate detail and trades, restores origin', async () => {
     const user = userEvent.setup();
     render(<HomepagePreview />);
@@ -47,7 +117,7 @@ describe('homepage mock journey', () => {
     await act(async () => late(stale));
     expect(screen.getByRole('button', { name: '港股' })).toHaveAttribute('aria-pressed', 'true');
     await userEvent.click(screen.getByRole('button', { name: '美股' }));
-    await userEvent.click(screen.getByRole('button', { name: '取消读取' }));
+    await userEvent.click(await screen.findByRole('button', { name: '取消读取' }));
     expect(screen.getByRole('button', { name: '港股' })).toHaveAttribute('aria-pressed', 'true');
   });
   it('cancels date drafts and resets page on a committed query or sort', async () => {
@@ -133,7 +203,7 @@ describe('homepage mock journey', () => {
     await ready();
     await userEvent.type(screen.getByRole('searchbox', { name: '搜索持仓' }), '腾讯');
     await screen.findByRole('button', { name: '取消读取' });
-    await userEvent.click(screen.getByRole('button', { name: '取消读取' }));
+    await userEvent.click(await screen.findByRole('button', { name: '取消读取' }));
     const count = readHome.mock.calls.length;
     await act(async () => { await new Promise(resolve => setTimeout(resolve, 400)); });
     expect(readHome).toHaveBeenCalledTimes(count);

@@ -97,8 +97,9 @@ export function PeriodSelector({
     const placePopover = () => {
       const rootBounds = root.getBoundingClientRect();
       const toolbarBounds = toolbar.getBoundingClientRect();
+      const triggerBounds = triggerRef.current?.getBoundingClientRect() ?? toolbarBounds;
       const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
-      const left = Math.max(24, Math.min(toolbarBounds.left, viewportWidth - 24 - panel.getBoundingClientRect().width));
+      const left = Math.max(24, Math.min(triggerBounds.right - panel.getBoundingClientRect().width, viewportWidth - 24 - panel.getBoundingClientRect().width));
       panel.style.left = `${left - rootBounds.left}px`;
       panel.style.top = `${toolbarBounds.bottom - rootBounds.top + 24}px`;
     };

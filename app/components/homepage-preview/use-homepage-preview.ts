@@ -10,6 +10,8 @@ function verifyIdentity(result: { stamp: Stamp }, stamp: Stamp, actual: string, 
 
 export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
   const [view, setView] = useState<HomeView | null>(null);
+  const [showPending, setShowPending] = useState(false);
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [pending, setPending] = useState(false), [error, setError] = useState<string | null>(null);
   const [notices, setNotices] = useState<string[]>([]);
   const [detail, setDetail] = useState<HoldingDetail | null>(null), [trades, setTrades] = useState<TradeCollection | null>(null);
@@ -24,13 +26,20 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
     active.current?.abort();
     const controller = new AbortController(), token = ++generation.current;
     active.current = controller; setPending(true); setError(null);
+    if (feedbackTimer.current !== null) clearTimeout(feedbackTimer.current);
+    setShowPending(false);
+    // A fast read commits directly; only sustained reads need stale-view feedback.
+    const feedback = setTimeout(() => {
+      if (generation.current === token && !controller.signal.aborted) setShowPending(true);
+    }, 250);
+    feedbackTimer.current = feedback;
     const timeout = setTimeout(() => {
       if (generation.current !== token) return;
-      ++generation.current; controller.abort(); setPending(false); setError('读取超过15秒，请手动修复或重试');
+      ++generation.current; controller.abort(); clearTimeout(feedback); setShowPending(false); setPending(false); setError('读取超过15秒，请手动修复或重试');
     }, 15000);
     try { const result = await read(controller.signal); if (!controller.signal.aborted && token === generation.current) commit(result); }
     catch (cause) { if (!controller.signal.aborted && token === generation.current) setError(cause instanceof Error ? cause.message : '读取失败'); }
-    finally { clearTimeout(timeout); if (token === generation.current) { active.current = null; setPending(false); } }
+    finally { clearTimeout(timeout); clearTimeout(feedback); if (token === generation.current) { active.current = null; feedbackTimer.current = null; setShowPending(false); setPending(false); } }
   }, []);
   const load = useCallback((request: HomeRequest, restore?: PreviewLocation, replace = false) => run(signal => source.readHome(request, signal), result => {
     const scope = JSON.stringify([request.market, request.accountId, request.period]);
@@ -40,7 +49,7 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
     const next: PreviewLocation = { request: result.request, scenario, ...(restore?.holdingId ? { holdingId: restore.holdingId, panel: restore.panel } : {}) };
     store(next, replace);
   }), [run, scenario, source, store]);
-  const invalidate = useCallback(() => { ++generation.current; active.current?.abort(); }, []);
+  const invalidate = useCallback(() => { ++generation.current; active.current?.abort(); if (feedbackTimer.current !== null) clearTimeout(feedbackTimer.current); feedbackTimer.current = null; }, []);
   useEffect(() => {
     const initial = parseLocation(window.location.search);
     void load(initial.request, initial, true);
@@ -71,15 +80,15 @@ export function useHomepagePreview(source: HomepageSource, scenario: Scenario) {
     });
   };
   const close = () => {
-    ++generation.current; active.current?.abort(); setPending(false); setError(null); setDetail(null); setTrades(null);
+    invalidate(); setShowPending(false); setPending(false); setError(null); setDetail(null); setTrades(null);
     if (committed.current) store({ request: committed.current.request, scenario });
     requestAnimationFrame(() => {
       if (origin.current?.isConnected) origin.current.focus({ preventScroll: true });
       else document.getElementById('holdings-heading')?.focus({ preventScroll: true });
     });
   };
-  return { view, pending, error, notices, detail, trades, change, close,
-    cancel: () => { ++generation.current; active.current?.abort(); setPending(false); setError(null); },
+  return { view, pending, showPending, error, notices, detail, trades, change, close,
+    cancel: () => { invalidate(); setShowPending(false); setPending(false); setError(null); },
     openHolding,
     openTrades: () => { if (!detail) return; void run(signal => source.readTrades(detail.stamp, detail.holding.id, signal), result => { verifyIdentity(result, detail.stamp, result.holdingId, detail.holding.id); setTrades(result); store({ ...location.current, panel: 'trades' }); }); },
     backToDetail: () => { setTrades(null); store({ ...location.current, panel: 'detail' }); },

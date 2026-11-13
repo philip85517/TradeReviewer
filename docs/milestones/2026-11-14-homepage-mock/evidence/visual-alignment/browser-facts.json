@@ -1,0 +1,4202 @@
+[
+  {
+    "name": "normal-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "date-open-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__popover": {
+        "docY": 140,
+        "h": 184,
+        "w": 480,
+        "x": 920,
+        "y": 140
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "date-error-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__popover": {
+        "docY": 140,
+        "h": 222,
+        "w": 480,
+        "x": 920,
+        "y": 140
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "normal-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "date-open-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__popover": {
+        "docY": 140,
+        "h": 184,
+        "w": 480,
+        "x": 760,
+        "y": 140
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "fast-A股-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=CN&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "fast-港股-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.1875,
+        "x": 554.8125,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=HK&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "fast-美股-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 295.0546875,
+        "x": 563.9453125,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=US&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "fast-全部-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "account-2-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=account-2&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "slow-pending-1280",
+    "cardsUpdating": 4,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": true,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 554.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "slow-ready-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.1875,
+        "x": 554.8125,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=HK&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "slow-before-cancel-1280",
+    "cardsUpdating": 4,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": true,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.1875,
+        "x": 554.8125,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=HK&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "slow-cancelled-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": -154.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 427
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 420
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 893
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 421
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.1875,
+        "x": 554.8125,
+        "y": 434.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": -44
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": -168
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 60
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": -88
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 380
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": -154.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 427
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": -88
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 168
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=HK&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "failure-retains-HK-1280",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1280
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1195,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1160,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1126,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.1875,
+        "x": 554.8125,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1160,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1208,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1160,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1024,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1160,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1007,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1160,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=HK&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "breakpoint-1101",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1270,
+      "w": 1101
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 695,
+        "h": 36,
+        "w": 44,
+        "x": 1016,
+        "y": 695
+      },
+      ".hp-holdings": {
+        "docY": 688,
+        "h": 522.5,
+        "w": 981,
+        "x": 96,
+        "y": 688
+      },
+      ".hp-holdings footer": {
+        "docY": 1161.5,
+        "h": 48,
+        "w": 947,
+        "x": 113,
+        "y": 1161.5
+      },
+      ".hp-holdings-title": {
+        "docY": 689,
+        "h": 48,
+        "w": 947,
+        "x": 113,
+        "y": 689
+      },
+      ".hp-holdings-title p": {
+        "docY": 702.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 375.984375,
+        "y": 702.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 188,
+        "w": 981,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1029,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 328,
+        "h": 320,
+        "w": 981,
+        "x": 96,
+        "y": 328
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 845,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 648,
+        "h": 40,
+        "w": 981,
+        "x": 96,
+        "y": 648
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 695,
+        "h": 36,
+        "w": 176,
+        "x": 828,
+        "y": 695
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 981,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1101
+    }
+  },
+  {
+    "name": "breakpoint-1099",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1318,
+      "w": 1099
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 548,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 719,
+        "h": 36,
+        "w": 44,
+        "x": 1014,
+        "y": 719
+      },
+      ".hp-holdings": {
+        "docY": 688,
+        "h": 570.5,
+        "w": 979,
+        "x": 96,
+        "y": 688
+      },
+      ".hp-holdings footer": {
+        "docY": 1209.5,
+        "h": 48,
+        "w": 945,
+        "x": 113,
+        "y": 1209.5
+      },
+      ".hp-holdings-title": {
+        "docY": 689,
+        "h": 96,
+        "w": 945,
+        "x": 113,
+        "y": 689
+      },
+      ".hp-holdings-title p": {
+        "docY": 749.625,
+        "h": 20.5,
+        "w": 701,
+        "x": 113,
+        "y": 749.625
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 188,
+        "w": 979,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1027,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 328,
+        "h": 320,
+        "w": 979,
+        "x": 96,
+        "y": 328
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 843,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 648,
+        "h": 40,
+        "w": 979,
+        "x": 96,
+        "y": 648
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 232,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 719,
+        "h": 36,
+        "w": 176,
+        "x": 826,
+        "y": 719
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 979,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1099
+    }
+  },
+  {
+    "name": "breakpoint-901",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1318,
+      "w": 901
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 548,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 719,
+        "h": 36,
+        "w": 44,
+        "x": 816,
+        "y": 719
+      },
+      ".hp-holdings": {
+        "docY": 688,
+        "h": 570.5,
+        "w": 781,
+        "x": 96,
+        "y": 688
+      },
+      ".hp-holdings footer": {
+        "docY": 1209.5,
+        "h": 48,
+        "w": 747,
+        "x": 113,
+        "y": 1209.5
+      },
+      ".hp-holdings-title": {
+        "docY": 689,
+        "h": 96,
+        "w": 747,
+        "x": 113,
+        "y": 689
+      },
+      ".hp-holdings-title p": {
+        "docY": 749.625,
+        "h": 20.5,
+        "w": 503,
+        "x": 113,
+        "y": 749.625
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 188,
+        "w": 781,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 829,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 328,
+        "h": 320,
+        "w": 781,
+        "x": 96,
+        "y": 328
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 645,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 648,
+        "h": 40,
+        "w": 781,
+        "x": 96,
+        "y": 648
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 232,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 719,
+        "h": 36,
+        "w": 176,
+        "x": 628,
+        "y": 719
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 781,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 901
+    }
+  },
+  {
+    "name": "breakpoint-899",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1484,
+      "w": 899
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 60,
+        "h": 36,
+        "w": 176,
+        "x": 412,
+        "y": 60
+      },
+      ".hp-export": {
+        "docY": 906.5,
+        "h": 36,
+        "w": 44,
+        "x": 814,
+        "y": 906.5
+      },
+      ".hp-holdings": {
+        "docY": 837,
+        "h": 587,
+        "w": 779,
+        "x": 96,
+        "y": 837
+      },
+      ".hp-holdings footer": {
+        "docY": 1375,
+        "h": 48,
+        "w": 745,
+        "x": 113,
+        "y": 1375
+      },
+      ".hp-holdings-title": {
+        "docY": 838,
+        "h": 112.5,
+        "w": 745,
+        "x": 113,
+        "y": 838
+      },
+      ".hp-holdings-title p": {
+        "docY": 878,
+        "h": 20.5,
+        "w": 745,
+        "x": 113,
+        "y": 878
+      },
+      ".hp-metric-cards": {
+        "docY": 217,
+        "h": 188,
+        "w": 779,
+        "x": 96,
+        "y": 217
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 113,
+        "w": 827,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 421,
+        "h": 320,
+        "w": 779,
+        "x": 96,
+        "y": 421
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 165,
+        "h": 36,
+        "w": 216,
+        "x": 659,
+        "y": 165
+      },
+      ".hp-read-status": {
+        "docY": 741,
+        "h": 96,
+        "w": 779,
+        "x": 96,
+        "y": 741
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 300,
+        "x": 96,
+        "y": 60
+      },
+      ".hp-search": {
+        "docY": 906.5,
+        "h": 36,
+        "w": 689,
+        "x": 113,
+        "y": 906.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 129,
+        "h": 72,
+        "w": 779,
+        "x": 96,
+        "y": 129
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 899
+    }
+  },
+  {
+    "name": "normal-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": 108
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 1227
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 1133
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 1699.5
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 1134
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 1178
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": 313
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": 717
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": 261
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 1037
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": 60
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 1227
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": 177
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "date-open-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": 108
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 1227
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 1133
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 1699.5
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 1134
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 1178
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": 313
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": 717
+      },
+      ".hp-period-selector__popover": {
+        "docY": 321,
+        "h": 232,
+        "w": 342,
+        "x": 24,
+        "y": 321
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": 261
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 1037
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": 60
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 1227
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": 177
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "date-error-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": 108
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 1227
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 1133
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 1699.5
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 1134
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 1178
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": 313
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": 717
+      },
+      ".hp-period-selector__popover": {
+        "docY": 321,
+        "h": 270,
+        "w": 342,
+        "x": 24,
+        "y": 321
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": 261
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 1037
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": 60
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 1227
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": 177
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "holdings-scroll-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "holdings-right-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "detail-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal&holding=account-2%3AHKEX%3A00700%3A1&panel=detail",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "detail-return-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "extreme-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 325.9765625,
+        "x": 693.0234375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=extreme",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "extreme-holdings-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=extreme",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "empty-390",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1828,
+      "w": 390
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 108,
+        "h": 36,
+        "w": 176,
+        "x": 88,
+        "y": -876.5
+      },
+      ".hp-export": {
+        "docY": 1227,
+        "h": 36,
+        "w": 44,
+        "x": 317,
+        "y": 242.5
+      },
+      ".hp-holdings": {
+        "docY": 1133,
+        "h": 615.5,
+        "w": 286,
+        "x": 88,
+        "y": 148.5
+      },
+      ".hp-holdings footer": {
+        "docY": 1699.5,
+        "h": 48,
+        "w": 260,
+        "x": 101,
+        "y": 715
+      },
+      ".hp-holdings-title": {
+        "docY": 1134,
+        "h": 141,
+        "w": 260,
+        "x": 101,
+        "y": 149.5
+      },
+      ".hp-holdings-title p": {
+        "docY": 1178,
+        "h": 41,
+        "w": 260,
+        "x": 101,
+        "y": 193.5
+      },
+      ".hp-metric-cards": {
+        "docY": 313,
+        "h": 388,
+        "w": 286,
+        "x": 88,
+        "y": -671.5
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 161,
+        "w": 318,
+        "x": 72,
+        "y": -984.5
+      },
+      ".hp-performance-chart": {
+        "docY": 717,
+        "h": 320,
+        "w": 286,
+        "x": 88,
+        "y": -267.5
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 261,
+        "h": 36,
+        "w": 216,
+        "x": 158,
+        "y": -723.5
+      },
+      ".hp-read-status": {
+        "docY": 1037,
+        "h": 96,
+        "w": 286,
+        "x": 88,
+        "y": 52.5
+      },
+      ".hp-scope": {
+        "docY": 60,
+        "h": 36,
+        "w": 286,
+        "x": 88,
+        "y": -924.5
+      },
+      ".hp-search": {
+        "docY": 1227,
+        "h": 36,
+        "w": 204,
+        "x": 101,
+        "y": 242.5
+      },
+      ".hp-section-toolbar": {
+        "docY": 177,
+        "h": 120,
+        "w": 286,
+        "x": 88,
+        "y": -807.5
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 984.5
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=empty",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "search-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": -99.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 482
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 475
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 948
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 476
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 489.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 11
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": -113
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 115
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": -33
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 435
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": -99.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 482
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": -33
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 113
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "search-applied-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": -99.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 482
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 475
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 948
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 476
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 489.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 11
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": -113
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 115
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": -33
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 435
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": -99.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 482
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": -33
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 113
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=%E8%85%BE%E8%AE%AF&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "sorted-value-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": -142.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 439
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 432
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 905
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 433
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 446.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": -32
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": -156
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 72
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": -76
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 392
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": -142.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 439
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": -76
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 156
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=marketValue&direction=desc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "detail-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": -156.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 425
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 418
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 891
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 419
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 432.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": -46
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": -170
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 58
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": -90
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 378
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": -156.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 425
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": -90
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 170
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=marketValue&direction=desc&page=1&scenario=normal&holding=account-2%3AHKEX%3A00700%3A1&panel=detail",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "delivery-1440",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "delivery-native-viewport",
+    "cardsUpdating": 0,
+    "page": {
+      "h": 1170,
+      "w": 1440
+    },
+    "pending": false,
+    "rects": {
+      ".hp-account": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 176,
+        "x": 644,
+        "y": 13.5
+      },
+      ".hp-export": {
+        "docY": 595,
+        "h": 36,
+        "w": 44,
+        "x": 1355,
+        "y": 595
+      },
+      ".hp-holdings": {
+        "docY": 588,
+        "h": 522,
+        "w": 1320,
+        "x": 96,
+        "y": 588
+      },
+      ".hp-holdings footer": {
+        "docY": 1061,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 1061
+      },
+      ".hp-holdings-title": {
+        "docY": 589,
+        "h": 48,
+        "w": 1286,
+        "x": 113,
+        "y": 589
+      },
+      ".hp-holdings-title p": {
+        "docY": 602.75,
+        "h": 20.5,
+        "w": 304.015625,
+        "x": 714.984375,
+        "y": 602.75
+      },
+      ".hp-metric-cards": {
+        "docY": 124,
+        "h": 88,
+        "w": 1320,
+        "x": 96,
+        "y": 124
+      },
+      ".hp-page-header": {
+        "docY": 0,
+        "h": 64,
+        "w": 1368,
+        "x": 72,
+        "y": 0
+      },
+      ".hp-performance-chart": {
+        "docY": 228,
+        "h": 320,
+        "w": 1320,
+        "x": 96,
+        "y": 228
+      },
+      ".hp-period-selector__trigger": {
+        "docY": 80,
+        "h": 36,
+        "w": 216,
+        "x": 1184,
+        "y": 80
+      },
+      ".hp-read-status": {
+        "docY": 548,
+        "h": 40,
+        "w": 1320,
+        "x": 96,
+        "y": 548
+      },
+      ".hp-scope": {
+        "docY": 13.5,
+        "h": 36,
+        "w": 300,
+        "x": 320,
+        "y": 13.5
+      },
+      ".hp-search": {
+        "docY": 595,
+        "h": 36,
+        "w": 176,
+        "x": 1167,
+        "y": 595
+      },
+      ".hp-section-toolbar": {
+        "docY": 80,
+        "h": 36,
+        "w": 1320,
+        "x": 96,
+        "y": 80
+      }
+    },
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 2,
+      "h": 722,
+      "w": 1440
+    }
+  }
+]

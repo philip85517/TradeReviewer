@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-11-13T16:26:20.781511+00:00",
+  "branch": "codex/homepage-mock-20261114",
+  "source_snapshot": "18ca3bd95ea15f45d4d9f21fea7e2ba5dc8aacc67307769e093b0c9343a33e39",
+  "checks": [
+    {
+      "command": "./scripts/native-node.sh node_modules/vitest/vitest.mjs run app/components/homepage-preview",
+      "exit_code": 0,
+      "files_passed": 3,
+      "tests_passed": 34,
+      "log": "homepage-tests.log"
+    },
+    {
+      "command": "./scripts/native-node.sh node_modules/typescript/bin/tsc --noEmit",
+      "exit_code": 0,
+      "log": "typecheck.log"
+    },
+    {
+      "command": "./scripts/native-node.sh node_modules/eslint/bin/eslint.js app/components/homepage-preview app/preview/homepage",
+      "exit_code": 0,
+      "log": "eslint.log"
+    }
+  ],
+  "log_archive_normalization": "Removed trailing whitespace and terminal blank lines only; raw local originals retained."
+}

@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-11-13T14:09:27.919580+00:00",
+  "preview_url": "http://127.0.0.1:3333/preview/homepage",
+  "http_status": 200,
+  "source_snapshot": "a443138c59e0f5567078a841c737766e9ceff75ad4c7a9cd962c93cf5822e2c3",
+  "real_browser_evidence": "browser-facts.json#delivery-native-viewport",
+  "viewport_override_reset": true,
+  "deliverable_tab_marked": true,
+  "service": "existing npm run dev, loopback3333, isolated WAL-aware test backup",
+  "product_database_writes": false,
+  "screenshot": "delivery-1440.jpg"
+}

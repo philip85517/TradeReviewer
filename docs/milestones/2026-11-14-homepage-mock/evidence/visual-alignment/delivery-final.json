@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-11-13T16:01:00.021868+00:00",
+  "preview_url": "http://127.0.0.1:3333/preview/homepage",
+  "source_snapshot": "18ca3bd95ea15f45d4d9f21fea7e2ba5dc8aacc67307769e093b0c9343a33e39",
+  "real_browser_evidence": "final-browser-facts.json",
+  "viewport_override_reset": true,
+  "deliverable_tab_marked": true,
+  "service": "npm run dev, exec session94946, loopback3333, fresh WAL-aware backup at .data/tradereview-test.sqlite",
+  "business_database_writes": false,
+  "screenshot": "final-normal-1440.jpg"
+}

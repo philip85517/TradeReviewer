@@ -115,7 +115,7 @@
   background: #162233;
 }
 
-.hp-period-selector__popover h3 {
+.hp-period-selector .hp-period-selector__popover h3 {
   margin: 0 0 20px;
   color: #e6edf7;
   font-size: 16px;

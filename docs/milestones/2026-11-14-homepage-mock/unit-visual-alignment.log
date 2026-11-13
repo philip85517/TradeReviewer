@@ -1,0 +1,72 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0cde/TradeReview
+
+(node:65243) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ scripts/deploy.test.mjs (58 tests | 1 failed) 99144ms
+     × stages the tracked build and application data sources from the real repository 5018ms
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 2 failed) 165709ms
+     × does not advance the training cursor when the target timeframe has no known candle yet 7250ms
+     × supplements only the selected stock account and retries the same audited request 5251ms
+ ❯ app/lib/market/providers/providers.test.ts (61 tests | 1 failed) 5268ms
+     × tries Tiger before public providers for US daily when configured 5007ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/deploy.test.mjs > deployment release staging > stages the tracked build and application data sources from the real repository
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/deploy.test.mjs:999:7
+    997|   });
+    998|
+    999|   test("stages the tracked build and application data sources from the…
+       |       ^
+    1000|     const sandbox = await mkdtemp(join(tmpdir(), "tradereview-real-sou…
+    1001|     const targetDir = join(sandbox, "target");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not advance the training cursor when the target timeframe has no known candle yet
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:1548:3
+    1546|   });
+    1547|
+    1548|   it("does not advance the training cursor when the target timeframe h…
+       |   ^
+    1549|     const user = userEvent.setup();
+    1550|     await renderGoldReplay([], "2026-06-26T02:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > supplements only the selected stock account and retries the same audited request
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:1598:3
+    1596|   });
+    1597|
+    1598|   it("supplements only the selected stock account and retries the same…
+       |   ^
+    1599|     const user = userEvent.setup();
+    1600|     const original = availabilityExecution({ id: "scope-original", row…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  app/lib/market/providers/providers.test.ts > provider routing > tries Tiger before public providers for US daily when configured
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/lib/market/providers/providers.test.ts:645:3
+    643|   });
+    644|
+    645|   it("tries Tiger before public providers for US daily when configured…
+       |   ^
+    646|     const calls: string[] = [];
+    647|     const tiger = new TigerProvider(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed | 319 passed | 3 skipped (325)
+      Tests  4 failed | 3100 passed | 6 skipped (3110)
+   Start at  21:50:22
+   Duration  552.83s (transform 12.47s, setup 63.11s, import 47.93s, tests 526.45s, environment 348.86s)

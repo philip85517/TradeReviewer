@@ -9,6 +9,24 @@ const load = () => createMockReadPort('reference').readPracticePage(query, { sig
 afterEach(cleanup);
 
 describe('practice list controls', () => {
+  it('discloses the full long identity and still opens its exact key', async () => {
+    const page = await load(); const row = page.rows[0]; const name = '超长证券名称用于验证完整身份和标的显示';
+    const longRow = { ...row, instrument: { ...row.instrument, name } }; const open = vi.fn();
+    render(<PracticeList page={{ ...page, rows: [longRow] }} error="" onRefresh={() => {}} onOpen={open} />);
+    const disclosure = screen.getByRole('button', { name: '查看完整练习身份' });
+    fireEvent.focus(disclosure);
+    expect(screen.getByRole('tooltip')).toHaveTextContent(`${name} · ${row.practiceDate} #${String(row.sequence).padStart(2, '0')}`);
+    expect(screen.getAllByText(name).length).toBeGreaterThan(0);
+    const trigger = document.getElementById(`practice-row-${row.key.practiceId}`)!;
+    fireEvent.click(trigger); expect(open).toHaveBeenCalledWith(row.key, trigger);
+  });
+  it('describes unavailable search and pagination controls', async () => {
+    const page = { ...(await load()), pageCount: 3 };
+    render(<PracticeList page={page} error="" onRefresh={() => {}} />);
+    for (const name of ['清除搜索', '上一页', '1', '2', '下一页']) {
+      expect(screen.getByRole('button', { name })).toHaveAttribute('aria-describedby', 'practice-query-reason');
+    }
+  });
   it('waits for IME composition to finish before submitting search', async () => {
     const page = await load(); const change = vi.fn();
     render(<PracticeList page={page} error="" onRefresh={() => {}} appliedQuery={query} onQueryChange={change} />);

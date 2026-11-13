@@ -13,3 +13,16 @@
 .practice-list-footer nav { display: flex; align-items: center; }
 .practice-list-reason { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (max-width: 600px) { .practice-list-toolbar { flex-wrap: wrap; gap: 12px; } }
+.practice-list-scroll table { width: 100%; table-layout: fixed; }
+.practice-list-scroll col:nth-child(1) { width: 14%; }
+.practice-list-scroll col:nth-child(2) { width: 28%; }
+.practice-list-scroll col:nth-child(3) { width: 11%; }
+.practice-list-scroll col:nth-child(4) { width: 14%; }
+.practice-list-scroll col:nth-child(5) { width: 10%; }
+.practice-list-scroll col:nth-child(6) { width: 12%; }
+.practice-list-scroll col:nth-child(7) { width: 11%; }
+.practice-list-scroll td:not(:nth-child(2)):not(:nth-child(3)) { white-space: nowrap; }
+.practice-identity { display: flex; align-items: center; min-width: 0; }
+.practice-identity .practice-button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.practice-identity > button:last-child { flex: 0 0 36px; }
+.practice-instrument { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

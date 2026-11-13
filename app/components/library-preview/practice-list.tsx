@@ -39,7 +39,7 @@ export function PracticeList({ page, error, onRefresh, pending = false, notice =
         <div className="toolbar-actions practice-list-actions">
           <div className="practice-search">
             <input aria-label="搜索" placeholder="搜索练习" value={draft} aria-disabled={!onQueryChange || undefined} aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} readOnly={!onQueryChange} onChange={event => setDraft(event.target.value)} onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; }} onKeyDown={event => { if (event.key === 'Enter' && !event.nativeEvent.isComposing && !composing.current) update({ search: draft, pageIndex: 1 }); }} />
-            <button type="button" aria-label="清除搜索" aria-disabled={!onQueryChange || undefined} onClick={() => { if (onQueryChange) { setDraft(''); update({ search: '', pageIndex: 1 }); } }}>×</button>
+            <button type="button" aria-label="清除搜索" aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} aria-disabled={!onQueryChange || undefined} onClick={() => { if (onQueryChange) { setDraft(''); update({ search: '', pageIndex: 1 }); } }}>×</button>
           </div>
           <button type="button" onClick={onRefresh} aria-label="刷新">↻</button>
         </div>
@@ -51,6 +51,7 @@ export function PracticeList({ page, error, onRefresh, pending = false, notice =
       </div>
       <div className="table-scroll practice-list-scroll">
         <table>
+          <colgroup><col /><col /><col /><col /><col /><col /><col /></colgroup>
           <thead><tr>
             <th><button type="button" className="practice-sort" aria-disabled={!onQueryChange || undefined} aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} onClick={() => update({ sort: query.sort === 'date-asc' ? 'date-desc' : 'date-asc', pageIndex: 1 })}>练习日期 {query.sort === 'date-asc' ? '↑' : '↓'}</button></th>
             <th>练习</th><th>标的</th><th>代码</th><th>成交笔数</th>
@@ -58,8 +59,8 @@ export function PracticeList({ page, error, onRefresh, pending = false, notice =
           </tr></thead>
           <tbody>{page?.rows.map(row => <tr key={row.key.practiceId}>
             <td>{row.practiceDate}</td>
-            <td><button id={`practice-row-${row.key.practiceId}`} type="button" className="practice-button" aria-describedby={!onOpen ? 'practice-open-reason' : undefined} aria-disabled={!onOpen || undefined} onClick={event => onOpen?.(row.key, event.currentTarget)}>{row.instrument.name} · {row.practiceDate} #{String(row.sequence).padStart(2, '0')}</button></td>
-            <td>{row.instrument.name}</td><td>{row.instrument.symbol}</td><td>{row.executionCount}</td>
+            <td><div className="practice-identity"><button id={`practice-row-${row.key.practiceId}`} type="button" className="practice-button" aria-describedby={!onOpen ? 'practice-open-reason' : undefined} aria-disabled={!onOpen || undefined} onClick={event => onOpen?.(row.key, event.currentTarget)}>{row.instrument.name} · {row.practiceDate} #{String(row.sequence).padStart(2, '0')}</button><InfoPopover label="查看完整练习身份">{row.instrument.name} · {row.practiceDate} #{String(row.sequence).padStart(2, '0')}</InfoPopover></div></td>
+            <td><span className="practice-instrument" title={row.instrument.name}>{row.instrument.name}</span></td><td>{row.instrument.symbol}</td><td>{row.executionCount}</td>
             <td>{row.pairCount.state === 'known' ? row.pairCount.value : <>—<InfoPopover label="内部配对数量未知说明">{row.pairCount.reason}</InfoPopover></>}</td>
             <td>{row.openQuantity.state === 'known' ? <span title={row.openQuantity.value}>{row.openQuantity.value}</span> : <>—<InfoPopover label="未平仓数量未知说明">{row.openQuantity.reason}</InfoPopover></>}</td>
           </tr>)}</tbody>
@@ -67,9 +68,9 @@ export function PracticeList({ page, error, onRefresh, pending = false, notice =
       </div>
       <footer className="practice-list-footer">
         {page && <><span>共 {page.totalCount} 条</span><nav aria-label="练习分页">
-          <button type="button" disabled={pageIndex <= 1} aria-disabled={!onQueryChange || undefined} onClick={() => update({ pageIndex: pageIndex - 1 })}>上一页</button>
-          {pages.map(number => <button type="button" key={number} aria-current={number === pageIndex ? 'page' : undefined} aria-disabled={!onQueryChange || undefined} onClick={() => update({ pageIndex: number })}>{number}</button>)}
-          <button type="button" disabled={pageIndex >= pageCount} aria-disabled={!onQueryChange || undefined} onClick={() => update({ pageIndex: pageIndex + 1 })}>下一页</button>
+          <button type="button" disabled={pageIndex <= 1} aria-disabled={!onQueryChange || undefined} aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} onClick={() => update({ pageIndex: pageIndex - 1 })}>上一页</button>
+          {pages.map(number => <button type="button" key={number} aria-current={number === pageIndex ? 'page' : undefined} aria-disabled={!onQueryChange || undefined} aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} onClick={() => update({ pageIndex: number })}>{number}</button>)}
+          <button type="button" disabled={pageIndex >= pageCount} aria-disabled={!onQueryChange || undefined} aria-describedby={!onQueryChange ? 'practice-query-reason' : undefined} onClick={() => update({ pageIndex: pageIndex + 1 })}>下一页</button>
         </nav></>}
       </footer>
     </div>

@@ -1,0 +1,19 @@
+.preview-date-filter { position: relative; }
+.preview-date-filter-label { display: block; margin-bottom: 6px; color: #a5b6c8; font-size: 12px; }
+.preview-date-filter-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.preview-date-filter-controls > button { width: 290px; max-width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+.preview-date-filter-controls button, .preview-date-filter-panel button, .preview-date-filter-panel input { min-height: 36px; color: #e6edf7; background: #111a26; border: 1px solid #283448; border-radius: 6px; padding: 0 10px; font: inherit; }
+.preview-date-filter-controls button, .preview-date-filter-panel button { cursor: pointer; }
+.preview-date-filter button:focus-visible, .preview-date-filter input:focus-visible { outline: 2px solid #6ca8ff; outline-offset: 2px; }
+.preview-date-filter-panel { position: fixed; z-index: 1000; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow: auto; display: grid; gap: 10px; padding: 14px; color: #e6edf7; background: #111a26; border: 1px solid #283448; border-radius: 8px; box-shadow: 0 8px 24px #0008; }
+.preview-date-filter-panel label { display: grid; gap: 4px; }
+.preview-date-filter-panel { width: 320px; box-sizing: border-box; }
+.preview-date-filter-panel p { margin: 0; color: #ff8592; }
+.preview-date-filter-panel div { display: flex; justify-content: flex-end; gap: 8px; }
+.preview-date-filter-panel .preview-date-filter-presets { flex-wrap: wrap; justify-content: flex-start; }
+.preview-date-filter-panel button:disabled { opacity: .5; cursor: not-allowed; }
+
+.preview-date-filter-panel { font: 14px/20px sans-serif; }
+.preview-date-filter-panel button:focus-visible, .preview-date-filter-panel input:focus-visible { outline: 2px solid #6ca8ff; outline-offset: 2px; }
+.preview-date-filter-label { line-height: 16px; }
+.preview-date-filter-controls > button { font-size: 14px; line-height: 20px; }

@@ -19,7 +19,8 @@ type State = {
   pairError: LibraryReadError | null;
 };
 
-export function useLibraryPreview(port: LibraryReadPort, initialLocation?: PreviewLocation) {
+export function useLibraryPreview(port: LibraryReadPort, initialLocation?: PreviewLocation, beforePop?: () => void) {
+  const beforePopRef = useRef(beforePop); beforePopRef.current = beforePop;
   const initial = useRef(initialLocation ?? decodePreviewLocation(''));
   const [state, setState] = useState<State>(() => ({
     options: null, page: null, error: '', listReadError: null, pending: false,
@@ -114,7 +115,7 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
     void run(initial.current, 'initial');
     const onPop = () => {
       const next = decodePreviewLocation(window.location.search);
-      if (next.scenario === initial.current.scenario) void run(next, 'pop');
+      if (next.scenario === initial.current.scenario) { beforePopRef.current?.(); void run(next, 'pop'); }
     };
     if (typeof window !== 'undefined') window.addEventListener('popstate', onPop);
     return () => { if (typeof window !== 'undefined') window.removeEventListener('popstate', onPop); controller.current?.abort(); requestId.current++; };

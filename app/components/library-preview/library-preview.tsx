@@ -18,14 +18,16 @@ export function LibraryPreviewEntry({ initialSearch }: { initialSearch: string }
 }
 export function LibraryPreview({ port, initialLocation }: { port: LibraryReadPort; initialLocation?: PreviewLocation | string }) {
  const initial = typeof initialLocation === 'string' ? decodePreviewLocation(initialLocation) : initialLocation;
- const { page, error, listReadError, refresh, retry, pending, options, appliedLocation, desiredLocation, detail, pairs, detailStatus, detailError, pairPending, pairError, openDetail, backToList, changePairPage, retryDetail, retryPairs, notice, changeQuery } = useLibraryPreview(port, initial);
+ const beforePopRef = useRef<() => void>(() => {});
+ const { page, error, listReadError, refresh, retry, pending, options, appliedLocation, desiredLocation, detail, pairs, detailStatus, detailError, pairPending, pairError, openDetail, backToList, changePairPage, retryDetail, retryPairs, notice, changeQuery } = useLibraryPreview(port, initial, () => beforePopRef.current());
  const host = useRef<HTMLDivElement>(null);
  const restore = useRef(true);
  const ready = useRef(false);
  const key = encodePreviewLocation({ ...appliedLocation, detail: undefined });
  const keyRef = useRef(key); keyRef.current = key;
  const save = useCallback(() => { if (!ready.current) return; const container = host.current?.querySelector<HTMLElement>('.library-preview'); if (!container) return; const active = document.activeElement; const focusId = active instanceof HTMLButtonElement && active.id.startsWith('practice-row-') ? active.id : null; saveReturnContext(keyRef.current, { scrollTop: container.scrollTop, focusId }); }, []);
- useEffect(() => { const pop = () => { save(); restore.current = true; ready.current = false; }; window.addEventListener('popstate', pop, true); window.addEventListener('pagehide', save); const container = host.current?.querySelector<HTMLElement>('.library-preview'); container?.addEventListener('scroll', save); return () => { window.removeEventListener('popstate', pop, true); window.removeEventListener('pagehide', save); container?.removeEventListener('scroll', save); }; }, [save]);
+ beforePopRef.current = () => { save(); restore.current = true; ready.current = false; };
+ useEffect(() => { window.addEventListener('pagehide', save); const container = host.current?.querySelector<HTMLElement>('.library-preview'); container?.addEventListener('scroll', save); return () => { window.removeEventListener('pagehide', save); container?.removeEventListener('scroll', save); }; }, [save]);
  useLayoutEffect(() => { if (desiredLocation.detail || !page || pending || !restore.current) return; const container = host.current?.querySelector<HTMLElement>('.library-preview'); if (!container) return; const stored = readReturnContext(key); container.scrollTop = stored?.scrollTop ?? 0; const target = stored?.focusId ? document.getElementById(stored.focusId) : null; (target ?? document.getElementById('practice-list-heading'))?.focus({ preventScroll: true }); restore.current = false; ready.current = true; }, [page, pending, key, desiredLocation.detail]);
  const change = (query: PracticeQuery) => { save(); changeQuery(query); };
  const isDetail = !!desiredLocation.detail;

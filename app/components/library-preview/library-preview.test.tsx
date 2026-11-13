@@ -160,10 +160,11 @@ it('restores the most recently opened row across consecutive returns', async () 
     if (type !== 'popstate') return add(type, listener, options);
     const isHost = ++popRegistration === 2;
     const invoke = (event: Event) => flushSync(() => { if (typeof listener === 'function') listener.call(window, event); else listener.handleEvent(event); });
-    const wrapper: EventListener = event => { if (isHost && options !== true) setTimeout(() => invoke(event), 0); else invoke(event); };
+    const wrapper: EventListener = event => { if (isHost) setTimeout(() => invoke(event), 0); else invoke(event); };
     wrapped.set(listener, wrapper); add(type, wrapper, options);
   }) as typeof window.addEventListener);
   const removeSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => remove(type, wrapped.get(listener) ?? listener, options)) as typeof window.removeEventListener);
+  try {
   window.history.replaceState({}, '', '/library-preview');
   const port = createMockReadPort('reference');
   render(<LibraryPreview port={port} initialLocation="" />);
@@ -177,5 +178,5 @@ it('restores the most recently opened row across consecutive returns', async () 
   };
   await openAndReturn('A');
   await openAndReturn('E');
-  cleanup(); addSpy.mockRestore(); removeSpy.mockRestore();
+  } finally { cleanup(); addSpy.mockRestore(); removeSpy.mockRestore(); }
 });

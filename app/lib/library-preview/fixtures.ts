@@ -13,7 +13,7 @@ const samples = [
 ] as const;
 export function fixtures(scenario: ScenarioId): readonly PracticeRow[] {
   if (scenario === 'empty') return [];
-  const entries: readonly (readonly [string, string, string, string, number, number, number, string, string | null])[] = scenario === 'pagination'
+  const entries: readonly (readonly [string, string, string, string, number, number, number, string, string | null])[] = (scenario === 'pagination' || scenario === 'pair-retry')
     ? [...samples, ...Array.from({length: 7}, (_, i) => [`P${i + 1}`, `测试${i + 1}`, `90000${i}`, String(15 + i % 5), i + 3, 2, 1, '0', '10'] as const)] : samples;
   return entries.map(([id, name, symbol, day, sequence, executions, pairs, open, original]) => {
     const missingPairs = { state: 'unknown', reasonCode: 'missing-pairs', reason: '配对数据缺失' } as const;
@@ -25,7 +25,7 @@ export function fixtures(scenario: ScenarioId): readonly PracticeRow[] {
       account: { id: 'simulation', label: '模拟账户' }, sequence,
       practiceDate: `2026-10-${day}`, practiceDateSource: 'filename',
       historicalFrom: '2022-01-01', historicalTo: '2023-01-01', importedAt: '2026-10-31T00:00:00Z', displayTimezone: 'Asia/Shanghai',
-      executionCount: scenario === 'pagination' && id === 'P1' ? 14 : executions, pairCount: scenario === 'extreme' && id === 'D' ? missingPairs : known(scenario === 'pagination' && id === 'P1' ? 7 : pairs), openQuantity: scenario === 'extreme' && id === 'D' ? missingPairs : known(open), net,
+      executionCount: (scenario === 'pagination' || scenario === 'pair-retry') && id === 'P1' ? 14 : executions, pairCount: scenario === 'extreme' && id === 'D' ? missingPairs : known((scenario === 'pagination' || scenario === 'pair-retry') && id === 'P1' ? 7 : pairs), openQuantity: scenario === 'extreme' && id === 'D' ? missingPairs : known(open), net,
       returnRate: amount === null ? unknown : known(new Decimal(amount).div(100000).toFixed()),
     };
   });

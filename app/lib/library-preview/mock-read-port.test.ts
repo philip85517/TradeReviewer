@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createMockReadPort } from './mock-read-port';
+import { decodePreviewLocation } from './preview-url';
 
 const context = () => ({ signal: new AbortController().signal });
 const query = { from: '2026-10-01', to: '2026-10-31', market: '', accountId: '', search: '', sort: 'date-asc' as const, pageIndex: 1, pageSize: 6 as const };
@@ -141,4 +142,46 @@ describe('historical time semantics', () => {
     }
     expect(detail.endValuation).toMatchObject({ state: 'known', value: { barEnd: detail.practice.historicalTo } });
   });
+});
+
+describe('pair retry scenario', () => {
+  it('provides the pagination fixture and first pair page', async () => {
+    const port = createMockReadPort(decodePreviewLocation('?scenario=pair-retry').scenario);
+    expect((await port.readPracticePage(query, context())).totalCount).toBe(13);
+    const detail = await port.readPracticeDetail({ practiceId: 'P1' }, context());
+    expect(detail.practice.executionCount).toBe(14);
+    expect(detail.practice.pairCount).toEqual({ state: 'known', value: 7 });
+    expect(detail.practice.net).toEqual({ state: 'known', value: { amount: '10', currency: 'CNY' } });
+    expect(detail.pairs.rows).toHaveLength(6);
+  });
+});
+
+it('delays pair requests and preserves the first page-two failure through abort and invalid version', async () => {
+  vi.useFakeTimers();
+  try {
+    const port = createMockReadPort(decodePreviewLocation('?scenario=pair-retry').scenario);
+    const detail = await port.readPracticeDetail({ practiceId: 'P1' }, context());
+    const key = detail.practice.key;
+    const first = port.readPairPage(key, { pageIndex: 1, pageSize: 6 }, context());
+    await vi.advanceTimersByTimeAsync(1200);
+    expect((await first).rows).toHaveLength(6);
+    await expect(port.readPairPage(key, { pageIndex: 2, pageSize: 6 }, { ...context(), snapshotVersion: 'old' })).rejects.toMatchObject({ code: 'version-expired' });
+    const controller = new AbortController();
+    const aborted = port.readPairPage(key, { pageIndex: 2, pageSize: 6 }, { signal: controller.signal });
+    controller.abort();
+    await expect(aborted).rejects.toMatchObject({ name: 'AbortError' });
+    let settled = false;
+    const failure = port.readPairPage(key, { pageIndex: 2, pageSize: 6 }, context());
+    const assertion = expect(failure).rejects.toMatchObject({ code: 'network', message: '暂时无法加载内部配对', retryable: true });
+    void failure.catch(() => { settled = true; });
+    await vi.advanceTimersByTimeAsync(1199);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await assertion;
+    const retry = port.readPairPage(key, { pageIndex: 2, pageSize: 6 }, context());
+    await vi.advanceTimersByTimeAsync(1200);
+    const page = await retry;
+    expect([page.totalCount, page.rows[0].pairId]).toEqual([7, 'P1-7']);
+    expect(page.rows[0].key).toEqual(key);
+  } finally { vi.useRealTimers(); }
 });

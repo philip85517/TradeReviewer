@@ -1,4 +1,4 @@
-export type ScenarioId = "reference" | "pagination" | "empty" | "slow" | "retry" | "stale" | "not-found" | "version-expired" | "extreme" | "explicit-end-price";
+export type ScenarioId = "reference" | "pagination" | "pair-retry" | "empty" | "slow" | "retry" | "stale" | "not-found" | "version-expired" | "extreme" | "explicit-end-price";
 export type Fact<T> = { state: "known"; value: T } | { state: "unknown"; reasonCode: string; reason: string };
 export type Money = Fact<{ amount: string; currency: string }>;
 export type PracticeKey = { practiceId: string; revisionId: string; practiceVersion: string };

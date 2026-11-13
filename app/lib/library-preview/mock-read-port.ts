@@ -21,6 +21,7 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
   const rows = fixtures(scenario);
   let attempts = 0;
   let detailAttempts = 0;
+  const pairFailures = new Set<string>();
   const money = (amount: string) => known({ amount, currency: 'CNY' });
   const missing = { state: 'unknown', reasonCode: 'missing-end-price', reason: '缺少结束时点价格' } as const;
   const noValuation = { state: 'unknown', reasonCode: 'no-open-position', reason: '没有剩余持仓，无需估值' } as const;
@@ -32,7 +33,7 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
   }
   function pairs(row: PracticeRow, pageIndex: number): PairPage {
     const id = row.key.practiceId;
-    const values = scenario === 'extreme' && id === 'D' ? [] : scenario === 'pagination' && id === 'P1' ? Array.from({ length: 7 }, (_, i) => ['2022-01-01', '2023-01-01', '1', i === 6 ? '4' : '1']) : id === 'A' ? [['2022-10-05', '2023-01-01', '50', '990'], ['2022-01-01', '2023-01-01', '30', '894']] : [['2022-01-01', '2023-01-01', '1', row.net.state === 'known' ? row.net.value.amount : '0']];
+    const values = scenario === 'extreme' && id === 'D' ? [] : (scenario === 'pagination' || scenario === 'pair-retry') && id === 'P1' ? Array.from({ length: 7 }, (_, i) => ['2022-01-01', '2023-01-01', '1', i === 6 ? '4' : '1']) : id === 'A' ? [['2022-10-05', '2023-01-01', '50', '990'], ['2022-01-01', '2023-01-01', '30', '894']] : [['2022-01-01', '2023-01-01', '1', row.net.state === 'known' ? row.net.value.amount : '0']];
     const all = values.map(([openedAt, closedAt, quantity, net], index) => ({ pairId: `${id}-${index + 1}`, key: row.key, openedAt, closedAt, quantity, net: money(net) }));
     const pageCount = Math.max(1, Math.ceil(all.length / 6));
     const current = Math.min(pageCount, Math.max(1, Math.floor(pageIndex) || 1));
@@ -82,6 +83,6 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
         ],
       };
     },
-    async readPairPage(key, page, context) { await ready(context, scenario === 'slow' ? 300 : 0); if (!key.revisionId || !key.practiceVersion) throw new LibraryReadError('version-expired', '版本已过期', false); return pairs(lookup(key), page.pageIndex); },
+    async readPairPage(key, page, context) { if (!key.revisionId || !key.practiceVersion) throw new LibraryReadError('version-expired', '版本已过期', false); const row = lookup(key); await ready(context, scenario === 'pair-retry' ? 1200 : scenario === 'slow' ? 300 : 0); const failureKey = JSON.stringify(key); if (scenario === 'pair-retry' && page.pageIndex === 2 && pairs(row, 2).pageIndex === 2 && !pairFailures.has(failureKey)) { pairFailures.add(failureKey); throw new LibraryReadError('network', '暂时无法加载内部配对', true); } return pairs(row, page.pageIndex); },
   };
 }

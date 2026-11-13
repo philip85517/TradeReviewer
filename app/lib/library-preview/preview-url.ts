@@ -1,6 +1,6 @@
 import type { PreviewLocation, ScenarioId } from './contracts';
 import { validateDateRange } from './practice-date-range';
-const scenarios: ScenarioId[] = ['reference','pagination','empty','slow','retry','stale','not-found','version-expired','extreme','explicit-end-price'];
+const scenarios: ScenarioId[] = ['reference','pagination','pair-retry','empty','slow','retry','stale','not-found','version-expired','extreme','explicit-end-price'];
 export function decodePreviewLocation(search: string): PreviewLocation {
   const p = new URLSearchParams(search); const scenario = p.get('scenario') as ScenarioId;
   const page = p.get('page') ?? ''; const n = Number(page);

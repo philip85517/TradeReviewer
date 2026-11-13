@@ -1,0 +1,578 @@
+{
+  "normal:all:all": {
+    "marketValue": "568418.92",
+    "unrealized": "35851.17"
+  },
+  "normal:all:account-1": {
+    "marketValue": "333316.92",
+    "unrealized": "17381.57"
+  },
+  "normal:all:account-2": {
+    "marketValue": "235102",
+    "unrealized": "18469.6"
+  },
+  "normal:CN:all": {
+    "marketValue": "293260",
+    "unrealized": "20515"
+  },
+  "normal:CN:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "normal:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "normal:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "10330"
+  },
+  "normal:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "normal:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "13080"
+  },
+  "normal:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "normal:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "normal:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:all:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:all:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:all:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:CN:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:CN:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:CN:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:HK:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:HK:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:HK:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:US:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:US:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "empty:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:all:all": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "one:all:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "one:all:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:CN:all": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "one:CN:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "one:CN:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:HK:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:HK:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:HK:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:US:all": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:US:account-1": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "one:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "five:all:all": {
+    "marketValue": "434284.54",
+    "unrealized": "29805.68"
+  },
+  "five:all:account-1": {
+    "marketValue": "284872.54",
+    "unrealized": "16006.08"
+  },
+  "five:all:account-2": {
+    "marketValue": "149412",
+    "unrealized": "13799.6"
+  },
+  "five:CN:all": {
+    "marketValue": "207570",
+    "unrealized": "15845"
+  },
+  "five:CN:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "five:CN:account-2": {
+    "marketValue": "25520",
+    "unrealized": "1820"
+  },
+  "five:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "10330"
+  },
+  "five:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "five:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "13080"
+  },
+  "five:US:all": {
+    "marketValue": "9418",
+    "unrealized": "628"
+  },
+  "five:US:account-1": {
+    "marketValue": "9418",
+    "unrealized": "628"
+  },
+  "five:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "nine:all:all": {
+    "marketValue": "750468.92",
+    "unrealized": "49876.17"
+  },
+  "nine:all:account-1": {
+    "marketValue": "515366.92",
+    "unrealized": "31406.57"
+  },
+  "nine:all:account-2": {
+    "marketValue": "235102",
+    "unrealized": "18469.6"
+  },
+  "nine:CN:all": {
+    "marketValue": "475310",
+    "unrealized": "34540"
+  },
+  "nine:CN:account-1": {
+    "marketValue": "364100",
+    "unrealized": "28050"
+  },
+  "nine:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "nine:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "10330"
+  },
+  "nine:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "nine:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "13080"
+  },
+  "nine:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "nine:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "nine:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "ten:all:all": {
+    "marketValue": "874360.92",
+    "unrealized": "61855.77"
+  },
+  "ten:all:account-1": {
+    "marketValue": "515366.92",
+    "unrealized": "31406.57"
+  },
+  "ten:all:account-2": {
+    "marketValue": "358994",
+    "unrealized": "30449.2"
+  },
+  "ten:CN:all": {
+    "marketValue": "475310",
+    "unrealized": "34540"
+  },
+  "ten:CN:account-1": {
+    "marketValue": "364100",
+    "unrealized": "28050"
+  },
+  "ten:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "ten:HK:all": {
+    "marketValue": "309160",
+    "unrealized": "23410"
+  },
+  "ten:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "ten:HK:account-2": {
+    "marketValue": "270560",
+    "unrealized": "26160"
+  },
+  "ten:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "ten:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "ten:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "twenty:all:all": {
+    "marketValue": "1535772.38",
+    "unrealized": "104026.52"
+  },
+  "twenty:all:account-1": {
+    "marketValue": "916156.38",
+    "unrealized": "53287.72"
+  },
+  "twenty:all:account-2": {
+    "marketValue": "619616",
+    "unrealized": "50738.8"
+  },
+  "twenty:CN:all": {
+    "marketValue": "794090",
+    "unrealized": "56875"
+  },
+  "twenty:CN:account-1": {
+    "marketValue": "546150",
+    "unrealized": "42075"
+  },
+  "twenty:CN:account-2": {
+    "marketValue": "247940",
+    "unrealized": "14800"
+  },
+  "twenty:HK:all": {
+    "marketValue": "483040",
+    "unrealized": "33740"
+  },
+  "twenty:HK:account-1": {
+    "marketValue": "77200",
+    "unrealized": "-5500"
+  },
+  "twenty:HK:account-2": {
+    "marketValue": "405840",
+    "unrealized": "39240"
+  },
+  "twenty:US:all": {
+    "marketValue": "41778",
+    "unrealized": "2268"
+  },
+  "twenty:US:account-1": {
+    "marketValue": "41778",
+    "unrealized": "2268"
+  },
+  "twenty:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "fifty-pages:all:all": {
+    "marketValue": "28420946.00",
+    "unrealized": "1792558.50"
+  },
+  "fifty-pages:all:account-1": {
+    "marketValue": "16665846.00",
+    "unrealized": "869078.50"
+  },
+  "fifty-pages:all:account-2": {
+    "marketValue": "11755100",
+    "unrealized": "923480.0"
+  },
+  "fifty-pages:CN:all": {
+    "marketValue": "14663000",
+    "unrealized": "1025750"
+  },
+  "fifty-pages:CN:account-1": {
+    "marketValue": "9102500",
+    "unrealized": "701250"
+  },
+  "fifty-pages:CN:account-2": {
+    "marketValue": "5560500",
+    "unrealized": "324500"
+  },
+  "fifty-pages:HK:all": {
+    "marketValue": "8694000",
+    "unrealized": "516500"
+  },
+  "fifty-pages:HK:account-1": {
+    "marketValue": "1930000",
+    "unrealized": "-137500"
+  },
+  "fifty-pages:HK:account-2": {
+    "marketValue": "6764000",
+    "unrealized": "654000"
+  },
+  "fifty-pages:US:all": {
+    "marketValue": "809000",
+    "unrealized": "41000"
+  },
+  "fifty-pages:US:account-1": {
+    "marketValue": "809000",
+    "unrealized": "41000"
+  },
+  "fifty-pages:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "extreme:all:all": {
+    "marketValue": "987654312098.7654312",
+    "unrealized": "35851.17"
+  },
+  "extreme:all:account-1": {
+    "marketValue": "493827156049.3827156",
+    "unrealized": "17381.57"
+  },
+  "extreme:all:account-2": {
+    "marketValue": "493827156049.3827156",
+    "unrealized": "18469.6"
+  },
+  "extreme:CN:all": {
+    "marketValue": "493827156049.3827156",
+    "unrealized": "20515"
+  },
+  "extreme:CN:account-1": {
+    "marketValue": "123456789012.3456789",
+    "unrealized": "14025"
+  },
+  "extreme:CN:account-2": {
+    "marketValue": "370370367037.0370367",
+    "unrealized": "6490"
+  },
+  "extreme:HK:all": {
+    "marketValue": "246913578024.6913578",
+    "unrealized": "10330"
+  },
+  "extreme:HK:account-1": {
+    "marketValue": "123456789012.3456789",
+    "unrealized": "-2750"
+  },
+  "extreme:HK:account-2": {
+    "marketValue": "123456789012.3456789",
+    "unrealized": "13080"
+  },
+  "extreme:US:all": {
+    "marketValue": "246913578024.6913578",
+    "unrealized": "820"
+  },
+  "extreme:US:account-1": {
+    "marketValue": "246913578024.6913578",
+    "unrealized": "820"
+  },
+  "extreme:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "gaps:all:all": {
+    "marketValue": "568418.92",
+    "unrealized": "35851.17"
+  },
+  "gaps:all:account-1": {
+    "marketValue": "333316.92",
+    "unrealized": "17381.57"
+  },
+  "gaps:all:account-2": {
+    "marketValue": "235102",
+    "unrealized": "18469.6"
+  },
+  "gaps:CN:all": {
+    "marketValue": "293260",
+    "unrealized": "20515"
+  },
+  "gaps:CN:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "gaps:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "gaps:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "10330"
+  },
+  "gaps:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "gaps:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "13080"
+  },
+  "gaps:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "gaps:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "gaps:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "unknown:all:all": {
+    "marketValue": "386368.92",
+    "unrealized": "23871.57"
+  },
+  "unknown:all:account-1": {
+    "marketValue": "151266.92",
+    "unrealized": "17381.57"
+  },
+  "unknown:all:account-2": {
+    "marketValue": "235102",
+    "unrealized": "6490"
+  },
+  "unknown:CN:all": {
+    "marketValue": "111210",
+    "unrealized": "20515"
+  },
+  "unknown:CN:account-1": {
+    "marketValue": "0",
+    "unrealized": "14025"
+  },
+  "unknown:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "unknown:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "-2750"
+  },
+  "unknown:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "unknown:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "0"
+  },
+  "unknown:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "unknown:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "unknown:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  },
+  "partial:all:all": {
+    "marketValue": "568418.92",
+    "unrealized": "35851.17"
+  },
+  "partial:all:account-1": {
+    "marketValue": "333316.92",
+    "unrealized": "17381.57"
+  },
+  "partial:all:account-2": {
+    "marketValue": "235102",
+    "unrealized": "18469.6"
+  },
+  "partial:CN:all": {
+    "marketValue": "293260",
+    "unrealized": "20515"
+  },
+  "partial:CN:account-1": {
+    "marketValue": "182050",
+    "unrealized": "14025"
+  },
+  "partial:CN:account-2": {
+    "marketValue": "111210",
+    "unrealized": "6490"
+  },
+  "partial:HK:all": {
+    "marketValue": "173880",
+    "unrealized": "10330"
+  },
+  "partial:HK:account-1": {
+    "marketValue": "38600",
+    "unrealized": "-2750"
+  },
+  "partial:HK:account-2": {
+    "marketValue": "135280",
+    "unrealized": "13080"
+  },
+  "partial:US:all": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "partial:US:account-1": {
+    "marketValue": "16180",
+    "unrealized": "820"
+  },
+  "partial:US:account-2": {
+    "marketValue": "0",
+    "unrealized": "0"
+  }
+}

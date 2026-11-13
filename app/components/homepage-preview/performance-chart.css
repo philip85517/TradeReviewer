@@ -1,0 +1,91 @@
+.hp-performance-chart {
+  display: flow-root;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px #283448;
+  background: #111a26;
+  color: #e6edf7;
+  font-family: system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  isolation: isolate;
+}
+.hp-performance-chart__stage { position: relative; width: 100%; }
+.hp-performance-chart__heading {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  pointer-events: none;
+}
+.hp-performance-chart__heading h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 20px; }
+.hp-performance-chart__heading span { color: #a8b6cb; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__graph, .hp-performance-chart__gap-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hp-performance-chart__graph:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; border-radius: 8px; }
+.hp-performance-chart svg { overflow: visible; }
+.hp-performance-chart svg text { fill: #a8b6cb; font-family: inherit; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__grid { stroke: #283448; stroke-width: 1; }
+.hp-performance-chart__zero { stroke: #a8b6cb; stroke-width: 1; }
+.hp-performance-chart__line { fill: none; stroke: #6ca8ff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.hp-performance-chart__future { fill: #a8b6cb; fill-opacity: .07; }
+.hp-performance-chart__cutoff { stroke: #71829b; stroke-width: 1; stroke-dasharray: 4 4; }
+.hp-performance-chart__locator { pointer-events: none; }
+.hp-performance-chart__locator line { stroke: #6ca8ff; stroke-width: 1; stroke-dasharray: 4 4; }
+.hp-performance-chart__locator rect { fill: #162233; }
+.hp-performance-chart__locator text { fill: #a9c8ff; }
+.hp-performance-chart__locator circle { fill: #6ca8ff; animation: hp-performance-chart-point-feedback 120ms ease-out; }
+@keyframes hp-performance-chart-point-feedback { from { opacity: 0; } to { opacity: 1; } }
+.hp-performance-chart__hit { fill: transparent; cursor: crosshair; }
+.hp-performance-chart__gap-layer { pointer-events: none; }
+.hp-performance-chart__gap { pointer-events: all; cursor: help; outline: none; }
+.hp-performance-chart__gap > rect { fill: transparent; stroke: transparent; stroke-width: 2; }
+.hp-performance-chart__gap:focus-visible > rect { stroke: #a9c8ff; }
+.hp-performance-chart__gap-symbol circle { fill: #162233; stroke: #6ca8ff; }
+.hp-performance-chart__gap-symbol text { fill: #6ca8ff; }
+.hp-performance-chart__gap-label { fill: #ffc66d !important; }
+.hp-performance-chart__empty { position: absolute; inset: 50px 16px; margin: 0; display: grid; place-items: center; text-align: center; color: #a8b6cb; font-size: 12px; line-height: 20px; }
+.hp-performance-chart__detail {
+  position: absolute;
+  z-index: 3;
+  left: 12px;
+  top: 12px;
+  width: 264px;
+  max-width: calc(100vw - 24px);
+  height: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #6ca8ff;
+  border-radius: 8px;
+  background: #162233;
+  color: #e6edf7;
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+  box-shadow: 0 4px 16px #0003;
+}
+.hp-performance-chart__detail-heading { display: flex; align-items: start; justify-content: space-between; gap: 8px; color: #a8b6cb; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__detail-heading > span { min-width: 0; }
+.hp-performance-chart__info { display: inline-grid; place-items: center; flex: 0 0 16px; width: 16px; height: 16px; margin: 0; padding: 0; border: 0; background: transparent; color: #6ca8ff; cursor: help; }
+.hp-performance-chart__info svg { display: block; }
+.hp-performance-chart__info:focus-visible, .hp-performance-chart__field dd:focus-visible { outline: 2px solid #a9c8ff; outline-offset: 2px; }
+.hp-performance-chart__fields { margin: 4px 0 0; }
+.hp-performance-chart__field { display: grid; grid-template-columns: minmax(76px, auto) minmax(0, 1fr); column-gap: 8px; row-gap: 0; align-items: start; margin-top: 2px; }
+.hp-performance-chart__field dt { color: #a8b6cb; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__field dd { min-width: 0; margin: 0; text-align: right; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__field dd.hp-performance-chart__period-net { font-size: 13px; line-height: 18px; }
+.hp-performance-chart__positive { color: #53d7a0; }
+.hp-performance-chart__negative { color: #ff8592; }
+.hp-performance-chart__neutral { color: #e6edf7; }
+.hp-performance-chart__evidence { grid-column: 1 / -1; color: #a8b6cb; font-size: 12px; line-height: 16px; padding: 6px 0; }
+.hp-performance-chart__evidence p { margin: 0; }
+.hp-performance-chart__reason, .hp-performance-chart__gap-description { margin: 8px 0 0; color: #a8b6cb; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__gap-description { color: #ffc66d; }
+.hp-performance-chart__pin { display: block; color: #6ca8ff; margin-top: 4px; font-size: 12px; line-height: 16px; }
+.hp-performance-chart__sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .hp-performance-chart__locator circle { animation: none; } }

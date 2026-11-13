@@ -10,7 +10,7 @@ export type Point = { key: string; businessDate: string; state: 'value' | 'sourc
 export type Series = { version: string; boundary: { effectiveEnd: string; asOf: string }; points: Point[] };
 export type HomeView = { stamp: Stamp; request: HomeRequest; metrics: Record<'net' | 'periodRealized' | 'unrealizedChange' | 'currentMarketValue', Amount>; currentUnrealized: Amount; series: Series; holdings: { rows: Holding[]; total: number; page: number; pages: number; marketValue: Amount; unrealized: Amount; sortAvailable: boolean }; accounts: { id: string; name: string }[]; reasons: string[] };
 export type HoldingDetail = { stamp: Stamp; holding: Holding; description: string };
-export type TradeCollection = { stamp: Stamp; holdingId: string; name: string; trades: { id: string; date: string; side: string; quantity: string; price: string; currency: string }[] };
+export type TradeCollection = { stamp: Stamp; holdingId: string; name: string; trades: { id: string; date: string; side: string; quantity: string; price: string | null; currency: string }[] };
 export interface HomepageSource {
   readHome(request: HomeRequest, signal: AbortSignal): Promise<HomeView>;
   readHolding(stamp: Stamp, holdingId: string, signal: AbortSignal): Promise<HoldingDetail>;

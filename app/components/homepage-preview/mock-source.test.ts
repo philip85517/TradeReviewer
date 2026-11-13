@@ -38,6 +38,35 @@ describe('homepage presentation source', () => {
     const trades = await source.readTrades(view.stamp, duplicates[0].id, signal());
     expect(trades.holdingId).toBe(duplicates[0].id);
   });
+  it('keeps current totals independent of local search and changes scope snapshots coherently', async () => {
+    const source = createMockSource({ scenario: 'normal' });
+    const all = await source.readHome(DEFAULT_REQUEST, signal());
+    const none = await source.readHome({ ...DEFAULT_REQUEST, query: 'no-match' }, signal());
+    expect(none.metrics.currentMarketValue).toEqual(all.metrics.currentMarketValue);
+    expect(none.holdings.marketValue).toEqual(all.holdings.marketValue);
+    const us = await source.readHome({ ...DEFAULT_REQUEST, market: 'US' }, signal());
+    expect(us.metrics.net.value).not.toEqual(all.metrics.net.value);
+    const row = us.holdings.rows[0];
+    const detail = await source.readHolding(us.stamp, row.id, signal());
+    expect(detail.holding.marketValue).toEqual(row.marketValue);
+    expect(Object.keys(row.marketValue.originals)).toEqual(['USD']);
+  });
+  it('supplies unique daily dates, historical snapshots and period changes in every scope', async () => {
+    const source = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const week = await source.readHome({ ...DEFAULT_REQUEST, market: 'US', period: { preset: 'week', from: '2026-10-12', to: '2026-10-15' } }, signal());
+    const year = await source.readHome({ ...DEFAULT_REQUEST, market: 'US' }, signal());
+    expect(week.series.points.map(point => point.businessDate)).toEqual(['2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15']);
+    expect(week.metrics.net.value).not.toBe(year.metrics.net.value);
+    expect(year.series.points[0].marketValue.value).not.toBe(year.metrics.currentMarketValue.value);
+    expect(year.series.points.at(-1)?.marketValue).toEqual(year.metrics.currentMarketValue);
+  });
+  it('never substitutes zero for an unknown trade price', async () => {
+    const source = createMockSource({ scenario: 'unknown', delayMs: 0 });
+    const view = await source.readHome(DEFAULT_REQUEST, signal());
+    const row = view.holdings.rows.find(item => item.cost === null)!;
+    const result = await source.readTrades(view.stamp, row.id, signal());
+    expect(result.trades[0].price).toBeNull();
+  });
   it('stops an aborted read', async () => {
     const controller = new AbortController();
     const request = createMockSource({ scenario: 'normal', delayMs: 50 }).readHome(DEFAULT_REQUEST, controller.signal);

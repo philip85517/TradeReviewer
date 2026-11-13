@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LibraryOptions, LibraryReadPort, PracticePage, PracticeQuery, PreviewLocation } from '../../lib/library-preview/contracts';
-import { decodePreviewLocation, validatePreviewLocation } from '../../lib/library-preview/preview-url';
+import { decodePreviewLocation, encodePreviewLocation, validatePreviewLocation } from '../../lib/library-preview/preview-url';
 
 type State = {
   options: LibraryOptions | null;
@@ -18,7 +18,13 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
     appliedLocation: initial.current, notice: '',
   }));
   const stateRef = useRef(state);
-  const failedTarget = useRef<PreviewLocation | null>(null);
+  type Intent = 'initial' | 'push' | 'replace' | 'pop';
+  const failedTarget = useRef<{ target: PreviewLocation; intent: Intent } | null>(null);
+  const write = (location: PreviewLocation, method: 'push' | 'replace') => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.pathname + encodePreviewLocation(location);
+    window.history[method === 'push' ? 'pushState' : 'replaceState'](window.history.state, '', url);
+  };
   const requestId = useRef(0);
   const controller = useRef<AbortController | null>(null);
   const update = useCallback((next: State) => {
@@ -26,7 +32,7 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
     setState(next);
   }, []);
 
-  const run = useCallback(async (target: PreviewLocation) => {
+  const run = useCallback(async (target: PreviewLocation, intent: Intent) => {
     controller.current?.abort();
     const id = ++requestId.current;
     const abort = new AbortController();
@@ -34,7 +40,8 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
     const active = () => id === requestId.current && !abort.signal.aborted;
     const validation = validatePreviewLocation(target);
     if (validation) {
-      failedTarget.current = target;
+      failedTarget.current = { target, intent };
+      if (intent === 'pop' && stateRef.current.page) write(stateRef.current.appliedLocation, 'replace');
       update({ ...stateRef.current, pending: false, error: `${stateRef.current.page ? '新范围未应用：' : ''}${validation}` });
       return;
     }
@@ -50,24 +57,36 @@ export function useLibraryPreview(port: LibraryReadPort, initialLocation?: Previ
       const page = await port.readPracticePage(query, { signal: abort.signal, snapshotVersion: options.snapshotVersion });
       if (!active()) return;
       failedTarget.current = null;
-      update({ options, page, error: '', pending: false, appliedLocation: { ...target, query: page.query }, notice });
+      const applied = { ...target, query: page.query };
+      if (typeof window !== 'undefined') {
+        const encoded = encodePreviewLocation(applied);
+        if (intent === 'push') write(applied, window.location.search === encoded ? 'replace' : 'push');
+        else if (intent !== 'pop' || window.location.search !== encoded) write(applied, 'replace');
+      }
+      update({ options, page, error: '', pending: false, appliedLocation: applied, notice });
     } catch (error) {
       if (!active()) return;
-      failedTarget.current = target;
+      failedTarget.current = { target, intent };
+      if (intent === 'pop' && stateRef.current.page) write(stateRef.current.appliedLocation, 'replace');
       const reason = error instanceof Error ? error.message : String(error);
       update({ ...stateRef.current, pending: false, error: `${stateRef.current.page ? '新范围未应用：' : ''}${reason}` });
     }
   }, [port, update]);
 
   useEffect(() => {
-    void run(initial.current);
-    return () => { controller.current?.abort(); requestId.current++; };
+    void run(initial.current, 'initial');
+    const onPop = () => {
+      const next = decodePreviewLocation(window.location.search);
+      if (next.scenario === initial.current.scenario) void run(next, 'pop');
+    };
+    if (typeof window !== 'undefined') window.addEventListener('popstate', onPop);
+    return () => { if (typeof window !== 'undefined') window.removeEventListener('popstate', onPop); controller.current?.abort(); requestId.current++; };
   }, [run]);
 
   const changeQuery = useCallback((query: PracticeQuery) => {
-    void run({ scenario: stateRef.current.appliedLocation.scenario, query });
+    void run({ scenario: stateRef.current.appliedLocation.scenario, query }, 'push');
   }, [run]);
-  const refresh = useCallback(() => { void run(stateRef.current.appliedLocation); }, [run]);
-  const retry = useCallback(() => { void run(failedTarget.current ?? stateRef.current.appliedLocation); }, [run]);
+  const refresh = useCallback(() => { void run(stateRef.current.appliedLocation, 'replace'); }, [run]);
+  const retry = useCallback(() => { const failed = failedTarget.current; void run(failed?.target ?? stateRef.current.appliedLocation, failed?.intent ?? 'replace'); }, [run]);
   return { ...state, changeQuery, refresh, retry };
 }

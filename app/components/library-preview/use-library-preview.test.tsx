@@ -1,11 +1,12 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMockReadPort } from '../../lib/library-preview/mock-read-port';
-import { decodePreviewLocation } from '../../lib/library-preview/preview-url';
+import { decodePreviewLocation, encodePreviewLocation } from '../../lib/library-preview/preview-url';
 import type { LibraryOptions, PracticePage } from '../../lib/library-preview/contracts';
 import { useLibraryPreview } from './use-library-preview';
 
-afterEach(cleanup);
+beforeEach(() => { window.history.replaceState({}, '', '/library-preview'); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('library request state', () => {
   it('loads the initial page', async () => {
     const port = createMockReadPort('reference');
@@ -51,8 +52,10 @@ describe('library request state', () => {
     act(() => result.current.changeQuery({ ...result.current.appliedLocation.query, search: 'new' }));
     await waitFor(() => expect(result.current.appliedLocation.query.search).toBe('new'));
     const current = result.current.page!;
+    const currentUrl = window.location.href;
     await act(async () => { resolveOld({ ...current, query: { ...current.query, search: 'old' } }); });
     expect(result.current.appliedLocation.query.search).toBe('new');
+    expect(window.location.href).toBe(currentUrl);
   });
 
   it('does not request a page after stale options resolve', async () => {
@@ -99,4 +102,69 @@ describe('library request state', () => {
     expect(result.current.appliedLocation.query.market).toBe('all');
     expect(result.current.appliedLocation.query.accountId).toBe('all');
   });
+  it('normalizes initial URL and pushes a retried change only on success', async () => {
+    const initial = decodePreviewLocation('?market=missing');
+    const port = createMockReadPort('reference');
+    const original = port.readPracticePage;
+    let fail = true;
+    port.readPracticePage = vi.fn(async (query, context) => {
+      if (query.search === 'failed' && fail) { fail = false; throw new Error('offline'); }
+      return original(query, context);
+    });
+    const push = vi.spyOn(window.history, 'pushState');
+    const replace = vi.spyOn(window.history, 'replaceState');
+    const { result } = renderHook(() => useLibraryPreview(port, initial));
+    await waitFor(() => expect(result.current.page).not.toBeNull());
+    expect(decodePreviewLocation(window.location.search).query.market).toBe('all');
+    expect(replace).toHaveBeenCalled();
+    const oldUrl = window.location.href;
+    act(() => result.current.changeQuery({ ...result.current.appliedLocation.query, search: 'failed' }));
+    await waitFor(() => expect(result.current.error).toContain('offline'));
+    expect(window.location.href).toBe(oldUrl);
+    act(() => result.current.retry());
+    await waitFor(() => expect(result.current.appliedLocation.query.search).toBe('failed'));
+    expect(decodePreviewLocation(window.location.search).query.search).toBe('failed');
+    expect(push).toHaveBeenCalledTimes(1);
+    act(() => result.current.refresh());
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(push).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles pop without pushing and replaces a clamped page', async () => {
+    const port = createMockReadPort('reference');
+    const push = vi.spyOn(window.history, 'pushState');
+    const { result } = renderHook(() => useLibraryPreview(port));
+    await waitFor(() => expect(result.current.page).not.toBeNull());
+    const target = { ...result.current.appliedLocation, query: { ...result.current.appliedLocation.query, pageIndex: 99 } };
+    act(() => {
+      window.history.replaceState({}, '', encodePreviewLocation(target));
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await waitFor(() => expect(result.current.pending).toBe(false));
+    expect(push).not.toHaveBeenCalled();
+    expect(decodePreviewLocation(window.location.search).query.pageIndex).toBe(result.current.page!.query.pageIndex);
+    expect(result.current.page!.query.pageIndex).not.toBe(99);
+  });
+
+  it('restores the applied URL and page when pop fails', async () => {
+    const port = createMockReadPort('reference');
+    const original = port.readPracticePage;
+    port.readPracticePage = vi.fn(async (query, context) => {
+      if (query.search === 'failed') throw new Error('offline');
+      return original(query, context);
+    });
+    const { result } = renderHook(() => useLibraryPreview(port));
+    await waitFor(() => expect(result.current.page).not.toBeNull());
+    const oldPage = result.current.page;
+    const oldUrl = window.location.href;
+    const target = { ...result.current.appliedLocation, query: { ...result.current.appliedLocation.query, search: 'failed' } };
+    act(() => {
+      window.history.replaceState({}, '', encodePreviewLocation(target));
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await waitFor(() => expect(result.current.error).toContain('新范围未应用'));
+    expect(result.current.page).toBe(oldPage);
+    expect(window.location.href).toBe(oldUrl);
+  });
+
 });

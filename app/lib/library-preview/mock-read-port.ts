@@ -83,6 +83,6 @@ export function createMockReadPort(scenario: ScenarioId): LibraryReadPort {
         ],
       };
     },
-    async readPairPage(key, page, context) { if (!key.revisionId || !key.practiceVersion) throw new LibraryReadError('version-expired', '版本已过期', false); const row = lookup(key); await ready(context, scenario === 'pair-retry' ? 1200 : scenario === 'slow' ? 300 : 0); const failureKey = JSON.stringify(key); if (scenario === 'pair-retry' && page.pageIndex === 2 && pairs(row, 2).pageIndex === 2 && !pairFailures.has(failureKey)) { pairFailures.add(failureKey); throw new LibraryReadError('network', '暂时无法加载内部配对', true); } return pairs(row, page.pageIndex); },
+    async readPairPage(key, page, context) { if (!key.revisionId || !key.practiceVersion) throw new LibraryReadError('version-expired', '版本已过期', false); const row = lookup(key); await ready(context, scenario === 'pair-retry' ? 1200 : scenario === 'slow' ? 300 : 0); const failureKey = JSON.stringify([key.practiceId, key.revisionId, key.practiceVersion]); if (scenario === 'pair-retry' && page.pageIndex === 2 && pairs(row, 2).pageIndex === 2 && !pairFailures.has(failureKey)) { pairFailures.add(failureKey); throw new LibraryReadError('network', '暂时无法加载内部配对', true); } return pairs(row, page.pageIndex); },
   };
 }

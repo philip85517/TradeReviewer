@@ -27,8 +27,8 @@ it('passes a date range applied in the real date control', () => {
   expect(change).toHaveBeenCalledWith({ ...query, from: '2026-10-01', to: '2026-10-02', pageIndex: 1 });
 });
 it('retains readonly filter context and navigation in detail', () => {
-  // The host suppresses its callback when rendering the detail shell.
-  render(<PreviewShell isDetail query={query} options={options} onQueryChange={undefined}>内容</PreviewShell>);
+  const change = vi.fn();
+  render(<PreviewShell isDetail query={query} options={options} onQueryChange={change}>内容</PreviewShell>);
   const date = screen.getByRole('button', { name: /练习日期/ });
   expect(date).toHaveAttribute('aria-disabled', 'true');
   expect(date).toHaveAccessibleDescription('返回列表后修改筛选');
@@ -39,6 +39,9 @@ it('retains readonly filter context and navigation in detail', () => {
   expect(screen.getByRole('navigation', { name: '交易库视图' })).toBeInTheDocument();
   fireEvent.click(date); fireEvent.click(clear);
   expect(screen.queryByLabelText('开始日期')).toBeNull();
+  fireEvent.change(screen.getByLabelText('市场'), { target: { value: 'CN' } });
+  fireEvent.change(screen.getByLabelText('账户 / 身份'), { target: { value: 'sim' } });
+  expect(change).not.toHaveBeenCalled();
 });
 it('supports the existing host without a callback', () => {
   render(<PreviewShell>内容</PreviewShell>);

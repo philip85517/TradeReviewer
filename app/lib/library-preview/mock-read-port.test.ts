@@ -178,7 +178,7 @@ it('delays pair requests and preserves the first page-two failure through abort 
     expect(settled).toBe(false);
     await vi.advanceTimersByTimeAsync(1);
     await assertion;
-    const retry = port.readPairPage(key, { pageIndex: 2, pageSize: 6 }, context());
+    const retry = port.readPairPage({ practiceVersion: key.practiceVersion, revisionId: key.revisionId, practiceId: key.practiceId }, { pageIndex: 2, pageSize: 6 }, context());
     await vi.advanceTimersByTimeAsync(1200);
     const page = await retry;
     expect([page.totalCount, page.rows[0].pairId]).toEqual([7, 'P1-7']);

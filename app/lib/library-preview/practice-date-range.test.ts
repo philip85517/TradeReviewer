@@ -1,3 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { getShanghaiDate, presetRange, validateDateRange } from './practice-date-range';
 describe('dates', () => { it('uses Shanghai calendar boundaries', () => { const n = new Date('2024-12-31T16:00:00Z'); expect(getShanghaiDate(n)).toBe('2025-01-01'); expect(presetRange('week', n)).toEqual({from:'2024-12-30',to:'2025-01-01'}); expect(presetRange('month', n).from).toBe('2025-01-01'); expect(presetRange('year', n).from).toBe('2025-01-01'); }); it('validates all and Gregorian dates', () => { expect(validateDateRange({from:'',to:''})).toBeNull(); expect(validateDateRange({from:'',to:'2024-01-01'})).not.toBeNull(); expect(validateDateRange({from:'2024-02-29',to:'2024-03-01'})).toBeNull(); expect(validateDateRange({from:'1900-02-29',to:'1900-03-01'})).not.toBeNull(); }); });
+
+it.each([['2024-03-02', '2024-03-01', false], ['2023-02-29', '2023-03-01', false], ['2024-04-31', '2024-05-01', false], ['2024-02-29', '2024-03-01', true]])('validates %s to %s', (from, to, valid) => { expect(validateDateRange({ from, to }) === null).toBe(valid); });

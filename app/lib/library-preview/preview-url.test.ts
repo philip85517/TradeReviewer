@@ -7,3 +7,6 @@ it('decodes and round trips the pair retry scenario', () => {
   expect(location.scenario).toBe('pair-retry');
   expect(decodePreviewLocation(encodePreviewLocation(location))).toEqual(location);
 });
+
+it.each([['-1', 1], ['0', 1], ['NaN', 1], ['9007199254740992', 1], ['', 1], ['2', 2]])('normalizes page %s', (page, expected) => { expect(decodePreviewLocation(page ? `?page=${page}` : '').query.pageIndex).toBe(expected); });
+it('defaults an unknown scenario', () => { expect(decodePreviewLocation('?scenario=unknown').scenario).toBe('reference'); });

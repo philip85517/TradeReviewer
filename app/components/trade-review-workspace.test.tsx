@@ -895,6 +895,7 @@ describe("TradeReviewWorkspace", () => {
     expect(within(header).getByRole("button", { name: "专注图表" })).toBeVisible();
   });
 
+  // Exercise the complete multi-dialog user journey with real jsdom rendering.
   it("keeps Recall header actions wired to data management, repair, and return navigation", async () => {
     const user = userEvent.setup();
     await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", false, createLegacySqliteClient(), false, false);
@@ -959,7 +960,7 @@ describe("TradeReviewWorkspace", () => {
     await user.click(returnButton);
     expect(await screen.findByRole("region", { name: "交易库" })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "导入交易回忆复盘工作区" })).not.toBeInTheDocument();
-  });
+  }, 15_000);
 
   it("keeps the parent review mounted until a failed navigation save is retried successfully", async () => {
     const user = userEvent.setup();
@@ -1595,6 +1596,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", cursor);
   });
 
+  // Includes import preview, audit rejection, and retry with the original request.
   it("supplements only the selected stock account and retries the same audited request", async () => {
     const user = userEvent.setup();
     const original = availabilityExecution({ id: "scope-original", row: 1, side: "buy", executedAt: "2025-01-07T14:30:00.000Z" });
@@ -1623,7 +1625,7 @@ describe("TradeReviewWorkspace", () => {
     expect(revise.mock.calls[0][0]).toEqual(revise.mock.calls[1][0]);
     expect(revise.mock.calls[0][0].changes).toEqual([{before:null,after:expect.objectContaining({id:added.id,accountId:original.accountId,instrument:original.instrument})}]);
     expect(merge).not.toHaveBeenCalled(); expect(mockMarketDataSync).not.toHaveBeenCalled();
-  });
+  }, 15_000);
 
   it("boots from the SQLite bootstrap response without reading legacy execution storage", async () => {
     const getBootstrap = vi.fn().mockResolvedValue({

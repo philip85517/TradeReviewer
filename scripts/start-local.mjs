@@ -48,14 +48,21 @@ export function buildVinextArguments(args = [], options = {}) {
 
 export function startLocalServer(args = process.argv.slice(2)) {
   const command = process.platform === "win32" ? "vinext.cmd" : "vinext";
-  const child = spawn(command, buildVinextArguments(args), {
-    env: buildStartEnvironment(),
+  const environment = buildStartEnvironment();
+  const worker = environment.TRADEREVIEW_HOME_WORKER === '1'
+    ? spawn(process.execPath, [fileURLToPath(new URL('./home-worker.mjs', import.meta.url))], {env:environment,stdio:'inherit'})
+    : null;
+  worker?.on('error', error => console.error(`首页后台进程无法启动：${error.message}`));
+  const launchArguments = buildVinextArguments(args);
+  const development = launchArguments[0] === 'dev';
+  const child = spawn(development ? command : process.execPath, development ? launchArguments : [fileURLToPath(new URL('./start-production.mjs', import.meta.url)), ...launchArguments.slice(1)], {
+    env: environment,
     stdio: "inherit",
   });
 
   const signalHandlers = new Map(
     ["SIGINT", "SIGTERM"].map((signal) => {
-      const handler = () => child.kill(signal);
+      const handler = () => { child.kill(signal); worker?.kill(signal); };
       process.on(signal, handler);
       return [signal, handler];
     }),
@@ -65,6 +72,7 @@ export function startLocalServer(args = process.argv.slice(2)) {
     process.exitCode = 1;
   });
   child.on("close", (code, signal) => {
+    worker?.kill("SIGTERM");
     for (const [name, handler] of signalHandlers) process.off(name, handler);
     if (signal) process.exitCode = 1;
     process.exitCode = code ?? 1;

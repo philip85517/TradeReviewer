@@ -30,7 +30,7 @@ export type SyncMarketDataOptions = {
   market: SupportedMarket;
   currency: string;
   required: DateRange;
-  repository: MarketDataRepository;
+  repository: Pick<MarketDataRepository,"getDailyCandles"|"getCoverage"|"getProviderSymbol"|"commitSyncResult">;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
   retryUnavailable?: boolean;

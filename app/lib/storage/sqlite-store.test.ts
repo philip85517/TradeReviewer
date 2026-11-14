@@ -54,7 +54,7 @@ function snapshotAllTables(store: SqliteStore) {
   return Object.fromEntries(
     tables.map(({ name }) => [
       name,
-      database.prepare(`select * from "${name}" order by rowid`).all(),
+      database.prepare(`select * from "${name}"`).all().sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),
     ]),
   );
 }
@@ -857,8 +857,8 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      // Version 14 registers the approved TradingView account migration.
-      schemaVersion: 14,
+      // Version 17 adds durable source jobs and the explicit FX convention.
+      schemaVersion: 17,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });

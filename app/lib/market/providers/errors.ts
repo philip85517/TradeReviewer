@@ -18,9 +18,12 @@ export class MarketDataProviderError extends Error {
   }
 }
 
+const marketTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+
 function marketTimeParts(timestamp: Date, timeZone: string) {
-  return Object.fromEntries(
-    new Intl.DateTimeFormat("en-CA", {
+  let formatter = marketTimeFormatters.get(timeZone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-CA", {
       timeZone,
       year: "numeric",
       month: "2-digit",
@@ -29,7 +32,14 @@ function marketTimeParts(timestamp: Date, timeZone: string) {
       minute: "2-digit",
       second: "2-digit",
       hourCycle: "h23",
-    })
+    });
+    // Cache formatter configuration only: each timestamp still resolves its
+    // own offset, including historical DST. Bound arbitrary provider zones.
+    if (marketTimeFormatters.size >= 64) marketTimeFormatters.clear();
+    marketTimeFormatters.set(timeZone, formatter);
+  }
+  return Object.fromEntries(
+    formatter
       .formatToParts(timestamp)
       .filter((part) => part.type !== "literal")
       .map((part) => [part.type, part.value]),

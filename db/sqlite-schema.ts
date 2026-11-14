@@ -1,3 +1,4 @@
+import { HOME_METRIC_OBJECT_SCHEMA, HOME_SCHEMA, HOME_REFRESH_SCHEMA, HOME_SOURCE_TRIGGERS, HOME_QUOTE_TRIGGER_FIX, HOME_SOURCE_JOBS_SCHEMA } from "./home-schema";
 import { createHash } from "node:crypto";
 
 import { TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA } from "./tradingview-account-migration-schema";
@@ -434,4 +435,13 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(12, "project-frozen-recall-actual-metrics", recallActualMetricsSql),
   migration(13, "project-frozen-recall-manual-evaluations", recallManualEvaluationsSql),
   migration(14, "tradingview-account-migration", TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA),
+  migration(15, "durable-home-read-model", HOME_SCHEMA + HOME_REFRESH_SCHEMA + HOME_SOURCE_TRIGGERS),
+  migration(16, "invalidate-removed-home-quotes", HOME_QUOTE_TRIGGER_FIX),
+  migration(17, "home-source-completion-and-fx-direction", HOME_SOURCE_JOBS_SCHEMA),
+  migration(18, "home-object-confirmed-subtotals", HOME_METRIC_OBJECT_SCHEMA),
+  migration(19, "cover-home-native-closing-prices", `
+    CREATE INDEX daily_candles_home_raw
+    ON daily_candles(instrument_id,date,close,currency,provider)
+    WHERE adjustment_mode='raw';
+  `),
 ];

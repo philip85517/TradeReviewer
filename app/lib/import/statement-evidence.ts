@@ -448,10 +448,39 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
     isUnassignedIpoFee(event) && event.accountId === execution.accountId
       && (event.market === undefined || event.market.toUpperCase() === execution.instrument.market.toUpperCase())
       && (event.currency === undefined || event.currency.toUpperCase() === execution.instrument.currency.toUpperCase());
+  // Index once per document. Empty documents still participate in supersession;
+  // only evidence row lookup is narrowed, preserving global execution ordering rules.
+  const identity = (item: {accountId:string;market?:string;symbol?:string}) =>
+    item.market && item.symbol !== undefined ? JSON.stringify([item.accountId,item.market,symbolKey(item.symbol,item.market)]) : '';
+  const indexed = new Map(monthly.map(statement => {
+    const positions = new Map<string, StatementPosition[]>(), events = new Map<string, StatementEvent[]>();
+    const unassigned: StatementEvent[] = [];
+    for (const position of statement.positions) {
+      const key=identity(position), rows=positions.get(key)??[]; rows.push(position); positions.set(key,rows);
+    }
+    for (const event of statement.events) {
+      const key=identity(event), rows=events.get(key)??[]; rows.push(event); events.set(key,rows);
+      if(isUnassignedIpoFee(event))unassigned.push(event);
+    }
+    return [statement,{positions,events,unassigned}] as const;
+  }));
+  const executionIndex = new Map<string, TradeExecution[]>();
+  const dayIndex = new Map<string, TradeExecution[]>();
+  for (const execution of executions) {
+    const key=JSON.stringify([execution.accountId,canonicalInstrumentId(execution.instrument.symbol,execution.instrument.market)]);
+    const group=executionIndex.get(key)??[];group.push(execution);executionIndex.set(key,group);
+    const day=execution.source.tradingDate??execution.source.marketCalendarDate??execution.executedAt.slice(0,10);
+    const daily=dayIndex.get(day)??[];daily.push(execution);dayIndex.set(day,daily);
+  }
+  type EvidenceContext = {applicableMonthly:MonthlyStatement[];documents:Set<string>;scopedDocuments:Set<string>;positions:StatementPosition[];events:StatementEvent[]};
+  const contexts=new Map<string,EvidenceContext>();
   return executions.map(execution => {
+    const matches = (item: { accountId: string; market?: string; symbol?: string }) => item.accountId === execution.accountId && item.market === execution.instrument.market && item.symbol !== undefined && symbolKey(item.symbol, item.market) === symbolKey(execution.instrument.symbol, execution.instrument.market);
+    const contextKey=JSON.stringify([execution.accountId,execution.instrument.id,execution.instrument.market,execution.instrument.symbol,execution.instrument.currency]);
+    let context=contexts.get(contextKey);
+    if(!context){
     const applicableMonthly = monthly.filter(statement => appliesToExecution(statement, execution));
     const documents = new Set(applicableMonthly.map(m => m.documentId));
-    const matches = (item: { accountId: string; market?: string; symbol?: string }) => item.accountId === execution.accountId && item.market === execution.instrument.market && item.symbol !== undefined && symbolKey(item.symbol, item.market) === symbolKey(execution.instrument.symbol, execution.instrument.market);
     // A newer scoped revision replaces the target slice of an older full
     // document while leaving that document's other instruments available to
     // their own executions.
@@ -460,17 +489,21 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
         .filter(statement => statement.evidenceScope !== undefined)
         .map(statement => statement.documentId),
     );
-    const positions = applicableMonthly.flatMap(m => m.positions
+    const identityKey=identity({accountId:execution.accountId,market:execution.instrument.market,symbol:execution.instrument.symbol});
+    const positions = applicableMonthly.flatMap(m => (indexed.get(m)!.positions.get(identityKey)??[])
       .filter(position => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(position)))
       .map(p => ({ ...p, documentId: p.documentId ?? m.documentId })));
-    const events = applicableMonthly.flatMap(m => m.events
+    const events = applicableMonthly.flatMap(m => [...(indexed.get(m)!.events.get(identityKey)??[]),...indexed.get(m)!.unassigned.filter(e=>compatibleUnassignedFee(e,execution))]
       .filter(event => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(event)))
       .map(e => ({ ...e, documentId: e.documentId ?? m.documentId })));
+    context={applicableMonthly,documents,scopedDocuments,positions,events};contexts.set(contextKey,context);
+    }
+    const {applicableMonthly,documents,scopedDocuments,positions,events}=context;
     const isSimulation = execution.source.tradeNature === "simulation" || execution.source.tradingNature === "simulated";
     const day = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
     const retainedPosition = execution.source.openingPosition && !superseded(execution.source.openingPosition, documents) ? [execution.source.openingPosition] : [];
     const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p, documents)), ...retainedPosition].filter(matches).map(p => [statementPositionEvidenceKey(p), p])).values()];
-    const transactionExecutions = (position: StatementPosition) => executions.filter(candidate => statementPositionMatchesExecution(position, candidate));
+    const transactionExecutions = (position: StatementPosition) => (executionIndex.get(JSON.stringify([position.accountId,canonicalInstrumentId(position.symbol,position.market)]))??[]).filter(candidate => statementPositionMatchesExecution(position, candidate));
     const precedesExecution = (position: StatementPosition) => {
       if (position.phase === "opening") return position.date <= day;
       if (position.date < day) return true;
@@ -488,17 +521,13 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
       if (executionHasExactTime(prior) !== executionHasExactTime(execution)) return false;
       if (executionHasExactTime(prior)) {
         if (replayCursorAt(prior.executedAt).localeCompare(replayCursorAt(execution.executedAt)) >= 0) return false;
-        const sameDayExecutions = executions.filter(candidate =>
-          (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
-        );
+        const sameDayExecutions = dayIndex.get(day)??[];
         const hasSourceOrderConflict = sameDayExecutions.some((left, index) =>
           sameDayExecutions.slice(index + 1).some(right => executionSourceOrderConflictsWithTime(left, right)),
         );
         return !hasSourceOrderConflict;
       }
-      const sameDayExecutions = executions.filter(candidate =>
-        (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
-      );
+      const sameDayExecutions = dayIndex.get(day)??[];
       const documentKeys = new Set(sameDayExecutions.map(executionDocumentKey));
       const sourceOrders = sameDayExecutions.map(explicitExecutionSourceOrder);
       const sourceOrderComparable = documentKeys.size === 1 && !documentKeys.has(undefined) &&
@@ -563,6 +592,8 @@ export function replayCursorAt(value: string): string {
   return value.length === 10 ? `${value}T23:59:59.999Z` : new Date(value).toISOString();
 }
 
+const sourceDateFormatters = new Map<string, Intl.DateTimeFormat>();
+
 export function replayExecutionAt(execution: TradeExecution): string {
   if (execution.executedAt.length !== 10 && execution.source.timePrecision !== "date-only") {
     return replayCursorAt(execution.executedAt);
@@ -573,9 +604,16 @@ export function replayExecutionAt(execution: TradeExecution): string {
   if (!calendarDate && sourceDate && /^\d{4}-\d{2}-\d{2}$/.test(sourceDate)) calendarDate = sourceDate;
   if (!calendarDate && execution.executedAt.length !== 10 && execution.source.sourceTimezone) {
     try {
-      const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
-        timeZone: execution.source.sourceTimezone, year: "numeric", month: "2-digit", day: "2-digit",
-      }).formatToParts(new Date(execution.executedAt)).map(part => [part.type, part.value]));
+      const zone = execution.source.sourceTimezone;
+      let formatter = sourceDateFormatters.get(zone);
+      if (!formatter) {
+        formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit",
+        });
+        if (sourceDateFormatters.size >= 64) sourceDateFormatters.clear();
+        sourceDateFormatters.set(zone, formatter);
+      }
+      const parts = Object.fromEntries(formatter.formatToParts(new Date(execution.executedAt)).map(part => [part.type, part.value]));
       calendarDate = `${parts.year}-${parts.month}-${parts.day}`;
     } catch {
       // Unrecognized historical zone labels retain the prior UTC-date fallback.

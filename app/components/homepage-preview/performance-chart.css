@@ -10,7 +10,6 @@
   color: #e6edf7;
   font-family: system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
-  isolation: isolate;
 }
 .hp-performance-chart__stage { position: relative; width: 100%; }
 .hp-performance-chart__heading {
@@ -58,6 +57,8 @@
   width: 264px;
   max-width: calc(100vw - 24px);
   height: auto;
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
   padding: 12px;
   box-sizing: border-box;
   border: 1px solid #6ca8ff;

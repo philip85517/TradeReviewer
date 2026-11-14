@@ -1,0 +1,28 @@
+import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
+import {afterEach,it,expect} from 'vitest';
+import {MetricCards} from './metric-cards';
+import {createMockSource,DEFAULT_REQUEST} from './mock-source';
+import type {ConfirmedSubtotal} from './display-contract';
+afterEach(cleanup);
+it('keeps the full amount unknown and opens exact subtotal, object coverage and repair guidance',async()=>{
+ const view=await createMockSource({scenario:'normal',delayMs:0}).readHome(DEFAULT_REQUEST,new AbortController().signal);
+ const partial:ConfirmedSubtotal={value:'176.000000000001',currency:'CNY',originals:{HKD:'220.00000000000125'},fxSource:'fixture',coverage:{available:2,total:3,scope:'imported',unit:'account-security'},missing:[{accountId:'a',code:'ABNB',name:'Airbnb',reasons:['缺少明确的开仓或平仓方向依据']}]};
+ view.metrics.currentMarketValue={...view.metrics.currentMarketValue,value:null,reasons:['原币金额缺少完整依据'],partial};
+ render(<MetricCards view={view} status={{kind:'ready'}}/>);
+ const card=screen.getByRole('article',{name:'当前持仓市值'});
+ expect(within(card).getByTestId('hp-metric-value')).toHaveTextContent('—');
+ expect(within(card).getByText('已确认小计 176.00')).toBeInTheDocument();
+ expect(within(card).getByText('已导入范围 2 / 3 项')).toBeInTheDocument();
+ fireEvent.click(within(card).getByRole('button'));
+ const detail=screen.getByRole('dialog');
+ const precision=within(detail).getByText('176.00 CNY').closest('summary')!;
+ expect(precision).toBeInTheDocument();
+ fireEvent.click(precision);
+ expect(within(detail).getByText('176.000000000001 CNY')).toBeInTheDocument();
+ expect(within(detail).getByText(/ABNB/)).toBeInTheDocument();
+ expect(within(detail).getByText(/开仓.*平仓.*凭证/)).toBeInTheDocument();
+ expect(within(detail).getByText(/不代表券商全部历史/)).toBeInTheDocument();
+ detail.scrollTop=500;
+ fireEvent.click(screen.getByRole('button',{name:/^期间净盈亏，口径详情/}));
+ expect(screen.getByRole('dialog').scrollTop).toBe(0);
+});

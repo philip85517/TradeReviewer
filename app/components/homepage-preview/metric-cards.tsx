@@ -5,6 +5,8 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { createPortal } from "react-dom";
 import type { Amount as HomepageV25Metric, HomeView } from "./display-contract";
 import "./metric-cards.css";
+import {SubtotalEvidence} from "./confirmed-subtotal";
+import {EvidenceAmount} from './evidence-amount';
 
 type MetricCardsStatus = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
 export type MetricCardsView = HomeView;
@@ -52,19 +54,20 @@ function formatPrimary(raw: string, signed: boolean): { number: string; unit: st
     tone: !signed || amount.isZero() ? "neutral" : amount.gt(0) ? "positive" : "negative" };
 }
 
-function MetricEvidence({ read, currency }: { read: Readout; currency: string }) {
+function MetricEvidence({ read, currency, accounts }: { read: Readout; currency: string; accounts?:HomeView['accounts'] }) {
   const metric = read.metric;
   return <>
     <dl className="hp-metric-cards__facts">
-      <dt>完整金额</dt><dd>{read.raw === null ? "—" : `${read.raw} ${currency}`}</dd>
-      <dt>覆盖数量</dt><dd>{metric ? `${metric.coverage.available} / ${metric.coverage.total}` : "—"}</dd>
+      <dt>完整金额</dt><dd>{read.raw === null ? "—" : <EvidenceAmount value={read.raw} currency={currency}/>}</dd>
+      <dt>币种覆盖</dt><dd>{metric ? `${metric.coverage.available} / ${metric.coverage.total}` : "—"}</dd>
       <dt>原币金额</dt><dd>{metric && Object.keys(metric.originals).length
-        ? Object.entries(metric.originals).map(([code, amount]) => <span key={code}>{amount} {code}</span>) : "未提供原币金额"}</dd>
+        ? Object.entries(metric.originals).map(([code, amount]) => <EvidenceAmount key={code} value={amount} currency={code}/>) : "未提供原币金额"}</dd>
       <dt>汇率来源</dt><dd>{metric?.fxSource ?? "未提供汇率来源"}</dd>
       {metric?.value !== null && metric?.value !== undefined && read.raw === null && <>
         <dt>来源金额</dt><dd>{metric.value} {metric.currency ?? "币种未知"}</dd>
       </>}
     </dl>
+    {read.raw===null&&metric?.partial&&metric.partial.currency===currency&&<SubtotalEvidence partial={metric.partial} accounts={accounts}/>}
     {read.reasons.length > 0 && <ul className="hp-metric-cards__reasons">{read.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>}
   </>;
 }
@@ -93,7 +96,7 @@ export function MetricCards(props: MetricCardsProps) {
   const read = (key: MetricKey) => readout(view?.metrics[key], reportCurrency);
 
   useLayoutEffect(() => {
-    if (active) dialog.current?.focus();
+    if (active && dialog.current) { dialog.current.scrollTop=0;dialog.current.focus(); }
     else if (previousOpen.current) triggers.current[previousOpen.current]?.focus();
     previousOpen.current = active;
   }, [active]);
@@ -149,15 +152,19 @@ export function MetricCards(props: MetricCardsProps) {
       {CARDS.map(card => {
         const amount = read(card.key);
         const formatted = amount.raw === null ? { number: "—", unit: "", tone: "neutral" } : formatPrimary(amount.raw, card.signed);
+        const partial=amount.raw===null&&amount.metric?.partial?.currency===reportCurrency?amount.metric.partial:null;
+        const small=partial?.value===null||!partial?null:formatPrimary(partial.value,card.signed);
+        const partialText=partial?`已确认小计 ${small?small.number+(small.unit?' '+small.unit:''):'—'}`:'';
         return <article key={card.key} className="hp-metric-cards__card" aria-label={card.label}>
           <h3 id={`${id}-${card.key}-label`}>{card.label}({reportCurrency})</h3>
           {status.kind === "pending" && !view ? <div className="hp-metric-cards__skeleton" data-testid="hp-metric-skeleton" aria-label="金额加载中" />
             : <p key={`${reportCurrency}:${amount.raw ?? "unavailable"}`} className={`hp-metric-cards__value hp-metric-cards__value--${formatted.tone}`} data-testid="hp-metric-value" data-tone={formatted.tone}>
               <span className="hp-metric-cards__number">{formatted.number}</span>{formatted.unit && <span className="hp-metric-cards__unit"> {formatted.unit}</span>}
+              {partial&&<span className="hp-metric-cards__partial"><span>{partialText}</span><span>已导入范围 {partial.coverage.available} / {partial.coverage.total} 项</span></span>}
             </p>}
           {status.kind === "pending" && view && <span className="hp-metric-cards__loading" aria-hidden="true">更新中</span>}
           <button className="hp-metric-cards__trigger" type="button" ref={node => { triggers.current[card.key] = node; }}
-            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}`} aria-haspopup="dialog"
+            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}${partial?`；${partialText} ${reportCurrency}，已导入范围 ${partial.coverage.available} / ${partial.coverage.total} 项`:""}`} aria-haspopup="dialog"
             aria-expanded={active === card.key} aria-controls={active === card.key ? `${id}-detail` : undefined}
             onClick={() => active === card.key ? closeDetail() : setSelection({ key: card.key, context })}>
             <span className={`hp-metric-cards__affordance${status.kind === "error" ? " hp-metric-cards__affordance--error" : ""}`}>
@@ -176,9 +183,9 @@ export function MetricCards(props: MetricCardsProps) {
       <p>{definition.definition}</p>
       <p className="hp-metric-cards__context">{presented === "currentMarketValue" ? `当前时点 ${view?.stamp.asOf ?? "未知"}` : periodContext}</p>
       {status.kind !== "ready" && <p className="hp-metric-cards__notice">{status.reason}</p>}
-      <MetricEvidence read={read(presented)} currency={reportCurrency} />
+      <MetricEvidence read={read(presented)} currency={reportCurrency} accounts={view?.accounts}/>
       {contextReasons.length > 0 && <ul className="hp-metric-cards__reasons">{unique(contextReasons).map(reason => <li key={reason}>{reason}</li>)}</ul>}
-      {presented === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={currentUnrealized} currency={reportCurrency} /></section>}
+      {presented === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={currentUnrealized} currency={reportCurrency} accounts={view?.accounts}/></section>}
     </div>, document.body)}
   </section>;
 }

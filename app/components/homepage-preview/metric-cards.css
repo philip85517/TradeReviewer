@@ -70,3 +70,17 @@
 @keyframes hp-metric-detail-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(4px); } }
 @keyframes hp-metric-value-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .hp-metric-cards__affordance { transition: none; } .hp-metric-cards__detail, .hp-metric-cards .hp-metric-cards__value { animation: none; } }
+
+/* Preserve the approved 88px card and main-value line in partial states. */
+.hp-metric-cards__partial { margin-left:auto; min-width:0; padding-left:12px; display:flex; flex-direction:column; justify-content:center; text-align:right; color:var(--hp-secondary,#a8b6cb); font-size:12px; font-weight:400; line-height:16px; }
+.hp-metric-cards__partial > span { overflow:hidden; text-overflow:ellipsis; }
+.hp-metric-cards__partial > span:first-child { color:var(--hp-text,#e6edf7); font-size:13px; }
+.hp-subtotal-evidence { margin-top:12px; padding-top:4px; border-top:1px solid #283448; }
+.hp-subtotal-missing { padding-left:18px; margin:8px 0; }
+.hp-subtotal-missing li { margin:12px 0; }
+.hp-subtotal-missing li > span { display:block; margin-top:4px; color:#a8b6cb; }
+.hp-evidence-precision { margin:0 0 4px; }
+.hp-evidence-precision summary { cursor:pointer; list-style:none; }
+.hp-evidence-precision summary small { display:block; color:#6ca8ff; font-size:12px; line-height:20px; }
+.hp-evidence-precision summary:focus-visible { outline:2px solid #a9c8ff; outline-offset:2px; border-radius:2px; }
+.hp-evidence-precision[open] > span { margin-top:4px; color:#a8b6cb; }

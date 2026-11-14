@@ -1,0 +1,57 @@
+.hp-history { margin-top:24px; position:relative; container:hp-history / inline-size; }
+.hp-history-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px; margin-bottom:24px; }
+.hp-history-controls { height:36px; display:flex; align-items:center; background:#111a26; border:1px solid #283448; border-radius:6px; position:relative; }
+.hp-history-year { display:flex; align-items:center; gap:8px; height:34px; padding:0 12px; border:0; background:transparent; white-space:nowrap; }
+.hp-history-year svg,.hp-history-select>svg { color:#a8b6cb; flex-shrink:0; }
+.hp-history-select { display:flex; align-items:center; height:20px; border-left:1px solid #283448; position:relative; padding-right:12px; }
+.hp-history-select select { appearance:none; border:0; background:transparent; padding:0 30px 0 12px; height:36px; min-width:170px; }
+.hp-history-select>svg { position:absolute; right:12px; pointer-events:none; }
+.hp-history-range-panel { position:absolute; right:0; top:42px; z-index:20; width:288px; background:#162233; border:1px solid #283448; border-radius:8px; box-shadow:0 12px 28px #0008; padding:16px; display:grid; gap:16px; }
+.hp-history-range-panel label { display:grid; grid-template-columns:44px minmax(0,1fr); align-items:center; gap:8px; color:#a8b6cb; }
+.hp-history-range-panel select { height:36px; background:#111a26; border:1px solid #283448; border-radius:6px; padding:0 10px; width:100%; color:#e6edf7; }
+.hp-history-year-inputs { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.hp-history-year-inputs label { grid-template-columns:20px minmax(0,1fr); gap:4px; }
+.hp-history-range-actions { display:flex; justify-content:flex-end; gap:8px; }
+.hp-history-range-actions button { min-height:36px; padding:0 16px; background:#111a26; border:1px solid #283448; border-radius:6px; }
+.hp-history-range-actions button:last-child { border-color:#6ca8ff; background:#243b5c; }
+.hp-history-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.hp-history-card { height:88px; min-width:0; padding:12px 16px; background:#111a26; border:1px solid #283448; border-radius:8px; display:flex; flex-direction:column; justify-content:center; }
+.hp-history-card>span { color:#a8b6cb; line-height:20px; }
+.hp-history-card strong { font-size:28px; line-height:34px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.hp-history-win>div { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.hp-history-win small { color:#a8b6cb; font-size:11px; line-height:16px; white-space:nowrap; position:relative; }
+.hp-history-win small span { margin-left:3px; }
+.hp-history-chart { height:320px; margin-top:40px; padding:16px; background:#111a26; border:1px solid #283448; border-radius:8px; position:relative; }
+/* Four 300px cards + three 12px gaps: switch all of the pressure layout together. */
+@container hp-history (max-width:1236px) {
+  .hp-history-metrics { margin-right:12px; }
+  .hp-history-card { height:104px; justify-content:flex-start; padding-top:16px; }
+  .hp-history-win small span { position:absolute; bottom:calc(100% + 4px); right:0; margin:0; }
+  .hp-history-chart { margin-top:24px; }
+}
+.hp-history-chart-title { display:flex; align-items:center; justify-content:space-between; height:24px; }
+.hp-history-chart-title h3 { font-size:16px; line-height:24px; font-weight:600; }
+.hp-history-chart-title>span { color:#a8b6cb; font-size:12px; }
+.hp-history-plot { position:relative; height:264px; }
+.hp-history-plot>svg { display:block; width:100%; height:264px; overflow:visible; }
+.hp-history-grid { stroke:#283448; stroke-width:1; }
+.hp-history-zero { stroke:#a8b6cb; stroke-width:1; }
+.hp-history-tick { fill:#a8b6cb; font-size:12px; font-variant-numeric:tabular-nums; }
+.hp-history-series { fill:none; stroke:#6ca8ff; stroke-width:2; }
+.hp-history-point { fill:#6ca8ff; pointer-events:none; }
+.hp-history-point.true-zero { fill:#e6edf7; }
+.hp-history-zone { pointer-events:none; }
+.hp-history-zone.empty { fill:#30291e; opacity:.65; }
+.hp-history-zone.source-missing { fill:#423125; opacity:.55; }
+.hp-history-zone.future { fill:#1d2b40; opacity:.85; }
+.hp-history-hit { fill:transparent; cursor:crosshair; }
+.hp-history-hit:focus-visible { stroke:#a9c8ff; stroke-width:1; stroke-dasharray:3 3; outline:none; }
+.hp-history-crosshair { stroke:#6ca8ff; stroke-width:1; stroke-dasharray:4 4; pointer-events:none; }
+.hp-history-tooltip { position:absolute; z-index:4; width:264px; display:grid; gap:3px; padding:10px 12px; border:1px solid #6ca8ff; border-radius:8px; background:#162233f5; font-size:12px; line-height:18px; box-shadow:0 8px 22px #0008; pointer-events:none; }
+.hp-history-tooltip-note { color:#a8b6cb; }
+.hp-history-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#a8b6cb; font-size:14px; pointer-events:none; }
+.hp-history-feedback { position:absolute; left:100px; top:16px; right:60px; font-size:12px; line-height:24px; color:#a8b6cb; display:flex; justify-content:flex-end; pointer-events:none; }
+.hp-history-feedback [role=alert] { color:#ff8592; }
+.hp-history-feedback button { height:28px; min-width:48px; margin-left:8px; border:1px solid #874451; border-radius:4px; background:#162233; pointer-events:auto; }
+@media(max-width:900px) { .hp-history-heading { min-width:720px; } .hp-history-metrics { min-width:720px; } .hp-history-chart { min-width:720px; } .hp-history { overflow-x:auto; padding-bottom:2px; } }
+@media(pointer:coarse) { .hp-history-year,.hp-history-select select,.hp-history-range-actions button { min-height:44px; } .hp-history-controls { height:46px; } }

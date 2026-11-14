@@ -81,8 +81,8 @@ export function createMockSource(options: { scenario: Scenario; delayMs?: number
       return view;
     },
     async readHolding(stamp, id, signal) { await wait(signal); return { stamp, holding: validate(stamp, id), description: '模拟持仓详情；身份由账户、交易所和标的代码共同确定。' }; },
-    async readTrades(stamp, id, signal) { await wait(signal); const row = validate(stamp, id); return { stamp, holdingId: id, name: row.name, trades: [{ id: `${id}:trade-1`, date: '2026-10-08', side: '买入', quantity: row.quantity, price: row.cost, currency: row.currency }] }; },
-    async exportHoldings(request, signal) { await wait(signal); return '\uFEFF' + [['名称', '代码', '交易所', '原币', '持有数量', '成本价', '最新价', '报告币种', '市值', '浮盈'], ...filtered(request).map(row => [row.name, row.code, row.exchange, row.currency, row.quantity, row.cost ?? '', row.price ?? '', row.marketValue.currency, row.marketValue.value ?? '', row.unrealized.value ?? ''])].map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n'; },
+    async readTrades(stamp, id, signal) { await wait(signal); const row = validate(stamp, id); return { stamp, holdingId: id, name: row.name, trades: [{ id: `${id}:trade-1`, date: '2026-10-08', side: '买入', quantity: row.quantity??'未知', price: row.cost, currency: row.currency }] }; },
+    async exportHoldings(request, signal) { await wait(signal); return '\uFEFF' + [['名称', '代码', '交易所', '原币', '持有数量', '成本价', '最新价', '报告币种', '市值', '浮盈'], ...filtered(request).map(row => [row.name, row.code, row.exchange, row.currency, row.quantity, row.cost ?? '', row.price ?? '', row.marketValue.currency, row.marketValue.value ?? '', row.unrealized.value ?? ''])].map(row => row.map(value=>csvCell(value??'未知')).join(',')).join('\r\n') + '\r\n'; },
     async repair(_request, signal) { await wait(signal); return { remainingReasons: options.scenario === 'partial' ? ['Mock 剩余行情仍未覆盖'] : [] }; },
   };
 }

@@ -7,6 +7,9 @@ import type { Amount as HomepageV25Metric, Point as HomepageBoundaryPointDisplay
 import "./performance-chart.css";
 
 export type PerformanceChartProps = {
+  /** Scope and period identity; publications within it preserve the selected date. */
+  interactionKey?: string;
+  onOpenDateTrades?: (date:string, trigger:HTMLElement) => void;
   series: HomepageSeriesDisplay | null;
   reportCurrency: string;
   pointStatus?: Readonly<Record<string, Readonly<{ state: "loading" | "error"; reason: string }> | undefined>>;
@@ -131,7 +134,8 @@ function evidenceFor(_point: HomepageBoundaryPointDisplay, metric: HomepageV25Me
   return `原币：${Object.entries(metric.originals).map(([code, value]) => `${value} ${code}`).join("；") || "未知"}；汇率来源：${metric.fxSource}；覆盖 ${metric.coverage.available}/${metric.coverage.total}`;
 }
 
-function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseEnter, onMouseLeave }: {
+function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseEnter, onMouseLeave, onOpenDateTrades }: {
+  onOpenDateTrades?: (date:string,trigger:HTMLElement)=>void;
   selection: Selection; reportCurrency: string; pinned: boolean; id: string;
   detailRef: React.RefObject<HTMLDivElement | null>;
   onMouseEnter: () => void; onMouseLeave: () => void;
@@ -184,6 +188,7 @@ function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseE
         </div>;
       })}
     </dl>
+    {pinned && !blank && onOpenDateTrades && <button type="button" className="hp-primary hpm-date-trades" onClick={event=>onOpenDateTrades(entry.point.businessDate,event.currentTarget)}>查看交易</button>}
     {(gapDescription || reasonOpen) && explanation && <p className="hp-performance-chart__reason" id={`${id}-reason`}>{explanation}</p>}
   </div>;
 }
@@ -202,7 +207,7 @@ function crossesRect(a: { x: number; y: number }, b: { x: number; y: number }, r
   return true;
 }
 
-function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }: PerformanceChartProps) {
+function ChartContent({ series, reportCurrency, pointStatus, unavailableReason, onOpenDateTrades }: PerformanceChartProps) {
   const rootRef = useRef<HTMLElement>(null);
   const graphRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
@@ -257,7 +262,8 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
     return () => { observer?.disconnect(); window.removeEventListener("resize", measure); };
   }, []);
 
-  // Measure natural content (including focused source/reason) before placing. No clipping height.
+  // Prefer the chart bounds; long explanations use the viewport without moving
+  // adjacent modules. Only content taller than the viewport needs scrolling.
   useLayoutEffect(() => {
     const root = rootRef.current, detail = detailRef.current;
     if (!root || !detail || !selection || !visible) return;
@@ -268,8 +274,11 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
       const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
       const minLeft = Math.max(12, 12 - rootBounds.left);
       const maxLeft = Math.max(minLeft, Math.min(size.width - detailBounds.width - 12, viewportWidth - rootBounds.left - detailBounds.width - 12));
-      const minTop = Math.max(12, 12 - rootBounds.top);
-      const bottom = Math.min(size.height - 12, window.innerHeight - rootBounds.top - 12);
+      const chartTop = Math.max(12, 12 - rootBounds.top);
+      const chartBottom = Math.min(size.height - 12, window.innerHeight - rootBounds.top - 12);
+      const fitsChart = detailBounds.height <= chartBottom - chartTop;
+      const minTop = fitsChart ? chartTop : 12 - rootBounds.top;
+      const bottom = fitsChart ? chartBottom : window.innerHeight - rootBounds.top - 12;
       const maxTop = Math.max(minTop, bottom - detailBounds.height);
       const clamp = (left: number, top: number): Rect => ({ left: Math.max(minLeft, Math.min(left, maxLeft)), top: Math.max(minTop, Math.min(top, maxTop)), width: detailBounds.width, height: detailBounds.height });
       const candidates = [clamp(anchorX + 12, anchorY + 12), clamp(anchorX - detailBounds.width - 12, anchorY + 12),
@@ -335,7 +344,6 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
     }, 100);
   };
   const pin = (next: Selection, trigger: HTMLElement | SVGElement | null) => {
-    if (suppressed.current === next.entry.point.key) return;
     clearTimers(); suppressed.current = null; triggerRef.current = trigger;
     setSelection(next); setVisible(true); setPinned(true);
   };
@@ -418,6 +426,7 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
         {valid.map(entry => <rect key={entry.point.key} data-testid={`hp-chart-point-${entry.point.key}`} className="hp-performance-chart__hit"
           x={space.boundary(entry.index, false)} y={plot.top} width={Math.max(0.01, space.boundary(entry.index, true) - space.boundary(entry.index, false))} height={plot.height}
           onMouseEnter={() => activate({ entry, source: "mouse" }, false, graphRef.current)} onMouseLeave={() => leave(entry)}
+          onMouseDown={event => event.preventDefault()}
           onClick={() => { graphRef.current?.focus({ preventScroll: true }); pin({ entry, source: "mouse" }, graphRef.current); }} />)}
       </svg>
     </div>
@@ -428,13 +437,14 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
         return <g key={gap.first.point.key} className="hp-performance-chart__gap" tabIndex={0} role="button"
           data-testid={`hp-chart-gap-${gap.first.point.key}`} aria-label={`${range} ${label}，金额未知，查看原因`}
           aria-describedby={visible && selection?.gap?.first.point.key === gap.first.point.key ? detailId : undefined}
+          onMouseDown={event => event.preventDefault()}
           onFocus={event => activate({ entry: gap.first, gap, source: "keyboard" }, true, event.currentTarget)}
           onBlur={event => {
             if (event.relatedTarget instanceof Node && rootRef.current?.contains(event.relatedTarget)) return;
             suppressed.current = null; if (!pinned) { clearTimers(); setVisible(false); setSelection(null); }
           }}
           onMouseEnter={event => activate({ entry: gap.first, gap, source: "mouse" }, false, event.currentTarget)} onMouseLeave={() => leave(gap.first)}
-          onClick={event => pin({ entry: gap.first, gap, source: "mouse" }, event.currentTarget)}
+          onClick={event => { event.currentTarget.focus({ preventScroll: true }); pin({ entry: gap.first, gap, source: "mouse" }, event.currentTarget); }}
           onKeyDown={event => {
             if (event.key === "Enter" || event.key === " ") { event.preventDefault(); pin({ entry: gap.first, gap, source: "keyboard" }, event.currentTarget); }
           }}>
@@ -451,15 +461,14 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason }
     {!unavailable && entries.length === 0 && <p className="hp-performance-chart__empty" role="status">期间内没有可用日期，金额 —</p>}
     </div>
     {visible && selection && !unavailable && <DateDetail key={`${selection.entry.point.key}:${selection.entry.state}`} selection={selection}
-      reportCurrency={reportCurrency} pinned={pinned} id={detailId} detailRef={detailRef}
+      reportCurrency={reportCurrency} pinned={pinned} id={detailId} onOpenDateTrades={onOpenDateTrades} detailRef={detailRef}
       onMouseEnter={clearHideTimer} onMouseLeave={() => leave(selection.entry)} />}
   </section>;
 }
 
 export function PerformanceChart(props: PerformanceChartProps) {
-  // A controlled generation/date/read-status change also cancels obsolete timers and pins.
-  const key = JSON.stringify([props.series?.version, props.series?.boundary,
-    props.series?.points.map(point => [point.key, point.state, point.plottable, point.periodNet.value]),
-    props.reportCurrency, props.pointStatus, props.unavailableReason]);
+  // A background publication updates selected point values without stealing
+  // focus or removing a pin. A user-selected scope/period starts a new journey.
+  const key = JSON.stringify([props.interactionKey ?? props.series?.boundary, props.reportCurrency, props.series?.points.map(point=>point.key), Boolean(props.unavailableReason), !props.series]);
   return <ChartContent key={key} {...props} />;
 }

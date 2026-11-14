@@ -1,2 +1,2 @@
-import { HomepagePreview } from '../../components/homepage-preview/homepage-preview';
-export default function Page() { return <HomepagePreview />; }
+import { FullMockHomepage } from '../../components/homepage-preview/complete-mock/full-mock-homepage';
+export default function Page() { return <FullMockHomepage />; }

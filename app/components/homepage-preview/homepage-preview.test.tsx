@@ -79,6 +79,34 @@ describe('homepage mock journey', () => {
     await userEvent.click(screen.getByRole('button', { name: '美股' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('新选择未应用，仍显示原范围');
   });
+  it('keeps empty holdings and no-match results free of pagination even when the API clamps pages to one', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    render(<HomepagePreview source={{ ...base, readHome: async (request, signal) => {
+      const view = await base.readHome(request, signal);
+      return { ...view, holdings: { ...view.holdings, rows: [], total: 0, page: 1, pages: 1 } };
+    } }} />);
+    await screen.findByText('暂无持仓');
+    expect(screen.getAllByTestId('holding-slot')).toHaveLength(8);
+    expect(screen.queryByText('1 / 1')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '上一页' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '下一页' })).not.toBeInTheDocument();
+    await userEvent.type(screen.getByRole('searchbox', { name: '搜索持仓' }), '不存在');
+    await screen.findByText('没有匹配的持仓，清除搜索可恢复');
+    expect(screen.queryByText('1 / 1')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '清除搜索' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '导出 CSV' })).toBeDisabled();
+  });
+  it('does not invent a stock classification for ETF identity readouts or details', async () => {
+    render(<HomepagePreview />);
+    await ready();
+    const row = screen.getByRole('row', { name: /沪深300ETF/ });
+    await userEvent.hover(within(row).getByText('沪深300ETF'));
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('沪深300ETF · 510300 · SSE');
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent('股票');
+    await userEvent.click(within(row).getByRole('button', { name: '查看沪深300ETF详情' }));
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByText(/510300 · SSE · CNY/)).not.toHaveTextContent('股票');
+  });
   it('shows four cards, eight slots, accurate detail and trades, restores origin', async () => {
     const user = userEvent.setup();
     render(<HomepagePreview />);
@@ -252,8 +280,14 @@ describe('homepage mock journey', () => {
     const dialog = await screen.findByRole('dialog');
     expect(document.body.style.overflow).toBe('hidden');
     const card = within(dialog).getByRole('heading', { name: '市值(CNY)' }).parentElement!;
-    fireEvent.focus(card.querySelector('p')!);
-    expect(within(dialog).getByRole('tooltip')).toHaveTextContent('123456789012.3456789');
+    const amount = card.querySelector('p')!;
+    act(() => amount.focus());
+    const readout = screen.getByRole('tooltip');
+    expect(readout).toHaveTextContent('123456789012.3456789');
+    expect(amount).toHaveAttribute('aria-describedby', readout.id);
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+    expect(dialog).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(document.body.style.overflow).not.toBe('hidden');
   });

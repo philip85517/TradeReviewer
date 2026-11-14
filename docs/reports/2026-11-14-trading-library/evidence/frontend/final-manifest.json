@@ -1,0 +1,498 @@
+{
+  "recordedAt": "2026-11-13T17:53:45.775708+00:00",
+  "head": "1770178694f5815b699c23deef894888dac1abea",
+  "base": "3d444316589e2feefd9b2b3d03d362737e8a6d27",
+  "branch": "codex/library-frontend-mock",
+  "worktree": "/Users/zhoulin/.codex/worktrees/e0bb/TradeReview",
+  "implementationModel": "gpt-6.1-terra",
+  "reasoning": "inherited tool default; no override",
+  "files": [
+    {
+      "path": "app/components/library-preview/dependency-boundary.test.ts",
+      "sha256": "7af325fc594f4dbb1756e3b0379fa51b952d1d125dd0d9969779870d1141d1ac"
+    },
+    {
+      "path": "app/components/library-preview/info-popover.tsx",
+      "sha256": "a3557c9675865d77c6217777650539b5a08b8d5c3709be3197c96bccba3bad3d"
+    },
+    {
+      "path": "app/components/library-preview/library-preview.test.tsx",
+      "sha256": "cc1dc204c2cb431728a51bd0cdbc48433d30a18648c8b5052c58d577f3ccf689"
+    },
+    {
+      "path": "app/components/library-preview/library-preview.tsx",
+      "sha256": "f47d3b2e2e8afb65391681109467cd38708d3495b81b19e4c580f476fcc628e4"
+    },
+    {
+      "path": "app/components/library-preview/metric-value.tsx",
+      "sha256": "ab691d4fc7382f594df3c1ddcc598831f414c81e7284d190939974819ff6c570"
+    },
+    {
+      "path": "app/components/library-preview/practice-date-filter.css",
+      "sha256": "39670d3224164184dabbeb3b673df98785f6635f4e7860746f3c2791d307b4c4"
+    },
+    {
+      "path": "app/components/library-preview/practice-date-filter.test.tsx",
+      "sha256": "bcd4a264d557c6bc9298d251490797fffab10ef9102815c598fcd88748594e34"
+    },
+    {
+      "path": "app/components/library-preview/practice-date-filter.tsx",
+      "sha256": "7b97d4473965ed0554128c83c3ce067426dfd89a5a7c8e92c3d6a88ca50b19a5"
+    },
+    {
+      "path": "app/components/library-preview/practice-detail.css",
+      "sha256": "dbd65bf916a2d768c04c9c1f221b708a84db2c2fce7edd9aa0f4929154292d55"
+    },
+    {
+      "path": "app/components/library-preview/practice-detail.test.tsx",
+      "sha256": "a3091d5e49d37a11a08abb4faa619526e69d4369a6692665c410dd45ac7fc2b9"
+    },
+    {
+      "path": "app/components/library-preview/practice-detail.tsx",
+      "sha256": "ae0d0800e9f5e5796d74415397ccd576b7f59eed1a475276aa7daa8ddbed7499"
+    },
+    {
+      "path": "app/components/library-preview/practice-list.css",
+      "sha256": "119b75fa6595cfa5b06f5c40e4bbfbf97e1ddbe2b27434e7502202d654253432"
+    },
+    {
+      "path": "app/components/library-preview/practice-list.test.tsx",
+      "sha256": "909930e91ee90cbc06f9517f7a470d24e1320cff7785dfe24ad3dee3e3f1a773"
+    },
+    {
+      "path": "app/components/library-preview/practice-list.tsx",
+      "sha256": "7093d33adfd2df6f8d504bcce5c3d15d8f9f6481a32e0e33c4abc06f7725d16e"
+    },
+    {
+      "path": "app/components/library-preview/preview-helpers.test.tsx",
+      "sha256": "67850369899b12eba2847b3820dc7bc7ec0148305acb5344157e5da17eb47732"
+    },
+    {
+      "path": "app/components/library-preview/preview-shell.test.tsx",
+      "sha256": "6c8011475bb2017c8ac18b5c920257799b5559e6027b356d3b3318af76ca79f8"
+    },
+    {
+      "path": "app/components/library-preview/preview-shell.tsx",
+      "sha256": "a3ce5c88de35fd3098f3c68bc026d7324a55bda2f12d8949d6335f81fb61c1ab"
+    },
+    {
+      "path": "app/components/library-preview/preview.css",
+      "sha256": "b1babc3090f87aea85d480bcc5eba7e8ae86d3f8f58e92bd8ff1fcf1239785d7"
+    },
+    {
+      "path": "app/components/library-preview/use-library-preview.test.tsx",
+      "sha256": "c9eafc98c0f2a2a6cc93ed7b015f5536ffc91ffdd0b133fc7ca6a5ad14650609"
+    },
+    {
+      "path": "app/components/library-preview/use-library-preview.ts",
+      "sha256": "2a7facc26c99439ff3f27afeb455190f3eae505f1924731c36350bb2588cdb91"
+    },
+    {
+      "path": "app/lib/library-preview/contracts.ts",
+      "sha256": "0188c6a6bbaa050b8ddc71fbae32dd30835be81b73a68754931cc4796b18f55d"
+    },
+    {
+      "path": "app/lib/library-preview/fixtures.ts",
+      "sha256": "459683bb1db4ec03b8235b3809572d3f11e34e9b5ed82d22dd4ab31dadd1ad2b"
+    },
+    {
+      "path": "app/lib/library-preview/format.test.ts",
+      "sha256": "ff983e5c32ee1a22b0d86320b8969d0176ca7337f05e6f50eda12098374f8623"
+    },
+    {
+      "path": "app/lib/library-preview/format.ts",
+      "sha256": "d34531664a23954d687f9b90f943fdbf133483d7a7ad22c9f531023e196d04c5"
+    },
+    {
+      "path": "app/lib/library-preview/mock-read-port.test.ts",
+      "sha256": "59c633d80f28722a660fb4f61b5749b03cbc3310794606813aadc6a0024ea3f5"
+    },
+    {
+      "path": "app/lib/library-preview/mock-read-port.ts",
+      "sha256": "0c59ebe1721164474414638aaf37db7b513c6566d6f37a36f92597efe07ac9df"
+    },
+    {
+      "path": "app/lib/library-preview/practice-date-range.test.ts",
+      "sha256": "d824ddf84cf50138b8651ac72d3957c513dc63872b1af7ec2582f20868153c75"
+    },
+    {
+      "path": "app/lib/library-preview/practice-date-range.ts",
+      "sha256": "8e016b5cac2c1374a4cd84389af3e06b481657365ae18864ba73a00e45cd377a"
+    },
+    {
+      "path": "app/lib/library-preview/preview-url.test.ts",
+      "sha256": "a1fe03d10c07bd565575f52f0f18c2c2dccb5df726fea11e161f28c2eeb1f56e"
+    },
+    {
+      "path": "app/lib/library-preview/preview-url.ts",
+      "sha256": "883703acb576d2d3dd96913037421a6275d7cd8d0d2acc7efe36545ff8f3b251"
+    },
+    {
+      "path": "app/lib/library-preview/return-context.test.ts",
+      "sha256": "46ec60a583710aaca73fad37f880a1526da525111cf2323d56930cee6553098a"
+    },
+    {
+      "path": "app/lib/library-preview/return-context.ts",
+      "sha256": "74cc8a8748938e22fc71a79d561fe070c9df6152a94c3bea71d67f1f645ab049"
+    },
+    {
+      "path": "app/library-preview/page.tsx",
+      "sha256": "fafac691f7697fec36d85e47f6b65ed71929ce85c349783adf8c31fedf2d178c"
+    }
+  ],
+  "references": [
+    {
+      "path": "docs/agents/frontend-control-audit.md",
+      "sha256": "ff09338e1e4605cec2682076ec1f5ceedcb56fd2fd1dcbcc96b91ab3f40e9777"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/05-loading.svg",
+      "sha256": "ac2113c429e02271e9df76dcd4d369161d60bc46a2451c13c9fa98080bd9784d"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/06-empty.svg",
+      "sha256": "b9fb17270d3ec6e14b5ee6716a00df9783f18fb2396798abf6d9ccbae29f0530"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/07-error.svg",
+      "sha256": "48a3fc1cdcda31d21b4fd71a788301547f5416571917131ea6d844ca307a6a25"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/08-extreme.svg",
+      "sha256": "218880bfaca09a81b574090cfbe4edcba510783698b6f6bf49690043303a3afa"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/09-missing-input.svg",
+      "sha256": "15c4198b5985a6a92924b1f94b0a70ad9eb3a761380adae4a345077a441bd33c"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-sim-list-1440.jpg",
+      "sha256": "fb912315670a2c97027287aeb016f61e8d00f62fca3689e705fd6662ea6d538f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-rounds-a.svg",
+      "sha256": "3f4c98f04bd7be65ae63b7d977ce8f32d573dd176ba258f7c26d3ac7c6ca9ebf"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-sim-ab.svg",
+      "sha256": "2d8708bbf94155e1367775687c822bd971ccb8646790a5e15f133de2c1f09c2f"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/journeys-simulation-return.svg",
+      "sha256": "3147b5cfd85b974cf28f0ffa7df1a466eb751130010907ea22a1a70170a795ea"
+    },
+    {
+      "path": "docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/visual-design.candidate.md",
+      "sha256": "c472817f0f9795de913e0eb7a0ec1eeff58a693a2a9d08f13d8878c2da858a3b"
+    },
+    {
+      "path": "docs/design-system/iterations/2026-11-06-current-visual-progress/BUSINESS-UPDATES.md",
+      "sha256": "0946d7387d110279d2e6c480e38d4b79ad9544d692378d0164f66c28587d914e"
+    },
+    {
+      "path": "docs/design-system/trading-library-design-spec.md",
+      "sha256": "be2fec0a6d88b7b9319769f21fab92c500da049c46eef27a472f1b5d6d97a262"
+    }
+  ],
+  "historicalEvidenceBridge": [
+    {
+      "evidenceVersion": "b7b8284f",
+      "changedSinceEvidence": [
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts",
+        "app/lib/library-preview/preview-url.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/preview.css",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "e900759b",
+      "changedSinceEvidence": [
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts",
+        "app/lib/library-preview/preview-url.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "aa071b3f",
+      "changedSinceEvidence": [
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts",
+        "app/lib/library-preview/preview-url.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "d80c04f4",
+      "changedSinceEvidence": [
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts",
+        "app/lib/library-preview/preview-url.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "618b25e1",
+      "changedSinceEvidence": [
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts",
+        "app/lib/library-preview/preview-url.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "76a79286",
+      "changedSinceEvidence": [
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/preview-url.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    },
+    {
+      "evidenceVersion": "1bddc7b1",
+      "changedSinceEvidence": [
+        "app/components/library-preview/preview-shell.test.tsx",
+        "app/components/library-preview/preview-shell.tsx",
+        "app/lib/library-preview/mock-read-port.test.ts",
+        "app/lib/library-preview/mock-read-port.ts",
+        "app/lib/library-preview/practice-date-range.test.ts",
+        "app/lib/library-preview/preview-url.test.ts"
+      ],
+      "byteIdenticalAtFinal": [
+        "app/components/library-preview/dependency-boundary.test.ts",
+        "app/components/library-preview/info-popover.tsx",
+        "app/components/library-preview/library-preview.test.tsx",
+        "app/components/library-preview/library-preview.tsx",
+        "app/components/library-preview/metric-value.tsx",
+        "app/components/library-preview/practice-date-filter.css",
+        "app/components/library-preview/practice-date-filter.test.tsx",
+        "app/components/library-preview/practice-date-filter.tsx",
+        "app/components/library-preview/practice-detail.css",
+        "app/components/library-preview/practice-detail.test.tsx",
+        "app/components/library-preview/practice-detail.tsx",
+        "app/components/library-preview/practice-list.css",
+        "app/components/library-preview/practice-list.test.tsx",
+        "app/components/library-preview/practice-list.tsx",
+        "app/components/library-preview/preview-helpers.test.tsx",
+        "app/components/library-preview/preview.css",
+        "app/components/library-preview/use-library-preview.test.tsx",
+        "app/components/library-preview/use-library-preview.ts",
+        "app/lib/library-preview/contracts.ts",
+        "app/lib/library-preview/fixtures.ts",
+        "app/lib/library-preview/format.test.ts",
+        "app/lib/library-preview/format.ts",
+        "app/lib/library-preview/practice-date-range.ts",
+        "app/lib/library-preview/preview-url.ts",
+        "app/lib/library-preview/return-context.test.ts",
+        "app/lib/library-preview/return-context.ts",
+        "app/library-preview/page.tsx"
+      ]
+    }
+  ],
+  "bridgeLimit": "Earlier images retain their original version. Byte identity and changed-file review plus final affected checks support reuse; this is not a claim that every old action was rerun at final HEAD.",
+  "finalAffectedEvidence": [
+    "pair-retry-17701786-before.json",
+    "pair-retry-17701786-pending.json",
+    "pair-retry-17701786-error.json",
+    "pair-retry-17701786-retrying.json",
+    "pair-retry-17701786-success.json",
+    "detail-17701786-readonly.json",
+    "list-17701786-direct-1440.json",
+    "detail-17701786-direct-A-1440.json",
+    "date-17701786-list-editable.json",
+    "delivery-17701786-default.json"
+  ],
+  "protectedUnchanged": [
+    "app/page.tsx",
+    "conf/runtime.json",
+    "conf/native-environment.json"
+  ],
+  "integration": "local branch/worktree preserved; no push/merge/publish"
+}

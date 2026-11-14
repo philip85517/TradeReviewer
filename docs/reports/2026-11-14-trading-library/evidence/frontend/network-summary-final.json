@@ -1,0 +1,19 @@
+{
+  "kind": "transparent proxy HTTP observation only, not Mock port call counts",
+  "requests": 1884,
+  "methods": {
+    "GET": 1846,
+    "UPGRADE": 38
+  },
+  "status": {
+    "200": 825,
+    "websocket-upgrade": 38,
+    "304": 1021
+  },
+  "apiOrStorageRequests": 0,
+  "writeRequests": 0,
+  "errors": 0,
+  "first": "2026-11-13T12:04:23.493Z",
+  "last": "2026-11-13T17:35:30.813Z",
+  "notes": "Historical dev asset/HMR/reload observations. UPGRADE is dev HMR websocket, not a business write. Does not measure Mock port calls, final direct3437, external origins, or production latency. Source boundary + isolated DB non-creation checked separately."
+}

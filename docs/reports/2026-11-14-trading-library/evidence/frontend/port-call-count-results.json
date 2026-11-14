@@ -1,0 +1,72 @@
+{
+  "kind": "consumer jsdom integration, not real-browser HTTP",
+  "results": [
+    {
+      "label": "initial-list",
+      "delta": {
+        "readOptions": 1,
+        "readPracticePage": 1,
+        "readPracticeDetail": 0,
+        "readPairPage": 0
+      }
+    },
+    {
+      "label": "market-filter",
+      "delta": {
+        "readOptions": 1,
+        "readPracticePage": 1,
+        "readPracticeDetail": 0,
+        "readPairPage": 0
+      }
+    },
+    {
+      "label": "refresh",
+      "delta": {
+        "readOptions": 1,
+        "readPracticePage": 1,
+        "readPracticeDetail": 0,
+        "readPairPage": 0
+      }
+    },
+    {
+      "label": "open-P1",
+      "delta": {
+        "readOptions": 0,
+        "readPracticePage": 0,
+        "readPracticeDetail": 1,
+        "readPairPage": 0
+      }
+    },
+    {
+      "label": "pair-page2",
+      "delta": {
+        "readOptions": 0,
+        "readPracticePage": 0,
+        "readPracticeDetail": 0,
+        "readPairPage": 1
+      }
+    },
+    {
+      "label": "return-list",
+      "delta": {
+        "readOptions": 1,
+        "readPracticePage": 1,
+        "readPracticeDetail": 0,
+        "readPairPage": 0
+      }
+    },
+    {
+      "label": "direct-detail-B",
+      "delta": {
+        "readOptions": 0,
+        "readPracticePage": 0,
+        "readPracticeDetail": 1,
+        "readPairPage": 0
+      }
+    }
+  ],
+  "harnessLabelHead": "1bddc7b1",
+  "executedHead": "1770178694f5815b699c23deef894888dac1abea",
+  "runLog": "port-call-count-17701786.log",
+  "metadataCorrection": "Evidence harness embedded 1bddc7b1 label; actual final run was at 17701786, separately logged. No product behavior changed to relabel it."
+}

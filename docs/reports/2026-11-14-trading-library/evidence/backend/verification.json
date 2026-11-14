@@ -1,0 +1,46 @@
+{
+  "sourceComparisons": {
+    "e0bb": {
+      "beforeCount": 6714,
+      "afterCount": 6714,
+      "headUnchanged": true,
+      "beforeFingerprint": "7658954b3f037abbef1f94e107bf328524fafec96ea20dbefdf70f129e5d6136",
+      "afterFingerprint": "7658954b3f037abbef1f94e107bf328524fafec96ea20dbefdf70f129e5d6136",
+      "changedFiles": []
+    },
+    "25db": {
+      "beforeCount": 5129,
+      "afterCount": 5129,
+      "headUnchanged": true,
+      "beforeFingerprint": "13617a8490effafcb03a728cc870baa251cadf4cb7deacd03cf05d558476fd64",
+      "afterFingerprint": "13617a8490effafcb03a728cc870baa251cadf4cb7deacd03cf05d558476fd64",
+      "changedFiles": []
+    },
+    "38a0": {
+      "beforeCount": 4898,
+      "afterCount": 4898,
+      "headUnchanged": true,
+      "beforeFingerprint": "3c29c5a5cca10d85b329e579b366cee8465d6023625788c5619bfd1af2145536",
+      "afterFingerprint": "3c29c5a5cca10d85b329e579b366cee8465d6023625788c5619bfd1af2145536",
+      "changedFiles": []
+    },
+    "0dc6": {
+      "beforeCount": 4832,
+      "afterCount": 4832,
+      "headUnchanged": true,
+      "beforeFingerprint": "b95051d5fc7a18566aa870eb037238d59491660f29044d56df8823df504db971",
+      "afterFingerprint": "b95051d5fc7a18566aa870eb037238d59491660f29044d56df8823df504db971",
+      "changedFiles": []
+    }
+  },
+  "historicalA1b": {
+    "path": "/Users/zhoulin/.codex/worktrees/38a0/TradeReview/.scratch/homepage-db-optimization-20261105/module-implementation-20261106/a1b/source-after-final-record.json",
+    "manifestSha256": "8e7afc06e10044c9783df1a9d4410bdc23d5f4ea089ac7b79200d83b461f7342",
+    "count": 1221,
+    "changedFiles": []
+  },
+  "markdownLinks": {
+    "count": 266,
+    "broken": []
+  }
+}

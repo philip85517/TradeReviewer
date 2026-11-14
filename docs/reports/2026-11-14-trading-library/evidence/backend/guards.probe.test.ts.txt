@@ -1,0 +1,5 @@
+// Existing candidate tests, run from scratch with an explicit isolated fallback.
+// Suites use memory or their own temporary WAL DBs, never business storage.
+import '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-statistics-snapshot.test';
+import '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-source-snapshot-reader.test';
+import '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-statistics-no-fee.integration.test';

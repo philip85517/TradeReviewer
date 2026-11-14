@@ -1,0 +1,108 @@
+{
+  "before": {
+    "previewScroll": 0,
+    "documentRects": [
+      {
+        "tag": "DIV",
+        "cls": "practice-detail",
+        "x": 96,
+        "w": 1320,
+        "h": 1046.5,
+        "y": 214
+      },
+      {
+        "tag": "TABLE",
+        "cls": "",
+        "x": 113,
+        "w": 1286,
+        "h": 324.5,
+        "y": 347
+      }
+    ]
+  },
+  "pending": {
+    "previewScroll": 189.5,
+    "documentRects": [
+      {
+        "tag": "DIV",
+        "cls": "practice-detail",
+        "x": 96,
+        "w": 1320,
+        "h": 1046.5,
+        "y": 214.0
+      },
+      {
+        "tag": "TABLE",
+        "cls": "",
+        "x": 113,
+        "w": 1286,
+        "h": 324.5,
+        "y": 347.0
+      }
+    ]
+  },
+  "error": {
+    "previewScroll": 189.5,
+    "documentRects": [
+      {
+        "tag": "DIV",
+        "cls": "practice-detail",
+        "x": 96,
+        "w": 1320,
+        "h": 1046.5,
+        "y": 214.0
+      },
+      {
+        "tag": "TABLE",
+        "cls": "",
+        "x": 113,
+        "w": 1286,
+        "h": 324.5,
+        "y": 347.0
+      }
+    ]
+  },
+  "retrying": {
+    "previewScroll": 0,
+    "documentRects": [
+      {
+        "tag": "DIV",
+        "cls": "practice-detail",
+        "x": 96,
+        "w": 1320,
+        "h": 1046.5,
+        "y": 214
+      },
+      {
+        "tag": "TABLE",
+        "cls": "",
+        "x": 113,
+        "w": 1286,
+        "h": 324.5,
+        "y": 347
+      }
+    ]
+  },
+  "success": {
+    "previewScroll": 0,
+    "documentRects": [
+      {
+        "tag": "DIV",
+        "cls": "practice-detail",
+        "x": 96,
+        "w": 1320,
+        "h": 806.5,
+        "y": 214
+      },
+      {
+        "tag": "TABLE",
+        "cls": "",
+        "x": 113,
+        "w": 1286,
+        "h": 84.5,
+        "y": 347
+      }
+    ]
+  },
+  "conclusion": "Final HEAD before/pending/error/retrying preserve document geometry; viewport displacement is scroll189.5. Successful one-row tail naturally shrinks by240px (five fewer48px rows)."
+}

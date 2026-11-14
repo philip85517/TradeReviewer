@@ -1,0 +1,10 @@
+# 综合报告的独立证据核对
+
+2026-11-14，readstore研究者对root的README/REVIEW/PERFORMANCE/VERDICTS做有界只读复核，root逐条直接核查和处理。没有改产品、打开DB或新增性能运行。
+
+|发现|根协调者核查|处理|
+|---|---|---|
+|PERFORMANCE固定业务Date被表述为“匹配历史发布有效期”|实际[store](/Users/zhoulin/.codex/worktrees/38a0/TradeReview/app/lib/storage/trade-library-read-store.ts:334)要求valid_until=null；[readiness](/Users/zhoulin/.codex/worktrees/38a0/TradeReview/app/lib/storage/trade-library-read-store.ts:99)按databaseId/epoch/rules/dependencies判freshness|已改为沿用历史时点，不把Date当发布时效条件，不证明相对当前业务输入fresh|
+|README及ACCEPTANCE把“交易库第一页”简称“首页”|实际[探针](/Users/zhoulin/.codex/worktrees/e0bb/TradeReview/.scratch/library-backend-review-20261114/evidence/readstore.probe.test.ts:20)调用summaryAndPage，不是首页路由|已改为“就绪→交易库第一页→严格解析”|
+
+复核未发现三组计时与原始JSON、25.4MB/67.9MB字节口径、嵌套分段、55 PASS与两个诊断FAIL、独立worker进程或逐模块裁决有重大矛盾。root保留测量边界、初次脚本错误及未验证项；未将复核通过记作真实后端通过。

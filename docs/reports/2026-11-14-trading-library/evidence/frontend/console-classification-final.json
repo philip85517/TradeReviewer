@@ -1,0 +1,6 @@
+{
+  "retainedWarnErrorEntries": 6,
+  "atOrAfterFinalCommit": 0,
+  "entriesAfterFinalCommit": [],
+  "classification": "Retained historical HMR hook-order errors at 16:11/16:58 UTC; final commit is 17:32:58 UTC. Final fresh navigation/affected journeys observed normally. No claim that the historical console is empty."
+}

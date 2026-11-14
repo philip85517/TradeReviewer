@@ -1,0 +1,80 @@
+import { DatabaseSync } from 'node:sqlite';
+import { writeFileSync } from 'node:fs';
+import { expect, test } from 'vitest';
+import { initializeSqlite } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/db/sqlite';
+import { PracticeStore } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-store';
+import { readPracticeListWithMetrics } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-list-metrics';
+import { readPracticeSourceSnapshot } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-source-snapshot-reader';
+import { projectTradingViewPractice } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/trades/tradingview-practice-pair-projection';
+import { header, row } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/import/__fixtures__/tradingview';
+import { CONTRACT_VERSION, TRADINGVIEW_PRACTICE_ACCOUNT_ID } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/trades/practice-contracts';
+
+type Metric = { calls:number; rows:number; textBytes:number; blobBytes:number; sql:Record<string,{calls:number;rows:number;textBytes:number;blobBytes:number}> };
+const empty = ():Metric => ({calls:0,rows:0,textBytes:0,blobBytes:0,sql:{}});
+function meter(db:DatabaseSync) {
+  let current = empty();
+  const proxy = new Proxy(db, { get(target,key) {
+    if(key === 'prepare') return (sql:string) => {
+      const statement = target.prepare(sql);
+      return new Proxy(statement, {get(s,k) {
+        if(k === 'all' || k === 'get') return (...args:unknown[]) => {
+          const result = (s[k] as Function).apply(s,args);
+          const rows = k==='all' ? result : result ? [result] : [];
+          const local = current.sql[sql] ??= {calls:0,rows:0,textBytes:0,blobBytes:0};
+          current.calls++; local.calls++; current.rows += rows.length; local.rows += rows.length;
+          for(const r of rows) for(const v of Object.values(r)) {
+            if(typeof v==='string') { const n=Buffer.byteLength(v); current.textBytes+=n;local.textBytes+=n; }
+            if(v instanceof Uint8Array) {current.blobBytes+=v.byteLength;local.blobBytes+=v.byteLength;}
+          }
+          return result;
+        };
+        const value=Reflect.get(s,k,s);return typeof value==='function'?value.bind(s):value;
+      }});
+    };
+    const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;
+  }});
+  return {proxy,reset(){current=empty();},result(){return structuredClone(current);}};
+}
+const results:any[]=[];
+test('measure actual PracticeStore against fresh synthetic in-memory fixtures',()=>{
+  for(const groups of [1,50]) for(const count of [1,10,50]) {
+    const db=new DatabaseSync(':memory:');initializeSqlite(db);
+    try {
+      const writer=new PracticeStore(db);let firstId='',firstRevision='';
+      const text=[header,...Array.from({length:groups},(_,i)=>[row(i+1,'多头出场','2021-03-01','11'),row(i+1,'多头进场','2021-02-19','10')]).flat()].join('\r\n');
+      for(let index=0;index<count;index++) {
+        const symbol=String(600000+index);
+        const input={contractVersion:CONTRACT_VERSION,fileName:`SSE_${symbol}_2026-10-26.csv`,bytesBase64:Buffer.from(text).toString('base64'),scope:{accountId:TRADINGVIEW_PRACTICE_ACCOUNT_ID,instrumentId:`CN-SH:${symbol}`}};
+        const preview=writer.preview(input);if(preview.status!=='create-source')throw new Error(JSON.stringify(preview));
+        const saved=writer.commit({contractVersion:CONTRACT_VERSION,commandId:`backend-probe-${groups}-${index}`,input,inputDigest:preview.inputDigest,guard:preview.guard});
+        if(!firstId){firstId=saved.practiceId;firstRevision=saved.revisionId;}
+      }
+      const m=meter(db),reader=new PracticeStore(m.proxy);
+      const result:any={count,groups,sourceBytesEach:Buffer.byteLength(text),samples:[]};
+      for(const operation of ['list','metricsList','singleDetail','statistics','pairProjection'] as const) for(let sample=0;sample<3;sample++) {
+        m.reset();const start=performance.now();
+        const value=operation==='list'?reader.list():operation==='metricsList'?readPracticeListWithMetrics(m.proxy):operation==='singleDetail'?reader.readWithLegacy(firstId):operation==='pairProjection'?projectTradingViewPractice(readPracticeSourceSnapshot(m.proxy,{practiceId:firstId,revisionId:firstRevision,practiceVersion:1})):reader.readStatisticsInputsSnapshot();
+        const storeMs=performance.now()-start;
+        const serialAt=performance.now(),body=JSON.stringify(value),jsonMs=performance.now()-serialAt;
+        result.samples.push({operation,sample,storeMs,jsonMs,bodyBytes:Buffer.byteLength(body),metric:m.result()});
+      }
+      result.plan=db.prepare('explain query plan select * from practices order by practice_date desc, instrument_id, sequence, id').all();
+      if(count===50&&groups===50){
+        db.exec('create index probe_practices_order on practices(practice_date desc,instrument_id,sequence,id)');
+        result.indexControlPlan=db.prepare('explain query plan select * from practices order by practice_date desc, instrument_id, sequence, id').all();
+        m.reset();const start=performance.now();reader.readStatisticsInputsSnapshot();
+        result.indexControl={storeMs:performance.now()-start,metric:m.result()};
+      }
+      expect(reader.list().practices).toHaveLength(count);results.push(result);
+    } finally {db.close();}
+  }
+  const versionDb=new DatabaseSync(':memory:');const sqlite=versionDb.prepare('select sqlite_version() version').get();versionDb.close();
+  writeFileSync('.scratch/library-backend-review-20261114/evidence/practice-read-results-v2.json',JSON.stringify({scope:'actual candidate stores/helpers; fresh synthetic in-memory SQLite; 3 ordered warm-process samples, instrumented SQL calls/returned rows/column bytes (not physical page scans), no HTTP, socket, browser, disk IO, concurrency, or production latency claim; one added-index control is isolated only',node:process.version,sqlite,results},null,2)+'\n');
+});
+test('diagnostic bounded-work expectation for a single selected financial object',()=>{
+  const small=results.find(r=>r.count===1&&r.groups===50).samples.find((s:any)=>s.operation==='statistics');
+  const large=results.find(r=>r.count===50&&r.groups===50).samples.find((s:any)=>s.operation==='statistics');
+  // Old detail consumer reads this global statistics snapshot to select one ID.
+  // Intentional RED diagnostic: unrelated practices must not scale this work.
+  expect(large.metric.blobBytes,'single-object financial consumer uses a global scan').toBeLessThanOrEqual(small.metric.blobBytes*2);
+});

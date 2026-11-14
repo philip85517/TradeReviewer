@@ -1,0 +1,46 @@
+# F1 独立接受记录
+
+2026-11-14，协调者 root；产品实现 `gpt-6.1-terra`（继承调度默认 reasoning，未另行覆盖）。**接受本地 F1 桌面只读 Mock 实验的功能、状态安全及视觉结果**；不宣称全计划流程合规、设备输入认证、生产迁移或真实性能通过。
+
+最终 HEAD `1770178694f5815b699c23deef894888dac1abea`；基线 `3d444316589e2feefd9b2b3d03d362737e8a6d27`；分支 `codex/library-frontend-mock`。差异仅限三个新目录下 33 个文件：`app/library-preview/`、`app/components/library-preview/`、`app/lib/library-preview/`。旧首页、runtime 和 native 配置未改。[最终 manifest](evidence/final-manifest.json)登记全部产品 SHA256、13 个参考 SHA256、历史证据兼容关系及最终受影响检查。报告资料保持本地；无 push/merge/publish。
+
+|门槛|结论|独立证据及边界|
+|---|---|---|
+|来源冻结、选择边界与隔离|PASS|[9/9 来源 hash](evidence/source-freeze-check-final.json)、[选取账](SOURCE-EXTRACTION.md)、依赖闭包测试；未修改 dirty 25db 来源，未整体 cherry-pick|
+|全分支代码及唯一修复轮|PASS，保留 Minor|[全分支审查](evidence/sdd/final-branch-review.md) base..1bddc7b1；[修复复审](evidence/sdd/final-fix-review.md) 1bddc7b1..17701786。无新 Critical/Important；M1/M2、必需页码/日历矩阵已修复，M3 与额外 M4 深度保留|
+|桌面列表/详情/配对旅程|PASS|[控件逐项记录](evidence/CONTROL-RESULTS.md)、[13 个练习旅程](evidence/journey-d80c04f4-results.json)及各对象 actions/截图；13 次准确打开/返回、20 个固定配对入口，阶段原因与 URL 不变|
+|请求/身份/返回状态安全|PASS|最终 hook/host 回归；d80 A/E/C 连续返回各自行焦点、B 第二页 scroll150/body0；76 旧 A 不覆盖 B；1bdd filtered-out 直达返回空列表/标题；不是实际业务数据删除测试|
+|配对加载/失败/重试与空间|PASS|最终 [五态几何](evidence/pair-retry-17701786-geometry-summary.json)及 before/pending/error/retrying/success 原图；完整 key 不混、旧 6 行保留，同目标重试得到第 7 行 +4 CNY|
+|独立视觉与响应式|PASS，批准差异如下|root 直接看原稿及真实渲染；1440/1280、列表 761/759/390、详情 900/899/600/599/390；正常/极值/unknown，最终 1440 列表/详情与默认 1280 页面重看|
+|适用自动化|PASS|[最终结果](evidence/automated-final-results.json)：13 文件/102 测试、消费者计数 1 测试、tsc、build、diff；[生产入口 404](evidence/production-guard-17701786-headers.txt)。这是定向范围，不是全仓套件|
+|网络及数据保护|PASS，观测范围有限|[代理摘要](evidence/network-summary-final.json)：1884 条历史资产/HMR 请求，业务 API/存储请求 0、写请求 0、代理错误 0；[runtime](evidence/runtime-final.json)隔离 SQLite 未创建；另有源码闭包。代理不覆盖最终直连 3437、外部源或后端性能|
+|可运行交付|PASS|[当前预览](http://127.0.0.1:3437/library-preview)、[最终浏览器截图](evidence/delivery-17701786-default.png)；root 真实浏览器检查，恢复默认 1280×720/DPR2；服务保持运行，启动见 [preview.sh](preview.sh)|
+|原生系统 IME / 模拟触控 / 物理触控 / 软件键盘|NOT VERIFIED，4 项补充证据|桌面接受不包含真机/原生输入认证；synthetic composition 和窄屏鼠标不能替代这些输入|
+|实际持久化/真实来源认证/后端性能/真实图表|NOT APPLICABLE 于 F1|只读 Mock 不调用这些能力，后续仍须独立评审和验收，不能用当前流畅表现证明通过|
+|历史执行流程合规|FAIL，明确保留|部分历史 RED、参考预读顺序和提前落盘派发文件缺失。见[执行档案](evidence/sdd/progress.md)；后来 GREEN/复审没有修复历史顺序，不宣称全计划 100% 完成|
+
+## 视觉比较与允许差异
+
+参考为 [approved-e-sim-list-1440.jpg](../../docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/approved-e-sim-list-1440.jpg)、[hcr06-final-rounds-a.svg](../../docs/design-system/baselines/2026-10-26-trading-library-v2.0/source/images/hcr06-final-rounds-a.svg)，同时读 BIZ、LIB 与 V2 正文；加载/空/错误/极值/缺输入状态图用于适用状态规则，未把 F2 统计图冒充 F1 范围。root 不参与这些产品组件实现，直接看图和操作接受。
+
+逐项核对 72px 侧栏、64px 顶栏、58px 二级栏、内容左96/右24、36px 字段/命中区、14px 表格文字、48px 行、280px 信息浮层、104px 指标卡、28/34px 数字及详情 4/2/1 列断点。390px 表格在自身区域实际横滚，完整长值可查；未缩全页字号塞入。首次鼠标提示关闭、列表日期挤压、详情极值溢出、金额对齐和连续返回焦点等旧 FAIL 均留证并在修复后复验。
+
+允许差异依据已批准业务规则：完整身份/文件名、详情上方只读来源条件、三种时间、费用/估值说明及阶段原因自然增加页面高度；不能机械裁成旧图相同 Y 坐标。reference/A 整份净额 unknown，1884 是闭合净额，不替代整份净额；仅 explicit-end-price/A 的估值输入已知，净额为4677。配对/估值日期属于历史2022–23，练习日期属于2026，分字段保留。统计/实盘/保存/导入/回放未实现，入口原因可见。
+
+最终直接证据：[列表1440](evidence/list-17701786-direct-1440.png)、[A详情1440](evidence/detail-17701786-direct-A-1440.png)、[详情只读](evidence/detail-17701786-readonly.png)、[列表日期可编辑](evidence/date-17701786-list-editable.png)。配对前/中/错/重试 document 几何保持；viewport 位移来自 scroll189.5，第2页只有1行后自然减少240px，不把该缩短当加载抖动。
+
+## 版本与输入覆盖的边界
+
+176 条登记为135控件、10选项、27状态、4补充项；172 PASS、4 NOT VERIFIED。每条保留实际版本、输入方式及保存证据，不能将自动化、鼠标、键盘、触控混称点击覆盖率，也不能把不同版本动作相加声称最终100%。33个业务实例为13个练习打开/返回及20个配对入口。
+
+旧旅程保留其原版本；最终 manifest 用内容 hash、变更文件和受影响复验建立桥接：aa071b3f 后列表/详情纯 CSS、详情纯组件及 Info 内容未改；d80c04f4 后返回 hook 未改。之后 shell、Mock、URL 等改动经过限定复审及最终相关浏览器/102测试回归。最终 HEAD 重新实际检查配对五态、详情只读、列表日期可编辑、1440列表→准确A详情→返回及默认交付页，**没有声称13/20所有动作都在最终HEAD重做**。
+
+HTTP代理与Mock端口计数分开。后者为真实宿主消费者的 jsdom integration，[7个操作样本](evidence/port-call-count-results.json)证明列表 options1+page1、详情 detail1、配对 pair1；它不证明浏览器实际HTTP次数。计数 harness 的旧 head 标签已经单独披露并更正执行版本。
+
+浏览器日志保留6条历史热更新 hook 错误；[最终分类](evidence/console-classification-final.json)在最终提交时间之后新增 warn/error 为0。没有声称整段历史 console 为空。旧76版本90/91及过时隐藏条件断言的FAIL日志、历史截图和复审报告保留；修正断言后1bdd91通过、最终177为102通过。
+
+## 剩余判断与独立签署
+
+M3 压缩 JSX/辅助函数可读性与 M4 任意部分身份/额外 fuzz 深度为已披露 Minor，留待模块下次调整；没有第二轮修复冒充已解决。[19项执行判断](RULINGS.md)逐项保留若错的成本。
+
+root 接受这份**可独立运行、可继续讨论的前端 Mock 基准**。展示资产有重构后复用价值；旧读取链不随之迁入。真实 adapter 的往返数、SQL/索引、聚合、来源认证、缓存/修订/费用与估值必须从[请求交接账](REQUEST-LEDGER.md)继续 review，当前不批准真实数据/后端迁移。

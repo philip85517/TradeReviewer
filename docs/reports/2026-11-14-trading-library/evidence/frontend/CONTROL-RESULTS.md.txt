@@ -1,0 +1,196 @@
+# F1 控件与状态展开结果
+
+{
+  "registered": 176,
+  "statusCounts": {
+    "PASS": 172,
+    "NOT VERIFIED": 4
+  },
+  "kindCounts": {
+    "control": 135,
+    "option": 10,
+    "state": 27,
+    "supplemental": 4
+  },
+  "missingEvidencePaths": [],
+  "rates": "不把不同历史版本合成最终100%。最终内容兼容性在FINAL-ACCEPTANCE及manifest单列。33业务实例为13打开返回+20配对入口；其余按事前语义字段/动作重复规则登记。"
+}
+
+|ID|证据版本|输入|结果|实际/证据|
+|---|---|---|---|---|
+|nav/home|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/library|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/analysis|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/data|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/strategy|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/live|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/simulation|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/list|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|nav/stats|618b25e1|mouse|PASS|当前入口保持；阶段项明确原因且URL不变；[shell-618b25e1-stage-actions.json](shell-618b25e1-stage-actions.json), [stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json)|
+|date/all|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/day|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/range|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/week|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/month|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/year|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/apply|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/cancel|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/from|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/to|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/invalid|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/escape|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|date/outside|b7b8284f|mouse/native date arrows；Escape|PASS|有效范围原子应用；非法不可应用；取消不改查询；[../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率](../CONTROL-AUDIT.md#条件与历史检查点-b7b8284f限定接受不是最终全页覆盖率), [date-b7b8284f-panel.json](date-b7b8284f-panel.json)|
+|filter/market/all|b7b8284f|mouse|PASS|URL/结果摘要同范围；页1；[list-b7b8284f-cleared-scope.json](list-b7b8284f-cleared-scope.json), [../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|filter/market/CN|b7b8284f|mouse|PASS|URL/结果摘要同范围；页1；[list-b7b8284f-cleared-scope.json](list-b7b8284f-cleared-scope.json), [../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|filter/account/all|b7b8284f|mouse|PASS|URL/结果摘要同范围；页1；[list-b7b8284f-cleared-scope.json](list-b7b8284f-cleared-scope.json), [../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|filter/account/simulation|b7b8284f|mouse|PASS|URL/结果摘要同范围；页1；[list-b7b8284f-cleared-scope.json](list-b7b8284f-cleared-scope.json), [../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|list/clear-filters|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list/search-submit|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list/clear-search|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list/sort-asc|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list/sort-desc|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list/refresh|b7b8284f|mouse/keyboard Enter|PASS|局部清除保留其他条件；排序稳定；刷新三态；[list-b7b8284f-search-sort.json](list-b7b8284f-search-sort.json), [list-b7b8284f-refresh-before.json](list-b7b8284f-refresh-before.json), [list-b7b8284f-refresh-during.json](list-b7b8284f-refresh-during.json), [list-b7b8284f-refresh-after.json](list-b7b8284f-refresh-after.json)|
+|list-page/1|b7b8284f|mouse|PASS|6/6/1，末页下一页禁用；[list-b7b8284f-pagination1.json](list-b7b8284f-pagination1.json), [list-b7b8284f-pagination2.json](list-b7b8284f-pagination2.json), [list-b7b8284f-pagination3.json](list-b7b8284f-pagination3.json)|
+|list-page/2|b7b8284f|mouse|PASS|6/6/1，末页下一页禁用；[list-b7b8284f-pagination1.json](list-b7b8284f-pagination1.json), [list-b7b8284f-pagination2.json](list-b7b8284f-pagination2.json), [list-b7b8284f-pagination3.json](list-b7b8284f-pagination3.json)|
+|list-page/3|b7b8284f|mouse|PASS|6/6/1，末页下一页禁用；[list-b7b8284f-pagination1.json](list-b7b8284f-pagination1.json), [list-b7b8284f-pagination2.json](list-b7b8284f-pagination2.json), [list-b7b8284f-pagination3.json](list-b7b8284f-pagination3.json)|
+|list-page/prev|b7b8284f|mouse|PASS|6/6/1，末页下一页禁用；[list-b7b8284f-pagination1.json](list-b7b8284f-pagination1.json), [list-b7b8284f-pagination2.json](list-b7b8284f-pagination2.json), [list-b7b8284f-pagination3.json](list-b7b8284f-pagination3.json)|
+|list-page/next|b7b8284f|mouse|PASS|6/6/1，末页下一页禁用；[list-b7b8284f-pagination1.json](list-b7b8284f-pagination1.json), [list-b7b8284f-pagination2.json](list-b7b8284f-pagination2.json), [list-b7b8284f-pagination3.json](list-b7b8284f-pagination3.json)|
+|practice/P7/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P7-actions.json](journey-d80c04f4-P7-actions.json)|
+|practice/P7/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P7/P7-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P7-actions.json](journey-d80c04f4-P7-actions.json)|
+|practice/D/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-D-actions.json](journey-d80c04f4-D-actions.json)|
+|practice/D/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/D/D-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-D-actions.json](journey-d80c04f4-D-actions.json)|
+|practice/P3/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P3-actions.json](journey-d80c04f4-P3-actions.json)|
+|practice/P3/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P3/P3-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P3-actions.json](journey-d80c04f4-P3-actions.json)|
+|practice/B/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-B-actions.json](journey-d80c04f4-B-actions.json)|
+|practice/B/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/B/B-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-B-actions.json](journey-d80c04f4-B-actions.json)|
+|practice/P4/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P4-actions.json](journey-d80c04f4-P4-actions.json)|
+|practice/P4/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P4/P4-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P4-actions.json](journey-d80c04f4-P4-actions.json)|
+|practice/F/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-F-actions.json](journey-d80c04f4-F-actions.json)|
+|practice/F/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/F/F-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-F-actions.json](journey-d80c04f4-F-actions.json)|
+|practice/P5/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P5-actions.json](journey-d80c04f4-P5-actions.json)|
+|practice/P5/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P5/P5-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P5-actions.json](journey-d80c04f4-P5-actions.json)|
+|practice/A/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json)|
+|practice/A/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/A/A-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json)|
+|pair/A/A-2/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json)|
+|practice/E/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-E-actions.json](journey-d80c04f4-E-actions.json)|
+|practice/E/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/E/E-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-E-actions.json](journey-d80c04f4-E-actions.json)|
+|practice/P6/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P6-actions.json](journey-d80c04f4-P6-actions.json)|
+|practice/P6/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P6/P6-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P6-actions.json](journey-d80c04f4-P6-actions.json)|
+|practice/C/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-C-actions.json](journey-d80c04f4-C-actions.json)|
+|practice/C/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/C/C-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-C-actions.json](journey-d80c04f4-C-actions.json)|
+|practice/P2/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P2-actions.json](journey-d80c04f4-P2-actions.json)|
+|practice/P2/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P2/P2-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P2-actions.json](journey-d80c04f4-P2-actions.json)|
+|practice/P1/open-return|d80c04f4|mouse|PASS|完整key/财务/三时间准确；恢复自身行焦点；[journey-d80c04f4-results.json](journey-d80c04f4-results.json), [journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|practice/P1/identity-info|d80c04f4|mouse|PASS|完整名称/练习日期/序号可读；[journey-d80c04f4-results.json](journey-d80c04f4-results.json)|
+|pair/P1/P1-1/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-2/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-3/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-4/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-5/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-6/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair/P1/P1-7/replay|d80c04f4|mouse|PASS|明确尚未接入原因；URL不变；[journey-d80c04f4-P1-pair7-actions.json](journey-d80c04f4-P1-pair7-actions.json)|
+|detail-stage/import|d80c04f4|mouse|PASS|阶段原因，无写入/假成功；[journey-d80c04f4-P7-actions.json](journey-d80c04f4-P7-actions.json), [journey-d80c04f4-D-actions.json](journey-d80c04f4-D-actions.json), [journey-d80c04f4-P3-actions.json](journey-d80c04f4-P3-actions.json), [journey-d80c04f4-B-actions.json](journey-d80c04f4-B-actions.json), [journey-d80c04f4-P4-actions.json](journey-d80c04f4-P4-actions.json), [journey-d80c04f4-F-actions.json](journey-d80c04f4-F-actions.json), [journey-d80c04f4-P5-actions.json](journey-d80c04f4-P5-actions.json), [journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json), [journey-d80c04f4-E-actions.json](journey-d80c04f4-E-actions.json), [journey-d80c04f4-P6-actions.json](journey-d80c04f4-P6-actions.json), [journey-d80c04f4-C-actions.json](journey-d80c04f4-C-actions.json), [journey-d80c04f4-P2-actions.json](journey-d80c04f4-P2-actions.json), [journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|detail-stage/save-capital|d80c04f4|mouse|PASS|阶段原因，无写入/假成功；[journey-d80c04f4-P7-actions.json](journey-d80c04f4-P7-actions.json), [journey-d80c04f4-D-actions.json](journey-d80c04f4-D-actions.json), [journey-d80c04f4-P3-actions.json](journey-d80c04f4-P3-actions.json), [journey-d80c04f4-B-actions.json](journey-d80c04f4-B-actions.json), [journey-d80c04f4-P4-actions.json](journey-d80c04f4-P4-actions.json), [journey-d80c04f4-F-actions.json](journey-d80c04f4-F-actions.json), [journey-d80c04f4-P5-actions.json](journey-d80c04f4-P5-actions.json), [journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json), [journey-d80c04f4-E-actions.json](journey-d80c04f4-E-actions.json), [journey-d80c04f4-P6-actions.json](journey-d80c04f4-P6-actions.json), [journey-d80c04f4-C-actions.json](journey-d80c04f4-C-actions.json), [journey-d80c04f4-P2-actions.json](journey-d80c04f4-P2-actions.json), [journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|detail-stage/replay|d80c04f4|mouse|PASS|阶段原因，无写入/假成功；[journey-d80c04f4-P7-actions.json](journey-d80c04f4-P7-actions.json), [journey-d80c04f4-D-actions.json](journey-d80c04f4-D-actions.json), [journey-d80c04f4-P3-actions.json](journey-d80c04f4-P3-actions.json), [journey-d80c04f4-B-actions.json](journey-d80c04f4-B-actions.json), [journey-d80c04f4-P4-actions.json](journey-d80c04f4-P4-actions.json), [journey-d80c04f4-F-actions.json](journey-d80c04f4-F-actions.json), [journey-d80c04f4-P5-actions.json](journey-d80c04f4-P5-actions.json), [journey-d80c04f4-A-actions.json](journey-d80c04f4-A-actions.json), [journey-d80c04f4-E-actions.json](journey-d80c04f4-E-actions.json), [journey-d80c04f4-P6-actions.json](journey-d80c04f4-P6-actions.json), [journey-d80c04f4-C-actions.json](journey-d80c04f4-C-actions.json), [journey-d80c04f4-P2-actions.json](journey-d80c04f4-P2-actions.json), [journey-d80c04f4-P1-actions.json](journey-d80c04f4-P1-actions.json)|
+|pair-page/1|d80c04f4|mouse|PASS|6→1→6，保持完整key；[journey-d80c04f4-P1-pair7-actions.json](journey-d80c04f4-P1-pair7-actions.json)|
+|pair-page/2|d80c04f4|mouse|PASS|6→1→6，保持完整key；[journey-d80c04f4-P1-pair7-actions.json](journey-d80c04f4-P1-pair7-actions.json)|
+|pair-page/prev|d80c04f4|mouse|PASS|6→1→6，保持完整key；[journey-d80c04f4-P1-pair7-actions.json](journey-d80c04f4-P1-pair7-actions.json)|
+|pair-page/next|d80c04f4|mouse|PASS|6→1→6，保持完整key；[journey-d80c04f4-P1-pair7-actions.json](journey-d80c04f4-P1-pair7-actions.json)|
+|pair-page/retry|76a79286|mouse|PASS|保留旧6行；禁用翻页；恢复第7行+4CNY；不混版本；[pair-retry-76a79286-before.json](pair-retry-76a79286-before.json), [pair-retry-76a79286-pending.json](pair-retry-76a79286-pending.json), [pair-retry-76a79286-error.json](pair-retry-76a79286-error.json), [pair-retry-76a79286-retrying.json](pair-retry-76a79286-retrying.json), [pair-retry-76a79286-success.json](pair-retry-76a79286-success.json), [pair-retry-76a79286-geometry-summary.json](pair-retry-76a79286-geometry-summary.json)|
+|info/known-zero-P1/1:内部配对 1|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/2:内部配对 2|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/3:内部配对 3|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/4:内部配对 4|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/5:内部配对 5|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/6:内部配对 6|618b25e1|mouse|PASS|+1.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/7:闭合净盈亏|618b25e1|mouse|PASS|+10.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/8:已平仓费用i|618b25e1|mouse|PASS|已计入净盈亏，不再重复扣除。；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/9:已平仓费用i|618b25e1|mouse|PASS|2.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/10:留存开仓费用i|618b25e1|mouse|PASS|残余持仓保留的开仓费用。；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/11:留存开仓费用i|618b25e1|mouse|PASS|0.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/12:已实现毛额|618b25e1|mouse|PASS|12.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/13:未实现毛额|618b25e1|mouse|PASS|0.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/14:总费用|618b25e1|mouse|PASS|2.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/15:整份净盈亏|618b25e1|mouse|PASS|+10.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/16:资本|618b25e1|mouse|PASS|100000.00 CNY；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/known-zero-P1/17:结束估值|618b25e1|mouse|PASS|没有剩余持仓，无需估值；[tooltips-618b25e1-known-zero-P1.json](tooltips-618b25e1-known-zero-P1.json)|
+|info/unknown-A/1:内部配对 1|618b25e1|mouse|PASS|+990.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/2:内部配对 2|618b25e1|mouse|PASS|+894.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/3:闭合净盈亏|618b25e1|mouse|PASS|+1884.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/4:已平仓费用i|618b25e1|mouse|PASS|已计入净盈亏，不再重复扣除。；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/5:已平仓费用i|618b25e1|mouse|PASS|16.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/6:留存开仓费用i|618b25e1|mouse|PASS|残余持仓保留的开仓费用。；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/7:留存开仓费用i|618b25e1|mouse|PASS|7.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/8:已实现毛额|618b25e1|mouse|PASS|1900.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/9:未实现毛额|618b25e1|mouse|PASS|缺少结束时点价格；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/10:总费用|618b25e1|mouse|PASS|23.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/11:整份净盈亏|618b25e1|mouse|PASS|缺少结束时点价格；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/12:资本|618b25e1|mouse|PASS|100000.00 CNY；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/13:收益率|618b25e1|mouse|PASS|缺少结束时点价格；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/unknown-A/14:结束估值|618b25e1|mouse|PASS|缺少结束时点价格；[tooltips-618b25e1-unknown-A.json](tooltips-618b25e1-unknown-A.json)|
+|info/extreme-D/1:detail-count|618b25e1|mouse|PASS|配对数据缺失；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/2:闭合净盈亏|618b25e1|mouse|PASS|-78.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/3:已平仓费用i|618b25e1|mouse|PASS|已计入净盈亏，不再重复扣除。；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/4:已平仓费用i|618b25e1|mouse|PASS|2.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/5:未平仓数量|618b25e1|mouse|PASS|配对数据缺失；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/6:留存开仓费用i|618b25e1|mouse|PASS|残余持仓保留的开仓费用。；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/7:留存开仓费用i|618b25e1|mouse|PASS|0.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/8:已实现毛额|618b25e1|mouse|PASS|-76.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/9:未实现毛额|618b25e1|mouse|PASS|0.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/10:总费用|618b25e1|mouse|PASS|2.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/11:整份净盈亏|618b25e1|mouse|PASS|-78.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/12:资本|618b25e1|mouse|PASS|100000.00 CNY；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/extreme-D/13:结束估值|618b25e1|mouse|PASS|缺少剩余持仓数量，无法判断估值需求；[tooltips-618b25e1-extreme-D.json](tooltips-618b25e1-extreme-D.json)|
+|info/list-unknown/1:|618b25e1|mouse|PASS|配对数据缺失；[tooltips-618b25e1-list-unknown.json](tooltips-618b25e1-list-unknown.json)|
+|info/list-unknown/2:|618b25e1|mouse|PASS|配对数据缺失；[tooltips-618b25e1-list-unknown.json](tooltips-618b25e1-list-unknown.json)|
+|info-behavior/first-click|f60354a2|mouse/keyboard|PASS|首次保持打开，关闭保留触发焦点；[helper-f60354a2-first-mouse-click.json](helper-f60354a2-first-mouse-click.json), [helper-f60354a2-keyboard-reopen.json](helper-f60354a2-keyboard-reopen.json)|
+|info-behavior/keyboard-focus|f60354a2|mouse/keyboard|PASS|首次保持打开，关闭保留触发焦点；[helper-f60354a2-first-mouse-click.json](helper-f60354a2-first-mouse-click.json), [helper-f60354a2-keyboard-reopen.json](helper-f60354a2-keyboard-reopen.json)|
+|info-behavior/escape|f60354a2|mouse/keyboard|PASS|首次保持打开，关闭保留触发焦点；[helper-f60354a2-first-mouse-click.json](helper-f60354a2-first-mouse-click.json), [helper-f60354a2-keyboard-reopen.json](helper-f60354a2-keyboard-reopen.json)|
+|info-behavior/space|f60354a2|mouse/keyboard|PASS|首次保持打开，关闭保留触发焦点；[helper-f60354a2-first-mouse-click.json](helper-f60354a2-first-mouse-click.json), [helper-f60354a2-keyboard-reopen.json](helper-f60354a2-keyboard-reopen.json)|
+|info-behavior/outside|f60354a2|mouse/keyboard|PASS|首次保持打开，关闭保留触发焦点；[helper-f60354a2-first-mouse-click.json](helper-f60354a2-first-mouse-click.json), [helper-f60354a2-keyboard-reopen.json](helper-f60354a2-keyboard-reopen.json)|
+|info/long-value|aa071b3f|mouse|PASS|超长数值完整可查，根无溢出；[detail-aa071b3f-extreme-B-full-value-390.json](detail-aa071b3f-extreme-B-full-value-390.json), [list-aa071b3f-extreme-B-identity.json](list-aa071b3f-extreme-B-identity.json)|
+|detail/retry|76a79286|mouse|PASS|先错误无旧对象，后准确A；[detail-76a79286-retry-failure.json](detail-76a79286-retry-failure.json), [detail-76a79286-retry-success.json](detail-76a79286-retry-success.json)|
+|detail/readonly-context|76a79286|mouse|PASS|保持只读，有返回列表后修改原因；[stage-76a79286-keyboard-readonly.json](stage-76a79286-keyboard-readonly.json), [pair-retry-76a79286-before.json](pair-retry-76a79286-before.json)|
+|history/back-forward|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[detail-e900759b-page2-B.json](detail-e900759b-page2-B.json), [list-b7b8284f-back.json](list-b7b8284f-back.json)|
+|history/consecutive-returns|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[focus-d80c04f4-sequence.json](focus-d80c04f4-sequence.json)|
+|history/scroll-own-container|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[focus-d80c04f4-page2-scroll.json](focus-d80c04f4-page2-scroll.json)|
+|history/reload|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[list-76a79286-return-B-reload.json](list-76a79286-return-B-reload.json), [list-b7b8284f-reference-restored.json](list-b7b8284f-reference-restored.json)|
+|history/direct-not-found|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|history/filtered-missing-target|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[list-1bddc7b1-filtered-missing-return.json](list-1bddc7b1-filtered-missing-return.json)|
+|history/stale-A-B|d80c04f4..1bddc7b1|mouse/browser navigation|PASS|准确身份与范围；可用行回行，缺行回标题；[detail-76a79286-stale-B-after-A.json](detail-76a79286-stale-B-after-A.json)|
+|state/initial-loading|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/empty|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/error|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/retry|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/not-found|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/version-expired|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/extreme|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|state/explicit-end-price|b7b8284f..76a79286|mouse|PASS|空/未知/错误独立，A默认未知，仅显式估值4677；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md), [detail-618b25e1-explicit-price-A.json](detail-618b25e1-explicit-price-A.json)|
+|layout/list/1440|aa071b3f|mouse|PASS|72/64/58与14字，48行，950局部滚动，根不溢出；[list-aa071b3f-final-layout-1440-css.png](list-aa071b3f-final-layout-1440-css.png), [list-76a79286-390-scroll-right.json](list-76a79286-390-scroll-right.json)|
+|layout/list/1280|aa071b3f|mouse|PASS|72/64/58与14字，48行，950局部滚动，根不溢出；[list-aa071b3f-final-layout-1280-css.png](list-aa071b3f-final-layout-1280-css.png), [list-76a79286-390-scroll-right.json](list-76a79286-390-scroll-right.json)|
+|layout/list/761|aa071b3f|mouse|PASS|72/64/58与14字，48行，950局部滚动，根不溢出；[list-aa071b3f-final-layout-761-css.png](list-aa071b3f-final-layout-761-css.png), [list-76a79286-390-scroll-right.json](list-76a79286-390-scroll-right.json)|
+|layout/list/759|aa071b3f|mouse|PASS|72/64/58与14字，48行，950局部滚动，根不溢出；[list-aa071b3f-final-layout-759-css.png](list-aa071b3f-final-layout-759-css.png), [list-76a79286-390-scroll-right.json](list-76a79286-390-scroll-right.json)|
+|layout/list/390|aa071b3f|mouse|PASS|72/64/58与14字，48行，950局部滚动，根不溢出；[list-aa071b3f-final-layout-390-css.png](list-aa071b3f-final-layout-390-css.png), [list-76a79286-390-scroll-right.json](list-76a79286-390-scroll-right.json)|
+|layout/detail/1440|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/1280|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/900|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/899|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/600|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/599|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|layout/detail/390|aa071b3f|mouse|PASS|104高，28/34字，4/2/1列；自然页高、长值可查；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|device/os-ime|final|os-ime|NOT VERIFIED|未实测；不混同mouse/keyboard/组件事件；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|device/emulated-touch|final|emulated-touch|NOT VERIFIED|未实测；不混同mouse/keyboard/组件事件；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|device/physical-touch|final|physical-touch|NOT VERIFIED|未实测；不混同mouse/keyboard/组件事件；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|
+|device/software-keyboard|final|software-keyboard|NOT VERIFIED|未实测；不混同mouse/keyboard/组件事件；[../CONTROL-AUDIT.md](../CONTROL-AUDIT.md)|

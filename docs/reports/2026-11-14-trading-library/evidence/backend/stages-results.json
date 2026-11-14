@@ -1,0 +1,72 @@
+{
+  "scope": "actual metrics-list helper; 50 synthetic practices x50 complete pairs; in-memory SQLite; spies add inclusive stage timings; nestedGroupCsvParser is INSIDE pairProjection, never sum them; warm process, no production or percentile claim",
+  "node": "v26.0.0",
+  "samples": [
+    {
+      "sample": 0,
+      "totalMs": 1300.246595,
+      "stages": {
+        "list": {
+          "calls": 1,
+          "ms": 76.79751899999974
+        },
+        "verifiedSnapshot": {
+          "calls": 50,
+          "ms": 437.1118740000011
+        },
+        "nestedGroupCsvParser": {
+          "calls": 2500,
+          "ms": 734.5690549999968
+        },
+        "pairProjection": {
+          "calls": 50,
+          "ms": 785.2744680000005
+        }
+      }
+    },
+    {
+      "sample": 1,
+      "totalMs": 1293.1147609999998,
+      "stages": {
+        "list": {
+          "calls": 1,
+          "ms": 71.80483099999947
+        },
+        "verifiedSnapshot": {
+          "calls": 50,
+          "ms": 436.58096900000055
+        },
+        "nestedGroupCsvParser": {
+          "calls": 2500,
+          "ms": 735.0887029999967
+        },
+        "pairProjection": {
+          "calls": 50,
+          "ms": 783.8578000000007
+        }
+      }
+    },
+    {
+      "sample": 2,
+      "totalMs": 1286.614751,
+      "stages": {
+        "list": {
+          "calls": 1,
+          "ms": 75.93905199999972
+        },
+        "verifiedSnapshot": {
+          "calls": 50,
+          "ms": 430.6665030000013
+        },
+        "nestedGroupCsvParser": {
+          "calls": 2500,
+          "ms": 725.9189379999707
+        },
+        "pairProjection": {
+          "calls": 50,
+          "ms": 779.1181530000003
+        }
+      }
+    }
+  ]
+}

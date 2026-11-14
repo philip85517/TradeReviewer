@@ -1,0 +1,24 @@
+import hashlib, json, subprocess
+from pathlib import Path
+import sys
+
+base = Path(__file__).resolve().parent
+result = {}
+for name in ['e0bb', '25db', '38a0', '0dc6']:
+    root = Path('/Users/zhoulin/.codex/worktrees') / name / 'TradeReview'
+    def git(*args):
+        return subprocess.check_output(['git', '-C', str(root), *args]).decode()
+    paths = set(git('ls-files', '-z', '--cached', '--others', '--exclude-standard').split('\0'))
+    files = {}
+    for path in sorted(paths):
+        if not path or path.startswith(('.scratch/', '.superpowers/')):
+            continue
+        file = root / path
+        if file.is_file() and not file.is_symlink():
+            files[path] = hashlib.sha256(file.read_bytes()).hexdigest()
+    result[name] = {'root': str(root), 'head': git('rev-parse', 'HEAD').strip(),
+                    'status': git('status', '--porcelain'), 'files': files,
+                    'fingerprint': hashlib.sha256(json.dumps(files,sort_keys=True).encode()).hexdigest()}
+target = base / (sys.argv[1] if len(sys.argv)>1 else 'sources-before.json')
+target.write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
+print(json.dumps({name: {'head': r['head'], 'count':len(r['files']), 'fingerprint':r['fingerprint']} for name,r in result.items()},indent=2))

@@ -1,0 +1,58 @@
+"""Read-only artifact/source checks. No database or product mutations."""
+import hashlib
+import json
+import re
+from pathlib import Path
+
+base = Path(__file__).resolve().parent.parent
+evidence = base / 'evidence'
+before = json.loads((evidence / 'sources-before.json').read_text())
+after = json.loads((evidence / 'sources-after.json').read_text())
+comparisons = {}
+for name, prior in before.items():
+    current = after[name]
+    a, b = prior['files'], current['files']
+    changed = [p for p in sorted(a.keys() | b.keys()) if a.get(p) != b.get(p)]
+    comparisons[name] = {'beforeCount': len(a), 'afterCount': len(b),
+                         'headUnchanged': prior['head'] == current['head'],
+                         'beforeFingerprint': prior['fingerprint'],
+                         'afterFingerprint': current['fingerprint'],
+                         'changedFiles': changed}
+
+historical_path = Path('/Users/zhoulin/.codex/worktrees/38a0/TradeReview/.scratch/homepage-db-optimization-20261105/module-implementation-20261106/a1b/source-after-final-record.json')
+historical = json.loads(historical_path.read_text())
+candidate = Path('/Users/zhoulin/.codex/worktrees/38a0/TradeReview')
+historical_changes = []
+for path, item in historical['files'].items():
+    p = candidate / path
+    digest = hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None
+    if digest != item['sha256']:
+        historical_changes.append(path)
+
+links, broken = [], []
+for doc in sorted(base.rglob('*.md')):
+    for target in re.findall(r'\]\(([^)\n]+)\)', doc.read_text()):
+        if '://' in target or target.startswith('#'):
+            continue
+        target = target.strip('<>')
+        match = re.match(r'^(.*):(\d+)$', target)
+        path = match[1] if match else target.split('#')[0]
+        p = Path(path) if path.startswith('/') else doc.parent / path
+        entry = {'document': str(doc.relative_to(base)), 'target': target}
+        if not p.exists():
+            broken.append({**entry, 'reason': 'missing'})
+        elif match and (not p.is_file() or int(match[2]) < 1 or
+                        int(match[2]) > len(p.read_text().splitlines())):
+            broken.append({**entry, 'reason': 'invalid line'})
+        links.append(entry)
+
+result = {'sourceComparisons': comparisons,
+          'historicalA1b': {'path': str(historical_path),
+                            'manifestSha256': hashlib.sha256(historical_path.read_bytes()).hexdigest(),
+                            'count': len(historical['files']), 'changedFiles': historical_changes},
+          'markdownLinks': {'count': len(links), 'broken': broken}}
+(evidence / 'verification.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps(result, ensure_ascii=False, indent=2))
+assert all(v['headUnchanged'] and not v['changedFiles'] for v in comparisons.values())
+assert not historical_changes
+assert not broken

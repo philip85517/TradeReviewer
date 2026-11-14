@@ -1,0 +1,143 @@
+# F1 前端控件与视觉验收记录
+
+## 最终结论：17701786
+
+2026-11-14，root 独立完成桌面 F1 功能、状态链与视觉接受。触发是整页前端迁入及筛选/详情/导航接线；范围为新增 `/library-preview` 的全部既定控件、选项、固定13练习/20配对和异常/响应式状态。既有主页、真实持久化/来源认证/后端性能/真实图表为只读 Mock 范围外；禁用阶段入口仍纳入登记。原生系统IME、模拟触控、物理触控和软件键盘4项明确 NOT VERIFIED，不能以桌面/单测替代。
+
+|冻结范围|结果/证据|
+|---|---|
+|版本/模型/责任|HEAD1770178694f5815b699c23deef894888dac1abea；gpt-6.1-terra实现，root整页一致性/数据导航及独立浏览器/视觉接受；[manifest](evidence/final-manifest.json)|
+|完整登记|[176条逐项表](evidence/CONTROL-RESULTS.md)、[JSON](evidence/control-results.json)：135控件+10选项+27状态+4补充；172 PASS+4 NOT VERIFIED，保存路径缺失0|
+|功能/状态|13练习准确打开/返回及20配对入口；筛选/日期六模式/搜索/IME合成测试/排序/6-6-1分页/重试/旧响应丢弃/直达/历史/自身滚动与焦点；各项版本和输入方式见逐项表|
+|最终受影响检查|177配对before/pending/error/retrying/success、详情只读条件、列表日期可编辑、1440列表→准确A→返回、默认1280×720/DPR2交付页；[几何](evidence/pair-retry-17701786-geometry-summary.json)|
+|独立视觉|root直接比较原稿和渲染，1440/1280、列表761/759/390、详情900/899/600/599/390；旧极值/首次提示/返回焦点FAIL均保留后复验|
+|自动化与边界|最终13文件102测试+消费者计数1测试、tsc/build/diff、生产404；[结果](evidence/automated-final-results.json)。网络与端口计数分开，隔离SQLite未创建|
+|当前预览|[3437](http://127.0.0.1:3437/library-preview)，真实浏览器新鲜检查且服务运行；[截图](evidence/delivery-17701786-default.png)、[启动脚本](preview.sh)|
+|历史流程合规|FAIL保留：早期RED/参考预读顺序与提前brief文件缺口；[执行档案](evidence/sdd/progress.md)。产品验收不等于历史流程补齐|
+
+这不是最终HEAD逐项重新点击176次的声明。旧动作保持原版本和输入事实，最终hash/变更审查/受影响复验共同建立版本桥接；详见[最终接受记录](FINAL-ACCEPTANCE.md)。不将鼠标、键盘、合成事件和触控混称，不把历史分子分母累加为最终100%。
+
+## 历史记录（以下状态只属于所标版本）
+
+以下内容原样保留，包括当时的 NOT ACCEPTED、FAIL、尚未执行和计划分母；当前状态以上方冻结表及 FINAL-ACCEPTANCE 为准。不能将旧FAIL删除，也不能把旧待办误读为最终门槛缺失。
+
+## 2026-11-14 返回修复与完整固定实例（d80c04f4，618b25e1仅测试）
+
+root真实IAB：连续A/E/C返回各自focus；1280×650第二页B返回前后自身scroll150、focusB、body0。证据focus-d80c04f4-sequence.json、focus-d80c04f4-page2-scroll.json。两个历史监听器竞态通过单一hook历史边界消除；4d99597f的capture修复真实失败仍保留。代码独立fix3 review确认剩余两项ADDRESSED；新测试不冒称重现历史RED。
+
+固定pagination13练习全部逐个打开、核对practice/revision/version/snapshot、三时间/来源/财务，并点击各自导入/保存/回放阶段控件，返回均恢复该行焦点。13完整身份提示逐个鼠标打开，文本保存在journey-d80c04f4-results.json。20配对入口全部实际鼠标点击且明确原因/URL不变：19个见各journey-d80c04f4-ID-actions.json，P1第7个单列journey-d80c04f4-P1-pair7-actions.json；P1数字页、前/后页6/1已实测。此33业务实例已执行，但尚不把整个控件全集写成100%。
+
+语义字段提示：known/zero P1、unknown A、extreme D全部实际鼠标点击并Escape，tooltip文本/280宽/rect保存在tooltips-618b25e1-*.json；列表D两未知原因分别可打开，C闭合0显示0.00 CNY（非—）。explicit-end-price/A展示未实现2800/整份4677/4.677%/140 CNY及2023-01-01；normal A仍未知。极值B长金额390完整值证据沿用展示不变aa071b3f。F1整体仍待pair异步/最终自动化/隔离/广泛review。
+
+触发：新增整页模拟只读列表/详情及数据、导航接线，适用 [frontend-control-audit](../../docs/agents/frontend-control-audit.md)。root 独立验收，Terra 实现；当前为预登记，产品尚未接受。
+
+## 条件与边界
+- worktree e0bb，分支 codex/library-frontend-mock；基线 3d444316589e2feefd9b2b3d03d362737e8a6d27。最终 manifest、HEAD、服务/进程、URL、时间待补。
+- 固定 reference A–F 与 pagination 13 行/3 页，配对固定实例按最终 fixture 登记；所有选项取端口固定集合。首次列表、更新、详情、空/错/极端/unknown 分态记录。
+- CSS 视口 1440×1000、1280×800，最终实际断点两侧和390；DPR/zoom、滚动容器/偏移与截图实际尺寸待补。
+- 本批完整登记新增预览路由；既有 `/` 不改，F2/后端/真实回放不在此批实现。阶段禁用控件仍登记并检查原因，不从分母消失。
+- 真实持久化写入 NOT APPLICABLE：F1 是只读 Mock、无写端口。物理触屏和软件键盘不作为桌面 Mock 交付门槛，保留 NOT VERIFIED，不宣称真机通过。模拟触控与鼠标/键盘分列。
+- Mock 路由不应导入/读取 SQLite；验收服务显式 isolated DB 路径防误接。无业务库数据写入授权。
+
+## 预登记（以最终 DOM/AX/source 三方核对后冻结）
+|ID/重复规则|前态|动作|预期/状态链|视觉目标|owner|状态|
+|---|---|---|---|---|---|---|
+|F1-nav/{home,library,analysis,data,strategy}|各主态|鼠标/键盘|本批入口保持模拟库；未接入有明确原因|72侧栏/36命中|root|NOT VERIFIED|
+|F1-mode/{live,simulation},view/{list,stats}|列表/详情|鼠标/键盘|本批模拟列表，非首批页签阶段说明|64顶栏/58二级栏|root|NOT VERIFIED|
+|F1-filter/date/{all,day,range,week,month,year,apply,cancel}|列表|开/编辑/非法/取消/提交|日期有效才请求，成功原子应用范围|320浮层/36字段，不推表|root|NOT VERIFIED|
+|F1-filter/market/{option},account/{option}|列表|逐固定选项|目标查询/页码1、完整范围合计|工具区稳定|root|NOT VERIFIED|
+|F1-search/{type,IME,submit,clear}|列表|输入/回车/清除|局部搜索0结果、取消/重试不混范围|220宽，与refresh间隔28|root|NOT VERIFIED|
+|F1-filter/clear,F1-refresh|已筛选/错误|点击/键盘|局部筛选与搜索分别清除；刷新相同已应用范围|36命中，状态槽稳定|root|NOT VERIFIED|
+|F1-sort/{asc,desc}|列表|逐方向|稳定身份/编号，URL成功后更改|表头对齐|root|NOT VERIFIED|
+|F1-page/{1,2,3,prev,next}|pagination|逐页/边界|6/6/1，无整库数组暴露|页脚/结果槽|root|NOT VERIFIED|
+|F1-row/{practiceId}|固定13行各自所在页|每行打开/返回|准确practice/revision/version；同名不串；焦点恢复|行点击前后与返回|root|NOT VERIFIED|
+|F1-info/{metricId}|列表/详情|hover/focus/Esc/外部关闭|口径/完整值，不推挤布局|36/16/280，边缘避让|root|NOT VERIFIED|
+|F1-detail/{back,retry,source,date,capital,replay}|详情/错误|返回/键盘/阶段禁用检查|准确三时间、来源、未知及独立财务；无假写|单列原容器，长文可读|root|NOT VERIFIED|
+|F1-pair/{practiceId,pairId},page/{n}|详情|逐固定配对/逐页|同practice版本；回放阶段原因|表格/页脚/位置|root|NOT VERIFIED|
+|F1-state/{loading,empty,error,retry,not-found,version-expired,extreme,explicit-end-price}|端口场景|URL进入/真实重试|旧结果和范围配套，A未知≠0，仅显式价场景4677|before/during/after槽位|root|NOT VERIFIED|
+|F1-history/{back,forward,reload,direct,vanished}|列表⇄详情|浏览器操作|范围/排序/页码/实际scroll与焦点；失效回标题|自身滚动容器|root|NOT VERIFIED|
+|F1-layout/{1440,1280,breakpoint±1,390}|normal/expanded/extreme|resize/滚动|自然页高，核心动作可达，无整体缩字|同态参考/尺寸|root|NOT VERIFIED|
+
+## 实际验证
+实际操作日志、截图、rect、network/console、独立比较继续补充。预登记不是完成分母：最终按 option/practiceId/pairId 展开。未执行一律 NOT VERIFIED，不能计算100%。
+
+### 首帧失败保留（1b.1 4e95d03c + 未消费helpers782479f0）
+root 未实现产品，直接看原稿 approved-e-sim-list-1440.jpg 与 [1440首帧](evidence/list-4e95-1440-before.jpg)。服务3437/session82120，显式隔离路径 preview-isolated.sqlite 尚不存在；开发首编译14.6s，不代表后端性能。
+1440×1000 CSS 对照：aside72、header64、nav58、content x96/right24、card x96/y218/w1320/h455、toolbar y237/h36、table y289/h329、tbody y335.5/h282、footer y634/h20。搜索220/刷新36/gap28符合。信息层级仍为条件→单表卡，六行身份 A/E/C/D/B/F 正确，保留完整练习名是现行业务要求。
+FAIL：侧栏缺图标；模式组宽度/位置偏离原稿；字段字体12（要求14）与身份宽196（要求216）；练习链接命中高20（要求36）；缺生效范围摘要；状态槽和响应式规则尚未完成。已派原实现者修复；不签首帧通过。
+浏览器 read-only evaluate 的 performance API 不可用，不能据此宣称网络请求为0；后续需用可用记录与依赖闭包交叉说明证据边界。鼠标/键盘尚未完整执行。
+
+|版本/ID|action/input|actual|visualdelta/state-chain|evidence|status|
+|---|---|---|---|---|---|
+|—|—|尚未运行新增UI|—|—|NOT VERIFIED|
+
+### 首帧复核5031d480（FAIL，修正中）
+原稿直接对照；1440×1000、1280×800 的六行身份/顺序正确，侧栏图标、模式组、14字号、36行命中区和已应用摘要已补齐。1440：card(96,218,1320,459)、toolbar(115,237,1282,44)、table(115,297,1282,325)、tbody高288、footer(115,622,1282,36)。鼠标刷新前后几何相同，但“during”取样时已返回，因此不作为加载中证据。
+仍 FAIL：账户216×36中的长文换为两行并溢出；审查指出初始toolbar36而正常44，加载槽跳8；390×844实际导航文字逐字换行、日期290超出内容270。截图 [1440](evidence/list-5031-1440.jpg)、[1280](evidence/list-5031-1280.jpg)、[390](evidence/list-5031-390-before.jpg)。版本绑定源码审查见 task-1b2-review.md；已交原 Terra 实现者修正，不扩展任务二/三直到首帧门槛通过。
+
+### 首张完整列表检查点接受（bd160a03）
+root 直接查看 [1440](evidence/list-bd160-1440.jpg)、[1280](evidence/list-bd160-1280.jpg)、[759](evidence/list-bd160-759.jpg)、[761](evidence/list-bd160-761.jpg)、[390](evidence/list-bd160-390-ready.jpg)。同态主布局72/64/58、卡片x96/right24、字段290/180/216×36、正文14/20、单表六行层级符合；保留现行业务完整练习名，摘要/搜索/页脚是规范要求的增补。卡片y218，较旧原图y215差3px，无核心层级差距。DPR1；缩放未由工具独立读取，CSS viewport是明确覆盖值，不把截图像素当推断来源。
+账户换为“全部模拟账户”且有身份说明；390日期收为270、导航不换字且局部横滚，根scrollWidth390；表格局部横滚保留正文尺寸。759/761工具区按可用空间换行，未缩字；页高自然增长。鼠标刷新与Tab至统计已观察，完整控制旅程待后续接线。review task-1b-fix1-review.md判两项Important均ADDRESSED，无新增Important。**仅首屏视觉检查点PASS，F1整体仍NOT VERIFIED**；加载/错误/详情和完整控件/历史将在最终代码重验。初次刷新后未完成CSS加载帧另存list-bd160-390.jpg，不冒充ready帧。
+
+## 验收门槛
+|门槛|证据|结论|
+|---|---|---|
+|功能正确性|尚未实施|NOT VERIFIED|
+|前端请求/导航/返回链|尚未实施|NOT VERIFIED|
+|独立视觉对照|尚未渲染|NOT VERIFIED|
+|隔离边界与业务数据保护|实现后import闭包与实际网络，当前配置未改|NOT VERIFIED|
+
+## e37889d0 浮层局部实测
+
+root，IAB tab3，1440×1000/DPR1，Mock reference；键盘 Tab/ShiftTab 到内部配对说明，浮层 x1152/y337/w280/h68/right1432，实际按 Escape 关闭且焦点仍留说明按钮。截图 `evidence/info-e378-keyboard.jpg`。该条只证明此版本此输入方式与位置，鼠标 hover、窄屏与整页完整验收未验证。新增仅验收用 loopback 3438→3437 透明 HTTP 代理，保存 `evidence/browser-network.ndjson`，产品代码无监控注入；最终网络结论待最终版本真实旅程完成。
+
+## 条件与历史检查点 b7b8284f（限定接受，不是最终全页覆盖率）
+
+root，真实 IAB tab3，代理3438→开发3437；1440×1000/DPR1/zoom1/scale1；另759×650。限定范围为 Task2 已接通的列表条件与历史；详情打开/返回及最终全部控件由 Task3/4 接受。独立代码审查 task-2b2c-review.md specPASS/qualityApproved；六文件35测试与tsc由实现者报告，review未重复执行。
+
+|ID|动作与实际结果|证据|结论|
+|---|---|---|---|
+|F1-search/submit,clear;sort/asc,desc|600519回车→3条A/E/B；排序desc→B/A/E；清搜索→6条且保持desc|list-b7b8284f-search-sort.json/jpg；真实AX动作记录|PASS|
+|F1-filter/market/all,CN;account/all,simulation|逐选CN、simulation；URL与摘要同步；清筛选回all/all|date-b7b8284f-panel；list-b7b8284f-cleared-scope|PASS|
+|F1-date/week,month,year,all|本周10-12..15、本月10-01..15、本年01-01..10-15，全部双空；保留其他查询|真实AX动作；date-b7b8284f-all|PASS|
+|F1-date/day,range,apply|单日10-18应用→同日起止；有效range应用，原子更新范围|date-b7b8284f-day；date-b7b8284f-range-applied|PASS|
+|F1-date/invalid,Escape,cancel,outside|非法range应用disabled；Esc关闭焦点回trigger；取消/外部点击关闭无查询改变|date-b7b8284f-invalid-range/escape/cancel/outside|PASS|
+|F1-page/1,2,3,prev,next|13条6/6/1，下一页末disabled，上一页/数字1可回，排序回page1|list-b7b8284f-pagination{1,2,3,-desc}|PASS|
+|F1-refresh/ready,pending,complete|三态完整6行仍在，loading只在during；card216/499、toolbar235/48、table335/325、tbody371.5/288、footer660/36前中后完全相同|list-b7b8284f-refresh-{before,during,after}.json/jpg|PASS|
+|F1-state/initial-loading,error,retry,empty|初始计数—；首错重试恢复6；不存在搜索→0|list-b7b8284f-slow-initial/retry-failed/retry-recovered/empty|PASS|
+|F1-history/back,forward,reload,scroll|清scope后back恢复单日CN/simulation，forward清scope；实际.library-preview scroll207重载恢复207；无body滚动替代|list-b7b8284f-back；list-b7b8284f-reference-{scrolled,restored}|PASS|
+|F1-list/visual|root直接查看当前1440列表、日期浮层及此前已接受bd160五尺寸对照；当前模块18/24与固定反馈槽是V2要求，六行层级/36字段/72-64-58保留|list-b7b8284f-1440-ready；date-b7b8284f-panel；历史原图比较|限定PASS，最终响应式复验待Task4|
+
+输入证据边界：该浏览器bridge的fill/setValue改变原生date DOM后没有提交React日期状态；真实native Up/Down随即正确触发状态并应用。没有注入DOM事件或修改产品来适配工具。实际系统IME、physical touch、软件键盘没有执行，保留NOT VERIFIED。先前slow-refresh-pending取样过晚的记录保留；只有新的refresh-during实际观察到加载中。历史缺失行测试失败来自测试未等加载完成和canonical key，原断言保留且35测试通过；实际详情消失行返回在Task3/4复验。
+
+## 极值中间版本检查 5e240db4（最终复验待执行）
+
+- 1440×1000/DPR1/zoom1，extreme，root实际浏览器，证据 `evidence/list-5e240db4-{extreme,missing-pairs,missing-open-keyboard}.{json,jpg}`。
+- 已知0与缺配对/未知未平仓分别显示0与—，键盘Tab可打开未知原因。
+- **FAIL待修复**：从其他焦点直接鼠标点击未知配对i，最终aria-expanded=false且说明消失；InfoPopover当前hover/focus先show再click toggle关闭。键盘打开不能抵销鼠标失败。最终共享提示修复票需包含首次鼠标click、键盘、Esc与outside回归。
+- **视觉待纠正**：超长B名称将日期列挤窄导致所有日期拆行，B行增高。最终极值布局需保持日期/代码/数值列稳定，并通过完整值提示保留超长名称；当前图片保留，不能计入视觉PASS。
+- 这是只读Mock中间版本检查，详情尚未挂载，不代表完整F1验收。
+
+## 最终登记的重复边界（执行前声明）
+
+固定 pagination 数据集13个练习各自单独登记打开/返回，20个内部配对各自单独登记只读回放入口（A2个、P1七个、其他11个各1个）。不能用同一行模板替代这33个实例。列表选项和页码全部展开。
+
+其余重复模板按“语义字段 × 行为/值状态”登记：详情导入/保存资本/回放等同一阶段动作以动作ID为一项，并核对各练习实际原因和不可用状态；金额与未知说明以字段、known/zero/unknown/long-value状态为项，通用浮层再分别检查mouse首次click、键盘focus、Escape、outside和避边。相同字段在13个练习中的静态数值全部留在逐对象JSON；不把这些静态检查计成13次交互。此重复规则明确区分模板交互和固定业务实例，不声称验证所有过滤组合或所有输入设备。最终分母以生成后的登记文件为准，目前尚不计算覆盖率。
+
+### 3df7de65详情视觉反例 / Task4a派发前映射
+F1-detail/pairs/summary、F1-layout/extreme、F1-info/full-value：root实际390×844 extreme/B的root390/scrollWidth442，四104卡宽345.89溢出可用270；配对quantity/net左右对齐错误（header/data均left）。证据detail-3df7de65-extreme-B-390{,-lower}.{jpg,json}及detail-3c-intermediate-A-1440。状态FAIL保留。绑定V2正文59/64/70/71/89/91与hcr06-final-rounds-a.svg；Task4a Terra负责局部样式/可收缩数值/提示行为，root负责1440/1280/899±/599±/390实际对照。保持104、28/34、4/2/1列、完整值可达，不缩全页、不改财务。pairpending状态槽待4b真实场景测量；当前未宣称实测。
+
+## 2026-11-14 helper f60354a2 局部复验
+root 实际鼠标点击“内部配对说明”首次保持展开；Escape 关闭并保留触发器焦点，Space 重新展开，点击列表标题关闭。1440×1000/DPR1/zoom1；evidence/helper-f60354a2-first-mouse-click.{json,jpg}、helper-f60354a2-keyboard-reopen.{json,jpg}。仅该入口行为局部 PASS；最终列表/详情视觉与完整控件清单仍待完成。未以组件合成事件冒称鼠标证据。
+
+## 新回归：连续详情返回行焦点（c5f1c3da）
+FAIL，root真实鼠标连续打开A返回、E/P6/C/P2返回，后四者列表URL/页码正确但焦点都停在practice-row-A；再次E单独打开返回仍A。证据journey-c5f1c3da-*-actions.json及return-c5f1c3da-E-focus-check.{json,jpg}。此前e900759b单次B返回PASS仍保留，不能外推连续导航。Task4c分配原host负责人补行为RED→GREEN；全F1保持NOT ACCEPTED。
+
+## aa071b3f 展示叶子复验（整体仍未接受）
+独立 scopedreview task-4a-review 无Critical/Important。root直接查看原图及normal A1440/1280、extreme B1440/390和900/899、600/599：数值header/data右对齐、四卡104高、28/34字体、4/2/1列均符合；极值根scrollWidth等于viewport，数字自身ellipsis且36px说明保留，390浮层完整展示+12345678901234567890.00 CNY。原始FAIL图保留。完整身份B可鼠标打开并看到全名/日期/序号。证据detail-aa071b3f-extreme-B-*、list-aa071b3f-extreme-B-identity。
+
+列表正常1440/1280/761/759/390：根scrollWidth均等于viewport，全部6行48高，table最小950局部横滚，字体不缩；root直接看list-aa071b3f-final-layout-*-css.png。1280正常详情四卡仍一行，root直接与hcr06参考比较（detail-aa071b3f-reference-A-1280-css.png）；现行身份/财务、独立状态槽及只读上下文增补按已批准brief自然增高，配对日期沿用现行2022–23历史事实。
+
+截图方法补充：原native截图可能为应用窗口适配后的缩放图（1280 CSS对应1152px宽文件），不能用图像像素推断CSS尺寸；保留原图，后缀-css.png改用documented tab.screenshot直接取得CSS视口图，并与同批DOM viewport/DPR1/zoom1/scale1绑定。最终交付采用后者。
+
+连续返回根因诊断：focus-aa071b3f-instrumented-fields.json记录restore→pop→ready=false→open E save跳过。修复仍待Task4c，上述布局PASS不抵销返回链FAIL。

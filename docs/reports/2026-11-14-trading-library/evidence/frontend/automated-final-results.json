@@ -1,0 +1,72 @@
+{
+  "head": "1770178694f5815b699c23deef894888dac1abea",
+  "recordedAt": "2026-11-13T17:53:45.775708+00:00",
+  "scope": "F1 targeted checks, not whole-repository suite",
+  "checks": [
+    {
+      "name": "unit",
+      "command": [
+        "./scripts/native-node.sh",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "app/lib/library-preview",
+        "app/components/library-preview"
+      ],
+      "exit": 0,
+      "log": "unit-17701786.log",
+      "files": 13,
+      "tests": 102
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "./scripts/native-node.sh",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "log": "typecheck-17701786.log"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "log": "build-17701786.log",
+      "runtime": "pinned native Node26 PATH"
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "diff-check-17701786.log"
+    },
+    {
+      "name": "port-call-count",
+      "command": [
+        "./scripts/native-node.sh",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        ".scratch/library-frontend-mock-20261113/evidence/port-count-vitest.config.mts"
+      ],
+      "exit": 0,
+      "log": "port-call-count-17701786.log",
+      "files": 1,
+      "tests": 1
+    }
+  ],
+  "productionGuard": {
+    "status": 404,
+    "headers": "production-guard-17701786-headers.txt",
+    "serverStopped": true
+  },
+  "warnings": "Baseline Node DEP0205 and build classification notice retained in raw logs."
+}

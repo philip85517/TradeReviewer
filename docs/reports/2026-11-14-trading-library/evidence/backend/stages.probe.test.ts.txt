@@ -1,0 +1,42 @@
+import { DatabaseSync } from 'node:sqlite';
+import { writeFileSync } from 'node:fs';
+import { expect, test, vi } from 'vitest';
+import { initializeSqlite } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/db/sqlite';
+import { PracticeStore } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-store';
+import { readPracticeListWithMetrics } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-list-metrics';
+import * as snapshots from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/storage/practice-source-snapshot-reader';
+import * as projections from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/trades/tradingview-practice-pair-projection';
+import * as parser from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/import/tradingview-simulation';
+import { header, row } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/import/__fixtures__/tradingview';
+import { CONTRACT_VERSION, TRADINGVIEW_PRACTICE_ACCOUNT_ID } from '/Users/zhoulin/.codex/worktrees/25db/TradeReview/app/lib/trades/practice-contracts';
+
+test('attribute actual metrics-list stages without changing candidate implementation',()=>{
+  const db=new DatabaseSync(':memory:');initializeSqlite(db);const writer=new PracticeStore(db);
+  const text=[header,...Array.from({length:50},(_,i)=>[row(i+1,'多头出场','2021-03-01','11'),row(i+1,'多头进场','2021-02-19','10')]).flat()].join('\r\n');
+  const samples:any[]=[];
+  try{
+    for(let i=0;i<50;i++){
+      const symbol=String(600000+i),input={contractVersion:CONTRACT_VERSION,fileName:`SSE_${symbol}_2026-10-26.csv`,bytesBase64:Buffer.from(text).toString('base64'),scope:{accountId:TRADINGVIEW_PRACTICE_ACCOUNT_ID,instrumentId:`CN-SH:${symbol}`}};
+      const p=writer.preview(input);if(p.status!=='create-source')throw Error('fixture');
+      writer.commit({contractVersion:CONTRACT_VERSION,commandId:`backend-stage-probe-${i}`,input,inputDigest:p.inputDigest,guard:p.guard});
+    }
+    expect(readPracticeListWithMetrics(db).practices).toHaveLength(50);
+    let stages:Record<string,{calls:number;ms:number}>={};
+    function timing<T extends (...a:any[])=>any>(name:string,fn:T):T{return ((...args:any[])=>{const at=performance.now();try{return fn(...args);}finally{const v=stages[name]??={calls:0,ms:0};v.calls++;v.ms+=performance.now()-at;}}) as T;}
+    const originalList=PracticeStore.prototype.list;
+    const originalSnapshot=snapshots.readPracticeSourceSnapshotInTransaction;
+    const originalProjection=projections.projectTradingViewPractice;
+    const originalParser=parser.parseTradingViewSimulationCsv;
+    vi.spyOn(PracticeStore.prototype,'list').mockImplementation(function(this:PracticeStore){const at=performance.now();try{return originalList.call(this);}finally{stages.list={calls:1,ms:performance.now()-at};}});
+    vi.spyOn(snapshots,'readPracticeSourceSnapshotInTransaction').mockImplementation(timing('verifiedSnapshot',originalSnapshot));
+    vi.spyOn(projections,'projectTradingViewPractice').mockImplementation(timing('pairProjection',originalProjection));
+    vi.spyOn(parser,'parseTradingViewSimulationCsv').mockImplementation(timing('nestedGroupCsvParser',originalParser));
+    for(let sample=0;sample<3;sample++){
+      stages={};const at=performance.now(),result=readPracticeListWithMetrics(db),totalMs=performance.now()-at;
+      expect(result.practices.every(p=>p.metrics?.pairCount===50)).toBe(true);
+      expect(stages.verifiedSnapshot.calls).toBe(50);expect(stages.pairProjection.calls).toBe(50);expect(stages.nestedGroupCsvParser.calls).toBe(2500);
+      samples.push({sample,totalMs,stages});
+    }
+    writeFileSync('.scratch/library-backend-review-20261114/evidence/stages-results.json',JSON.stringify({scope:'actual metrics-list helper; 50 synthetic practices x50 complete pairs; in-memory SQLite; spies add inclusive stage timings; nestedGroupCsvParser is INSIDE pairProjection, never sum them; warm process, no production or percentile claim',node:process.version,samples},null,2)+'\n');
+  } finally {vi.restoreAllMocks();db.close();}
+});

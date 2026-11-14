@@ -1,0 +1,85 @@
+# Final whole-branch review — F1 frontend Mock experiment
+
+Reviewer: final_branch_review, independent read-only code review, 2026-11-14.
+Base: `3d444316589e2feefd9b2b3d03d362737e8a6d27`; head: `1bddc7b131a64361f0f198fa364213040526ed57`.
+
+## Scope and evidence
+
+Used the supplied `review-3d444316..1bddc7b1.diff` package for commit/file scope, then inspected the final product modules and relevant behavior tests. No regenerated branch diff, product edit, index/HEAD/branch mutation, database access, push, merge, publication, or subagent dispatch. This report is the only reviewer write.
+
+Read AGENTS.md, development-workflow, the four supplied F1 requirement documents, canonical V2 layout/interaction rules and current business specification references, SOURCE-EXTRACTION, REQUEST-LEDGER, CONTROL-AUDIT, progress ledger and scoped 4b/4d review evidence. Whole-page visual acceptance belongs to the root reviewer doing actual reference/render comparisons; this code review does not claim another independent visual inspection. Production entry and source preservation are supported by the branch scope, route source, boundary guard and recorded source-freeze evidence, not a claim that this reviewer ran production or opened the business database.
+
+No unchanged suites rerun. At dispatch the last aggregate run was 90/91 with the obsolete detail-filter assertion failing; head updates that test, its scoped five tests and tsc passed, and root aggregate rerun remains pending. Recorded build success at 76a79286 predates only test changes. Do not interpret those facts as a fresh 91/91 assertion from this reviewer.
+
+## Strengths
+
+- A small port boundary separates fixtures, domain facts, async state, URL/history and presentation. The development route returns notFound in production, and the changed file set does not include app/page.tsx or runtime configuration. New imports do not lead to legacy HTTP/store/parser/bootstrap/Recall/xlsx or /api/storage.
+- List requests retain the successful query/results/options while pending. Snapshot validation precedes applying query/data/version and writing the URL; failed targets remain retryable without relabeling old rows. Cancellation plus monotonically increasing request identity protects against noncooperative late responses, including stale options.
+- Direct detail reads do not fetch options or list data. New detail intent clears the old object immediately. Detail and pair responses validate full practice identity, row identity and snapshot; failed pair pagination preserves the accepted page. The tests exercise mismatches and late responses, not merely callbacks.
+- Facts distinguish unknown from known zero. Default A retains unknown whole-practice net and residual 70, independently displays closed net 1884 and fees 16/7, and the explicit valuation scenario alone supplies 4677. Decimal formatting preserves full large values in disclosures.
+- The scroll owner is local to the preview. Saved context is keyed by canonical list URL including scenario; the repaired single popstate boundary saves before transitions and restores after rows exist. Existing continuous-return failures remain recorded instead of being erased by subsequent passing checks.
+- Stage actions remain explanatory and inert. UI source preserves the 72/64/58 shell, 96/24 content edges, 220 search, 36 desktop controls, 280 disclosures, natural page growth, local table overflow and 4/2/1 detail metrics. Actual fidelity remains a separate browser gate.
+
+## Issues
+
+### Critical (Must Fix)
+
+None found in this experiment's code scope.
+
+### Important (Should Fix)
+
+No new code finding. Final acceptance evidence is still a gate, not an optional follow-up: root must finish the aggregate verification, final version-bound control inventory, network/isolation evidence, responsive/visual comparison and fresh running preview link. Stale report status text is expected during that work and is not separately charged as a product defect.
+
+### Minor (Nice to Have)
+
+1. **Failure-once key depends on property insertion order.** `app/lib/library-preview/mock-read-port.ts:86`. `JSON.stringify(key)` makes equivalent PracticeKey objects occupy different failure entries when property order differs. The prior scoped independent reproduction showed two initial failures for the same semantic key. Current host retries the canonical detail key, so its actual retry journey works; this remains a Minor development-scenario defect, not a production integrity issue. Use `JSON.stringify([key.practiceId, key.revisionId, key.practiceVersion])` or the canonical looked-up row key, with an equivalent-key retry assertion. Deferred, explicitly retained.
+
+2. **Shell allows contradictory detail/edit props.** `app/components/library-preview/preview-shell.tsx:13–29`. `isDetail` controls explanatory text while callback presence controls editability. A direct consumer passing both `isDetail` and `onQueryChange` gets editable filters. Current LibraryPreview at line 34 suppresses the callback for detail, so no reachable F1 host defect follows. Treat as Minor interface hardening: derive `canEdit = !isDetail && Boolean(onQueryChange)` or use a discriminated prop type. The corrected test should not be represented as proving the contradictory-prop case safe. Deferred.
+
+3. **Compressed source increases review cost.** `app/components/library-preview/library-preview.tsx:29–34`, `practice-detail.tsx:26–39`, and `app/lib/library-preview/preview-url.ts:4–14`. Several state transitions and large JSX blocks are single lines. Their behavior is inspectable and bounded, but future changes are harder to review and diagnose. Format and extract named presentation/state helpers when these modules are next changed; avoid an unrelated rewrite during acceptance. Deferred readability item.
+
+4. **Pure helper boundary coverage remains thin.** `app/lib/library-preview/preview-url.test.ts:3–5` and `practice-date-range.test.ts:3`. Safe-integer pages and Gregorian validation are implemented, but the explicit negative/zero/NaN page matrix, unknown partial identity parameters, reversed ranges and additional calendar boundaries are not all individually asserted here. Existing host/date tests cover invalid range and normal navigation, so there is no demonstrated faulty outcome. Add table-driven external-behavior cases on the next helper change. Deferred test depth, not a claim of full boundary coverage.
+
+## Deferred-item disposition
+
+|Prior concern|Disposition at this head|
+|---|---|
+|Compressed JSX / helper formatting|Retained Minor 3.|
+|Date/URL boundary matrix|Retained Minor 4; implementation rejects unsafe pages and invalid Gregorian ranges.|
+|Pair mismatch component assertions|The hook now explicitly tests mismatched detail key, pair key, row key and snapshot, plus stale pair response rejection. Pure view also guards supplied page identity; extra component-only defense assertions remain optional, not an integration gap.|
+|Pair pending/error rerender coverage|Addressed by practice-detail.test.tsx:11–26, retaining actual row/status nodes across rerenders and testing retry callback; root supplies real-browser geometry evidence.|
+|Unavailable search/page accessible reasons|Addressed in current list props and practice-list.test.tsx:24–30.|
+|Tooltip edge positioning and side-effect import guard|Addressed in current InfoPopover positioning/listeners and dependency-boundary import scanning/tests; root must retain actual edge screenshots.|
+|Early stale-test timing / retry test depth|Superseded by hook tests resolving noncooperative deferred responses under act and host failed-refresh retry assertions. No longer a standalone blocker.|
+|Shell clear test initially matched defaults|Current shell test uses differing supplied default dates; actual host test clears nondefault date/market/account while preserving search/sort. Addressed.|
+|4b equivalent key serialization|Retained Minor 1; no severity inflation for the actual canonical host path.|
+|4d isDetail plus callback|Retained Minor 2; corrected test describes the actual host contract.|
+|4d context-value assertions|Optional test strengthening; component renders passed query values and parent reports direct filtered-out detail return to empty list/title. No identified value-loss bug.|
+|Historical TDD / reference pre-read / advance-brief misses|Process exceptions remain disclosed in progress/report history. Later GREEN and independent review do not retrospectively establish RED or pre-read compliance.|
+
+## Recommendations
+
+Keep the experiment acceptance and later backend decision separate. Carry Minor 1/2 into the next touched-module work, and keep the compact port/state contract tests as the basis for a future adapter. Update README, final acceptance, inventory and request ledger together after root's remaining checks; preserve old FAIL and NOT VERIFIED records with their version rather than rewriting history.
+
+## Declined to judge / considered and set aside
+
+- Real SQLite query complexity, indexes, projections, caches and first-screen latency: intentionally deferred to R; mock array filtering is not presented as a production query design.
+- Production persistence, import correctness, source certification, parser behavior and database migration: B/real backend scope, absent write endpoints here.
+- F2 live trading, statistics and real chart/replay execution: expressly excluded from F1; explanatory disabled controls were assessed instead.
+- Fixed clock and fixtures, including the permanently empty-library scenario: deterministic preview material; query-induced empty and clear-to-restore behavior is separately exercised with populated scenarios.
+- Complete runtime schema validation of arbitrary malicious adapter payloads, arbitrary timezones/currencies and unbounded pair counts: future adapter boundary work; shipped fixed data are bounded and host already validates identity/version safety.
+- Extra options request on every list action: explicit experiment consistency strategy and documented R cost, not proof of acceptable real network performance.
+- Restoring detail-page scroll or resetting every detail opening to zero: F1 explicitly requires list return/reload context; no observed failure or clear approved detail-scroll rule justifies introducing a new behavior gate here.
+- Real OS IME, physical touch and software keyboard certification: unavailable device evidence remains NOT VERIFIED; synthetic composition tests or desktop widths cannot certify them. Root must keep input modes distinct and enforce any applicable accepted scope.
+- Independent rendered visual acceptance and the final network/control inventory: root is performing them; this reviewer checked code/evidence boundaries, not screenshots in a real browser.
+- Exact final status text in the in-progress acceptance documents: deliberately pending root's final update; an uncorrected final delivery would still fail the evidence gate.
+
+## Assessment
+
+**Spec compliance (code scope): PASS with disclosed minor limitations.** The planned simulation-only read journey, page/detail granularity, query atomicity, identity protection, unknown handling, isolation and stage boundaries are implemented. No newly identified Critical/Important code defect blocks this experiment.
+
+**Code quality: APPROVED for the bounded experiment, with deferred Minors above.** Architecture is suitably small and replaceable; readability and prop/key hardening deserve follow-up without overstating current user impact.
+
+**Ready for experiment acceptance: CONDITIONAL / NOT YET SIGNED OFF.** This reviewer clears the whole-branch code gate. Root still must supply the fresh aggregate result and close all applicable browser, visual, isolation and documentation gates. A scoped reviewer pass is not full feature acceptance.
+
+**Ready to merge/push/publish: NOT AUTHORIZED and not assessed as a production migration.** The request is a local Mock experiment; no integration action is recommended here.

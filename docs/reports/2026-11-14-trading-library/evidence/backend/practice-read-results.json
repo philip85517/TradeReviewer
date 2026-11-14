@@ -1,0 +1,4293 @@
+{
+  "scope": "actual candidate PracticeStore; fresh synthetic in-memory SQLite; 3 ordered warm-process samples, no HTTP, socket, browser, disk IO, concurrency, or production latency claim",
+  "node": "v26.0.0",
+  "sqlite": {
+    "version": "3.53.0"
+  },
+  "results": [
+    {
+      "count": 1,
+      "groups": 1,
+      "sourceBytesEach": 439,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 0.7716390000000501,
+          "jsonMs": 0.008062000000109038,
+          "bodyBytes": 474,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 5675,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 0.27936300000010306,
+          "jsonMs": 0.004185000000006767,
+          "bodyBytes": 474,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 5675,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 0.1796600000000126,
+          "jsonMs": 0.003175000000055661,
+          "bodyBytes": 474,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 5675,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 1.0150280000000294,
+          "jsonMs": 0.04869300000018484,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 0.5208239999999478,
+          "jsonMs": 0.04250200000001314,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 0.4548459999998613,
+          "jsonMs": 0.04129999999986467,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 8.110606999999845,
+          "jsonMs": 0.028964000000087253,
+          "bodyBytes": 2052,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 12010,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 10990,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 1.9549329999999827,
+          "jsonMs": 0.0286750000000211,
+          "bodyBytes": 2052,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 12010,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 10990,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 1.6211450000000696,
+          "jsonMs": 0.01794700000004923,
+          "bodyBytes": 2052,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 12010,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 10990,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "count": 10,
+      "groups": 1,
+      "sourceBytesEach": 439,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 1.1224660000000313,
+          "jsonMs": 0.009962999999970634,
+          "bodyBytes": 4254,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 56750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 54950,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 1.1397260000001097,
+          "jsonMs": 0.009712000000035914,
+          "bodyBytes": 4254,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 56750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 54950,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 1.1002280000000155,
+          "jsonMs": 0.007712999999966996,
+          "bodyBytes": 4254,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 56750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 54950,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 0.5375010000000202,
+          "jsonMs": 0.05664000000001579,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 0.4756560000000718,
+          "jsonMs": 0.04240399999980582,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 0.6524920000001657,
+          "jsonMs": 0.04620400000021618,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 14.032850000000053,
+          "jsonMs": 0.12646399999994173,
+          "bodyBytes": 20034,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 120100,
+            "blobBytes": 4390,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 109900,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 4390
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 12.181891000000178,
+          "jsonMs": 0.13027800000008938,
+          "bodyBytes": 20034,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 120100,
+            "blobBytes": 4390,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 109900,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 4390
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 11.956016999999974,
+          "jsonMs": 0.106804000000011,
+          "bodyBytes": 20034,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 120100,
+            "blobBytes": 4390,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 109900,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 4390
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "count": 50,
+      "groups": 1,
+      "sourceBytesEach": 439,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 5.951209999999946,
+          "jsonMs": 0.04768000000012762,
+          "bodyBytes": 21054,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 283750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 274750,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 5.299115000000029,
+          "jsonMs": 0.04187000000001717,
+          "bodyBytes": 21054,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 283750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 274750,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 5.307957000000215,
+          "jsonMs": 0.06716499999993175,
+          "bodyBytes": 21054,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 283750,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 274750,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 0.5465420000000449,
+          "jsonMs": 0.05698600000005172,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 0.4378430000001572,
+          "jsonMs": 0.04715599999985898,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 0.37886900000012247,
+          "jsonMs": 0.04517699999996694,
+          "bodyBytes": 7444,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 6131,
+            "blobBytes": 439,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 5495,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 439
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 61.00249899999994,
+          "jsonMs": 0.40047599999979866,
+          "bodyBytes": 99954,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 600500,
+            "blobBytes": 21950,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 549500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 21950
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 49.771060000000034,
+          "jsonMs": 0.45251699999994344,
+          "bodyBytes": 99954,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 600500,
+            "blobBytes": 21950,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 549500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 21950
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 55.51363500000002,
+          "jsonMs": 0.28500899999994544,
+          "bodyBytes": 99954,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 600500,
+            "blobBytes": 21950,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 549500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 21950
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "groups": 50,
+      "sourceBytesEach": 9929,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 1.7919010000000526,
+          "jsonMs": 0.00572199999987788,
+          "bodyBytes": 476,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 209230,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 1.9586770000000797,
+          "jsonMs": 0.006202000000030239,
+          "bodyBytes": 476,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 209230,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 1.891202999999905,
+          "jsonMs": 0.003108000000111133,
+          "bodyBytes": 476,
+          "metric": {
+            "calls": 3,
+            "rows": 2,
+            "textBytes": 209230,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 1.9773009999998976,
+          "jsonMs": 1.3542099999999664,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 2.263099999999895,
+          "jsonMs": 0.9449299999998857,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 2.4131109999998444,
+          "jsonMs": 1.009951000000001,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 11.801124000000073,
+          "jsonMs": 0.04930500000000393,
+          "bodyBytes": 15840,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 419120,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 418100,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 8.788737000000083,
+          "jsonMs": 0.06868699999995442,
+          "bodyBytes": 15840,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 419120,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 418100,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 8.461496000000125,
+          "jsonMs": 0.058003999999982625,
+          "bodyBytes": 15840,
+          "metric": {
+            "calls": 19,
+            "rows": 11,
+            "textBytes": 419120,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 2,
+                "rows": 2,
+                "textBytes": 418100,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 168,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 2,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "count": 10,
+      "groups": 50,
+      "sourceBytesEach": 9929,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 16.903639999999996,
+          "jsonMs": 0.015153999999938605,
+          "bodyBytes": 4274,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 2092300,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2090500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 18.88593200000014,
+          "jsonMs": 0.011717999999973472,
+          "bodyBytes": 4274,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 2092300,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2090500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 16.76919399999997,
+          "jsonMs": 0.020162000000027547,
+          "bodyBytes": 4274,
+          "metric": {
+            "calls": 21,
+            "rows": 20,
+            "textBytes": 2092300,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2090500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 3.2966109999999844,
+          "jsonMs": 0.7367279999998573,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 1.9050880000002053,
+          "jsonMs": 0.7046100000000024,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 1.855139999999892,
+          "jsonMs": 1.1314520000000812,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 75.1733220000001,
+          "jsonMs": 0.4257600000000821,
+          "bodyBytes": 157914,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 4191200,
+            "blobBytes": 99290,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 4181000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 99290
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 86.96027300000014,
+          "jsonMs": 0.3298730000001342,
+          "bodyBytes": 157914,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 4191200,
+            "blobBytes": 99290,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 4181000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 99290
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 88.51486299999988,
+          "jsonMs": 0.5179400000001806,
+          "bodyBytes": 157914,
+          "metric": {
+            "calls": 181,
+            "rows": 110,
+            "textBytes": 4191200,
+            "blobBytes": 99290,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 20,
+                "rows": 20,
+                "textBytes": 4181000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 530,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 420,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 2250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1000,
+                "blobBytes": 99290
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 10,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 1680,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 10,
+                "rows": 10,
+                "textBytes": 360,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 20,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "count": 50,
+      "groups": 50,
+      "sourceBytesEach": 9929,
+      "samples": [
+        {
+          "operation": "list",
+          "sample": 0,
+          "storeMs": 86.6516959999999,
+          "jsonMs": 0.07778899999993882,
+          "bodyBytes": 21154,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 10461500,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 10452500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 1,
+          "storeMs": 95.38116100000025,
+          "jsonMs": 0.03612699999985125,
+          "bodyBytes": 21154,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 10461500,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 10452500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "list",
+          "sample": 2,
+          "storeMs": 82.96103900000026,
+          "jsonMs": 0.04735500000015236,
+          "bodyBytes": 21154,
+          "metric": {
+            "calls": 101,
+            "rows": 100,
+            "textBytes": 10461500,
+            "blobBytes": 0,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 10452500,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 0,
+          "storeMs": 2.193224999999984,
+          "jsonMs": 0.9058549999999741,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 1,
+          "storeMs": 1.8340389999998479,
+          "jsonMs": 0.7387330000001384,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "singleDetail",
+          "sample": 2,
+          "storeMs": 1.9073789999997643,
+          "jsonMs": 1.0832719999998517,
+          "bodyBytes": 223654,
+          "metric": {
+            "calls": 12,
+            "rows": 7,
+            "textBytes": 209686,
+            "blobBytes": 9929,
+            "sql": {
+              "select * from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 180,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 209050,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 53,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 42,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 225,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 100,
+                "blobBytes": 9929
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 1,
+                "rows": 1,
+                "textBytes": 36,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 1,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 0,
+          "storeMs": 385.35314900000003,
+          "jsonMs": 4.506448999999975,
+          "bodyBytes": 789354,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 20956000,
+            "blobBytes": 496450,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 20905000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 496450
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 1,
+          "storeMs": 364.90992400000005,
+          "jsonMs": 2.831003000000237,
+          "bodyBytes": 789354,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 20956000,
+            "blobBytes": 496450,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 20905000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 496450
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        },
+        {
+          "operation": "statistics",
+          "sample": 2,
+          "storeMs": 417.16571399999975,
+          "jsonMs": 2.9198740000001635,
+          "bodyBytes": 789354,
+          "metric": {
+            "calls": 901,
+            "rows": 550,
+            "textBytes": 20956000,
+            "blobBytes": 496450,
+            "sql": {
+              "select * from practices order by practice_date desc, instrument_id, sequence, id": {
+                "calls": 1,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select revision_json from practice_revisions where id=? and practice_id=?": {
+                "calls": 100,
+                "rows": 100,
+                "textBytes": 20905000,
+                "blobBytes": 0
+              },
+              "select period,source,declared_version from practice_period_declarations where practice_id=? and revision_id=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select * from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 9000,
+                "blobBytes": 0
+              },
+              "select instrument_id as instrumentId,practice_date as practiceDate,sequence,reason,assigned_at as assignedAt from practice_sequence_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2650,
+                "blobBytes": 0
+              },
+              "select before_date as before,after_date as after,source,changed_at as changedAt from practice_date_history where practice_id=? order by id": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 2100,
+                "blobBytes": 0
+              },
+              "select id,practice_id as practiceId,revision_id as revisionId,source_id as sourceId,file_name as fileName,imported_at as importedAt,raw_record_count as rawRecordCount,first_trade_date as firstTradeDate,last_trade_date as lastTradeDate,status from practice_import_history where id=? and practice_id=? and revision_id=? and source_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 11250,
+                "blobBytes": 0
+              },
+              "select id,bytes,byte_sha256 as byteSha256,byte_length as byteLength from practice_sources where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 5000,
+                "blobBytes": 496450
+              },
+              "select current_revision_id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select 1 from legacy_practice_execution_refs where practice_id=? and revision_id<>? union all select 1 from legacy_practice_review_refs where practice_id=? and revision_id<>? limit 1": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select record_id as recordId,execution_id as executionId,source_line as sourceLine,payload_sha256 as payloadSha256 from legacy_practice_execution_refs where practice_id=? order by source_line": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select provider,episode_id as episodeId,payload_sha256 as payloadSha256 from legacy_practice_review_refs where practice_id=? order by provider,episode_id": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select revision_id,binding_sha256 from legacy_practice_reference_sets where practice_id=?": {
+                "calls": 50,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              },
+              "select id,practice_id,source_id,import_history_id,ordinal,imported_at from practice_revisions where id=? and practice_id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 8400,
+                "blobBytes": 0
+              },
+              "select id from practices where id=?": {
+                "calls": 50,
+                "rows": 50,
+                "textBytes": 1800,
+                "blobBytes": 0
+              },
+              "select value_json from app_settings where key=?": {
+                "calls": 100,
+                "rows": 0,
+                "textBytes": 0,
+                "blobBytes": 0
+              }
+            }
+          }
+        }
+      ],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 216,
+          "detail": "SCAN practices"
+        },
+        {
+          "id": 18,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,968 @@
+{
+  "scope": "3 uninstrumented sequential actual Request/Response + strict parse; existing read-only isolated A1b DB; fixed business time for historical publication; no sockets/browser/build/write/concurrency; fourth sequence SQL rows/bytes trace separately instrumented",
+  "node": "v26.0.0",
+  "sqlite": {
+    "version": "3.53.0"
+  },
+  "path": "/Users/zhoulin/.codex/worktrees/38a0/TradeReview/.scratch/homepage-db-optimization-20261105/module-implementation-20261106/acceptance-trades-a1b.sqlite",
+  "publicationId": "dbd8cf92-c495-4b54-855c-535ab9618141",
+  "persisted": {
+    "details": {
+      "rows": 226,
+      "bytes": 13693424
+    },
+    "evidence": {
+      "rows": 726,
+      "bytes": 11737709
+    }
+  },
+  "samples": [
+    {
+      "readinessMs": 2265.399491,
+      "pageMs": 1817.0897679999998,
+      "parseMs": 99.55263399999967,
+      "totalMs": 4182.04969,
+      "bodyBytes": 627555
+    },
+    {
+      "readinessMs": 1869.5373640000007,
+      "pageMs": 1816.244616,
+      "parseMs": 41.278620999999475,
+      "totalMs": 3727.0649120000007,
+      "bodyBytes": 627555
+    },
+    {
+      "readinessMs": 1830.0504279999986,
+      "pageMs": 1834.63825,
+      "parseMs": 48.129548999999315,
+      "totalMs": 3712.82273,
+      "bodyBytes": 627555
+    }
+  ],
+  "metrics": [
+    {
+      "sql": "select 1 from sqlite_master where type='table' and name='trade_library_input_state'",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select database_id, epoch, sequence from trade_book_state where singleton = 1",
+      "rows": 1,
+      "textBytes": 68,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 120,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_refresh_queue where job_key='default'",
+      "rows": 1,
+      "textBytes": 134,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select publication_id from homepage_read_head where product='trades'",
+      "rows": 1,
+      "textBytes": 36,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select 1 from data_migrations where status='complete' limit 1",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select registry_signature,rules_version from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 120,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"schema_migrations\")",
+      "rows": 4,
+      "textBytes": 65,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"trade_book_state\")",
+      "rows": 4,
+      "textBytes": 55,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"executions\")",
+      "rows": 15,
+      "textBytes": 232,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"execution_fact_states\")",
+      "rows": 5,
+      "textBytes": 65,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"instruments\")",
+      "rows": 9,
+      "textBytes": 148,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_batches\")",
+      "rows": 11,
+      "textBytes": 201,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"data_migrations\")",
+      "rows": 8,
+      "textBytes": 149,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"reviews\")",
+      "rows": 10,
+      "textBytes": 177,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tag_suggestions\")",
+      "rows": 8,
+      "textBytes": 133,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"app_settings\")",
+      "rows": 3,
+      "textBytes": 52,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"daily_candles\")",
+      "rows": 12,
+      "textBytes": 148,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"market_candles\")",
+      "rows": 14,
+      "textBytes": 181,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"coverage\")",
+      "rows": 6,
+      "textBytes": 114,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"interval_coverage\")",
+      "rows": 7,
+      "textBytes": 136,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"market_data_jobs\")",
+      "rows": 9,
+      "textBytes": 150,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"provider_symbols\")",
+      "rows": 5,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_materials\")",
+      "rows": 3,
+      "textBytes": 42,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_material_versions\")",
+      "rows": 16,
+      "textBytes": 300,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_observations\")",
+      "rows": 7,
+      "textBytes": 109,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_execution_links\")",
+      "rows": 4,
+      "textBytes": 59,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_material_account_mappings\")",
+      "rows": 6,
+      "textBytes": 106,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_audit_state\")",
+      "rows": 7,
+      "textBytes": 98,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_plan_proofs\")",
+      "rows": 6,
+      "textBytes": 77,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_memberships\")",
+      "rows": 4,
+      "textBytes": 63,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_material_refs\")",
+      "rows": 3,
+      "textBytes": 40,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_audit_dirty\")",
+      "rows": 2,
+      "textBytes": 30,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"trade_revisions\")",
+      "rows": 7,
+      "textBytes": 114,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"account_principal_provisionals\")",
+      "rows": 8,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_operations\")",
+      "rows": 12,
+      "textBytes": 209,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_rows\")",
+      "rows": 7,
+      "textBytes": 107,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_aliases\")",
+      "rows": 4,
+      "textBytes": 50,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_dependencies\")",
+      "rows": 4,
+      "textBytes": 55,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_documents\")",
+      "rows": 5,
+      "textBytes": 76,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_versions\")",
+      "rows": 44,
+      "textBytes": 786,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_targets\")",
+      "rows": 9,
+      "textBytes": 129,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_risk_baselines\")",
+      "rows": 13,
+      "textBytes": 197,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_retained_bundles\")",
+      "rows": 16,
+      "textBytes": 313,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_plans\")",
+      "rows": 5,
+      "textBytes": 86,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_baselines\")",
+      "rows": 5,
+      "textBytes": 82,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_associations\")",
+      "rows": 6,
+      "textBytes": 90,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_exit_evaluations\")",
+      "rows": 22,
+      "textBytes": 378,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_associations\")",
+      "rows": 6,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_tags\")",
+      "rows": 6,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_evidence\")",
+      "rows": 10,
+      "textBytes": 161,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_executions\")",
+      "rows": 5,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_evaluations\")",
+      "rows": 5,
+      "textBytes": 93,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_selections\")",
+      "rows": 5,
+      "textBytes": 86,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_sources\")",
+      "rows": 17,
+      "textBytes": 295,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metrics\")",
+      "rows": 12,
+      "textBytes": 159,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_refs\")",
+      "rows": 6,
+      "textBytes": 89,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_exits\")",
+      "rows": 7,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluations\")",
+      "rows": 17,
+      "textBytes": 288,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_tags\")",
+      "rows": 6,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_evidence\")",
+      "rows": 10,
+      "textBytes": 161,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_executions\")",
+      "rows": 5,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_associations\")",
+      "rows": 6,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_association_executions\")",
+      "rows": 5,
+      "textBytes": 87,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_manual_evaluations\")",
+      "rows": 5,
+      "textBytes": 100,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select name,sql from sqlite_master where type='trigger'",
+      "rows": 242,
+      "textBytes": 266655,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select dependencies_json,database_id,epoch,rules_version from homepage_read_publications where publication_id=? and product='trades'",
+      "rows": 1,
+      "textBytes": 184,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select facts,source,catalog,review,display,rules from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_read_publications where publication_id=? and product='trades'",
+      "rows": 1,
+      "textBytes": 175552,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_source_proofs where proof_id=? and purpose='trade-read'",
+      "rows": 1,
+      "textBytes": 4266336,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_publication_members where publication_id=? order by group_key",
+      "rows": 295,
+      "textBytes": 455577,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select e.* from homepage_episode_rows e\n    join homepage_publication_members m on m.group_key=e.group_key and m.fact_revision=e.fact_revision\n    where m.publication_id=? order by e.group_key,e.fact_revision,e.episode_id",
+      "rows": 764,
+      "textBytes": 1031010,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_stock_rows where publication_id=? order by ordinal",
+      "rows": 226,
+      "textBytes": 1042141,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_stock_members where publication_id=? order by rowid",
+      "rows": 726,
+      "textBytes": 1035507,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_round_details where publication_id=? order by display_row_id",
+      "rows": 226,
+      "textBytes": 13724563,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_evidence_refs where publication_id=? order by evidence_id",
+      "rows": 726,
+      "textBytes": 11936633,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select 1 from sqlite_master where type='table' and name='trade_library_input_state'",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select database_id, epoch, sequence from trade_book_state where singleton = 1",
+      "rows": 1,
+      "textBytes": 68,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 120,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_refresh_queue where job_key='default'",
+      "rows": 1,
+      "textBytes": 134,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select publication_id from homepage_read_head where product='trades'",
+      "rows": 1,
+      "textBytes": 36,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select 1 from data_migrations where status='complete' limit 1",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select registry_signature,rules_version from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 120,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"schema_migrations\")",
+      "rows": 4,
+      "textBytes": 65,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"trade_book_state\")",
+      "rows": 4,
+      "textBytes": 55,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"executions\")",
+      "rows": 15,
+      "textBytes": 232,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"execution_fact_states\")",
+      "rows": 5,
+      "textBytes": 65,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"instruments\")",
+      "rows": 9,
+      "textBytes": 148,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_batches\")",
+      "rows": 11,
+      "textBytes": 201,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"data_migrations\")",
+      "rows": 8,
+      "textBytes": 149,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"reviews\")",
+      "rows": 10,
+      "textBytes": 177,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tag_suggestions\")",
+      "rows": 8,
+      "textBytes": 133,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"app_settings\")",
+      "rows": 3,
+      "textBytes": 52,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"daily_candles\")",
+      "rows": 12,
+      "textBytes": 148,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"market_candles\")",
+      "rows": 14,
+      "textBytes": 181,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"coverage\")",
+      "rows": 6,
+      "textBytes": 114,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"interval_coverage\")",
+      "rows": 7,
+      "textBytes": 136,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"market_data_jobs\")",
+      "rows": 9,
+      "textBytes": 150,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"provider_symbols\")",
+      "rows": 5,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_materials\")",
+      "rows": 3,
+      "textBytes": 42,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_material_versions\")",
+      "rows": 16,
+      "textBytes": 300,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_observations\")",
+      "rows": 7,
+      "textBytes": 109,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_execution_links\")",
+      "rows": 4,
+      "textBytes": 59,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"source_material_account_mappings\")",
+      "rows": 6,
+      "textBytes": 106,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_audit_state\")",
+      "rows": 7,
+      "textBytes": 98,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_plan_proofs\")",
+      "rows": 6,
+      "textBytes": 77,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_memberships\")",
+      "rows": 4,
+      "textBytes": 63,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_material_refs\")",
+      "rows": 3,
+      "textBytes": 40,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"import_history_audit_dirty\")",
+      "rows": 2,
+      "textBytes": 30,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"trade_revisions\")",
+      "rows": 7,
+      "textBytes": 114,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"account_principal_provisionals\")",
+      "rows": 8,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_operations\")",
+      "rows": 12,
+      "textBytes": 209,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_rows\")",
+      "rows": 7,
+      "textBytes": 107,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_aliases\")",
+      "rows": 4,
+      "textBytes": 50,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"tradingview_account_migration_dependencies\")",
+      "rows": 4,
+      "textBytes": 55,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_documents\")",
+      "rows": 5,
+      "textBytes": 76,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_versions\")",
+      "rows": 44,
+      "textBytes": 786,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_targets\")",
+      "rows": 9,
+      "textBytes": 129,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_risk_baselines\")",
+      "rows": 13,
+      "textBytes": 197,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_retained_bundles\")",
+      "rows": 16,
+      "textBytes": 313,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_plans\")",
+      "rows": 5,
+      "textBytes": 86,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_baselines\")",
+      "rows": 5,
+      "textBytes": 82,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_plan_associations\")",
+      "rows": 6,
+      "textBytes": 90,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_exit_evaluations\")",
+      "rows": 22,
+      "textBytes": 378,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_associations\")",
+      "rows": 6,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_tags\")",
+      "rows": 6,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_evidence\")",
+      "rows": 10,
+      "textBytes": 161,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_executions\")",
+      "rows": 5,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_evaluations\")",
+      "rows": 5,
+      "textBytes": 93,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_evaluation_selections\")",
+      "rows": 5,
+      "textBytes": 86,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_sources\")",
+      "rows": 17,
+      "textBytes": 295,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metrics\")",
+      "rows": 12,
+      "textBytes": 159,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_refs\")",
+      "rows": 6,
+      "textBytes": 89,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_actual_metric_exits\")",
+      "rows": 7,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluations\")",
+      "rows": 17,
+      "textBytes": 288,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_tags\")",
+      "rows": 6,
+      "textBytes": 110,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_evidence\")",
+      "rows": 10,
+      "textBytes": 161,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_executions\")",
+      "rows": 5,
+      "textBytes": 94,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_associations\")",
+      "rows": 6,
+      "textBytes": 96,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_manual_evaluation_association_executions\")",
+      "rows": 5,
+      "textBytes": 87,
+      "blobBytes": 0
+    },
+    {
+      "sql": "pragma table_info(\"recall_bundle_manual_evaluations\")",
+      "rows": 5,
+      "textBytes": 100,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select name,sql from sqlite_master where type='trigger'",
+      "rows": 242,
+      "textBytes": 266655,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select dependencies_json,database_id,epoch,rules_version from homepage_read_publications where publication_id=? and product='trades'",
+      "rows": 1,
+      "textBytes": 184,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select facts,source,catalog,review,display,rules from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_read_publications where publication_id=? and product='trades'",
+      "rows": 1,
+      "textBytes": 175552,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_source_proofs where proof_id=? and purpose='trade-read'",
+      "rows": 1,
+      "textBytes": 4266336,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from homepage_publication_members where publication_id=? order by group_key",
+      "rows": 295,
+      "textBytes": 455577,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select e.* from homepage_episode_rows e\n    join homepage_publication_members m on m.group_key=e.group_key and m.fact_revision=e.fact_revision\n    where m.publication_id=? order by e.group_key,e.fact_revision,e.episode_id",
+      "rows": 764,
+      "textBytes": 1031010,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_stock_rows where publication_id=? order by ordinal",
+      "rows": 226,
+      "textBytes": 1042141,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_stock_members where publication_id=? order by rowid",
+      "rows": 726,
+      "textBytes": 1035507,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_round_details where publication_id=? order by display_row_id",
+      "rows": 226,
+      "textBytes": 13724563,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select * from trade_library_evidence_refs where publication_id=? order by evidence_id",
+      "rows": 726,
+      "textBytes": 11936633,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select facts,source,catalog,review,display,rules from trade_library_input_state where singleton=1",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    },
+    {
+      "sql": "select 1 from homepage_read_publications where publication_id=? and product='trades'",
+      "rows": 1,
+      "textBytes": 0,
+      "blobBytes": 0
+    }
+  ]
+}

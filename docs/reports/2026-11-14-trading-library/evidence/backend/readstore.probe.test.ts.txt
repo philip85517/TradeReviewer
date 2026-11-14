@@ -1,0 +1,35 @@
+import { DatabaseSync } from 'node:sqlite';
+import { writeFileSync, realpathSync } from 'node:fs';
+import { expect, test, vi } from 'vitest';
+import { DEFAULT_LIBRARY_SELECTION, parseLibrarySummaryAndPage } from '/Users/zhoulin/.codex/worktrees/38a0/TradeReview/app/lib/storage/trade-library-read-contract';
+import { POST } from '/Users/zhoulin/.codex/worktrees/38a0/TradeReview/app/api/storage/trade-library/read/route';
+const connection=vi.hoisted(()=>({database:undefined as DatabaseSync|undefined}));
+vi.mock('/Users/zhoulin/.codex/worktrees/38a0/TradeReview/db/sqlite',async importOriginal=>({...await importOriginal<any>(),openSqliteDatabase:()=>{if(!connection.database)throw Error('missing isolated read-only db');return connection.database;}}));
+const samples:any[]=[];
+test('replay actual readiness and page against existing isolated A1b publication',async()=>{
+  const path=realpathSync('/Users/zhoulin/.codex/worktrees/38a0/TradeReview/.scratch/homepage-db-optimization-20261105/module-implementation-20261106/acceptance-trades-a1b.sqlite');
+  if(!path.includes('/.scratch/'))throw Error('not isolated');
+  const db=new DatabaseSync(path,{readOnly:true});connection.database=db;
+  vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(new Date('2026-11-05T08:00:00.000Z'));
+  const metrics:any[]=[];
+  const request=(body:unknown)=>new Request('http://127.0.0.1/api/storage/trade-library/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  async function sequence(){
+    const at=performance.now();let t=at;
+    const ready=await POST(request({operation:'readiness'}));const readiness=JSON.parse(await ready.text());
+    const readinessMs=performance.now()-t;t=performance.now();expect(ready.status).toBe(200);
+    const response=await POST(request({operation:'summaryAndPage',selection:DEFAULT_LIBRARY_SELECTION,mode:'stocks',sort:'newest',page:{number:1,size:100},readVersion:readiness.readVersion}));
+    const body=await response.text(),pageMs=performance.now()-t;t=performance.now();expect(response.status).toBe(200);
+    const parsed=await parseLibrarySummaryAndPage(JSON.parse(body));
+    expect(parsed.rows).toHaveLength(100);expect(parsed.counts.stocks).toBe(226);expect(parsed.counts.episodes).toBe(726);
+    return {readinessMs,pageMs,parseMs:performance.now()-t,totalMs:performance.now()-at,bodyBytes:Buffer.byteLength(body)};
+  }
+  try {
+    const head=db.prepare("select publication_id from homepage_read_head where product='trades'").get()!;
+    const persisted=Object.fromEntries([['details','trade_library_round_details','payload_json'],['evidence','trade_library_evidence_refs','target_json']].map(([name,table,column])=>[name,db.prepare(`select count(*) rows,sum(length(cast(${column} as blob))) bytes from ${table} where publication_id=?`).get(head.publication_id)]));
+    for(let i=0;i<3;i++)samples.push(await sequence());
+    const proxy=new Proxy(db,{get(target,key){if(key==='prepare')return (sql:string)=>{const st=target.prepare(sql);return new Proxy(st,{get(s,k){if(k==='get'||k==='all')return (...args:any[])=>{const value=(s[k] as Function).apply(s,args);const rows=k==='all'?value:value?[value]:[];let textBytes=0,blobBytes=0;for(const r of rows)for(const v of Object.values(r)){if(typeof v==='string')textBytes+=Buffer.byteLength(v);if(v instanceof Uint8Array)blobBytes+=v.byteLength;}metrics.push({sql,rows:rows.length,textBytes,blobBytes});return value;};const v=Reflect.get(s,k,s);return typeof v==='function'?v.bind(s):v;}});};const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}});
+    connection.database=proxy;await sequence();
+    writeFileSync('.scratch/library-backend-review-20261114/evidence/readstore-results.json',JSON.stringify({scope:'3 uninstrumented sequential actual Request/Response + strict parse; existing read-only isolated A1b DB; fixed business time for historical publication; no sockets/browser/build/write/concurrency; fourth sequence SQL rows/bytes trace separately instrumented',node:process.version,sqlite:db.prepare('select sqlite_version() version').get(),path,publicationId:head.publication_id,persisted,samples,metrics},null,2)+'\n');
+  } finally {vi.useRealTimers();connection.database=undefined;db.close();}
+});
+test('diagnostic one-second backend read budget',()=>{expect(samples.every(s=>s.totalMs<=1000),'existing publication readiness + first page still exceeds 1s').toBe(true);});

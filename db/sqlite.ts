@@ -1,4 +1,5 @@
 import "server-only";
+import {HOME_FULL_SCHEMA} from "./home-full-schema";
 
 import { existsSync, mkdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
@@ -83,6 +84,7 @@ export function initializeSqlite(database: DatabaseSync): void {
       record.run(migration.version, migration.name, migration.checksum);
     });
   }
+  database.exec(HOME_FULL_SCHEMA);
 }
 
 export function openSqliteDatabase(path?: string): DatabaseSync {

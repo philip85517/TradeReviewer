@@ -38,12 +38,13 @@
 .hp-performance-chart__locator line { stroke: #6ca8ff; stroke-width: 1; stroke-dasharray: 4 4; }
 .hp-performance-chart__locator rect { fill: #162233; }
 .hp-performance-chart__locator text { fill: #a9c8ff; }
-.hp-performance-chart__locator circle { fill: #6ca8ff; animation: hp-performance-chart-point-feedback 120ms ease-out; }
+.hp-performance-chart__isolated, .hp-performance-chart__locator circle { fill: #6ca8ff; }
+.hp-performance-chart__locator circle { animation: hp-performance-chart-point-feedback 120ms ease-out; }
 @keyframes hp-performance-chart-point-feedback { from { opacity: 0; } to { opacity: 1; } }
 .hp-performance-chart__hit { fill: transparent; cursor: crosshair; }
 .hp-performance-chart__gap-layer { pointer-events: none; }
-.hp-performance-chart__gap { pointer-events: all; cursor: help; outline: none; }
-.hp-performance-chart__gap > rect { fill: transparent; stroke: transparent; stroke-width: 2; }
+.hp-performance-chart__gap { pointer-events: none; cursor: help; outline: none; }
+.hp-performance-chart__gap > rect { pointer-events: fill; fill: transparent; stroke: transparent; stroke-width: 2; }
 .hp-performance-chart__gap:focus-visible > rect { stroke: #a9c8ff; }
 .hp-performance-chart__gap-symbol circle { fill: #162233; stroke: #6ca8ff; }
 .hp-performance-chart__gap-symbol text { fill: #6ca8ff; }

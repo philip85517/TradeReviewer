@@ -1,7 +1,8 @@
 import type {DatabaseSync} from 'node:sqlite';
 import {randomUUID} from 'node:crypto';
 export type SourceJob = {key:string;kind:'quote'|'fx';payload:Record<string,string>;priority:number};
-const activeJob="NOT (j.kind='fx' AND EXISTS(SELECT 1 FROM home_source_job newer WHERE newer.kind='fx' AND newer.state='done' AND newer.created_at>j.created_at))";
+const activeJob="json_extract(j.payload_json,'$.supersededByRelease') IS NULL AND NOT (j.kind='fx' AND EXISTS(SELECT 1 FROM home_source_job newer WHERE newer.kind='fx' AND newer.state='done' AND newer.created_at>j.created_at))";
+const runnable="((state IN('pending','failed') AND attempts<3 AND retry_after<=?) OR (state='running' AND lease_until<=?))";
 /** Durable, bounded source acquisition. Independent of the publication lease. */
 export class HomeSourceJobs {
  constructor(private readonly db:DatabaseSync){}
@@ -9,19 +10,23 @@ export class HomeSourceJobs {
   this.db.prepare('INSERT OR IGNORE INTO home_source_job(job_key,kind,payload_json,priority,created_at,updated_at)VALUES(?,?,?,?,?,?)').run(job.key,job.kind,JSON.stringify(job.payload),job.priority,now,now);
  }
  summary(now=Date.now()){
-  const row=this.db.prepare(`SELECT count(*) total,sum(state='done') done,sum(state='failed') failed,sum(state IN('pending','running')) pending,min(CASE WHEN state<>'done' THEN created_at END) since FROM home_source_job j WHERE ${activeJob}`).get()!;
+  const row=this.db.prepare(`SELECT count(*) total,sum(state='done') done,sum(state='failed') failed,sum(state IN('pending','running')) pending,sum(state='failed' AND attempts<3) retryable,min(CASE WHEN state<>'done' THEN created_at END) since FROM home_source_job j WHERE ${activeJob}`).get()!;
   const failure=this.db.prepare(`SELECT error FROM home_source_job j WHERE state='failed' AND ${activeJob} ORDER BY updated_at DESC LIMIT 1`).get();
-  return {total:Number(row.total),done:Number(row.done??0),failed:Number(row.failed??0),pending:Number(row.pending??0),since:row.since?new Date(Number(row.since)).toISOString():null,error:failure?.error?String(failure.error):null,delayed:row.since!==null&&now-Number(row.since)>30000};
+  const pending=Number(row.pending??0),failed=Number(row.failed??0),retryable=Number(row.retryable??0);
+  // Failed jobs remain outstanding during their automatic retry delay. Preserve
+  // the persisted-state counts while exposing when acquisition is truly over.
+  return {total:Number(row.total),done:Number(row.done??0),failed,pending,retryable,remaining:pending+retryable,terminalFailed:failed-retryable,since:row.since?new Date(Number(row.since)).toISOString():null,error:failure?.error?String(failure.error):null,delayed:row.since!==null&&now-Number(row.since)>30000};
  }
- retry(){this.db.prepare(`UPDATE home_source_job AS j SET state='pending',attempts=0,retry_after=0,error=NULL,updated_at=? WHERE state='failed' AND ${activeJob}`).run(Date.now());}
- async runOne(execute:(job:SourceJob,signal:AbortSignal)=>Promise<void>,signal:AbortSignal,options:{now?:()=>number;timeoutMs?:number}={}){
+ retry(keys?:string[]){this.db.prepare(`UPDATE home_source_job AS j SET state='pending',attempts=0,retry_after=0,error=NULL,updated_at=? WHERE state='failed' AND ${activeJob} ${keys?'AND job_key IN (SELECT value FROM json_each(?))':''}`).run(Date.now(),...(keys?[JSON.stringify(keys)]:[]));}
+ hasRunnable(now=Date.now()){return !!this.db.prepare(`SELECT 1 FROM home_source_job j WHERE ${activeJob} AND ${runnable} LIMIT 1`).get(now,now);}
+ async runOne(execute:(job:SourceJob,signal:AbortSignal)=>Promise<void>,signal:AbortSignal,options:{now?:()=>number;timeoutMs?:number;keys?:string[]}={}){
   if(signal.aborted)return false;
   const now=options.now??Date.now,owner=randomUUID(),started=now(),timeout=options.timeoutMs??25000;
   this.db.exec('BEGIN IMMEDIATE');
   let row:Record<string,unknown>|undefined;
   try{
    // A killed process is eligible after its lease; no network request runs in this transaction.
-   row=this.db.prepare(`SELECT * FROM home_source_job j WHERE ${activeJob} AND ((state IN('pending','failed') AND attempts<3 AND retry_after<=?) OR (state='running' AND lease_until<=?)) ORDER BY priority,created_at,job_key LIMIT 1`).get(started,started);
+   row=this.db.prepare(`SELECT * FROM home_source_job j WHERE ${activeJob} AND ${runnable} ${options.keys?'AND job_key IN (SELECT value FROM json_each(?))':''} ORDER BY priority,created_at,job_key LIMIT 1`).get(started,started,...(options.keys?[JSON.stringify(options.keys)]:[]));
    if(row)this.db.prepare("UPDATE home_source_job SET state='running',lease_owner=?,lease_until=?,attempts=attempts+1,updated_at=? WHERE job_key=?").run(owner,started+timeout+5000,started,String(row.job_key));
    this.db.exec('COMMIT');
   }catch(error){this.db.exec('ROLLBACK');throw error;}

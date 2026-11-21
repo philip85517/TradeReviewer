@@ -6,13 +6,18 @@ import { canonicalRecord, type TradeRevision, type TradeRevisionRequest, type Tr
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 
+import { LIBRARY_ACCOUNT_DIRECTORY_SQL } from "../../../db/library-scope-schema";
 import { SQLITE_MIGRATIONS } from "../../../db/sqlite-schema";
 import { withSqliteTransaction } from "../../../db/sqlite";
 import { normalizeDrawing, validateDrawing } from "../chart/drawings";
+import { applyMonthlyHistoryEvidence, selectMonthlyEvidenceHistory } from "../import/statement-evidence";
 import { compareExecutions, reconcileExecutions } from "../import/execution-reconciliation";
 import type { TagSuggestionRecord } from "../insights/types";
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord, NativeMarketInterval } from "../market/contracts";
+import { summarizeRecallDocument } from "../recall/summary";
+import { validateRecallDocument } from "../recall/document";
+import type { RecallDocument } from "../recall/types";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import {
   isReviewSummaryNote,
@@ -24,7 +29,7 @@ import type { ChartSettings } from "./chart-settings";
 import { validReviewExtensions } from "../reviews/review-metrics";
 import type { ImportHistoryEntry } from "./import-history";
 import { isMonthlyEvidenceScope, isMonthlyStatement } from "../import/monthly-statement";
-import { canonicalInstrumentId } from "../instruments/display-name";
+import { canonicalInstrumentId, instrumentDisplayName } from "../instruments/display-name";
 import {
   validateResolvedInstrument,
   validateLocalizedInstrumentName,
@@ -43,6 +48,8 @@ import type {
   ProviderSymbolRecord,
   SqliteStatus,
   StorageBootstrap,
+  LibraryScope,
+  LibraryScopeBootstrap,
   StoredInstrument,
 } from "./sqlite-contracts";
 
@@ -394,6 +401,23 @@ function sameTrustedSourceProvenance(
   return provenanceChecks.length > 0 && provenanceChecks.every(Boolean);
 }
 
+/** A source clock review may remove a previously inferred instant without changing a fill. */
+function sameReviewedPrintedExecution(existing: TradeExecution, incoming: TradeExecution): boolean {
+  const before=existing.source, after=incoming.source;
+  if(before.platform!=='futu'||after.platform!=='futu'||before.templateId!=='F4'||after.templateId!=='F4'||
+    before.timeEvidence!=='inferred'||after.timeEvidence!=='document'||after.timePrecision!=='date-only'||
+    !before.fileFingerprint||before.fileFingerprint!==after.fileFingerprint||
+    !Number.isInteger(before.page)||before.page!==after.page||before.row!==after.row||
+    !before.sourceTimestampText||before.sourceTimestampText!==after.sourceTimestampText||
+    !/^\d{4}[/-]\d{2}[/-]\d{2} \d{2}:\d{2}:\d{2}$/.test(after.sourceTimestampText)||
+    incoming.executedAt!==after.sourceTimestampText.slice(0,10).replaceAll('/','-'))return false;
+  if(existing.fee!==incoming.fee||existing.instrument.market!==incoming.instrument.market||existing.instrument.symbol!==incoming.instrument.symbol)return false;
+  for(const field of ['grossAmount','cashChange','settlementDate'] as const) {
+    if(before[field]===undefined||before[field]!==after[field])return false;
+  }
+  return executionCorrectionIdentity({...existing,executedAt:incoming.executedAt})===executionCorrectionIdentity(incoming);
+}
+
 function canCarryAccountCorrection(
   existing: TradeExecution,
   incoming: TradeExecution,
@@ -402,7 +426,7 @@ function canCarryAccountCorrection(
   return (
     (incoming.accountId === correction.originalAccountId ||
       incoming.accountId === correction.canonicalAccountId) &&
-    executionCorrectionIdentity(existing) === executionCorrectionIdentity(incoming) &&
+    (executionCorrectionIdentity(existing) === executionCorrectionIdentity(incoming) || sameReviewedPrintedExecution(existing,incoming)) &&
     sameTrustedSourceProvenance(existing, incoming)
   );
 }
@@ -1005,6 +1029,10 @@ function mapProviderSymbolRow(row: Row): ProviderSymbolRecord {
   };
 }
 
+export class InvalidLibraryScopeError extends Error {
+  constructor() { super("Invalid library scope"); this.name = "InvalidLibraryScopeError"; }
+}
+
 export class SqliteStore {
   constructor(private readonly database: DatabaseSync) {}
 
@@ -1031,6 +1059,114 @@ export class SqliteStore {
     };
   }
 
+  /** Complete single-account/security source history in one SQLite read snapshot. */
+  getLibraryScope(scope: LibraryScope): LibraryScopeBootstrap {
+    if (!scope || typeof scope.accountId !== "string" || !scope.accountId.trim() || scope.accountId !== scope.accountId.trim() || scope.accountId.length > 500 || scope.accountId === "all" || typeof scope.instrumentId !== "string" || scope.instrumentId.length > 200 || !isMonthlyEvidenceScope(scope))
+      throw new InvalidLibraryScopeError();
+    const ownedTransaction = !this.database.isTransaction;
+    if (ownedTransaction)
+      this.database.exec("BEGIN");
+    try {
+      const instruments = this.getInstrumentMetadata([scope.instrumentId]);
+      const separator = scope.instrumentId.indexOf(":");
+      const market = scope.instrumentId.slice(0, separator), symbol = scope.instrumentId.slice(separator + 1);
+      const instrument = instruments[0] ?? {
+        id: scope.instrumentId, market, symbol, name: instrumentDisplayName(symbol, market), currency: marketCurrency(market)
+      };
+      const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency, i.metadata_json, i.localized_name_json from executions e join instruments i on i.id=e.instrument_id where e.account=? and e.instrument_id=?").all(scope.accountId, scope.instrumentId) as Row[];
+      const executions = rows.map(mapExecutionRow).sort(compareExecutions);
+      // Keep complete account documents: empty months and cash/IPO reversal chains
+      // are evidence too. Never narrow their headers into invented scoped imports.
+      const imports = this.database.prepare(`
+    select b.reconciliation_json, r.request_json as revision_request_json
+    from import_batches b left join trade_revisions r on r.id=b.id
+    where b.id in (select import_batch_id from executions where account=? and instrument_id=?)
+     or b.source_fingerprint in (select json_extract(evidence_json,'$.source.fileFingerprint') from executions where account=? and instrument_id=?)
+     or json_extract(b.reconciliation_json,'$.monthly.accountId')=?
+     or exists(select 1 from json_each(b.reconciliation_json,'$.monthly.positions') p where json_extract(p.value,'$.accountId')=?)
+     or exists(select 1 from json_each(b.reconciliation_json,'$.monthly.events') e where json_extract(e.value,'$.accountId')=?)
+     or exists(select 1 from json_each(b.reconciliation_json,'$.monthly.zeroStockEvidence') z where json_extract(z.value,'$.accountId')=?)
+     or json_extract(r.request_json,'$.accountId')=?
+    order by b.imported_at desc,b.id
+   `).all(scope.accountId, scope.instrumentId, scope.accountId, scope.instrumentId, ...Array(5).fill(scope.accountId)) as Row[];
+      const importHistory = imports.map(row => projectImportHistoryMonthly(parseJson<ImportHistoryEntry>(row.reconciliation_json, "import history"), row.revision_request_json));
+      const matching = (v: {
+        accountId: string;
+        symbol?: string;
+        market?: string;
+      }) => v.accountId === scope.accountId && v.symbol !== undefined && v.market !== undefined && canonicalInstrumentId(v.symbol, v.market) === scope.instrumentId;
+      if (!executions.length && !importHistory.some(h => h.monthly && ([...h.monthly.positions, ...h.monthly.events].some(matching) || h.monthly.evidenceScope?.accountId === scope.accountId && h.monthly.evidenceScope.instrumentId === scope.instrumentId)))
+        throw new InvalidLibraryScopeError();
+      if (!instruments.length)
+        instruments.push(instrument);
+      // Monthly inventory/IPO evidence can change an opening episode identity.
+      // Read both current effective IDs and original IDs, preserving existing
+      // drafts and legacy reviews without broadening into other securities.
+      const episodes = buildTradeEpisodes(executions);
+      const effectiveExecutions = applyMonthlyHistoryEvidence(
+        executions, selectMonthlyEvidenceHistory(importHistory),
+      ).filter(execution => execution.accountId === scope.accountId && execution.instrument.id === scope.instrumentId);
+      const scopedEpisodeIds = [...new Set([
+        ...episodes.map(episode => episode.id),
+        ...buildTradeEpisodes(effectiveExecutions).map(episode => episode.id),
+      ])];
+      const episodeIds = JSON.stringify(scopedEpisodeIds);
+      const legacy = this.getLegacyReviews(scopedEpisodeIds);
+      const recallRows = this.database.prepare("select episode_id,draft_json,updated_at from recall_documents where episode_id in (select value from json_each(?)) order by updated_at desc,episode_id").all(episodeIds) as Row[];
+      const completions = this.getFormalRecallCompletions(scopedEpisodeIds);
+      const reviews = bridgeRecallCompletions(legacy, completions, new Map(episodes.map(e => [e.id, e.instrument.id])));
+      const reviewStates = (this.database.prepare("select episode_id,cursor_json,drawings_json from reviews where episode_id in (select value from json_each(?)) and cursor_json is not null order by episode_id").all(episodeIds) as Row[]).map(mapReviewStateRow);
+      const tagSuggestions = (this.database.prepare("select evidence_json from tag_suggestions where episode_id in (select value from json_each(?)) order by id").all(episodeIds) as Row[]).map(row => parseJson<TagSuggestionRecord>(row.evidence_json, "tag suggestion"));
+      const marketDataJobs = (this.database.prepare("select progress_json from market_data_jobs where instrument_id=? order by id").all(scope.instrumentId) as Row[]).map(row => parseJson<MarketDataJob>(row.progress_json, "market data job"));
+      const recallSummaries = recallRows.map(row => {
+        const document = parseJson<RecallDocument>(row.draft_json, "draft recall document");
+        validateRecallDocument(document);
+        if (typeof row.updated_at === 'string')
+          document.updatedAt = row.updated_at;
+        return summarizeRecallDocument(document);
+      });
+      // Only small identity/nature columns cross this directory boundary; no
+      // execution bodies or review documents are loaded for other securities.
+      const directoryRows = this.database.prepare(LIBRARY_ACCOUNT_DIRECTORY_SQL).all() as Row[];
+      const directory = new Map<string, LibraryScopeBootstrap['accountDirectory'][number]>();
+      for (const row of directoryRows) {
+        const id = String(row.id), nature = row.nature === 'live' || row.nature === 'simulation' ? row.nature : 'unknown';
+        const value = directory.get(id) ?? {
+          id, label: String(row.label) || "未命名账户", natures: []
+        };
+        if (!value.natures.includes(nature))
+          value.natures.push(nature);
+        directory.set(id, value);
+      }
+      if (!directory.has(scope.accountId))
+        directory.set(scope.accountId, {
+          id: scope.accountId, label: scope.accountId, natures: ['unknown']
+        });
+      const accountDirectory = [...directory.values()].sort((a, b) => a.id.localeCompare(b.id));
+      const accountAliases = (this.database.prepare(`select a.operation_id,a.alias_kind,a.old_id,a.new_id from tradingview_account_migration_aliases a join tradingview_account_migration_operations o on o.operation_id=a.operation_id where a.alias_kind='account' and o.operation_kind='commit' and o.status='committed' order by a.operation_id,a.old_id`).all() as Row[]).map(row => ({
+        operationId: String(row.operation_id), kind: 'account' as const, oldId: String(row.old_id), newId: String(row.new_id)
+      }));
+      const bootstrap: StorageBootstrap = {
+        schemaVersion: SQLITE_MIGRATIONS.at(-1)?.version ?? 0, migration: this.getLatestMigration(), executions, importHistory, instruments, reviews, reviewStates, tagSuggestions, marketDataJobs, settings: this.getSettings()
+      };
+      const payload = {
+        scope: {
+          accountId: scope.accountId, instrumentId: scope.instrumentId
+        }, bootstrap, accountDirectory, accountAliases, recallSummaries
+      };
+      const result = {
+        ...payload, revision: createHash('sha256').update(canonicalRecord(payload)).digest('hex')
+      };
+      if (ownedTransaction)
+        this.database.exec("COMMIT");
+      return result;
+    }
+    catch (error) {
+      if (ownedTransaction && this.database.isTransaction)
+        this.database.exec("ROLLBACK");
+      throw error;
+    }
+  }
   getInstruments(): StoredInstrument[] {
     const rows = this.database
       .prepare("select id, symbol, name, market, currency, metadata_json, localized_name_json from instruments order by id")
@@ -1061,6 +1197,9 @@ export class SqliteStore {
       const existing = existingRow ? mapInstrumentRow(existingRow) : undefined;
       const existingMetadata = storedMetadata(existing?.metadata);
       const newestMetadata = newestByResolvedAt([existingMetadata, normalized]) ?? normalized;
+      const localizedNameLookup = [existingMetadata?.localizedNameLookup, normalized.localizedNameLookup]
+        .filter(attempt => attempt?.source === newestMetadata.source)
+        .sort((a, b) => Date.parse(a!.checkedAt) - Date.parse(b!.checkedAt)).at(-1);
       const effectiveLocalizedName =
         newestByResolvedAt<LocalizedInstrumentName>([
           storedLocalizedName(existing?.localizedName),
@@ -1077,6 +1216,7 @@ export class SqliteStore {
         ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
         metadata: {
           ...newestMetadata,
+          ...(localizedNameLookup ? { localizedNameLookup } : {}),
           ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
         },
       });
@@ -1102,8 +1242,8 @@ export class SqliteStore {
     );
   }
 
-  private getLegacyReviews(): EpisodeReviewRecord[] {
-    return (this.database.prepare("select review_json from reviews where review_json is not null order by episode_id").all() as Row[])
+  private getLegacyReviews(episodeIds?: readonly string[]): EpisodeReviewRecord[] {
+    return (this.database.prepare(`select review_json from reviews where review_json is not null ${episodeIds ? "and episode_id in (select value from json_each(?))" : ""} order by episode_id`).all(...(episodeIds ? [JSON.stringify(episodeIds)] : [])) as Row[])
       .map((row) => parseJson<EpisodeReviewRecord>(row.review_json, "review"));
   }
 
@@ -1112,10 +1252,10 @@ export class SqliteStore {
     return row?.review_json ? parseJson<EpisodeReviewRecord>(row.review_json, "review") : undefined;
   }
 
-  private getFormalRecallCompletions(): RecallCompletionProjection[] {
+  private getFormalRecallCompletions(episodeIds?: readonly string[]): RecallCompletionProjection[] {
     const rows = this.database
-      .prepare("select episode_id, finalized_json from recall_documents where finalized_json is not null order by episode_id")
-      .all() as Row[];
+      .prepare(`select episode_id, finalized_json from recall_documents where finalized_json is not null ${episodeIds ? "and episode_id in (select value from json_each(?))" : ""} order by episode_id`)
+      .all(...(episodeIds ? [JSON.stringify(episodeIds)] : [])) as Row[];
     return rows.flatMap((row) => {
       const finalized = parseJson<Record<string, unknown>>(row.finalized_json, "finalized recall document");
       if (finalized.status !== "completed" || typeof finalized.completedAt !== "string") return [];

@@ -1,17 +1,17 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronDown, FlaskConical, Settings2 } from 'lucide-react';
-import type { HomepageSource, Period, Scenario } from './display-contract';
-import { createMockSource, DEFAULT_REQUEST, SCENARIOS, TODAY } from './mock-source';
-import { parseLocation } from './location-state';
-import { useHomepagePreview } from './use-homepage-preview';
-import { MetricCards } from './metric-cards';
-import { PerformanceChart } from './performance-chart';
-import { PeriodSelector } from './period-selector';
-import { Holdings } from './holdings';
-import { HoldingDetailPanel } from './holding-detail';
-import { ReadReasons } from './read-reasons';
-import './homepage-preview.css';
+import type { HomepageSource, Period, Scenario } from '../display-contract';
+import { createMockSource, DEFAULT_REQUEST, SCENARIOS, TODAY } from '../mock-source';
+import { parseLocation } from '../location-state';
+import { useHomepagePreview } from '../use-homepage-preview';
+import { MetricCards } from '../metric-cards';
+import { PerformanceChart } from '../performance-chart';
+import { PeriodSelector } from '../period-selector';
+import { Holdings } from '../holdings';
+import { HoldingDetailPanel } from '../holding-detail';
+import { ReadReasons } from '../read-reasons';
+import '../homepage-preview.css';
 
 // Navigation paths come directly from the approved home-1440.svg reference.
 const NAV_ITEMS = [

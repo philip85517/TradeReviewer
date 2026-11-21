@@ -478,3 +478,18 @@ describe("resolveInstrumentMetadataBatch", () => {
     );
   });
 });
+
+it('records a dedicated successful localized lookup independently of provider time and leaves failures unmarked', async () => {
+  const record: ResolvedInstrument = { market: 'HK', symbol: '100', name: 'MINIMAX-W', assetType: 'stock', source: 'tencent', confidence: 'portal', resolvedAt: '2026-10-24T00:00:00.000Z' };
+  const repository = memoryRepository();
+  const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json(record));
+  const checkedAt = '2026-11-21T12:00:00.000Z';
+  await resolveInstrumentMetadataBatch([{ market: 'HK', symbol: '100' }], { repository, fetcher, forceRefresh: true, localizedNameLookup: true, clock: () => Date.parse(checkedAt) });
+  expect((await repository.get('HK:100'))).toEqual({ ...record, localizedNameLookup: { checkedAt, source: 'tencent' } });
+  // An explicit refresh still reaches the provider even with a persisted marker.
+  await refreshInstrumentMetadata({ market: 'HK', symbol: '100' }, { repository, fetcher });
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  const failedRepository = memoryRepository();
+  await resolveInstrumentMetadataBatch([{ market: 'HK', symbol: '100' }], { repository: failedRepository, fetcher: vi.fn<typeof fetch>().mockResolvedValue(new Response('{}', { status: 503 })), forceRefresh: true, localizedNameLookup: true });
+  expect(failedRepository.put).not.toHaveBeenCalled();
+});

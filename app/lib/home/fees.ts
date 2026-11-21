@@ -15,7 +15,7 @@ function executionFee(execution:TradeExecution):string|null {
  try{
   const fee=decimal(execution.fee),settlement=execution.source.settlement;
   if(fee.lt(0)||execution.source.feeStatus==='unknown')return null;
-  if(settlement){
+  if(settlement&&!(execution.source as TradeExecution['source'] & {homeFeeBasis?:unknown}).homeFeeBasis){
    const quantity=decimal(settlement.quantity),gross=decimal(settlement.grossAmount),parts=Object.values(settlement.fees).map(decimal);
    if(!quantity.isPositive()||!quantity.eq(decimal(execution.quantity))||gross.lt(0)||parts.some(p=>p.lt(0))||!parts.reduce((n,p)=>n.plus(p),decimal('0')).eq(fee))return null;
    if(settlement.netAmount!==undefined&&!decimal(settlement.netAmount).eq(execution.side==='buy'?gross.negated().minus(fee):gross.minus(fee)))return null;

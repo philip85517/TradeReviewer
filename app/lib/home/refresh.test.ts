@@ -1,5 +1,5 @@
 import {DatabaseSync} from 'node:sqlite';
-import {afterEach,describe,expect,it} from 'vitest';
+import {afterEach,describe,expect,it,vi} from 'vitest';
 import {initializeSqlite} from '../../../db/sqlite';
 import {HomeRefresh} from './refresh';
 import {HomeStore} from './store';
@@ -47,6 +47,29 @@ describe('durable refresh coordination',()=>{
   db.exec("CREATE TRIGGER claim_after_unlink AFTER DELETE ON home_release WHEN OLD.release_id='r1' BEGIN UPDATE home_refresh SET lease_owner='builder',lease_until=9999999999999 WHERE singleton=1; END");
   store.collect(now+32*60000);
   expect(db.prepare("SELECT count(*) n FROM home_daily WHERE scope_version='r1/all/all'").get()!.n).toBe(before);
+ });
+ it('does not claim writer locks for closed trade sets retained by the full catalog',()=>{
+  const {db,store}=setup();store.stage(release('r1',0));store.publish('r1',null);
+  db.exec("INSERT INTO home_full_module VALUES('r1','catalog','[{\"tradeSetId\":\"closed-set\"}]')");
+  db.exec("INSERT INTO home_trade_set(trade_set_id,position_key,source_sequence,trade_count,policy_version)VALUES('closed-set','closed',0,0,'fixture')");
+  const exec=vi.spyOn(db,'exec');store.collect(now);
+  expect(exec.mock.calls.filter(([sql])=>sql==='BEGIN IMMEDIATE')).toHaveLength(0);
+  expect(db.prepare("SELECT 1 FROM home_trade_set WHERE trade_set_id='closed-set'").get()).toBeTruthy();
+ });
+ it('rechecks newly acquired catalog references under the deletion writer lock',()=>{
+  const {db,store}=setup();store.stage(release('r1',0));store.publish('r1',null);
+  db.exec("INSERT INTO home_trade_set(trade_set_id,position_key,source_sequence,trade_count,policy_version)VALUES('late-set','closed',0,0,'fixture')");
+  const exec=db.exec.bind(db);let attached=false;
+  vi.spyOn(db,'exec').mockImplementation(sql=>{
+   if(sql==='BEGIN IMMEDIATE'&&!attached){
+    attached=true;exec("INSERT INTO home_full_module VALUES('r1','catalog','[{\"tradeSetId\":\"late-set\"}]')");
+   }
+   return exec(sql);
+  });
+  store.collect(now);
+  expect(attached).toBe(true);
+  expect(db.prepare("SELECT 1 FROM home_trade_set WHERE trade_set_id='late-set'").get()).toBeTruthy();
+  expect(store.readHome(request).stamp.version).toBe('r1');
  });
  it('wakes once at a persisted intraday knowledge boundary without a fact write',()=>{
   const {db,refresh,store}=setup();const input=release('r1',0);

@@ -1,3 +1,4 @@
+import {verifiedSplitBoundaries} from './split-valuation-safety';
 import { replayPositionAtPrice, type NativePositionFacts } from '../replay/position-ledger';
 import { nativeExecutionAt } from '../replay/native-boundary';
 import { decimal, validDay } from './period';
@@ -50,12 +51,13 @@ export function nativePosition(input: Omit<Parameters<typeof replayPositionAtPri
   // Future fills can carry earlier statement evidence. Keep that context, while
   // the explicit visible IDs prevent the future fills themselves from entering the ledger.
   const context=[...executions,...input.executions.filter(e=>!selectedIds.has(e.id))];
-  replayPositionAtPrice({ ...input, executions:context, nativeErrors, cursor, visibleExecutionIds: executions.map(e => e.id), nativeFacts: result => { facts = result; } });
+  replayPositionAtPrice({ ...input, nativeSplits:verifiedSplitBoundaries, executions:context, nativeErrors, cursor, visibleExecutionIds: executions.map(e => e.id), nativeFacts: result => { facts = result; } });
   if (!facts) throw new Error('native facts were not produced');
   const result = facts as NativePositionFacts;
   const quantity = invalidQuantity ? null : result.quantity;
   const pnlInvalid = errors.size > 0;
-  return { ...result, ...(errors.size ? { realizedContributions:{...result.realizedContributions, 'invalid-time':{currency:input.executions[0]?.instrument.currency??input.inventoryIdentity?.currency??'UNKNOWN',amount:null}},realizedMissing:result.realizedMissing+1,lifetimeComplete:false } : {}), quantity, averageCost: pnlInvalid ? null : result.averageCost, realized: pnlInvalid ? null : result.realized,
+  const unknownTime = {currency:input.executions[0]?.instrument.currency??input.inventoryIdentity?.currency??'UNKNOWN',amount:null};
+  return { ...result, ...(errors.size ? { realizedContributions:{...result.realizedContributions, 'invalid-time':unknownTime},closedFeeContributions:{...result.closedFeeContributions,'invalid-time':unknownTime},realizedMissing:result.realizedMissing+1,lifetimeComplete:false } : {}), quantity, averageCost: pnlInvalid ? null : result.averageCost, realized: pnlInvalid ? null : result.realized,
     unrealized: pnlInvalid || quantity === null ? null : result.unrealized,
     fees: [...errors].some(e => e.includes('fee')) ? null : result.fees,
     marketValue: quantity === null ? null : decimal(quantity).mul(input.markPrice).toFixed(), reasons: [...new Set([...result.reasons, ...errors])] };

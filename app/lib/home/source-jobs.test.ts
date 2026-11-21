@@ -61,3 +61,39 @@ it('recovers the public status when a newer FX snapshot succeeds',async()=>{
   expect(jobs.summary(now)).toMatchObject({failed:0,pending:0});
  }finally{db.close();}
 });
+
+it('consumes only requested keys and exposes runnable work without planning or network',async()=>{
+ const db=new DatabaseSync(':memory:');initializeSqlite(db);
+ try{
+  const jobs=new HomeSourceJobs(db),signal=new AbortController().signal;
+  jobs.enqueue({key:'background',kind:'quote',payload:{},priority:0});
+  jobs.enqueue({key:'requested',kind:'quote',payload:{},priority:1});
+  const seen:string[]=[];
+  expect(jobs.hasRunnable()).toBe(true);
+  await jobs.runOne(async job=>{seen.push(job.key);},signal,{keys:['requested']});
+  expect(seen).toEqual(['requested']);
+  expect(await jobs.runOne(async()=>{},signal,{keys:['requested']})).toBe(false);
+  expect(jobs.hasRunnable()).toBe(true);
+  await jobs.runOne(async()=>{},signal);expect(jobs.hasRunnable()).toBe(false);
+ }finally{db.close();}
+});
+
+it('keeps failed work outstanding while automatic retries remain, including the retry delay',async()=>{
+ const db=new DatabaseSync(':memory:');initializeSqlite(db);
+ try{
+  const jobs=new HomeSourceJobs(db),signal=new AbortController().signal;
+  let now=1000;
+  jobs.enqueue({key:'quote',kind:'quote',payload:{},priority:0},now);
+  expect(jobs.summary(now)).toMatchObject({pending:1,failed:0,retryable:0,remaining:1,terminalFailed:0});
+  const fail=async()=>{throw new Error('provider unavailable');};
+  await jobs.runOne(fail,signal,{now:()=>now});
+  expect(jobs.hasRunnable(now)).toBe(false);
+  expect(jobs.summary(now)).toMatchObject({pending:0,failed:1,retryable:1,remaining:1,terminalFailed:0});
+  for(let attempt=2;attempt<=3;attempt++){
+   now+=31000;expect(jobs.hasRunnable(now)).toBe(true);
+   await jobs.runOne(fail,signal,{now:()=>now});
+  }
+  now+=31000;expect(jobs.hasRunnable(now)).toBe(false);
+  expect(jobs.summary(now)).toMatchObject({pending:0,failed:1,retryable:0,remaining:0,terminalFailed:1});
+ }finally{db.close();}
+});

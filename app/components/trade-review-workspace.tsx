@@ -1,4 +1,6 @@
 "use client";
+import {useLibraryDataScope} from './workspace/library-data-scope';
+import {fullLibraryActivityEntries,fullLibraryBrowse} from './homepage-preview/full-library';
 import { summarizeRecallDocument, type RecallReviewSummary } from "../lib/recall/summary";
 import { fetchRecallReviewSummaries } from "../lib/recall/summary-client";
 import type { RecallDocument } from "../lib/recall/types";
@@ -351,6 +353,7 @@ type InstrumentMarketState = {
 type Props = {
   initialFrame: DemoReplayFrame;
   showDemo?: boolean;
+  homeLibraryEntry?: {accounts:string[];market:string;from:string|null;to:string|null;instrumentId?:string;returnTo?:string;notice?:string};
   /** Optional future data-management module, such as the FX updater. */
   fxSlot?: ReactNode;
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
@@ -1219,6 +1222,7 @@ async function fetchCashData(client: CashClient, request: CashDataRequest): Prom
 
 export function TradeReviewWorkspace({
   initialFrame,
+  homeLibraryEntry,
   showDemo = true,
   fxSlot,
   screenshotImportDependencies,
@@ -1229,6 +1233,7 @@ export function TradeReviewWorkspace({
   const [storageClient] = useState<SqliteHttpClient>(
     () => storageClientOverride ?? createSqliteHttpClient(),
   );
+  const libraryDataScope = useLibraryDataScope(storageClient, homeLibraryEntry);
   const [activeAliasLoader] = useState<ActiveAliasLoader>(() =>
     activeAliasLoaderOverride ?? (storageClientOverride ? async () => [] : createActiveAliasLoader()),
   );
@@ -1279,10 +1284,11 @@ export function TradeReviewWorkspace({
     media.addEventListener("change", closeOnDesktop);
     return () => media.removeEventListener("change", closeOnDesktop);
   }, []);
-  const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [homeActivityRange,setHomeActivityRange]=useState(homeLibraryEntry?{from:homeLibraryEntry.from,to:homeLibraryEntry.to}:null);
+  const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState | undefined>(()=>homeLibraryEntry?fullLibraryBrowse(homeLibraryEntry):undefined);
   const [librarySourceSnapshot, setLibrarySourceSnapshot] = useState<RoomPendingSourceSnapshot | null>(null);
   const [dashboardRestoreContext, setDashboardRestoreContext] = useState<RoomPendingSourceSnapshot | null>(null);
-  const [sharedScope, setSharedScope] = useState<SharedScope>(DEFAULT_SHARED_SCOPE);
+  const [sharedScope, setSharedScope] = useState<SharedScope>(homeLibraryEntry?{...DEFAULT_SHARED_SCOPE,nature:"live",reportCurrency:"CNY",accountIds:homeLibraryEntry.accounts}:DEFAULT_SHARED_SCOPE);
   const [sharedScopeRestored, setSharedScopeRestored] = useState(false);
   const sharedScopeRef = useRef(sharedScope);
   const sharedScopeChangeGeneration = useRef(0);
@@ -1307,26 +1313,35 @@ export function TradeReviewWorkspace({
   }, []);
   const [activeView, setActiveViewState] = useState<
     "dashboard" | "review" | "library" | "insights" | "data"
-  >(showDemo ? "review" : "dashboard");
-  const [dashboardOpened, setDashboardOpened] = useState(!showDemo);
+  >(homeLibraryEntry ? "library" : showDemo ? "review" : "dashboard");
+  // A homepage deep link opens the real library, not the hidden legacy dashboard.
+  // Retain each panel after its first visit so its drafts and local state survive.
+  const [dashboardOpened, setDashboardOpened] = useState(!showDemo && !homeLibraryEntry);
+  const [dataOpened, setDataOpened] = useState(!homeLibraryEntry);
   const recallLeaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
   const navigationAttemptRef = useRef(0);
   const registerRecallLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
     recallLeaveGuardRef.current = guard;
   }, []);
-  function setActiveView(next: typeof activeView) {
+  function setActiveView(next: typeof activeView, fullDataReady = false) {
     const attempt = ++navigationAttemptRef.current;
+    if (!fullDataReady && libraryDataScope.isScoped && next !== "library") {
+      void libraryDataScope.ensureFull().then(() => { if (attempt === navigationAttemptRef.current) setActiveView(next, true); }).catch(() => undefined);
+      return;
+    }
     if (activeView === "review" && next !== "review") {
       invalidatePendingImportedReplayRestore();
     }
     if (activeView !== "review" || next === "review" || !recallLeaveGuardRef.current) {
       if (next === "dashboard") setDashboardOpened(true);
+      if (next === "data") setDataOpened(true);
       setActiveViewState(next);
       return;
     }
     void recallLeaveGuardRef.current().then(allowed => {
       if (allowed && attempt === navigationAttemptRef.current) {
         if (next === "dashboard") setDashboardOpened(true);
+        if (next === "data") setDataOpened(true);
         setActiveViewState(next);
       }
     }).catch(() => setNavigationNotice("复盘尚未保存，请重试保存后再离开。"));
@@ -1455,7 +1470,7 @@ export function TradeReviewWorkspace({
     "loading" | "migration" | "ready" | "error"
   >("loading");
   useEffect(() => {
-    if (storageState !== "ready" || (activeView !== "dashboard" && recallSummariesRequested.current)) return;
+    if (libraryDataScope.isScoped || storageState !== "ready" || (activeView !== "dashboard" && recallSummariesRequested.current)) return;
     recallSummariesRequested.current = true;
     let cancelled = false;
     const requestedAtSequence = recallSaveSequence.current;
@@ -1475,7 +1490,7 @@ export function TradeReviewWorkspace({
       // Summaries enhance the homepage; outages retain the last confirmed state.
     });
     return () => { cancelled = true; };
-  }, [activeView, storageState]);
+  }, [activeView, storageState, libraryDataScope.isScoped]);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const pendingMigrationReloads = useRef<Array<{ resolve: () => void; reject: (error: unknown) => void }>>([]);
@@ -1855,16 +1870,16 @@ export function TradeReviewWorkspace({
   }, [tradeLibraryEntriesResult.cache]);
   const tradeLibraryEntries = tradeLibraryEntriesResult.entries;
   const scopedTradeLibraryEntries = useMemo(
-    () => filterEntriesBySharedScope(tradeLibraryEntries, sharedScope),
-    [tradeLibraryEntries, sharedScope],
+    () => filterEntriesBySharedScope(fullLibraryActivityEntries(tradeLibraryEntries,homeActivityRange), sharedScope),
+    [tradeLibraryEntries, sharedScope,homeActivityRange],
   );
   const sharedAccountOptions = useMemo(() => {
-    const options = [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
+    const options = libraryDataScope.isScoped ? libraryDataScope.directory.filter(account=>account.natures.includes(sharedScope.nature)).map(({id,label})=>({id,label})) : [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
       .filter(item => sharedEpisodeNature(entry.tradeNature, item.episode) === sharedScope.nature)
       .map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel || "未命名账户" }] as const))).values()];
     const displayLabels = stableAccountDisplayLabels(options);
     return options.map(option => ({ ...option, label: displayLabels.get(option.id) ?? option.label }));
-  }, [tradeLibraryEntries, sharedScope.nature]);
+  }, [tradeLibraryEntries, sharedScope.nature, libraryDataScope.isScoped, libraryDataScope.directory]);
   const sharedSimulationRunOptions = useMemo(() => {
     if (sharedScope.nature !== "simulation") return [];
     const runs = new Map<string, { instrumentName: string; symbol: string }>();
@@ -1884,7 +1899,8 @@ export function TradeReviewWorkspace({
       .map(([id, instrument]) => ({ id, label: formatSimulationRunLabel(id, instrument) }));
   }, [tradeLibraryEntries, sharedScope]);
 
-  const updateSharedScope = useCallback((patch: Partial<SharedScope>) => {
+  const updateSharedScope = useCallback((patch: Partial<SharedScope>, fullDataReady = false) => {
+    if (!fullDataReady && libraryDataScope.isScoped) {void libraryDataScope.ensureFull().then(()=>updateSharedScope(patch,true)).catch(()=>undefined);return;}
     sharedScopeChangeGeneration.current += 1;
     setSharedScope(current => {
       let next = normalizeSharedScope({ ...current, ...patch });
@@ -1900,7 +1916,7 @@ export function TradeReviewWorkspace({
       sharedScopeRef.current = next;
       return next;
     });
-  }, [tradeLibraryEntries]);
+  }, [tradeLibraryEntries, libraryDataScope.isScoped, libraryDataScope.ensureFull]);
 
   useEffect(() => {
     if (tradeLibraryEntries.length === 0 || sharedScope.nature !== "simulation" || !sharedScope.simulationRunId) return;
@@ -1957,7 +1973,7 @@ export function TradeReviewWorkspace({
     fxRevision: cashFxRevision,
   }), [cashExecutionRevision, cashFxRevision, cashMetadataRevision, cashNature, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
   const cashDataRequest = useMemo<CashDataRequest | null>(() => {
-    if (!cashScopeReady || !cashNature) return null;
+    if (!cashScopeReady || !cashNature || (homeLibraryEntry && !dashboardOpened && !dataOpened)) return null;
     return {
       nature: cashNature,
       simulationRunId: cashSimulationRunId,
@@ -1965,7 +1981,7 @@ export function TradeReviewWorkspace({
       today: cashTodayKey,
       accountIds: [...sharedScope.accountIds],
     };
-  }, [cashNature, cashScopeReady, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
+  }, [cashNature, cashScopeReady, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds, homeLibraryEntry, dashboardOpened, dataOpened]);
   const [cashBaselineState, setCashBaselineState] = useState<CashBaselineState | CashBaselineStorageState>(() => emptyCashBaselineStorageState());
   const [cashBaselineScopeKey, setCashBaselineScopeKey] = useState<string | null>(null);
   const [cashSummary, setCashSummary] = useState<CashSummary | null>(null);
@@ -2507,15 +2523,17 @@ export function TradeReviewWorkspace({
     const requestId = ++replayRequestSequence.current;
     const aliasController = new AbortController();
     const bootstrapWorkspace = async () => {
-      const reloadRequested = pendingMigrationReloads.current.length > 0;
+      const upgradingScope = hydrated && libraryDataScope.isScoped && libraryDataScope.fullRequested.current;
+      const reloadRequested = pendingMigrationReloads.current.length > 0 || upgradingScope;
       try {
         if (!reloadRequested) setStorageState("loading");
         setStorageError(null);
-        let bootstrap = await storageClient.getBootstrap();
+        let bootstrap = await libraryDataScope.read(aliasController.signal);
         if (!bootstrap.migration) {
           const legacyState = await legacyStateExporter({ excludeDemo: !showDemo });
           if (legacyState) {
             setStorageState("migration");
+            if (libraryDataScope.context.current) {bootstrap = await storageClient.getBootstrap();libraryDataScope.context.current=null;libraryDataScope.fullRequested.current=true;}
             await migrateLegacyBrowserState(storageClient, legacyState, {
               ignoreLocalMarker: true,
             });
@@ -2524,11 +2542,14 @@ export function TradeReviewWorkspace({
         }
         if (!active) return;
         setStoredInstruments(bootstrap.instruments);
-        const productionExecutions = applyMonthlyHistoryEvidence(showDemo
+        const evidenceExecutions = applyMonthlyHistoryEvidence(showDemo
           ? bootstrap.executions
           : bootstrap.executions.filter((execution) => execution.source.platform !== "demo"),
           selectMonthlyEvidenceHistory(bootstrap.importHistory));
-        const savedScope = readPersistedSharedScope();
+        const scopeRead = libraryDataScope.context.current;
+        const productionExecutions = scopeRead ? evidenceExecutions.filter(execution=>execution.instrument.id===scopeRead.scope.instrumentId&&execution.accountId===scopeRead.scope.accountId) : evidenceExecutions;
+        if(scopeRead) setRecallSummariesByEpisode(Object.fromEntries(scopeRead.recallSummaries.map(summary=>[summary.episodeId,summary])));
+        const savedScope = homeLibraryEntry ? {...DEFAULT_SHARED_SCOPE,nature:"live" as const,reportCurrency:"CNY" as const,accountIds:homeLibraryEntry.accounts} : readPersistedSharedScope();
         const scopeGeneration = sharedScopeChangeGeneration.current;
         let aliases: readonly import("../lib/storage/tradingview-account-migration-client").TradingViewAccountMigrationAlias[] = [];
         let aliasFailure: Error | null = null;
@@ -2539,7 +2560,7 @@ export function TradeReviewWorkspace({
           setAliasRecoveryState("loading");
           setAliasRecoveryError(null);
           try {
-            aliases = await activeAliasLoader(aliasController.signal);
+            aliases = scopeRead ? scopeRead.accountAliases : await activeAliasLoader(aliasController.signal);
           } catch (error) {
             if (!active || isAbortError(error)) return;
             aliasFailure = error instanceof Error ? error : new Error("账户范围恢复失败");
@@ -2643,18 +2664,34 @@ export function TradeReviewWorkspace({
               }
             : EMPTY_MARKET_DATA_REFRESH,
         );
-        setMarketStates(
-          Object.fromEntries(
-            storedSummaries.map((summary) => [
-              summary.instrument.id,
-              emptyMarketState(jobs[summary.instrument.id] ?? "not-requested"),
-            ]),
-          ),
-        );
+        // Scope expansion changes the inventory, not the already-read market
+        // cache. A matching completed hydration key must keep its data as well
+        // as its key; otherwise that key suppresses the only daily reload.
+        const retainedMarketIds = new Set(storedSummaries.filter(summary =>
+          upgradingScope && marketHydrationKeys.current.get(summary.instrument.id) ===
+            `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`,
+        ).map(summary => summary.instrument.id));
+        setMarketStates(current => Object.fromEntries(storedSummaries.map(summary => {
+          const id = summary.instrument.id;
+          const previous = retainedMarketIds.has(id) ? current[id] : undefined;
+          return [id, previous
+            ? applyPersistedMarketDataJob(previous, jobs[id])
+            : emptyMarketState(jobs[id] ?? "not-requested")];
+        })));
+        if (upgradingScope) {
+          // A wider history/changed trade range needs a fresh read and may not
+          // advertise old readiness while the new coverage is being checked.
+          setHydratedMarketIds(current => new Set([...current].filter(id => retainedMarketIds.has(id))));
+          for (const summary of storedSummaries) {
+            if (!retainedMarketIds.has(summary.instrument.id)) {
+              marketIntradayKeys.current.delete(summary.instrument.id);
+            }
+          }
+        }
         const firstSummary = storedSummaries[0];
         const newestEpisode = sortedEpisodes(firstSummary)[0];
         const storedDemo = states[REVIEW_ID];
-        if (firstSummary && newestEpisode) {
+        if (!upgradingScope && firstSummary && newestEpisode) {
           const stored = states[newestEpisode.id];
           drawingEpisodeRef.current = newestEpisode.id;
           setSelectedInstrumentId(firstSummary.instrument.id);
@@ -2663,7 +2700,7 @@ export function TradeReviewWorkspace({
           setImportedCursor(stored?.replayCursor ?? replayCursorForEpisode([], newestEpisode.startedAt));
           setActivePanelTab(stored?.activePanelTab ?? "stats");
           setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
-        } else if (showDemo && storedDemo) {
+        } else if (!upgradingScope && showDemo && storedDemo) {
           drawingEpisodeRef.current = REVIEW_ID;
           setTimeframe(storedDemo.timeframe);
           setActivePanelTab(storedDemo.activePanelTab);
@@ -2683,6 +2720,7 @@ export function TradeReviewWorkspace({
           setRestoring(false);
           setHydrated(true);
           setStorageState("ready");
+          libraryDataScope.complete();
           const pending = pendingMigrationReloads.current.splice(0);
           for (const request of pending) {
             if (aliasFailure) request.reject(aliasFailure);
@@ -2691,6 +2729,8 @@ export function TradeReviewWorkspace({
         }
       } catch (error) {
         if (!active || requestId !== replayRequestSequence.current) return;
+        libraryDataScope.fail(error);
+        if (upgradingScope) return;
         const pending = pendingMigrationReloads.current.splice(0);
         if (pending.length > 0) {
           const message = error instanceof Error ? error.message : "无法刷新迁移后的页面数据";
@@ -2711,15 +2751,15 @@ export function TradeReviewWorkspace({
       aliasController.abort();
       replayRequestSequence.current += 1;
     };
-  }, [activeAliasLoader, aliasRecoveryAttempt, bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
+  }, [activeAliasLoader, aliasRecoveryAttempt, bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient, libraryDataScope.reloadKey, libraryDataScope.read]);
 
   useEffect(() => {
-    if (!hydrated || storedInstruments.length === 0) return;
+    if (libraryDataScope.isScoped || !hydrated || storedInstruments.length === 0) return;
     localizedHydrationQueue.current?.enqueue(storedInstruments);
-  }, [hydrated, storedInstruments]);
+  }, [hydrated, storedInstruments, libraryDataScope.isScoped]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (libraryDataScope.isScoped || !hydrated) return;
     const controller = new AbortController();
     const queue = localizedHydrationQueue.current;
     if (!queue) return () => controller.abort();
@@ -2731,7 +2771,7 @@ export function TradeReviewWorkspace({
       onProgress: setStoredInstruments,
     }).catch(() => undefined);
     return () => controller.abort();
-  }, [hydrated, metadataRepository, storageClient]);
+  }, [hydrated, metadataRepository, storageClient, libraryDataScope.isScoped]);
 
   // Read the latest selection only when an inventory hydration completes. Saving a
   // cursor or switching episodes must never re-read every instrument's cache.
@@ -3196,6 +3236,7 @@ export function TradeReviewWorkspace({
 
   useEffect(() => {
     if (
+      libraryDataScope.isScoped ||
       !hydrated ||
       restoring ||
       !activeEpisodeId ||
@@ -3223,6 +3264,7 @@ export function TradeReviewWorkspace({
     timeframe,
     showDemo,
     selectedRawImportedInstrument,
+    libraryDataScope.isScoped,
   ]);
 
   useEffect(() => {
@@ -4482,7 +4524,11 @@ export function TradeReviewWorkspace({
     }
   }
 
-  function openDataCheck(instrumentId: string, accountId: string) {
+  function openDataCheck(instrumentId: string, accountId: string, fullDataReady = false) {
+    if (libraryDataScope.isScoped && !fullDataReady) {
+      void libraryDataScope.ensureFull().then(() => openDataCheck(instrumentId, accountId, true)).catch(() => undefined);
+      return;
+    }
     const instrument = importedInstruments.find(item => item.instrument.id === instrumentId)?.instrument ?? storedInstruments.find(item=>item.id===instrumentId);
     if (!instrument) return;
     setPlaying(false); setDrawerOpen(false); setStockDrawerOpen(false);
@@ -5077,15 +5123,27 @@ export function TradeReviewWorkspace({
       setImportPhase("idle");
       return;
     }
-    const mergedExecutions = applyMonthlyHistoryEvidence(
-      tradingViewMerge?.merged ?? mergeExecutions(
+    const mergedBeforeEvidence = tradingViewMerge?.merged ?? mergeExecutions(
         resolvedMonthly?.currentAfterReplacements ?? mergeBase,
         resolvedMonthly?.incomingToMerge ?? recordsForStorage,
-      ), [
+      );
+    const evidenceUpdated = applyMonthlyHistoryEvidence(mergedBeforeEvidence, [
       ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
         .flatMap(entry => entry.monthly ? [entry.monthly] : []),
       ...(pendingImport.monthly ? [pendingImport.monthly] : []),
     ]);
+    // Compare both overlays on the same merged set: only the changed
+    // statement may alter existing evidence, including account-wide evidence.
+    const priorEvidenceUpdated = applyMonthlyHistoryEvidence(
+      mergedBeforeEvidence,
+      importHistory.flatMap(entry => entry.monthly ? [entry.monthly] : []),
+    );
+    const mergedExecutions = evidenceUpdated.map((execution, index) =>
+      pendingImport.monthly && !belongsToMonthlyDocument(execution, pendingImport.monthly) &&
+      JSON.stringify(priorEvidenceUpdated[index]) === JSON.stringify(execution)
+        ? mergedBeforeEvidence[index]
+        : execution,
+    );
     const mergedIds = new Set(mergedExecutions.map((execution) => execution.id));
     // Reinsert explicitly retained conflicting rows together, so storage cannot
     // reinterpret the user's keep-both decision as an unresolved conflict.
@@ -5132,9 +5190,27 @@ export function TradeReviewWorkspace({
     setSavingImport(true);
     setImportError(null);
     try {
+      // Save the affected rows only. Revalidating and rewriting the entire
+      // library makes an unrelated legacy row block a statement-only update.
+      // Explicit replacements must still be reinserted even when unchanged.
+      const currentById = new Map(currentExecutions.map(execution => [execution.id, execution]));
+      const replacementIds = new Set(replaceExecutionIds);
+      const changedExecutions = mergedExecutions.filter(execution =>
+        replacementIds.has(execution.id) ||
+        JSON.stringify(currentById.get(execution.id)) !== JSON.stringify(execution),
+      );
+      // Existing evidence-only updates are duplicates to reconciliation unless
+      // explicitly replaced. Keep this limited to the computed changed rows.
+      for (const execution of changedExecutions) {
+        if (currentById.has(execution.id) && !replacementIds.has(execution.id)) {
+          replaceExecutionIds.push(execution.id);
+          replacementIds.add(execution.id);
+        }
+      }
+      const changedInstrumentIds = new Set(changedExecutions.map(execution => execution.instrument.id));
       await storageClient.mergeExecutions({
-        executions: mergedExecutions,
-        instruments: summaries.map(({ instrument }) => instrument),
+        executions: changedExecutions,
+        instruments: summaries.filter(({ instrument }) => changedInstrumentIds.has(instrument.id)).map(({ instrument }) => instrument),
         importHistory: [historyEntry],
         ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
       });
@@ -5516,11 +5592,17 @@ export function TradeReviewWorkspace({
 
   }
 
+  const prepareImportPage = () => {
+    if (!libraryDataScope.isScoped) return false;
+    setDataTab("import");
+    setActiveView("data");
+    return true;
+  };
   const importActions = {
     disabled: importing,
-    onTradingView: () => { clearSupplement(); tradingViewInputRef.current?.click(); },
-    onFile: () => { clearSupplement(); importFileRef.current?.click(); },
-    onScreenshot: () => { clearSupplement(); importScreenshotRef.current?.click(); },
+    onTradingView: () => { if (prepareImportPage()) return; clearSupplement(); tradingViewInputRef.current?.click(); },
+    onFile: () => { if (prepareImportPage()) return; clearSupplement(); importFileRef.current?.click(); },
+    onScreenshot: () => { if (prepareImportPage()) return; clearSupplement(); importScreenshotRef.current?.click(); },
   };
 
   // Global search and utility menus are mounted only by the active page. They
@@ -5530,8 +5612,9 @@ export function TradeReviewWorkspace({
     <TradingRoomGlobalSearch
       entries={tradeLibraryEntries}
       scope={sharedScope}
-      status="ready"
+      status={libraryDataScope.isScoped ? (libraryDataScope.error ? "error" : "loading") : "ready"}
       onOpenSearchResult={openGlobalSearchResult}
+      onRequireFullData={libraryDataScope.isScoped ? libraryDataScope.ensureFull : undefined}
     />
   );
   const workspaceGlobalUtilities = (returnView: ReviewReturnView) => (
@@ -5540,7 +5623,8 @@ export function TradeReviewWorkspace({
       scope={sharedScope}
       marketDataStatuses={marketDataStatuses}
       marketDataLabels={marketDataLabels}
-      status="ready"
+      status={libraryDataScope.isScoped ? "loading" : "ready"}
+      onRequireFullData={libraryDataScope.isScoped ? libraryDataScope.ensureFull : undefined}
       onOpenNotification={item => openGlobalNotification(item, returnView)}
       onOpenAccountAndCurrency={openAccountAndCurrency}
     />
@@ -5655,13 +5739,15 @@ export function TradeReviewWorkspace({
           <strong>{failed ? "无法打开交易数据" : storageState === "migration" ? "正在迁移浏览器交易数据" : "正在连接交易数据"}</strong>
           <span>{failed ? storageError ?? "SQLite 存储暂时不可用。" : storageState === "migration" ? "首次升级会将现有浏览器数据安全迁移到 SQLite。" : "正在从 SQLite 读取交易记录…"}</span>
           {failed && <button type="button" onClick={() => setBootstrapAttempt((value) => value + 1)}>重试</button>}
+          {failed && libraryDataScope.isScoped && <button type="button" onClick={()=>void libraryDataScope.ensureFull().catch(()=>undefined)}>读取完整交易库</button>}
         </section>
       </main>
     );
   }
 
   return (
-    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}>
+    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}
+    >
       <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" multiple={!supplementScope} disabled={importing} onChange={(event) => {
         const files = Array.from(event.target.files ?? []);
         if (files.length) startStatementBatch(files);
@@ -5897,7 +5983,7 @@ export function TradeReviewWorkspace({
             overflow: "auto",
           }}
         >
-          <DataManagement
+          {dataOpened && <DataManagement
             unifiedHeader
             scopeControls={activeView === "data" ? workspaceScopeControls : undefined}
             globalTools={activeView === "data" ? workspaceGlobalUtilities("data") : undefined}
@@ -5949,12 +6035,16 @@ export function TradeReviewWorkspace({
             fxSlot={resolvedFxSlot}
             cashSlot={cashSlot}
             accountMigrationSlot={!showDemo ? <TradingViewAccountMigrationPanel onCommitted={reloadAfterMigrationCommit} /> : undefined}
-          />
+          />}
         </div>
         {activeView === "library" ? (
           <div className="library-page-shell">
-            {librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
+            {homeLibraryEntry?.returnTo && <a className="library-source-return" href={homeLibraryEntry.returnTo}>返回我的交易室</a>}{librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
+          {homeLibraryEntry?.notice&&<p role="status">{homeLibraryEntry.notice}</p>}
+          {homeActivityRange&&(homeActivityRange.from||homeActivityRange.to)&&<div role="status">首页成交期间：{homeActivityRange.from??'最早'} 至 {homeActivityRange.to??'最新'} <button type="button" onClick={()=>setHomeActivityRange(null)}>清除成交期间</button></div>}
+          {libraryDataScope.isScoped && (libraryDataScope.error || libraryDataScope.phase==='upgrading') && <p role="status" className="navigation-notice">{libraryDataScope.error ? <>完整交易库读取失败：{libraryDataScope.error} <button className="library-scope-retry" onClick={()=>void libraryDataScope.ensureFull().catch(()=>undefined)}>重试完整读取</button></> : libraryDataScope.phase==='upgrading' ? '正在读取完整交易库，当前证券和筛选保持不变…' : null}</p>}
           <TradeLibrary
+            onRequireFullData={libraryDataScope.isScoped ? libraryDataScope.ensureFull : undefined}
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
             sharedAccountOptions={sharedAccountOptions}
@@ -5963,6 +6053,7 @@ export function TradeReviewWorkspace({
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
             entries={scopedTradeLibraryEntries}
+            scopeFilterEntries={homeLibraryEntry?filterEntriesBySharedScope(tradeLibraryEntries,sharedScope):undefined}
             sharedSimulationRunOptions={sharedSimulationRunOptions}
             instrumentMetadata={instrumentMetadata}
             roomFxSnapshot={fxSnapshot}
@@ -5989,12 +6080,12 @@ export function TradeReviewWorkspace({
             }}
             reviewsHydrated={reviewsHydrated}
             target={libraryTarget}
-            onSaveReview={saveEpisodeReview}
+            onSaveReview={async record => { await libraryDataScope.ensureFull(); await saveEpisodeReview(record); }}
             reviewExtras={reviewExtras}
             globalSearch={workspaceGlobalSearch}
             globalTools={workspaceGlobalUtilities("library")}
             onInspectData={openDataCheck}
-            onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true, priority: "interactive" })}
+            onRefreshMarketData={(instrumentId) => void libraryDataScope.ensureFull().then(()=>startMarketDataUpdate([instrumentId], { refreshMetadata: true, priority: "interactive" })).catch(()=>undefined)}
             onImport={() => {
               setDataTab("import");
               setActiveView("data");
@@ -6304,7 +6395,7 @@ export function TradeReviewWorkspace({
               locateRequest={locateRequest}
               onLocateResult={handleLocateResult}
               onLocateTimeframeChange={setReviewTimeframe}
-              onSaveReview={saveEpisodeReview}
+              onSaveReview={async record => { await libraryDataScope.ensureFull(); await saveEpisodeReview(record); }}
               onCompleteReview={selectedImportedInstrument ? continueFromReview : undefined}
               reviewExtras={selectedEpisode ? reviewExtras(selectedEpisode) : undefined}
             />

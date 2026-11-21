@@ -22,6 +22,8 @@ import type {
   MigrationReport,
   SqliteStatus,
   StorageBootstrap,
+  LibraryScope,
+  LibraryScopeBootstrap,
   StoredInstrument,
 } from "./sqlite-contracts";
 import type { ResolvedInstrument } from "../instruments/metadata-contracts";
@@ -65,10 +67,10 @@ export type SuggestionDecisionInput = {
 type SqliteHttpClientWithMetadata = ReturnType<typeof createSqliteHttpClient>;
 export type SqliteHttpClient = Omit<
   SqliteHttpClientWithMetadata,
-  "getInstrumentMetadata" | "putInstrumentMetadata"
+  "getInstrumentMetadata" | "putInstrumentMetadata" | "getLibraryScope"
 > & Partial<Pick<
   SqliteHttpClientWithMetadata,
-  "getInstrumentMetadata" | "putInstrumentMetadata"
+  "getInstrumentMetadata" | "putInstrumentMetadata" | "getLibraryScope"
 >>;
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
@@ -133,6 +135,7 @@ function instrumentMetadataUrl(instrumentIds: readonly string[]): string {
 export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   getStatus(): Promise<SqliteStatus>;
   getBootstrap(): Promise<StorageBootstrap>;
+  getLibraryScope(scope: LibraryScope, signal?: AbortSignal): Promise<LibraryScopeBootstrap>;
   getInstrumentMetadata(instrumentIds: string[], signal?: AbortSignal): Promise<InstrumentMetadataRead>;
   putInstrumentMetadata(record: ResolvedInstrument): Promise<{ ok: true }>;
   migrate(payload: BrowserStatePayload): Promise<MigrationReport>;
@@ -157,6 +160,13 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   return {
     getStatus: async () => parseResponse<SqliteStatus>(await fetcher("/api/storage/status", { cache: "no-store" })),
     getBootstrap: async () => parseResponse<StorageBootstrap>(await fetcher("/api/storage/bootstrap", { cache: "no-store" })),
+    getLibraryScope: async (scope, signal) => {
+      if (!scope?.accountId?.trim() || !scope?.instrumentId?.trim()) throw new Error("Invalid library scope");
+      const params = new URLSearchParams({accountId:scope.accountId,instrumentId:scope.instrumentId});
+      const value = await parseResponse<LibraryScopeBootstrap>(await fetcher(`/api/storage/library-scope?${params.toString()}`, {cache:"no-store",...(signal?{signal}:{})}));
+      if (value?.scope?.accountId !== scope.accountId || value?.scope?.instrumentId !== scope.instrumentId || typeof value.revision !== "string") throw new Error("Library scope response mismatch");
+      return value;
+    },
     getInstrumentMetadata: async (instrumentIds, signal) => parseResponse<InstrumentMetadataRead>(await fetcher(instrumentMetadataUrl(instrumentIds), { cache: "no-store", ...(signal ? { signal } : {}) })),
     putInstrumentMetadata: async (record) => parseResponse<{ ok: true }>(await fetcher("/api/storage/instruments/metadata", jsonRequest("PUT", record))),
     migrate: async (payload) => parseResponse<MigrationReport>(await fetcher("/api/storage/migrate", jsonRequest("POST", payload))),

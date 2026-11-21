@@ -10,7 +10,8 @@ export function decimal(value: string) { const d = new D(value); if (!d.isFinite
 
 export function convertNative(values: Record<string, string | null>, currency: string, fx: FxRates, reasons: string[] = []): Amount {
   let value = new D(0), available = 0;
-  const errors = new Set(reasons), sources = new Set<string>(), originals: Record<string, string> = {};
+  const valuationNotes = [...new Set(reasons.filter(isValuationNote))];
+  const errors = new Set(reasons.filter(reason=>!isValuationNote(reason))), sources = new Set<string>(), originals: Record<string, string> = {};
   for (const [code, raw] of Object.entries(values)) {
     if (raw === null) { errors.add('原币金额缺少完整依据'); continue; }
     const amount = decimal(raw); originals[code] = amount.toString();
@@ -22,19 +23,24 @@ export function convertNative(values: Record<string, string | null>, currency: s
     if (fx[code]) sources.add(`${fx[code].source} · ${fx[code].asOf}`);
     if (fx[currency]) sources.add(`${fx[currency].source} · ${fx[currency].asOf}`);
   }
-  return { value: errors.size ? null : value.toString(), currency, reasons: [...errors], coverage: { available, total: Object.keys(values).length }, originals, fxSource: [...sources].join('；') || ([...errors].some(e=>e.includes('汇率缺失')) ? '所需汇率缺失' : '原币或零金额，无需换算') };
+  return { ...(valuationNotes.length?{valuationNotes}:{}), value: errors.size ? null : value.toString(), currency, reasons: [...errors], coverage: { available, total: Object.keys(values).length }, originals, fxSource: [...sources].join('；') || ([...errors].some(e=>e.includes('汇率缺失')) ? '所需汇率缺失' : '原币或零金额，无需换算') };
 }
 
+export const isValuationNote=(reason:string)=>reason.startsWith('拆股推算：');
+export function valuationNotes(...days:(NativeDay|null|undefined)[]):string[]{
+ return [...new Set(days.flatMap(day=>Object.values(day?.buckets??{}).flatMap(b=>b.reasons.filter(isValuationNote))))];
+}
+const withNotes=(amount:Amount,notes:string[]):Amount=>notes.length?{...amount,valuationNotes:[...new Set([...(amount.valuationNotes??[]),...notes])]}:amount;
 export function currentAmounts(day: NativeDay, currency: string) {
   const values = (field: 'market' | 'unrealized') => convertNative(Object.fromEntries(Object.entries(day.buckets).map(([c, b]) => [c, b[field]])), currency, day.fx);
-  return { marketValue: values('market'), unrealized: values('unrealized') };
+  return { marketValue: withNotes(values('market'),valuationNotes(day)), unrealized: withNotes(values('unrealized'),valuationNotes(day)) };
 }
 
 /** Revalue stored native components; a missing native component stays unknown. */
 export function revalueAmount(amount: Amount, currency: string, fx: FxRates): Amount {
   const reasons=amount.reasons.filter(reason=>!reason.endsWith(' 边界汇率缺失'));
   if(Object.keys(amount.originals).length<amount.coverage.total&&!reasons.includes('原币金额缺少完整依据'))reasons.push('原币金额缺少完整依据');
-  const converted=convertNative(amount.originals,currency,fx,reasons);
+  const converted=convertNative(amount.originals,currency,fx,[...reasons,...(amount.valuationNotes??[])]);
   return {...converted,coverage:{...converted.coverage,total:amount.coverage.total}};
 }
 function difference(a: NativeBucket | undefined, b: NativeBucket | undefined, field: 'realized' | 'fees' | 'unrealized'): string | null {
@@ -61,7 +67,9 @@ export function periodAmounts(baseline:NativeDay|null,day:NativeDay|undefined,fr
     const net = Object.fromEntries([...currencies].map(c => [c, realized[c] === null || unrealized[c] === null ? null : decimal(realized[c]!).plus(unrealized[c]!).toString()]));
     const fees=deltas('fees');
     for(const [code,amount]of Object.entries(feeWindowsAmount(day.feeWindows??[],from,day.date)))fees[code]=amount===null||fees[code]===null?null:decimal(fees[code]??'0').plus(amount).toFixed();
-    return { realized: convertNative(realized, currency, day.fx), unrealizedChange: convertNative(unrealized, currency, day.fx), net: convertNative(net, currency, day.fx), fees: convertNative(fees, currency, day.fx) };
+    const notes=valuationNotes(baseline,day);
+    const realizedNotes=[...new Set([...currencies].flatMap(code=>(day.buckets[code]?.realizedValuationCount??0)>(baseline.buckets[code]?.realizedValuationCount??0)?(day.buckets[code]?.realizedValuationNotes??[]):[]))];
+    return { realized: withNotes(convertNative(realized, currency, day.fx),realizedNotes), unrealizedChange: withNotes(convertNative(unrealized, currency, day.fx),notes), net: withNotes(convertNative(net, currency, day.fx),[...notes,...realizedNotes]), fees: convertNative(fees, currency, day.fx) };
 }
 
 export function projectPeriod(baseline: NativeDay | null, days: NativeDay[], period: { from: string; to: string }, currency: string, businessDate: string) {
@@ -76,8 +84,8 @@ export function projectPeriod(baseline: NativeDay | null, days: NativeDay[], per
     const day = byDate.get(date), future = date > businessDate;
     const periodValues = future ? { net: unknown('未来日期'), fees: unknown('未来日期') } : endpoint(day);
     const current = day && !future ? currentAmounts(day, currency) : { marketValue: unknown(future ? '未来日期' : '日期结果未覆盖'), unrealized: unknown(future ? '未来日期' : '日期结果未覆盖') };
-    const lifetime = (net: boolean) => day && !future ? convertNative(Object.fromEntries(Object.entries(day.buckets).map(([c, b]) => [c, !b.lifetimeComplete || net && b.unrealized === null ? null : decimal(b.realized).plus(net ? b.unrealized! : '0').toString()])), currency, day.fx) : unknown(future ? '未来日期' : '日期结果未覆盖');
-    points.push({ key: date, businessDate: date, state: future ? 'future' : periodValues.net.value === null ? 'source-missing' : 'value', plottable: !future && periodValues.net.value !== null, ...current, realized: lifetime(false), net: lifetime(true), periodNet: periodValues.net, periodFees: periodValues.fees, reasons: [...new Set([...(day?.reasons ?? []), ...periodValues.net.reasons])] });
+    const lifetime = (net: boolean) => day && !future ? convertNative(Object.fromEntries(Object.entries(day.buckets).map(([c, b]) => [c, !b.lifetimeComplete || net && b.unrealized === null ? null : decimal(b.realized).plus(net ? b.unrealized! : '0').toString()])), currency, day.fx, [...(net?valuationNotes(day):[]),...Object.values(day.buckets).flatMap(b=>b.realizedValuationNotes??[])]) : unknown(future ? '未来日期' : '日期结果未覆盖');
+    points.push({ key: date, businessDate: date, state: future ? 'future' : periodValues.net.value === null ? 'source-missing' : 'value', plottable: !future && periodValues.net.value !== null, ...current, realized: lifetime(false), net: lifetime(true), periodNet: periodValues.net, periodFees: periodValues.fees, reasons: [...new Set([...(day?.reasons ?? []).filter(reason=>!isValuationNote(reason)), ...periodValues.net.reasons])] });
   }
   return { ...metrics, points, effectiveEnd };
 }

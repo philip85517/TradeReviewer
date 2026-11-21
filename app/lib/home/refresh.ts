@@ -1,30 +1,40 @@
 import type {DatabaseSync} from 'node:sqlite';
 import {HomeSourceJobs} from './source-jobs';
-import {HOME_POLICY,HOME_PREPARED_SUBTOTAL_VERSION} from './contracts';
+import {HOME_FINANCIAL_PARTITION_VERSION,HOME_POLICY,HOME_PREPARED_SUBTOTAL_VERSION} from './contracts';
 
 export type RefreshStatus = {
+ sourcePending?:number;sourceFailed?:number;
+ fullReady?:boolean;fullReleaseId?:string|null;
  state:'ready'|'updating'|'delayed'|'failed'|'recovering';
  releaseId:string|null; publishedSequence:number; pendingSequence:number;
  asOf:string|null; pendingSince:string|null; error:string|null; canRetry:boolean;
 };
 /** Persistent scheduler state. HTTP status reads do not enqueue or compute anything. */
 export class HomeRefresh {
- constructor(private readonly db:DatabaseSync){}
+ constructor(private readonly db:DatabaseSync,private readonly requireFull=false){}
  status(now=Date.now()):RefreshStatus {
   const computed=this.computeStatus(now),source=new HomeSourceJobs(this.db).summary(now);
+  computed.sourcePending=source.remaining;computed.sourceFailed=source.terminalFailed;
+  const full=computed.releaseId&&this.db.prepare("SELECT 1 FROM sqlite_master WHERE name='home_full_release'").get()?this.db.prepare('SELECT manifest_json FROM home_full_release WHERE release_id=?').get(computed.releaseId):null;
+  computed.fullReady=!!full;computed.fullReleaseId=full?computed.releaseId:null;
   if(!computed.releaseId||computed.state==='failed')return computed;
   if(source.failed)return {...computed,state:'failed',error:`行情或汇率补齐失败：${source.error}`,canRetry:true};
   if(source.pending&&computed.state==='ready')return {...computed,state:source.delayed?'delayed':'updating',pendingSince:source.since,canRetry:source.delayed};
   return computed;
  }
  private computeStatus(now=Date.now()):RefreshStatus {
-  const head=this.db.prepare("SELECT r.*,json_type(r.manifest_json,'$.preparedSubtotals') prepared_type,json_extract(r.manifest_json,'$.preparedSubtotalVersion') prepared_version FROM home_head h JOIN home_release r USING(release_id) WHERE singleton=1").get();
+  const head=this.db.prepare(`SELECT r.*,json_type(r.manifest_json,'$.preparedSubtotals') prepared_type,
+   json_extract(r.manifest_json,'$.preparedSubtotalVersion') prepared_version,
+   json_extract(r.manifest_json,'$.financialPartitionVersion') financial_version
+   FROM home_head h JOIN home_release r USING(release_id) WHERE singleton=1`).get();
   const sequence=Number(head?.source_sequence??0);
   const pending=this.db.prepare('SELECT max(seq) seq,min(committed_at) since FROM home_source_change WHERE seq>?').get(sequence)!;
   const job=this.db.prepare('SELECT * FROM home_refresh WHERE singleton=1').get()!;
   // Upgrade the persisted entry result without invalidating reusable native
   // projections. The previous publication stays readable during the rebuild.
-  const stale=!!head&&(head.policy_version!==HOME_POLICY||head.prepared_type!=='object'||head.prepared_version!==HOME_PREPARED_SUBTOTAL_VERSION);
+  const fullMissing=this.requireFull&&!!head&&!!this.db.prepare("SELECT 1 FROM sqlite_master WHERE name='home_full_release'").get()&&!this.db.prepare('SELECT 1 FROM home_full_release WHERE release_id=?').get(String(head.release_id));
+  const upgradeFinance=this.requireFull&&!!head&&head.financial_version!==HOME_FINANCIAL_PARTITION_VERSION;
+  const stale=!!head&&(fullMissing||upgradeFinance||head.policy_version!==HOME_POLICY||head.prepared_type!=='object'||head.prepared_version!==HOME_PREPARED_SUBTOTAL_VERSION);
   const pendingSequence=Math.max(sequence,Number(pending.seq??0));
   const needs=!head||pendingSequence>sequence||stale;
   const since=pending.since?String(pending.since):job.started_at?String(job.started_at):null;
@@ -44,7 +54,7 @@ export class HomeRefresh {
  fail(owner:string,error:string,now=Date.now()){
   this.db.prepare('UPDATE home_refresh SET lease_owner=NULL,lease_until=0,last_error=?,retry_after=? WHERE singleton=1 AND lease_owner=?').run(error.slice(0,500),now+30000,owner);
  }
- retry(){new HomeSourceJobs(this.db).retry();this.db.prepare('UPDATE home_refresh SET retry_after=0,last_error=NULL WHERE singleton=1 AND lease_owner IS NULL').run();}
+ retry(keys?:string[]){new HomeSourceJobs(this.db).retry(keys);this.db.prepare('UPDATE home_refresh SET retry_after=0,last_error=NULL WHERE singleton=1 AND lease_owner IS NULL').run();}
  /** Time-only knowledge transitions are scheduled by the builder, never by GET. */
  tick(day:string,now=Date.now()){
   const head=this.db.prepare("SELECT r.business_date,json_extract(r.manifest_json,'$.nextRefreshAt') next_at FROM home_head h JOIN home_release r USING(release_id)").get();

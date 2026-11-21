@@ -23,6 +23,8 @@ type ResolveOptions = {
   fetcher?: typeof fetch;
   concurrency?: number;
   forceRefresh?: boolean;
+  /** Set only by the dedicated automatic Chinese-name hydration journey. */
+  localizedNameLookup?: boolean;
   signal?: AbortSignal;
   clock?: () => number;
 };
@@ -270,6 +272,13 @@ export async function resolveInstrumentMetadataBatch(
         clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
       );
       return;
+    }
+
+    if (options.localizedNameLookup) {
+      record = { ...record, localizedNameLookup: {
+        checkedAt: new Date((options.clock ?? Date.now)()).toISOString(),
+        source: record.source,
+      } };
     }
 
     const cachedRecord = resolved.get(instrumentId);

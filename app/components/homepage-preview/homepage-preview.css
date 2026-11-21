@@ -154,3 +154,8 @@ body:has(.hp-preview) { overflow-y:auto; }
   .hp-holdings footer { gap:8px; }
   .hp-detail-cards { grid-template-columns:minmax(0,1fr); }
 }
+
+.hp-fee-evidence { margin-top:16px; color:var(--hp-muted,#a8b6cb); font-size:13px; }
+.hp-fee-evidence summary { cursor:pointer; width:fit-content; padding:8px 0; }
+.hp-fee-evidence ul { padding:0; margin:0; list-style:none; }
+.hp-fee-evidence li { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 16px; padding:8px 0; border-bottom:1px solid #283448; font-variant-numeric:tabular-nums; }

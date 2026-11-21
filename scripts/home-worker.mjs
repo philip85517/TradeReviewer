@@ -1,20 +1,26 @@
 import {build} from 'vite';
 import {fork} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
-import {isAbsolute,resolve} from 'node:path';
+import {mkdirSync,mkdtempSync,rmSync} from 'node:fs';
+import {dirname,isAbsolute,resolve} from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
-import {readFileSync,realpathSync} from 'node:fs';
-const path=process.env.TRADEREVIEW_DB_PATH;
-if(!path||!isAbsolute(path))throw new Error('后台首页进程需要显式绝对数据库路径');
-const business=JSON.parse(readFileSync(new URL('../conf/runtime.json',import.meta.url),'utf8')).databasePath;
-if(realpathSync(path)===realpathSync(business))throw new Error('本轮开发的后台进程仅允许隔离数据库');
-const bundle=resolve('.data/home-worker-runtime/home-build-entry.mjs');
-if(process.argv[2]==='--sources'){
+import {resolveRuntimeConfig} from './runtime-config.mjs';
+if(!process.env.TRADEREVIEW_DB_PATH||!isAbsolute(process.env.TRADEREVIEW_DB_PATH))throw new Error('后台首页进程需要显式绝对数据库路径');
+const path=resolveRuntimeConfig().databasePath;
+const sourceSync=process.env.HOME_SOURCE_SYNC ?? '0';
+if(sourceSync!=='0'&&sourceSync!=='1')throw new Error('HOME_SOURCE_SYNC must be 0 or 1');
+// Children share only their parent's immutable runtime. A second preview must
+// never replace the bundle of an already running worker.
+const childMode=process.argv[2];
+let bundle=process.env.TRADEREVIEW_HOME_WORKER_BUNDLE;
+if(childMode&&(!bundle||!isAbsolute(bundle)))throw new Error('后台子进程需要父进程的绝对运行模块路径');
+if(!childMode){mkdirSync(resolve('.data'),{recursive:true});const runtime=mkdtempSync(resolve('.data/home-worker-runtime-'));bundle=resolve(runtime,'home-build-entry.mjs');process.env.TRADEREVIEW_HOME_WORKER_BUNDLE=bundle;process.once('exit',()=>rmSync(runtime,{recursive:true,force:true}));}
+if(childMode==='--sources'||childMode==='--sources-requested'){
  const {coordinator,sourceCompletion}=await import(pathToFileURL(bundle).href);
  const {db,close}=coordinator(path),completion=sourceCompletion(db),controller=new AbortController();
  process.on('SIGTERM',()=>controller.abort());process.on('SIGINT',()=>controller.abort());
  try{while(!controller.signal.aborted){
-  try{completion.plan();await completion.runOne(controller.signal);}catch(error){if(!controller.signal.aborted)console.error('数据补齐调度失败',error);}
+  try{if(childMode==='--sources')completion.plan();const ran=await completion.runOne(controller.signal);if(childMode==='--sources-requested'&&!ran)break;}catch(error){if(!controller.signal.aborted)console.error('数据补齐调度失败',error);if(childMode==='--sources-requested')break;}
   if(!controller.signal.aborted)await new Promise(resolve=>{const timer=setTimeout(done,1000);function done(){clearTimeout(timer);controller.signal.removeEventListener('abort',done);resolve();}controller.signal.addEventListener('abort',done,{once:true});});
  }}finally{close();}
 }else if(process.argv[2]==='--collect'){
@@ -26,9 +32,9 @@ if(process.argv[2]==='--sources'){
  try{const result=buildOnce(path,undefined,process.argv[3]);process.send?.({result});}
  catch(error){process.send?.({error:error instanceof Error?error.message:String(error)});process.exitCode=1;}
 }else{
- await build({configFile:false,logLevel:'error',resolve:{alias:{'server-only':resolve('tests/server-only.ts')}},build:{ssr:'scripts/home-build-entry.ts',outDir:resolve('.data/home-worker-runtime'),emptyOutDir:true,minify:false,rollupOptions:{output:{entryFileNames:'home-build-entry.mjs'}}}});
- const {coordinator}=await import(pathToFileURL(bundle).href);
- const {refresh,close}=coordinator(path);let child=null,owner=null,stopped=false,collector=null,pendingResult=null;
+ await build({configFile:false,logLevel:'error',resolve:{alias:{'server-only':resolve('tests/server-only.ts')}},build:{ssr:'scripts/home-build-entry.ts',outDir:dirname(bundle),emptyOutDir:true,minify:false,rollupOptions:{output:{entryFileNames:'home-build-entry.mjs'}}}});
+ const {coordinator,sourceCompletion}=await import(pathToFileURL(bundle).href);
+ const {db,refresh,close}=coordinator(path),sourceJobs=sourceCompletion(db).jobs;let child=null,owner=null,stopped=false,collector=null,pendingResult=null;
  // Maintenance cannot hold the scheduler hostage or turn an accepted release
  // into a failed calculation. SQLite contention while settling a lease is
  // retried by the parent before it can claim any further calculation.
@@ -46,10 +52,11 @@ if(process.argv[2]==='--sources'){
   return true;
  };
  let sources=null;
- const startSources=()=>{if(stopped)return;sources=fork(fileURLToPath(import.meta.url),['--sources'],{stdio:['ignore','inherit','inherit','ipc']});sources.on('exit',()=>{sources=null;if(!stopped)setTimeout(startSources,5000);});};
- if(process.env.HOME_SOURCE_SYNC!=='0')startSources();
+ const startSources=()=>{if(stopped||sources)return;sources=fork(fileURLToPath(import.meta.url),[sourceSync==='1'?'--sources':'--sources-requested'],{stdio:['ignore','inherit','inherit','ipc']});sources.on('error',error=>console.error('数据补齐进程未启动:',error));sources.on('exit',()=>{sources=null;if(!stopped&&sourceSync==='1')setTimeout(startSources,5000);});};
+ if(sourceSync==='1')startSources();
  const run=()=>{
   if(stopped||child)return;
+  if(sourceSync==='0'&&sourceJobs.hasRunnable())startSources();
   if(!settle())return;
   const day=new Date(Date.now()+8*3600000).toISOString().slice(0,10);refresh.tick(day);
   const candidate=randomUUID();if(!refresh.claim(candidate))return;

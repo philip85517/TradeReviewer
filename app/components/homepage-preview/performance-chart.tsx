@@ -56,10 +56,9 @@ function formatAmount(raw: string, signed = false, compact = false) {
   const value = new Decimal(raw);
   const unit = compact && value.abs().gte(100_000_000) ? "亿" : compact && value.abs().gte(10_000) ? "万" : "";
   const shown = unit === "亿" ? value.div(100_000_000) : unit === "万" ? value.div(10_000) : value;
-  // Keep source decimal places, including meaningful trailing zeros, in the complete readout.
-  const originalPlaces = /^[-+]?\d*\.(\d+)$/.exec(raw)?.[1].length ?? value.decimalPlaces();
-  const [integer, fraction] = shown.toFixed(compact ? 2 : Math.max(2, originalPlaces)).split(".");
-  return `${signed && value.gt(0) ? "+" : ""}${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${fraction}${unit}`;
+  const rounded = shown.toDecimalPlaces(2);
+  const [integer, fraction] = (rounded.isZero() ? "0.00" : rounded.toFixed(2)).split(".");
+  return `${signed && rounded.gt(0) ? "+" : ""}${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${fraction}${unit}`;
 }
 
 function coverageReasons(point: HomepageBoundaryPointDisplay): string[] {
@@ -168,8 +167,9 @@ function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseE
       {amounts.map(field => {
         const raw = blank ? null : field.read.raw;
         const amount = decimal(raw);
-        const sign = !field.signed || !amount || amount.isZero() ? "neutral" : amount.isPositive() ? "positive" : "negative";
-        const evidence = blank ? explanation : evidenceFor(entry.point, entry.point[field.key]);
+        const sign = !field.signed || !amount || amount.toDecimalPlaces(2).isZero() ? "neutral" : amount.isPositive() ? "positive" : "negative";
+        const notes = entry.point[field.key].valuationNotes ?? [];
+        const evidence = blank ? explanation : `${notes.join("；")}${notes.length ? "；" : ""}${raw === null ? "" : `原始金额：${raw} ${reportCurrency}；`}${evidenceFor(entry.point, entry.point[field.key])}`;
         const reason = blank ? explanation : field.read.reasons.join("；");
         const value = raw === null ? "—" : formatAmount(raw, field.signed);
         return <div key={field.key} className="hp-performance-chart__field" data-field={field.key} data-testid="hp-chart-field">
@@ -181,7 +181,7 @@ function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseE
             title={`${value}${reason ? `；${reason}` : ""}；${evidence}`}
             onFocus={() => setEvidenceField(field.key)} onBlur={() => setEvidenceField(null)}
             onMouseEnter={() => setEvidenceField(field.key)} onMouseLeave={event => { if (document.activeElement !== event.currentTarget) setEvidenceField(null); }}
-          >{value}</dd>
+          >{value}{raw !== null && notes.length > 0 && <span className="hp-estimate-label"> 含拆股推算</span>}</dd>
           {evidenceField === field.key && <div id={`${id}-${field.key}-evidence`} className="hp-performance-chart__evidence">
             {reason && <p>{reason}</p>}<p>{evidence}</p>
           </div>}
@@ -414,6 +414,8 @@ function ChartContent({ series, reportCurrency, pointStatus, unavailableReason, 
         </g>)}
         {space.segments.map(segment => <path key={segment[0].point.key} data-testid="hp-chart-segment" className="hp-performance-chart__line"
           d={segment.map((entry, index) => `${index ? "L" : "M"}${x(entry.index)},${y(entry.amount!)}`).join(" ")} />)}
+        {space.segments.filter(segment => segment.length === 1).map(([entry]) => <circle key={entry.point.key}
+          data-testid="hp-chart-isolated-point" className="hp-performance-chart__isolated" cx={x(entry.index)} cy={y(entry.amount!)} r="3" />)}
         {marker && <g key={marker.point.key} className="hp-performance-chart__locator">
           <line x1={x(marker.index)} x2={x(marker.index)} y1={plot.top} y2={plot.top + plot.height} />
           <line x1={plot.left} x2={plot.left + plot.width} y1={y(marker.amount!)} y2={y(marker.amount!)} />

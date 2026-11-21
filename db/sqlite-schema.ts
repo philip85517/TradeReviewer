@@ -1,4 +1,6 @@
-import { HOME_METRIC_OBJECT_SCHEMA, HOME_SCHEMA, HOME_REFRESH_SCHEMA, HOME_SOURCE_TRIGGERS, HOME_QUOTE_TRIGGER_FIX, HOME_SOURCE_JOBS_SCHEMA } from "./home-schema";
+import { LIBRARY_SCOPE_INDEX_SCHEMA } from "./library-scope-schema";
+import { HOME_BUSINESS_PAIRING_SCHEMA } from "./home-business-pairing-schema";
+import { HOME_METRIC_OBJECT_SCHEMA, HOME_SCHEMA, HOME_REFRESH_SCHEMA, HOME_SOURCE_TRIGGERS, HOME_QUOTE_TRIGGER_FIX, HOME_SOURCE_JOBS_SCHEMA, HOME_SOURCE_CHANGE_V2 } from "./home-schema";
 import { createHash } from "node:crypto";
 
 import { TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA } from "./tradingview-account-migration-schema";
@@ -444,4 +446,7 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     ON daily_candles(instrument_id,date,close,currency,provider)
     WHERE adjustment_mode='raw';
   `),
+  migration(20, "capture-home-source-facts-and-corrections", HOME_SOURCE_CHANGE_V2),
+  migration(21, "persist-home-business-pairing-confirmations", HOME_BUSINESS_PAIRING_SCHEMA),
+  migration(22, "cover-library-account-directory", LIBRARY_SCOPE_INDEX_SCHEMA),
 ];

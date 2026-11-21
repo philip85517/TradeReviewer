@@ -241,3 +241,120 @@ CREATE TABLE home_metric_member (
 ) WITHOUT ROWID;
 CREATE INDEX home_metric_member_object ON home_metric_member(object_version);
 `;
+
+/**
+ * Migration 20 replaces source notifications without changing migrations 15/16.
+ * Selectors retain evidence, not an inferred ledger scope. Consumers must still
+ * accept historical v1/clock events and read complete facts at the source watermark.
+ */
+type SourceTextMode = 'comparison' | 'payload';
+function sourceJsonText(column: string, path: string, mode: SourceTextMode = 'comparison'): string {
+ const nonempty = `json_type(${column},'${path}')='text' AND json_extract(${column},'${path}')<>''`;
+ // SQLite length(TEXT) stops at NUL. Compare to '' within SQLite instead.
+ // Keep decoded SQL text for canonical comparisons, so equivalent escapes do
+ // not notify. Payloads embed the original JSON scalar: decoding and quoting
+ // lone surrogates would create invalid UTF-8 at the native SQLite/JS boundary.
+ return mode==='payload'
+  ? `json(CASE WHEN ${nonempty} THEN ${column} -> '${path}' ELSE 'null' END)`
+  : `CASE WHEN ${nonempty} THEN json_extract(${column},'${path}') ELSE NULL END`;
+}
+function legacySourceFact(ref: string, mode: SourceTextMode = 'comparison'): string {
+ const body = `${ref}.review_json`;
+ return `CASE WHEN ${body} IS NULL THEN NULL ELSE json_object(
+  'storageIdentity',json_object('episodeId',${ref}.episode_id,'instrumentId',${ref}.instrument_id),
+  'episodeId',${sourceJsonText(body,'$.episodeId',mode)},'instrumentId',${sourceJsonText(body,'$.instrumentId',mode)},
+  'completed',json(CASE json_type(${body},'$.review.completed') WHEN 'true' THEN 'true' WHEN 'false' THEN 'false' ELSE 'null' END)) END`;
+}
+function recallSourceFact(ref: string, mode: SourceTextMode = 'comparison'): string {
+ const formal = `${ref}.finalized_json`, draft = `${ref}.draft_json`;
+ return `json_object('episodeId',${ref}.episode_id,
+  'formal',json(CASE WHEN ${formal} IS NULL THEN NULL ELSE json_object(
+   'episodeId',${sourceJsonText(formal,'$.episodeId',mode)},'status',${sourceJsonText(formal,'$.status',mode)},
+   'completedAt',${sourceJsonText(formal,'$.completedAt',mode)},'updatedAt',${sourceJsonText(formal,'$.updatedAt',mode)}) END),
+  'draft',json_object('episodeId',${sourceJsonText(draft,'$.episodeId',mode)},'status',${sourceJsonText(draft,'$.status',mode)}))`;
+}
+
+type SourceEventDefinition = {
+ table: string;
+ key: string;
+ columns?: string[];
+ fact?: (ref: string, mode?: SourceTextMode) => string;
+ guard?: string;
+ account?: string;
+ instrument?: string;
+ episode?: string;
+ effectiveAt?: string;
+ importedAt?: string;
+ recordedAt?: string;
+ timePrecision?: string;
+ sourceTimezone?: string;
+ businessDay?: string;
+ dependencies: (action: 'INSERT' | 'UPDATE' | 'DELETE') => string;
+};
+
+function sourceEventTriggers(definition: SourceEventDefinition): string {
+ const at = (sql: string, ref: string) => sql.replaceAll('$',ref);
+ // JSON paths are generated inside fact()/sourceJsonText(), never passed to at().
+ const selector = (ref: string) => `json_object(
+  'sourceTable','${definition.table}','sourceKey',${at(definition.key,ref)},
+  'accountId',${at(definition.account ?? 'NULL',ref)},'instrumentId',${at(definition.instrument ?? 'NULL',ref)},
+  'episodeId',${at(definition.episode ?? 'NULL',ref)},'effectiveAt',${at(definition.effectiveAt ?? 'NULL',ref)},
+  'timePrecision',${definition.table==='executions' ? sourceJsonText(`${ref}.evidence_json`,'$.source.timePrecision','payload') : at(definition.timePrecision ?? 'NULL',ref)},
+  'sourceTimezone',${definition.table==='executions' ? sourceJsonText(`${ref}.evidence_json`,'$.source.sourceTimezone','payload') : at(definition.sourceTimezone ?? 'NULL',ref)}
+  ${definition.importedAt ? `,'importedAt',${at(definition.importedAt,ref)}` : ''}
+  ${definition.recordedAt ? `,'recordedAt',${at(definition.recordedAt,ref)}` : ''}
+  ${definition.fact ? `,'reviewFact',json(${definition.fact(ref,'payload')})` : ''})`;
+ return (['INSERT','UPDATE','DELETE'] as const).map(action => {
+  const ref = action==='DELETE' ? 'OLD' : 'NEW';
+  const guard = definition.guard ?? '1';
+  const allowed = action==='UPDATE' ? `(${at(guard,'OLD')}) OR (${at(guard,'NEW')})` : at(guard,ref);
+  const changed = action==='UPDATE'
+   ? definition.fact ? `${definition.fact('OLD')} IS NOT ${definition.fact('NEW')}`
+    : definition.columns!.map(column=>`OLD.${column} IS NOT NEW.${column}`).join(' OR ')
+   : '1';
+  // Only schema-defined business-day columns are used. Execution strings and
+  // import evidence need a timezone-aware domain resolver; keep them conservative.
+  const day = definition.businessDay;
+  const relevantDays = day ? (action==='UPDATE' ? [at(day,'OLD'),at(day,'NEW')] : [at(day,ref)]) : [];
+  const validDay = (value: string) => `(${value} GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' AND ${value}>='0001-01-01' AND ${value}<='9999-12-31' AND date(${value},'+0 days') IS ${value})`;
+  const proven = relevantDays.length ? relevantDays.map(validDay).join(' AND ') : '0';
+  const earliest = relevantDays.length===2 ? `min(${relevantDays.join(',')})` : relevantDays[0] ?? 'NULL';
+  const effective = `CASE WHEN ${proven} THEN ${earliest} ELSE '0001-01-01' END`;
+  const boundary = `CASE WHEN ${proven} THEN json_object('kind','business-day','businessDay',${earliest}) ELSE json_object('kind','conservative-full') END`;
+  return `DROP TRIGGER IF EXISTS home_${definition.table}_${action.toLowerCase()};
+CREATE TRIGGER home_${definition.table}_${action.toLowerCase()} AFTER ${action} ON ${definition.table}
+WHEN (${allowed}) AND (${changed}) BEGIN
+ INSERT INTO home_source_change(entity_kind,entity_key,effective_from,committed_at,change_json)
+ VALUES('${definition.table}',${at(definition.key,ref)},${effective},strftime('%Y-%m-%dT%H:%M:%fZ','now'),
+  json_object('schemaVersion',2,'action','${action}',
+   'before',${action==='INSERT' ? 'NULL' : selector('OLD')},'after',${action==='DELETE' ? 'NULL' : selector('NEW')},
+   'dependencyKinds',json(${definition.dependencies(action)}),'boundary',json(${boundary}),
+   'tombstone',json('${action==='DELETE' ? 'true' : 'false'}')));
+END;`;
+ }).join('\n');
+}
+
+const sourceDependency = (...kinds: string[]) => () => `json_array(${kinds.map(kind=>`'${kind}'`).join(',')})`;
+
+/** Append-only upgrade: all prior generic source coverage plus catalog/review facts. */
+export const HOME_SOURCE_CHANGE_V2 = [
+ sourceEventTriggers({table:'executions',key:'$.id',account:'$.account',instrument:'$.instrument_id',effectiveAt:'$.executed_at',
+  columns:['id','instrument_id','account','side','executed_at','quantity','price','fee','currency','evidence_json','trade_nature','simulation_run_id','import_batch_id'],
+  dependencies:sourceDependency('execution','material')}),
+ sourceEventTriggers({table:'import_batches',key:'$.id',importedAt:'$.imported_at',
+  columns:['id','evidence_json','reconciliation_json','source_fingerprint','source_type','imported_at','trade_nature','simulation_run_id'],
+  dependencies:sourceDependency('material')}),
+ sourceEventTriggers({table:'trade_revisions',key:'$.id',account:'$.account_id',instrument:'$.instrument_id',recordedAt:'$.recorded_at',
+  columns:['id','instrument_id','account_id','request_json','revision_json','recorded_at'],dependencies:sourceDependency('material')}),
+ sourceEventTriggers({table:'instruments',key:'$.id',instrument:'$.id',
+  columns:['id','symbol','name','market','currency','localized_name_json','metadata_json'],
+  dependencies:action=>action==='UPDATE' ? `CASE WHEN OLD.id IS NOT NEW.id OR OLD.symbol IS NOT NEW.symbol OR OLD.market IS NOT NEW.market OR OLD.currency IS NOT NEW.currency THEN json_array('catalog','material','valuation') ELSE json_array('catalog') END` : "json_array('catalog','material','valuation')"}),
+ sourceEventTriggers({table:'reviews',key:'$.episode_id',instrument:'$.instrument_id',episode:'$.episode_id',
+  fact:legacySourceFact,guard:'$.review_json IS NOT NULL',dependencies:sourceDependency('review')}),
+ sourceEventTriggers({table:'recall_documents',key:'$.episode_id',episode:'$.episode_id',fact:recallSourceFact,dependencies:sourceDependency('review')}),
+ sourceEventTriggers({table:'daily_candles',key:"$.instrument_id||'/'||$.date",instrument:'$.instrument_id',effectiveAt:'$.date',timePrecision:"'date-only'",businessDay:'$.date',
+  columns:['instrument_id','date','close','currency','provider','adjustment_mode'],guard:"$.adjustment_mode='raw'",dependencies:sourceDependency('valuation')}),
+ sourceEventTriggers({table:'app_settings',key:'$.key',columns:['key','value_json'],guard:"$.key='fx.rates.snapshot.v1'",dependencies:sourceDependency('fx')}),
+ sourceEventTriggers({table:'home_fx_history',key:'$.observation_id',effectiveAt:'$.business_date',timePrecision:"'date-only'",businessDay:'$.business_date',
+  columns:['observation_id','rates_json','business_date','known_at','convention'],dependencies:sourceDependency('fx')}),
+].join('\n');

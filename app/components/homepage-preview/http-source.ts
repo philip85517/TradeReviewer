@@ -1,6 +1,7 @@
 import type {HomeRequest,HomepageSource,HomeView,Stamp} from './display-contract';
 import type {HomeStore} from '../../lib/home/store';
 import {explainReasons} from './reason-labels';
+import {normalizeHomeFilters} from '../../lib/home/request-filters';
 export function createHttpSource(fetcher:typeof fetch=fetch):HomepageSource {
  const today=new Date(Date.now()+8*3600000).toISOString().slice(0,10);
  const initialRequest:HomeRequest={market:'all',accountId:'all',period:{preset:'ytd',from:`${today.slice(0,4)}-01-01`,to:today},page:1,sort:'name',direction:'asc',query:''};
@@ -22,7 +23,8 @@ export function createHttpSource(fetcher:typeof fetch=fetch):HomepageSource {
   exportHoldings:(request,signal,version)=>{if(!version)throw new Error('缺少导出结果版本');return read('export',{request,version},signal);},
   repair:async(_request,signal)=>{await read('retry',{},signal,'POST');return{remainingReasons:[]};},
   readChange:async(current,request,signal)=>{
-   if(current.request.market!==request.market||current.request.accountId!==request.accountId)return source.readHome(request,signal);
+   const filtersChanged=!same(normalizeHomeFilters(current.request.filters),normalizeHomeFilters(request.filters));
+   if(current.request.market!==request.market||current.request.accountId!==request.accountId||filtersChanged)return source.readHome(request,signal);
    const periodChanged=!same(current.request.period,request.period);
    const rowsChanged=['query','sort','direction','page'].some(key=>current.request[key as keyof HomeRequest]!==request[key as keyof HomeRequest]);
    const version=current.stamp.version;

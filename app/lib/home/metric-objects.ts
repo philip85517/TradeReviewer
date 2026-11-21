@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import type {DatabaseSync} from 'node:sqlite';
 import type {Amount,ConfirmedSubtotal} from '../../components/homepage-preview/display-contract';
 import type {FxRates,MetricObject,NativeDay} from './contracts';
+import {nativeOrdering,validateNativeOrdering} from './full-window';
 import {convertNative,currentAmounts,decimal,nextDay,periodAmounts,validDay} from './period';
 
 export function metricObjectVersion(object:Omit<MetricObject,'version'>) {
@@ -20,21 +21,32 @@ export function stageMetricObjects(db:DatabaseSync,objects:MetricObject[]) {
    if(previous&&(day.date<previous.date||day.activity!<previous.activity!))throw new Error('non-monotonic metric boundary');
    for(const [code,b]of Object.entries(day.buckets)) {
     for(const field of ['market','unrealized','realized','fees'] as const)if(b[field]!==null)decimal(b[field]!);
+    if(b.closedFees!=null)decimal(b.closedFees);
+    if(b.closedTransactions!==undefined&&(!Number.isSafeInteger(b.closedTransactions)||b.closedTransactions<0))throw new Error('invalid closed transaction count');
+    if(b.closedFeesMissing!==undefined&&(!Number.isSafeInteger(b.closedFeesMissing)||b.closedFeesMissing<(previous?.buckets[code]?.closedFeesMissing??0)))throw new Error('invalid closed fee prefix');
     if(previous&&(b.realizedMissing<(previous.buckets[code]?.realizedMissing??0)||b.feesMissing<(previous.buckets[code]?.feesMissing??0)))throw new Error('non-monotonic metric prefix');
    }
    previous=day;
   }
-  const saved=db.prepare('SELECT complete FROM home_metric_object WHERE object_version=?').get(version);
-  if(saved?.complete===1)continue;
-  const metadata=JSON.stringify({accountId:object.accountId,code:object.code,name:object.name});
+  if(Object.hasOwn(object,'ordering')){
+   validateNativeOrdering(object.ordering,object.firstDay,object.lastDay);
+   if(JSON.stringify(object.ordering)!==JSON.stringify(nativeOrdering(object.boundaries)))throw new Error('incomplete native ordering metadata');
+  }
+  const metadata=JSON.stringify({accountId:object.accountId,code:object.code,name:object.name,...(Object.hasOwn(object,'ordering')?{ordering:object.ordering}:{})});
+  const saved=db.prepare('SELECT * FROM home_metric_object WHERE object_version=?').get(version);
+  if(saved&&[saved.position_key!==object.positionKey,saved.first_day!==object.firstDay,saved.last_day!==object.lastDay,saved.current_json!==JSON.stringify(object.current),saved.metadata_json!==metadata,saved.boundary_count!==object.boundaries.length].some(Boolean))throw new Error('immutable metric object mismatch');
+  const verify=()=>{
+   const rows=db.prepare('SELECT business_date,native_json FROM home_metric_boundary WHERE object_version=? ORDER BY business_date').all(version);
+   if(rows.length!==object.boundaries.length||rows.some((row,i)=>row.business_date!==object.boundaries[i].date||row.native_json!==JSON.stringify(object.boundaries[i])))throw new Error('incomplete or altered metric boundaries');
+  };
+  if(saved?.complete===1){verify();continue;}
   transaction(db,()=>{db.prepare('INSERT OR IGNORE INTO home_metric_object VALUES(?,?,?,?,?,?,?,0)').run(version,object.positionKey,object.firstDay,object.lastDay,JSON.stringify(object.current),metadata,object.boundaries.length);});
   for(let offset=0;offset<object.boundaries.length;offset+=256)transaction(db,()=>{
    const insert=db.prepare('INSERT OR IGNORE INTO home_metric_boundary VALUES(?,?,?)');
    for(const day of object.boundaries.slice(offset,offset+256))insert.run(version,day.date,JSON.stringify(day));
   });
   transaction(db,()=>{
-   const count=db.prepare('SELECT count(*) n FROM home_metric_boundary WHERE object_version=?').get(version)!.n;
-   if(count!==object.boundaries.length)throw new Error('incomplete metric object');
+   verify();
    db.prepare('UPDATE home_metric_object SET complete=1 WHERE object_version=?').run(version);
   });
  }
@@ -51,15 +63,17 @@ function endpoints(db:DatabaseSync,version:string,from:string,to:string,fx:FxRat
   WHERE m.scope_version=? AND o.complete=1 ORDER BY m.position_key`).all(nextDay(from,-1),to,version);
  return rows.map(row=>{
   const read=(raw:unknown,date:string)=>raw&&date>=String(row.first_day)&&date<=String(row.last_day)?{...JSON.parse(String(raw)),date,fx} as NativeDay:null;
-  return {identity:JSON.parse(String(row.metadata_json)),current:{...JSON.parse(String(row.current_json)),fx},baseline:read(row.baseline_json,nextDay(from,-1)),end:read(row.end_json,to)};
+  const meta=JSON.parse(String(row.metadata_json));
+  if(Object.hasOwn(meta,'ordering'))validateNativeOrdering(meta.ordering,String(row.first_day),String(row.last_day));
+  return {identity:{accountId:meta.accountId,code:meta.code,name:meta.name},current:{...JSON.parse(String(row.current_json)),fx},baseline:read(row.baseline_json,nextDay(from,-1)),end:read(row.end_json,to)};
  });
 }
-function subtotal(members:{identity:Omit<Identity,'reasons'>;amount:Amount;reasons:string[]}[],currency:string,fx:FxRates):ConfirmedSubtotal {
+export function confirmedSubtotal(members:{identity:Omit<Identity,'reasons'>;amount:Amount;reasons:string[]}[],currency:string,fx:FxRates):ConfirmedSubtotal {
  const originals:Record<string,string>={},missing:Identity[]=[];
  let available=0;
  for(const member of members){
   // Include every currency of a calculable object, or none of that object.
-  if(member.amount.value===null){if(missing.length<8)missing.push({...member.identity,reasons:[...new Set([...member.reasons,...member.amount.reasons])]});continue;}
+  if(member.amount.value===null||member.amount.valuationNotes?.length){if(missing.length<8)missing.push({...member.identity,reasons:[...new Set([...member.reasons,...member.amount.reasons,...(member.amount.valuationNotes??[])])]});continue;}
   available++;
   for(const [code,value]of Object.entries(member.amount.originals))originals[code]=decimal(originals[code]??'0').plus(value).toFixed();
  }
@@ -75,8 +89,8 @@ function computeObjectSubtotals(db:DatabaseSync,version:string,period:{from:stri
  // Unknown/uncovered boundaries remain in the denominator, never disappear.
  const active=objects.filter(o=>!o.baseline||!o.end||hasPosition(o.baseline)||hasPosition(o.end)||o.end.activity!==o.baseline.activity);
  const evaluated=active.map(o=>({...o,values:periodAmounts(o.baseline,o.end??undefined,period.from,currency)}));
- const currentMetric=(field:'marketValue'|'unrealized')=>subtotal(current.map(o=>({identity:o.identity,amount:currentAmounts(o.current,currency)[field],reasons:reasons(o.current)})),currency,fx);
- const periodMetric=(field:'realized'|'unrealizedChange'|'net')=>subtotal(evaluated.map(o=>({identity:o.identity,amount:o.values[field],reasons:[...reasons(o.baseline),...reasons(o.end)]})),currency,fx);
+ const currentMetric=(field:'marketValue'|'unrealized')=>confirmedSubtotal(current.map(o=>({identity:o.identity,amount:currentAmounts(o.current,currency)[field],reasons:reasons(o.current)})),currency,fx);
+ const periodMetric=(field:'realized'|'unrealizedChange'|'net')=>confirmedSubtotal(evaluated.map(o=>({identity:o.identity,amount:o.values[field],reasons:[...reasons(o.baseline),...reasons(o.end)]})),currency,fx);
  return {marketValue:currentMetric('marketValue'),unrealized:currentMetric('unrealized'),realized:periodMetric('realized'),unrealizedChange:periodMetric('unrealizedChange'),net:periodMetric('net')};
 }
 

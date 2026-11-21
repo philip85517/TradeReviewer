@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { buildRelease } from './builder';
 import type { SourceSnapshot } from './source';
+import {inflateSync} from 'node:zlib';
 import { scopeId } from './contracts';
 import { projectPeriod } from './period';
 import {DatabaseSync} from 'node:sqlite';
@@ -13,8 +14,56 @@ const instrument = { id: 'HK:00001', name: '证券', symbol: '00001', market: 'H
 const source = (): SourceSnapshot => ({ sequence: 1, asOf: '2026-01-07T15:59:59.999Z', businessDate: '2026-01-07', executions: [
   { id: 'b', accountId: 'a', accountLabel: 'A', instrument, executedAt: '2026-01-05T02:00:00Z', side: 'buy', quantity: '2', price: '100', fee: '4', source: { platform: 'futu', row: 1, tradeNature: 'live' } },
   { id: 's', accountId: 'a', accountLabel: 'A', instrument, executedAt: '2026-01-06T02:00:00Z', side: 'sell', quantity: '1', price: '120', fee: '1', source: { platform: 'futu', row: 2, tradeNature: 'live' } },
-], monthly: [], instruments: [instrument], candles: ['05','06','07'].map(d=>({ instrumentId: instrument.id, tradingDate: `2026-01-${d}`, open:'110', high:'110',low:'110',close:'110',volume:'1', adjustmentMode:'raw', currency:'HKD', provider:'yahoo', providerSymbol:'1', fetchedAt:`2026-01-${d}T12:00:00Z` })), currentFx: {}, historicalFx: [], classification:{live:2,simulation:0,unknown:0} });
+], monthly: [], instruments: [instrument], candles: ['05','06','07'].map(d=>({ instrumentId: instrument.id, tradingDate: `2026-01-${d}`, open:'110', high:'110',low:'110',close:'110',volume:'1', adjustmentMode:'raw', currency:'HKD', provider:'yahoo', providerSymbol:'1', fetchedAt:`2026-01-${d}T12:00:00Z` })), currentFx: {}, historicalFx: [], reviewFacts:{schemaVersion:1,legacy:[],recall:[]}, classification:{live:2,simulation:0,unknown:0} });
 describe('fact to release construction', () => {
+ it('publishes provisional split inventory and inclusive cost against the raw new-unit close',()=>{
+  const input=source(), stock={id:'US:SNDK',name:'Sandisk',symbol:'SNDK',market:'US',currency:'USD'};
+  input.asOf='2026-11-21T06:00:00Z';input.businessDate='2026-11-21';input.instruments=[stock];
+  input.executions=[{...input.executions[0],instrument:stock,quantity:'1',price:'640',executedAt:'2026-11-18T17:00:00Z'}];
+  input.candles=[{...input.candles[0],instrumentId:stock.id,tradingDate:'2026-11-20',currency:'USD',close:'79.240'}];
+  const us=buildRelease(input,'split').scopes.find(s=>s.id===scopeId('US','a'))!;
+  expect(us.holdings[0].row).toMatchObject({quantity:'8',cost:'80.5',price:'79.24',priceAsOf:'2026-11-20',marketValue:{originals:{USD:'633.92'}},unrealized:{originals:{USD:'-10.08'}}});
+  expect(us.holdings[0].row.valuationNotes?.join(' ')).toContain('拆股推算：SNDK');
+  expect(us.current.buckets.USD.market).toBe('633.92');
+ });
+ it('defers confirmed prelisting IPO residuals without inventing a holding price',()=>{
+  const input=source(), ipo={...instrument,id:'HK:100',symbol:'00100'};
+  input.executions=[];input.instruments=[ipo];input.candles=[];input.currentFx={HKD:{rate:'1',source:'fixture',asOf:'2026-01-09'}};
+  input.monthly=[{documentId:'ipo',templateIds:[],reviewRequired:false,positions:[],events:[
+   {id:'application',accountId:'a',market:'HK',symbol:'00100',currency:'HKD',date:'2026-01-06',kind:'ipo',amount:'-10010',description:'IPO application',source:[]},
+   {id:'fee',accountId:'a',market:'HK',symbol:'00100',currency:'HKD',date:'2026-01-07',kind:'fee',amount:'-10',description:'IPO fee',source:[]},
+   {id:'refund',accountId:'a',market:'HK',symbol:'00100',currency:'HKD',date:'2026-01-07',kind:'ipo',amount:'10',description:'IPO refund',source:[]},
+   {id:'allocation',accountId:'a',market:'HK',symbol:'00100',currency:'HKD',date:'2026-01-07',kind:'ipo',quantity:'100',description:'IPO allotment',displayTimePolicy:'session-open',source:[]},
+  ]}];
+  const hk=buildRelease(input,'ipo').scopes.find(s=>s.id===scopeId('HK','a'))!;
+  expect(hk.holdings[0].row).toMatchObject({quantity:'100',cost:'100',price:null,marketValue:{value:null},unrealized:{value:null}});
+  expect(hk.holdings[0].row.marketValue.reasons.join(' ')).toContain('持仓尚无正式估值');
+  expect(hk.current.buckets.HKD.market).toBe('0');
+  expect(hk.current.buckets.HKD.unrealized).toBe('0');
+  expect(hk.current.buckets.HKD.reasons.join(' ')).toContain('暂不纳入业绩');
+  input.executions=[{...source().executions[1],instrument:ipo,executedAt:'2026-01-07T06:00:00Z',quantity:'20',price:'110',fee:'1'}];
+  const partial=buildRelease(input,'partial').scopes.find(s=>s.id===scopeId('HK','a'))!;
+  expect(partial.holdings[0].row).toMatchObject({quantity:'80',marketValue:{value:null},unrealized:{value:null}});
+  expect(partial.current.buckets.HKD).toMatchObject({market:'0',unrealized:'0',realized:'197'});
+  input.executions[0].quantity='100';
+  const sold=buildRelease(input,'sold').scopes.find(s=>s.id===scopeId('HK','a'))!;
+  expect(sold.current.buckets.HKD).toMatchObject({market:'0',unrealized:'0',realized:'989'});
+  input.executions=[];input.businessDate='2026-01-09';input.asOf='2026-01-09T15:59:59.999Z';
+  input.candles=[{...source().candles[0],instrumentId:ipo.id,tradingDate:'2026-01-09',close:'120'}];
+  const listed=buildRelease(input,'listed').scopes.find(s=>s.id===scopeId('HK','a'))!;
+  expect(listed.holdings[0].row).toMatchObject({marketValue:{value:'12000'},unrealized:{value:'1990'}});
+  expect(listed.current.buckets.HKD).toMatchObject({market:'12000',unrealized:'1990'});
+  expect(listed.days.find(d=>d.date==='2026-01-07')!.buckets.HKD.market).toBe('0');
+  input.candles=[];
+  expect(buildRelease(input,'missing-listed').scopes.find(s=>s.id===scopeId('HK','a'))!.current.buckets.HKD.market).toBeNull();
+  input.businessDate='2026-01-07';input.asOf='2026-01-07T15:59:59.999Z';
+  input.executions=[{...source().executions[0],instrument:ipo,executedAt:'2026-01-07T02:00:00Z'}];
+  expect(buildRelease(input,'mixed').scopes.find(s=>s.id===scopeId('HK','a'))!.current.buckets.HKD.market).toBeNull();
+  input.monthly=[];
+  expect(buildRelease(input,'ordinary').scopes.find(s=>s.id===scopeId('HK','a'))!.current.buckets.HKD.market).toBeNull();
+
+
+ });
  it('publishes FX independently without rewriting native daily results and freezes old FX',()=>{
   const db=new DatabaseSync(':memory:');initializeSqlite(db);const store=new HomeStore(db),input=source();
   input.currentFx={HKD:{rate:'0.9',source:'fixture',asOf:'2026-01-07'}};
@@ -43,6 +92,30 @@ describe('fact to release construction', () => {
   const hk=buildRelease(input,'r').scopes.find(s=>s.id===scopeId('HK','a'))!;
   expect(hk.holdings[0].row).toMatchObject({quantity:'2',cost:'20'});
   expect(hk.current.buckets.HKD.lifetimeComplete).toBe(false);
+ });
+ it('uses a cash-only closing inventory at the dated boundary, within its account, market and revision',()=>{
+  const input=source();
+  const sell={...input.executions[1],source:{...input.executions[1].source,positionEffect:'close-long' as const}};
+  const otherMarket={...instrument,id:'US:TEST',symbol:'TEST',market:'US',currency:'USD'};
+  input.executions=[sell,{...sell,id:'other-account',accountId:'other'},{...sell,id:'other-market',instrument:otherMarket}];
+  const statement:SourceSnapshot['monthly'][number]={documentId:'cash',month:'2026-01',accountId:'a',templateIds:[],reviewRequired:false,events:[],positions:[]};
+  input.monthly=[statement];
+  const current=(accountId:string,market:'US'|'HK')=>buildRelease(input,'r').scopes.find(s=>s.id===scopeId(market,accountId))!;
+  expect(current('a','HK').current.buckets.HKD.unrealized).toBeNull();
+  statement.zeroStockEvidence=[{accountId:'a',markets:['HK'],phase:'closing',date:'2026-01-07',proof:'complete-cash-only-asset-breakdown',source:[{page:2,row:4},{page:2,row:5},{page:2,row:6}]}];
+  const hk=current('a','HK');
+  expect(hk.days.find(d=>d.date==='2026-01-06')!.buckets.HKD.unrealized).toBeNull();
+  expect(hk.current.buckets.HKD).toMatchObject({unrealized:'0',market:'0',count:0,lifetimeComplete:false});
+  expect(current('other','HK').current.buckets.HKD.unrealized).toBeNull();
+  expect(current('a','US').current.buckets.USD.unrealized).toBeNull();
+  const explicit: typeof statement = {...statement,documentId:'inventory',zeroStockEvidence:undefined,positions:[{accountId:'a',market:'HK',symbol:'00001',phase:'closing',date:'2026-01-07',quantity:'3',source:[]}]};
+  for (const documents of [[statement, explicit], [explicit, statement]]) {
+   input.monthly=documents;
+   expect(current('a','HK').current.buckets.HKD).toMatchObject({market:'330',count:1});
+  }
+  input.monthly=[statement];
+  input.monthly.push({...statement,zeroStockEvidence:undefined,evidenceScope:{accountId:'a',instrumentId:'HK:1'}});
+  expect(current('a','HK').current.buckets.HKD.unrealized).toBeNull();
  });
  it('revalues historical native results in CNY using current FX without replaying positions',()=>{
   const db=new DatabaseSync(':memory:');initializeSqlite(db);
@@ -125,7 +198,19 @@ describe('fact to release construction', () => {
   const cache=new ProjectionCache(db),read=vi.spyOn(cache,'get');
   const actual=buildRelease(input,'second',{cache});
   expect(actual).toEqual(buildRelease(input,'second'));
-  expect(read).not.toHaveBeenCalled();db.close();
+  expect(read).not.toHaveBeenCalled();read.mockRestore();
+  const row=db.prepare("SELECT position_key,fingerprint,payload FROM home_object_projection WHERE position_key LIKE 'base:%' LIMIT 1").get()!;
+  const base=JSON.parse(inflateSync(row.payload as Uint8Array).toString());
+  for(const key of Object.keys(base.positions))Reflect.deleteProperty(base.positions[key].metric,'ordering');
+  cache.putBase(String(row.position_key).slice(5),String(row.fingerprint),base);
+  const fallback=vi.spyOn(cache,'get');
+  expect(buildRelease(input,'without-capability',{cache})).toEqual(buildRelease(input,'without-capability'));
+  expect(fallback).toHaveBeenCalled();fallback.mockRestore();
+  const corrupt=JSON.parse(inflateSync(db.prepare("SELECT payload FROM home_object_projection WHERE position_key=?").get(row.position_key)!.payload as Uint8Array).toString());
+  for(const key of Object.keys(corrupt.positions))corrupt.positions[key].metric.ordering=null;
+  cache.putBase(String(row.position_key).slice(5),String(row.fingerprint),corrupt);
+  expect(()=>buildRelease(input,'malformed',{cache})).toThrow('ordering');
+  db.close();
  });
  it('keeps cached and fresh financial results identical after every relevant input changes',()=>{
   const db=new DatabaseSync(':memory:');db.exec(HOME_SCHEMA);const input=source(),cache=new ProjectionCache(db);
@@ -297,4 +382,27 @@ describe('fact to release construction', () => {
   expect(all.current.buckets.HKD.market).toBeNull();
   expect(all.holdings[0].row.marketValue.value).toBeNull();
  });
+});
+
+it('values a supported 2025 US Beijing day-end from its prior completed session',()=>{
+ const input=source(),us={id:'US:AAPL',name:'Apple',symbol:'AAPL',market:'US',currency:'USD'};
+ input.asOf='2025-03-05T15:59:59.999Z';input.businessDate='2025-03-05';input.instruments=[us];
+ input.executions=[{...input.executions[0],instrument:us,executedAt:'2025-03-03T15:00:00Z'}];
+ input.candles=[{...input.candles[0],instrumentId:us.id,currency:'USD',tradingDate:'2025-03-04'}];
+ const actual=buildRelease(input,'historical-us').scopes.find(scope=>scope.id===scopeId('US','a'))!;
+ expect(actual.current.buckets.USD.market).toBe('220');
+});
+
+it('projects a cancelled IPO as flat complete history while retaining dated fees',()=>{
+ const input=source();input.executions=[];input.candles=[];
+ const common={accountId:'a',market:'HK',symbol:'00001',currency:'HKD',documentId:'cancel',source:[]};
+ input.monthly=[{documentId:'cancel',templateIds:[],reviewRequired:false,positions:[],events:[
+ {...common,id:'allot',date:'2026-01-06',kind:'ipo',quantity:'50',description:'IPO allotment'},
+ {...common,id:'reverse',date:'2026-01-06',kind:'corporate-action',ipoAction:'ipo-cancellation',quantity:'-50',reversesEventId:'allot',description:'Cancel Listing'},
+ {...common,id:'fee',date:'2026-01-05',kind:'fee',amount:'-50',description:'IPO fee'},
+ {...common,id:'refund',date:'2026-01-06',kind:'fee',amount:'50',description:'IPO fee refund'},
+ ]}];
+ const hk=buildRelease(input,'cancel').scopes.find(s=>s.id===scopeId('HK','a'))!;
+ expect(hk.holdings).toHaveLength(0);
+ expect(hk.metricObjects![0].current.buckets.HKD).toMatchObject({realized:'0',realizedMissing:0,feesMissing:0,lifetimeComplete:true});
 });

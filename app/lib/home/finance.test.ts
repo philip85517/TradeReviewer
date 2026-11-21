@@ -70,7 +70,7 @@ describe('native finance projection', () => {
       const e=fill(id,side,quantity,price,fee,day);e.source.settlement={currency:'CNY',quantity,grossAmount:'900',netAmount:side==='buy'?'-909':'891',fees:{commission:fee}};return e;
     };
     const trades=[cross('1','buy','100','10','9','2026-01-05'),cross('2','sell','50','12','9','2026-01-06')];
-    expect(run(trades,'13')).toMatchObject({quantity:'50',averageCost:'10',openFeesByCurrency:{CNY:'4.5'},realizedByCurrency:{HKD:'100',CNY:'-13.5'},unrealized:null});
+    expect(run(trades,'13')).toMatchObject({quantity:'50',averageCost:'10',openFeesByCurrency:{CNY:'4.5'},realizedByCurrency:{HKD:'100',CNY:'-13.5'},closedFeesByCurrency:{HKD:'0',CNY:'13.5'},unrealized:null});
   });
   it('recovers a valid new lot after malformed old prices without certifying old realization',()=>{
     const trades=[fill('1','buy','1','NaN','0'),fill('2','sell','1','120','0','2026-01-06'),fill('3','buy','1','20','1','2026-01-07')];

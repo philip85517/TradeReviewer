@@ -10,6 +10,7 @@ import type { StoredInstrument } from "../storage/sqlite-contracts";
 
 export const LOCALIZED_METADATA_HYDRATION_BATCH_SIZE = 12;
 const BATCH_INTERVAL_MS = 30_000;
+export const LOCALIZED_LOOKUP_TTL_MS = 24 * 60 * 60 * 1_000;
 
 function waitForBatch(delay: number, signal: AbortSignal): Promise<void> {
   if (delay <= 0 || signal.aborted) return Promise.resolve();
@@ -22,6 +23,15 @@ function waitForBatch(delay: number, signal: AbortSignal): Promise<void> {
     const timer = setTimeout(finish, delay);
     signal.addEventListener("abort", finish, { once: true });
   });
+}
+
+function hasRecentLocalizedLookup(instrument: StoredInstrument): boolean {
+  const metadata = instrument.metadata;
+  const attempt = metadata?.localizedNameLookup;
+  if (!attempt || attempt.source !== metadata?.source) return false;
+  const checkedAt = Date.parse(attempt.checkedAt);
+  const age = Date.now() - checkedAt;
+  return Number.isFinite(checkedAt) && age >= 0 && age < LOCALIZED_LOOKUP_TTL_MS;
 }
 
 function hasCachedLocalizedName(instrument: StoredInstrument) {
@@ -40,6 +50,7 @@ export function missingLocalizedMetadataLookups(
     if (
       (instrument.market !== "US" && instrument.market !== "HK") ||
       hasCachedLocalizedName(instrument) ||
+      hasRecentLocalizedLookup(instrument) ||
       instrumentPresentation(instrument).hasChineseName
     ) {
       return [];
@@ -77,6 +88,7 @@ type HydrationRunOptions = {
       signal: AbortSignal;
       concurrency: number;
       forceRefresh: true;
+      localizedNameLookup: true;
     },
   ) => Promise<ResolveBatchResult>;
 };
@@ -170,6 +182,7 @@ export class LocalizedMetadataHydrationQueue {
           signal: options.signal,
           concurrency: 3,
           forceRefresh: true,
+          localizedNameLookup: true,
         });
         await result.backgroundRefresh;
         // Space completed batches too: slow requests must not bunch up with

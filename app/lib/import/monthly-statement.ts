@@ -25,12 +25,23 @@ export type StatementEvent = {
   symbol?: string;
   date: string;
   kind: "transfer-in" | "transfer-out" | "distribution" | "fee" | "ipo" | "corporate-action" | "other";
+  ipoAction?: "ipo-cancellation" | "cash-refund";
+  reversesEventId?: string;
   quantity?: string;
   amount?: string;
   currency?: string;
   /** IPO allotments are displayed on the first candle of the trading session. */
   displayTimePolicy?: "session-open";
   description: string;
+  source: StatementFragment[];
+};
+export type StatementZeroStockEvidence = {
+  accountId: string;
+  /** Statement accounting date; opening is start of day, closing is end of day. */
+  date: string;
+  phase: "opening" | "closing";
+  markets: ("US" | "HK" | "CN-SH" | "CN-SZ")[];
+  proof: "complete-cash-only-asset-breakdown";
   source: StatementFragment[];
 };
 export type MonthlyStatement = {
@@ -44,6 +55,7 @@ export type MonthlyStatement = {
    * source document. Full-document imports leave this absent for compatibility.
    */
   evidenceScope?: MonthlyEvidenceScope;
+  zeroStockEvidence?: StatementZeroStockEvidence[];
   positions: StatementPosition[];
   events: StatementEvent[];
   reviewRequired: boolean;
@@ -78,9 +90,16 @@ export function isMonthlyStatement(value: unknown): value is MonthlyStatement {
   const optionalString = (object: Record<string, unknown>, key: string) => object[key] === undefined || typeof object[key] === "string";
   if (item.evidenceScope !== undefined && !isMonthlyEvidenceScope(item.evidenceScope)) return false;
   const fragments = (value: unknown) => Array.isArray(value) && value.every(f => f && typeof f === "object" && Number.isInteger(f.page) && f.page > 0 && Number.isFinite(f.row) && f.row >= 0);
+  if (item.zeroStockEvidence !== undefined && (!Array.isArray(item.zeroStockEvidence) || !item.zeroStockEvidence.every(e =>
+    e && typeof e === "object" && typeof e.accountId === "string" && e.accountId === item.accountId &&
+    typeof item.month === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(item.month) &&
+    typeof e.date === "string" && e.date === (e.phase === "opening" ? `${item.month}-01` : `${item.month}-${new Date(Date.UTC(Number(item.month.slice(0,4)), Number(item.month.slice(5)), 0)).getUTCDate()}`) &&
+    (e.phase === "opening" || e.phase === "closing") && e.proof === "complete-cash-only-asset-breakdown" &&
+    Array.isArray(e.markets) && e.markets.length > 0 && e.markets.every((m: unknown) => typeof m === "string" && ["US", "HK", "CN-SH", "CN-SZ"].includes(m)) &&
+    fragments(e.source) && e.source.length >= 3))) return false;
   if (item.historyIncomplete !== undefined && typeof item.historyIncomplete !== "boolean") return false;
   if (item.incompleteInstruments !== undefined && (!Array.isArray(item.incompleteInstruments) || !item.incompleteInstruments.every(i => i && typeof i === "object" && typeof i.market === "string" && typeof i.symbol === "string"))) return false;
   if (typeof item.documentId !== "string" || !Array.isArray(item.templateIds) || !item.templateIds.every(t => typeof t === "string") || typeof item.reviewRequired !== "boolean" || !["month", "accountId", "timePolicy"].every(k => optionalString(item, k))) return false;
   if (!Array.isArray(item.positions) || !item.positions.every(p => p && typeof p === "object" && ["accountId", "market", "symbol", "date", "quantity"].every(k => typeof p[k] === "string") && (p.phase === "opening" || p.phase === "closing") && ["cost", "documentId"].every(k => optionalString(p, k)) && fragments(p.source))) return false;
-  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "currency", "documentId"].every(k => optionalString(e, k)) && (e.displayTimePolicy === undefined || e.displayTimePolicy === "session-open") && fragments(e.source));
+  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "currency", "documentId", "reversesEventId"].every(k => optionalString(e, k)) && (e.ipoAction === undefined || e.ipoAction === "ipo-cancellation" || e.ipoAction === "cash-refund") && (e.displayTimePolicy === undefined || e.displayTimePolicy === "session-open") && fragments(e.source));
 }

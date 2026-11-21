@@ -16,15 +16,15 @@ describe('production readiness',()=>{
    expect(environment).toEqual({TOP:'explicit',CHOICE:'local',REF:'local',BASE:'base'});
   }finally{rmSync(dir,{recursive:true,force:true});}
  });
- it('consumes the initial HTML stream before resolving readiness and reads only status',async()=>{
+ it('consumes the initial HTML stream before resolving readiness and checks the published release without producing a query result',async()=>{
   let finish,done=false;const paths=[];
   const pending=initializeHomeRuntime({fetch:async request=>{
-   paths.push(new URL(request.url).pathname);
+   const url=new URL(request.url);paths.push(url.pathname+url.search);
    if(paths.length===1)return new Response(new ReadableStream({start(controller){finish=()=>controller.close();}}));
    return Response.json({state:'recovering'});
   }}).then(()=>{done=true;});
   await new Promise(r=>setTimeout(r,0));expect(done).toBe(false);expect(paths).toEqual(['/home']);
-  finish();await pending;expect(paths).toEqual(['/home','/api/home/status']);
+  finish();await pending;expect(paths).toEqual(['/home','/api/home/status?reader=full-home-v1&verify=publication']);
  });
  it('rejects a broken route or database instead of marking the process ready',async()=>{
   await expect(initializeHomeRuntime({fetch:async()=>new Response('failed',{status:500})})).rejects.toThrow('500');

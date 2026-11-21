@@ -1,0 +1,30 @@
+import type {Amount,HomeRequest,HomeView,Market,Period,TradeCollection,Holding} from '../../components/homepage-preview/display-contract';
+import type {FxRates,HomeResult} from './contracts';
+import type {ExecutionContentRef} from './execution-content-ref';
+export const FULL_SCHEMA='full-home-v1';
+export const FULL_QUERY_SCHEMA='full-home-query-v1';
+export const FULL_MODULES=['closeRounds','coverage','catalog','allocations','effectiveReview'] as const;
+export type FullRequestV1={
+ schema:typeof FULL_QUERY_SCHEMA;
+ selection:{market:Market;accountId:string;assetTypes:string[];globalOpenOnly:boolean;review:'all'|'pending'|'done';reviewPolicy:'effective-completion-v1'};
+ currentPeriod:Period;historyRange:{fromYear:number;toYear:number};
+ holdings:{query:string;sort:HomeRequest['sort'];direction:'asc'|'desc';page:number};
+ contribution:{mode:'current'|'historical';category:'long'|'short'|'ipo';localOpenOnly:boolean;drillMarket:Market;sort:'name'|'net';direction:'asc'|'desc';page:number};
+};
+export type FullCoverage={classifiedCount?:number;eligibleCount?:number;universeComplete:boolean;confirmedClosedCount:number;closedCount:number|null;knownNetCount:number;unknownNetCount:number;reasons:string[];sourceRefsKey:string;affectedSourceRefs?:ExecutionContentRef[]};
+export type FullMoney={valuationNotes?:string[];value:string|null;currency:string;reasons:string[]};
+export type FullRound={id:string;roundId:string;accountId:string;instrumentId:string;market:Market;name:string;code:string;category:'long'|'short'|'ipo';closeBusinessDay:string|null;closingExecutionIds:string[];pairings:{openingExecutionId:string;closingExecutionId:string;quantity:string}[];revision:number;fingerprint:string;sourceRefs:ExecutionContentRef[];gross:FullMoney;net:FullMoney;fees:FullMoney[]};
+export type FullCatalogItem={id:string;instrumentId:string;accountId:string;market:Market;name:string;code:string;exchange:string;currency:string;assetType:string|null;positionKey:string;tradeSetId:string;open:boolean};
+export type FullSourceCoverage={accountId:string;instrumentId:string;market:Market;reasons:string[];sourceRefs:ExecutionContentRef[];universeComplete:boolean;category:'long'|'short'|'ipo'|null};
+export type FullAllocation={positionKey:string;accountId:string;instrumentId:string;category:'long'|'short'|'ipo'|null;sourceRefs:ExecutionContentRef[];reasons:string[];categoryMetrics?:import('./contribution-allocation').ContributionMetric[];parts?:{sourceRef:ExecutionContentRef;quantity:string;fee:string|null;feeCurrency:string;role:'open-long'|'close-long'|'open-short'|'close-short'|null}[]};
+export type FullManifestV1={accountIdsByMarket?:Record<'CN'|'HK'|'US',string[]>;schema:typeof FULL_SCHEMA;releaseId:string;sourceSequence:number;asOf:string;businessDate:string;timezone:'Asia/Shanghai';fx:FxRates;fxVersion:string;capabilities:string[];moduleComplete:boolean;scopeRefs?:{id:string;version:string}[];versions?:Record<string,string>;marketCutoffs?:Record<string,string|null>;modules:Record<string,{hash:string;count:number;version:string;complete:boolean}>};
+export type FullHistory={coverage:FullCoverage;net:FullMoney;fees:FullMoney;confirmedNet:FullMoney;confirmedFees:FullMoney;winRate:string|null;confirmedWinRate:string|null;years:{year:number;net:FullMoney;fees:FullMoney;count:number;coverage:FullCoverage}[];buckets:{key:string;granularity:'month'|'year';net:FullMoney;fees:FullMoney;count:number;knownWins:number;winRate:string|null;cumulativeNet:FullMoney;coverage:FullCoverage}[]};
+export type FullContributionRow={id:string;name:string;code:string;accountId:string;instrumentId:string;market:Market;net:FullMoney;realized:FullMoney;unrealizedChange:FullMoney;fees:FullMoney;open:boolean;roundCount:number|null};
+export type FullContribution={mode:'current'|'historical';category:'long'|'short'|'ipo';rows:FullContributionRow[];total:number;page:number;pages:number;net:FullMoney;fees:FullMoney;coverage:FullCoverage;categories:{category:'long'|'short'|'ipo';net:FullMoney;realized:FullMoney;unrealizedChange:FullMoney;fees:FullMoney;count:number;coverage:FullCoverage}[];markets:{market:Market;net:FullMoney;realized:FullMoney;unrealizedChange:FullMoney;fees:FullMoney;count:number;coverage:FullCoverage}[]};
+export type FullResultV1={schema:typeof FULL_SCHEMA;evidenceTransport:'release-key-v2'|'inline-dictionary-v1';sourceRefsByKey?:Record<string,ExecutionContentRef[]>;releaseId:string;manifest:FullManifestV1;request:FullRequestV1;selectionKey:string;queryArtifactId:string;core:HomeResult;accountIdsByMarket:Record<'CN'|'HK'|'US',string[]>;history:FullHistory;contribution:FullContribution;capabilities:{globalOpenOnly:boolean;review:boolean;assetTypes:boolean;reasons:string[]};catalogCount:number};
+export type FullDetailTarget={kind:'instrument'|'position'|'closeRound';id:string;accountScope:string[];sourceContext:string};
+export type FullDetail={schema:typeof FULL_SCHEMA;releaseId:string;target:FullDetailTarget;items:FullCatalogItem[];holding:Holding|null;description:string;rounds:FullRound[];trades:TradeCollection['trades'];nextCursor:number|null};
+export function coreRequest(request:FullRequestV1):HomeRequest{return {...request.holdings,market:request.selection.market,accountId:request.selection.accountId,period:request.currentPeriod};}
+export function defaultFullRequest(day:string):FullRequestV1{return {schema:FULL_QUERY_SCHEMA,selection:{market:'all',accountId:'all',assetTypes:[],globalOpenOnly:false,review:'all',reviewPolicy:'effective-completion-v1'},currentPeriod:{preset:'ytd',from:day.slice(0,4)+'-01-01',to:day},historyRange:{fromYear:2000,toYear:Number(day.slice(0,4))},holdings:{query:'',sort:'name',direction:'asc',page:1},contribution:{mode:'current',category:'long',localOpenOnly:false,drillMarket:'all',sort:'net',direction:'desc',page:1}};}
+/** The first viewport intentionally asks for the current history year. */
+export function initialFullRequest(day:string):FullRequestV1{const request=defaultFullRequest(day);request.historyRange={fromYear:Number(day.slice(0,4)),toYear:Number(day.slice(0,4))};return request;}

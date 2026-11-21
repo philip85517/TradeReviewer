@@ -19,3 +19,11 @@ TRADEREVIEW_DB_PATH=/absolute/path/to/isolated.sqlite \
 ```
 
 3031 仅为特殊验收示例。底层启动器不自动备份，调用方须准备、校验和清理自己拥有的数据库，不能将外部业务库当作测试清理目标。
+
+## 首页后台进程
+
+`scripts/start-local.mjs` 默认设置 `TRADEREVIEW_HOME_WORKER=1`，Web 和首页后台进程使用同一个最终解析出的绝对数据库路径。后台异步生成完整首页快照；页面读取和重试接口不在请求中同步重建。后台意外退出（包括退出码为0）会使启动器停止本次拥有的 Web 和进程后代，并以非零状态退出；正常停止会清理同一组进程。参数、路径和开关在启动子进程前校验。
+
+`HOME_SOURCE_SYNC` 默认 `0`，只有显式设置为 `1` 才启动首页外部数据补齐调度；单独运行 `home-worker.mjs` 同样遵循此默认值，并要求显式绝对 `TRADEREVIEW_DB_PATH`。即使不补齐外部来源，后台仍会写入任务状态、派生快照并清理旧结果，因此开发与验收必须使用隔离库。
+
+固定快照预览可设置 `TRADEREVIEW_HOME_WORKER=0 HOME_SOURCE_SYNC=0`。关闭后台后，缺少快照时不会自动恢复；它也不是应用只读开关。两个开关仅接受 `0` 或 `1`。直接调用 `scripts/start-production.mjs` 只启动 Web；通常应使用管理两个进程的 `start-local.mjs` 入口。

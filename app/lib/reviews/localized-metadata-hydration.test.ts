@@ -405,3 +405,19 @@ describe("localized metadata hydration selection", () => {
     expect(attempted.size).toBe(2);
   });
 });
+
+it('uses persisted successful Chinese lookup timestamps across opens, retries expiry and new sources', () => {
+  vi.setSystemTime(new Date('2026-11-21T12:00:00Z'));
+  const metadata = {
+    market: 'US' as const, symbol: 'SNDK', name: 'SanDisk Corporation', assetType: 'stock' as const,
+    source: 'tencent' as const, confidence: 'portal' as const, resolvedAt: '2026-11-21T10:00:00Z',
+    localizedNameLookup: { checkedAt: '2026-11-21T10:00:00Z', source: 'tencent' as const },
+  };
+  const persisted = JSON.parse(JSON.stringify(instrument({ metadata })));
+  expect(missingLocalizedMetadataLookups([persisted])).toEqual([]);
+  expect(missingLocalizedMetadataLookups([JSON.parse(JSON.stringify(persisted))])).toEqual([]);
+  expect(missingLocalizedMetadataLookups([instrument({ metadata: { ...metadata, localizedNameLookup: undefined } })])).toHaveLength(1);
+  expect(missingLocalizedMetadataLookups([instrument({ metadata: { ...metadata, source: 'nasdaq' } })])).toHaveLength(1);
+  vi.setSystemTime(new Date('2026-11-22T10:00:01Z'));
+  expect(missingLocalizedMetadataLookups([persisted])).toHaveLength(1);
+});

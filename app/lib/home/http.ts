@@ -1,8 +1,12 @@
+import {fullHttp} from './full-http';
+import {validateFull} from './full-persistence';
 import type {DatabaseSync} from 'node:sqlite';
 import type {HomeRequest,Stamp} from '../../components/homepage-preview/display-contract';
 import {HomeReadError,HomeStore} from './store';
 import {HomeRefresh} from './refresh';
-import {validDay} from './period';
+import {validDay,nextDay} from './period';
+import {sourceCompletion} from './source-completion';
+import {normalizeHomeFilters} from './request-filters';
 const headers={'Cache-Control':'no-store'};
 const bad=()=>new HomeReadError(400,'无效的首页请求参数');
 function parse(params:URLSearchParams,key:string):unknown {
@@ -18,6 +22,8 @@ function homeRequest(value:unknown):HomeRequest {
  const from=text(p.from,10),to=text(p.to,10);
  if(!validDay(from)||!validDay(to)||from<'0001-01-02'||to>'9998-12-31'||from>to)throw bad();
  if((Date.parse(to)-Date.parse(from))/86400000>36600)throw new HomeReadError(400,'单次图表范围不能超过 100 年，请缩小日期范围');
+ let filters;try{filters=normalizeHomeFilters(v.filters);}catch{throw bad();}
+ if(filters.assetTypes.length||filters.openOnly||filters.review!=='all')throw new HomeReadError(422,'首页附加筛选尚未支持，无法应用资产类别、仅看未平仓或复盘状态；请清除附加筛选后重试');
  return value as HomeRequest;
 }
 function stamp(value:unknown):Stamp {
@@ -30,14 +36,42 @@ function stamp(value:unknown):Stamp {
 }
 export async function homeHttp(db:DatabaseSync,operation:string,request:Request):Promise<Response> {
  try {
-  const url=new URL(request.url),params=url.searchParams,store=new HomeStore(db),refresh=new HomeRefresh(db);
-  if(operation==='retry'){
+  const url=new URL(request.url),params=url.searchParams,store=new HomeStore(db);
+  const reader=['status','retry','repair'].includes(operation)?params.get('reader'):null;
+  if(reader!==null&&reader!=='full-home-v1')throw bad();
+  const refresh=new HomeRefresh(db,reader==='full-home-v1');
+  if(operation==='retry'||operation==='repair'){
    if(request.method!=='POST')return Response.json({error:'请使用 POST'},{status:405,headers});
    if(request.headers.get('origin')&&request.headers.get('origin')!==url.origin)return Response.json({error:'请求来源不匹配'},{status:403,headers});
-   refresh.retry();return Response.json(refresh.status(),{headers});
+   let sourceKeys:string[]|undefined,requestedSourceJobs=0,sourceRepairRange:{from:string;to:string;limited:boolean}|undefined;
+   if(operation==='repair'){
+    const from=params.get('from');
+    if(!from||!validDay(from)||from<'0001-01-02'||from>new Date(Date.now()+8*3600000).toISOString().slice(0,10))throw bad();
+    const to=params.get('to')??new Date(Date.now()+8*3600000).toISOString().slice(0,10);
+    if(!validDay(to)||to<from||to>new Date(Date.now()+8*3600000).toISOString().slice(0,10))throw bad();
+    const baseline=nextDay(from,-1),dailyFrom=baseline<nextDay(to,-366)?nextDay(to,-366):baseline;
+    sourceRepairRange={from:dailyFrom,to,limited:dailyFrom!==baseline};
+    sourceKeys=sourceCompletion(db).planCurrent(new Date(),{dates:[nextDay(from,-1)],to});requestedSourceJobs=sourceKeys.length;
+   }
+   refresh.retry(sourceKeys);return Response.json({...refresh.status(),...(operation==='repair'?{requestedSourceJobs,sourceRepairRange}:{})},{headers});
   }
   if(request.method!=='GET')return Response.json({error:'请使用 GET'},{status:405,headers});
-  if(operation==='status')return Response.json(refresh.status(),{headers});
+  if(operation==='status'){
+   const status=refresh.status();
+   // Production startup checks the existing publication once on the serving
+   // connection. Ordinary polling only reads scheduler state.
+   if(params.get('verify')==='publication'&&status.fullReleaseId){
+    try{
+     if(!validateFull(db,status.fullReleaseId))return Response.json(refresh.status(),{headers});
+    }
+    catch(error){
+     console.error('Published homepage failed startup validation',error);
+     return Response.json({...status,state:'failed',fullReady:false,error:'已发布首页校验失败',canRetry:true},{headers});
+    }
+   }
+   return Response.json(status,{headers});
+  }
+  if(['full','history','contribution','search','detail','full-export','evidence'].includes(operation))return fullHttp(db,operation,params);
   let result:unknown;
   if(operation==='holding'||operation==='trades'){
    const scope=stamp(parse(params,'stamp')),id=text(parse(params,'id'));

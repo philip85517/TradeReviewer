@@ -3,7 +3,24 @@ import {afterEach,it,expect} from 'vitest';
 import {MetricCards} from './metric-cards';
 import {createMockSource,DEFAULT_REQUEST} from './mock-source';
 import type {ConfirmedSubtotal} from './display-contract';
+import {hasUnalignedSplit,missingDataNextStep,SubtotalEvidence} from './confirmed-subtotal';
 afterEach(cleanup);
+const unalignedSplit='SNDK 2026-11-20 起按 1 拆 8 后报价；账本拆股数量及成本尚未对齐，暂停估值';
+it('identifies the published split-unit mismatch and gives alignment guidance before generic cost guidance',()=>{
+ const reasons=['缺少期末行情及成本依据',unalignedSplit];
+ const guidance='对照券商拆股记录及生效日前后的持仓结单，对齐拆股后的持仓数量与成本单位后重新估值。';
+ expect(missingDataNextStep(reasons)).toBe(guidance);
+ expect(hasUnalignedSplit(reasons)).toBe(true);
+ render(<SubtotalEvidence partial={{value:'10',currency:'USD',originals:{USD:'10'},fxSource:'fixture',coverage:{available:30,total:31,scope:'imported',unit:'account-security'},missing:[{accountId:'a',code:'SNDK',name:'SanDisk',reasons}]}}/>);
+ expect(screen.getByText(guidance)).toBeInTheDocument();
+ expect(screen.queryByText('补齐原始买入或转入的成本与费用资料。')).not.toBeInTheDocument();
+});
+it('keeps ordinary missing quotes and genuinely missing costs distinct from split alignment',()=>{
+ expect(hasUnalignedSplit(['缺少当前行情'])).toBe(false);
+ expect(hasUnalignedSplit(['拆股后行情已更新，缺少原始买入成本'])).toBe(false);
+ expect(missingDataNextStep(['缺少当前行情'])).toBe('核对证券代码及交易日期，再补齐对应交易日行情。');
+ expect(missingDataNextStep(['unknown-cost'])).toBe('补齐原始买入或转入的成本与费用资料。');
+});
 it('keeps the full amount unknown and opens exact subtotal, object coverage and repair guidance',async()=>{
  const view=await createMockSource({scenario:'normal',delayMs:0}).readHome(DEFAULT_REQUEST,new AbortController().signal);
  const partial:ConfirmedSubtotal={value:'176.000000000001',currency:'CNY',originals:{HKD:'220.00000000000125'},fxSource:'fixture',coverage:{available:2,total:3,scope:'imported',unit:'account-security'},missing:[{accountId:'a',code:'ABNB',name:'Airbnb',reasons:['缺少明确的开仓或平仓方向依据']}]};

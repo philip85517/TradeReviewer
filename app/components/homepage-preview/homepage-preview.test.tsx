@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { HomepagePreview } from './homepage-preview';
+import { HomepagePreview } from './archive/homepage-preview';
 import { createMockSource, DEFAULT_REQUEST } from './mock-source';
 import type { HomepageSource, HomeView } from './display-contract';
 
@@ -182,6 +182,17 @@ describe('homepage mock journey', () => {
     expect(screen.getByRole('tooltip')).toHaveTextContent('2026-10-15');
     expect(screen.getAllByTestId('hp-chart-segment')).toHaveLength(2);
   });
+  it('shows isolated valid days without connecting gaps', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const source: HomepageSource = { ...base, readHome: async (request, signal) => {
+      const view = await base.readHome(request, signal);
+      return { ...view, series: { ...view.series, points: view.series.points.map((point, index) => index === 1 || index === 3
+        ? { ...point, state: 'source-missing' as const, plottable: false } : point) } };
+    } };
+    render(<HomepagePreview source={source} />);
+    await ready();
+    expect(screen.getAllByTestId('hp-chart-isolated-point').length).toBeGreaterThan(0);
+  });
   it('rejects mismatched detail identities instead of opening another holding', async () => {
     const base = createMockSource({ scenario: 'normal', delayMs: 0 });
     const source: HomepageSource = { ...base, readHolding: async (stamp, id, signal) => {
@@ -303,6 +314,30 @@ describe('homepage mock journey', () => {
     fireEvent.focus(screen.getByRole('group', { name: /当前表现｜/ }));
     expect(screen.getByTestId('hp-chart-value-net')).toHaveTextContent('999,999.00');
     expect(screen.getByTestId('hp-chart-value-periodNet')).toHaveTextContent('12.00');
+  });
+  it('rounds chart amounts while retaining precise evidence and unknowns', async () => {
+    const base = createMockSource({ scenario: 'normal', delayMs: 0 });
+    const source: HomepageSource = { ...base, readHome: async (request, signal) => {
+      const view = await base.readHome(request, signal);
+      return { ...view, series: { ...view.series, points: view.series.points.map(point => ({ ...point,
+        marketValue: { ...point.marketValue, value: '1234.5678' },
+        unrealized: { ...point.unrealized, value: '-0.004' },
+        realized: { ...point.realized, value: '0.004' },
+        net: { ...point.net, value: null },
+        periodNet: { ...point.periodNet, value: '-4380.745' },
+      })) } };
+    } };
+    render(<HomepagePreview source={source} />);
+    await ready();
+    fireEvent.focus(screen.getByRole('group', { name: /当前表现｜/ }));
+    expect(screen.getByTestId('hp-chart-value-marketValue')).toHaveTextContent('1,234.57');
+    expect(screen.getByTestId('hp-chart-value-unrealized').textContent).toBe('0.00');
+    expect(screen.getByTestId('hp-chart-value-realized').textContent).toBe('0.00');
+    expect(screen.getByTestId('hp-chart-value-net').textContent).toBe('—');
+    const amount = screen.getByTestId('hp-chart-value-periodNet');
+    expect(amount.textContent).toBe('-4,380.75');
+    fireEvent.focus(amount);
+    expect(document.getElementById(amount.getAttribute('aria-describedby')!)).toHaveTextContent('原始金额：-4380.745 CNY');
   });
   it('explains normalized invalid URL values', async () => {
     window.history.replaceState(null, '', '/preview/homepage?market=invalid&page=-5&from=bad');

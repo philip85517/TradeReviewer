@@ -1,5 +1,5 @@
 import "fake-indexeddb/auto";
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ComponentProps, ReactNode } from "react";
 import type { CashSummary } from "../lib/cash/cash-model";
@@ -62,6 +62,19 @@ async function mount() {
 function switchAccount(id: string) { act(() => probe.dashboard?.onSharedScopeChange?.({ accountIds: [id] })); }
 
 describe("independent workspace cash race acceptance", () => {
+  it("defers hidden dashboard/data cash initialization on a homepage library entry and loads it on navigation", async () => {
+    render(<TradeReviewWorkspace initialFrame={frame} showDemo={false} storageClient={createLegacySqliteClient()} legacyStateExporter={async () => null} homeLibraryEntry={{market:"all",accounts:[],from:null,to:null,instrumentId:"US:A",returnTo:"/home",notice:""}} />);
+    await screen.findByRole("button", {name:/^交易库$/});
+    expect(probe.dashboard).toBeNull();
+    expect(probe.panel).toBeNull();
+    expect(vi.mocked(fetch).mock.calls.some(([url])=>String(url).includes("/trading-room/cash"))).toBe(false);
+    fireEvent.click(screen.getByRole("button", {name:/^数据$/}));
+    await waitFor(()=>expect(probe.panel).not.toBeNull());
+    await waitFor(()=>expect(vi.mocked(fetch).mock.calls.some(([url])=>String(url).includes("/trading-room/cash"))).toBe(true));
+    fireEvent.click(screen.getByRole("button", {name:/^我的交易室$/}));
+    await waitFor(()=>expect(probe.dashboard?.cashSummary).toEqual(summary("A")));
+  });
+
   it("clears the previous amount while the next identity GET waits, and ignores an older successful GET", async () => {
     await mount();
     const b = deferred<Response>(); const c = deferred<Response>();

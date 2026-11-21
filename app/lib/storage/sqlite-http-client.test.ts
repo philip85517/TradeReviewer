@@ -208,3 +208,12 @@ describe("createSqliteHttpClient", () => {
     );
   });
 });
+
+it('reads an explicit library scope, forwards abort and rejects mismatched response scope',async()=>{
+ const scope={accountId:'account:a',instrumentId:'US:EDZ'},signal=new AbortController().signal;
+ const fetcher=vi.fn<typeof fetch>().mockResolvedValue(json({scope,revision:'r',bootstrap:{},accountDirectory:[],accountAliases:[],recallSummaries:[]}));
+ await createSqliteHttpClient(fetcher).getLibraryScope(scope,signal);
+ expect(fetcher).toHaveBeenCalledWith('/api/storage/library-scope?accountId=account%3Aa&instrumentId=US%3AEDZ',{cache:'no-store',signal});
+ fetcher.mockResolvedValue(json({scope:{...scope,accountId:'different'}}));
+ await expect(createSqliteHttpClient(fetcher).getLibraryScope(scope)).rejects.toThrow();
+});

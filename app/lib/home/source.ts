@@ -1,28 +1,34 @@
+import {overlayHomeExecutionFee} from './execution-fee-basis';
+import {executionContentVersion,type ExecutionContentRef} from './execution-content-ref';
 import type { DatabaseSync } from 'node:sqlite';
 import {canonicalInstrumentId} from '../instruments/display-name';
+import type {StoredInstrument} from '../storage/sqlite-contracts';
 import { SqliteStore } from '../storage/sqlite-store';
 import { selectMonthlyEvidenceHistory, applyMonthlyHistoryEvidence } from '../import/statement-evidence';
 import type { MonthlyStatement } from '../import/monthly-statement';
 import type { DailyCandleRecord } from '../market/contracts';
-import type { Instrument, TradeExecution } from '../trades/types';
+import type { TradeExecution } from '../trades/types';
 import { resolvedTradeNatureOf } from '../trades/nature-resolution';
 import { readFxSnapshot } from '../fx/storage';
 import { decimal } from './period';
 import { businessDay, executionBusinessDay } from './finance';
 import type { FxRates } from './contracts';
+import {readReviewFacts,type ReviewFacts} from './review-facts';
 
 export type HistoricalFx = { date: string; knownAt: string; rates: FxRates };
 export type HomeQuote = Pick<DailyCandleRecord,'instrumentId'|'tradingDate'|'close'|'currency'|'provider'|'adjustmentMode'>;
 export type SourceSnapshot = {
   sequence: number; asOf: string; businessDate: string;
-  executions: TradeExecution[]; monthly: MonthlyStatement[]; instruments: Instrument[];
+  executionRefs?: ExecutionContentRef[];
+  executions: TradeExecution[]; monthly: MonthlyStatement[]; instruments: StoredInstrument[];
   candles: HomeQuote[]; currentFx: FxRates; historicalFx: HistoricalFx[];
+  reviewFacts: ReviewFacts;
   classification: Record<'live' | 'simulation' | 'unknown', number>;
   unclassified?: {accountId:string;accountLabel:string;instrumentId:string;market:string;knownAt:string}[];
   timings?:Record<string,number>;
 };
-/** One WAL read transaction fixes the source watermark and every input. No bootstrap/reviews/Recall. */
-export function readSourceSnapshot(db: DatabaseSync, asOf = new Date().toISOString()): SourceSnapshot {
+/** One WAL read transaction fixes the source watermark and every input. No full review/Recall bodies. */
+export function readSourceSnapshot(db: DatabaseSync, asOf = new Date().toISOString(), capture?: (source:SourceSnapshot)=>void): SourceSnapshot {
   db.exec('BEGIN');
   try {
     let phaseStart=performance.now();const timings:Record<string,number>={};const phase=(name:string)=>{const now=performance.now();timings[name]=now-phaseStart;phaseStart=now;};
@@ -38,7 +44,12 @@ export function readSourceSnapshot(db: DatabaseSync, asOf = new Date().toISOStri
     phase('executions');
     const selected = selectMonthlyEvidenceHistory(store.getImportHistory());
     phase('statements');
-    const executions = applyMonthlyHistoryEvidence(live, selected);
+    const instruments=store.getInstruments();
+    const assetTypes=new Map(instruments.map(i=>[i.id,i.metadata?.assetType]));
+    phase('instruments');
+    const rawVersions = new Map(live.map(e=>[e.id,executionContentVersion(e,'raw')]));
+    const executions = applyMonthlyHistoryEvidence(live, selected).map(e=>overlayHomeExecutionFee(e,assetTypes.get(e.instrument.id)));
+    const executionRefs:ExecutionContentRef[] = executions.map(e=>({schemaVersion:1,executionId:e.id,rawVersion:rawVersions.get(e.id)!,effectiveVersion:executionContentVersion(e,'effective')}));
     phase('evidenceOverlay');
     // The same scoped overlay rule also applies to evidence-only inventory.
     const monthly = selected.map(statement => {
@@ -63,8 +74,9 @@ export function readSourceSnapshot(db: DatabaseSync, asOf = new Date().toISOStri
     for(const group of quoteQuery.iterate())for(const row of JSON.parse(String(group.payload)) as [string,string,string|null,string|null][]){
       candles.push({instrumentId:String(group.instrument_id),tradingDate:row[0],close:row[1],currency:typeof row[2]==='string'?row[2]:'UNKNOWN',provider:(typeof row[3]==='string'?row[3]:'') as HomeQuote['provider'],adjustmentMode:'raw'});
     }
-    phase('quotes');const instruments=store.getInstruments();phase('instruments');
-    const result = { sequence, asOf, businessDate: businessDay(asOf), executions, monthly, instruments, candles, currentFx, historicalFx, classification,unclassified,timings };
-    db.exec('COMMIT'); return result;
+    phase('quotes');
+    const reviewFacts=readReviewFacts(db);phase('reviewFacts');
+    const result = { sequence, asOf, businessDate: businessDay(asOf), executionRefs, executions, monthly, instruments, candles, currentFx, historicalFx, reviewFacts, classification,unclassified,timings };
+    capture?.(result); db.exec('COMMIT'); return result;
   } catch (error) { db.exec('ROLLBACK'); throw error; }
 }

@@ -3,9 +3,9 @@
 import Decimal from "decimal.js";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Amount as HomepageV25Metric, HomeView } from "./display-contract";
+import { lifetimeCoverageNotice, type Amount as HomepageV25Metric, type HomeView } from "./display-contract";
 import "./metric-cards.css";
-import {SubtotalEvidence} from "./confirmed-subtotal";
+import {hasUnalignedSplit, SubtotalEvidence} from "./confirmed-subtotal";
 import {EvidenceAmount} from './evidence-amount';
 
 type MetricCardsStatus = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
@@ -68,7 +68,8 @@ function MetricEvidence({ read, currency, accounts }: { read: Readout; currency:
       </>}
     </dl>
     {read.raw===null&&metric?.partial&&metric.partial.currency===currency&&<SubtotalEvidence partial={metric.partial} accounts={accounts}/>}
-    {read.reasons.length > 0 && <ul className="hp-metric-cards__reasons">{read.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>}
+    {(metric?.valuationNotes ?? []).map(note => <p key={note}>{note}</p>)}
+    {read.reasons.filter(reason => !(metric?.valuationNotes ?? []).includes(reason) && !reason.startsWith("拆股推算：")).length > 0 && <ul className="hp-metric-cards__reasons">{read.reasons.filter(reason => !(metric?.valuationNotes ?? []).includes(reason) && !reason.startsWith("拆股推算：")).map(reason => <li key={reason}>{reason}</li>)}</ul>}
   </>;
 }
 
@@ -145,7 +146,10 @@ export function MetricCards(props: MetricCardsProps) {
   }, [active, closeDetail]);
 
   const currentUnrealized = readout(view?.currentUnrealized, reportCurrency);
-  const contextReasons = view?.reasons ?? [];
+  const detailMetric = presented ? view?.metrics[presented] : undefined;
+  const detailReasons = new Set([...(detailMetric?.reasons ?? []), ...(detailMetric?.value === null
+    ? detailMetric.partial?.missing.flatMap(item => item.reasons) ?? [] : [])]);
+  const contextReasons = (view?.reasons ?? []).filter(reason => reason !== lifetimeCoverageNotice && !reason.startsWith("拆股推算：") && !detailReasons.has(reason));
   const periodContext = view ? `期间 ${view.request.period.from} 至 ${view.request.period.to} · 上海时区` : "期间数据尚不可用";
   return <section className="hp-metric-cards" aria-label="当前表现指标" aria-busy={status.kind === "pending"}>
     <div className="hp-metric-cards__grid">
@@ -155,16 +159,21 @@ export function MetricCards(props: MetricCardsProps) {
         const partial=amount.raw===null&&amount.metric?.partial?.currency===reportCurrency?amount.metric.partial:null;
         const small=partial?.value===null||!partial?null:formatPrimary(partial.value,card.signed);
         const partialText=partial?`已确认小计 ${small?small.number+(small.unit?' '+small.unit:''):'—'}`:'';
+        const coverageText = partial && `${partial.coverage.available} / ${partial.coverage.total} 项`;
+        const singleMissing = partial && partial.coverage.total - partial.coverage.available === 1 && partial.missing.length === 1
+          ? partial.missing[0] : undefined;
+        const splitHint = singleMissing && hasUnalignedSplit(singleMissing.reasons) ? `${singleMissing.code} 拆股待核对` : null;
         return <article key={card.key} className="hp-metric-cards__card" aria-label={card.label}>
           <h3 id={`${id}-${card.key}-label`}>{card.label}({reportCurrency})</h3>
           {status.kind === "pending" && !view ? <div className="hp-metric-cards__skeleton" data-testid="hp-metric-skeleton" aria-label="金额加载中" />
             : <p key={`${reportCurrency}:${amount.raw ?? "unavailable"}`} className={`hp-metric-cards__value hp-metric-cards__value--${formatted.tone}`} data-testid="hp-metric-value" data-tone={formatted.tone}>
               <span className="hp-metric-cards__number">{formatted.number}</span>{formatted.unit && <span className="hp-metric-cards__unit"> {formatted.unit}</span>}
-              {partial&&<span className="hp-metric-cards__partial"><span>{partialText}</span><span>已导入范围 {partial.coverage.available} / {partial.coverage.total} 项</span></span>}
+              {amount.raw !== null && !!amount.metric?.valuationNotes?.length && <span className="hp-estimate-label">含拆股推算</span>}
+              {partial&&<span className="hp-metric-cards__partial"><span>{partialText}</span><span>{splitHint ? `已导入 ${partial.coverage.available}/${partial.coverage.total} 项 · ${splitHint}` : `已导入范围 ${coverageText}`}</span></span>}
             </p>}
           {status.kind === "pending" && view && <span className="hp-metric-cards__loading" aria-hidden="true">更新中</span>}
           <button className="hp-metric-cards__trigger" type="button" ref={node => { triggers.current[card.key] = node; }}
-            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}${partial?`；${partialText} ${reportCurrency}，已导入范围 ${partial.coverage.available} / ${partial.coverage.total} 项`:""}`} aria-haspopup="dialog"
+            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}${amount.metric?.valuationNotes?.length ? `；含拆股推算：${amount.metric.valuationNotes.join("；")}` : ""}${partial?`；${partialText} ${reportCurrency}，已导入范围 ${coverageText}`:""}${splitHint ? `，${splitHint}` : ""}`} aria-haspopup="dialog"
             aria-expanded={active === card.key} aria-controls={active === card.key ? `${id}-detail` : undefined}
             onClick={() => active === card.key ? closeDetail() : setSelection({ key: card.key, context })}>
             <span className={`hp-metric-cards__affordance${status.kind === "error" ? " hp-metric-cards__affordance--error" : ""}`}>
@@ -185,7 +194,7 @@ export function MetricCards(props: MetricCardsProps) {
       {status.kind !== "ready" && <p className="hp-metric-cards__notice">{status.reason}</p>}
       <MetricEvidence read={read(presented)} currency={reportCurrency} accounts={view?.accounts}/>
       {contextReasons.length > 0 && <ul className="hp-metric-cards__reasons">{unique(contextReasons).map(reason => <li key={reason}>{reason}</li>)}</ul>}
-      {presented === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={currentUnrealized} currency={reportCurrency} accounts={view?.accounts}/></section>}
+      {presented === "currentMarketValue" && <section aria-label="当前浮盈"><h5>当前浮盈</h5><MetricEvidence read={{...currentUnrealized, metric: currentUnrealized.metric ? {...currentUnrealized.metric, valuationNotes: currentUnrealized.metric.valuationNotes?.filter(note => !detailMetric?.valuationNotes?.includes(note))} : undefined}} currency={reportCurrency} accounts={view?.accounts}/></section>}
     </div>, document.body)}
   </section>;
 }

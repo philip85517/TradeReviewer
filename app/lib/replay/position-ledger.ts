@@ -1,4 +1,6 @@
 import Decimal from "decimal.js";
+import {resolvedTradeNatureOf} from "../trades/nature-resolution";
+import {exactDecimalOperation} from "../home/exact-decimal-operations";
 
 import {
   hasSettlementCurrencyMismatch, executionFeeCurrency,
@@ -7,7 +9,7 @@ import {
 } from "../trades/types";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { canonicalInstrumentId } from "../instruments/display-name";
-import { executionHasExactTime, executionSourceOrderConflictsWithTime, statementPositionEvidenceKey, statementPositionMatchesExecution, explicitExecutionSourceOrder, executionDocumentKey, isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { executionHasExactTime, executionSourceOrderConflictsWithTime, statementPositionEvidenceKey, statementPositionMatchesExecution, explicitExecutionSourceOrder, executionDocumentKey, isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt, withCashInventoryPositions } from "../import/statement-evidence";
 import { bonusShareEvidenceKey, collectBonusShareEvidence, isBonusShareEvidence } from "../trades/bonus-share-evidence";
 import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
 
@@ -88,6 +90,26 @@ const nativeEventAt = (event: StatementEvent) => event.date.length === 7 || even
 const nativeTransferAt = (event: StatementEvent) => nativeMarketBoundary(`${event.date}T00:00:00.000Z`,event.market);
 const nativeMonthAt = (month: string,market?:string) => { const at = monthEndAt(month); return at ? nativeMarketBoundary(at,market) : undefined; };
 
+/** Imported corporate-action quantities are credited deltas, not final balances. */
+function confirmsNativeSplit(event:StatementEvent,split:{instrumentId:string;effectiveAt:string;firstSession:string;ratio:string},delta:Decimal|undefined):boolean {
+  if(event.kind!=='corporate-action'||!event.symbol||!event.market||!delta||
+    canonicalInstrumentId(event.symbol,event.market)!==split.instrumentId||
+    ![split.firstSession,split.effectiveAt.slice(0,10)].includes(event.date)||
+    !/split|拆股|拆细|拆\s*\d/iu.test(event.description))return false;
+  const ratios:Decimal[]=[];
+  for(const match of event.description.matchAll(/(?<![\d.])(\d+(?:\.\d+)?)\s*-?\s*for\s*-?\s*(\d+(?:\.\d+)?)(?![\d.])/giu)){
+    if(new Decimal(match[2]).isZero())return false;
+    ratios.push(new Decimal(match[1]).div(match[2]));
+  }
+  for(const match of event.description.matchAll(/(?<![\d.])(\d+(?:\.\d+)?)\s*(?:拆|[:：])\s*(\d+(?:\.\d+)?)(?![\d.])/gu)){
+    if(new Decimal(match[1]).isZero())return false;
+    ratios.push(new Decimal(match[2]).div(match[1]));
+  }
+  if(!ratios.length||ratios.some(r=>!r.eq(split.ratio)))return false;
+  try{return event.quantity===undefined||new Decimal(event.quantity).eq(delta);}
+  catch{return false;}
+}
+
 /** Every time-only ledger transition also invalidates materialization caches and wakes the worker. */
 export function nativeEvidenceBoundaries(executions: TradeExecution[], evidence: Pick<MonthlyStatement, 'positions'|'events'|'month'>[],market?:string): string[] {
   const positions = [...evidence.flatMap(s => s.positions), ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])];
@@ -97,12 +119,16 @@ export function nativeEvidenceBoundaries(executions: TradeExecution[], evidence:
 
 /** Exact native facts for background materialization; display snapshots retain their existing format. */
 export type NativePositionFacts = {
+  splitCostBasis?:true; splitEstimates?: string[]; realizedValuationNotes?: string[]; realizedValuationCount?:number;
+  grossContributions?: Record<string,{currency:string;amount:string|null;reasons:string[]}>;
   quantity: string | null; averageCost: string | null; realized: string | null;
   unrealized: string | null; fees: string | null; knownFees: string; openFees: string | null;
   reasons: string[]; closedCount: number;
   /** Monotonic prefixes isolate old missing contributions from later periods. */
   knownRealized: string; realizedMissing: number; feesMissing: number;
   realizedContributions: Record<string, {currency:string;amount:string|null}>;
+  closedFeeContributions: Record<string, {currency:string;amount:string|null}>;
+  closedFeesByCurrency: Record<string,string>;
   realizedByCurrency: Record<string,string>; openFeesByCurrency: Record<string,string> | null;
   lifetimeComplete: boolean; historicalReasons: string[];
 };
@@ -110,18 +136,30 @@ export function replayPositionAtPrice(input: {
   executions: TradeExecution[];
   /** Native reporting uses market-local evidence boundaries and explicit short evidence. */
   nativeFacts?: (facts: NativePositionFacts) => void;
+  certifyOrdinaryLongGross?: true;
   /** Validation failures follow their execution through inventory and prefix accounting. */
   nativeErrors?: ReadonlyMap<string, readonly string[]>;
+  /** Native-only verified issuer actions; no source row is synthesized. */
+  nativeSplits?: readonly {instrumentId:string;effectiveAt:string;firstSession:string;ratio:string}[];
   markPrice: string;
   cursor?: string;
   /** Exact execution IDs selected by a dual-cursor replay boundary. */
   visibleExecutionIds?: readonly string[];
   /** Explicit identity for statement-only inventory; used only when no executions exist. */
   inventoryIdentity?: { accountId: string; symbol: string; market: string; currency?:string };
-  evidence?: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[] & Partial<MonthlyStatement>[];
+  evidence?: (Pick<MonthlyStatement, "positions" | "events"> & Partial<MonthlyStatement>)[];
 }): PositionLedgerSnapshot {
   // Never mutate the process-wide Decimal configuration used by legacy consumers.
   const D = input.nativeFacts ? Decimal.clone({ precision: 48 }) : Decimal;
+  const certify = !!input.nativeFacts && input.certifyOrdinaryLongGross === true;
+  const grossContributions: NonNullable<NativePositionFacts['grossContributions']> = {};
+  let precisionTainted = false;
+  let quantityPrecisionTainted = false;
+  const unsupportedGrossTime = certify && input.executions.some(e=>!Number.isFinite(Date.parse(e.executedAt))||/\.\d{3}\d*[1-9]\d*(?:Z|[+-]\d{2}:\d{2})$/i.test(e.executedAt));
+  const exact = (operation:'add'|'subtract'|'multiply'|'divide', a:Decimal,b:Decimal,result:Decimal) => {
+    if(certify && !exactDecimalOperation(operation,a.toFixed(),b.toFixed(),result.toFixed())) precisionTainted=true;
+    return result;
+  };
   const getExecutionAt = (execution:TradeExecution) => input.nativeFacts ? nativeExecutionAt(execution) : replayExecutionAt(execution);
   const getPositionAt = (position: StatementPosition) => input.nativeFacts ? nativePositionAt(position) : statementPositionAt(position);
   const getEventAt = (event: StatementEvent) => input.nativeFacts ? nativeEventAt(event) : ledgerEventAt(event);
@@ -131,29 +169,43 @@ export function replayPositionAtPrice(input: {
   const quoteCurrency = input.executions[0]?.instrument.currency ?? input.inventoryIdentity?.currency ?? 'UNKNOWN';
   const realizedContributions: NativePositionFacts['realizedContributions'] = {};
   const realizedByCurrency: Record<string,string> = {};
+  const closedFeeContributions: NativePositionFacts['closedFeeContributions'] = {};
+  const closedFeesByCurrency: Record<string,string> = {};
   const feePools: Record<string,Decimal> = {};
-  const recordRealized = (key: string, value: Decimal | null, currency=quoteCurrency) => {
+  const recordRealized = (key: string, value: Decimal | null, currency=quoteCurrency, closedFee: Decimal | null=null) => {
     realizedContributions[`${key}:${currency}`] = {currency,amount:value?.toFixed()??null};
+    closedFeeContributions[`${key}:${currency}`] = {currency,amount:closedFee?.toFixed()??null};
+    if (closedFee!==null) closedFeesByCurrency[currency]=new D(closedFeesByCurrency[currency]??0).plus(closedFee).toFixed();
     if (value === null) realizedMissing++;
     else {
       realizedByCurrency[currency]=new D(realizedByCurrency[currency]??0).plus(value).toFixed();
       if(currency===quoteCurrency)knownRealized=knownRealized.plus(value);
     }
   };
+  const splitEstimates = new Set<string>(), realizedValuationNotes = new Set<string>();
+  const appliedSplits = new Set<string>();
+  const splitDeltas = new Map<string,Decimal>();
+  let realizedValuationCount=0;
+  let splitCostBasis=false;
+  const splitIdentity=input.inventoryIdentity??(input.executions[0]?{symbol:input.executions[0].instrument.symbol,market:input.executions[0].instrument.market}:undefined);
+  const hasVerifiedSplit=!!input.nativeFacts&&!!splitIdentity&&(input.nativeSplits??[]).some(s=>s.instrumentId===canonicalInstrumentId(splitIdentity.symbol,splitIdentity.market));
   let provenStart = false;
   const historicalReasons = new Set<string>();
   const allocateFees = (key: string, side: 'buy' | 'sell', size: Decimal, fee: Decimal | null, price?: Decimal, feeCurrency=quoteCurrency) => {
     const closes = side === 'sell' ? quantity.gt(0) : quantity.lt(0);
     const closed = closes ? D.min(quantity.abs(), size) : new D(0);
-    if (closed.gt(0)) closedCount++;
+    if (closed.gt(0)) { closedCount++; if(splitEstimates.size)realizedValuationCount++; for(const note of splitEstimates)realizedValuationNotes.add(note); }
     const basisKnown = !quantityUncertain && !pendingTransfers.size && ![...reasons].some(r=>!r.includes('fee'));
     if (!fee) feesMissing++;
     if (closed.gt(0)) {
       if (basisKnown && feePoolKnown && fee && price && size.gt(0)) {
-        const amounts: Record<string,Decimal> = {[quoteCurrency]:(quantity.gt(0) ? price.minus(averageCost) : averageCost.minus(price)).mul(closed)};
-        for(const [currency,pool]of Object.entries(feePools))amounts[currency]=(amounts[currency]??new D(0)).minus(pool.mul(closed).div(quantity.abs()));
-        amounts[feeCurrency]=(amounts[feeCurrency]??new D(0)).minus(fee.mul(closed).div(size));
-        for(const [currency,value]of Object.entries(amounts))recordRealized(key,value,currency);
+        const gross=(quantity.gt(0) ? price.minus(averageCost) : averageCost.minus(price)).mul(closed);
+        const allocated: Record<string,Decimal> = {[quoteCurrency]:new D(0)};
+        for(const [currency,pool]of Object.entries(feePools))allocated[currency]=pool.mul(closed).div(quantity.abs());
+        allocated[feeCurrency]=(allocated[feeCurrency]??new D(0)).plus(fee.mul(closed).div(size));
+        for(const [currency,closedFee]of Object.entries(allocated)){
+          recordRealized(key,(currency===quoteCurrency?gross:new D(0)).minus(closedFee),currency,closedFee);
+        }
       } else recordRealized(key, null);
     } else if (quantityUncertain || pendingTransfers.size) recordRealized(key, null);
     if (!fee || !size.gt(0) || quantityUncertain) { feePoolKnown = false; return; }
@@ -178,16 +230,47 @@ export function replayPositionAtPrice(input: {
     ...bonusEvidence.events,
     ...rawEvents.filter(event => !isBonusShareEvidence(event)),
   ].map(event => [`${event.accountId}:${event.id}`, event])).values()];
+  // An explicit same-day reversal cancels the quantity evidence, not a sale.
+  // Keep cash rows intact: refunds retain their actual recognition dates.
+  const cancelledIds = new Set<string>();
+  for (const reversal of events) {
+    if (reversal.ipoAction !== "ipo-cancellation" || !reversal.reversesEventId || !reversal.quantity) continue;
+    if (!reversal.documentId?.trim() || !/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(reversal.quantity) || !new D(reversal.quantity).lt(0)) continue;
+    const allocations = events.filter(allocation => allocation.id === reversal.reversesEventId &&
+      allocation.kind === "ipo" && allocation.quantity !== undefined && /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(allocation.quantity) &&
+      allocation.accountId === reversal.accountId && allocation.documentId === reversal.documentId &&
+      allocation.date === reversal.date && allocation.date.length === 10 &&
+      allocation.market === reversal.market && !!allocation.market && !!allocation.symbol && !!reversal.symbol &&
+      canonicalInstrumentId(allocation.symbol, allocation.market) === canonicalInstrumentId(reversal.symbol, reversal.market!) &&
+      new D(allocation.quantity).gt(0) && new D(allocation.quantity).plus(reversal.quantity!).isZero());
+    if (allocations.length !== 1 || events.filter(e => e.ipoAction === "ipo-cancellation" && e.accountId === reversal.accountId && e.reversesEventId === reversal.reversesEventId).length !== 1) continue;
+    // Date-only cancellation evidence cannot establish its order against a fill.
+    if (input.executions.some(e => e.accountId === reversal.accountId &&
+      canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(reversal.symbol!, reversal.market!) &&
+      (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === reversal.date)) continue;
+    cancelledIds.add(`${reversal.accountId}:${reversal.id}`);
+    cancelledIds.add(`${allocations[0].accountId}:${allocations[0].id}`);
+  }
   const matches = (item: StatementPosition | StatementEvent) => input.executions.some(e =>
     tradeNatureOf(e) !== "simulation" && e.accountId === item.accountId && item.symbol && item.market &&
     canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(item.symbol, item.market)) ||
     Boolean(input.executions.length === 0 && input.inventoryIdentity && item.symbol && item.market &&
       input.inventoryIdentity.accountId === item.accountId &&
       canonicalInstrumentId(input.inventoryIdentity.symbol, input.inventoryIdentity.market) === canonicalInstrumentId(item.symbol, item.market));
-  type Entry = { ambiguousOrder?:boolean; at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent; incomplete?: string };
+  type Split = NonNullable<typeof input.nativeSplits>[number];
+  type Entry = { split?:Split; ambiguousOrder?:boolean; at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent; incomplete?: string };
   const timeline: Entry[] = input.executions.map(execution => ({ at: getExecutionAt(execution), execution }));
+  if(input.nativeFacts)for(const split of input.nativeSplits??[]){
+    const identity=input.inventoryIdentity??(input.executions[0]?{symbol:input.executions[0].instrument.symbol,market:input.executions[0].instrument.market}:undefined);
+    if(identity&&canonicalInstrumentId(identity.symbol,identity.market)===split.instrumentId)timeline.push({at:split.effectiveAt,split});
+  }
   const seen = new Set<string>();
-  for (const position of [...(input.evidence ?? []).flatMap(e => e.positions), ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])]) {
+  const evidence = input.inventoryIdentity && input.evidence ? withCashInventoryPositions(input.evidence, input.inventoryIdentity, input.executions) : input.evidence ?? [];
+  const allPositions = [
+    ...evidence.flatMap(e => e.positions),
+    ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])]),
+  ];
+  for (const position of allPositions) {
     if (!matches(position)) continue;
     const key = statementPositionEvidenceKey(position);
     if (seen.has(key)) continue;
@@ -195,7 +278,7 @@ export function replayPositionAtPrice(input: {
     timeline.push({ at: getPositionAt(position), position });
   }
   for (const event of events) {
-    if (!matches(event) || seen.has(`${event.accountId}:${event.id}`)) continue;
+    if (!matches(event) || seen.has(`${event.accountId}:${event.id}`) || cancelledIds.has(`${event.accountId}:${event.id}`)) continue;
     seen.add(`${event.accountId}:${event.id}`);
     // Month-only IPO results are contextual evidence, known by month end at earliest.
     const at = getEventAt(event);
@@ -236,7 +319,7 @@ export function replayPositionAtPrice(input: {
   // A separately reported closing inventory can restore quantity after unknown
   // ordering. Transaction balances cannot establish which row was last.
   for(let i=timeline.length-1;i>=0;i--)if(timeline[i].position?.phase==='closing'&&ambiguousAt.has(timeline[i].at)&&timeline[i].position!.source.some(s=>s.role==='transaction-position'))timeline.splice(i,1);
-  const rank = (entry: Entry) => entry.ambiguousOrder ? 1 : entry.incomplete ? 5 : entry.position ? (entry.position.phase === "opening" ? 0 : 4) : entry.pendingTransfer ? 1 : entry.event ? 2 : 3;
+  const rank = (entry: Entry) => entry.split ? -1 : entry.ambiguousOrder ? 1 : entry.incomplete ? 5 : entry.position ? (entry.position.phase === "opening" ? 0 : 4) : entry.pendingTransfer ? 1 : entry.event ? 2 : 3;
   // Same-day transaction balances belong after their own fill, not after all
   // fills or before all fills. Only durable document/row + explicit source order
   // may interleave date-only rows; a storage array order is not clock evidence.
@@ -274,10 +357,6 @@ export function replayPositionAtPrice(input: {
   const visibleEvents = [...new Map(events
     .filter(event => visibleAt(getEventAt(event)))
     .map(event => [`${event.accountId}:${event.id}`, event])).values()];
-  const allPositions = [
-    ...(input.evidence ?? []).flatMap(e => e.positions),
-    ...input.executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])]),
-  ];
   const knownPositions = [...new Map(allPositions
     .filter(position => visibleAt(getPositionAt(position)))
     .map(position => [statementPositionEvidenceKey(position), position])).values()];
@@ -289,6 +368,9 @@ export function replayPositionAtPrice(input: {
   // Legacy replay keeps its existing conservative compatibility behavior.
   const recoverFlat = () => {
     if (!input.nativeFacts || !quantity.isZero() || quantityUncertain || pendingTransfers.size) return;
+    if(quantityPrecisionTainted)return;
+    precisionTainted = false;
+    splitEstimates.clear();splitCostBasis=false;
     for (const reason of reasons) historicalReasons.add(reason);
     reasons.clear(); averageCost = new D(0); openFees = new D(0); feePoolKnown = true;
     for(const currency of Object.keys(feePools))delete feePools[currency];
@@ -298,6 +380,17 @@ export function replayPositionAtPrice(input: {
     if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
     if (cursor && Date.parse(entry.at) > Date.parse(cursor)
       && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
+    if(entry.split){
+      const split=entry.split;
+      if(appliedSplits.has(split.instrumentId))continue;
+      appliedSplits.add(split.instrumentId);
+      if(quantity.isZero())continue;
+      const ratio=new D(split.ratio);
+      splitDeltas.set(split.instrumentId,quantity.mul(ratio.minus(1)));
+      quantity=quantity.mul(ratio);averageCost=averageCost.div(ratio);splitCostBasis=true;
+      splitEstimates.add(`拆股推算：${split.instrumentId.split(':')[1]} 按 1 拆 ${split.ratio} 换算持仓及成本，暂估，待账户凭证确认`);
+      continue;
+    }
     if(entry.ambiguousOrder){
       reasons.add('ambiguous-execution-order');quantityUncertain=true;
       recordRealized(`ambiguous-order:${entry.at}`,null);hasHistory=true;continue;
@@ -312,11 +405,31 @@ export function replayPositionAtPrice(input: {
       continue;
     }
     if (entry.position) {
+      const position=entry.position;
+      // A broker cost-bearing position replaces the provisional current lot.
+      // Reported cost includes remaining acquisition fees; keep the fee pool,
+      // remove it from the kernel's gross basis, and never book a fake sale.
+      if(hasVerifiedSplit&&position.cost!==undefined){
+        const action=(input.nativeSplits??[]).find(s=>splitIdentity&&s.instrumentId===canonicalInstrumentId(splitIdentity.symbol,splitIdentity.market));
+        // A date-only statement for the last regular pre-split session can be
+        // known after the legal effective instant. Its inventory is still in
+        // that session's old units, so it cannot certify the account split.
+        const oldSession=action&&appliedSplits.has(action.instrumentId)&&position.date<action.firstSession;
+        const ratio=new D(oldSession?action.ratio:1);
+        const next=new D(position.quantity).mul(ratio),cost=new D(position.cost).div(ratio);
+        if(next.isFinite()&&cost.isFinite()&&cost.gte(0)&&!pendingTransfers.size){
+          if(!next.eq(quantity))recordRealized(`split-reconciliation:${statementPositionEvidenceKey(position)}`,null);
+          quantity=next;quantityUncertain=false;
+          averageCost=next.isZero()?new D(0):cost.minus(openFees.div(next));
+          for(const reason of ['initial-position','unknown-cost','position-gap','position-event','ambiguous-event-order','execution-direction-unavailable'])if(reasons.delete(reason))historicalReasons.add(reason);
+          if(!oldSession)splitEstimates.clear();lastActivity=position.date;hasHistory=true;recoverFlat();continue;
+        }
+      }
       quantityUncertain = false;
       const covered = [
         ...visibleExecutions.filter(e => e.source.statementMonth && executionMatchesPosition(e, entry.position!)).map(e => e.source.statementMonth!),
         ...knownPositions.filter(position => position.accountId === entry.position!.accountId && canonicalInstrumentId(position.symbol, position.market) === canonicalInstrumentId(entry.position!.symbol, entry.position!.market)).map(position => position.date.slice(0, 7)),
-        ...(input.evidence ?? []).filter(e => e.month && monthEndAt(e.month) !== undefined && visibleAt(input.nativeFacts ? nativeMonthAt(e.month,entry.position!.market)! : monthEndAt(e.month)!) && evidenceCoversMarket(e, entry.position!)).map(e => e.month!),
+        ...evidence.filter(e => e.month && monthEndAt(e.month) !== undefined && visibleAt(input.nativeFacts ? nativeMonthAt(e.month,entry.position!.market)! : monthEndAt(e.month)!) && evidenceCoversMarket(e, entry.position!)).map(e => e.month!),
       ];
       const coverageGaps = statementCoverageGaps(lastActivity, entry.position.date, covered);
       if (new D(entry.position.quantity).eq(quantity)) {
@@ -341,6 +454,11 @@ export function replayPositionAtPrice(input: {
     if (entry.event) {
       const event = entry.event;
       if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) continue;
+      // A dated broker split confirms the already-applied issuer action.
+      // Unrelated or unrecognised actions retain the conservative gap path.
+      const split=(input.nativeSplits??[]).find(s=>appliedSplits.has(s.instrumentId)&&confirmsNativeSplit(event,s,splitDeltas.get(s.instrumentId)));
+      if(input.nativeFacts&&split){splitEstimates.clear();hasHistory=true;continue;}
+
       const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
       const isBonusShare = isBonusShareEvidence(event);
       if (isIpoAllocation && isZero(event.quantity)) continue;
@@ -507,6 +625,8 @@ export function replayPositionAtPrice(input: {
     const price = settlement && settlement.currency === execution.instrument.currency
       ? new D(settlement.grossAmount).div(settlement.quantity)
       : new D(execution.price);
+    if(certify && (resolvedTradeNatureOf(execution)!=='live'||execution.source.positionEvents?.length||execution.source.statementPositions?.length||execution.source.openingPosition||settlement&&settlement.currency!==execution.instrument.currency||execution.instrument.currency!==quoteCurrency)) reasons.add('unsupported-gross-source');
+    if(certify && settlement && settlement.currency === execution.instrument.currency) exact('divide',new D(settlement.grossAmount),new D(settlement.quantity),price);
     if (input.nativeFacts && execution.side === 'sell' && size.gt(D.max(quantity, 0)) && execution.source.positionEffect !== 'open-short') {
       quantityUncertain = true; reasons.add('execution-direction-unavailable');
     }
@@ -523,10 +643,12 @@ export function replayPositionAtPrice(input: {
 
     if (execution.side === "buy") {
       if (quantity.gte(0)) {
-        const newQuantity = quantity.plus(size);
-        averageCost = newQuantity.isZero()
-          ? new D(0)
-          : averageCost.mul(quantity).plus(price.mul(size)).div(newQuantity);
+        const newQuantity = exact('add',quantity,size,quantity.plus(size));
+        if(certify&&!exactDecimalOperation('add',quantity.toFixed(),size.toFixed(),newQuantity.toFixed()))quantityPrecisionTainted=true;
+        const oldNumerator = exact('multiply',averageCost,quantity,averageCost.mul(quantity));
+        const addedNumerator = exact('multiply',price,size,price.mul(size));
+        const numerator = exact('add',oldNumerator,addedNumerator,oldNumerator.plus(addedNumerator));
+        averageCost = newQuantity.isZero() ? new D(0) : exact('divide',numerator,newQuantity,numerator.div(newQuantity));
         quantity = newQuantity;
         grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
       } else {
@@ -551,8 +673,18 @@ export function replayPositionAtPrice(input: {
       grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(size));
     } else {
       const closed = D.min(quantity, size);
-      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(closed));
-      quantity = quantity.minus(size);
+      const difference = exact('subtract',price,averageCost,price.minus(averageCost));
+      const gross = exact('multiply',difference,closed,difference.mul(closed));
+      const nextQuantity = exact('subtract',quantity,size,quantity.minus(size));
+      if(certify&&!exactDecimalOperation('subtract',quantity.toFixed(),size.toFixed(),nextQuantity.toFixed()))quantityPrecisionTainted=true;
+      if(certify){
+        const grossReasons=[...reasons].filter(r=>!r.includes('fee'));
+        if(unsupportedGrossTime)grossReasons.push('unsupported-execution-time');
+        if(precisionTainted)grossReasons.push('unsupported-gross-precision');
+        grossContributions[execution.id]={currency:quoteCurrency,amount:grossReasons.length?null:gross.toFixed(),reasons:grossReasons};
+      }
+      realizedPnl = realizedPnl.plus(gross);
+      quantity = nextQuantity;
       if (quantity.isNegative()) {
         averageCost = price;
         grossCapitalDeployed = grossCapitalDeployed.plus(price.mul(quantity.abs()));
@@ -577,13 +709,16 @@ export function replayPositionAtPrice(input: {
     const costKnown = quantityKnown && costReasons.length === 0;
     const feesKnown = feePoolKnown && ![...reasons].some(reason => reason.includes('fee'));
     input.nativeFacts({
+      ...(certify ? {grossContributions} : {}),
+      ...(splitCostBasis?{splitCostBasis:true as const}:{}),
+      splitEstimates:[...splitEstimates],realizedValuationNotes:[...realizedValuationNotes],realizedValuationCount,
       quantity: quantityKnown ? quantity.toFixed() : null,
       averageCost: costKnown ? averageCost.toFixed() : null,
       realized: !quantityKnown || realizedMissing > 0 || Object.entries(realizedByCurrency).some(([c,v])=>c!==quoteCurrency&&!new D(v).isZero()) ? null : knownRealized.toFixed(),
       unrealized: quantityKnown && quantity.isZero() ? '0' : costKnown && feesKnown && !Object.entries(feePools).some(([c,v])=>c!==quoteCurrency&&!v.isZero()) ? unrealizedPnl.minus(openFees).toFixed() : null,
       fees: feesMissing === 0 ? fees.toFixed() : null, knownFees: fees.toFixed(),
       openFees: feesKnown ? openFees.toFixed() : null,
-      reasons: [...reasons], closedCount, knownRealized: knownRealized.toFixed(), realizedMissing, feesMissing, realizedContributions, realizedByCurrency,
+      reasons: [...reasons], closedCount, knownRealized: knownRealized.toFixed(), realizedMissing, feesMissing, realizedContributions, realizedByCurrency, closedFeeContributions, closedFeesByCurrency,
       openFeesByCurrency:feesKnown?Object.fromEntries(Object.entries(feePools).map(([c,v])=>[c,v.toFixed()])):null,
       historicalReasons: [...historicalReasons], lifetimeComplete: (!hasHistory || provenStart) && historicalReasons.size === 0 && reasons.size === 0 && realizedMissing === 0 && feesMissing === 0,
     });

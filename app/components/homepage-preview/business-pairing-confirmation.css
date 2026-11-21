@@ -1,0 +1,8 @@
+.hp-pairing-confirmation{margin-top:24px;border-top:1px solid var(--hp-line,#283448);padding-top:16px;font-size:12px;line-height:1.6;color:var(--hp-muted,#9ca9bc)}
+.hp-pairing-confirmation summary{cursor:pointer;color:var(--hp-text,#e7edf7);font-size:14px;font-weight:600}
+.hp-pairing-table{overflow-x:auto;margin:16px 0}.hp-pairing-table table{min-width:600px}.hp-pairing-table td{white-space:nowrap}
+.hp-pairing-confirmation select,.hp-pairing-confirmation textarea{color:inherit;background:var(--hp-overlay,#162233);border:1px solid var(--hp-line,#283448);border-radius:6px;padding:6px}
+.hp-pairing-basis{display:grid;gap:6px;margin:12px 0}.hp-pairing-basis textarea{min-height:70px;resize:vertical;font:inherit}.hp-pairing-check{display:flex;gap:8px;align-items:center;margin:12px 0}
+.hp-pairing-confirmation button:disabled{opacity:.5;cursor:not-allowed}
+
+.hp-pairing-origin{display:block;white-space:normal;color:var(--hp-muted);font-size:11px}

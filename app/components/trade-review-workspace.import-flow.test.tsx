@@ -406,6 +406,47 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportedExecutions()[0]).toMatchObject({ id: existing.id, instrument: existing.instrument });
   });
 
+  it("saves a statement-only update without rewriting unrelated legacy executions", async () => {
+    const user = userEvent.setup();
+    const existing = { ...cmsExecution, source: { ...cmsExecution.source, sourceTradeId: "legacy-live-ipo" } };
+    saveImportedExecutions([existing]);
+    const client = createLegacySqliteClient();
+    const merge = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    const monthly = { documentId: "futu:cash-only", month: "2025-12", templateIds: ["cash-only"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", records: [], candidates: [], monthly });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [], unresolved: [], exclusions: [], monthly });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2025-12.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(merge).toHaveBeenCalledOnce());
+    expect(merge.mock.calls[0][0]).toMatchObject({ executions: [], instruments: [], importHistory: [{ monthly }] });
+    expect(loadImportedExecutions()).toEqual([existing]);
+  });
+
+  it("explicitly persists evidence changes on an existing execution from another statement", async () => {
+    const user = userEvent.setup();
+    const existing = { ...cmsExecution };
+    saveImportedExecutions([existing]);
+    const client = createLegacySqliteClient();
+    const merge = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    const monthly = { documentId: "new-balance-doc", accountId: existing.accountId, month: "2026-03", templateIds: ["balance"], positions: [{ documentId: "new-balance-doc", accountId: existing.accountId, market: "CN-SH" as const, symbol: "600938", date: "2026-03-01", quantity: "100", phase: "opening" as const, source: [{ page: 1, row: 1 }] }], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, records: [], candidates: [], monthly });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, importable: [], unresolved: [], exclusions: [], monthly });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "balance.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(merge).toHaveBeenCalledOnce());
+    const input = merge.mock.calls[0][0];
+    expect(input.replaceExecutionIds).toContain(existing.id);
+    expect(input.executions).toHaveLength(1);
+    expect(input.executions[0].source.statementPositions).toEqual(monthly.positions);
+    expect(loadImportedExecutions()[0].source.statementPositions).toEqual(monthly.positions);
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();

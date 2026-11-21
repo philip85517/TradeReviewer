@@ -406,6 +406,26 @@ describe("attachStatementEvidence", () => {
     expect(parsed.monthly?.historyIncomplete).toBe(true);
   });
 
+  it("links an explicit cancelled allotment and retains wrapped refund remarks", () => {
+    const parsed = attachStatementEvidence([legacyCashPage([
+      [[20, "港股保證金賬戶月結單(2020年11月)"]],
+      [[20, "資金進出"]],
+      [[20, "類型"], [120, "日期"], [260, "金額"], [390, "單號"], [520, "備註"]],
+      [[20, "存入現金"], [120, "2020/11/04"], [260, "+50.00"], [390, "19183088"], [520, "IPO #06688 HANDLING FEE REFUND"]],
+      [[520, "IPO Refund Amount for Allotment Qty"]],
+      [[20, "存入現金"], [120, "2020/11/06"], [260, "+4,040.31"], [390, "19594468"]],
+      [[520, "[Cancel Listing] - #06688"]],
+      [[20, "股票進出"]],
+      [[20, "類型"], [120, "日期"], [220, "股票"], [360, "變動數量"], [470, "單號"], [570, "備註"]],
+      [[20, "存入股票"], [120, "2020/11/04"], [220, "06688 蚂蚁"], [360, "50"], [570, "IPO Allotment Qty - #06688"]],
+      [[20, "提取股票"], [120, "2020/11/04"], [220, "06688 蚂蚁"], [360, "-50"], [570, "[Cancel Listing]Reverse IPO Allotment Qty #06688"]],
+    ])], result());
+    const events = parsed.monthly!.events;
+    expect(events[0]).toMatchObject({ kind: "fee", description: expect.not.stringContaining("Allotment"), source: [{page: 1, row: 4, role: "cash"}] });
+    expect(events[1]).toMatchObject({ source: [{page: 1, row: 6, role: "cash"}, {page: 1, row: 5, role: "cash"}, {page: 1, row: 7, role: "cash"}], kind: "other", ipoAction: "cash-refund", symbol: "06688", amount: "4040.31", description: expect.stringContaining("[Cancel Listing] - #06688") });
+    expect(events[3]).toMatchObject({ kind: "corporate-action", ipoAction: "ipo-cancellation", quantity: "-50", reversesEventId: events[2].id });
+  });
+
   it("does not turn negative or cancelled IPO stock rows into positive IPO inventory", () => {
     const parsed = attachStatementEvidence([legacyCashPage([
       [[20, "港股保證金賬戶月結單(2020年12月)"]],

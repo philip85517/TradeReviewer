@@ -1,7 +1,7 @@
 import {act,cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {PerformanceChart} from './performance-chart';
-import {HomepagePreview} from './homepage-preview';
+import {HomepagePreview} from './archive/homepage-preview';
 import {createMockSource,DEFAULT_REQUEST} from './mock-source';
 import type {HomepageSource} from './display-contract';
 afterEach(()=>{cleanup();vi.useRealTimers();});

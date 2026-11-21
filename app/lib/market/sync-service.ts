@@ -173,7 +173,7 @@ function shiftDate(date: string, days: number) {
   return value.toISOString().slice(0, 10);
 }
 
-function retainCoveragePart(
+export function retainCoveragePart(
   segment: Awaited<
     ReturnType<MarketDataRepository["getCoverage"]>
   >[number],
@@ -209,7 +209,7 @@ function retainCoveragePart(
   };
 }
 
-function preserveCoverageOutsideGap(
+export function preserveCoverageOutsideGap(
   coverage: Awaited<
     ReturnType<MarketDataRepository["getCoverage"]>
   >,

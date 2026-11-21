@@ -1,6 +1,8 @@
+import {stageFull,validateFull} from './full-persistence';
+import {FullHomeStore} from './full-store';
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
 import type { Amount, Holding, HoldingDetail, HomeRequest, Stamp, TradeCollection } from '../../components/homepage-preview/display-contract';
-import { HOME_POLICY, HOME_PREPARED_SUBTOTAL_VERSION, scopeId, type HomeResult, type NativeDay, type ReleaseInput, type ScopeProjection } from './contracts';
+import { HOME_FINANCIAL_PARTITION_VERSION, HOME_POLICY, HOME_PREPARED_SUBTOTAL_VERSION, scopeId, type HomeResult, type NativeDay, type ReleaseInput, type ScopeProjection } from './contracts';
 import { currentAmounts, decimal, nextDay, projectPeriod, revalueAmount, validDay } from './period';
 
 import {objectSubtotalKey,objectSubtotals,stageMetricObjects} from './metric-objects';
@@ -77,10 +79,15 @@ export class HomeStore {
     });
     const expired=this.all(`SELECT release_id FROM home_publication WHERE published_at<?
       AND release_id NOT IN(SELECT release_id FROM home_publication ORDER BY published_at DESC,release_id DESC LIMIT 2)
-      AND release_id NOT IN(SELECT release_id FROM home_head)`,now-30*60000);
+      AND release_id NOT IN(SELECT release_id FROM home_head)
+      UNION SELECT release_id FROM home_release WHERE computed_at<? AND release_id NOT IN(SELECT release_id FROM home_publication) AND release_id NOT IN(SELECT release_id FROM home_head)`,now-30*60000,new Date(now-30*60000).toISOString());
     for(const row of expired){
       const scopes=this.all('SELECT scope_version FROM home_release_scope WHERE release_id=?',row.release_id);
       if(!maintenance(()=>{
+        if(this.get('SELECT 1 FROM home_head WHERE release_id=?',row.release_id)||this.get('SELECT 1 FROM home_publication WHERE release_id=? AND published_at>=?',row.release_id,now-30*60000)||this.all('SELECT release_id FROM home_publication ORDER BY published_at DESC,release_id DESC LIMIT 2').some(r=>r.release_id===row.release_id))return;
+        for(const table of ['home_full_financial','home_full_evidence','home_full_query','home_full_module','home_full_release']){
+          if(this.get("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",table))this.run(`DELETE FROM ${table} WHERE release_id=?`,row.release_id);
+        }
         this.run('DELETE FROM home_release_scope WHERE release_id=?',row.release_id);
         this.run('DELETE FROM home_publication WHERE release_id=?',row.release_id);
         this.run('DELETE FROM home_release WHERE release_id=?',row.release_id);
@@ -107,11 +114,28 @@ export class HomeStore {
         if(!batch)return;
         for(const {trade_set_id:id}of batch.value)if(!maintenance(()=>{
           if(this.get('SELECT 1 FROM home_holding WHERE trade_set_id=? LIMIT 1',id))return;
+          if(this.get("SELECT 1 FROM sqlite_master WHERE name='home_full_module'")&&this.get("SELECT 1 FROM home_full_module m,json_each(m.payload_json) c WHERE m.kind='catalog' AND json_extract(c.value,'$.tradeSetId')=? LIMIT 1",id))return;
           this.run('DELETE FROM home_holding_trade WHERE trade_set_id=?',id);
           this.run('DELETE FROM home_trade_set WHERE trade_set_id=?',id);
         }))return;
       }
     }
+    // Closed positions are retained by the immutable full catalog even when
+    // absent from current holdings. Exclude them in one read before claiming
+    // any writer lock; parsing every catalog again under thousands of writer
+    // transactions can starve readers which must persist evidence recipes.
+    // The final reference checks below remain inside the deletion transaction:
+    // a publication or builder may acquire a reference after this candidate read.
+    const catalogTradeSets=new Set(this.get("SELECT 1 FROM sqlite_master WHERE name='home_full_module'")
+      ?this.all("SELECT DISTINCT json_extract(c.value,'$.tradeSetId') AS id FROM home_full_module m,json_each(m.payload_json) c WHERE m.kind='catalog'").map(row=>row.id)
+      :[]);
+    const orphanSets=this.all('SELECT trade_set_id FROM home_trade_set WHERE trade_set_id NOT IN(SELECT trade_set_id FROM home_holding)')
+      .filter(row=>!catalogTradeSets.has(row.trade_set_id));
+    for(const {trade_set_id:id}of orphanSets)if(!maintenance(()=>{
+      if(this.get('SELECT 1 FROM home_holding WHERE trade_set_id=? LIMIT 1',id))return;
+      if(this.get("SELECT 1 FROM sqlite_master WHERE name='home_full_module'")&&this.get("SELECT 1 FROM home_full_module m,json_each(m.payload_json) c WHERE m.kind='catalog' AND json_extract(c.value,'$.tradeSetId')=? LIMIT 1",id))return;
+      this.run('DELETE FROM home_holding_trade WHERE trade_set_id=?',id);this.run('DELETE FROM home_trade_set WHERE trade_set_id=?',id);
+    }))return;
   }
   head() { return this.get('SELECT release_id FROM home_head WHERE singleton=1')?.release_id as string | undefined ?? null; }
 
@@ -158,7 +182,7 @@ export class HomeStore {
     }
     // Validated input is written in bounded transactions; a crash leaves only unreferenced staging.
     this.transaction(() => {
-      this.run('INSERT INTO home_release VALUES(?,?,?,?,?,?,?,?,?)', input.id, input.sourceSequence, HOME_POLICY, input.computedAt, input.computedAt, input.businessDate, 'staging', encode(input.accounts), encode({scopes:required,nextRefreshAt:input.nextRefreshAt??null,...(input.fx?{fx:input.fx}:{})}));
+      this.run('INSERT INTO home_release VALUES(?,?,?,?,?,?,?,?,?)', input.id, input.sourceSequence, HOME_POLICY, input.computedAt, input.computedAt, input.businessDate, 'staging', encode(input.accounts), encode({requiresFull:!!input.full,scopes:required,nextRefreshAt:input.nextRefreshAt??null,...(input.fx?{fx:input.fx}:{})}));
       for (const reuse of input.reuse ?? []) {
         const prior = this.get('SELECT s.* FROM home_scope_result s WHERE scope_version=? AND scope_id=? AND policy_version=? AND EXISTS(SELECT 1 FROM home_release_scope r JOIN home_publication p USING(release_id) WHERE r.scope_version=s.scope_version)', reuse.version, reuse.id, HOME_POLICY);
         if (!prior || Number(prior.built_from_sequence) > input.sourceSequence) throw new Error('invalid reused scope');
@@ -215,12 +239,17 @@ export class HomeStore {
       const [year,...extra]=periods.map(period=>({key:objectSubtotalKey(version,period,currency,fx),value:objectSubtotals(this.db,version,period,currency,fx)}));
       preparedSubtotals[String(scope.scope_id)]={...year,periods:extra};
     }
+    if(input.full){
+      stageFull(this.db,input.full);
+      new FullHomeStore(this.db).publishFinancialPartitions(input.id);
+    }
     this.transaction(() => {
       for(const set of input.trades)if(Number(this.get('SELECT count(*) n FROM home_holding_trade WHERE trade_set_id=?',set.id)?.n)!==set.trades.length)throw new Error('incomplete trade publication');
       const actual = this.all('SELECT scope_id FROM home_release_scope WHERE release_id=?', input.id);
       if (actual.length !== required.length) throw new Error('incomplete scope publication');
       const manifest=JSON.parse(String(this.get('SELECT manifest_json FROM home_release WHERE release_id=?',input.id)!.manifest_json));
-      this.run("UPDATE home_release SET state='validated',manifest_json=? WHERE release_id=?",encode({...manifest,preparedSubtotals,preparedSubtotalVersion:HOME_PREPARED_SUBTOTAL_VERSION}),input.id);
+      const financialVersion=input.full?{financialPartitionVersion:HOME_FINANCIAL_PARTITION_VERSION}:{};
+      this.run("UPDATE home_release SET state='validated',manifest_json=? WHERE release_id=?",encode({...manifest,preparedSubtotals,preparedSubtotalVersion:HOME_PREPARED_SUBTOTAL_VERSION,...financialVersion}),input.id);
     });
   }
 
@@ -231,6 +260,9 @@ export class HomeStore {
       const release = this.get("SELECT * FROM home_release WHERE release_id=? AND state='validated'", id);
       if (!release) throw new Error('release not validated');
       const previous = expected ? this.get('SELECT source_sequence FROM home_release WHERE release_id=?', expected) : null;
+      const full=validateFull(this.db,id);
+      if(JSON.parse(String(release.manifest_json)).requiresFull&&!full)throw new Error('required full manifest missing');
+      if(full&&!fence)throw new Error('full publication requires fence');
       if (previous && Number(previous.source_sequence) > Number(release.source_sequence)) throw new Error('older release');
       this.run('INSERT OR IGNORE INTO home_publication VALUES(?,?)',id,publishedAt);
       this.run('INSERT INTO home_head VALUES(1,?) ON CONFLICT(singleton) DO UPDATE SET release_id=excluded.release_id', id);
@@ -312,8 +344,9 @@ export class HomeStore {
       const sort=current.marketValue.value===null||current.unrealized.value===null?'name':request.sort;
       const rows=this.orderedHoldings(scope,request,sort);
       const cell=(value:string|null)=>'"'+(value===null?'未知':/^[=+@\-]/.test(value)?"'"+value:value).replaceAll('"','""')+'"';
-      return ['名称,代码,账户,数量,原币成本,原币价格,原币,市值,未实现盈亏,报告币种',...rows.map(h=>{
-        return [h.name,h.code,h.accountId,h.quantity,h.cost,h.price,h.currency,h.marketValue.value,h.unrealized.value,h.marketValue.currency].map(cell).join(',');
+      const notes=rows.some(h=>h.valuationNotes?.length||h.marketValue.valuationNotes?.length||h.unrealized.valuationNotes?.length);
+      return ['名称,代码,账户,数量,原币成本,原币价格,原币,市值,未实现盈亏,报告币种'+(notes?',估值依据':''),...rows.map(h=>{
+        return [h.name,h.code,h.accountId,h.quantity,h.cost,h.price,h.currency,h.marketValue.value,h.unrealized.value,h.marketValue.currency,...(notes?[[...new Set([...(h.valuationNotes??[]),...(h.marketValue.valuationNotes??[]),...(h.unrealized.valuationNotes??[])])].join('；')]:[])].map(cell).join(',');
       })].join('\n');
     });
   }

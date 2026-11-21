@@ -79,6 +79,12 @@ make dev
 
 自动化测试需要自建隔离库及独立端口时，可直接调用 `scripts/start-local.mjs`，显式设置 `TRADEREVIEW_DB_PATH`。此底层入口不自动备份，备份和清理由调用方负责，见 [运行配置](conf/README.md)。
 
+标准调试和生产启动通过 `start-local.mjs` 同时管理 Web 与首页后台进程。后台根据数据库已有事实生成、更新完整首页快照；首次尚未发布时，页面会说明正在准备。后台意外退出会一起停止本次启动的 Web 和子进程，并返回失败，避免页面长期停在无数据状态。`HOME_SOURCE_SYNC` 默认 `0`，不额外启动首页外部行情/汇率补齐任务；确有需要时显式设为 `1`。关闭外部补齐后，后台仍会更新派生快照和任务状态。
+
+完整首页的[真实数据口径](docs/specs/homepage-real-data-contract.md)、[接入进展与验收边界](docs/reports/2026-11-21-homepage-integration-handoff.md)及[来源纠错工具](docs/operations/source-correction.md)已单独整理。验收按具体构建和范围记录；后台重建与已发布页面的读取分别计时。
+
+使用已准备好的隔离快照做固定版本验收时，可显式设置 `TRADEREVIEW_HOME_WORKER=0` 关闭本次后台进程；这不会自动生成或更新首页快照，也不代表整个应用只读。这两个开关仅接受 `0` 或 `1`。
+
 ### Recall 复盘流程
 
 1. 选择导入的交易回合。券商拆单可明确合并为同一次决策，误合并可拆分并重新指定快照归属。

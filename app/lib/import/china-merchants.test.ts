@@ -343,3 +343,121 @@ describe("China Merchants Securities PDF import", () => {
     });
   });
 });
+
+// Actual p9/p11 narrow ETF geometry; account and cash balance anonymized.
+const narrowEtfHeader: Array<[string, number, number]> = [
+  ["发生日期 市场", 36, 74.484],
+  ["币种", 122.904, 24],
+  ["银行代码 证券账号", 154.356, 98.484],
+  ["证券代码 证券名称", 260.292, 98.484],
+  ["业务标志", 371.196, 48],
+  ["发生数量 成交均价", 463.908, 98.484],
+  ["成交金额", 569.844, 48],
+  ["佣金 印花税 其他费", 625.296, 100.968],
+  ["变动金额", 736.2, 48],
+  ["资金余额 证", 794.136, 62.484],
+];
+const narrowEtfRows: Array<{
+  date: string;
+  fee: string;
+  quantity: string;
+  price: string;
+  grossAmount: string;
+  netAmount: string;
+  items: Array<[string, number, number]>;
+}> = [
+  {
+    date: "20260122",
+    fee: "5.00",
+    quantity: "10000",
+    price: "1.307",
+    grossAmount: "13070.00",
+    netAmount: "-13075.00",
+    items: [
+      ["20260122 深圳", 36, 70.836],
+      ["人民币 匿名银行 0000000001 159813", 119.256, 180.156],
+      ["芯片", 306.864, 24],
+      ["证券买入", 353.22, 48],
+      ["10000.00", 445.932, 41.664],
+      ["1.3070", 495.048, 30.576],
+      ["13070.00", 533.076, 41.664],
+      ["5.00", 582.192, 19.488],
+      ["0.00", 609.132, 19.488],
+      ["0.00", 636.072, 19.488],
+      ["-13075.00", 663.012, 46.164],
+      ["0.00 45300.00", 716.628, 90.312],
+    ],
+  },
+  {
+    date: "20260202",
+    fee: "5.00",
+    quantity: "10000",
+    price: "1.259",
+    grossAmount: "12590.00",
+    netAmount: "-12595.00",
+    items: [
+      ["20260202 深圳", 36, 70.836],
+      ["人民币 匿名银行 0000000001 159813", 119.256, 180.156],
+      ["芯片", 306.864, 24],
+      ["证券买入", 353.22, 48],
+      ["10000.00", 445.932, 41.664],
+      ["1.2590", 495.048, 30.576],
+      ["12590.00", 533.076, 41.664],
+      ["5.00", 582.192, 19.488],
+      ["0.00", 609.132, 19.488],
+      ["0.00", 636.072, 19.488],
+      ["-12595.00", 663.012, 46.164],
+      ["0.00 55300.00", 716.628, 90.312],
+    ],
+  },
+  {
+    date: "20260226",
+    fee: "5.99",
+    quantity: "20000",
+    price: "1.272",
+    grossAmount: "25440.00",
+    netAmount: "-25445.99",
+    items: [
+      ["20260226 深圳", 36, 70.836],
+      ["人民币 匿名银行 0000000001 159813", 119.256, 180.156],
+      ["芯片", 306.864, 24],
+      ["证券买入", 353.22, 48],
+      ["20000.00", 445.932, 41.664],
+      ["1.2720", 495.048, 30.576],
+      ["25440.00", 533.076, 41.664],
+      ["5.99", 582.192, 19.488],
+      ["0.00", 609.132, 19.488],
+      ["0.00", 636.072, 19.488],
+      ["-25445.99 -622297.06 47700.00", 663.012, 146.988],
+    ],
+  },
+];
+
+describe("China Merchants narrow legacy fee columns", () => {
+  it.each(narrowEtfRows)("preserves reported commission and settlement on $date", (sample) => {
+    const items = (values: Array<[string, number, number]>, y: number) =>
+      values.map(([text, x, width]) => ({ text, x, y, width, height: 12 }));
+    const pages = [{
+      pageNumber: 2, width: 900, height: 600,
+      items: [
+        ...items([["招商证券普通对账单", 36, 120], ["资产账号：0000000001", 200, 120]], 36),
+        ...items([["流水明细", 36, 48]], 144),
+        ...items(narrowEtfHeader, 180),
+        ...items(sample.items, 216),
+      ],
+    }];
+    const result = parseChinaMerchantsPages(pages, options);
+    expect(result.records).toHaveLength(1);
+    expect(result.records[0]).toMatchObject({
+      fee: String(Number(sample.fee)), quantity: sample.quantity, price: sample.price,
+      source: {
+        feeStatus: "reported", timePrecision: "date-only",
+        sourceTimestampText: sample.date,
+        settlement: {
+          currency: "CNY", grossAmount: String(Number(sample.grossAmount)), netAmount: String(Number(sample.netAmount)),
+          fees: { commission: String(Number(sample.fee)), stampDuty: "0", otherFee: "0" },
+        },
+      },
+    });
+  });
+});

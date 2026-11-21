@@ -23,6 +23,7 @@ export type TradingRoomGlobalToolsProps = {
   marketDataLabels?: Readonly<Record<string, string | undefined>>;
   status?: "loading" | "error" | "ready";
   onOpenSearchResult: (result: GlobalSearchResult) => void;
+  onRequireFullData?: () => Promise<void>;
   onOpenNotification: (item: GlobalNotification) => void;
   onOpenAccountAndCurrency: () => void;
 };
@@ -46,7 +47,8 @@ export function TradingRoomGlobalSearch({
   scope,
   status = "ready",
   onOpenSearchResult,
-}: Pick<TradingRoomGlobalToolsProps, "entries" | "scope" | "status" | "onOpenSearchResult">) {
+  onRequireFullData,
+}: Pick<TradingRoomGlobalToolsProps, "entries" | "scope" | "status" | "onOpenSearchResult" | "onRequireFullData">) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -110,7 +112,7 @@ export function TradingRoomGlobalSearch({
     <span className={styles.searchLabel}>搜索标的</span>
     <label className={styles.searchField}>
       <Search size={17} aria-hidden="true" />
-      <input ref={inputRef} type="search" aria-label="搜索已导入标的" placeholder="搜索已导入标的" value={query} onFocus={() => { if (suppressFocusRef.current) { suppressFocusRef.current = false; return; } setOpen(true); }} onChange={event => { setActionNotice(null); setQuery(event.target.value); setOpen(true); }} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); setQuery(""); setOpen(false); focusInput(); return; } if (event.key === "Enter" && canSearch && results[0]) selectResult(results[0]); }} />
+      <input ref={inputRef} type="search" aria-label="搜索已导入标的" placeholder="搜索已导入标的" value={query} onFocus={() => { if (suppressFocusRef.current) { suppressFocusRef.current = false; return; } setOpen(true); void onRequireFullData?.().catch(()=>undefined); }} onChange={event => { setActionNotice(null); setQuery(event.target.value); setOpen(true); }} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); setQuery(""); setOpen(false); focusInput(); return; } if (event.key === "Enter" && canSearch && results[0]) selectResult(results[0]); }} />
       {query && <button type="button" className={styles.clearSearch} aria-label="清除搜索" onClick={() => setQuery("")}><X size={14} /></button>}
     </label>
       {open && <div className={styles.searchPopover} role="listbox" aria-label="标的搜索结果">
@@ -130,7 +132,8 @@ export function TradingRoomGlobalUtilities({
   onOpenNotification,
   onOpenAccountAndCurrency,
   onNotificationAttempt,
-}: Pick<TradingRoomGlobalToolsProps, "entries" | "scope" | "marketDataStatuses" | "marketDataLabels" | "status" | "onOpenNotification" | "onOpenAccountAndCurrency"> & { onNotificationAttempt?: () => void }) {
+  onRequireFullData,
+}: Pick<TradingRoomGlobalToolsProps, "entries" | "scope" | "marketDataStatuses" | "marketDataLabels" | "status" | "onOpenNotification" | "onOpenAccountAndCurrency" | "onRequireFullData"> & { onNotificationAttempt?: () => void }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -185,7 +188,7 @@ export function TradingRoomGlobalUtilities({
   };
   return <div className={`${styles.tools} ${styles.utilities}`} aria-label="交易室全局工具">
     <div className={styles.popoverAnchor} ref={notificationRef}>
-      <button ref={notificationTriggerRef} type="button" className={styles.iconButton} aria-label="打开待处理事项" aria-expanded={notificationsOpen} onClick={() => { setActionNotice(null); setNotificationsOpen(value => !value); setUserMenuOpen(false); }}><Bell size={18} />{status === "ready" && notifications.state === "ready" && notifications.items.length > 0 && <span className={styles.badge} aria-label={`${notifications.items.length} 条待处理事项`}>{notifications.items.length > 99 ? "99+" : notifications.items.length}</span>}</button>
+      <button ref={notificationTriggerRef} type="button" className={styles.iconButton} aria-label="打开待处理事项" aria-expanded={notificationsOpen} onClick={() => { setActionNotice(null); setNotificationsOpen(value => !value); setUserMenuOpen(false); if (!notificationsOpen) void onRequireFullData?.().catch(()=>undefined); }}><Bell size={18} />{status === "ready" && notifications.state === "ready" && notifications.items.length > 0 && <span className={styles.badge} aria-label={`${notifications.items.length} 条待处理事项`}>{notifications.items.length > 99 ? "99+" : notifications.items.length}</span>}</button>
       {notificationsOpen && <div className={`${styles.panel} ${styles.notificationsPanel}`} role="dialog" aria-label="待处理事项"><header><div><strong>待处理事项</strong><small>{status === "loading" ? "读取中" : status === "error" ? "读取失败" : notifications.state === "ready" ? `${notifications.items.length} 项` : "范围待确认"}</small></div><button type="button" className={styles.closePanel} aria-label="关闭待处理事项" onClick={() => { setNotificationsOpen(false); focusNotification(); }}><X size={15} /></button></header>{status === "loading" ? <p className={styles.empty}>正在读取当前身份…</p> : status === "error" ? <p className={styles.error}>事项暂时无法读取，请稍后重试。</p> : notifications.state === "needs-scope" ? <p className={styles.empty}>选择账户、交易性质和模拟运行后显示对应事项。</p> : notifications.items.length === 0 ? <p className={styles.empty}>当前身份下没有待处理事项。</p> : <div className={styles.notificationList}>{notifications.items.map(item => <button type="button" key={item.id} className={styles.notification} onClick={() => selectNotification(item)}><span className={`${styles.notificationMark} ${styles[`kind-${item.kind}`]}`} aria-hidden="true">{notificationIcon(item)}</span><span><strong>{notificationLabel(item)} · {item.label}</strong><small>{item.description}</small></span><ChevronDown size={15} className={styles.notificationArrow} aria-hidden="true" /></button>)}</div>}</div>}
     </div>
     <div className={styles.popoverAnchor} ref={userRef}>

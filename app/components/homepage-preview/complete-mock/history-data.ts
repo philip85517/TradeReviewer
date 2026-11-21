@@ -64,5 +64,5 @@ export function historyAmount(value: number | null, signed = false, compact = fa
   const prefix = signed && value > 0 ? '+' : '';
   if (compact && Math.abs(value) >= 1e8) return prefix + (value / 1e8).toFixed(2) + '亿';
   if (compact && Math.abs(value) >= 1e4) return prefix + (value / 1e4).toFixed(2) + '万';
-  return prefix + new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, minimumFractionDigits: compact ? 0 : 2 }).format(value);
+  return prefix + new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value);
 }

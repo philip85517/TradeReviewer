@@ -84,3 +84,4 @@
 .hp-evidence-precision summary small { display:block; color:#6ca8ff; font-size:12px; line-height:20px; }
 .hp-evidence-precision summary:focus-visible { outline:2px solid #a9c8ff; outline-offset:2px; border-radius:2px; }
 .hp-evidence-precision[open] > span { margin-top:4px; color:#a8b6cb; }
+.hp-estimate-label { display: inline-block; margin-left: 6px; color: #d6b878; font-size: 11px; font-weight: 500; line-height: 14px; vertical-align: middle; white-space: nowrap; }

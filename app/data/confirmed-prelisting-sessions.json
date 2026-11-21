@@ -1,0 +1,182 @@
+{
+  "version": "2026-11-19-verified-required-sessions",
+  "scope": "Only confirmed regular-market prelisting sessions. No inference for other years, symbols, aliases, or when-issued trading.",
+  "sources": {
+    "hkex-nlr-2026": {
+      "publisher": "Hong Kong Exchanges and Clearing Limited",
+      "url": "https://www2.hkexnews.hk/-/media/HKEXnews/Homepage/New-Listings/New-Listing-Information/New-Listing-Report/Main/NLR2026_Eng.xlsx",
+      "sheet": "NLR",
+      "listingDateColumn": "E"
+    },
+    "bitgo-debut": {
+      "publisher": "BitGo Holdings, Inc.",
+      "url": "https://investors.bitgo.com/news/news-details/2026/BitGo-Holdings-Celebrates-its-Debut-as-a-Public-Company-on-the-New-York-Stock-Exchange/default.aspx"
+    }
+  },
+  "records": [
+    {
+      "instrumentId": "HK:100",
+      "validFrom": "2026-01-07",
+      "validThrough": "2026-01-08",
+      "sessions": [
+        "2026-01-07",
+        "2026-01-08"
+      ],
+      "listingDate": "2026-01-09",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 11
+    },
+    {
+      "instrumentId": "HK:1021",
+      "validFrom": "2026-03-26",
+      "validThrough": "2026-03-26",
+      "sessions": [
+        "2026-03-26"
+      ],
+      "listingDate": "2026-03-30",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 69
+    },
+    {
+      "instrumentId": "HK:1879",
+      "validFrom": "2026-04-24",
+      "validThrough": "2026-04-27",
+      "sessions": [
+        "2026-04-24",
+        "2026-04-27"
+      ],
+      "listingDate": "2026-04-28",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 93
+    },
+    {
+      "instrumentId": "HK:2290",
+      "validFrom": "2026-06-03",
+      "validThrough": "2026-06-04",
+      "sessions": [
+        "2026-06-03",
+        "2026-06-04"
+      ],
+      "listingDate": "2026-06-05",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 131
+    },
+    {
+      "instrumentId": "HK:2677",
+      "validFrom": "2026-02-04",
+      "validThrough": "2026-02-05",
+      "sessions": [
+        "2026-02-04",
+        "2026-02-05"
+      ],
+      "listingDate": "2026-02-06",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 31
+    },
+    {
+      "instrumentId": "HK:3296",
+      "validFrom": "2026-04-21",
+      "validThrough": "2026-04-22",
+      "sessions": [
+        "2026-04-21",
+        "2026-04-22"
+      ],
+      "listingDate": "2026-04-23",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 91
+    },
+    {
+      "instrumentId": "HK:3355",
+      "validFrom": "2026-03-19",
+      "validThrough": "2026-03-20",
+      "sessions": [
+        "2026-03-19",
+        "2026-03-20"
+      ],
+      "listingDate": "2026-03-23",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 63
+    },
+    {
+      "instrumentId": "HK:3986",
+      "validFrom": "2026-01-09",
+      "validThrough": "2026-01-12",
+      "sessions": [
+        "2026-01-09",
+        "2026-01-12"
+      ],
+      "listingDate": "2026-01-13",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 19
+    },
+    {
+      "instrumentId": "HK:470",
+      "validFrom": "2026-02-09",
+      "validThrough": "2026-02-09",
+      "sessions": [
+        "2026-02-09"
+      ],
+      "listingDate": "2026-02-11",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 43
+    },
+    {
+      "instrumentId": "HK:6228",
+      "validFrom": "2026-06-24",
+      "validThrough": "2026-06-25",
+      "sessions": [
+        "2026-06-24",
+        "2026-06-25"
+      ],
+      "listingDate": "2026-06-26",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 157
+    },
+    {
+      "instrumentId": "HK:6809",
+      "validFrom": "2026-02-05",
+      "validThrough": "2026-02-05",
+      "sessions": [
+        "2026-02-05"
+      ],
+      "listingDate": "2026-02-09",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 37
+    },
+    {
+      "instrumentId": "HK:7666",
+      "validFrom": "2026-05-11",
+      "validThrough": "2026-05-12",
+      "sessions": [
+        "2026-05-11",
+        "2026-05-12"
+      ],
+      "listingDate": "2026-05-13",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 107
+    },
+    {
+      "instrumentId": "HK:9903",
+      "validFrom": "2026-01-06",
+      "validThrough": "2026-01-07",
+      "sessions": [
+        "2026-01-06",
+        "2026-01-07"
+      ],
+      "listingDate": "2026-01-08",
+      "sourceId": "hkex-nlr-2026",
+      "sourceRow": 7
+    },
+    {
+      "instrumentId": "US:BTGO",
+      "validFrom": "2026-01-21",
+      "validThrough": "2026-01-21",
+      "sessions": [
+        "2026-01-21"
+      ],
+      "listingDate": "2026-01-22",
+      "sourceId": "bitgo-debut",
+      "sourceRow": null
+    }
+  ]
+}

@@ -76,7 +76,7 @@ function MetricEvidence({ read, currency, accounts }: { read: Readout; currency:
 export function MetricCards(props: MetricCardsProps) {
   const { view, status } = props;
   const reportCurrency = props.view === null ? props.placeholderCurrency : props.view.stamp.reportCurrency;
-  
+
   const context = viewIdentity(view, reportCurrency);
   const id = useId();
   const [selection, setSelection] = useState<Selection | null>(null);

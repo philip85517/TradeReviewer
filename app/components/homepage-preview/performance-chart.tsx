@@ -1,0 +1,476 @@
+"use client";
+
+import Decimal from "decimal.js";
+import { Info } from "lucide-react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import type { Amount as HomepageV25Metric, Point as HomepageBoundaryPointDisplay, Series as HomepageSeriesDisplay } from "./display-contract";
+import "./performance-chart.css";
+
+export type PerformanceChartProps = {
+  /** Scope and period identity; publications within it preserve the selected date. */
+  interactionKey?: string;
+  onOpenDateTrades?: (date:string, trigger:HTMLElement) => void;
+  series: HomepageSeriesDisplay | null;
+  reportCurrency: string;
+  pointStatus?: Readonly<Record<string, Readonly<{ state: "loading" | "error"; reason: string }> | undefined>>;
+  unavailableReason?: string;
+};
+
+const FIELDS = [
+  { key: "marketValue", label: "当日市值", signed: false },
+  { key: "unrealized", label: "当日浮盈", signed: true },
+  { key: "realized", label: "累计已实现", signed: true },
+  { key: "net", label: "累计净盈亏", signed: true },
+  { key: "periodNet", label: "期间净盈亏", signed: true },
+  { key: "periodFees", label: "期间费用", signed: false },
+] as const;
+type FieldKey = typeof FIELDS[number]["key"];
+type ReadState = "value" | "source-missing" | "future" | "loading" | "error";
+type DateEntry = {
+  point: HomepageBoundaryPointDisplay;
+  index: number;
+  state: ReadState;
+  amount: Decimal | null;
+  reasons: string[];
+};
+type Gap = { first: DateEntry; last: DateEntry; entries: DateEntry[] };
+type Selection = { entry: DateEntry; gap?: Gap; source: "mouse" | "keyboard" };
+type Rect = { left: number; top: number; width: number; height: number };
+const CHART_NAME = "当前表现｜期间净盈亏（按日）";
+const unique = (items: readonly string[]) => [...new Set(items.filter(Boolean))];
+
+function decimal(value: string | null): Decimal | null {
+  if (value === null) return null;
+  try { const parsed = new Decimal(value); return parsed.isFinite() ? parsed : null; } catch { return null; }
+}
+
+/** Validate display authority, never convert a historical amount into another currency. */
+function readAmount(metric: HomepageV25Metric, reportCurrency: string) {
+  const parsed = decimal(metric.value);
+  const valid = parsed !== null && metric.currency === reportCurrency;
+  return { raw: valid ? metric.value : null, decimal: valid ? parsed : null,
+    reasons: unique([...metric.reasons, ...(metric.currency !== reportCurrency ? ["报告币种不一致"] : []), ...(parsed === null ? ["金额未知"] : [])]) };
+}
+
+function formatAmount(raw: string, signed = false, compact = false) {
+  const value = new Decimal(raw);
+  const unit = compact && value.abs().gte(100_000_000) ? "亿" : compact && value.abs().gte(10_000) ? "万" : "";
+  const shown = unit === "亿" ? value.div(100_000_000) : unit === "万" ? value.div(10_000) : value;
+  const rounded = shown.toDecimalPlaces(2);
+  const [integer, fraction] = (rounded.isZero() ? "0.00" : rounded.toFixed(2)).split(".");
+  return `${signed && rounded.gt(0) ? "+" : ""}${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${fraction}${unit}`;
+}
+
+function coverageReasons(point: HomepageBoundaryPointDisplay): string[] {
+  return unique([...point.reasons, ...FIELDS.flatMap(field => point[field.key].reasons)]);
+}
+
+function entriesFor({ series, reportCurrency, pointStatus }: PerformanceChartProps): DateEntry[] {
+  return (series?.points ?? []).map((point, index) => {
+    const override = pointStatus?.[point.key];
+    const read = readAmount(point.periodNet, reportCurrency);
+    const state = override?.state ?? point.state;
+    const amount = state === "value" && point.plottable ? read.decimal : null;
+    const reasons = state === "future" ? ["未来未覆盖，金额未知"]
+      : override ? [override.reason || (override.state === "loading" ? "行情加载中" : "该日期读取失败")]
+        : unique([...coverageReasons(point), ...read.reasons]);
+    return { point, index, state: state === "value" && !amount ? "source-missing" : state, amount,
+      reasons: reasons.length ? reasons : amount ? [] : ["该日期数据不可用"] };
+  });
+}
+
+function gapsFor(entries: DateEntry[]): Gap[] {
+  const gaps: Gap[] = [];
+  for (const entry of entries) {
+    if (entry.amount !== null) continue;
+    const previous = gaps.at(-1);
+    if (previous && previous.last.index === entry.index - 1 && previous.first.state === entry.state) {
+      previous.entries.push(entry); previous.last = entry;
+    } else gaps.push({ first: entry, last: entry, entries: [entry] });
+  }
+  return gaps;
+}
+
+function geometry(entries: DateEntry[], size: { width: number; height: number }) {
+  const values = entries.flatMap(entry => entry.amount === null ? [] : [entry.amount]);
+  let low = Decimal.min(0, ...values), high = Decimal.max(0, ...values);
+  if (low.eq(high)) { low = new Decimal(-1); high = new Decimal(1); }
+  const rawStep = high.minus(low).div(4);
+  const magnitude = new Decimal(10).pow(rawStep.e);
+  const fraction = rawStep.div(magnitude);
+  const step = magnitude.mul(fraction.lte(1) ? 1 : fraction.lte(2) ? 2 : fraction.lte(5) ? 5 : 10);
+  low = low.div(step).floor().mul(step); high = high.div(step).ceil().mul(step);
+  const ticks: Decimal[] = [];
+  if (values.length) for (let value = low; value.lte(high) && ticks.length < 7; value = value.plus(step)) ticks.push(value);
+  const left = Math.max(75, ...ticks.map(value => formatAmount(value.toFixed(), false, true).length * 7 + 16));
+  const plot = { left, top: 50, width: Math.max(1, size.width - left - (size.width < 600 ? 20 : 36)), height: Math.max(1, size.height - 100) };
+  const x = (index: number) => plot.left + (entries.length > 1 ? index / (entries.length - 1) : 0.5) * plot.width;
+  const y = (value: Decimal) => plot.top + high.minus(value).div(high.minus(low)).toNumber() * plot.height;
+  const boundary = (index: number, after: boolean) => entries.length < 2
+    ? after ? plot.left + plot.width : plot.left
+    : Math.max(plot.left, Math.min(plot.left + plot.width, x(index) + (after ? 1 : -1) * plot.width / (entries.length - 1) / 2));
+  const segments: DateEntry[][] = [];
+  for (const entry of entries) {
+    if (entry.amount === null) continue;
+    const last = segments.at(-1);
+    if (last && last.at(-1)!.index === entry.index - 1) last.push(entry);
+    else segments.push([entry]);
+  }
+  const xCount = Math.max(2, Math.min(6, Math.floor(plot.width / 115) + 1, entries.length));
+  const dateIndexes = entries.length ? unique(Array.from({ length: xCount }, (_, i) => String(Math.round(i * (entries.length - 1) / (xCount - 1))))).map(Number) : [];
+  return { plot, ticks, x, y, boundary, segments, dateIndexes };
+}
+
+function gapLabel(gap: Gap) {
+  const state = gap.first.state;
+  const label = state === "loading" ? "行情加载中" : state === "error" ? "读取失败" : state === "future" ? "未来未覆盖" : "数据缺失";
+  const range = gap.first.point.businessDate === gap.last.point.businessDate ? gap.first.point.businessDate
+    : `${gap.first.point.businessDate} — ${gap.last.point.businessDate}`;
+  return { label, range };
+}
+
+function evidenceFor(_point: HomepageBoundaryPointDisplay, metric: HomepageV25Metric) {
+  return `原币：${Object.entries(metric.originals).map(([code, value]) => `${value} ${code}`).join("；") || "未知"}；汇率来源：${metric.fxSource}；覆盖 ${metric.coverage.available}/${metric.coverage.total}`;
+}
+
+function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseEnter, onMouseLeave, onOpenDateTrades }: {
+  onOpenDateTrades?: (date:string,trigger:HTMLElement)=>void;
+  selection: Selection; reportCurrency: string; pinned: boolean; id: string;
+  detailRef: React.RefObject<HTMLDivElement | null>;
+  onMouseEnter: () => void; onMouseLeave: () => void;
+}) {
+  const { entry, gap } = selection;
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [evidenceField, setEvidenceField] = useState<FieldKey | null>(null);
+  const blank = entry.state === "future" || entry.state === "loading" || entry.state === "error";
+  const amounts = FIELDS.map(field => ({ ...field, read: readAmount(entry.point[field.key], reportCurrency) }));
+  const reasons = unique([
+    ...(gap ? gap.entries.flatMap(item => item.reasons) : entry.reasons),
+    ...(!blank ? amounts.flatMap(field => field.read.raw === null ? field.read.reasons : []) : []),
+  ]);
+  const explanation = reasons.join("；");
+  const gapDescription = gap ? gapLabel(gap) : null;
+  return <div ref={detailRef} className="hp-performance-chart__detail" id={id} role="tooltip"
+    data-pinned={pinned} data-state={entry.state} aria-live="polite" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <header className="hp-performance-chart__detail-heading">
+      <span>{entry.point.businessDate} {reportCurrency || "币种未知"}</span>
+      {reasons.length > 0 && <button type="button" className="hp-performance-chart__info" aria-label={`${entry.point.businessDate} 数据说明`}
+        aria-expanded={reasonOpen} aria-describedby={reasonOpen ? `${id}-reason` : undefined} title={explanation}
+        onFocus={() => setReasonOpen(true)} onBlur={() => setReasonOpen(false)}
+        onMouseEnter={() => setReasonOpen(true)} onMouseLeave={event => { if (document.activeElement !== event.currentTarget) setReasonOpen(false); }}>
+        <Info size={16} aria-hidden="true" />
+      </button>}
+    </header>
+    {pinned && <span className="hp-performance-chart__pin">已固定</span>}
+    {gapDescription && <p className="hp-performance-chart__gap-description">{gapDescription.label} · {gapDescription.range} · 金额未知时显示 —</p>}
+    <dl className="hp-performance-chart__fields">
+      {amounts.map(field => {
+        const raw = blank ? null : field.read.raw;
+        const amount = decimal(raw);
+        const sign = !field.signed || !amount || amount.toDecimalPlaces(2).isZero() ? "neutral" : amount.isPositive() ? "positive" : "negative";
+        const notes = entry.point[field.key].valuationNotes ?? [];
+        const evidence = blank ? explanation : `${notes.join("；")}${notes.length ? "；" : ""}${raw === null ? "" : `原始金额：${raw} ${reportCurrency}；`}${evidenceFor(entry.point, entry.point[field.key])}`;
+        const reason = blank ? explanation : field.read.reasons.join("；");
+        const value = raw === null ? "—" : formatAmount(raw, field.signed);
+        return <div key={field.key} className="hp-performance-chart__field" data-field={field.key} data-testid="hp-chart-field">
+          <dt>{field.label}</dt>
+          <dd tabIndex={0} data-raw-value={raw ?? undefined} data-testid={`hp-chart-value-${field.key}`}
+            className={`hp-performance-chart__${sign} ${field.key === "periodNet" ? "hp-performance-chart__period-net" : ""}`}
+            aria-label={`${field.label} ${reportCurrency} ${value}${reason ? `；${reason}` : ""}；${evidence}`}
+            aria-describedby={evidenceField === field.key ? `${id}-${field.key}-evidence` : undefined}
+            title={`${value}${reason ? `；${reason}` : ""}；${evidence}`}
+            onFocus={() => setEvidenceField(field.key)} onBlur={() => setEvidenceField(null)}
+            onMouseEnter={() => setEvidenceField(field.key)} onMouseLeave={event => { if (document.activeElement !== event.currentTarget) setEvidenceField(null); }}
+          >{value}{raw !== null && notes.length > 0 && <span className="hp-estimate-label"> 含拆股推算</span>}</dd>
+          {evidenceField === field.key && <div id={`${id}-${field.key}-evidence`} className="hp-performance-chart__evidence">
+            {reason && <p>{reason}</p>}<p>{evidence}</p>
+          </div>}
+        </div>;
+      })}
+    </dl>
+    {pinned && !blank && onOpenDateTrades && <button type="button" className="hp-primary hpm-date-trades" onClick={event=>onOpenDateTrades(entry.point.businessDate,event.currentTarget)}>查看交易</button>}
+    {(gapDescription || reasonOpen) && explanation && <p className="hp-performance-chart__reason" id={`${id}-reason`}>{explanation}</p>}
+  </div>;
+}
+
+// Segment/rectangle collision is used only to choose an unobtrusive tooltip position.
+function crossesRect(a: { x: number; y: number }, b: { x: number; y: number }, rect: Rect) {
+  let from = 0, to = 1;
+  const dx = b.x - a.x, dy = b.y - a.y;
+  for (const [p, q] of [[-dx, a.x - rect.left], [dx, rect.left + rect.width - a.x], [-dy, a.y - rect.top], [dy, rect.top + rect.height - a.y]]) {
+    if (p === 0 && q < 0) return false;
+    if (p === 0) continue;
+    const ratio = q / p;
+    if (p < 0) from = Math.max(from, ratio); else to = Math.min(to, ratio);
+    if (from > to) return false;
+  }
+  return true;
+}
+
+function ChartContent({ series, reportCurrency, pointStatus, unavailableReason, onOpenDateTrades }: PerformanceChartProps) {
+  const rootRef = useRef<HTMLElement>(null);
+  const graphRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | SVGElement | null>(null);
+  const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suppressed = useRef<string | null>(null);
+  const [size, setSize] = useState({ width: 1020, height: 320 });
+  const [chosen, setSelection] = useState<Selection | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const detailId = useId();
+  const unavailable = !series || Boolean(unavailableReason);
+  const entries = unavailable ? [] : entriesFor({ series, reportCurrency, pointStatus });
+  const valid = entries.filter(entry => entry.amount !== null);
+  const gaps = gapsFor(entries);
+  // Selection owns only local interaction. Always read the current controlled point and evidence.
+  const selectedEntry = chosen ? entries.find(entry => entry.point.key === chosen.entry.point.key) : null;
+  const selection: Selection | null = chosen && selectedEntry ? { entry: selectedEntry, source: chosen.source,
+    ...(chosen.gap ? { gap: gaps.find(gap => gap.first.point.key === chosen.gap!.first.point.key) } : {}) } : null;
+  const space = geometry(entries, size);
+  const { plot, x, y } = space;
+  const clearHideTimer = () => {
+    if (hideTimer.current !== null) clearTimeout(hideTimer.current);
+    hideTimer.current = null;
+  };
+  const hasReadingFocus = () => rootRef.current?.contains(document.activeElement) ?? false;
+  const clearTimers = () => {
+    if (showTimer.current !== null) clearTimeout(showTimer.current);
+    showTimer.current = null;
+    clearHideTimer();
+  };
+
+  useEffect(() => () => {
+    if (showTimer.current !== null) clearTimeout(showTimer.current);
+    if (hideTimer.current !== null) clearTimeout(hideTimer.current);
+  }, []);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const measure = () => {
+      const bounds = root.getBoundingClientRect();
+      const height = 320;
+      if (bounds.width > 0) setSize(previous => previous.width === bounds.width && previous.height === height
+        ? previous : { width: bounds.width, height });
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(root);
+    window.addEventListener("resize", measure);
+    return () => { observer?.disconnect(); window.removeEventListener("resize", measure); };
+  }, []);
+
+  // Prefer the chart bounds; long explanations use the viewport without moving
+  // adjacent modules. Only content taller than the viewport needs scrolling.
+  useLayoutEffect(() => {
+    const root = rootRef.current, detail = detailRef.current;
+    if (!root || !detail || !selection || !visible) return;
+    const place = () => {
+      const rootBounds = root.getBoundingClientRect(), detailBounds = detail.getBoundingClientRect();
+      const anchorX = x(selection.entry.index);
+      const anchorY = selection.entry.amount === null ? plot.top + plot.height / 2 : y(selection.entry.amount);
+      const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+      const minLeft = Math.max(12, 12 - rootBounds.left);
+      const maxLeft = Math.max(minLeft, Math.min(size.width - detailBounds.width - 12, viewportWidth - rootBounds.left - detailBounds.width - 12));
+      const chartTop = Math.max(12, 12 - rootBounds.top);
+      const chartBottom = Math.min(size.height - 12, window.innerHeight - rootBounds.top - 12);
+      const fitsChart = detailBounds.height <= chartBottom - chartTop;
+      const minTop = fitsChart ? chartTop : 12 - rootBounds.top;
+      const bottom = fitsChart ? chartBottom : window.innerHeight - rootBounds.top - 12;
+      const maxTop = Math.max(minTop, bottom - detailBounds.height);
+      const clamp = (left: number, top: number): Rect => ({ left: Math.max(minLeft, Math.min(left, maxLeft)), top: Math.max(minTop, Math.min(top, maxTop)), width: detailBounds.width, height: detailBounds.height });
+      const candidates = [clamp(anchorX + 12, anchorY + 12), clamp(anchorX - detailBounds.width - 12, anchorY + 12),
+        clamp(anchorX + 12, anchorY - detailBounds.height - 12), clamp(anchorX - detailBounds.width - 12, anchorY - detailBounds.height - 12),
+        clamp(minLeft, minTop), clamp(maxLeft, minTop), clamp(minLeft, maxTop), clamp(maxLeft, maxTop)];
+      // Corners alone can all intersect a turning line even when the middle is clear.
+      for (let column = 0; column <= 4; column++) for (let row = 0; row <= 4; row++) {
+        candidates.push(clamp(minLeft + (maxLeft - minLeft) * column / 4, minTop + (maxTop - minTop) * row / 4));
+      }
+      const obstruction = (rect: Rect) => {
+        let collisions = 0;
+        for (const segment of space.segments) {
+          for (let index = 1; index < segment.length; index++) {
+            const a = segment[index - 1], b = segment[index];
+            if (crossesRect({ x: x(a.index), y: y(a.amount!) }, { x: x(b.index), y: y(b.amount!) }, rect)) collisions++;
+          }
+        }
+        const coversAnchor = anchorX >= rect.left - 6 && anchorX <= rect.left + rect.width + 6
+          && anchorY >= rect.top - 6 && anchorY <= rect.top + rect.height + 6;
+        return coversAnchor || collisions > 0;
+      };
+      const fitting = candidates.filter(rect => rect.left + rect.width <= size.width - 12
+        && rect.left + rect.width <= viewportWidth - rootBounds.left - 12
+        && rect.top + rect.height <= bottom && !obstruction(rect));
+      const distance = (rect: Rect) => Math.hypot(rect.left + rect.width / 2 - anchorX, rect.top + rect.height / 2 - anchorY);
+      const position = (fitting.length ? fitting : candidates).reduce((best, candidate) => distance(candidate) < distance(best) ? candidate : best);
+      // Overlay only: selection never changes the following module's geometry.
+      detail.dataset.placement = "floating";
+      detail.style.position = "absolute";
+      detail.style.left = `${position.left}px`;
+      detail.style.top = `${position.top}px`;
+
+    };
+    place();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(place);
+    observer?.observe(detail);
+    window.addEventListener("resize", place); window.addEventListener("scroll", place, true);
+    return () => { observer?.disconnect(); window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); };
+  });
+
+  const activate = (next: Selection, immediate: boolean, trigger: HTMLElement | SVGElement | null) => {
+    if (pinned) return;
+    clearTimers();
+    if (suppressed.current !== next.entry.point.key) suppressed.current = null;
+    triggerRef.current = trigger;
+    setSelection(next);
+    if (suppressed.current === next.entry.point.key) { setVisible(false); return; }
+    if (immediate) setVisible(true);
+    else {
+      setVisible(false);
+      showTimer.current = setTimeout(() => { showTimer.current = null; setVisible(true); }, 300);
+    }
+  };
+  const leave = (entry: DateEntry) => {
+    if (suppressed.current === entry.point.key) suppressed.current = null;
+    if (pinned) return;
+    clearTimers();
+    if (hasReadingFocus()) return;
+    hideTimer.current = setTimeout(() => {
+      hideTimer.current = null;
+      if (hasReadingFocus()) return;
+      setVisible(false); setSelection(null);
+    }, 100);
+  };
+  const pin = (next: Selection, trigger: HTMLElement | SVGElement | null) => {
+    clearTimers(); suppressed.current = null; triggerRef.current = trigger;
+    setSelection(next); setVisible(true); setPinned(true);
+  };
+  const keyboard = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Escape" && selection) {
+      event.preventDefault(); event.stopPropagation(); clearTimers();
+      suppressed.current = selection.entry.point.key;
+      setVisible(false); setPinned(false);
+      triggerRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (event.target !== graphRef.current || !valid.length) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (selection && selection.entry.amount !== null) pin(selection, graphRef.current);
+      return;
+    }
+    const index = valid.findIndex(entry => entry.point.key === selection?.entry.point.key);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? valid.length - 1
+      : event.key === "ArrowRight" ? Math.min(valid.length - 1, index + 1)
+        : event.key === "ArrowLeft" ? Math.max(0, index - 1) : null;
+    if (next === null) return;
+    event.preventDefault();
+    // Keyboard selection is explicit even when a prior point was fixed.
+    clearTimers(); setPinned(false);
+    const entry = valid[next];
+    if (suppressed.current !== entry.point.key) suppressed.current = null;
+    triggerRef.current = graphRef.current;
+    setSelection({ entry, source: "keyboard" }); setVisible(suppressed.current !== entry.point.key);
+  };
+  const marker = selection && selection.entry.amount !== null ? selection.entry : null;
+  const future = gaps.find(gap => gap.first.state === "future");
+  return <section className="hp-performance-chart" ref={rootRef} aria-label="当前表现日曲线" onKeyDown={keyboard} onFocusCapture={clearHideTimer}
+    onBlur={event => {
+      if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) return;
+      suppressed.current = null;
+      if (!pinned) { clearTimers(); setVisible(false); setSelection(null); }
+    }}>
+    <div className="hp-performance-chart__stage" data-testid="hp-chart-stage" style={{ height: size.height }}>
+    <header className="hp-performance-chart__heading"><h3>期间净盈亏</h3><span>{reportCurrency || "币种未知"}</span></header>
+    <p id={`${detailId}-help`} className="hp-performance-chart__sr-only">{CHART_NAME}。Tab 聚焦后立即显示日期详情，左右键选择相邻有效点，Home 或 End 选择首尾，Enter 固定，Esc 关闭。缺失和未来日期不参与有效点导航。</p>
+    <div className="hp-performance-chart__graph" ref={graphRef} role="group" aria-label={CHART_NAME}
+      tabIndex={!unavailable && valid.length ? 0 : -1} aria-disabled={unavailable || !valid.length}
+      aria-describedby={`${detailId}-help${visible ? ` ${detailId}` : ""}`}
+      onFocus={event => {
+        if (event.target !== event.currentTarget || pinned || !valid.length) return;
+        const entry = valid.find(item => item.point.key === selection?.entry.point.key) ?? valid[0];
+        activate({ entry, source: "keyboard" }, true, event.currentTarget);
+      }}
+      onBlur={event => {
+        if (event.relatedTarget instanceof Node && rootRef.current?.contains(event.relatedTarget)) return;
+        suppressed.current = null;
+        if (!pinned) { clearTimers(); setVisible(false); setSelection(null); }
+      }}>
+      <svg width="100%" height="100%" viewBox={`0 0 ${size.width} ${size.height}`} aria-hidden="true" focusable="false">
+        {future && <g><rect data-testid="hp-chart-future-region" className="hp-performance-chart__future" x={space.boundary(future.first.index, false)} y={plot.top}
+          width={plot.left + plot.width - space.boundary(future.first.index, false)} height={plot.height} />
+          <line className="hp-performance-chart__cutoff" x1={space.boundary(future.first.index, false)} x2={space.boundary(future.first.index, false)} y1={plot.top} y2={plot.top + plot.height} />
+          <text className="hp-performance-chart__cutoff-label" x={plot.left + plot.width} y={plot.top + 16} textAnchor="end">截至 {series?.boundary.effectiveEnd ?? series?.boundary.asOf.slice(0, 10)}</text>
+        </g>}
+        {space.ticks.map(value => <g key={value.toFixed()}>
+          <line className={value.isZero() ? "hp-performance-chart__zero" : "hp-performance-chart__grid"} x1={plot.left} x2={plot.left + plot.width} y1={y(value)} y2={y(value)} />
+          <text data-testid="hp-chart-money-tick" x={plot.left - 12} y={y(value) + 4} textAnchor="end">{formatAmount(value.toFixed(), false, true)}</text>
+        </g>)}
+        {space.dateIndexes.map(index => <g key={entries[index].point.key}>
+          <line className="hp-performance-chart__grid" x1={x(index)} x2={x(index)} y1={plot.top} y2={plot.top + plot.height} />
+          <text x={x(index)} y={plot.top + plot.height + 24} textAnchor={index === 0 ? "start" : index === entries.length - 1 ? "end" : "middle"}>{entries[index].point.businessDate.slice(5)}</text>
+        </g>)}
+        {space.segments.map(segment => <path key={segment[0].point.key} data-testid="hp-chart-segment" className="hp-performance-chart__line"
+          d={segment.map((entry, index) => `${index ? "L" : "M"}${x(entry.index)},${y(entry.amount!)}`).join(" ")} />)}
+        {space.segments.filter(segment => segment.length === 1).map(([entry]) => <circle key={entry.point.key}
+          data-testid="hp-chart-isolated-point" className="hp-performance-chart__isolated" cx={x(entry.index)} cy={y(entry.amount!)} r="3" />)}
+        {marker && <g key={marker.point.key} className="hp-performance-chart__locator">
+          <line x1={x(marker.index)} x2={x(marker.index)} y1={plot.top} y2={plot.top + plot.height} />
+          <line x1={plot.left} x2={plot.left + plot.width} y1={y(marker.amount!)} y2={y(marker.amount!)} />
+          <rect x={Math.max(4, plot.left - 72)} y={y(marker.amount!) - 10} width="68" height="20" />
+          <text x={plot.left - 8} y={y(marker.amount!) + 4} textAnchor="end">{formatAmount(marker.amount!.toFixed(), true, true)}</text>
+          <rect x={Math.min(size.width - 88, Math.max(8, x(marker.index) - 40))} y={plot.top + plot.height + 8} width="80" height="20" />
+          <text x={Math.min(size.width - 48, Math.max(48, x(marker.index)))} y={plot.top + plot.height + 22} textAnchor="middle">{marker.point.businessDate}</text>
+          <circle data-testid="hp-chart-marker" cx={x(marker.index)} cy={y(marker.amount!)} r="3" />
+        </g>}
+        {valid.map(entry => <rect key={entry.point.key} data-testid={`hp-chart-point-${entry.point.key}`} className="hp-performance-chart__hit"
+          x={space.boundary(entry.index, false)} y={plot.top} width={Math.max(0.01, space.boundary(entry.index, true) - space.boundary(entry.index, false))} height={plot.height}
+          onMouseEnter={() => activate({ entry, source: "mouse" }, false, graphRef.current)} onMouseLeave={() => leave(entry)}
+          onMouseDown={event => event.preventDefault()}
+          onClick={() => { graphRef.current?.focus({ preventScroll: true }); pin({ entry, source: "mouse" }, graphRef.current); }} />)}
+      </svg>
+    </div>
+    {gaps.length > 0 && <svg className="hp-performance-chart__gap-layer" width="100%" height="100%" viewBox={`0 0 ${size.width} ${size.height}`}>
+      {gaps.map(gap => {
+        const { label, range } = gapLabel(gap);
+        const left = space.boundary(gap.first.index, false), right = space.boundary(gap.last.index, true);
+        return <g key={gap.first.point.key} className="hp-performance-chart__gap" tabIndex={0} role="button"
+          data-testid={`hp-chart-gap-${gap.first.point.key}`} aria-label={`${range} ${label}，金额未知，查看原因`}
+          aria-describedby={visible && selection?.gap?.first.point.key === gap.first.point.key ? detailId : undefined}
+          onMouseDown={event => event.preventDefault()}
+          onFocus={event => activate({ entry: gap.first, gap, source: "keyboard" }, true, event.currentTarget)}
+          onBlur={event => {
+            if (event.relatedTarget instanceof Node && rootRef.current?.contains(event.relatedTarget)) return;
+            suppressed.current = null; if (!pinned) { clearTimers(); setVisible(false); setSelection(null); }
+          }}
+          onMouseEnter={event => activate({ entry: gap.first, gap, source: "mouse" }, false, event.currentTarget)} onMouseLeave={() => leave(gap.first)}
+          onClick={event => { event.currentTarget.focus({ preventScroll: true }); pin({ entry: gap.first, gap, source: "mouse" }, event.currentTarget); }}
+          onKeyDown={event => {
+            if (event.key === "Enter" || event.key === " ") { event.preventDefault(); pin({ entry: gap.first, gap, source: "keyboard" }, event.currentTarget); }
+          }}>
+          <title>{range} · {label} · {unique(gap.entries.flatMap(entry => entry.reasons)).join("；")}</title>
+          <rect x={left} y={plot.top} width={Math.max(0.01, right - left)} height={plot.height} />
+          {right - left >= 28 && <g className="hp-performance-chart__gap-symbol" transform={`translate(${(left + right) / 2}, ${plot.top + plot.height - 28})`}>
+            <circle r="7" /><text textAnchor="middle" y="4">i</text>
+          </g>}
+          {right - left > 180 && <text className="hp-performance-chart__gap-label" x={(left + right) / 2} y={plot.top + plot.height - 48} textAnchor="middle">{label} · 金额 —</text>}
+        </g>;
+      })}
+    </svg>}
+    {unavailable && <p className="hp-performance-chart__empty" role="status">{unavailableReason || "图表数据暂不可用"}</p>}
+    {!unavailable && entries.length === 0 && <p className="hp-performance-chart__empty" role="status">期间内没有可用日期，金额 —</p>}
+    </div>
+    {visible && selection && !unavailable && <DateDetail key={`${selection.entry.point.key}:${selection.entry.state}`} selection={selection}
+      reportCurrency={reportCurrency} pinned={pinned} id={detailId} onOpenDateTrades={onOpenDateTrades} detailRef={detailRef}
+      onMouseEnter={clearHideTimer} onMouseLeave={() => leave(selection.entry)} />}
+  </section>;
+}
+
+export function PerformanceChart(props: PerformanceChartProps) {
+  // A background publication updates selected point values without stealing
+  // focus or removing a pin. A user-selected scope/period starts a new journey.
+  const key = JSON.stringify([props.interactionKey ?? props.series?.boundary, props.reportCurrency, props.series?.points.map(point=>point.key), Boolean(props.unavailableReason), !props.series]);
+  return <ChartContent key={key} {...props} />;
+}

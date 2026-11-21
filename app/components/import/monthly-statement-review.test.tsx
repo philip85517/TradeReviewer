@@ -6,6 +6,25 @@ import type { StatementParseResult } from "../../lib/import/contracts";
 function result(): StatementParseResult { return { broker: "futu", records: [], candidates: [], exclusions: [], diagnostics: [{ severity: "warning", code: "test", message: "来源时区未确认" }], blocked: false, monthly: { documentId: "f", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: true } }; }
 afterEach(cleanup);
 describe("monthly statement review", () => {
+  it("shows dated account-wide zero-stock evidence inside the existing evidence disclosure", () => {
+    const parsed = result();
+    parsed.monthly!.zeroStockEvidence = ["opening", "closing"].map((phase, i) => ({
+      accountId: "futu:1001200118029088", date: i ? "2025-12-31" : "2025-12-01", phase: phase as "opening" | "closing",
+      markets: ["US", "HK", "CN-SH", "CN-SZ"], proof: "complete-cash-only-asset-breakdown", source: [{page:1,row:6}, {page:i ? 2 : 1,row:4}],
+    }));
+    render(<MonthlyStatementReview fileName="2025-12.pdf" parsed={parsed} onReparse={vi.fn()} onContinue={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText(/2 条账户级空仓证明/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("持仓与辅助流水证据"));
+    expect(screen.getByText(/2025-12-01 期初 · 账户级空仓证明 · 富途账户尾号 9088/)).toHaveTextContent("美股、港股、沪市、深市股票持仓为 0 · 原件第 1 页");
+    expect(screen.getByText(/2025-12-31 期末 · 账户级空仓证明/)).toHaveTextContent("原件第 1、2 页");
+  });
+
+  it("keeps ordinary statements free of empty-stock claims", () => {
+    render(<MonthlyStatementReview fileName="2025-06.pdf" parsed={result()} onReparse={vi.fn()} onContinue={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.queryByText(/账户级空仓证明/)).not.toBeInTheDocument();
+    expect(screen.getByText(/已识别 0 笔成交、0 条持仓快照、0 条辅助流水。/)).toBeInTheDocument();
+  });
+
   it("shows inferred timezone confidence in the execution evidence table", () => {
     const parsed = {
       ...result(),

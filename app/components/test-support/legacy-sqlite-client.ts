@@ -3,8 +3,8 @@ import { exportLegacyBrowserState } from "../../lib/storage/browser-state-export
 import { IndexedDbEpisodeReviewRepository } from "../../lib/storage/indexeddb-episode-review-repository";
 import { IndexedDbMarketDataRepository } from "../../lib/storage/indexeddb-market-data-repository";
 import { IndexedDbTagSuggestionRepository } from "../../lib/storage/indexeddb-tag-suggestion-repository";
-import { saveImportHistoryEntry } from "../../lib/storage/import-history";
-import { saveImportedExecutions } from "../../lib/storage/import-library";
+import { loadImportHistory, saveImportHistoryEntry } from "../../lib/storage/import-history";
+import { loadImportedExecutions, saveImportedExecutions } from "../../lib/storage/import-library";
 import { saveMarketDataJob, type MarketDataJob } from "../../lib/storage/market-data-jobs";
 import { saveReviewState } from "../../lib/storage/review-storage";
 import type { SqliteHttpClient } from "../../lib/storage/sqlite-http-client";
@@ -48,8 +48,13 @@ export function createLegacySqliteClient(): SqliteHttpClient {
         executions: source.executions,
         importHistory: source.importHistory,
         instruments: source.instruments,
-      } : { executions: [], importHistory: [], instruments: [] };
-      const executions = input.executions;
+      } : { executions: loadImportedExecutions(), importHistory: loadImportHistory(), instruments: [] };
+      const replaced = new Set(input.replaceExecutionIds ?? []);
+      const incoming = new Map(input.executions.map(execution => [execution.id, execution]));
+      const executions = [
+        ...current.executions.filter(execution => !replaced.has(execution.id) && !incoming.has(execution.id)),
+        ...input.executions,
+      ];
       const importHistory = input.importHistory
         ? [...input.importHistory, ...current.importHistory.filter((entry) => !input.importHistory?.some((next) => next.id === entry.id))]
         : current.importHistory;

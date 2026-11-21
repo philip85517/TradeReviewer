@@ -10,8 +10,9 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    // Bound jsdom UI and child-process test contention on shared resources.
-    maxWorkers: 2,
+    // Run jsdom and child-process test files serially to bound resource
+    // contention; preserve existing assertions and timeout budgets.
+    maxWorkers: 1,
     setupFiles: ["./tests/setup.ts"],
     include: ["app/**/*.test.{ts,tsx}", "db/**/*.test.ts", "scripts/**/*.test.mjs"],
     // These operational integration tests use Node's native test runner.

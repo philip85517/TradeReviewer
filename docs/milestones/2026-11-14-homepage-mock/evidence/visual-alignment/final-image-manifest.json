@@ -1,0 +1,12 @@
+{
+  "source_snapshot": "18ca3bd95ea15f45d4d9f21fea7e2ba5dc8aacc67307769e093b0c9343a33e39",
+  "prior_image_manifest": "image-manifest.json",
+  "images": {
+    "final-delivery-native.jpg": "fcfceb6b9bab9b8e8c23452eb9270453832fdc5c68776ebc35e5bd214abcb355",
+    "final-header-1099.jpg": "70198b10553f18db31262fdea69d142533b9479b294ce2b7f61c1bdb639c87b5",
+    "final-header-1101.jpg": "50511305ee42d2c36f802475f18cc057f16c725efa3604247c83b6ade23f2d65",
+    "final-header-right-390.jpg": "e94365c67dfd11c2fe778f7d248391fb2161eb3a9d4ef48f9c2b4296163cc7d5",
+    "final-normal-1280.jpg": "10ff7d9288149e03a8c21b39664520d76090a57193e69cc945058daac00a35d8",
+    "final-normal-1440.jpg": "edb72771dc755856e32140932b725a120db6c8ca1ebca2008dc3bf763571297d"
+  }
+}

@@ -4,6 +4,7 @@ import type { PdfTextItem, PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
 import type { ImportHistoryEntry } from "../storage/import-history";
 import Decimal from "decimal.js";
+import { canonicalInstrumentId } from "../instruments/display-name";
 
 export type MonthlyEvidenceHistoryEntry = Pick<ImportHistoryEntry, "id" | "importedAt" | "monthly">;
 
@@ -75,7 +76,49 @@ export function selectMonthlyEvidenceHistory(
   });
   return selected.map((candidate) => candidate.monthly);
 }
-import { canonicalInstrumentId } from "../instruments/display-name";
+type LedgerStatement = Pick<MonthlyStatement, "positions" | "events"> & Partial<MonthlyStatement>;
+type InventoryIdentity = { accountId: string; market: string; symbol: string };
+
+/** Expand a complete cash inventory only for an existing account/security being replayed.
+ * Keep the proof in import history once, without copying it onto individual trades. */
+export function withCashInventoryPositions<T extends LedgerStatement>(statements: readonly T[], identity: InventoryIdentity, executions: readonly TradeExecution[] = []): readonly T[] {
+  if (!statements.some(s => s.zeroStockEvidence?.length)) return statements;
+  const instrumentId = canonicalInstrumentId(identity.symbol, identity.market);
+  const scopedDocuments = new Set(statements.filter(s => s.evidenceScope?.accountId === identity.accountId && s.evidenceScope.instrumentId === instrumentId).map(s => s.documentId));
+  const inScope = (statement: T) => statement.evidenceScope
+    ? statement.evidenceScope.accountId === identity.accountId && statement.evidenceScope.instrumentId === instrumentId
+    : !scopedDocuments.has(statement.documentId);
+  // An itemized quantity from any applicable document or fill is more specific
+  // than an account-wide inference, regardless of which file was imported last.
+  const itemizedBoundaries = new Set<string>();
+  const notePosition = (position: StatementPosition) => {
+    if (position.accountId === identity.accountId && canonicalInstrumentId(position.symbol, position.market) === instrumentId) {
+      itemizedBoundaries.add(position.date + "/" + position.phase);
+    }
+  };
+  for (const statement of statements) if (inScope(statement)) statement.positions.forEach(notePosition);
+  for (const execution of executions) {
+    if (execution.accountId !== identity.accountId || execution.source.tradeNature === 'simulation') continue;
+    execution.source.statementPositions?.forEach(notePosition);
+    if (execution.source.openingPosition) notePosition(execution.source.openingPosition);
+  }
+  return statements.map(statement => {
+    if (!statement.zeroStockEvidence?.length) return statement;
+    // selectMonthlyEvidenceHistory keeps only scoped revisions newer than their full base.
+    const base = { ...statement, zeroStockEvidence: undefined };
+    if (!statement.documentId || statement.accountId !== identity.accountId || statement.historyIncomplete ||
+        !inScope(statement) ||
+        statement.incompleteInstruments?.some(i => canonicalInstrumentId(i.symbol, i.market) === instrumentId)) return base;
+    const positions: StatementPosition[] = [];
+    for (const proof of statement.zeroStockEvidence) {
+      if (proof.proof !== 'complete-cash-only-asset-breakdown' || proof.accountId !== identity.accountId ||
+          !proof.markets.some(market => market === identity.market)) continue;
+      if (itemizedBoundaries.has(proof.date + "/" + proof.phase)) continue;
+      positions.push({ accountId: identity.accountId, market: identity.market, symbol: identity.symbol, documentId: statement.documentId, date: proof.date, phase: proof.phase, quantity: '0', source: proof.source });
+    }
+    return { ...base, positions: [...base.positions, ...positions] };
+  });
+}
 
 type Row = { y: number; items: PdfTextItem[]; number: number; text: string };
 const compact = (text: string) => text.replace(/\s+/g, "");
@@ -213,7 +256,30 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
   for (const page of pages) {
     const rows = rowsOf(page);
     for (let index = 0; index < rows.length; index++) {
-      const row = rows[index];
+      let row = rows[index];
+      const remarkRows: number[] = [];
+      // Legacy cash remarks can wrap below the amount row. Only join remark-column
+      // continuations; never borrow the next dated movement or its stock identity.
+      if (section === "cash" && dateIn(row.text)) {
+        const remark = headers.find(h => /^(備註|备注)$/.test(compact(h.text)));
+        if (remark) {
+          const continuations = [];
+          for (let next = index + 1; next < rows.length; next++) {
+            const candidate = rows[next];
+            if (/IPO.*Refund.*Allotment/i.test(candidate.text) || candidate.y - row.y > 40 || !candidate.items.length || candidate.items.some(i => i.x < remark.x - 10) || dateIn(candidate.text)) break;
+            continuations.push(candidate);
+          }
+          const preceding = rows[index - 1];
+          if (preceding && /IPO.*Refund.*Allotment/i.test(preceding.text) && preceding.items.every(i => i.x >= remark.x - 10) && row.y - preceding.y <= 30) {
+            remarkRows.push(preceding.number);
+            row = { ...row, text: row.text + " " + preceding.text };
+          }
+          if (continuations.length) {
+            remarkRows.push(...continuations.map(r => r.number));
+            row = { ...row, text: [row.text, ...continuations.map(r => r.text)].join(" ") };
+          }
+        }
+      }
       const text = compact(row.text);
       if (row.y < 60 || row.y > page.height - 25) continue; // Repeated titles/dates and account footers are outside evidence tables.
       const labeledAccountCurrency = accountCurrencyIn(row);
@@ -245,7 +311,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
         if (section === "stock" && stockMovementPattern.test(text)) unresolved(page, row, "stock", identity(row.text)?.symbol);
         continue;
       }
-      const source = [{ page: page.pageNumber, row: row.number, role: section === "position" ? `${phase}-position` : section }];
+      const source = [{ page: page.pageNumber, row: row.number, role: section === "position" ? `${phase}-position` : section }, ...remarkRows.map(number => ({ page: page.pageNumber, row: number, role: section }))];
       const codeHeader = headers.find(h => /^(代码|代碼|股票|名稱代碼|代碼名稱)$/.test(compact(h.text)));
       const nameItems = codeHeader ? row.items.filter(i => Math.abs(i.x - codeHeader.x) < 45) : [];
       // Tiger prints the parenthesized symbol one baseline below the numeric row.
@@ -274,6 +340,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       }
       let date = dateIn(row.text);
       let kind: StatementEvent["kind"] | undefined;
+      let ipoAction: StatementEvent["ipoAction"];
       let quantity: string | undefined;
       let amount: string | undefined;
       if (section === "stock") {
@@ -285,7 +352,8 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
         quantity = numericCell(row, headers, /^(?:變動數量|变动数量)$/);
         const positiveQuantity = quantity !== undefined && new Decimal(quantity).isPositive();
         const negativeQuantity = quantity !== undefined && new Decimal(quantity).isNegative();
-        kind = allotment && deposit && positiveQuantity && !cancelled ? "ipo" : deposit && !negativeQuantity && !cancelled ? "transfer-in" : "transfer-out";
+        if (allotment && cancelled && negativeQuantity && /Reverse\s*IPO\s*Allotment/i.test(row.text) && /Cancel\s*Listing/i.test(row.text)) ipoAction = "ipo-cancellation";
+        kind = ipoAction ? "corporate-action" : allotment && deposit && positiveQuantity && !cancelled ? "ipo" : deposit && !negativeQuantity && !cancelled ? "transfer-in" : "transfer-out";
         if (!instrument || !date || quantity === undefined) {
           unresolved(page, row, "stock", instrument?.symbol);
           continue;
@@ -303,10 +371,12 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
         const cashRow = section === "cash" && /(?:存入現金|提取現金|存入现金|提取现金)/.test(text);
         kind = /Scrip Charge|Handling (?:Fee|Charge)|Financing Interest|Interest for Month|月度利息扣除|手续费|手續費|利息/i.test(row.text)
           ? "fee"
+          : /IPO.*Refund/i.test(row.text) && /Cancel\s*Listing/i.test(row.text) ? "other"
           : /IPO/.test(row.text) ? "ipo"
           : /F\/D|分派|股息/.test(row.text) ? "distribution"
           : /公司行[动動]/.test(row.text) ? "corporate-action"
           : cashRow ? "other" : undefined;
+        if (kind === "other" && /IPO.*Refund/i.test(row.text) && /Cancel\s*Listing/i.test(row.text)) ipoAction = "cash-refund";
         amount = numericCell(row, headers, /^金額$/);
         if (section === "asset" && kind === "ipo") quantity = numericCell(row, headers, /^數量$/);
       } else if (section === "dividend") {
@@ -324,7 +394,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       }
       if (!kind || !date || (section === "cash" && amount === undefined)) continue;
       const eventCurrency = rowCurrency(row) ?? (section === "cash" ? sectionCurrency : undefined);
-      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: section === "stock" || section === "transfer" ? undefined : eventCurrency, description: row.text, source });
+      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(ipoAction ? { ipoAction } : {}), ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: section === "stock" || section === "transfer" ? undefined : eventCurrency, description: row.text, source });
     }
   }
   const positionKeys = new Set(monthly.positions.map(statementPositionEvidenceKey));
@@ -334,6 +404,10 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
   }
   const eventIds = new Set(monthly.events.map(e => e.id));
   for (const event of events) if (!eventIds.has(event.id)) { monthly.events.push(event); eventIds.add(event.id); }
+  for (const cancellation of monthly.events.filter(e => e.ipoAction === "ipo-cancellation")) {
+    const candidates = monthly.events.filter(e => e.kind === "ipo" && e.accountId === cancellation.accountId && e.market === cancellation.market && e.symbol === cancellation.symbol && e.date === cancellation.date && e.quantity !== undefined && cancellation.quantity !== undefined && new Decimal(e.quantity).isPositive() && new Decimal(e.quantity).eq(new Decimal(cancellation.quantity).abs()));
+    if (candidates.length === 1) cancellation.reversesEventId = candidates[0].id;
+  }
   const matches = (item: { accountId: string; market?: string; symbol?: string }, record: StatementParseResult["records"][number]) => item.accountId === record.accountId && item.market === record.instrument.market && item.symbol === record.instrument.symbol;
   for (const event of monthly.events) {
     if ((event.kind === "transfer-in" || event.kind === "transfer-out") && event.date.length === 10 && result.records.some(r => matches(event, r) && (r.source.tradingDate ?? r.source.marketCalendarDate ?? r.executedAt.slice(0, 10)) === event.date)) {
@@ -448,10 +522,39 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
     isUnassignedIpoFee(event) && event.accountId === execution.accountId
       && (event.market === undefined || event.market.toUpperCase() === execution.instrument.market.toUpperCase())
       && (event.currency === undefined || event.currency.toUpperCase() === execution.instrument.currency.toUpperCase());
+  // Index once per document. Empty documents still participate in supersession;
+  // only evidence row lookup is narrowed, preserving global execution ordering rules.
+  const identity = (item: {accountId:string;market?:string;symbol?:string}) =>
+    item.market && item.symbol !== undefined ? JSON.stringify([item.accountId,item.market,symbolKey(item.symbol,item.market)]) : '';
+  const indexed = new Map(monthly.map(statement => {
+    const positions = new Map<string, StatementPosition[]>(), events = new Map<string, StatementEvent[]>();
+    const unassigned: StatementEvent[] = [];
+    for (const position of statement.positions) {
+      const key=identity(position), rows=positions.get(key)??[]; rows.push(position); positions.set(key,rows);
+    }
+    for (const event of statement.events) {
+      const key=identity(event), rows=events.get(key)??[]; rows.push(event); events.set(key,rows);
+      if(isUnassignedIpoFee(event))unassigned.push(event);
+    }
+    return [statement,{positions,events,unassigned}] as const;
+  }));
+  const executionIndex = new Map<string, TradeExecution[]>();
+  const dayIndex = new Map<string, TradeExecution[]>();
+  for (const execution of executions) {
+    const key=JSON.stringify([execution.accountId,canonicalInstrumentId(execution.instrument.symbol,execution.instrument.market)]);
+    const group=executionIndex.get(key)??[];group.push(execution);executionIndex.set(key,group);
+    const day=execution.source.tradingDate??execution.source.marketCalendarDate??execution.executedAt.slice(0,10);
+    const daily=dayIndex.get(day)??[];daily.push(execution);dayIndex.set(day,daily);
+  }
+  type EvidenceContext = {applicableMonthly:MonthlyStatement[];documents:Set<string>;scopedDocuments:Set<string>;positions:StatementPosition[];events:StatementEvent[]};
+  const contexts=new Map<string,EvidenceContext>();
   return executions.map(execution => {
+    const matches = (item: { accountId: string; market?: string; symbol?: string }) => item.accountId === execution.accountId && item.market === execution.instrument.market && item.symbol !== undefined && symbolKey(item.symbol, item.market) === symbolKey(execution.instrument.symbol, execution.instrument.market);
+    const contextKey=JSON.stringify([execution.accountId,execution.instrument.id,execution.instrument.market,execution.instrument.symbol,execution.instrument.currency]);
+    let context=contexts.get(contextKey);
+    if(!context){
     const applicableMonthly = monthly.filter(statement => appliesToExecution(statement, execution));
     const documents = new Set(applicableMonthly.map(m => m.documentId));
-    const matches = (item: { accountId: string; market?: string; symbol?: string }) => item.accountId === execution.accountId && item.market === execution.instrument.market && item.symbol !== undefined && symbolKey(item.symbol, item.market) === symbolKey(execution.instrument.symbol, execution.instrument.market);
     // A newer scoped revision replaces the target slice of an older full
     // document while leaving that document's other instruments available to
     // their own executions.
@@ -460,17 +563,21 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
         .filter(statement => statement.evidenceScope !== undefined)
         .map(statement => statement.documentId),
     );
-    const positions = applicableMonthly.flatMap(m => m.positions
+    const identityKey=identity({accountId:execution.accountId,market:execution.instrument.market,symbol:execution.instrument.symbol});
+    const positions = applicableMonthly.flatMap(m => (indexed.get(m)!.positions.get(identityKey)??[])
       .filter(position => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(position)))
       .map(p => ({ ...p, documentId: p.documentId ?? m.documentId })));
-    const events = applicableMonthly.flatMap(m => m.events
+    const events = applicableMonthly.flatMap(m => [...(indexed.get(m)!.events.get(identityKey)??[]),...indexed.get(m)!.unassigned.filter(e=>compatibleUnassignedFee(e,execution))]
       .filter(event => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(event)))
       .map(e => ({ ...e, documentId: e.documentId ?? m.documentId })));
+    context={applicableMonthly,documents,scopedDocuments,positions,events};contexts.set(contextKey,context);
+    }
+    const {applicableMonthly,documents,scopedDocuments,positions,events}=context;
     const isSimulation = execution.source.tradeNature === "simulation" || execution.source.tradingNature === "simulated";
     const day = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
     const retainedPosition = execution.source.openingPosition && !superseded(execution.source.openingPosition, documents) ? [execution.source.openingPosition] : [];
     const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p, documents)), ...retainedPosition].filter(matches).map(p => [statementPositionEvidenceKey(p), p])).values()];
-    const transactionExecutions = (position: StatementPosition) => executions.filter(candidate => statementPositionMatchesExecution(position, candidate));
+    const transactionExecutions = (position: StatementPosition) => (executionIndex.get(JSON.stringify([position.accountId,canonicalInstrumentId(position.symbol,position.market)]))??[]).filter(candidate => statementPositionMatchesExecution(position, candidate));
     const precedesExecution = (position: StatementPosition) => {
       if (position.phase === "opening") return position.date <= day;
       if (position.date < day) return true;
@@ -488,17 +595,13 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
       if (executionHasExactTime(prior) !== executionHasExactTime(execution)) return false;
       if (executionHasExactTime(prior)) {
         if (replayCursorAt(prior.executedAt).localeCompare(replayCursorAt(execution.executedAt)) >= 0) return false;
-        const sameDayExecutions = executions.filter(candidate =>
-          (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
-        );
+        const sameDayExecutions = dayIndex.get(day)??[];
         const hasSourceOrderConflict = sameDayExecutions.some((left, index) =>
           sameDayExecutions.slice(index + 1).some(right => executionSourceOrderConflictsWithTime(left, right)),
         );
         return !hasSourceOrderConflict;
       }
-      const sameDayExecutions = executions.filter(candidate =>
-        (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
-      );
+      const sameDayExecutions = dayIndex.get(day)??[];
       const documentKeys = new Set(sameDayExecutions.map(executionDocumentKey));
       const sourceOrders = sameDayExecutions.map(explicitExecutionSourceOrder);
       const sourceOrderComparable = documentKeys.size === 1 && !documentKeys.has(undefined) &&
@@ -563,6 +666,8 @@ export function replayCursorAt(value: string): string {
   return value.length === 10 ? `${value}T23:59:59.999Z` : new Date(value).toISOString();
 }
 
+const sourceDateFormatters = new Map<string, Intl.DateTimeFormat>();
+
 export function replayExecutionAt(execution: TradeExecution): string {
   if (execution.executedAt.length !== 10 && execution.source.timePrecision !== "date-only") {
     return replayCursorAt(execution.executedAt);
@@ -573,9 +678,16 @@ export function replayExecutionAt(execution: TradeExecution): string {
   if (!calendarDate && sourceDate && /^\d{4}-\d{2}-\d{2}$/.test(sourceDate)) calendarDate = sourceDate;
   if (!calendarDate && execution.executedAt.length !== 10 && execution.source.sourceTimezone) {
     try {
-      const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
-        timeZone: execution.source.sourceTimezone, year: "numeric", month: "2-digit", day: "2-digit",
-      }).formatToParts(new Date(execution.executedAt)).map(part => [part.type, part.value]));
+      const zone = execution.source.sourceTimezone;
+      let formatter = sourceDateFormatters.get(zone);
+      if (!formatter) {
+        formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit",
+        });
+        if (sourceDateFormatters.size >= 64) sourceDateFormatters.clear();
+        sourceDateFormatters.set(zone, formatter);
+      }
+      const parts = Object.fromEntries(formatter.formatToParts(new Date(execution.executedAt)).map(part => [part.type, part.value]));
       calendarDate = `${parts.year}-${parts.month}-${parts.day}`;
     } catch {
       // Unrecognized historical zone labels retain the prior UTC-date fallback.

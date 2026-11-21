@@ -32,6 +32,8 @@ export type InstrumentMetadataConfidence =
 export type ResolvedInstrument = InstrumentLookup & {
   name: string;
   localizedName?: LocalizedInstrumentName;
+  /** Successful dedicated Chinese-name lookup, including a valid result without Chinese. */
+  localizedNameLookup?: { checkedAt: string; source: InstrumentMetadataSource };
   assetType: InstrumentAssetType;
   source: InstrumentMetadataSource;
   confidence: InstrumentMetadataConfidence;
@@ -151,10 +153,22 @@ export function validateResolvedInstrument(
     invalidResolvedInstrument();
   }
 
+  const lookupAttempt = value.localizedNameLookup;
+  if (lookupAttempt !== undefined && (
+    !isRecord(lookupAttempt) ||
+    typeof lookupAttempt.checkedAt !== "string" ||
+    !Number.isFinite(Date.parse(lookupAttempt.checkedAt)) ||
+    !SOURCES.has(lookupAttempt.source as InstrumentMetadataSource)
+  )) invalidResolvedInstrument();
+
   return {
     market: normalizedMarket,
     symbol: normalizedSymbol,
     name,
+    ...(isRecord(lookupAttempt) ? { localizedNameLookup: {
+      checkedAt: new Date(lookupAttempt.checkedAt as string).toISOString(),
+      source: lookupAttempt.source as InstrumentMetadataSource,
+    } } : {}),
     ...(localizedName ? { localizedName } : {}),
     assetType: value.assetType as InstrumentAssetType,
     source: value.source as InstrumentMetadataSource,

@@ -1,0 +1,1136 @@
+[
+  {
+    "name": "final-header-right-390",
+    "at": "2026-11-13T15:59:32.500Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": -619,
+          "right": -374,
+          "top": 291,
+          "width": 245,
+          "x": -619,
+          "y": 291
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": -374,
+          "right": -295.6015625,
+          "top": 291,
+          "width": 78.3984375,
+          "x": -374,
+          "y": 291
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": -295.6015625,
+          "right": -197.6015625,
+          "top": 291,
+          "width": 98,
+          "x": -295.6015625,
+          "y": 291
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": -197.6015625,
+          "right": -89.8046875,
+          "top": 291,
+          "width": 107.796875,
+          "x": -197.6015625,
+          "y": 291
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": -89.8046875,
+          "right": 17.9921875,
+          "top": 291,
+          "width": 107.796875,
+          "x": -89.8046875,
+          "y": 291
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 320,
+          "height": 20,
+          "left": 57.6640625,
+          "right": 156.9921875,
+          "top": 300,
+          "width": 99.328125,
+          "x": 57.6640625,
+          "y": 300
+        },
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": 17.9921875,
+          "right": 164.9921875,
+          "top": 291,
+          "width": 147,
+          "x": 17.9921875,
+          "y": 291
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 320,
+          "height": 20,
+          "left": 172.9921875,
+          "right": 294.1875,
+          "top": 300,
+          "width": 121.1953125,
+          "x": 172.9921875,
+          "y": 300
+        },
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": 164.9921875,
+          "right": 302.1875,
+          "top": 291,
+          "width": 137.1953125,
+          "x": 164.9921875,
+          "y": 291
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 331,
+          "height": 40,
+          "left": 302.1875,
+          "right": 361,
+          "top": 291,
+          "width": 58.8125,
+          "x": 302.1875,
+          "y": 291
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 390,
+    "scroll": {
+      "x": 0,
+      "y": 984
+    },
+    "table": {
+      "rect": {
+        "bottom": 715,
+        "height": 424,
+        "left": 101,
+        "right": 361,
+        "top": 291,
+        "width": 260,
+        "x": 101,
+        "y": 291
+      },
+      "scrollLeft": 720
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  },
+  {
+    "name": "final-header-1101",
+    "at": "2026-11-13T15:59:33.156Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 80,
+          "right": 325,
+          "top": 737,
+          "width": 245,
+          "x": 80,
+          "y": 737
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 325,
+          "right": 403.3984375,
+          "top": 737,
+          "width": 78.3984375,
+          "x": 325,
+          "y": 737
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 403.3984375,
+          "right": 501.3984375,
+          "top": 737,
+          "width": 98,
+          "x": 403.3984375,
+          "y": 737
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 501.3984375,
+          "right": 609.1953125,
+          "top": 737,
+          "width": 107.796875,
+          "x": 501.3984375,
+          "y": 737
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 609.1953125,
+          "right": 716.9921875,
+          "top": 737,
+          "width": 107.796875,
+          "x": 609.1953125,
+          "y": 737
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 766,
+          "height": 20,
+          "left": 756.6640625,
+          "right": 855.9921875,
+          "top": 746,
+          "width": 99.328125,
+          "x": 756.6640625,
+          "y": 746
+        },
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 716.9921875,
+          "right": 863.9921875,
+          "top": 737,
+          "width": 147,
+          "x": 716.9921875,
+          "y": 737
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 766,
+          "height": 20,
+          "left": 871.9921875,
+          "right": 993.1875,
+          "top": 746,
+          "width": 121.1953125,
+          "x": 871.9921875,
+          "y": 746
+        },
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 863.9921875,
+          "right": 1001.1875,
+          "top": 737,
+          "width": 137.1953125,
+          "x": 863.9921875,
+          "y": 737
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 1001.1875,
+          "right": 1060,
+          "top": 737,
+          "width": 58.8125,
+          "x": 1001.1875,
+          "y": 737
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1101,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1161,
+        "height": 424,
+        "left": 113,
+        "right": 1060,
+        "top": 737,
+        "width": 947,
+        "x": 113,
+        "y": 737
+      },
+      "scrollLeft": 33
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1101
+    }
+  },
+  {
+    "name": "final-header-1101",
+    "at": "2026-11-13T15:59:45.949Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 113,
+          "right": 358,
+          "top": 737,
+          "width": 245,
+          "x": 113,
+          "y": 737
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 358,
+          "right": 436.3984375,
+          "top": 737,
+          "width": 78.3984375,
+          "x": 358,
+          "y": 737
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 436.3984375,
+          "right": 534.3984375,
+          "top": 737,
+          "width": 98,
+          "x": 436.3984375,
+          "y": 737
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 534.3984375,
+          "right": 642.1953125,
+          "top": 737,
+          "width": 107.796875,
+          "x": 534.3984375,
+          "y": 737
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 642.1953125,
+          "right": 749.9921875,
+          "top": 737,
+          "width": 107.796875,
+          "x": 642.1953125,
+          "y": 737
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 766,
+          "height": 20,
+          "left": 789.6640625,
+          "right": 888.9921875,
+          "top": 746,
+          "width": 99.328125,
+          "x": 789.6640625,
+          "y": 746
+        },
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 749.9921875,
+          "right": 896.9921875,
+          "top": 737,
+          "width": 147,
+          "x": 749.9921875,
+          "y": 737
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 766,
+          "height": 20,
+          "left": 904.9921875,
+          "right": 1026.1875,
+          "top": 746,
+          "width": 121.1953125,
+          "x": 904.9921875,
+          "y": 746
+        },
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 896.9921875,
+          "right": 1034.1875,
+          "top": 737,
+          "width": 137.1953125,
+          "x": 896.9921875,
+          "y": 737
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 777,
+          "height": 40,
+          "left": 1034.1875,
+          "right": 1093,
+          "top": 737,
+          "width": 58.8125,
+          "x": 1034.1875,
+          "y": 737
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1101,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1161,
+        "height": 424,
+        "left": 113,
+        "right": 1060,
+        "top": 737,
+        "width": 947,
+        "x": 113,
+        "y": 737
+      },
+      "scrollLeft": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1101
+    }
+  },
+  {
+    "name": "final-header-1099",
+    "at": "2026-11-13T15:59:46.313Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 113,
+          "right": 358,
+          "top": 785,
+          "width": 245,
+          "x": 113,
+          "y": 785
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 358,
+          "right": 436.3984375,
+          "top": 785,
+          "width": 78.3984375,
+          "x": 358,
+          "y": 785
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 436.3984375,
+          "right": 534.3984375,
+          "top": 785,
+          "width": 98,
+          "x": 436.3984375,
+          "y": 785
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 534.3984375,
+          "right": 642.1953125,
+          "top": 785,
+          "width": 107.796875,
+          "x": 534.3984375,
+          "y": 785
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 642.1953125,
+          "right": 749.9921875,
+          "top": 785,
+          "width": 107.796875,
+          "x": 642.1953125,
+          "y": 785
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 814,
+          "height": 20,
+          "left": 789.6640625,
+          "right": 888.9921875,
+          "top": 794,
+          "width": 99.328125,
+          "x": 789.6640625,
+          "y": 794
+        },
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 749.9921875,
+          "right": 896.9921875,
+          "top": 785,
+          "width": 147,
+          "x": 749.9921875,
+          "y": 785
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 814,
+          "height": 20,
+          "left": 904.9921875,
+          "right": 1026.1875,
+          "top": 794,
+          "width": 121.1953125,
+          "x": 904.9921875,
+          "y": 794
+        },
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 896.9921875,
+          "right": 1034.1875,
+          "top": 785,
+          "width": 137.1953125,
+          "x": 896.9921875,
+          "y": 785
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 825,
+          "height": 40,
+          "left": 1034.1875,
+          "right": 1093,
+          "top": 785,
+          "width": 58.8125,
+          "x": 1034.1875,
+          "y": 785
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1099,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1209,
+        "height": 424,
+        "left": 113,
+        "right": 1058,
+        "top": 785,
+        "width": 945,
+        "x": 113,
+        "y": 785
+      },
+      "scrollLeft": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1099
+    }
+  },
+  {
+    "name": "final-normal-1280",
+    "at": "2026-11-13T15:59:46.754Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 113,
+          "right": 394.5,
+          "top": 637,
+          "width": 281.5,
+          "x": 113,
+          "y": 637
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 394.5,
+          "right": 484.578125,
+          "top": 637,
+          "width": 90.078125,
+          "x": 394.5,
+          "y": 637
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 484.578125,
+          "right": 597.171875,
+          "top": 637,
+          "width": 112.59375,
+          "x": 484.578125,
+          "y": 637
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 597.171875,
+          "right": 721.03125,
+          "top": 637,
+          "width": 123.859375,
+          "x": 597.171875,
+          "y": 637
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 721.03125,
+          "right": 844.890625,
+          "top": 637,
+          "width": 123.859375,
+          "x": 721.03125,
+          "y": 637
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 906.4609375,
+          "right": 1005.7890625,
+          "top": 646,
+          "width": 99.328125,
+          "x": 906.4609375,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 844.890625,
+          "right": 1013.7890625,
+          "top": 637,
+          "width": 168.8984375,
+          "x": 844.890625,
+          "y": 637
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 1040.09375,
+          "right": 1163.421875,
+          "top": 646,
+          "width": 123.328125,
+          "x": 1040.09375,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1013.7890625,
+          "right": 1171.421875,
+          "top": 637,
+          "width": 157.6328125,
+          "x": 1013.7890625,
+          "y": 637
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1171.421875,
+          "right": 1239,
+          "top": 637,
+          "width": 67.578125,
+          "x": 1171.421875,
+          "y": 637
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1280,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1061,
+        "height": 424,
+        "left": 113,
+        "right": 1239,
+        "top": 637,
+        "width": 1126,
+        "x": 113,
+        "y": 637
+      },
+      "scrollLeft": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 800,
+      "w": 1280
+    }
+  },
+  {
+    "name": "final-normal-1440",
+    "at": "2026-11-13T16:00:28.955Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 113,
+          "right": 434.5078125,
+          "top": 637,
+          "width": 321.5078125,
+          "x": 113,
+          "y": 637
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 434.5078125,
+          "right": 537.3828125,
+          "top": 637,
+          "width": 102.875,
+          "x": 434.5078125,
+          "y": 637
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 537.3828125,
+          "right": 665.9765625,
+          "top": 637,
+          "width": 128.59375,
+          "x": 537.3828125,
+          "y": 637
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 665.9765625,
+          "right": 807.4296875,
+          "top": 637,
+          "width": 141.453125,
+          "x": 665.9765625,
+          "y": 637
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 807.4296875,
+          "right": 948.8828125,
+          "top": 637,
+          "width": 141.453125,
+          "x": 807.4296875,
+          "y": 637
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 1034.453125,
+          "right": 1133.78125,
+          "top": 646,
+          "width": 99.328125,
+          "x": 1034.453125,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 948.8828125,
+          "right": 1141.78125,
+          "top": 637,
+          "width": 192.8984375,
+          "x": 948.8828125,
+          "y": 637
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 1190.4921875,
+          "right": 1313.8203125,
+          "top": 646,
+          "width": 123.328125,
+          "x": 1190.4921875,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1141.78125,
+          "right": 1321.8203125,
+          "top": 637,
+          "width": 180.0390625,
+          "x": 1141.78125,
+          "y": 637
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1321.8203125,
+          "right": 1399,
+          "top": 637,
+          "width": 77.1796875,
+          "x": 1321.8203125,
+          "y": 637
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1440,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1061,
+        "height": 424,
+        "left": 113,
+        "right": 1399,
+        "top": 637,
+        "width": 1286,
+        "x": 113,
+        "y": 637
+      },
+      "scrollLeft": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 1,
+      "h": 1000,
+      "w": 1440
+    }
+  },
+  {
+    "name": "final-delivery-native",
+    "at": "2026-11-13T16:00:29.649Z",
+    "headers": [
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 113,
+          "right": 434.5078125,
+          "top": 637,
+          "width": 321.5078125,
+          "x": 113,
+          "y": 637
+        },
+        "text": "标的",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 434.5078125,
+          "right": 537.3828125,
+          "top": 637,
+          "width": 102.875,
+          "x": 434.5078125,
+          "y": 637
+        },
+        "text": "持仓天数",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 537.3828125,
+          "right": 665.9765625,
+          "top": 637,
+          "width": 128.59375,
+          "x": 537.3828125,
+          "y": 637
+        },
+        "text": "数量",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 665.9765625,
+          "right": 807.4296875,
+          "top": 637,
+          "width": 141.453125,
+          "x": 665.9765625,
+          "y": 637
+        },
+        "text": "成本价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 807.4296875,
+          "right": 948.8828125,
+          "top": 637,
+          "width": 141.453125,
+          "x": 807.4296875,
+          "y": 637
+        },
+        "text": "最新价(原币)",
+        "whiteSpace": null
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 1034.453125,
+          "right": 1133.78125,
+          "top": 646,
+          "width": 99.328125,
+          "x": 1034.453125,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 948.8828125,
+          "right": 1141.78125,
+          "top": 637,
+          "width": 192.8984375,
+          "x": 948.8828125,
+          "y": 637
+        },
+        "text": "持仓市值(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "button": {
+          "bottom": 666,
+          "height": 20,
+          "left": 1190.4921875,
+          "right": 1313.8203125,
+          "top": 646,
+          "width": 123.328125,
+          "x": 1190.4921875,
+          "y": 646
+        },
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1141.78125,
+          "right": 1321.8203125,
+          "top": 637,
+          "width": 180.0390625,
+          "x": 1141.78125,
+          "y": 637
+        },
+        "text": "持仓浮动盈亏(CNY)",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "rect": {
+          "bottom": 677,
+          "height": 40,
+          "left": 1321.8203125,
+          "right": 1399,
+          "top": 637,
+          "width": 77.1796875,
+          "x": 1321.8203125,
+          "y": 637
+        },
+        "text": "查看",
+        "whiteSpace": null
+      }
+    ],
+    "pageWidth": 1440,
+    "scroll": {
+      "x": 0,
+      "y": 0
+    },
+    "table": {
+      "rect": {
+        "bottom": 1061,
+        "height": 424,
+        "left": 113,
+        "right": 1399,
+        "top": 637,
+        "width": 1286,
+        "x": 113,
+        "y": 637
+      },
+      "scrollLeft": 0
+    },
+    "url": "http://127.0.0.1:3333/preview/homepage?market=all&account=all&period=ytd&from=2026-01-01&to=2026-10-15&q=&sort=name&direction=asc&page=1&scenario=normal",
+    "viewport": {
+      "dpr": 2,
+      "h": 722,
+      "w": 1440
+    }
+  }
+]

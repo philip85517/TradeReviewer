@@ -996,6 +996,8 @@ describe("deployment release staging", () => {
     }
   });
 
+  // Copies the real repository (including design assets); this filesystem journey
+  // takes about 11s locally and deliberately retains complete staging coverage.
   test("stages the tracked build and application data sources from the real repository", async () => {
     const sandbox = await mkdtemp(join(tmpdir(), "tradereview-real-source-stage-"));
     const targetDir = join(sandbox, "target");
@@ -1020,7 +1022,7 @@ describe("deployment release staging", () => {
     } finally {
       await rm(sandbox, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 
   test("never stages ignored environment files or private credentials", async () => {
     const sandbox = await mkdtemp(join(tmpdir(), "tradereview-secret-stage-"));

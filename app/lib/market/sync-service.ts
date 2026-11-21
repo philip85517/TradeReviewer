@@ -30,7 +30,7 @@ export type SyncMarketDataOptions = {
   market: SupportedMarket;
   currency: string;
   required: DateRange;
-  repository: MarketDataRepository;
+  repository: Pick<MarketDataRepository,"getDailyCandles"|"getCoverage"|"getProviderSymbol"|"commitSyncResult">;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
   retryUnavailable?: boolean;
@@ -173,7 +173,7 @@ function shiftDate(date: string, days: number) {
   return value.toISOString().slice(0, 10);
 }
 
-function retainCoveragePart(
+export function retainCoveragePart(
   segment: Awaited<
     ReturnType<MarketDataRepository["getCoverage"]>
   >[number],
@@ -209,7 +209,7 @@ function retainCoveragePart(
   };
 }
 
-function preserveCoverageOutsideGap(
+export function preserveCoverageOutsideGap(
   coverage: Awaited<
     ReturnType<MarketDataRepository["getCoverage"]>
   >,

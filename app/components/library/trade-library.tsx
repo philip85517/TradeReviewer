@@ -92,11 +92,15 @@ import "./trade-library.css";
 export type { TradeLibraryBrowseState } from "./library-browse-state";
 
 type Props = {
+  /** Upgrade a homepage-scoped read before controls can broaden its data universe. */
+  onRequireFullData?: () => Promise<void>;
   defaultMode?: "queue" | "stocks";
   reviewExtras?: (episode: TradeEpisode) => Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   initialBrowseState?: TradeLibraryBrowseState;
   onBrowseStateChange?: (state: TradeLibraryBrowseState) => void;
   entries: TradeLibraryEntry[];
+  /** Homepage activity scope keeps filter options based on the complete shared account scope. */
+  scopeFilterEntries?:TradeLibraryEntry[];
   candlesByInstrument: Record<string, DailyCandleRecord[]>;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
   marketDataLabels?: Record<string, string>;
@@ -358,7 +362,9 @@ type TradeLibraryBrowseDerivedModel = {
 };
 
 export function TradeLibrary({
+  onRequireFullData,
   entries,
+  scopeFilterEntries,
   candlesByInstrument,
   marketDataStatuses,
   marketDataLabels,
@@ -384,6 +390,7 @@ export function TradeLibrary({
   instrumentMetadata,
   roomFxSnapshot,
 }: Props) {
+  const hasImportedEntries=(scopeFilterEntries??entries).length>0;
   const [browseState, setBrowseState] = useState<TradeLibraryBrowseState>(() => {
     const normalized = normalizeTradeLibraryBrowseState(initialBrowseState, defaultMode);
     return target
@@ -420,7 +427,11 @@ export function TradeLibrary({
     stockPage,
     roundPage,
   } = browseState;
-  const updateBrowseState = (patch: Partial<TradeLibraryBrowseState>) =>
+  const updateBrowseState = (patch: Partial<TradeLibraryBrowseState>, fullDataReady = false) => {
+    if (!fullDataReady && onRequireFullData && Object.keys(patch).some(key=>PAGINATION_RESET_KEYS.has(key as keyof TradeLibraryBrowseState))) {
+      void onRequireFullData().then(()=>updateBrowseState(patch,true)).catch(()=>undefined);
+      return;
+    }
     setBrowseState(current => {
       const next = { ...current, ...patch };
       const filterChanged = Object.keys(patch).some(key => PAGINATION_RESET_KEYS.has(key as keyof TradeLibraryBrowseState));
@@ -430,6 +441,7 @@ export function TradeLibrary({
       }
       return next;
     });
+  };
   const [queueNotice, setQueueNotice] = useState("");
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [fxSnapshot, setFxSnapshot] = useState<FxSnapshot | null>(null);
@@ -465,7 +477,7 @@ export function TradeLibrary({
   const filterOptions = useMemo(
     () => ({
       markets: [...new Set(entries.map((entry) => entry.instrument.market))],
-      marketOptions: dashboardMarketFilterOptions(entries),
+      marketOptions: dashboardMarketFilterOptions(scopeFilterEntries??entries),
       accounts: [
         ...new Map(
           entries
@@ -503,7 +515,7 @@ export function TradeLibrary({
         ).values(),
       ],
     }),
-    [entries],
+    [entries,scopeFilterEntries],
   );
   const advancedOptions = useMemo(
     () => buildLibraryFilterOptions(entries),
@@ -1105,7 +1117,7 @@ export function TradeLibrary({
       <button type="button" className="secondary-action" onClick={resetBrowseFilters}>
         重置筛选
       </button>
-      <button type="button" className="secondary-action" onClick={() => setFilterDrawerOpen(true)}>
+      <button type="button" className="secondary-action" onClick={() => {if(onRequireFullData)void onRequireFullData().then(()=>setFilterDrawerOpen(true)).catch(()=>undefined);else setFilterDrawerOpen(true);}}>
         高级筛选{advancedFilterCount > 0 ? `（${advancedFilterCount}）` : ""}
       </button>
       </div>
@@ -1184,13 +1196,13 @@ export function TradeLibrary({
       scopeTools={globalSearch}
       globalTools={globalTools}
       tabs={libraryViewTabs}
-      filters={entries.length > 0 ? sharedBrowseControls : undefined}
+      filters={hasImportedEntries ? sharedBrowseControls : undefined}
     />
   );
   const simulationScopeNotice = simulationScopeNeedsRun
     ? <p className="library-simulation-scope-notice" role="status">请选择模拟运行后查看交易库；不会合并多个模拟运行。</p>
     : null;
-  const emptyBrowseAction = entries.length === 0
+  const emptyBrowseAction = !hasImportedEntries
     ? onImport && <button type="button" className="primary-action" onClick={onImport}>去导入</button>
     : <button type="button" className="secondary-action" onClick={resetBrowseFilters}>清除筛选</button>;
   const emptyLibraryState = (
@@ -1200,7 +1212,7 @@ export function TradeLibrary({
     </div>
   );
 
-  if (entries.length === 0) {
+  if (!hasImportedEntries) {
     return (
       <section ref={sectionRef} className="trade-library" aria-label="交易库">
         {libraryHeader}
@@ -1551,10 +1563,10 @@ export function TradeLibrary({
         <div className="library-empty">
           <Database size={28} />
           <strong>
-            {entries.length === 0 ? "还没有导入交易" : "没有符合条件的股票"}
+            {!hasImportedEntries ? "还没有导入交易" : "没有符合条件的股票"}
           </strong>
           <span>
-            {entries.length === 0
+            {!hasImportedEntries
               ? "使用下方“去导入”添加券商成交记录。"
               : "调整搜索词或筛选条件后再试。"}
           </span>

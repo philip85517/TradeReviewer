@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-11-21",
+  "kind": "sanitized-historical-evidence-extract",
+  "freshProductVerification": false,
+  "unit": "ms",
+  "measurement": {
+    "viewport": "1440x1000",
+    "browser": "Chrome 157.0.8103.79",
+    "scope": "P06: open detail, close detail, enter target library until actual target executions render, return until full homepage renders; paint endpoints include two requestAnimationFrame callbacks",
+    "serverEntrySha256": "53a42ee6654b6790966662e1d0d9c494c2bb6a3632806ea4a9cb528c02b906ab",
+    "buildLabel": "production-retention",
+    "latestMarketAccountsBuildCovered": false
+  },
+  "p06": [
+    {
+      "scale": "1x",
+      "sourcePath": ".scratch/homepage-real-integration-20261114/evidence/final-integration-20261121/performance-1x/retention-p06-1x-20-raw.json",
+      "sourceSha256": "400533bf05880629897088823fda5d32c4f643dabd8d2f39df95299fb221f07b",
+      "originalErrorCount": 0,
+      "scenarios": {
+        "open-detail": {
+          "n": 20,
+          "durationsMs": [
+            121,
+            70.300048828125,
+            60.5,
+            76.199951171875,
+            73.2998046875,
+            72.5,
+            61.699951171875,
+            72.300048828125,
+            63.2001953125,
+            71.599853515625,
+            73.300048828125,
+            73.300048828125,
+            71.699951171875,
+            73.89990234375,
+            75.099853515625,
+            61.300048828125,
+            62.699951171875,
+            75.2001953125,
+            75.699951171875,
+            78.60009765625
+          ],
+          "maxMs": 121,
+          "above1000Ms": 0
+        },
+        "close-detail": {
+          "n": 20,
+          "durationsMs": [
+            80.400146484375,
+            77.599853515625,
+            88.699951171875,
+            74,
+            89.89990234375,
+            75.5,
+            91.199951171875,
+            91.89990234375,
+            90.199951171875,
+            92.39990234375,
+            94.699951171875,
+            75.7998046875,
+            92.2998046875,
+            76.800048828125,
+            80.10009765625,
+            80.800048828125,
+            77.5,
+            76.199951171875,
+            77.300048828125,
+            81.10009765625
+          ],
+          "maxMs": 94.699951171875,
+          "above1000Ms": 0
+        },
+        "enter-target-library": {
+          "n": 20,
+          "durationsMs": [
+            425.199951171875,
+            255.699951171875,
+            240.599853515625,
+            239.300048828125,
+            211.000244140625,
+            227.099853515625,
+            241.800048828125,
+            241.2998046875,
+            241.39990234375,
+            239.5,
+            242.699951171875,
+            241.39990234375,
+            241.39990234375,
+            241.60009765625,
+            258.199951171875,
+            241.199951171875,
+            241.5,
+            222.5,
+            226.60009765625,
+            228.10009765625
+          ],
+          "maxMs": 425.199951171875,
+          "above1000Ms": 0
+        },
+        "return-home": {
+          "n": 20,
+          "durationsMs": [
+            233.800048828125,
+            227.699951171875,
+            213.400146484375,
+            280.999755859375,
+            215.300048828125,
+            232,
+            215.199951171875,
+            228.400146484375,
+            210.5,
+            228.300048828125,
+            216.7001953125,
+            249.099853515625,
+            228,
+            213.900146484375,
+            246.699951171875,
+            211.300048828125,
+            231.199951171875,
+            213.300048828125,
+            213.39990234375,
+            212.89990234375
+          ],
+          "maxMs": 280.999755859375,
+          "above1000Ms": 0
+        }
+      }
+    },
+    {
+      "scale": "10x",
+      "sourcePath": ".scratch/homepage-real-integration-20261114/evidence/final-integration-20261121/performance-1x/retention-p06-10x-20-raw.json",
+      "sourceSha256": "8e5be803dff8395fd2a92059846d107b0887c73c0097c2ed32385f31883b4abb",
+      "originalErrorCount": 0,
+      "scenarios": {
+        "open-detail": {
+          "n": 20,
+          "durationsMs": [
+            123.900146484375,
+            72.10009765625,
+            74.599853515625,
+            75.199951171875,
+            71.199951171875,
+            74.099853515625,
+            74.199951171875,
+            90.2001953125,
+            75.300048828125,
+            90.800048828125,
+            80.900146484375,
+            73.60009765625,
+            76.300048828125,
+            75.699951171875,
+            59.599853515625,
+            76.39990234375,
+            75.60009765625,
+            74.60009765625,
+            59.900146484375,
+            76.199951171875
+          ],
+          "maxMs": 123.900146484375,
+          "above1000Ms": 0
+        },
+        "close-detail": {
+          "n": 20,
+          "durationsMs": [
+            92.10009765625,
+            77.5,
+            77.599853515625,
+            75.300048828125,
+            76.800048828125,
+            92.699951171875,
+            91.89990234375,
+            79.900146484375,
+            79.10009765625,
+            77.5,
+            75.60009765625,
+            75.10009765625,
+            91,
+            80.699951171875,
+            76.5,
+            90.900146484375,
+            73.300048828125,
+            81.39990234375,
+            91.199951171875,
+            88.800048828125
+          ],
+          "maxMs": 92.699951171875,
+          "above1000Ms": 0
+        },
+        "enter-target-library": {
+          "n": 20,
+          "durationsMs": [
+            415.89990234375,
+            213.100341796875,
+            230.699951171875,
+            229.10009765625,
+            218.7998046875,
+            225.400146484375,
+            180.099853515625,
+            234.400390625,
+            227.7998046875,
+            229.400146484375,
+            219.5,
+            218.400146484375,
+            211.900146484375,
+            223.800048828125,
+            229.5,
+            202.599853515625,
+            227.2001953125,
+            211.10009765625,
+            236.2001953125,
+            201.10009765625
+          ],
+          "maxMs": 415.89990234375,
+          "above1000Ms": 0
+        },
+        "return-home": {
+          "n": 20,
+          "durationsMs": [
+            277.7998046875,
+            245.89990234375,
+            231.099853515625,
+            247.7001953125,
+            263.699951171875,
+            228.199951171875,
+            250.300048828125,
+            247.89990234375,
+            261.7001953125,
+            265,
+            246.800048828125,
+            262.60009765625,
+            233.300048828125,
+            232.60009765625,
+            249.300048828125,
+            230.099853515625,
+            230.7998046875,
+            231.199951171875,
+            244.7998046875,
+            232.099853515625
+          ],
+          "maxMs": 277.7998046875,
+          "above1000Ms": 0
+        }
+      }
+    }
+  ],
+  "recovery10x": {
+    "sourcePath": ".scratch/homepage-real-integration-20261114/evidence/final-integration-20261121/retention-release/recovery-summary.json",
+    "sourceSha256": "9c0cb76f7f23bc77f08e6d303ccce7862f2e7107f36a1703ff0a8fd2c299c224",
+    "serverEntrySha256": "53a42ee6654b6790966662e1d0d9c494c2bb6a3632806ea4a9cb528c02b906ab",
+    "missingStatePaintMs": 249.59999999403954,
+    "automaticRecoveryElapsedMs": 216908.69999998808,
+    "firstFullAfterPublication": {
+      "status": 200,
+      "delayUntilRequestMs": 9643.542,
+      "requestDurationMs": 623.523
+    },
+    "originalErrorCount": 0,
+    "responseCounts": {
+      "200": 18,
+      "503": 1
+    },
+    "claimOrReadLockLogEvents": 0,
+    "curvePoints": 325,
+    "curveToCentEqual": true,
+    "maximumUnroundedCurveAmountDifference": "1e-42",
+    "interpretation": "Missing-state rendering and asynchronous rebuild/recovery are separate metrics. Recovery elapsed includes publication polling. The single 503 occurred before publication. This record does not demonstrate a 30-second freshness SLA."
+  }
+}

@@ -115,6 +115,8 @@ export type TradeExecution = {
     tradingDate?: string;
     settlementDate?: string;
     grossAmount?: string;
+    /** Original statement quote, separate from any gross/quantity-derived average. */
+    reportedPrice?: string;
     cashChange?: string;
     feeStatus?: "reported" | "allocated" | "unknown";
     venue?: string;

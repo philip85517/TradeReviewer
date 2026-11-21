@@ -87,6 +87,14 @@ function marketSessionClose(
   };
 }
 
+/** Next cutoff within the current market day. Day rollover schedules later days. */
+export function nextMarketSessionCutoff(market: SupportedMarket, now: Date): string | null {
+  const day = marketTradingDate(now.toISOString(), market);
+  if (!expectedTradingDates(market, day, day).length) return null;
+  const at = marketLocalTimestampToIso(`${day} ${marketSessionClose(market, day).time}`, marketTimeZone(market));
+  return Date.parse(at) > now.getTime() ? new Date(at).toISOString() : null;
+}
+
 export const MIN_FORWARD_DAILY_SESSIONS = 180;
 
 function shiftIsoDate(timestamp: string, days: number) {

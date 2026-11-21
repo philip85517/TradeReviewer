@@ -39,6 +39,17 @@ export type StorageBootstrap = {
   settings: Record<string, unknown>;
 };
 
+export type LibraryScope = { accountId: string; instrumentId: string };
+export type LibraryScopeBootstrap = {
+  scope: LibraryScope;
+  /** Content identity of this single consistent read snapshot, not a full-bootstrap revision. */
+  revision: string;
+  bootstrap: StorageBootstrap;
+  accountDirectory: Array<{ id: string; label: string; natures: import("../trades/types").TradeNature[] }>;
+  accountAliases: import("./tradingview-account-migration-client").TradingViewAccountMigrationAlias[];
+  recallSummaries: import("../recall/summary").RecallReviewSummary[];
+};
+
 export type InstrumentMetadataRead = {
   instruments: StoredInstrument[];
 };

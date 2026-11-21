@@ -13,6 +13,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { openSqliteDatabase } from "../../../db/sqlite";
+import { SQLITE_MIGRATIONS } from "../../../db/sqlite-schema";
 import type { BrowserStatePayload } from "./sqlite-contracts";
 import { SqliteStore } from "./sqlite-store";
 
@@ -54,7 +55,7 @@ function snapshotAllTables(store: SqliteStore) {
   return Object.fromEntries(
     tables.map(({ name }) => [
       name,
-      database.prepare(`select * from "${name}" order by rowid`).all(),
+      database.prepare(`select * from "${name}"`).all().sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),
     ]),
   );
 }
@@ -199,6 +200,29 @@ describe("SqliteStore", () => {
         importAudit: { sourceVersion: "original-parser" },
       }),
     });
+  });
+
+  it("retains corrected accounts only for the same reviewed printed F4 execution", () => {
+    const correction={originalAccountId:execution.accountId,canonicalAccountId:'reviewed-account',reason:'confirmed'};
+    const source={...execution.source,platform:'futu',fileFingerprint:'reviewed-file',page:2,row:6,templateId:'F4',timeEvidence:'inferred' as const,timePrecision:'second' as const,sourceTimestampText:'2024/10/30 22:03:16',grossAmount:'1000',cashChange:'998',settlementDate:'2024-10-31'};
+    const old={...execution,accountId:correction.canonicalAccountId,executedAt:'2024-10-31T02:03:16Z',source};
+    const incoming={...old,accountId:correction.originalAccountId,executedAt:'2024-10-30',source:{...source,timeEvidence:'document' as const,timePrecision:'date-only' as const}};
+    const store=createStore();store.mergeExecutions([old]);
+    const evidence={source:old.source,accountLabel:old.accountLabel,accountCorrection:correction};
+    databaseFor(store).prepare('update executions set evidence_json=? where id=?').run(JSON.stringify(evidence),old.id);
+    for(const changed of [
+      {...incoming,accountId:'unrelated'},
+      {...incoming,quantity:'999'},
+      {...incoming,fee:'999'},
+      {...incoming,instrument:{...incoming.instrument,id:'US:OTHER',symbol:'OTHER'}},
+      {...incoming,source:{...incoming.source,fileFingerprint:'other'}},
+      {...incoming,source:{...incoming.source,row:7}},
+      {...incoming,source:{...incoming.source,sourceTimestampText:'2024/10/30 22:03:17'}},
+      {...incoming,source:{...incoming.source,cashChange:'999'}},
+    ]) expect(()=>store.mergeTradeData({executions:[changed],replaceExecutionIds:[old.id]})).toThrow('Account correction replacement identity conflict');
+    store.mergeTradeData({executions:[incoming],replaceExecutionIds:[old.id]});
+    expect(store.getExecutions()[0]).toMatchObject({accountId:correction.canonicalAccountId,executedAt:'2024-10-30'});
+    expect(JSON.parse(databaseFor(store).prepare('select evidence_json from executions where id=?').get(old.id)!.evidence_json as string).accountCorrection).toEqual(correction);
   });
 
   it("fails closed when a same-id reimport changes the corrected trade quantity", () => {
@@ -854,11 +878,14 @@ describe("SqliteStore", () => {
     }
   });
   it("returns a complete bootstrap with empty production data", () => {
-    const bootstrap = createStore().getBootstrap();
+    const store = createStore();
+    const bootstrap = store.getBootstrap();
+    const applied = databaseFor(store).prepare("select max(version) as version from schema_migrations").get() as { version: number };
+    expect(applied.version).toBeGreaterThan(0);
+    expect(applied.version).toBe(SQLITE_MIGRATIONS.at(-1)!.version);
+    expect(bootstrap.schemaVersion).toBe(applied.version);
 
     expect(bootstrap).toMatchObject({
-      // Version 14 registers the approved TradingView account migration.
-      schemaVersion: 14,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -1766,4 +1793,24 @@ describe("SqliteStore", () => {
       payload({ coverage: [coverage as never] }),
     );
   });
+});
+
+it('does not invalidate source projections when identical instrument metadata is written again', () => {
+  const store = createStore();
+  store.mergeExecutions([execution]);
+  const database = databaseFor(store);
+  const record = {
+    market: 'US' as const, symbol: 'AAPL', name: 'Apple Inc.',
+    assetType: 'stock' as const, source: 'nasdaq' as const,
+    confidence: 'official' as const, resolvedAt: '2026-01-01T00:00:00.000Z',
+  };
+  store.putInstrumentMetadata(record);
+  const sequence = () => database.prepare('select max(seq) as seq from home_source_change').get();
+  const before = sequence();
+  const rows = store.getInstrumentMetadata(['US:AAPL']);
+  store.putInstrumentMetadata(record);
+  expect(store.getInstrumentMetadata(['US:AAPL'])).toEqual(rows);
+  expect(sequence()).toEqual(before);
+  store.putInstrumentMetadata({ ...record, name: 'Apple Inc. updated', resolvedAt: '2026-02-01T00:00:00.000Z' });
+  expect(sequence()).not.toEqual(before);
 });

@@ -48,6 +48,20 @@ afterEach(() => {
 });
 
 describe("FX snapshot persistence and refresh", () => {
+  it("records immutable FX knowledge on the observed Shanghai day and deduplicates retries", () => {
+    const database = openDatabase();
+    const value = snapshot({fetchedAt:'2026-09-19T17:00:00.000Z',rates:{CNY:1,HKD:2,USD:0.5}});
+    replaceFxSnapshot(database,value);
+    replaceFxSnapshot(database,{...value,cacheStatus:'cached',lastError:'offline'});
+    const rows = database.prepare('SELECT * FROM home_fx_history').all();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({business_date:'2026-09-20',known_at:value.fetchedAt});
+    expect(JSON.parse(String(rows[0].rates_json))).toMatchObject({HKD:{rate:'2'},USD:{rate:'0.5'}});
+    database.exec("CREATE TRIGGER reject_fx BEFORE INSERT ON home_fx_history BEGIN SELECT RAISE(ABORT,'history unavailable'); END");
+    expect(()=>replaceFxSnapshot(database,{...value,fetchedAt:'2026-09-20T17:00:00.000Z'})).toThrow();
+    expect(readFxSnapshot(database)?.fetchedAt).toBe(value.fetchedAt);
+  });
+
   it("replaces and reads one complete snapshot from the generic settings store", () => {
     const database = openDatabase();
     const value = snapshot();

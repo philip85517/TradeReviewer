@@ -5,6 +5,63 @@ import { f4, legacy, page } from './__fixtures__/futu-pdf-layouts';
 import { contracts } from './__fixtures__/futu-pdf-contracts';
 const options = {fileName:'synthetic.pdf',fileFingerprint:'synthetic'};
 describe('Futu PDF evidence parsing',()=>{
+  it('keeps a footer account separate from its far-right page numerator', () => {
+    const pages = legacy('F1');
+    pages[0].items.push(
+      { x:244.5, y:563.368, width:94.676, height:6.75, text:'賬戶號碼：1234567890123456' },
+      { x:776.25, y:563.368, width:12.506, height:6.75, text:'1/12' },
+    );
+    const result = parseFutuPdfPages(pages, options);
+    expect(result.monthly?.accountId).toBe('futu:1234567890123456');
+    expect(result.records.map(record => record.accountId)).toEqual(['futu:1234567890123456']);
+    const overridden = parseFutuPdfPages(pages, { ...options, accountId:'reviewed:account' });
+    expect(overridden.monthly?.accountId).toBe('reviewed:account');
+    expect(overridden.records[0].accountId).toBe('reviewed:account');
+  });
+
+  it.each(['123456', '123456789012345678901'])('preserves the complete legacy account %s', account => {
+    const result = parseFutuPdfPages(pageOnly(`富途 美股賬戶月結單 賬戶號碼：${account}`), options);
+    expect(result.monthly?.accountId).toBe(`futu:${account}`);
+  });
+  it('reads adjacent account glyphs and a value below the label without taking the page number', () => {
+    const pages = legacy('F1');
+    pages[0].items.push(
+      { x:20, y:500, width:40, height:8, text:'賬戶號碼：' },
+      { x:20, y:512, width:24, height:8, text:'123456' },
+      { x:44, y:512, width:24, height:8, text:'789012' },
+      { x:540, y:512, width:16, height:8, text:'1/12' },
+    );
+    const result = parseFutuPdfPages(pages, options);
+    expect(result.blocked).toBe(false);
+    expect(result.monthly?.accountId).toBe('futu:123456789012');
+    expect(result.records[0].accountId).toBe('futu:123456789012');
+  });
+  it('does not borrow an unlabelled number from another column or page', () => {
+    const pages = [page([[[20,'富途 美股賬戶月結單']],[[20,'賬戶號碼：']],[[500,'123456']]]), page([[[20,'123456']]],2)];
+    const result = parseFutuPdfPages(pages, options);
+    expect(result.monthly?.accountId).toBe('futu:document:synthetic');
+    expect(result.diagnostics.some(item => item.code === 'missing-statement-account')).toBe(true);
+  });
+  it('accepts repeated consistent account labels across pages', () => {
+    const pages = [page([[[20,'富途 美股賬戶月結單 賬戶號碼：123456']]]), page([[[20,'賬戶號碼：123456'],[700,'2/12']]],2)];
+    const result = parseFutuPdfPages(pages, options);
+    expect(result.blocked).toBe(false);
+    expect(result.monthly?.accountId).toBe('futu:123456');
+  });
+  it.each([false, true])('fails closed for conflicting accounts on one cell or separate pages (%s)', sameCell => {
+    const pages = sameCell
+      ? pageOnly('富途 美股賬戶月結單 賬戶號碼：123456 賬戶號碼：654321')
+      : [page([[[20,'富途 美股賬戶月結單 賬戶號碼：123456']]]), page([[[20,'賬戶號碼：654321']]],2)];
+    const result = parseFutuPdfPages(pages, options);
+    expect(result.blocked).toBe(true);
+    expect(result.records).toHaveLength(0);
+    expect(result.monthly?.accountId).toBeUndefined();
+    expect(result.diagnostics.some(item => item.code === 'conflicting-statement-account')).toBe(true);
+    const overridden = parseFutuPdfPages(pages, { ...options, accountId:'reviewed:account' });
+    expect(overridden.blocked).toBe(false);
+    expect(overridden.monthly?.accountId).toBe('reviewed:account');
+  });
+
   it.each([
     ['交易合約明細', undefined, 'F0', 'supported'],
     ['訂單合計 買賣方向 價格', '買賣方向 訂單日期 價格', 'F4a', 'unsupported'],
@@ -38,12 +95,33 @@ describe('Futu PDF evidence parsing',()=>{
     ['賣出開倉','sell','open-short'], ['卖出开仓','sell','open-short'],
     ['補回','buy','close-short'], ['补回','buy','close-short'],
     ['買入平倉','buy','close-short'], ['买入平仓','buy','close-short'],
+    ['買入開倉','buy','open-long'], ['买入开仓','buy','open-long'],
+    ['賣出平倉','sell','close-long'], ['卖出平仓','sell','close-long'],
     ['賣出','sell',undefined], ['買入','buy',undefined],
+    ['卖出','sell',undefined], ['买入','buy',undefined],
   ])('retains explicit position effect for %s without inferring generic direction', (direction,side,effect)=>{
     const pages=legacy('F3');pages[0].items.find(i=>i.text==='補回')!.text=direction!;
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
     expect(r.blocked).toBe(false);expect(r.records).toHaveLength(1);
-    for(const record of r.records){expect(record.side).toBe(side);expect(record.source.positionEffect).toBe(effect);}
+    for(const record of r.records){
+      expect(record.side).toBe(side);expect(record.source.positionEffect).toBe(effect);
+      if(effect){
+        expect(record.source.positionEffectEvidence).toMatchObject({kind:'explicit',confidence:'high',sourceLabel:direction});
+        expect(record.source.positionEffectEvidence?.reason).toBeTruthy();
+        expect(record.source.positionEffectEvidence?.fragments).toEqual([{page:1,row:5,role:'position-effect'}]);
+      }else expect(record.source.positionEffectEvidence).toBeUndefined();
+    }
+  });
+  it('preserves the original non-parent quote precision separately from the derived average',()=>{
+    const pages=legacy('F1');
+    for(const [before,after] of [['10.00','1,009.123450'],['1400.00','141277.28']]){
+      const item=pages[0].items.find(i=>i.text===before)!;
+      const end=item.x+item.width;item.text=after;item.width=after.length*4;item.x=end-item.width;
+    }
+    const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
+    expect(r.blocked).toBe(false);expect(r.records).toHaveLength(1);
+    expect(r.records[0]).toMatchObject({quantity:'140',price:'1009.12342857',fee:'2',source:{reportedPrice:'1009.123450',grossAmount:'141277.28'}});
+    expect(r.records[0].source.executionGroup).toBeUndefined();
   });
   it('detects content rather than a filename and accepts summary months',()=>{
     expect(detectFutuPdfStatement(pageOnly('富途 美股現金賬戶月結單 2020年01月')).matched).toBe(true);
@@ -53,7 +131,9 @@ describe('Futu PDF evidence parsing',()=>{
     const r=parseFutuPdfPages(f4(),options);
     expect(r.blocked).toBe(false);
     expect(r.records.map(x=>[x.quantity,x.price,x.fee,x.side])).toEqual([['300','10','3','sell']]);
-    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, quantity: '300' });
+    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, quantity: '300', reportedPrice:'10', fills:[{price:'10'},{price:'10'}] });
+    expect(r.records[0].source.reportedPrice).toBeUndefined();
+    expect(r.records[0].source).toMatchObject({positionEffect:'close-long',positionEffectEvidence:{kind:'explicit',confidence:'high',sourceLabel:'賣出平倉',fragments:[{page:1,row:4,role:'position-effect'}]}});
     expect(r.records[0].source.fragments?.map(x=>x.page)).toContain(1);
     expect(r.records[0].source.sourceTimezone).toBe('Asia/Hong_Kong');
     expect(r.monthly?.month).toBe('2025-06');
@@ -78,7 +158,8 @@ describe('Futu PDF evidence parsing',()=>{
   it('does not import order totals and conserves allocated fees',()=>{
     const r=parseFutuPdfPages(legacy('F3'),{...options,sourceTimezone:'America/New_York'});
     expect(r.records.map(x=>[x.quantity,x.price,x.fee])).toEqual([['140','10','2']]);
-    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, reportedQuantity: '140' });
+    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, reportedQuantity: '140', reportedPrice:'10' });
+    expect(r.records[0].source.reportedPrice).toBeUndefined();
     expect(new Set(r.records.map(x=>x.id)).size).toBe(1);
   });
 
@@ -160,7 +241,7 @@ describe('Futu PDF evidence parsing',()=>{
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
     expect(r.blocked).toBe(false);expect(r.records[0].fee).toBe('2');
   });
-  it('resolves a market-local legend per transaction when rows need different source zones',()=>{
+  it('preserves the explicit market-local clock even outside the daytime session',()=>{
     const pages=f4();
     for(const p of pages)for(const i of p.items){
       if(i.text==='01234(合成股票)')i.text='DEMO(Synthetic)';
@@ -179,9 +260,29 @@ describe('Futu PDF evidence parsing',()=>{
     expect(r.records).toHaveLength(1);
     expect(r.records[0]).toMatchObject({
       executedAt:'2025-06-25T16:10:38Z',
-      source:{sourceTimezone:'America/New_York',timeEvidence:'inferred',timeConfidence:0.93},
+      source:{sourceTimezone:'America/New_York',timeEvidence:'document'},
     });
-    expect(r.records[0].source.executionGroup?.fills[1]).toMatchObject({ sourceTimestampText: '2025/06/25 22:03:16' });
+    expect(r.records[0].source.executionGroup?.fills[1]).toMatchObject({ sourceTimestampText: '2025/06/25 22:03:16', sourceTimezone: 'America/New_York', executedAt: '2025-06-26T02:03:16Z' });
+  });
+  it('retains printed dates when comprehensive overnight clocks conflict with settlement',()=>{
+    const pages=f4();
+    for(const p of pages)for(const i of p.items){
+      if(i.text==='01234(合成股票)')i.text='DEMO(Synthetic)';
+      if(i.text==='HKD')i.text='USD';
+      if(i.text==='SEHK')i.text='CDED';
+      if(i.text==='2025/06/25')i.text='2025/03/21';
+      if(i.text==='2025/06/27')i.text='2025/03/24';
+      if(i.text==='09:30:00')i.text='22:29:15';
+      if(i.text.includes('按照香港'))i.text='本結單所展示的時間按照當地證券及期貨市場時間顯示 20:00(T)~04:00(T+1)之交易';
+    }
+    const r=parseFutuPdfPages(pages,options);
+    expect(r.blocked).toBe(false);
+    expect(r.records[0]).toMatchObject({executedAt:'2025-03-21',source:{timePrecision:'date-only',sourceTimestampText:'2025/03/21 22:29:15'}});
+    expect(r.records[0].source.tradingDate).toBeUndefined();
+    expect(r.diagnostics.some(d=>d.code==='futu-clock-date-conflict')).toBe(true);
+    const overridden=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong',overrideDocumentTimezone:true});
+    expect(overridden.records[0].source.timePrecision).toBe('second');
+    expect(overridden.records[0].source.timeEvidence).toBe('user');
   });
   it('blocks contradictory document legends until an explicit reviewed override',()=>{
     const pages=f4();pages[1].items.push({x:20,y:800,text:'本結單所展示的時間按照當地證券市場時間顯示',width:300,height:8});
@@ -214,7 +315,7 @@ describe('Futu PDF evidence parsing',()=>{
     expect(r.records.map(x=>[x.executedAt,x.side,x.quantity,x.price,x.fee])).toEqual([
       ['2016-01-04','buy','100','10.25','8'],['2016-01-05','sell','100','11','8.04'],
     ]);
-    expect(r.records[0].source).toMatchObject({sourceTimeKind:'date',timePrecision:'date-only',settlementDate:'2016-01-07',grossAmount:'1025',cashChange:'-1033'});
+    expect(r.records[0].source).toMatchObject({sourceTimeKind:'date',timePrecision:'date-only',settlementDate:'2016-01-07',grossAmount:'1025',cashChange:'-1033',reportedPrice:'10.25'});
     expect(r.records[0].source.sourceTimezone).toBe('');
     expect(r.monthly).toMatchObject({month:'2016-01',templateIds:['F0'],reviewRequired:true});
   });

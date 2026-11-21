@@ -202,7 +202,10 @@ function numericCells(
     (token) => token.centerX >= priceEnd && token.centerX < amountEnd,
   );
   if (!amountToken) return cells;
-  const remaining = tokens.filter((token) => token.centerX >= amountEnd);
+  // Narrow rows can put commission just left of the header-derived amount
+  // boundary. Once the amount is identified, every later token is a fee/tail
+  // candidate; reusing amountEnd here can silently discard reported commission.
+  const remaining = tokens.filter((token) => token.centerX > amountToken.centerX);
   const commissionEnd = amountToken.centerX + layout.amountSpan;
   const stampDutyEnd = commissionEnd + layout.feeSpan * 0.27;
   const otherFeeEnd = commissionEnd + layout.feeSpan * 0.58;

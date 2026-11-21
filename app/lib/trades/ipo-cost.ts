@@ -40,13 +40,14 @@ function dateBounds(value: string): [number, number] | undefined {
   return [start, end];
 }
 
-function withinWindow(left: string, right: string): boolean {
+export function withinIpoAttributionWindow(left: string, right: string): boolean {
   const leftBounds = dateBounds(left);
   const rightBounds = dateBounds(right);
   if (!leftBounds || !rightBounds) return false;
   const window = WINDOW_DAYS * 24 * 60 * 60 * 1000;
   return leftBounds[0] <= rightBounds[1] + window && rightBounds[0] <= leftBounds[1] + window;
 }
+const withinWindow = withinIpoAttributionWindow;
 
 function sameScope(event: StatementEvent, allocation: StatementEvent): boolean {
   return event.accountId === allocation.accountId

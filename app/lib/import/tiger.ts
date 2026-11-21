@@ -745,6 +745,10 @@ function positionEffectForLabel(
   if (label.includes("平仓空头") || label.includes("平倉空頭")) return "close-short";
   if (label.includes("开仓做多") || label.includes("開倉做多")) return "open-long";
   if (label.includes("平仓多头") || label.includes("平倉多頭")) return "close-long";
+  if (label === "开仓" || label === "開倉") {
+    if (signedQuantity?.isPositive()) return "open-long";
+    if (signedQuantity?.isNegative()) return "open-short";
+  }
   if (label === "平仓" || label === "平倉") {
     if (signedQuantity?.isPositive()) return "close-short";
     if (signedQuantity?.isNegative()) return "close-long";
@@ -764,7 +768,7 @@ function explicitPositionEffectEvidence(
     confidence: "high",
     sourceLabel,
     reason:
-      sourceLabel === "平仓" || sourceLabel === "平倉"
+      ["平仓", "平倉", "开仓", "開倉"].includes(compact(sourceLabel))
         ? `原件交易类型明确标记为${sourceLabel}，按原始数量符号识别为${effect}`
         : `原件交易类型明确标记为${sourceLabel ?? effect}`,
   };
@@ -871,7 +875,8 @@ function legacyPositionEffects(
 ): Map<number, { effect: PositionEffect; evidence: TigerPositionEffectEvidence }> {
   const effects = new Map<number, { effect: PositionEffect; evidence: TigerPositionEffectEvidence }>();
   const { snapshots, hasUnknownInventoryAdjustments } = positionSnapshots(pages);
-  const facts = rows.flatMap((row) => {
+  const explicitIdentities = new Set<string>();
+  const allFacts = rows.flatMap((row) => {
     const identity = parseIdentity(
       row.cells.code,
       row.cells.name,
@@ -885,7 +890,10 @@ function legacyPositionEffects(
     } catch {
       return [];
     }
-    if (positionEffectForLabel(row.cells.direction, signedQuantity)) return [];
+    if (positionEffectForLabel(row.cells.direction, signedQuantity)) {
+      explicitIdentities.add(`${identity.market}:${identity.symbol}`);
+      return [];
+    }
     return [{
       row,
       identityKey: `${identity.market}:${identity.symbol}`,
@@ -896,6 +904,9 @@ function legacyPositionEffects(
     }];
   });
 
+  // Mixed streams cannot be reconstructed from legacy-only quantities. Keep their
+  // legacy effects unknown rather than deriving inventory from incomplete flows.
+  const facts = allFacts.filter((fact) => !explicitIdentities.has(fact.identityKey));
   for (const [identityKey, snapshot] of hasUnknownInventoryAdjustments ? [] : snapshots) {
     if (!snapshot.quantity.isNegative()) continue;
     const identityFacts = facts.filter((fact) => fact.identityKey === identityKey);
@@ -1008,7 +1019,12 @@ function parseIdentity(
   marketValue: string | undefined,
   currencyValue: string | undefined,
 ): ParsedIdentity | null {
-  const sourceCode = codeValue?.trim() ?? "";
+  // Preserve an explicit whitespace market boundary before compacting or
+  // splitting a combined name/code cell.
+  const sourceCode = (codeValue?.trim() ?? "").replace(
+    /^(HK|US|SH|SZ)\s+([A-Z0-9.-]+)$/i,
+    "$1.$2",
+  );
   let inferredName = nameValue?.trim() || undefined;
   let rawCode = compact(sourceCode).toUpperCase();
   if (!rawCode) return null;
@@ -1033,11 +1049,13 @@ function parseIdentity(
     inferredName ||= combinedPrefix[2].trim();
   }
 
-  const prefixed = rawCode.match(/^(HK|US|SH|SZ)[.: -]?([A-Z0-9.-]+)$/);
+  // Bare letter symbols (USO, SHY, ...) are not market-prefixed codes.
+  // Undelimited numeric codes retain the historical broker format.
+  const prefixed = rawCode.match(/^(HK|US|SH|SZ)(?:[.:-]([A-Z0-9.-]+)|(\d+))$/);
   const suffixed = rawCode.match(/^([A-Z0-9.-]+)[.:-](HK|US|SH|SZ)$/);
   if (prefixed) {
     marketText ||= prefixed[1];
-    symbol = prefixed[2];
+    symbol = prefixed[2] ?? prefixed[3];
   } else if (suffixed) {
     symbol = suffixed[1];
     marketText ||= suffixed[2];

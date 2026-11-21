@@ -768,3 +768,32 @@ it("scopes evidence-only inventory events and ignores identity overrides when re
   const execution = fill("buy", "2026-09-17", "2", "10", "0");
   expect(replayPositionAtPrice({ executions: [execution], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("2");
 });
+
+it('certifies ordinary-long gross independently of unknown fees and rounded cost', () => {
+ const executions=[fill('buy','2025-01-01T15:00:00Z','100','10','1'),fill('sell','2025-01-02T15:00:00Z','40','12','0.4')];
+ executions.forEach(e=>{e.source.tradeNature='live';});
+ executions[0].source.feeStatus='unknown';
+ let gross: unknown;
+ replayPositionAtPrice({executions,markPrice:'0',certifyOrdinaryLongGross:true,nativeFacts:f=>{gross=f.grossContributions;}});
+ expect(gross).toEqual({[executions[1].id]:{currency:'USD',amount:'80',reasons:[]}});
+});
+it('does not certify precision lost inside gross subtraction or expose opt-in facts to old calls',()=>{
+ const es=[fill('buy','2025-01-01T15:00:00Z','1','1000000000000000000000000000000000000000000000001','0'),fill('sell','2025-01-02T15:00:00Z','1','1000000000000000000000000000000000000000000000002','0')];es.forEach(e=>{e.source.tradeNature='live';});
+ let amount:unknown;
+ replayPositionAtPrice({executions:es,markPrice:'0',certifyOrdinaryLongGross:true,nativeFacts:f=>{amount=f.grossContributions?.[es[1].id].amount;}});expect(amount).toBeNull();
+ replayPositionAtPrice({executions:es,markPrice:'0',nativeFacts:f=>{expect(f.grossContributions).toBeUndefined();}});
+});
+
+it("neutralizes a proved IPO cancellation without inventing a realized close", () => {
+  const allocation = fixtureEvent({ id: "allot", date: "2020-11-04", kind: "ipo", quantity: "50", description: "IPO allotment" });
+  const reversal: StatementEvent = { ...allocation, id: "reverse", kind: "corporate-action", ipoAction: "ipo-cancellation", quantity: "-50", reversesEventId: "allot", description: "Cancel Listing" };
+  const input = { executions: [], inventoryIdentity: { accountId: allocation.accountId, symbol: allocation.symbol!, market: allocation.market! }, evidence: [{ positions: [], events: [allocation, reversal] }], cursor: "2020-11-30", markPrice: "10" };
+  expect(replayPositionAtPrice(input)).toMatchObject({ quantity: "0", realizedPnl: "0" });
+  expect(replayPositionAtPrice(input).accuracy).toBeUndefined();
+  // Unrelated malformed evidence must not throw while searching for pairs.
+  expect(() => replayPositionAtPrice({ ...input, evidence: [{ positions: [], events: [allocation, { ...reversal, quantity: "invalid" }] }] })).not.toThrow();
+  const noDocument = replayPositionAtPrice({ ...input, evidence: [{ positions: [], events: [{ ...allocation, documentId: undefined }, { ...reversal, documentId: undefined }] }] });
+  expect(noDocument.accuracy?.reasons).toContain("position-event");
+  const unmatched = replayPositionAtPrice({ ...input, evidence: [{ positions: [], events: [allocation, { ...reversal, reversesEventId: "missing" }] }] });
+  expect(unmatched.accuracy?.reasons).toContain("position-event");
+});

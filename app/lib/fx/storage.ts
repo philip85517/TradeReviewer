@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import Decimal from "decimal.js";
 import type { DatabaseSync } from "node:sqlite";
 
 import { withSqliteTransaction } from "../../../db/sqlite";
@@ -32,6 +34,16 @@ export function replaceFxSnapshot(
   assertFxSnapshot(snapshot);
   const json = JSON.stringify(snapshot);
   withSqliteTransaction(database, () => {
+    // Preserve the day on which the rate became knowable, never backfill its
+    // provider rateDate into earlier financial snapshots.
+    const knownAt = new Date(snapshot.fetchedAt).toISOString();
+    const businessDate = new Date(Date.parse(knownAt) + 8 * 3600000).toISOString().slice(0, 10);
+    const D = Decimal.clone({precision:48});
+    const rates = Object.fromEntries(Object.entries(snapshot.rates).map(([currency, rate]) => [currency, {
+      rate: new D(String(rate)).toFixed(), source:snapshot.source.id, asOf:snapshot.rateDate,
+    }]));
+    const id = createHash('sha256').update(JSON.stringify([knownAt, snapshot.source.id, snapshot.rateDate, rates])).digest('hex');
+    database.prepare("INSERT OR IGNORE INTO home_fx_history(observation_id,business_date,known_at,rates_json,convention) VALUES(?,?,?,?,'CNY-per-unit-v1')").run(id,businessDate,knownAt,JSON.stringify(rates));
     database
       .prepare(
         `insert into app_settings (key, value_json, updated_at)

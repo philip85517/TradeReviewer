@@ -7,6 +7,7 @@
 - 每个功能使用 `.scratch/<feature-slug>/` 目录。
 - 每个任务独立保存为 `.scratch/<feature-slug>/issues/<NN>-<slug>.md`，按依赖顺序编号，阻塞任务在前。
 - 功能目录的 `README.md` 可作为索引，不代替独立任务文件。
+- 每批验收报告、功能 `README.md` 当前摘要及聊天汇报遵循[批次验收摘要](development-workflow.md#批次验收摘要先讲结论再给证据)：先说明本批/整体结论、核心变化、验收进展、剩余影响和下一步，再链接详细证据。任务编号附带业务含义；摘要不替代票的验收和生命周期字段。
 - 每个任务包含 What to build / Scope、Refs、State、Status、Assignee、集成负责人、Blocked by、可勾选的验收标准、反例与证据；按需记录 Priority。使用 [拆票标准与模板](task-decomposition.md)。
 - UI 功能目录同时记录视觉契约和整页 acceptance 证据，使用 [UI 任务与验收模板](ui-task-templates.md)；组件票通过不能自动关闭整页验收票。
 - 前端控件测试/检查等同义任务，以及影响前端交互或布局的开发后验收，按[前端控件与视觉空间诊断规范](frontend-control-audit.md)记录触发、完整/局部范围、版本绑定的控件登记/验证表、问题表与复验证据。范围内缺陷建立独立问题票，设计待补与实现故障分别标明；用户排除有依据且不记作通过。该要求同样适用于原任务未显式写“测试”的前端开发。

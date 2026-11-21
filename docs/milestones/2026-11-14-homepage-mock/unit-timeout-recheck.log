@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0cde/TradeReview
+
+(node:69308) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ scripts/deploy.test.mjs (58 tests | 1 failed | 57 skipped) 5015ms
+     × stages the tracked build and application data sources from the real repository 5013ms
+ ❯ app/lib/market/providers/providers.test.ts (61 tests | 1 failed | 60 skipped) 5019ms
+     × tries Tiger before public providers for US daily when configured 5016ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/deploy.test.mjs > deployment release staging > stages the tracked build and application data sources from the real repository
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ scripts/deploy.test.mjs:999:7
+    997|   });
+    998|
+    999|   test("stages the tracked build and application data sources from the…
+       |       ^
+    1000|     const sandbox = await mkdtemp(join(tmpdir(), "tradereview-real-sou…
+    1001|     const targetDir = join(sandbox, "target");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/lib/market/providers/providers.test.ts > provider routing > tries Tiger before public providers for US daily when configured
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/lib/market/providers/providers.test.ts:645:3
+    643|   });
+    644|
+    645|   it("tries Tiger before public providers for US daily when configured…
+       |   ^
+    646|     const calls: string[] = [];
+    647|     const tiger = new TigerProvider(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  2 failed | 2 passed | 206 skipped (210)
+   Start at  22:03:36
+   Duration  26.16s (transform 3.31s, setup 470ms, import 4.48s, tests 16.74s, environment 3.27s)

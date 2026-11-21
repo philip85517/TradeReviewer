@@ -1,0 +1,11 @@
+import { build } from 'vite';
+import { isAbsolute, resolve } from 'node:path';
+import { readFileSync, realpathSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+const path=process.env.TRADEREVIEW_DB_PATH;
+if(!path||!isAbsolute(path))throw new Error('Set an explicit absolute TRADEREVIEW_DB_PATH for the isolated build.');
+const business=JSON.parse(readFileSync(new URL('../conf/runtime.json',import.meta.url),'utf8')).databasePath;
+if(realpathSync(path)===realpathSync(business))throw new Error('This validation command does not write the business database.');
+await build({configFile:false,logLevel:'error',resolve:{alias:{'server-only':resolve('tests/server-only.ts')}},build:{ssr:'scripts/home-build-entry.ts',outDir:'.data/home-worker-build',emptyOutDir:true,minify:false,rollupOptions:{output:{entryFileNames:'home-build-entry.mjs'}}}});
+const {buildOnce}=await import(pathToFileURL(resolve('.data/home-worker-build/home-build-entry.mjs')).href);
+console.log(JSON.stringify(buildOnce(path,process.env.HOME_BUILD_AS_OF),null,2));

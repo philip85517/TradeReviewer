@@ -1,0 +1,31 @@
+{
+  "base_commit": "6ddbeca09b9eaf1b6d88488e6e154839217cb74b",
+  "branch": "codex/latest-system-preview-20261106",
+  "snapshot_sha256": "18ca3bd95ea15f45d4d9f21fea7e2ba5dc8aacc67307769e093b0c9343a33e39",
+  "files": {
+    "app/components/homepage-preview/display-contract.ts": "be7e3f6a5136c34464416c7454b6dd9b3e99b73596b911ca7b47fcb8d4e2765b",
+    "app/components/homepage-preview/full-value.tsx": "e3635496c6624de956e1ac502a95335307a72ebd5a928fd17b99d66e0a66d508",
+    "app/components/homepage-preview/holding-detail.tsx": "83d061d7680b2b0e17d5797be2d72b6df1077f0740d444bf4c7c4efd38a9d412",
+    "app/components/homepage-preview/holdings.tsx": "0b051fa652380a5c6ca02a5944f2e0db692035b2eefa7c0af9aa3b452039b480",
+    "app/components/homepage-preview/homepage-preview.css": "dcc3ea97c0e0894dc086839ef7f509a7f7f3f6295312362d5f27334a926bcfb1",
+    "app/components/homepage-preview/homepage-preview.test.tsx": "27db737ca630b88de0a05394b3436f83680c1089f08b020853b97aa39646de0d",
+    "app/components/homepage-preview/homepage-preview.tsx": "84bdde37e53789c1964cfadd8a81bc7ea62dcdbdc08e4f10ea9b037fdebcb3fe",
+    "app/components/homepage-preview/location-state.test.ts": "25f31b56e7cbc827c70adcbd3b7673fe77d5d825dafd71df1b122d36e3119ea8",
+    "app/components/homepage-preview/location-state.ts": "5e44411fef3353034aaec55fb470bf501228e372c11c176727e398412f9c8514",
+    "app/components/homepage-preview/metric-cards.css": "718ec99e15fc867915485065a9218ff1b17a8524c08f4a5246bbf81d883670ed",
+    "app/components/homepage-preview/metric-cards.tsx": "2251dd6f0706e0647f4e1ae062ebdb3eac5abde9e0ce37b41d07f24014029d99",
+    "app/components/homepage-preview/mock-snapshots.json": "df45f1b2a46e8ef32c3251e26a2d531547e0150cb2564a9ee037f1c94f6ee921",
+    "app/components/homepage-preview/mock-source.test.ts": "ba09fac63e01040ae5831b4ab751344eb77e61205dde0514bf51ac4b8aebe2df",
+    "app/components/homepage-preview/mock-source.ts": "d0d34fb71c3f839df3b050a24535fdd256ba9fb22e72f7a993509ad86bd21ee5",
+    "app/components/homepage-preview/performance-chart.css": "849139d7b76fc49a460b01c75f8e1991a002e2eb25c49ffa150f4f700e5c97e0",
+    "app/components/homepage-preview/performance-chart.tsx": "c0231aaa7b9c6c3725a468a441477f132aaaae9bc17003bbe66ab81276930877",
+    "app/components/homepage-preview/period-selector.css": "4d29e8c63a103aa67ddc2aba4474029d1861dab85e0f95da5b82b02f17286417",
+    "app/components/homepage-preview/period-selector.tsx": "2658061629c8e28f9d16d023e898962b07a92e37c0a38398fc389313e89b8ba1",
+    "app/components/homepage-preview/use-homepage-preview.ts": "7835cd6d09e2353f884138915e14903975d1b353b9795c36310363b3451e032d",
+    "app/preview/homepage/page.tsx": "f2b366d17e3bfa1a257b18f1a068ff81412c94509be7724ec59a93439a803865"
+  },
+  "prior_snapshot": "a443138c59e0f5567078a841c737766e9ceff75ad4c7a9cd962c93cf5822e2c3",
+  "recorded_at": "2026-11-13T16:00:16.847046+00:00",
+  "scope": "D01–D06 plus delayed pending feedback; VA-R01 header nowrap correction",
+  "snapshot_algorithm": "sha256 of UTF-8 JSON(files, sort_keys=True, separators=(comma,colon))"
+}

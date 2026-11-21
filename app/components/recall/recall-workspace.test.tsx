@@ -914,7 +914,8 @@ describe("RecallWorkspace autosave reconciliation", () => {
       renderRecall(replayEpisode, initial);
 
       await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
-      expect(replayChartHarness.pendingReady).not.toBeNull();
+      // DOM commit can precede the passive effect that registers chart readiness.
+      await waitFor(() => expect(replayChartHarness.pendingReady).not.toBeNull());
       pendingFrames.splice(0).forEach((callback) => callback(0));
       expect(replayChartHarness.handle.restoreViewport).not.toHaveBeenCalledWith(savedViewport);
 

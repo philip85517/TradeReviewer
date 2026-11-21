@@ -25,6 +25,50 @@ const options = {
   fileFingerprint: "tiger-fixture",
 };
 
+describe("Tiger symbol identity", () => {
+  it.each(["USHY", "SHV", "SZK", "HKD", "O"])("keeps the legal bare symbol %s intact", code => {
+    const pages = legacyPages();
+    pages[0].items.find(item => item.text === "SYNX")!.text = code;
+    pages[0].items.find(item => item.text === "US")!.text = "";
+    const result = parseTigerPages(pages, options);
+    expect(result.records[0].instrument).toMatchObject({ id:`US:${code}`, symbol:code, market:"US" });
+  });
+  it.each([
+    ["US.USO", "US", "USO"], ["US:USO", "US", "USO"], ["US-USO", "US", "USO"],
+    ["USO.US", "US", "USO"], ["USO:US", "US", "USO"], ["USO-US", "US", "USO"],
+    ["US USO", "US", "USO"], ["SH 600000", "CN-SH", "600000"], ["SZ.000001", "CN-SZ", "000001"],
+    ["HK01810", "HK", "1810"], ["SH600000", "CN-SH", "600000"], ["SZ000001", "CN-SZ", "000001"],
+  ])("retains the explicit or numeric market format %s", (code, market, symbol) => {
+    const pages = legacyPages();
+    pages[0].items.find(item => item.text === "SYNX")!.text = code;
+    pages[0].items.find(item => item.text === "US")!.text = "";
+    const result = parseTigerPages(pages, options);
+    if (market.startsWith("CN-")) {
+      // CN execution imports are already unsupported; retain the correct code
+      // and rejection instead of accidentally admitting it as a HK trade.
+      expect(result.blocked).toBe(true);
+      expect(result.records).toHaveLength(0);
+      expect(result.diagnostics).toContainEqual(expect.objectContaining({ code:"invalid-tiger-trade-row", instrumentSymbol:symbol }));
+    } else {
+      expect(result.blocked).toBe(false);
+      expect(result.records[0].instrument).toMatchObject({ id:`${market}:${symbol}`, market, symbol });
+    }
+  });
+  it.each(["合成原油 USO", "USO 合成原油"])("preserves bare codes combined with names: %s", code => {
+    const pages = legacyPages();
+    pages[0].items.find(item => item.text === "SYNX")!.text = code;
+    expect(parseTigerPages(pages, options).records[0].instrument).toMatchObject({ id:"US:USO", symbol:"USO" });
+  });
+  it("preserves bare USO rather than stripping US as a market prefix", () => {
+    const pages = legacyPages();
+    pages[0].items.find(item => item.text === "SYNX")!.text = "USO";
+    const result = parseTigerPages(pages, options);
+    expect(result.blocked).toBe(false);
+    expect(result.records[0].instrument).toMatchObject({ id:"US:USO", symbol:"USO", market:"US" });
+    expect(result.candidates[0].symbol).toBe("USO");
+  });
+});
+
 describe("Tiger fee reconciliation", () => {
   const subtotal = (amount: string, currency = "USD", y = 340) =>
     legacyRow(y, ["合计", "", "", "", "", "", "", "", amount, "", "", "", "", currency]);
@@ -470,6 +514,34 @@ describe("Tiger PDF import", () => {
       expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "开仓做多" }),
       expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "平仓多头" }),
     ]);
+  });
+
+  it.each([["开仓", "3", "open-long"], ["開倉", "-3", "open-short"]])(
+    "uses signed quantity for plain opening %s %s", (label, quantity, effect) => {
+      const pages = legacyPages({ quantity });
+      pages[0].items.push(legacyItem(label, 290, 250));
+      expect(parseTigerPages(pages, options).records[0]?.source).toMatchObject({
+        positionEffect: effect,
+        positionEffectEvidence: { kind: "explicit", confidence: "high", sourceLabel: label,
+          reason: expect.stringContaining("原始数量符号"), fragments: expect.any(Array) },
+      });
+    },
+  );
+
+  it("does not infer legacy inventory from a net flow missing an explicit opening", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, ["SYNX", "US", "NASDAQ", "开仓", "-5", "9", "-45", "0", "0", "0", "", "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD"]),
+      legacyItem("期末持仓", 30, 410), legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-5", "10", "", "", "", "", "", "", "", "USD"]));
+    expect(parseTigerPages(pages, options).records.map(r => r.source.positionEffect)).toEqual([undefined, "open-short"]);
+  });
+
+  it.each(["0", ""])('rejects a plain opening with quantity %s', quantity => {
+    const pages = legacyPages({ quantity });
+    pages[0].items.push(legacyItem("开仓", 290, 250));
+    expect(parseTigerPages(pages, options).records).toHaveLength(0);
   });
 
   it("maps a plain closing label by signed quantity without realized P&L", () => {

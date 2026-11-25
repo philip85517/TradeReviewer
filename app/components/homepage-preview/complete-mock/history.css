@@ -33,7 +33,7 @@
 .hp-history-chart-title h3 { font-size:16px; line-height:24px; font-weight:600; }
 .hp-history-chart-title>span { color:#a8b6cb; font-size:12px; }
 .hp-history-plot { position:relative; height:264px; }
-.hp-history-plot>svg { display:block; width:100%; height:264px; overflow:visible; }
+.hp-history-chart-surface>svg { display:block; width:100%; height:264px; overflow:visible; }
 .hp-history-grid { stroke:#283448; stroke-width:1; }
 .hp-history-zero { stroke:#a8b6cb; stroke-width:1; }
 .hp-history-tick { fill:#a8b6cb; font-size:12px; font-variant-numeric:tabular-nums; }
@@ -53,5 +53,54 @@
 .hp-history-feedback { position:absolute; left:100px; top:16px; right:60px; font-size:12px; line-height:24px; color:#a8b6cb; display:flex; justify-content:flex-end; pointer-events:none; }
 .hp-history-feedback [role=alert] { color:#ff8592; }
 .hp-history-feedback button { height:28px; min-width:48px; margin-left:8px; border:1px solid #874451; border-radius:4px; background:#162233; pointer-events:auto; }
-@media(max-width:900px) { .hp-history-heading { min-width:720px; } .hp-history-metrics { min-width:720px; } .hp-history-chart { min-width:720px; } .hp-history { overflow-x:auto; padding-bottom:2px; } }
+.hp-history-scroll-hint { display:none; }
+@media(max-width:900px) {
+  .hp-history { overflow:visible; padding-bottom:0; }
+  .hp-history-heading { min-width:0; flex-wrap:wrap; gap:12px; min-height:56px; margin-bottom:20px; }
+  .hp-history-controls { max-width:100%; }
+  .hp-history-metrics { min-width:0; margin-right:0; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hp-history-card { height:auto; min-height:104px; }
+  .hp-history-card strong { white-space:normal; overflow-wrap:anywhere; }
+  .hp-history-win>div { flex-wrap:wrap; }
+  .hp-history-win small { margin-top:16px; margin-left:auto; }
+  .hp-history-chart { min-width:0; height:auto; }
+  .hp-history-chart-scroll { overflow-x:auto; overflow-y:hidden; padding:2px; margin:-2px; }
+  .hp-history-chart-surface { min-width:620px; }
+  .hp-history-tooltip { left:0!important; width:264px; max-width:100%; }
+  .hp-history-scroll-hint { display:block; margin-top:8px!important; color:#a8b6cb; font-size:12px; line-height:20px; }
+  .hp-history-feedback { position:static; min-height:40px; margin-top:8px; font-size:12px; line-height:18px; justify-content:flex-start; overflow-wrap:anywhere; }
+}
+@media(max-width:760px) {
+  .hp-history-heading { align-items:flex-start; flex-direction:column; }
+  .hp-history-controls { width:100%; }
+  .hp-history-year { flex:0 0 auto; }
+  .hp-history-select { flex:1; min-width:0; }
+  .hp-history-select select { min-width:0; width:100%; }
+}
+@media(max-width:600px) {
+  .hp-history-metrics { grid-template-columns:minmax(0,1fr); }
+  .hp-history-range-panel { width:min(288px,100%); }
+  .hp-history-year { padding-left:10px; padding-right:10px; }
+  .hp-history-card { min-height:104px; }
+  .hp-history-feedback { min-height:72px; }
+}
 @media(pointer:coarse) { .hp-history-year,.hp-history-select select,.hp-history-range-actions button { min-height:44px; } .hp-history-controls { height:46px; } }
+
+/* Real-home dual money chart: keep the existing title/plot heights and mock styles. */
+.hp-history-real .hp-history-chart-title { gap:12px; }
+.hp-history-real .hp-history-chart-title h3 { white-space:nowrap; }
+.hp-history-real .hp-history-legend { display:flex; align-items:center; justify-content:flex-end; gap:14px; flex:1; list-style:none; margin:0; padding:0; font-size:12px; line-height:20px; color:#a8b6cb; white-space:nowrap; }
+.hp-history-real .hp-history-legend li { display:flex; align-items:center; gap:6px; }
+.hp-history-real .hp-history-legend i { display:block; width:16px; height:2px; background:#6ca8ff; }
+.hp-history-real .hp-history-legend-cumulative i { background:#b49aff; }
+.hp-history-real .hp-history-line-cumulative .hp-history-series { stroke:#b49aff; }
+.hp-history-real .hp-history-line-cumulative .hp-history-point { fill:#b49aff; }
+@media(max-width:600px) {
+  .hp-history-real .hp-history-chart-title { gap:8px; }
+  .hp-history-real .hp-history-legend { gap:8px; }
+}
+
+@media(min-width:901px) {
+  /* Coverage feedback uses the existing gap above the chart, clear of the legend. */
+  .hp-history-real .hp-history-feedback { top:-24px; left:0; right:0; line-height:20px; }
+}

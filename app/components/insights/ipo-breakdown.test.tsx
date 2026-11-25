@@ -78,6 +78,19 @@ describe("IpoBreakdown", () => {
     expect(onOpenEpisode).toHaveBeenCalledWith("US:ipo-episode", "ipo-episode");
   });
 
+  it("uses readable evidence labels while retaining the exact episode routing key", async () => {
+    const id="episode:%5Bprivate-account%5D";
+    const item=fact(id,"ipo","12",{instrumentName:"华虹宏力",instrumentSymbol:"1347",ipoEvidence:[{id:"event",label:"获配"}]});
+    const onOpenEpisode=vi.fn();
+    const {container}=render(<IpoBreakdown report={buildIpoBreakdownReport([item])} facts={[item]} onOpenEpisode={onOpenEpisode}/>);
+    const button=screen.getByRole("button",{name:/查看IPO 证据 华虹宏力 1347/});
+    expect(button).toHaveTextContent("2025/12/31—2026/1/1");
+    expect(container.textContent).not.toContain(id);
+    expect(button.getAttribute("aria-label")).not.toContain(id);
+    await userEvent.click(button);
+    expect(onOpenEpisode).toHaveBeenCalledWith(item.instrumentId,id);
+  });
+
   it("uses dashes for unavailable metrics and explains coverage", () => {
     const facts = [fact("unknown-episode", "unknown", null, { ipoClassificationReason: "收益不可用" })];
     render(<IpoBreakdown report={buildIpoBreakdownReport(facts)} facts={facts} onOpenEpisode={vi.fn()} />);

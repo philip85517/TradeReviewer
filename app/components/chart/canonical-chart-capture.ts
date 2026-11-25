@@ -58,10 +58,11 @@ export function drawExecutionMarkers(
     markers: readonly CanonicalChartMarker[],
     projection: MarkerProjection,
 ) {
-    for (const marker of markers) {
+    const occupiedLabels: { left: number; right: number; top: number; bottom: number }[] = [];
+    const projectedMarkers = markers.flatMap(marker => {
         const x = projection.timeToX(marker.time);
         const anchorY = projection.priceToY(marker.price);
-        if (x === null || anchorY === null || !Number.isFinite(x) || !Number.isFinite(anchorY)) continue;
+        if (x === null || anchorY === null || !Number.isFinite(x) || !Number.isFinite(anchorY)) return [];
         const geometry = markerDisplayGeometry({
             anchorX: x,
             anchorY,
@@ -69,9 +70,24 @@ export function drawExecutionMarkers(
             offsetX: marker.offsetX,
             offsetY: marker.offsetY,
             maxX: projection.maxX,
+            rightLabelBoundaryX: projection.rightLabelBoundaryX,
         });
+        return [{ marker, geometry, anchorX: x, anchorY }];
+    });
+    for (const { marker, geometry, anchorX, anchorY } of projectedMarkers) {
         const { x: xWithOffset, y, radius } = geometry;
         context.save();
+        // Only the display diamond moves out of the price-label strip. Keep a
+        // leader to the real time/price anchor so the shift cannot imply a fill
+        // occurred on another candle. Hit-testing uses this same geometry.
+        if (Number.isFinite(projection.rightLabelBoundaryX) && anchorX > (projection.rightLabelBoundaryX as number) - radius && anchorX <= (projection.maxX ?? Infinity)) {
+            context.strokeStyle = marker.color;
+            context.lineWidth = 1;
+            context.beginPath();
+            context.moveTo(anchorX, anchorY);
+            context.lineTo(xWithOffset, y);
+            context.stroke();
+        }
         context.fillStyle = marker.color;
         context.beginPath();
         context.moveTo(xWithOffset, y - radius);
@@ -93,7 +109,20 @@ export function drawExecutionMarkers(
             rightTextX + textWidth > (rightLabelBoundaryX as number) &&
             leftTextX - textWidth >= 0;
         context.textAlign = shouldPlaceLeft ? 'right' : 'left';
-        context.fillText(marker.text, shouldPlaceLeft ? leftTextX : rightTextX, y);
+        const textX = shouldPlaceLeft ? leftTextX : rightTextX;
+        const bounds = { left: shouldPlaceLeft ? textX - textWidth : textX, right: shouldPlaceLeft ? textX : textX + textWidth, top: y - 8, bottom: y + 8 };
+        // Keep every execution diamond and hit target. Only redundant permanent
+        // text yields to all diamonds and nearby labels; zooming reprojects and restores it.
+        const intersectsDiamond = projectedMarkers.some(other => {
+            if (other.geometry === geometry) return false;
+            const { x, y: markerY, radius: markerRadius } = other.geometry;
+            return bounds.left < x + markerRadius + 2 && bounds.right > x - markerRadius - 2 &&
+                bounds.top < markerY + markerRadius + 2 && bounds.bottom > markerY - markerRadius - 2;
+        });
+        if (!intersectsDiamond && !occupiedLabels.some(box => bounds.left < box.right + 4 && bounds.right + 4 > box.left && bounds.top < box.bottom + 2 && bounds.bottom + 2 > box.top)) {
+            context.fillText(marker.text, textX, y);
+            occupiedLabels.push(bounds);
+        }
         context.restore();
     }
 }

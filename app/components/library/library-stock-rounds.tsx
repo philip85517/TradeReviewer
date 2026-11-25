@@ -3,6 +3,7 @@
 import { ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 
+import { tradingViewEpisodeBusinessScope, TRADINGVIEW_CANONICAL_ACCOUNT_LABEL } from "../../lib/trades/tradingview-account-identity";
 import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import { instrumentPresentation } from "../../lib/instruments/instrument-presentation";
@@ -65,6 +66,9 @@ function runIdForRow(row: ReviewQueueItem) {
 }
 
 function runLabel(rows: ReviewQueueItem[], runId: string | null) {
+  if (rows.length > 0 && rows.every(row => tradingViewEpisodeBusinessScope(row.item.episode))) {
+    return TRADINGVIEW_CANONICAL_ACCOUNT_LABEL;
+  }
   if (!runId) return "实盘回合";
   const first = rows.find((row) => runIdForRow(row) === runId);
   const presentation = first ? instrumentPresentation(first.entry.instrument) : null;
@@ -443,6 +447,7 @@ export function LibraryStockRounds({
                   <small>{weightedReturnLabel(stockMetrics.returnValue, stockMetrics.currency, stockMetrics.cnyUnavailable, reportCurrency)}</small>
                   {rawPnlDetailsLabel(stockMetrics) && <small>{rawPnlDetailsLabel(stockMetrics)}</small>}
                   {stockOpenLabel && <small>{stockOpenLabel}</small>}
+                  {[...new Set(entry.episodes.flatMap(item => item.valuationNote ? [item.valuationNote] : []))].map(note => <small key={note}>{note}</small>)}
                 </span>
                 <ChevronRight size={16} />
               </button>
@@ -506,6 +511,7 @@ export function LibraryStockRounds({
                             <small>{episode.status === "open" ? (roundOpenLabel ?? "浮盈亏暂不可用") : weightedReturnLabel(roundMetrics.returnValue, roundMetrics.currency, roundMetrics.cnyUnavailable, reportCurrency)}</small>
                           </span>
                         </button>
+                        {row.item.valuationNote && <small>{row.item.valuationNote}</small>}
                         {locallyIncludedExtra && <small className={styles.localExtraBadge}>局部额外显示 · 不计入当前统计</small>}
                         <details className={styles.fullName}>
                           <summary>查看完整原名</summary>

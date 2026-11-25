@@ -352,6 +352,29 @@ describe("LibraryStockRounds", () => {
     expect(screen.getByText(/加权收益率（按开仓金额）：10\.00% · CNY/)).toBeInTheDocument();
   });
 
+  it("labels the canonical TradingView account without inventing a source run", () => {
+    const canonical = item("canonical", "2026-02-01T10:00:00Z", {
+      nature: "simulation", accountId: "tradingview:simulation:default",
+      accountLabel: "TradingView · 模拟盘", netPnl: "-7900.6",
+    });
+    canonical.episode.executions[0].source = {
+      ...canonical.episode.executions[0].source,
+      tradeNature: "simulation", tradingNature: "simulated", simulationRunId: "source-a",
+    };
+    const stock = { ...entry([canonical]), tradeNature: "simulation" as const };
+    const rows = [row(stock, canonical)];
+    render(<LibraryStockRounds
+      groups={buildTradeLibraryStockGroups(rows, rows, [stock])}
+      expandedStockIds={[instrument.id]} includeReviewedStockIds={[]} reviewStatus="all"
+      marketDataStatuses={{}} onToggleExpanded={vi.fn()} onToggleIncludeReviewed={vi.fn()}
+      onOpenRound={vi.fn()} money={(value, currency) => `${currency} ${value}`}
+      natureLabel={() => "模拟盘"} marketDataStatusLabel={() => "行情待补齐"} reviewTagLabel={tag => tag}
+    />);
+    expect(screen.getByRole("heading", { name: "TradingView · 模拟盘" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /模拟运行/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/UABD/)).not.toBeInTheDocument();
+  });
+
   it("shows separate per-run amounts and the multi-run expansion cue", async () => {
     const runAEpisode = item("run-a-episode", "2026-02-01T10:00:00Z", {
       nature: "simulation",
@@ -392,6 +415,7 @@ describe("LibraryStockRounds", () => {
     );
 
     expect(screen.getByText("2 个模拟运行 · 展开查看")).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { name: /^模拟运行 ·/ })).toHaveLength(2);
     expect(screen.getByText(/CNY 10/)).toBeInTheDocument();
     expect(screen.getByText(/CNY 20/)).toBeInTheDocument();
     expect(screen.queryByText(/CNY 30/)).not.toBeInTheDocument();

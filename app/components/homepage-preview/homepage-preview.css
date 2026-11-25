@@ -49,7 +49,8 @@ body:has(.hp-preview) { overflow-y:auto; }
 .hp-holdings { padding:0 16px; background:#111a26; border:1px solid #283448; border-radius:8px; }
 .hp-holdings-title { height:48px; display:flex; align-items:center; gap:12px; }
 .hp-holdings-title h2 { margin-right:12px; white-space:nowrap; }
-.hp-holdings-title p { margin-left:auto; margin-right:136px; color:#a8b6cb; font-size:12px; white-space:nowrap; }
+/* Preserve the 136px desktop reserve at 1280px+, release it before controls overflow. */
+.hp-holdings-title p { margin-left:auto; margin-right:clamp(0px,calc(100vw - 1144px),136px); color:#a8b6cb; font-size:12px; white-space:nowrap; }
 .hp-holdings-title p strong { color:#e6edf7; font-size:14px; font-weight:500; padding-left:6px; }
 .hp-holdings-title p>span { margin-left:16px; }
 .hp-search { height:36px; width:176px; display:flex; align-items:center; gap:8px; border:1px solid #283448; border-radius:6px; color:#a8b6cb; padding:0 12px; flex-shrink:0; }
@@ -69,7 +70,12 @@ body:has(.hp-preview) { overflow-y:auto; }
 .hp-holdings th:first-child,.hp-holdings td:first-child { text-align:left; padding-left:16px; }
 .hp-holdings td:last-child,.hp-holdings th:last-child { text-align:center; }
 .hp-holdings th button { display:inline-flex; align-items:center; justify-content:flex-end; gap:4px; padding:0; border:0; background:transparent; max-width:100%; white-space:nowrap; }
-.hp-holding-name { display:block; overflow:hidden; text-overflow:ellipsis; font-weight:500; }
+/* Keep identity and valuation provenance inside the approved 48px row. */
+.hp-holding-identity { min-width:0; line-height:20px; }
+.hp-holding-name-line { display:flex; align-items:center; min-width:0; height:20px; }
+.hp-holding-name-line .hp-estimate-label { flex:none; }
+.hp-holding-name { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; font-weight:500; }
+.hp-holding-identity small { overflow:hidden; text-overflow:ellipsis; }
 .hp-holdings small { display:block; color:#a8b6cb; font-size:12px; line-height:16px; }
 .hp-eye { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:1px solid transparent; border-radius:6px; color:#6ca8ff!important; }
 .hp-price-currency { color:#a8b6cb; font-size:12px; }

@@ -52,7 +52,7 @@ function savedDrawing(
   };
 }
 
-function renderCanvas(overrides: Record<string, unknown> = {}) {
+function renderCanvas(overrides: Record<string, unknown> = {}, focusableWorkspace = false) {
   const props = {
     episodeId: "episode-1",
     candles,
@@ -67,11 +67,10 @@ function renderCanvas(overrides: Record<string, unknown> = {}) {
     coordinateAdapter: adapter,
     ...overrides,
   };
-  render(
-    <div className="chart-stage" data-testid="chart-stage">
-      <DrawingCanvas {...(props as Parameters<typeof DrawingCanvas>[0])} />
-    </div>,
-  );
+  const chartStage = <div className="chart-stage" data-testid="chart-stage">
+    <DrawingCanvas {...(props as Parameters<typeof DrawingCanvas>[0])} />
+  </div>;
+  render(focusableWorkspace ? <section className="recall-workspace" tabIndex={-1}>{chartStage}</section> : chartStage);
   const canvas = screen.getByRole("img", { name: "绘图画布" });
   const stage = screen.getByTestId("chart-stage");
   vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
@@ -234,6 +233,47 @@ describe("drawing interactions", () => {
     }));
   });
 
+  it("leaves an overlay candidate button above a drawing clickable while retaining surface drag", () => {
+    const onCommand = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const drawing = savedDrawing({ id: "under-candidate", tool: "trend-line", anchors: [{ time: candles[0].time, price: 100 }, { time: candles[1].time, price: 110 }] });
+    const { stage } = renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand, onSelectDrawing });
+    const setPointerCapture = vi.fn();
+    Object.defineProperty(stage, "setPointerCapture", { configurable: true, value: setPointerCapture });
+    const dialog = document.createElement("div");
+    dialog.setAttribute("role", "dialog");
+    const button = document.createElement("button");
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    label.setAttribute("aria-label", "8月4日 买入");
+    button.appendChild(label);
+    dialog.appendChild(button);
+    stage.appendChild(dialog);
+    const selectCandidate = vi.fn();
+    button.addEventListener("click", selectCandidate);
+    const down = new MouseEvent("pointerdown", { bubbles: true, cancelable: true, clientX: 10, clientY: 100 });
+    Object.defineProperty(down, "pointerId", { value: 21 });
+    fireEvent(label, down);
+    fireEvent.pointerUp(label, { pointerId: 21, clientX: 10, clientY: 100 });
+    fireEvent.click(label);
+    expect(down.defaultPrevented).toBe(false);
+    expect(setPointerCapture).not.toHaveBeenCalled();
+    expect(onSelectDrawing).not.toHaveBeenCalled();
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(selectCandidate).toHaveBeenCalledTimes(1);
+
+    const chartSurface = document.createElement("div");
+    chartSurface.className = "lightweight-chart";
+    const chartCanvas = document.createElement("canvas");
+    chartSurface.appendChild(chartCanvas);
+    stage.appendChild(chartSurface);
+    fireEvent.pointerDown(chartCanvas, { pointerId: 22, clientX: 10, clientY: 100 });
+    fireEvent.pointerMove(chartCanvas, { pointerId: 22, clientX: 20, clientY: 90 });
+    fireEvent.pointerUp(chartCanvas, { pointerId: 22, clientX: 20, clientY: 90 });
+    expect(setPointerCapture).toHaveBeenCalledWith(22);
+    expect(onSelectDrawing).toHaveBeenCalledWith(drawing.id);
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({ type: "replace", drawing: expect.objectContaining({ id: drawing.id }) }));
+  });
+
   it("lets a blank cursor gesture propagate to chart navigation", () => {
     const onSelectDrawing = vi.fn();
     const { stage } = renderCanvas({
@@ -389,9 +429,15 @@ describe("drawing interactions", () => {
       drawings: [drawing],
       selectedDrawingId: drawing.id,
       onCommand,
-    });
+    }, true);
 
-    fireEvent.pointerDown(stage, { clientX: 10, clientY: 100 });
+    // Actual recall DOM: the focusable workspace is outside chart-stage.
+    const chartSurface = document.createElement("div");
+    chartSurface.className = "lightweight-chart";
+    const chartCanvas = document.createElement("canvas");
+    chartSurface.appendChild(chartCanvas);
+    stage.appendChild(chartSurface);
+    fireEvent.pointerDown(chartCanvas, { clientX: 10, clientY: 100 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     expect(editor).toHaveStyle({ pointerEvents: "auto" });
     fireEvent.change(editor, { target: { value: "更新注释" } });
@@ -433,6 +479,25 @@ describe("drawing interactions", () => {
         anchors: [{ time: candles[0].time, price: 110 }],
       }),
     }));
+  });
+
+  it("prioritizes a selected anchor over an overlapping top drawing, while bodies remain topmost", () => {
+    const rectangle = savedDrawing({ id: "rect", tool: "rectangle", anchors: [
+      { time: candles[0].time, price: 100 }, { time: candles[1].time, price: 110 },
+    ] });
+    const fib = savedDrawing({ id: "fib", tool: "fibonacci", zIndex: 1, anchors: [
+      { time: candles[0].time, price: 100 }, { time: candles[1].time, price: 120 },
+    ] });
+    const onSelectDrawing = vi.fn();
+    const onCommand = vi.fn();
+    const { stage } = renderCanvas({ activeTool: "cursor", drawings: [rectangle, fib], selectedDrawingId: "rect", onSelectDrawing, onCommand });
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 10, clientY: 100 });
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 20, clientY: 95 });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 20, clientY: 95 });
+    expect(onSelectDrawing).toHaveBeenLastCalledWith("rect");
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({ type: "replace", drawing: expect.objectContaining({ id: "rect", anchors: [expect.objectContaining({ price: 105 }), rectangle.anchors[1]] }) }));
+    fireEvent.pointerDown(stage, { pointerId: 2, clientX: 45, clientY: 100 });
+    expect(onSelectDrawing).toHaveBeenLastCalledWith("fib");
   });
 
   it("moves a whole drawing in time and price with one replacement command", () => {

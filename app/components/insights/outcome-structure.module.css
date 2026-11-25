@@ -288,6 +288,11 @@
 }
 
 .stripPoint {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  box-sizing: border-box;
   background: #74b3ff !important;
   border: 2px solid #c2ddff !important;
   box-shadow: 0 0 0 1px #111a2b;
@@ -298,4 +303,8 @@
   outline: 2px solid #f0c674;
   outline-offset: 2px;
   z-index: 2;
+}
+
+@media (max-width: 640px), (pointer: coarse) {
+  .stripPoint { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
 }

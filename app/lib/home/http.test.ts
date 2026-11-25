@@ -7,9 +7,15 @@ import {HomeStore} from './store';
 import {homeHttp} from './http';
 import {release,request} from './test-fixtures';
 import {fullRead,retryFull,type FullRefreshStatus} from '../../components/homepage-preview/full-client';
+import {defaultFullRequest} from './full-contracts';
+import {parseFullRequest} from './full-http';
 const emptyFilters={assetTypes:[],openOnly:false,review:'all' as const};
 const requestOperations=['core','period','holdings','export'] as const;
 const opened:DatabaseSync[]=[];afterEach(()=>opened.splice(0).forEach(d=>d.close()));
+it('accepts the all contribution category and an all-history scope',()=>{
+ const value=defaultFullRequest('2026-11-22');value.contribution.category='all';value.historyRange={fromYear:2026,toYear:2026,scope:'all'};
+ expect(parseFullRequest(value)).toMatchObject({contribution:{category:'all'},historyRange:{scope:'all'}});
+});
 function setup(published=true){const db=new DatabaseSync(':memory:');opened.push(db);initializeSqlite(db);const store=new HomeStore(db);if(published){store.stage(release());store.publish('r1',null);}return{db,store};}
 function req(operation:string,parameters:Record<string,unknown>={request}){const url=new URL(`http://localhost/api/home/${operation}`);for(const[k,v]of Object.entries(parameters))url.searchParams.set(k,JSON.stringify(v));return new Request(url);}
 describe('bounded immutable HTTP reads',()=>{

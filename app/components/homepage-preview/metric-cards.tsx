@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { lifetimeCoverageNotice, type Amount as HomepageV25Metric, type HomeView } from "./display-contract";
 import "./metric-cards.css";
 import {hasUnalignedSplit, SubtotalEvidence} from "./confirmed-subtotal";
-import {EvidenceAmount} from './evidence-amount';
+import {EvidenceAmount, formatEvidenceAmount} from './evidence-amount';
 
 type MetricCardsStatus = Readonly<{ kind: "ready" }> | Readonly<{ kind: "pending" | "error" | "empty"; reason: string }>;
 export type MetricCardsView = HomeView;
@@ -173,7 +173,7 @@ export function MetricCards(props: MetricCardsProps) {
             </p>}
           {status.kind === "pending" && view && <span className="hp-metric-cards__loading" aria-hidden="true">更新中</span>}
           <button className="hp-metric-cards__trigger" type="button" ref={node => { triggers.current[card.key] = node; }}
-            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${amount.raw} ${reportCurrency}`}${amount.metric?.valuationNotes?.length ? `；含拆股推算：${amount.metric.valuationNotes.join("；")}` : ""}${partial?`；${partialText} ${reportCurrency}，已导入范围 ${coverageText}`:""}${splitHint ? `，${splitHint}` : ""}`} aria-haspopup="dialog"
+            aria-label={`${card.label}，${status.kind === "error" ? "查看原因" : "口径详情"}，${amount.raw === null ? "金额未知" : `完整金额 ${formatEvidenceAmount(amount.raw)} ${reportCurrency}`}${amount.metric?.valuationNotes?.length ? `；含拆股推算：${amount.metric.valuationNotes.join("；")}` : ""}${partial?`；${partialText} ${reportCurrency}，已导入范围 ${coverageText}`:""}${splitHint ? `，${splitHint}` : ""}`} aria-haspopup="dialog"
             aria-expanded={active === card.key} aria-controls={active === card.key ? `${id}-detail` : undefined}
             onClick={() => active === card.key ? closeDetail() : setSelection({ key: card.key, context })}>
             <span className={`hp-metric-cards__affordance${status.kind === "error" ? " hp-metric-cards__affordance--error" : ""}`}>

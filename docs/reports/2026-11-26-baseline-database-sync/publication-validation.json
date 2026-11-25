@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-11-25T16:36:08.188Z",
+  "readOnly": true,
+  "identical": true,
+  "validation": "validateFull on a fresh SQLite connection for each database",
+  "results": [
+    {
+      "role": "source",
+      "releaseId": "76a83ca8-32b7-495e-a1a4-865be4decc44",
+      "businessDate": "2026-11-25",
+      "moduleComplete": true,
+      "moduleCounts": {
+        "closeRounds": 824,
+        "coverage": 328,
+        "catalog": 301,
+        "allocations": 301,
+        "effectiveReview": 301
+      }
+    },
+    {
+      "role": "baseline",
+      "releaseId": "76a83ca8-32b7-495e-a1a4-865be4decc44",
+      "businessDate": "2026-11-25",
+      "moduleComplete": true,
+      "moduleCounts": {
+        "closeRounds": 824,
+        "coverage": 328,
+        "catalog": 301,
+        "allocations": 301,
+        "effectiveReview": 301
+      }
+    }
+  ]
+}

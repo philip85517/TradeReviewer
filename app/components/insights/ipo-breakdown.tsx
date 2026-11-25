@@ -1,3 +1,4 @@
+import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
 import type { IpoBreakdownGroup, IpoBreakdownReport } from "../../lib/insights/ipo-breakdown";
 import { OutcomeDiagnostics } from "./outcome-diagnostics";
@@ -31,10 +32,10 @@ function EpisodeButton({
   return (
     <button
       type="button"
-      aria-label={`查看${label} ${fact.episodeId}`}
+      aria-label={`查看${label} ${fact.instrumentName} ${fact.instrumentSymbol} ${formatMarketTradingDate(fact.startedAt, fact.market)}—${formatMarketTradingDate(fact.endedAt, fact.market)}`}
       onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}
     >
-      {fact.instrumentName}（{fact.instrumentSymbol}） · {fact.episodeId}
+      {fact.instrumentName}（{fact.instrumentSymbol}） · {formatMarketTradingDate(fact.startedAt, fact.market)}—{formatMarketTradingDate(fact.endedAt, fact.market)}
     </button>
   );
 }
@@ -141,7 +142,7 @@ function GroupCard({
           <summary>未进入正式收益比较（{group.excluded.length}）</summary>
           {group.excluded.map((item) => (
             <div key={`${item.episodeId}:${item.reason}`}>
-              <span>{item.episodeId} · {item.reasonLabel}</span>
+              <span>{item.reasonLabel}</span>
               {factsByEpisode.has(item.episodeId) && <EpisodeButton fact={factsByEpisode.get(item.episodeId)!} label="排除回合" onOpenEpisode={onOpenEpisode} />}
             </div>
           ))}
@@ -155,7 +156,7 @@ function GroupCard({
             const fact = factsByEpisode.get(item.episodeId);
             return (
               <div key={item.episodeId}>
-                <span>{item.episodeId} · {item.reason}</span>
+                <span>{item.reason}</span>
                 {fact && <EpisodeButton fact={fact} label="无法判定" onOpenEpisode={onOpenEpisode} />}
               </div>
             );

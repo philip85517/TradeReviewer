@@ -865,6 +865,7 @@ describe("RecallWorkspace autosave reconciliation", () => {
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "date-entry"));
+    expect(screen.getByText("成交截止 2025-01-02（仅日期）")).toBeInTheDocument();
   });
 
   it("restores a retained viewport while editing and the working viewport on exit", async () => {
@@ -1123,6 +1124,22 @@ describe("RecallWorkspace autosave reconciliation", () => {
   });
 });
 
+describe("RecallWorkspace mark time", () => {
+  it.each([
+    ["daily", "2025-01-02T00:00:00.000Z", "2025-01-02T21:00:00.000Z", "2025-01-02 16:00:00"],
+    ["intraday", "2025-01-02T10:30:00.000Z", "2025-01-02T10:45:00.000Z", "2025-01-02 05:45:00"],
+  ])("shows the completed %s candle knowledge time", async (_kind, time, knowledgeAt, expected) => {
+    const bars = [{ ...candle, time, knowledgeAt }];
+    const usEpisode = { ...replayEpisode, instrument: { ...replayEpisode.instrument, market: "US" } };
+    renderRecall(usEpisode, createRecallDocument(usEpisode, "2025-01-02T10:00:00.000Z"), undefined, undefined, { "15m": bars, "1D": bars, "1W": bars });
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    await openMoreRecords();
+    fireEvent.click(screen.getAllByRole("button", { name: "完整历史" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "统计" }));
+    expect(screen.getByRole("complementary", { name: "当前统计" })).toHaveTextContent(`标记时间${expected}`);
+  });
+});
+
 describe("RecallWorkspace accounting safeguards", () => {
   it("hides cost and PnL when a revealed HK Connect fill has a mismatched settlement currency", async () => {
     const hkConnectEpisode: TradeEpisode = {
@@ -1205,6 +1222,41 @@ describe("RecallWorkspace accounting safeguards", () => {
     expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument();
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("报告收益率4.5%");
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("持仓 K 线6");
+  });
+
+  it("keeps hidden current drawings manageable without exposing future or other timeframe layers", async () => {
+    const user = userEvent.setup();
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const drawing: NormalizedDrawing = {
+      version: 2, id: "layer-current", episodeId: replayEpisode.id, name: "当前图层", tool: "trend-line",
+      anchors: [{ time: replayCandles[0].time, price: 10 }, { time: replayCandles[1].time, price: 11 }],
+      style: { color: "#2f80ed", lineWidth: 2, opacity: 1 }, zIndex: 0,
+      hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
+      createdAtCursor: "2025-01-02T09:59:00.000Z",
+    };
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockImplementation(async document => ({ ...document, revision: document.revision + 1 })),
+      fetch: vi.fn(),
+    };
+    renderRecall(replayEpisode, initial, repository, undefined, undefined, [
+      drawing,
+      { ...drawing, id: "future", name: "未来图层", createdAtCursor: "2099-01-01T00:00:00.000Z" },
+      { ...drawing, id: "other-timeframe", name: "其他周期", visibleOn: ["1W"] },
+    ]);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    const layersButton = screen.getByRole("button", { name: "图层" });
+    await user.click(layersButton);
+    const panel = screen.getByRole("region", { name: "绘图图层面板" });
+    expect(within(panel).queryByRole("textbox", { name: "重命名未来图层" })).not.toBeInTheDocument();
+    expect(within(panel).queryByRole("textbox", { name: "重命名其他周期" })).not.toBeInTheDocument();
+    await user.click(within(panel).getByRole("button", { name: "隐藏当前图层" }));
+    expect(within(panel).getByRole("button", { name: "显示当前图层" })).toBeInTheDocument();
+    await user.click(within(panel).getByRole("button", { name: "关闭绘图图层" }));
+    expect(layersButton).toBeEnabled();
+    await user.click(layersButton);
+    await user.click(within(screen.getByRole("region", { name: "绘图图层面板" })).getByRole("button", { name: "显示当前图层" }));
+    expect(within(screen.getByRole("region", { name: "绘图图层面板" })).getByRole("button", { name: "隐藏当前图层" })).toBeInTheDocument();
   });
 
   it("closes the drawing layer panel and leaves the chart frame available", async () => {
@@ -1294,6 +1346,7 @@ describe("structured plan sidebar", () => {
     await waitFor(() => screen.getByRole("button", { name: "下一根 K 线" }));
     fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
     expect(screen.getByText(/成交截止/)).toBeInTheDocument();
+    expect(screen.getByText(/成交截止/)).not.toHaveTextContent("仅日期");
     expect(screen.getByText(/行情时间/)).toBeInTheDocument();
   });
 
@@ -1892,26 +1945,46 @@ it("keeps a plan edit made during the final save dirty and saves it after the fr
 });
 
 it("preserves newer local edits and blocks leaving on a genuine external revision conflict", async () => {
+  // Isolate explicit leave guards from the independent 1000ms autosave path.
+  vi.useFakeTimers();
   const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
   let guard: (() => Promise<boolean>) | null = null;
+  let action = "initial-load";
+  const submissions: {action: string; snapshots: number; drawings: number; revision: number; expectedRevision: number}[] = [];
+  let releaseCapture!: (value: {imageDataUrl: string; viewport: typeof replayChartHarness.viewport}) => void;
+  replayChartHarness.handle.capture.mockImplementationOnce(() => new Promise(resolve => {releaseCapture = resolve;}));
   const repository: RecallRepository = {
     load: vi.fn().mockResolvedValue(initial), fetch: vi.fn(),
-    save: vi.fn().mockImplementationOnce(async (document: RecallDocument) => ({...document, revision: 1}))
-      .mockRejectedValue(new RecallRepositoryError(409, "revision-conflict", "External edit")),
+    save: vi.fn().mockImplementation(async (document: RecallDocument, options: {expectedRevision: number}) => {
+      submissions.push({action, snapshots: document.snapshots.length, drawings: document.working.drawings.length,
+        revision: document.revision, expectedRevision: options.expectedRevision});
+      if (action === "save-drawing-before-capture") return {...document, revision: 1};
+      throw new RecallRepositoryError(409, "revision-conflict", "External edit");
+    }),
   };
   renderRecall(episode, initial, repository, next => { guard = next; });
-  fireEvent.click(await screen.findByRole("button", {name: "add drawing"}));
+  await act(async () => {await Promise.resolve();});
+  fireEvent.click(screen.getByRole("button", {name: "add drawing"}));
+  action = "save-drawing-before-capture";
   await act(async () => { expect(await guard!()).toBe(true); });
+  expect(submissions).toEqual([{action, snapshots: 0, drawings: 1, revision: 0, expectedRevision: 0}]);
+  action = "capture-pending";
   fireEvent.click(screen.getByRole("button", {name: "留存当前快照"}));
-  await openAllSnapshotRecords();
-  await screen.findByRole("button", {name: "编辑决策 1快照"});
+  expect(replayChartHarness.handle.capture).toHaveBeenCalledTimes(1);
+  expect(repository.save).toHaveBeenCalledTimes(1);
+  await act(async () => {
+    releaseCapture({imageDataUrl: "data:image/png;base64,AA==", viewport: replayChartHarness.viewport});
+  });
+  openAllSnapshotRecords();
+  expect(screen.getByRole("button", {name: "编辑决策 1快照"})).toBeInTheDocument();
+  action = "leave-after-completed-capture";
   await act(async () => { expect(await guard!()).toBe(false); });
   expect(screen.getByText("云端草稿已有新版本；当前编辑仍保留，请重新载入或手动合并。")).toBeInTheDocument();
   expect(screen.getByRole("button", {name: "编辑决策 1快照"})).toBeInTheDocument();
-  const [submitted, options] = vi.mocked(repository.save).mock.calls.at(-1)!;
-  expect(options?.expectedRevision).toBe(1);
-  expect(submitted.working.drawings).toHaveLength(1);
-  expect(submitted.snapshots).toHaveLength(1);
+  expect(submissions).toEqual([
+    {action: "save-drawing-before-capture", snapshots: 0, drawings: 1, revision: 0, expectedRevision: 0},
+    {action: "leave-after-completed-capture", snapshots: 1, drawings: 1, revision: 1, expectedRevision: 1},
+  ]);
 });
 
 it("reloads server plan input after a conflict instead of reusing the stale local overlay", async () => {
@@ -2241,7 +2314,7 @@ it.each(["pre-entry", "holding"] as const)("renders a retained post-review metri
   await waitFor(() => expect(screen.getByText("更多 / 记录", { exact: true })).toBeInTheDocument());
   await openAllSnapshotRecords();
   fireEvent.click(await screen.findByRole("button", {name: "编辑决策 1快照"}));
-  expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("777 USD");
+  expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("777.00 USD");
   expect(screen.getByText("实际 R")).toBeInTheDocument();
 });
 
@@ -2294,6 +2367,8 @@ it.each([
 });
 
 it("accepts the synchronous Text commit performed before the chart freezes its scene", async () => {
+  // Keep autosave separate from this synchronous editor/capture barrier.
+  vi.useFakeTimers();
   const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
   replayChartHarness.handle.capture.mockImplementationOnce(() => {
     fireEvent.click(screen.getByRole("button", {name: "add Text"}));
@@ -2302,12 +2377,42 @@ it("accepts the synchronous Text commit performed before the chart freezes its s
   let guard: (() => Promise<boolean>) | null = null;
   const repository: RecallRepository = {load: vi.fn().mockResolvedValue(initial), fetch: vi.fn(), save: vi.fn().mockImplementation(async document => ({...document, revision: document.revision + 1}))};
   renderRecall(episode, initial, repository, next => {guard = next;});
-  fireEvent.click(await screen.findByRole("button", {name: "留存当前快照"}));
+  await act(async () => {await Promise.resolve();});
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", {name: "留存当前快照"}));
+  });
   await openAllSnapshotRecords();
-  await screen.findByRole("button", {name: "编辑决策 1快照"});
-  await act(async () => {await guard!();});
-  const saved = vi.mocked(repository.save).mock.calls[0][0];
+  expect(screen.getByRole("button", {name: "编辑决策 1快照"})).toBeInTheDocument();
+  expect(replayChartHarness.handle.capture).toHaveBeenCalledTimes(1);
+  expect(repository.save).not.toHaveBeenCalled();
+  await act(async () => {expect(await guard!()).toBe(true);});
+  // Identify the save by the captured image, never by its position in a race
+  // with autosave. There must be exactly one explicit guard submission.
+  const captureSubmissions = vi.mocked(repository.save).mock.calls.filter(([document]) =>
+    document.snapshots.some(snapshot => snapshot.imageDataUrl === "data:image/png;base64,committed"));
+  expect(repository.save).toHaveBeenCalledTimes(1);
+  expect(captureSubmissions).toHaveLength(1);
+  const [saved, options] = captureSubmissions[0];
+  expect(options?.expectedRevision).toBe(0);
+  expect(saved.snapshots).toHaveLength(1);
   expect(saved.snapshots[0].drawings).toHaveLength(1);
   expect(saved.snapshots[0].drawings[0]).toMatchObject({tool: "text", text: "新 Text"});
   expect(saved.snapshots[0].imageDataUrl).toBe("data:image/png;base64,committed");
+});
+
+it("keeps footer inventory on the same market cutoff as holding results", async () => {
+  const futureEvidenceEpisode: TradeEpisode = {
+    ...replayEpisode,
+    executions: replayEpisode.executions.map(execution => ({ ...execution, source: {
+      ...execution.source,
+      statementPositions: [{ documentId: "future-month", accountId: execution.accountId,
+        market: execution.instrument.market, symbol: execution.instrument.symbol,
+        phase: "closing" as const, date: "2025-02-28", quantity: "7", source: [] }],
+    } })),
+  };
+  const initial = createRecallDocument(futureEvidenceEpisode, "2025-01-02T10:00:00.000Z");
+  initial.working.phase = "holding";
+  renderRecall(futureEvidenceEpisode, initial);
+  await waitFor(() => expect(screen.getByText("持仓 1", { exact: true })).toBeInTheDocument());
+  expect(screen.queryByText(/持仓历史、成本或费用尚未补齐/)).toBeNull();
 });

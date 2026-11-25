@@ -1,0 +1,1185 @@
+{
+  "checkedAt": "2026-11-25T16:35:16.268Z",
+  "identical": true,
+  "databases": {
+    "snapshot": {
+      "integrity": "ok",
+      "foreignKeyViolations": 0,
+      "tableCount": 76,
+      "rowCount": 504682,
+      "logicalSha256": "c350ae5c0ba1826b1c32d16262f91f24f17e4ced3544a2ca15bf9b1b03df02d2",
+      "applicationId": 0,
+      "userVersion": 0,
+      "encoding": "UTF-8",
+      "schemaSha256": "0b931f35e3045365e1ad3104d98b14da68ecbf9714c0b43d45f7b8138c37620d",
+      "tables": [
+        {
+          "name": "account_principal_provisionals",
+          "rows": 1,
+          "sha256": "7dc8420d13a3f5e85e2573aa321f3d31e6192615e71311657a15e26522e9f06a"
+        },
+        {
+          "name": "app_settings",
+          "rows": 8,
+          "sha256": "6552d44cceb2e12c42285f7deb8a87118f65520c2f72c0b3a16503a4bc541752"
+        },
+        {
+          "name": "coverage",
+          "rows": 238,
+          "sha256": "a3b3d830eafcbb6b67784f0a1c4a75c44a01da2f332db3546056f2dbed68e5b2"
+        },
+        {
+          "name": "daily_candles",
+          "rows": 154579,
+          "sha256": "d7029f254c6b9e6aab16be94465b47f7bfdee01668c32f2b888bbe9440ac30e3"
+        },
+        {
+          "name": "data_migrations",
+          "rows": 1,
+          "sha256": "2f3d323f1d3816c883d82cb919e0997d098bc535d5259d563dbec7a1670e0918"
+        },
+        {
+          "name": "executions",
+          "rows": 1931,
+          "sha256": "3f8f4111ab6de7410fe349f8eea5d20c4062199a3da8e9ab649d3616f0c11300"
+        },
+        {
+          "name": "home_business_pairing_head",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_business_pairing_revision",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_daily",
+          "rows": 271936,
+          "sha256": "0c77a7cbde56a7bf4b8e564ecd2d41d1a21658cd4fb5893479fa108ad3f478ba"
+        },
+        {
+          "name": "home_dirty",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_full_evidence",
+          "rows": 17,
+          "sha256": "425a11191c3657d0c6ec484fd4f5a9a1c6522dc53721b50effb5ede52e3d07d8"
+        },
+        {
+          "name": "home_full_financial",
+          "rows": 8,
+          "sha256": "0dbd14ac6aeb080ccd4f7feebd04a765b0e4a26863a48c555b2bda285dfd6fb2"
+        },
+        {
+          "name": "home_full_module",
+          "rows": 12,
+          "sha256": "37fc119ec265530090fafebd5a0141a759a9cb9ecdd70d225267f6cd00ec9c53"
+        },
+        {
+          "name": "home_full_query",
+          "rows": 1,
+          "sha256": "94a29f81997ca4d91d501100dbb01837e69f8a6e45bff2188fc62f56315197da"
+        },
+        {
+          "name": "home_full_release",
+          "rows": 2,
+          "sha256": "7993823f5df8a13cc1cd9b2310a6e65e3f70f58c511b6d1d5a25b553ad96b437"
+        },
+        {
+          "name": "home_fx_history",
+          "rows": 2,
+          "sha256": "e0179d25a71c72cda82f4df01b5f04d717a2d41c9d45e9a36c2e6e9a12494c45"
+        },
+        {
+          "name": "home_head",
+          "rows": 1,
+          "sha256": "0d46c35795fedb34b5df9f484d62f0954ff5e3a2b3223febc42c2ffcadb06f4a"
+        },
+        {
+          "name": "home_holding",
+          "rows": 48,
+          "sha256": "80a2f23f7b549cdac34f0522bb8f21ae758825993a0635fccc52438aa039c4a2"
+        },
+        {
+          "name": "home_holding_order",
+          "rows": 288,
+          "sha256": "481d5f011d73b57e915cd4504303f15a15f0122254b0bd086c919a524a2d924e"
+        },
+        {
+          "name": "home_holding_trade",
+          "rows": 3698,
+          "sha256": "6918bc84d712eaed57d315f474864ba1d97028d64030dd00d9458af1f22a3fb6"
+        },
+        {
+          "name": "home_ledger_checkpoint",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_metric_boundary",
+          "rows": 13318,
+          "sha256": "d6e95a31d3b580556aac8dd20a4ed9382acbea5687591eadfc2700b1bb480411"
+        },
+        {
+          "name": "home_metric_member",
+          "rows": 2408,
+          "sha256": "677e33303107350d5beac300faf9bcb1e775405faa3ced4f8876949cd9ebda68"
+        },
+        {
+          "name": "home_metric_object",
+          "rows": 602,
+          "sha256": "38feea480f2da5a8999c08b5e10955dfdd9f5c6ab44573ff3a9a54c44de7fe24"
+        },
+        {
+          "name": "home_object_projection",
+          "rows": 312,
+          "sha256": "5203c3f9ac38f4b224365b90f6786636d5cfa19d7d22acc14bc06c09879161e8"
+        },
+        {
+          "name": "home_publication",
+          "rows": 2,
+          "sha256": "cfc9e6e5dbdd7d4147bee1bb0d9911cc097fc38a8ac7425e6f48644ccf3c7845"
+        },
+        {
+          "name": "home_refresh",
+          "rows": 1,
+          "sha256": "27f7c5ff0c1c9c50b974848736abd32fd1fee035f7de9b650dcafadff9f75aeb"
+        },
+        {
+          "name": "home_release",
+          "rows": 2,
+          "sha256": "8147f8b9e60cb23801e5c9940561e4728aaf51d3dd5910e85fc44eb953996818"
+        },
+        {
+          "name": "home_release_scope",
+          "rows": 64,
+          "sha256": "bdec6ccaf4a9b920a4f340c942f7cc35862c088814e50ef303c3e796afd6c253"
+        },
+        {
+          "name": "home_scope_result",
+          "rows": 64,
+          "sha256": "1f396abe05720558f3ba0f8eff65dca760144368cd227943746f406c6cde2243"
+        },
+        {
+          "name": "home_source_change",
+          "rows": 69,
+          "sha256": "97e331a3864c5305d5d1f5d9e9289ea802263fcaff9bc25ad6f9f69ab1b06614"
+        },
+        {
+          "name": "home_source_job",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_trade_set",
+          "rows": 602,
+          "sha256": "928b051c9c9b51583da519a4b0dd220666fb0f56ed428c1f2a43dd781247a59d"
+        },
+        {
+          "name": "homepage_data_repair_runs",
+          "rows": 1,
+          "sha256": "d8e4d6658c9915fb5abbb2dbc6e32a49649e65dcf75307bb9cfb59e2a77eb7d5"
+        },
+        {
+          "name": "import_batches",
+          "rows": 224,
+          "sha256": "d855d66baa850667ac7745ef182dea40551d03f578fafe6fd07750383916d766"
+        },
+        {
+          "name": "instruments",
+          "rows": 239,
+          "sha256": "0b6b1ab5b9c7c76154a43709083b3f19239f55f2f456ef3918d6dca6967b343e"
+        },
+        {
+          "name": "interval_coverage",
+          "rows": 236,
+          "sha256": "244408cd1fb6686fc46b648af46169a2fc121b1575e48e37fd2339b32abb6b34"
+        },
+        {
+          "name": "market_candles",
+          "rows": 52781,
+          "sha256": "b5102a90d09bf40f1878ff1c04666f339218b95d6284df38543b2a406fa4e249"
+        },
+        {
+          "name": "market_data_jobs",
+          "rows": 236,
+          "sha256": "5f5763d6eacdb3a00b32ff5b0ab7c41669580aea2d84b7aba3410fe52a582482"
+        },
+        {
+          "name": "provider_symbols",
+          "rows": 438,
+          "sha256": "7307d7b8d3d0859b5c73d07c986e40a258c64456930646d73872cdf65ea57abd"
+        },
+        {
+          "name": "recall_actual_metric_exits",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_refs",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_sources",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metrics",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_plans",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_documents",
+          "rows": 5,
+          "sha256": "35ab4a6c2793cc75d91f13e40038a0e4b0dbcded1886cf81ed534d04fdffdb04"
+        },
+        {
+          "name": "recall_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_selections",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_exit_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_association_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_targets",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_versions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_retained_bundles",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_risk_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "reviews",
+          "rows": 138,
+          "sha256": "fa18605d8d90282073e9884fc6bbe8885238114849c96bb509f73afbadd660c7"
+        },
+        {
+          "name": "schema_migrations",
+          "rows": 22,
+          "sha256": "80a0ba8fca4f0e9b6cd8d935f31d8ef4e3e9ce2189be51339bb5a4d249896653"
+        },
+        {
+          "name": "source_correction_runs",
+          "rows": 7,
+          "sha256": "e3ed75169510950d6bebfe308c9467c237a19c0b75c8bdaea2f6a165a69e4133"
+        },
+        {
+          "name": "sqlite_sequence",
+          "rows": 1,
+          "sha256": "aab4d136cfc8923a8c15c45fec7bb64121033d6515c9cb9737d5ebddc347eaf9"
+        },
+        {
+          "name": "tag_suggestions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "trade_revisions",
+          "rows": 11,
+          "sha256": "4c21f2205c410693bcd1afcba002b1174785cdaf76713f83bafac37dd44166d5"
+        },
+        {
+          "name": "tradingview_account_migration_aliases",
+          "rows": 36,
+          "sha256": "2e368e08675ac8daf5dc0784779f1766af63c2c01f8c24a3bf8ab1bc4cdf7251"
+        },
+        {
+          "name": "tradingview_account_migration_dependencies",
+          "rows": 4,
+          "sha256": "4376852a826df72016b53aa06de5becba718d330ffb4e6048eeda1520417a0e6"
+        },
+        {
+          "name": "tradingview_account_migration_operations",
+          "rows": 1,
+          "sha256": "a90c1f47140a5b78d7829f38730f64c1c788efff68a9431a54ba6569021fa8f0"
+        },
+        {
+          "name": "tradingview_account_migration_rows",
+          "rows": 87,
+          "sha256": "64b2ff64ea0416df6c6f930ab37b927199fbecd366f2f46e5e802d37c1453a17"
+        }
+      ]
+    },
+    "source": {
+      "integrity": "ok",
+      "foreignKeyViolations": 0,
+      "tableCount": 76,
+      "rowCount": 504682,
+      "logicalSha256": "c350ae5c0ba1826b1c32d16262f91f24f17e4ced3544a2ca15bf9b1b03df02d2",
+      "applicationId": 0,
+      "userVersion": 0,
+      "encoding": "UTF-8",
+      "schemaSha256": "0b931f35e3045365e1ad3104d98b14da68ecbf9714c0b43d45f7b8138c37620d",
+      "tables": [
+        {
+          "name": "account_principal_provisionals",
+          "rows": 1,
+          "sha256": "7dc8420d13a3f5e85e2573aa321f3d31e6192615e71311657a15e26522e9f06a"
+        },
+        {
+          "name": "app_settings",
+          "rows": 8,
+          "sha256": "6552d44cceb2e12c42285f7deb8a87118f65520c2f72c0b3a16503a4bc541752"
+        },
+        {
+          "name": "coverage",
+          "rows": 238,
+          "sha256": "a3b3d830eafcbb6b67784f0a1c4a75c44a01da2f332db3546056f2dbed68e5b2"
+        },
+        {
+          "name": "daily_candles",
+          "rows": 154579,
+          "sha256": "d7029f254c6b9e6aab16be94465b47f7bfdee01668c32f2b888bbe9440ac30e3"
+        },
+        {
+          "name": "data_migrations",
+          "rows": 1,
+          "sha256": "2f3d323f1d3816c883d82cb919e0997d098bc535d5259d563dbec7a1670e0918"
+        },
+        {
+          "name": "executions",
+          "rows": 1931,
+          "sha256": "3f8f4111ab6de7410fe349f8eea5d20c4062199a3da8e9ab649d3616f0c11300"
+        },
+        {
+          "name": "home_business_pairing_head",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_business_pairing_revision",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_daily",
+          "rows": 271936,
+          "sha256": "0c77a7cbde56a7bf4b8e564ecd2d41d1a21658cd4fb5893479fa108ad3f478ba"
+        },
+        {
+          "name": "home_dirty",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_full_evidence",
+          "rows": 17,
+          "sha256": "425a11191c3657d0c6ec484fd4f5a9a1c6522dc53721b50effb5ede52e3d07d8"
+        },
+        {
+          "name": "home_full_financial",
+          "rows": 8,
+          "sha256": "0dbd14ac6aeb080ccd4f7feebd04a765b0e4a26863a48c555b2bda285dfd6fb2"
+        },
+        {
+          "name": "home_full_module",
+          "rows": 12,
+          "sha256": "37fc119ec265530090fafebd5a0141a759a9cb9ecdd70d225267f6cd00ec9c53"
+        },
+        {
+          "name": "home_full_query",
+          "rows": 1,
+          "sha256": "94a29f81997ca4d91d501100dbb01837e69f8a6e45bff2188fc62f56315197da"
+        },
+        {
+          "name": "home_full_release",
+          "rows": 2,
+          "sha256": "7993823f5df8a13cc1cd9b2310a6e65e3f70f58c511b6d1d5a25b553ad96b437"
+        },
+        {
+          "name": "home_fx_history",
+          "rows": 2,
+          "sha256": "e0179d25a71c72cda82f4df01b5f04d717a2d41c9d45e9a36c2e6e9a12494c45"
+        },
+        {
+          "name": "home_head",
+          "rows": 1,
+          "sha256": "0d46c35795fedb34b5df9f484d62f0954ff5e3a2b3223febc42c2ffcadb06f4a"
+        },
+        {
+          "name": "home_holding",
+          "rows": 48,
+          "sha256": "80a2f23f7b549cdac34f0522bb8f21ae758825993a0635fccc52438aa039c4a2"
+        },
+        {
+          "name": "home_holding_order",
+          "rows": 288,
+          "sha256": "481d5f011d73b57e915cd4504303f15a15f0122254b0bd086c919a524a2d924e"
+        },
+        {
+          "name": "home_holding_trade",
+          "rows": 3698,
+          "sha256": "6918bc84d712eaed57d315f474864ba1d97028d64030dd00d9458af1f22a3fb6"
+        },
+        {
+          "name": "home_ledger_checkpoint",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_metric_boundary",
+          "rows": 13318,
+          "sha256": "d6e95a31d3b580556aac8dd20a4ed9382acbea5687591eadfc2700b1bb480411"
+        },
+        {
+          "name": "home_metric_member",
+          "rows": 2408,
+          "sha256": "677e33303107350d5beac300faf9bcb1e775405faa3ced4f8876949cd9ebda68"
+        },
+        {
+          "name": "home_metric_object",
+          "rows": 602,
+          "sha256": "38feea480f2da5a8999c08b5e10955dfdd9f5c6ab44573ff3a9a54c44de7fe24"
+        },
+        {
+          "name": "home_object_projection",
+          "rows": 312,
+          "sha256": "5203c3f9ac38f4b224365b90f6786636d5cfa19d7d22acc14bc06c09879161e8"
+        },
+        {
+          "name": "home_publication",
+          "rows": 2,
+          "sha256": "cfc9e6e5dbdd7d4147bee1bb0d9911cc097fc38a8ac7425e6f48644ccf3c7845"
+        },
+        {
+          "name": "home_refresh",
+          "rows": 1,
+          "sha256": "27f7c5ff0c1c9c50b974848736abd32fd1fee035f7de9b650dcafadff9f75aeb"
+        },
+        {
+          "name": "home_release",
+          "rows": 2,
+          "sha256": "8147f8b9e60cb23801e5c9940561e4728aaf51d3dd5910e85fc44eb953996818"
+        },
+        {
+          "name": "home_release_scope",
+          "rows": 64,
+          "sha256": "bdec6ccaf4a9b920a4f340c942f7cc35862c088814e50ef303c3e796afd6c253"
+        },
+        {
+          "name": "home_scope_result",
+          "rows": 64,
+          "sha256": "1f396abe05720558f3ba0f8eff65dca760144368cd227943746f406c6cde2243"
+        },
+        {
+          "name": "home_source_change",
+          "rows": 69,
+          "sha256": "97e331a3864c5305d5d1f5d9e9289ea802263fcaff9bc25ad6f9f69ab1b06614"
+        },
+        {
+          "name": "home_source_job",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_trade_set",
+          "rows": 602,
+          "sha256": "928b051c9c9b51583da519a4b0dd220666fb0f56ed428c1f2a43dd781247a59d"
+        },
+        {
+          "name": "homepage_data_repair_runs",
+          "rows": 1,
+          "sha256": "d8e4d6658c9915fb5abbb2dbc6e32a49649e65dcf75307bb9cfb59e2a77eb7d5"
+        },
+        {
+          "name": "import_batches",
+          "rows": 224,
+          "sha256": "d855d66baa850667ac7745ef182dea40551d03f578fafe6fd07750383916d766"
+        },
+        {
+          "name": "instruments",
+          "rows": 239,
+          "sha256": "0b6b1ab5b9c7c76154a43709083b3f19239f55f2f456ef3918d6dca6967b343e"
+        },
+        {
+          "name": "interval_coverage",
+          "rows": 236,
+          "sha256": "244408cd1fb6686fc46b648af46169a2fc121b1575e48e37fd2339b32abb6b34"
+        },
+        {
+          "name": "market_candles",
+          "rows": 52781,
+          "sha256": "b5102a90d09bf40f1878ff1c04666f339218b95d6284df38543b2a406fa4e249"
+        },
+        {
+          "name": "market_data_jobs",
+          "rows": 236,
+          "sha256": "5f5763d6eacdb3a00b32ff5b0ab7c41669580aea2d84b7aba3410fe52a582482"
+        },
+        {
+          "name": "provider_symbols",
+          "rows": 438,
+          "sha256": "7307d7b8d3d0859b5c73d07c986e40a258c64456930646d73872cdf65ea57abd"
+        },
+        {
+          "name": "recall_actual_metric_exits",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_refs",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_sources",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metrics",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_plans",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_documents",
+          "rows": 5,
+          "sha256": "35ab4a6c2793cc75d91f13e40038a0e4b0dbcded1886cf81ed534d04fdffdb04"
+        },
+        {
+          "name": "recall_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_selections",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_exit_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_association_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_targets",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_versions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_retained_bundles",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_risk_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "reviews",
+          "rows": 138,
+          "sha256": "fa18605d8d90282073e9884fc6bbe8885238114849c96bb509f73afbadd660c7"
+        },
+        {
+          "name": "schema_migrations",
+          "rows": 22,
+          "sha256": "80a0ba8fca4f0e9b6cd8d935f31d8ef4e3e9ce2189be51339bb5a4d249896653"
+        },
+        {
+          "name": "source_correction_runs",
+          "rows": 7,
+          "sha256": "e3ed75169510950d6bebfe308c9467c237a19c0b75c8bdaea2f6a165a69e4133"
+        },
+        {
+          "name": "sqlite_sequence",
+          "rows": 1,
+          "sha256": "aab4d136cfc8923a8c15c45fec7bb64121033d6515c9cb9737d5ebddc347eaf9"
+        },
+        {
+          "name": "tag_suggestions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "trade_revisions",
+          "rows": 11,
+          "sha256": "4c21f2205c410693bcd1afcba002b1174785cdaf76713f83bafac37dd44166d5"
+        },
+        {
+          "name": "tradingview_account_migration_aliases",
+          "rows": 36,
+          "sha256": "2e368e08675ac8daf5dc0784779f1766af63c2c01f8c24a3bf8ab1bc4cdf7251"
+        },
+        {
+          "name": "tradingview_account_migration_dependencies",
+          "rows": 4,
+          "sha256": "4376852a826df72016b53aa06de5becba718d330ffb4e6048eeda1520417a0e6"
+        },
+        {
+          "name": "tradingview_account_migration_operations",
+          "rows": 1,
+          "sha256": "a90c1f47140a5b78d7829f38730f64c1c788efff68a9431a54ba6569021fa8f0"
+        },
+        {
+          "name": "tradingview_account_migration_rows",
+          "rows": 87,
+          "sha256": "64b2ff64ea0416df6c6f930ab37b927199fbecd366f2f46e5e802d37c1453a17"
+        }
+      ]
+    },
+    "baseline": {
+      "integrity": "ok",
+      "foreignKeyViolations": 0,
+      "tableCount": 76,
+      "rowCount": 504682,
+      "logicalSha256": "c350ae5c0ba1826b1c32d16262f91f24f17e4ced3544a2ca15bf9b1b03df02d2",
+      "applicationId": 0,
+      "userVersion": 0,
+      "encoding": "UTF-8",
+      "schemaSha256": "0b931f35e3045365e1ad3104d98b14da68ecbf9714c0b43d45f7b8138c37620d",
+      "tables": [
+        {
+          "name": "account_principal_provisionals",
+          "rows": 1,
+          "sha256": "7dc8420d13a3f5e85e2573aa321f3d31e6192615e71311657a15e26522e9f06a"
+        },
+        {
+          "name": "app_settings",
+          "rows": 8,
+          "sha256": "6552d44cceb2e12c42285f7deb8a87118f65520c2f72c0b3a16503a4bc541752"
+        },
+        {
+          "name": "coverage",
+          "rows": 238,
+          "sha256": "a3b3d830eafcbb6b67784f0a1c4a75c44a01da2f332db3546056f2dbed68e5b2"
+        },
+        {
+          "name": "daily_candles",
+          "rows": 154579,
+          "sha256": "d7029f254c6b9e6aab16be94465b47f7bfdee01668c32f2b888bbe9440ac30e3"
+        },
+        {
+          "name": "data_migrations",
+          "rows": 1,
+          "sha256": "2f3d323f1d3816c883d82cb919e0997d098bc535d5259d563dbec7a1670e0918"
+        },
+        {
+          "name": "executions",
+          "rows": 1931,
+          "sha256": "3f8f4111ab6de7410fe349f8eea5d20c4062199a3da8e9ab649d3616f0c11300"
+        },
+        {
+          "name": "home_business_pairing_head",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_business_pairing_revision",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_daily",
+          "rows": 271936,
+          "sha256": "0c77a7cbde56a7bf4b8e564ecd2d41d1a21658cd4fb5893479fa108ad3f478ba"
+        },
+        {
+          "name": "home_dirty",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_full_evidence",
+          "rows": 17,
+          "sha256": "425a11191c3657d0c6ec484fd4f5a9a1c6522dc53721b50effb5ede52e3d07d8"
+        },
+        {
+          "name": "home_full_financial",
+          "rows": 8,
+          "sha256": "0dbd14ac6aeb080ccd4f7feebd04a765b0e4a26863a48c555b2bda285dfd6fb2"
+        },
+        {
+          "name": "home_full_module",
+          "rows": 12,
+          "sha256": "37fc119ec265530090fafebd5a0141a759a9cb9ecdd70d225267f6cd00ec9c53"
+        },
+        {
+          "name": "home_full_query",
+          "rows": 1,
+          "sha256": "94a29f81997ca4d91d501100dbb01837e69f8a6e45bff2188fc62f56315197da"
+        },
+        {
+          "name": "home_full_release",
+          "rows": 2,
+          "sha256": "7993823f5df8a13cc1cd9b2310a6e65e3f70f58c511b6d1d5a25b553ad96b437"
+        },
+        {
+          "name": "home_fx_history",
+          "rows": 2,
+          "sha256": "e0179d25a71c72cda82f4df01b5f04d717a2d41c9d45e9a36c2e6e9a12494c45"
+        },
+        {
+          "name": "home_head",
+          "rows": 1,
+          "sha256": "0d46c35795fedb34b5df9f484d62f0954ff5e3a2b3223febc42c2ffcadb06f4a"
+        },
+        {
+          "name": "home_holding",
+          "rows": 48,
+          "sha256": "80a2f23f7b549cdac34f0522bb8f21ae758825993a0635fccc52438aa039c4a2"
+        },
+        {
+          "name": "home_holding_order",
+          "rows": 288,
+          "sha256": "481d5f011d73b57e915cd4504303f15a15f0122254b0bd086c919a524a2d924e"
+        },
+        {
+          "name": "home_holding_trade",
+          "rows": 3698,
+          "sha256": "6918bc84d712eaed57d315f474864ba1d97028d64030dd00d9458af1f22a3fb6"
+        },
+        {
+          "name": "home_ledger_checkpoint",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_metric_boundary",
+          "rows": 13318,
+          "sha256": "d6e95a31d3b580556aac8dd20a4ed9382acbea5687591eadfc2700b1bb480411"
+        },
+        {
+          "name": "home_metric_member",
+          "rows": 2408,
+          "sha256": "677e33303107350d5beac300faf9bcb1e775405faa3ced4f8876949cd9ebda68"
+        },
+        {
+          "name": "home_metric_object",
+          "rows": 602,
+          "sha256": "38feea480f2da5a8999c08b5e10955dfdd9f5c6ab44573ff3a9a54c44de7fe24"
+        },
+        {
+          "name": "home_object_projection",
+          "rows": 312,
+          "sha256": "5203c3f9ac38f4b224365b90f6786636d5cfa19d7d22acc14bc06c09879161e8"
+        },
+        {
+          "name": "home_publication",
+          "rows": 2,
+          "sha256": "cfc9e6e5dbdd7d4147bee1bb0d9911cc097fc38a8ac7425e6f48644ccf3c7845"
+        },
+        {
+          "name": "home_refresh",
+          "rows": 1,
+          "sha256": "27f7c5ff0c1c9c50b974848736abd32fd1fee035f7de9b650dcafadff9f75aeb"
+        },
+        {
+          "name": "home_release",
+          "rows": 2,
+          "sha256": "8147f8b9e60cb23801e5c9940561e4728aaf51d3dd5910e85fc44eb953996818"
+        },
+        {
+          "name": "home_release_scope",
+          "rows": 64,
+          "sha256": "bdec6ccaf4a9b920a4f340c942f7cc35862c088814e50ef303c3e796afd6c253"
+        },
+        {
+          "name": "home_scope_result",
+          "rows": 64,
+          "sha256": "1f396abe05720558f3ba0f8eff65dca760144368cd227943746f406c6cde2243"
+        },
+        {
+          "name": "home_source_change",
+          "rows": 69,
+          "sha256": "97e331a3864c5305d5d1f5d9e9289ea802263fcaff9bc25ad6f9f69ab1b06614"
+        },
+        {
+          "name": "home_source_job",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "home_trade_set",
+          "rows": 602,
+          "sha256": "928b051c9c9b51583da519a4b0dd220666fb0f56ed428c1f2a43dd781247a59d"
+        },
+        {
+          "name": "homepage_data_repair_runs",
+          "rows": 1,
+          "sha256": "d8e4d6658c9915fb5abbb2dbc6e32a49649e65dcf75307bb9cfb59e2a77eb7d5"
+        },
+        {
+          "name": "import_batches",
+          "rows": 224,
+          "sha256": "d855d66baa850667ac7745ef182dea40551d03f578fafe6fd07750383916d766"
+        },
+        {
+          "name": "instruments",
+          "rows": 239,
+          "sha256": "0b6b1ab5b9c7c76154a43709083b3f19239f55f2f456ef3918d6dca6967b343e"
+        },
+        {
+          "name": "interval_coverage",
+          "rows": 236,
+          "sha256": "244408cd1fb6686fc46b648af46169a2fc121b1575e48e37fd2339b32abb6b34"
+        },
+        {
+          "name": "market_candles",
+          "rows": 52781,
+          "sha256": "b5102a90d09bf40f1878ff1c04666f339218b95d6284df38543b2a406fa4e249"
+        },
+        {
+          "name": "market_data_jobs",
+          "rows": 236,
+          "sha256": "5f5763d6eacdb3a00b32ff5b0ab7c41669580aea2d84b7aba3410fe52a582482"
+        },
+        {
+          "name": "provider_symbols",
+          "rows": 438,
+          "sha256": "7307d7b8d3d0859b5c73d07c986e40a258c64456930646d73872cdf65ea57abd"
+        },
+        {
+          "name": "recall_actual_metric_exits",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_refs",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metric_sources",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_actual_metrics",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_bundle_plans",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_documents",
+          "rows": 5,
+          "sha256": "35ab4a6c2793cc75d91f13e40038a0e4b0dbcded1886cf81ed534d04fdffdb04"
+        },
+        {
+          "name": "recall_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_selections",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_exit_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_association_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_evidence",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_executions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluation_tags",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_manual_evaluations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_associations",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_targets",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_plan_versions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_retained_bundles",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "recall_risk_baselines",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "reviews",
+          "rows": 138,
+          "sha256": "fa18605d8d90282073e9884fc6bbe8885238114849c96bb509f73afbadd660c7"
+        },
+        {
+          "name": "schema_migrations",
+          "rows": 22,
+          "sha256": "80a0ba8fca4f0e9b6cd8d935f31d8ef4e3e9ce2189be51339bb5a4d249896653"
+        },
+        {
+          "name": "source_correction_runs",
+          "rows": 7,
+          "sha256": "e3ed75169510950d6bebfe308c9467c237a19c0b75c8bdaea2f6a165a69e4133"
+        },
+        {
+          "name": "sqlite_sequence",
+          "rows": 1,
+          "sha256": "aab4d136cfc8923a8c15c45fec7bb64121033d6515c9cb9737d5ebddc347eaf9"
+        },
+        {
+          "name": "tag_suggestions",
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "trade_revisions",
+          "rows": 11,
+          "sha256": "4c21f2205c410693bcd1afcba002b1174785cdaf76713f83bafac37dd44166d5"
+        },
+        {
+          "name": "tradingview_account_migration_aliases",
+          "rows": 36,
+          "sha256": "2e368e08675ac8daf5dc0784779f1766af63c2c01f8c24a3bf8ab1bc4cdf7251"
+        },
+        {
+          "name": "tradingview_account_migration_dependencies",
+          "rows": 4,
+          "sha256": "4376852a826df72016b53aa06de5becba718d330ffb4e6048eeda1520417a0e6"
+        },
+        {
+          "name": "tradingview_account_migration_operations",
+          "rows": 1,
+          "sha256": "a90c1f47140a5b78d7829f38730f64c1c788efff68a9431a54ba6569021fa8f0"
+        },
+        {
+          "name": "tradingview_account_migration_rows",
+          "rows": 87,
+          "sha256": "64b2ff64ea0416df6c6f930ab37b927199fbecd366f2f46e5e802d37c1453a17"
+        }
+      ]
+    }
+  }
+}

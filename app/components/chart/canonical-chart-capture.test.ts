@@ -131,6 +131,7 @@ it('paints the same solid diamond and action label used by the interactive repla
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         closePath: vi.fn(),
+        stroke: vi.fn(),
         fill: vi.fn(),
         fillText: vi.fn(),
         measureText: vi.fn(() => ({ width: 24 })),
@@ -157,6 +158,7 @@ it('keeps a marker label inside the plot pane before the right price axis', () =
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         closePath: vi.fn(),
+        stroke: vi.fn(),
         fill: vi.fn(),
         fillText: vi.fn(),
         measureText: vi.fn(() => ({ width: 24 })),
@@ -182,6 +184,7 @@ it('keeps marker text clear of a price-axis label that extends into the plot', (
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         closePath: vi.fn(),
+        stroke: vi.fn(),
         fill: vi.fn(),
         fillText: vi.fn(),
         measureText: vi.fn(() => ({ width: 24 })),
@@ -195,7 +198,11 @@ it('keeps marker text clear of a price-axis label that extends into the plot', (
         actionLabel: '买入',
         text: '买入',
     }], { timeToX: () => 300, priceToY: () => 200, maxX: 400, rightLabelBoundaryX: 280 });
-    expect(context.fillText).toHaveBeenCalledWith('买入', 290, 190);
+    expect(context.fillText).toHaveBeenCalledWith('买入', 264, 190);
+    expect(context.moveTo).toHaveBeenCalledWith(300, 200);
+    expect(context.lineTo).toHaveBeenCalledWith(274, 190);
+    expect(context.stroke).toHaveBeenCalledTimes(1);
+    expect(context.fill).toHaveBeenCalledTimes(1);
     expect(context.textAlign).toBe('right');
 });
 
@@ -210,6 +217,7 @@ it('uses the actual plot boundary when capture paints a right-edge marker', asyn
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         closePath: vi.fn(),
+        stroke: vi.fn(),
         fill: vi.fn(),
         fillText: vi.fn(),
         measureText: vi.fn(() => ({ width: 24 })),
@@ -226,7 +234,7 @@ it('uses the actual plot boundary when capture paints a right-edge marker', asyn
     await renderCanonicalChartCapture(scene);
 
     const context = getContext.mock.results.at(-1)?.value as CanvasRenderingContext2D;
-    expect(context.fillText).toHaveBeenCalledWith('卖出', 380, 190);
+    expect(context.fillText).toHaveBeenCalledWith('卖出', 344, 190);
     getContext.mockRestore();
     toDataURL.mockRestore();
 });
@@ -239,6 +247,7 @@ it('keeps the filled diamond inside the plot when a lane offset crosses the righ
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         closePath: vi.fn(),
+        stroke: vi.fn(),
         fill: vi.fn(),
         fillText: vi.fn(),
         measureText: vi.fn(() => ({ width: 24 })),
@@ -279,4 +288,22 @@ it('does not place a single-candle unknown execution at the old candle', () => {
     const projection = captureDrawingProjection({ candles }, chart, series);
 
     expect(projection.timeToX('2026-09-08T00:00:00Z')).toBeNull();
+});
+
+it('keeps every dense execution diamond but suppresses colliding labels', () => {
+    const context = { save: vi.fn(), restore: vi.fn(), beginPath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), closePath: vi.fn(), fill: vi.fn(), fillText: vi.fn(), measureText: vi.fn(() => ({ width: 24 })) } as unknown as CanvasRenderingContext2D;
+    const markers = [100, 110, 180].map((price) => ({ time: '2025-01-01', price, position: 'belowBar' as const, color: '#26a69a', shape: 'diamond' as const, actionLabel: '买入', text: '买入' }));
+    drawExecutionMarkers(context, markers, { timeToX: () => 100, priceToY: (price) => price });
+    expect(context.fill).toHaveBeenCalledTimes(3);
+    expect(context.fillText).toHaveBeenCalledTimes(2);
+});
+
+it('keeps labels clear of diamonds painted later in the marker order', () => {
+    const context = { save: vi.fn(), restore: vi.fn(), beginPath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), closePath: vi.fn(), fill: vi.fn(), fillText: vi.fn(), measureText: vi.fn(() => ({ width: 24 })) } as unknown as CanvasRenderingContext2D;
+    const markers = ['first', 'later'].map((time) => ({ time, price: 100, position: 'belowBar' as const, color: '#26a69a', shape: 'diamond' as const, actionLabel: '买入', text: '买入' }));
+    drawExecutionMarkers(context, markers, { timeToX: (time) => time === 'first' ? 100 : 120, priceToY: (price) => price });
+    expect(context.fill).toHaveBeenCalledTimes(2);
+    expect(context.fillText).toHaveBeenCalledTimes(1);
+    expect(context.fillText).not.toHaveBeenCalledWith('买入', 110, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('买入', 130, expect.any(Number));
 });

@@ -1,0 +1,677 @@
+{
+  "checkedAt": "2026-11-25T16:37:17.142Z",
+  "method": "Read-only comparison of pre-sync SQLite backup and immutable authoritative source snapshot; stable primary keys, row values and changed column names only; no row payloads exported",
+  "allCommonTablesHaveNoOldOnlyKeys": true,
+  "before": {
+    "tableCount": 47,
+    "rowCount": 210956,
+    "logicalSha256": "05a72c0f222b87b4b78127c3e94397614f65d664103fe3c350c18041e77f77ce"
+  },
+  "source": {
+    "tableCount": 76,
+    "rowCount": 504682,
+    "logicalSha256": "c350ae5c0ba1826b1c32d16262f91f24f17e4ced3544a2ca15bf9b1b03df02d2"
+  },
+  "results": [
+    {
+      "table": "account_principal_provisionals",
+      "primaryKeys": [
+        "account_id"
+      ],
+      "oldRows": 1,
+      "newRows": 1,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "app_settings",
+      "primaryKeys": [
+        "key"
+      ],
+      "oldRows": 7,
+      "newRows": 8,
+      "added": 1,
+      "removed": 0,
+      "changed": 1,
+      "changedColumns": {
+        "value_json": 1,
+        "updated_at": 1
+      }
+    },
+    {
+      "table": "coverage",
+      "primaryKeys": [
+        "instrument_id",
+        "adjustment_mode"
+      ],
+      "oldRows": 236,
+      "newRows": 238,
+      "added": 2,
+      "removed": 0,
+      "changed": 7,
+      "changedColumns": {
+        "end_date": 7,
+        "updated_at": 7,
+        "details_json": 7
+      }
+    },
+    {
+      "table": "daily_candles",
+      "primaryKeys": [
+        "instrument_id",
+        "date",
+        "adjustment_mode"
+      ],
+      "oldRows": 154410,
+      "newRows": 154579,
+      "added": 169,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "data_migrations",
+      "primaryKeys": [
+        "source_fingerprint"
+      ],
+      "oldRows": 1,
+      "newRows": 1,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "executions",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 1866,
+      "newRows": 1931,
+      "added": 65,
+      "removed": 0,
+      "changed": 234,
+      "changedColumns": {
+        "evidence_json": 232,
+        "account": 55,
+        "executed_at": 12,
+        "updated_at": 57,
+        "instrument_id": 2
+      }
+    },
+    {
+      "table": "import_batches",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 213,
+      "newRows": 224,
+      "added": 11,
+      "removed": 0,
+      "changed": 25,
+      "changedColumns": {
+        "reconciliation_json": 25
+      }
+    },
+    {
+      "table": "instruments",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 236,
+      "newRows": 239,
+      "added": 3,
+      "removed": 0,
+      "changed": 19,
+      "changedColumns": {
+        "metadata_json": 19,
+        "updated_at": 19
+      }
+    },
+    {
+      "table": "interval_coverage",
+      "primaryKeys": [
+        "instrument_id",
+        "interval",
+        "adjustment_mode"
+      ],
+      "oldRows": 236,
+      "newRows": 236,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "legacy_migration_runs",
+      "oldRows": 1,
+      "action": "Original migration receipt retained in baseline-before.sqlite backup"
+    },
+    {
+      "table": "market_candles",
+      "primaryKeys": [
+        "instrument_id",
+        "interval",
+        "timestamp",
+        "adjustment_mode"
+      ],
+      "oldRows": 52781,
+      "newRows": 52781,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "market_data_jobs",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 236,
+      "newRows": 236,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "provider_symbols",
+      "primaryKeys": [
+        "instrument_id",
+        "provider"
+      ],
+      "oldRows": 436,
+      "newRows": 438,
+      "added": 2,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_actual_metric_exits",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "execution_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_actual_metric_refs",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "ref_kind",
+        "ref_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_actual_metric_sources",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_actual_metrics",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "scope",
+        "scope_id",
+        "metric_key"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_bundle_baselines",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "baseline_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_bundle_evaluations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "evaluation_revision_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_bundle_manual_evaluations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "manual_evaluation_revision_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_bundle_plans",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "bundle_id",
+        "plan_version_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_documents",
+      "primaryKeys": [
+        "episode_id"
+      ],
+      "oldRows": 5,
+      "newRows": 5,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_evaluation_associations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_evaluation_evidence",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "ordinal"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_evaluation_executions",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "execution_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_evaluation_selections",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "decision_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_evaluation_tags",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "tag_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_exit_evaluations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluation_association_executions",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_id",
+        "execution_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluation_associations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluation_evidence",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "ordinal"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluation_executions",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "execution_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluation_tags",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "evaluation_entity_id",
+        "tag_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_manual_evaluations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_plan_associations",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "plan_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_plan_targets",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "plan_entity_id",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_plan_versions",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_retained_bundles",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "recall_risk_baselines",
+      "primaryKeys": [
+        "episode_id",
+        "version_kind",
+        "entity_id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "reviews",
+      "primaryKeys": [
+        "episode_id"
+      ],
+      "oldRows": 138,
+      "newRows": 138,
+      "added": 0,
+      "removed": 0,
+      "changed": 1,
+      "changedColumns": {
+        "updated_at": 1
+      }
+    },
+    {
+      "table": "schema_migrations",
+      "primaryKeys": [
+        "version"
+      ],
+      "oldRows": 14,
+      "newRows": 22,
+      "added": 8,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "tag_suggestions",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 0,
+      "newRows": 0,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "trade_revisions",
+      "primaryKeys": [
+        "id"
+      ],
+      "oldRows": 11,
+      "newRows": 11,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "tradingview_account_migration_aliases",
+      "primaryKeys": [
+        "operation_id",
+        "alias_kind",
+        "old_id"
+      ],
+      "oldRows": 36,
+      "newRows": 36,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "tradingview_account_migration_dependencies",
+      "primaryKeys": [
+        "operation_id",
+        "table_name",
+        "row_key"
+      ],
+      "oldRows": 4,
+      "newRows": 4,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "tradingview_account_migration_operations",
+      "primaryKeys": [
+        "operation_id"
+      ],
+      "oldRows": 1,
+      "newRows": 1,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    },
+    {
+      "table": "tradingview_account_migration_rows",
+      "primaryKeys": [
+        "operation_id",
+        "table_name",
+        "primary_key"
+      ],
+      "oldRows": 87,
+      "newRows": 87,
+      "added": 0,
+      "removed": 0,
+      "changed": 0,
+      "changedColumns": {}
+    }
+  ]
+}

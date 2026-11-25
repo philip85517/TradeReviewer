@@ -59,6 +59,7 @@ import {
   type Timeframe,
 } from "../../lib/market/types";
 import { marketTimeZone } from "../../lib/market/trading-date";
+import { executionHasExactTime } from "../../lib/import/statement-evidence";
 import {
   completeRecallDocument,
   createRecallDocument,
@@ -128,6 +129,7 @@ import { RecallPlanRevisionSection } from "./recall-plan-revisions";
 import { RecallExitEvaluations } from "./recall-exit-evaluations";
 import { RecallActualMetricsPanel } from "./recall-actual-metrics";
 import { RecallManualEvaluations } from "./recall-manual-evaluations";
+import { projectRecallSplitUnits } from "../../lib/recall/split-valuation";
 import { calculateRecallActualMetrics } from "../../lib/recall/actual-metrics";
 import { calculateRecallPlan, upsertRecallPlanDraft } from "../../lib/recall/plans";
 import { captureRecallExecutionEvidence, freezeRecallSnapshotBundle, getRecallBundlePlans } from "../../lib/recall/retained-bundles";
@@ -514,6 +516,7 @@ function money(value: string, currency: string) {
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
     currency,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
     signDisplay: "always",
   }).format(amount);
@@ -525,6 +528,7 @@ function fee(value: string, currency: string) {
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
     currency,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
 }
@@ -1265,12 +1269,24 @@ export function RecallWorkspace({
       source: { documentRevision: document.revision, evidenceDigest: captureRecallExecutionEvidence(episode).digest, computedAt: nowIso() },
     });
   }, [document, editingSnapshotId, episode, latestCandle, phase, replay, viewedBundle]);
+  const positionProjection = useMemo(() => projectRecallSplitUnits(
+    chartExecutions, snapshotEdit?.cursor ?? replay?.cursor,
+    latestCandle ? { price: String(latestCandle.close), time: candleKnowledgeAt(latestCandle) }
+      : chartExecutions.at(-1) ? { price: chartExecutions.at(-1)!.price, time: chartExecutions.at(-1)!.executedAt } : undefined,
+  ), [chartExecutions, latestCandle, replay?.cursor, snapshotEdit?.cursor]);
   const position = useMemo(
-    () => replayPositionAtPrice({
-      executions: chartExecutions,
-      markPrice: String(latestCandle?.close ?? chartExecutions.at(-1)?.price ?? 0),
-    }),
-    [chartExecutions, latestCandle?.close],
+    () => {
+      const value = replayPositionAtPrice({
+        executions: positionProjection.executions,
+        markPrice: positionProjection.markPrice ?? "0",
+        cursor: snapshotEdit?.cursor ?? replay?.cursor,
+        visibleExecutionIds: chartExecutions.map(execution => execution.id),
+      });
+      return positionProjection.markPrice === null && positionProjection.executions.length
+        ? { ...value, ...(positionProjection.reason ? { quantityKnown: false as const, costKnown: false as const } : {}), accuracy: { pnl: "unavailable" as const, reasons: [...(value.accuracy?.reasons ?? []), positionProjection.reason ?? "price-basis-mismatch"] } }
+        : value;
+    },
+    [chartExecutions, positionProjection, replay?.cursor, snapshotEdit?.cursor],
   );
   const tradeNature = episode.tradeNature ?? (currentExecutions[0] ? tradeNatureOf(currentExecutions[0]) : "unknown");
   const simulationRunId = episode.simulationRunId ?? currentExecutions.find((execution) => tradeNatureOf(execution) === "simulation")?.source.simulationRunId;
@@ -1313,6 +1329,15 @@ export function RecallWorkspace({
     () => visibleDrawingsAtCursor(drawingHistory.present, replay?.cursor ?? episode.startedAt, timeframe),
     [drawingHistory.present, episode.startedAt, replay?.cursor, timeframe],
   );
+  // The layer manager must retain hidden drawings, but never disclose drawings
+  // beyond the same cursor/timeframe boundary used by the chart.
+  const manageableDrawings = useMemo(() => {
+    const cursor = replay?.cursor ?? episode.startedAt;
+    return drawingHistory.present.filter((drawing) =>
+      drawing.createdAtCursor <= cursor &&
+      (drawing.visibleOn === "all" || drawing.visibleOn.includes(timeframe)),
+    );
+  }, [drawingHistory.present, episode.startedAt, replay?.cursor, timeframe]);
   const canUndo = replay ? canUndoDrawingAtCursor(drawingHistory, replay.cursor, timeframe) : false;
   const canRedo = replay ? canRedoDrawingAtCursor(drawingHistory, replay.cursor, timeframe) : false;
   const allLocked = visibleDrawings.length > 0 && visibleDrawings.every((drawing) => drawing.locked);
@@ -2482,7 +2507,11 @@ export function RecallWorkspace({
       return;
     }
     if (missing.length > 0) {
-      setError(`仍缺少决策快照：${missing.join("、")}`);
+      const labels = missing.map(id => {
+        const index = document.decisions.findIndex(decision => decision.id === id);
+        return index >= 0 ? `第${index + 1}笔决策` : "待核对决策";
+      });
+      setError(`仍缺少决策快照：${labels.join("、")}。请在本回合记录中选择对应决策并留存快照。`);
       return;
     }
     if (document.snapshots.some((snapshot) => snapshot.decisionId === "unassigned")) {
@@ -2865,8 +2894,9 @@ export function RecallWorkspace({
     ? orderedRecallExecutions(currentExecutions).at(-1)
     : replay.revealedExecutions.at(-1);
   const visibleExecutionCutoff = visibleExecution ? recallExecutionKnowledgeAt(visibleExecution) : undefined;
-  const executionCutoff = visibleExecutionCutoff ? formatMarketCursor(visibleExecutionCutoff, instrument.market) : "成交尚未揭示";
-  const executionCutoffShort = visibleExecutionCutoff ? formatMarketCursorShort(visibleExecutionCutoff, instrument.market) : executionCutoff;
+  const dateOnlyExecution = visibleExecution && !executionHasExactTime(visibleExecution);
+  const executionCutoff = visibleExecutionCutoff ? dateOnlyExecution ? `${visibleExecutionCutoff.slice(0, 10)}（仅日期）` : formatMarketCursor(visibleExecutionCutoff, instrument.market) : "成交尚未揭示";
+  const executionCutoffShort = visibleExecutionCutoff && !dateOnlyExecution ? formatMarketCursorShort(visibleExecutionCutoff, instrument.market) : executionCutoff;
 
   return (
     <section ref={workspaceElementRef} className="recall-workspace trade-review-workspace--recall-frame" data-layout={focusMode ? "focus" : "standard"} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
@@ -2889,7 +2919,7 @@ export function RecallWorkspace({
             onRefreshMarketData={onRefreshMarketData}
             refreshDisabledReason={undefined}
             layersOpen={layersOpen}
-            layersDisabledReason={visibleDrawings.length === 0 ? "当前没有可见绘图" : undefined}
+            layersDisabledReason={manageableDrawings.length === 0 ? "当前没有可管理绘图" : undefined}
             onToggleLayers={() => setLayersOpen((open) => !open)}
             fullscreen={{ supported: false, isFullscreen: false, error: null, toggleFullscreen: async () => undefined } as ComponentProps<typeof ChartToolbar>["fullscreen"]}
             settings={settings}
@@ -3047,6 +3077,7 @@ export function RecallWorkspace({
             <DrawingToolbar compact activeTool={activeTool} canUndo={canUndo} canRedo={canRedo} allLocked={allLocked} onToolChange={(tool) => { setPlaying(false); setActiveTool(tool); }} onUndo={() => replay && commitDrawingHistory(undoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onRedo={() => replay && commitDrawingHistory(redoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onClear={() => commitDrawingHistory(applyDrawingCommand(drawingHistory, { type: "clear-unlocked" }))} onToggleLock={() => replay && commitDrawingHistory(setAllDrawingsLockedAtCursor(drawingHistory, replay.cursor, timeframe))} />
             <div className="recall-chart-column">
               <ReplayChartWithHandle
+                phaseKey={phase}
                 episodeId={episode.id}
                 viewportKey={`${episode.id}:${timeframe}:${editingSnapshotId ?? "working"}:${chartCandles[0]?.time ?? ""}:${chartCandles.at(-1)?.time ?? ""}`}
                 candles={chartCandles}
@@ -3079,7 +3110,7 @@ export function RecallWorkspace({
                       <X size={16} aria-hidden="true" />
                     </button>
                   </div>
-                  <DrawingLayersPanel drawings={visibleDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
+                  <DrawingLayersPanel drawings={manageableDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
                 </div>
               )}
             </div>
@@ -3101,6 +3132,7 @@ export function RecallWorkspace({
               hasSeenFuture={document.working.hasSeenFuture}
               knownQuantity={quantityAvailable ? position.quantity : undefined}
               primaryContent={sidebarPhase === "pre-entry" ? undefined : <div className="recall-plan-primary-content">
+                {!editingSnapshotId && positionProjection.notes.length > 0 && <p role="status">{positionProjection.notes.join("；")}</p>}
                 {editingSnapshotId
                   ? <RecallActualMetricsPanel metrics={actualMetrics} phase={sidebarPhase} retained />
                   : <RecallActualMetricsPanel metrics={actualMetrics} phase={sidebarPhase} compact />}
@@ -3229,9 +3261,10 @@ export function RecallWorkspace({
             </div>}
           </div>
 
+          {positionProjection.notes.length > 0 && <p role="status">{positionProjection.notes.join("；")}</p>}
           {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
 
-          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(latestCandle.time, instrument.market) : "—"}</dd><dt>已揭示成交</dt><dd>{chartExecutions.length} / {currentExecutions.length}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
+          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(candleKnowledgeAt(latestCandle), instrument.market) : "—"}</dd>{latestCandle && positionProjection.markPrice !== null && positionProjection.markPrice !== String(latestCandle.close) && <><dt>估值换算价</dt><dd>{positionProjection.markPrice} {instrument.currency}（拆股推算）</dd></>}<dt>已揭示成交</dt><dd>{chartExecutions.length} / {currentExecutions.length}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
 
         </div>
       </div>

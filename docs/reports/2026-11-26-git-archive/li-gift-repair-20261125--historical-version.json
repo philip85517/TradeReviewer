@@ -1,0 +1,28 @@
+{
+  "branch": "codex/homepage-performance-data-optimization",
+  "head": "3eb5813b7469f828339b9555194f3e98cd84d707",
+  "date": "2026-11-25",
+  "timezone": "Asia/Shanghai",
+  "recordedAt": "2026-11-25T12:55:29.248Z",
+  "dirty": true,
+  "node": "v26.0.0",
+  "files": {
+    "app/lib/trades/gift-acquisition-evidence.ts": "9ae30be8f0a8c47b389ca5ac887099e2b139b70a032f92f5313de19df5214198",
+    "app/lib/trades/gift-acquisition-evidence.test.ts": "4cbf3db8bee58dd3288523253c93f5c0e36e79e87b8d127fe5d8e6aae74d79c5",
+    "app/lib/import/monthly-statement.ts": "51e05bf461c845faf50c666b2c42ddd0ccde73f931de1856a5da5f3a4202e16c",
+    "app/lib/import/statement-evidence.ts": "51a3e9b130af3d124c3fe4c77a99d4f546febfc3bc4c6c5e1716a9d00e2f22c1",
+    "app/lib/replay/position-ledger.ts": "85c6e6f423c3f2d558fc930e6ebfd16548db6943479f2252e92f0078727250ef",
+    "app/lib/trades/episodes.ts": "475811890be607a2569a5f43098c848892047c12ce22cf5fb7290d989efa6675",
+    "app/lib/trades/episode-metrics.ts": "9f0bdef68fc14019b964135ebf791c41d7a237e6de808cfab611b280d6534b11",
+    "app/lib/storage/sqlite-store.ts": "488cd05b404a1183e029f81d42d056c5c340092a657438458c939a1af9850939",
+    "app/lib/storage/sqlite-store.test.ts": "ab27c3e171e9c7e13c69b477466290b308dc2398a39fd774e6b901e6a8957dbf",
+    "app/lib/home/contribution-allocation.ts": "70cdd7dbfe5abf3aed2ca29a10241d06febed08cfd414c187b281f0f06e84db4",
+    "app/lib/home/builder.ts": "37471b9966c117d4a5925c30b009e67a78f78101846db4f40dc2619c13ab01bd",
+    "app/lib/home/projection-cache.ts": "92e11019c19fd7ea77a56badb999ecde64968018b764e7073c81b9988d782f90",
+    "app/lib/home/full-persistence.ts": "b2bd390d7372f0a77b393fdf694efc0421d10430a5eb4d4d99fe68f116401dfd",
+    "app/components/homepage-preview/full-client.ts": "98ff4cb5760829bbfb2032e0a82e3cc326885999754edb5fd62d2ae256ef8e23",
+    "app/components/homepage-preview/full-homepage.tsx": "4e6c4d27f778cac6e4e5a7b81d429cae673d8dc9b561dfe188d6a3911e5482be",
+    "app/components/homepage-preview/full-cutover.test.tsx": "9fd5ab3e5d8675da41e9b86ad0c11d57427fb92880fd0881bf9578a1f6e232db"
+  },
+  "archiveNote": "Historical source fingerprints copied without recalculation. Documentation archival may change current specification fingerprints. This archival is not renewed acceptance."
+}

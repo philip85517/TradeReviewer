@@ -1,3 +1,4 @@
+import { carryGiftAcquisitionEvidence, isGiftAcquisitionEvidence } from "../trades/gift-acquisition-evidence";
 import {verifiedSplitBoundaries,splitValuationQuote} from './split-valuation-safety';
 import {homeExecutionFeeBasis} from './execution-fee-basis';
 import {valuationRawClose,valuationSession} from './valuation-quote';
@@ -15,7 +16,7 @@ import { CalendarOutOfRangeError } from '../market/calendar';
 import { confirmedPrelistingClose } from '../market/prelisting-close';
 import type { SupportedMarket } from '../market/contracts';
 import { lifetimeCoverageNotice, type Holding, type Market } from '../../components/homepage-preview/display-contract';
-import { HOME_POLICY, HOME_METRIC_ORDERING, scopeId, type NativeBucket, type NativeDay, type ReleaseInput, type ScopeProjection } from './contracts';
+import { HOME_POLICY, HOME_METRIC_ORDERING, scopeId, type HomeCategory, type NativeBucket, type NativeDay, type ReleaseInput, type ScopeProjection, type SourceFifoProof, type SourceLotProof } from './contracts';
 import { convertNative, decimal, nextDay, validDay } from './period';
 import { businessDay, executionBusinessDay, nativePosition, type NativePosition } from './finance';
 import type { SourceSnapshot } from './source';
@@ -24,8 +25,12 @@ import type {ProjectionCache} from './projection-cache';
 import {nativeOrdering,validateNativeOrdering} from './full-window';
 import {metricObjectVersion} from './metric-objects';
 import {compactSeries,NativeSeriesAccumulator} from './native-series';
+import {resolveIpoAcquisitionCost} from '../trades/ipo-cost';
+import {executionContentVersion} from './execution-content-ref';
+import {fullCanonical,fullHash} from './full-projection';
 
 const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const HOME_SOURCE_FIFO_PROOF_VERSION = 'source-fifo-proof-v3-confirmed-gift-source-lots';
 const marketOf = (market: string): Market => market.startsWith('CN-') ? 'CN' : market === 'HK' || market === 'US' ? market : 'all';
 const empty = (): NativeBucket => ({ market:'0', unrealized:'0', realized:'0', realizedMissing:0, fees:'0',feesMissing:0,count:0,marketKnown:0,unrealizedKnown:0,lifetimeComplete:true,reasons:[] });
 const sum = (a: string | null, b: string | null) => a === null || b === null ? null : a === '0' ? b : b === '0' ? a : decimal(a).plus(b).toFixed();
@@ -37,7 +42,77 @@ function trackMissingContributions(current: NativePosition['realizedContribution
   for(const [key,value] of Object.entries(prior))if(!Object.hasOwn(current,key))counts[value.currency]=(counts[value.currency]??0)+1;
 }
 type Group = { key: string; accountId: string; instrument: Instrument; executions: TradeExecution[]; evidence: MonthlyStatement[] };
-type Projection = { metric:import('./contracts').MetricObject; group: Group; current: NativeDay; state: NativePosition; price: string | null; opened: string | null };
+type Projection = { metric:import('./contracts').MetricObject; group: Group; current: NativeDay; state: NativePosition; price: string | null; opened: string | null; categories?:import('./projection-cache').CategoryProjection[] };
+
+/**
+ * Project native source-FIFO facts into a category boundary.  This is an
+ * intentionally small adapter: it accepts only facts emitted by the native
+ * transition and reuses the parent day's quote, deferred/prelisting decision,
+ * FX and reasons.  No category replay or valuation is performed here.
+ */
+export function canonicalCategoryNativeDay(state: NativePosition, parent: NativeDay, category: HomeCategory, currency: string, price: string|null): NativeDay|null {
+  const facts=state.sourceFifo as (typeof state.sourceFifo & {realizedByCategory?:Record<string,string>;closedFeesByCategory?:Record<string,string>;openFeesByCategory?:Record<string,string>;remainingByCategory?:Record<string,string>;remainingCashCostByCategory?:Record<string,string>})|undefined;
+  if(!facts||facts.version!==1)return null;
+  const q=facts.remainingByCategory?.[category]??'0';
+  const cost=facts.remainingCashCostByCategory?.[category]??'0';
+  const openFees=facts.openFeesByCategory?.[category]??'0';
+  const noPosition=q==='0';
+  const parentBucket=parent.buckets[currency];
+  const deferred=parentBucket?.market==='0'&&parentBucket.unrealized==='0'&&decimal(q).gt(0);
+  const market=deferred||noPosition?'0':q==='0'?'0':parentBucket?.market===null||price===null?null:decimal(q).mul(price).toFixed();
+  const unrealized=deferred||noPosition?'0':market===null?null:decimal(market).minus(cost).minus(openFees).toFixed();
+  const reasons=[...(parentBucket?.reasons??parent.reasons)];
+  const closingIds=new Set((facts.consumptions??[]).filter((c:any)=>c.category===category).map((c:any)=>c.closingId));
+  const closedFees=facts.closedFeesByCategory?.[category]??'0';
+  const bucket:NativeBucket={market,unrealized,realized:facts.realizedByCategory?.[category as 'ipo'|'long']??'0',realizedMissing:parentBucket?.realizedMissing??0,fees:facts.feesByCategory?.[category as 'ipo'|'long']??closedFees,feesMissing:parentBucket?.feesMissing??0,closedFees,closedFeesMissing:0,closedTransactions:closingIds.size,count:noPosition?0:1,marketKnown:market===null?0:noPosition?0:1,unrealizedKnown:unrealized===null?0:noPosition?0:1,lifetimeComplete:parentBucket?.lifetimeComplete??true,reasons};
+  return {date:parent.date,buckets:{[currency]:bucket},fx:parent.fx,reasons:[...new Set(reasons)],...(parent.activity===undefined?{}:{activity:parent.activity})};
+}
+
+/** Build the immutable v6 seam from the same source snapshot as the native day.
+ * No P/L is recomputed here: quantities and cash costs are copied from native
+ * consumption/remaining facts, while event-only IPO lots are resolved through
+ * the existing immutable monthly cash resolver.
+ */
+function sourceFifoProofFor(group:Group, state:NativePosition, source:SourceSnapshot, refs:Map<string,import('./execution-content-ref').ExecutionContentRef>):SourceFifoProof|undefined {
+  const facts=state.sourceFifo as (typeof state.sourceFifo & {remaining?:Array<{sourceKey:string;category:HomeCategory;quantity:string;cashCost:string}>})|undefined;
+  if(!facts||facts.version!==1||(!(facts.consumptions?.length)&&!(facts.remaining?.length)))return undefined;
+  const executionById=new Map(group.executions.map(e=>[e.id,e]));
+  const attachedEvents=[...group.evidence.flatMap(s=>s.events),...group.executions.flatMap(e=>e.source.positionEvents??[])];
+  const events=carryGiftAcquisitionEvidence(attachedEvents,attachedEvents);
+  const eventById=new Map<string,typeof events[number]>();for(const event of events){const prior=eventById.get(event.id);if(prior&&fullHash(prior)!==fullHash(event))return undefined;eventById.set(event.id,event);}const uniqueEvents=[...eventById.values()];
+  const instrumentIdentity=canonicalInstrumentId(group.instrument.symbol,group.instrument.market);
+  const matchesGroup=(event:typeof uniqueEvents[number])=>event.accountId===group.accountId&&!!event.symbol&&!!event.market&&canonicalInstrumentId(event.symbol,event.market)===instrumentIdentity;
+  const scopedEvents=uniqueEvents.filter(matchesGroup);
+  const eventLots:SourceLotProof[]=scopedEvents.filter(e=>e.kind==='ipo'&&e.quantity!==undefined&&Number(e.quantity)>0&&!group.executions.some(x=>isExecutionBackedIpoAllocation(e,[x]))).map(e=>{
+    const resolved=resolveIpoAcquisitionCost(e,uniqueEvents,group.executions,group.instrument.currency);if(!resolved)return undefined;
+    const dependencyIds=[e.id,...resolved.evidenceIds.filter(id=>id!==e.id)];
+    const payload={sourceKey:`event:${e.accountId}:${e.id}`,category:'ipo' as const,quantity:e.quantity!,cashCost:resolved.cashCost,at:statementEventAt(e),dependencyHashes:dependencyIds.map(id=>fullHash(uniqueEvents.find(x=>x.id===id)??id))};
+    return {...payload,proofHash:fullHash(payload),executionId:undefined};
+  }).filter((x):x is NonNullable<typeof x>=>!!x);
+  // Only emit gift lots actually referenced by this native state. Preserve the
+  // original acquisition quantity and its user confirmation even after all
+  // shares are consumed; a remaining fragment is not an immutable source lot.
+  const usedSourceKeys=new Set([...(facts.remaining??[]).map(l=>l.sourceKey),...facts.consumptions.map(c=>c.openingSourceKey)]);
+  for(const event of scopedEvents){
+    const sourceKey=`event:${event.accountId}:${event.id}`;
+    if(!usedSourceKeys.has(sourceKey)||!isGiftAcquisitionEvidence(event)||event.giftAcquisition!.currency!==group.instrument.currency)continue;
+    const at=nativeEvidenceBoundaries([],[{positions:[],events:[event]}],group.instrument.market)[0];
+    const payload={sourceKey,category:'long' as const,quantity:event.quantity!,cashCost:'0',at,dependencyHashes:[fullHash(event)]};
+    eventLots.push({...payload,proofHash:fullHash(payload),executionId:undefined});
+  }
+  const remaining=new Map((facts.remaining??[]).map(l=>[l.sourceKey,l]));
+  const categoryFor=new Map<string,HomeCategory>();
+  for(const l of facts.remaining??[])categoryFor.set(l.sourceKey,l.category);
+  for(const c of facts.consumptions)categoryFor.set(c.openingSourceKey,c.category);
+  const lots:SourceLotProof[]=[...remaining.values()].filter(l=>!(l.sourceKey.startsWith('execution:')&&executionById.has(l.sourceKey.slice('execution:'.length)))&&!eventLots.some(e=>e.sourceKey===l.sourceKey)).map(l=>{const payload={sourceKey:l.sourceKey,category:l.category,quantity:l.quantity,cashCost:l.cashCost,at:'',dependencyHashes:[] as string[]};return {...payload,proofHash:fullHash(payload)};});
+  for(const e of group.executions){const key=`execution:${e.id}`;if(!categoryFor.has(key))continue;if(lots.some(l=>l.sourceKey===key))continue;const payload={sourceKey:key,category:categoryFor.get(key)!,quantity:e.quantity,cashCost:decimal(e.price).mul(e.quantity).toFixed(),at:e.executedAt,dependencyHashes:refs.has(e.id)?[refs.get(e.id)!.effectiveVersion]:[],executionId:e.id};lots.push({...payload,proofHash:fullHash(payload)});}
+  lots.push(...eventLots);
+  if(!lots.length||lots.some(l=>!l.dependencyHashes.length))return undefined;
+  const sourceQuantities=[] as NonNullable<SourceFifoProof['sourceQuantities']>;
+  for(const e of group.executions){const close=facts.consumptions.filter(c=>c.closingId===e.id);if(close.length){for(const category of ['ipo','long'] as const){const quantity=close.filter(c=>c.category===category).reduce((n,c)=>n.plus(c.quantity),decimal('0'));if(quantity.gt(0))sourceQuantities.push({executionId:e.id,sourceKey:`execution:${e.id}`,category,role:'close-long',quantity:quantity.toFixed(),sourceRef:refs.get(e.id)});}const residual=remaining.get(`execution:${e.id}`);if(residual)sourceQuantities.push({executionId:e.id,sourceKey:`execution:${e.id}`,category:residual.category,role:'open-long',quantity:residual.quantity,sourceRef:refs.get(e.id)});}else if(categoryFor.has(`execution:${e.id}`)){const category=categoryFor.get(`execution:${e.id}`)!;sourceQuantities.push({executionId:e.id,sourceKey:`execution:${e.id}`,category,role:'open-long',quantity:e.quantity,sourceRef:refs.get(e.id)});}}
+  if(!sourceQuantities.length&&!eventLots.length)return undefined;
+  return {version:1,sourceQuantities,consumptions:facts.consumptions.map(c=>({closingExecutionId:c.closingId,openingSourceKey:c.openingSourceKey,category:c.category,quantity:c.quantity,cashCost:c.cashCost})),lots};
+}
 
 /** CPU-only construction. HTTP reads never call this module. */
 export function buildRelease(source: SourceSnapshot, id: string, options: {cache?:ProjectionCache;reusePublished?:boolean;stats?:{reused:number;built:number};timings?:Record<string,number>} = {}): ReleaseInput {
@@ -127,6 +202,7 @@ export function buildRelease(source: SourceSnapshot, id: string, options: {cache
   // converts any selected interval at read time; changing FX never reruns the ledger.
   const fxByDay = new Map<string,import('./contracts').FxRates>();
   const projections: Projection[] = [];
+  const categoryObjectsByPosition=new Map<string,import('./projection-cache').CategoryProjection[]>();
   const aggregateDays=new Map<string,NativeDay[]>(), aggregateCurrent=new Map<string,NativeDay>();
   const baseSeries=new Map<string,{accountId:string;market:Market;series:NativeSeriesAccumulator}>();
   const add=(day:NativeDay,native:NativeDay)=>{
@@ -156,6 +232,7 @@ export function buildRelease(source: SourceSnapshot, id: string, options: {cache
     const content={positionKey:group.key,accountId:group.accountId,code:group.instrument.symbol,name:group.instrument.localizedName?.name??group.instrument.name,firstDay:first,lastDay:source.businessDate,current:native,boundaries,ordering:nativeOrdering(boundaries)};
     const metric=projection.metric?.ordering?projection.metric:{...content,version:metricObjectVersion(content)};
     projections.push({group,...small,metric});
+    if(projection.categories?.length)categoryObjectsByPosition.set(group.key,projection.categories);
   };
   phase('prepare');
   const preparedGroups = [...groups.values()].map(group => {
@@ -169,7 +246,7 @@ export function buildRelease(source: SourceSnapshot, id: string, options: {cache
     // Invalidate only objects affected by the verified acquisition ordering fix;
     // their parent scopes inherit this fingerprint, including FX-only reuse.
     const orderingPolicy=group.executions.some(e=>e.source.displayTimePolicy==='session-open'&&e.source.positionEffect==='open-long')?`${HOME_POLICY}/verified-session-open-v1`:HOME_POLICY;
-    const fingerprint=digest([HOME_METRIC_ORDERING,refSchema,group.executions.map(e=>executionRefs.get(e.id)),orderingPolicy,group,dates[0],source.businessDate,context.filter(at=>at<=source.asOf).length,quoteAt(group,source.asOf),candlesByInstrument.get(group.instrument.id)??[]]);
+    const fingerprint=digest([HOME_METRIC_ORDERING,HOME_SOURCE_FIFO_PROOF_VERSION,refSchema,group.executions.map(e=>executionRefs.get(e.id)),orderingPolicy,group,dates[0],source.businessDate,context.filter(at=>at<=source.asOf).length,quoteAt(group,source.asOf),candlesByInstrument.get(group.instrument.id)??[]]);
     return {group,context,fingerprint};
   });
   const unknown=(source.unclassified??[]).filter(e=>Date.parse(e.knownAt)<=Date.parse(source.asOf));
@@ -273,7 +350,22 @@ export function buildRelease(source: SourceSnapshot, id: string, options: {cache
     };
     const days=dates.map(date=>nativeDay(date,date===source.businessDate?source.asOf:`${date}T15:59:59.999Z`));
     const current=nativeDay(source.businessDate,source.asOf,true), state=stateAt(source.asOf);
-    const projection={days,current,state,price:splitValuationQuote(group.instrument.id,source.asOf,completed.get(`${group.instrument.market}/${source.asOf}`),quoteAt(group,source.asOf)).price,opened};
+    const categoryDaysByCategory=new Map<HomeCategory,NativeDay[]>(), categoryCurrent:import('./projection-cache').CategoryProjection[]=[];
+    for(const category of ['long','ipo'] as const){
+      const projected=days.map(day=>{const cursor=day.date===source.businessDate?source.asOf:`${day.date}T15:59:59.999Z`;return canonicalCategoryNativeDay(stateAt(cursor),day,category,group.instrument.currency,splitValuationQuote(group.instrument.id,cursor,completed.get(`${group.instrument.market}/${cursor}`),quoteAt(group,cursor)).price)}).filter((day):day is NativeDay=>!!day);
+      const rawCurrentCategory=canonicalCategoryNativeDay(state,current,category,group.instrument.currency,splitValuationQuote(group.instrument.id,source.asOf,completed.get(`${group.instrument.market}/${source.asOf}`),quoteAt(group,source.asOf)).price);
+      // Category metric objects follow the native metric cache contract: the
+      // current FX snapshot is read-time release data, not ledger content.
+      // Keep historical day FX intact, but normalize the cached current.
+      const currentCategory=rawCurrentCategory?{...rawCurrentCategory,fx:{}}:null;
+      if(projected.length&&currentCategory){
+        const categorySeries=projected.some(day=>day.date===currentCategory.date)?projected:[...projected,currentCategory].sort((a,b)=>a.date.localeCompare(b.date));
+        const boundaries=compactSeries(categorySeries), content={positionKey:group.key,accountId:group.accountId,code:group.instrument.symbol,name:group.instrument.localizedName?.name??group.instrument.name,firstDay:boundaries[0].date,lastDay:currentCategory.date,current:currentCategory,boundaries,ordering:nativeOrdering(boundaries)};
+        const fifo=sourceFifoProofFor(group,state,source,executionRefs);
+        categoryCurrent.push({category,metric:{...content,version:metricObjectVersion(content)},days:projected,current:currentCategory,...(fifo?{sourceFifo:fifo}: {})});
+      }
+    }
+    const projection={days,current,state,price:splitValuationQuote(group.instrument.id,source.asOf,completed.get(`${group.instrument.market}/${source.asOf}`),quoteAt(group,source.asOf)).price,opened,categories:categoryCurrent};
     options.cache?.put(group.key,fingerprint,projection);
     accept(group,projection);
   }
@@ -348,7 +440,8 @@ export function buildRelease(source: SourceSnapshot, id: string, options: {cache
     });
     const marketCutoffs:Record<string,string|null>={};
     for(const holding of holdings){const market=holding.row.exchange,at=holding.row.priceAsOf??null;marketCutoffs[market]=marketCutoffs[market]===null?null:at;}
-    scopes.push({metricObjects:selected.map(p=>p.metric),marketCutoffs,id:scopeId(market,account.id),version:digest([HOME_METRIC_ORDERING,HOME_POLICY,market,account.id,source.businessDate,days,current,holdings,selected.map(p=>p.metric.version),unknownCount(market,account.id)]),market,accountId:account.id,currency,sourceSequence:source.sequence,computedAt:source.asOf,valuationCutoff:source.asOf,businessDate:source.businessDate,days,current,holdings,reasons:[...current.reasons,...(unknownCount(market,account.id)?[`${unknownCount(market,account.id)} 条记录交易性质待核实，未计入实盘`]:[])]});
+    const categoryMetricObjects=selected.flatMap(p=>(categoryObjectsByPosition.get(p.group.key)??[]).map(c=>({positionKey:p.group.key,category:c.category,metric:c.metric,...(c.sourceFifo?{sourceFifo:c.sourceFifo}: {})})));
+    scopes.push({metricObjects:selected.map(p=>p.metric),...(categoryMetricObjects.length?{categoryMetricObjects}:{}),marketCutoffs,id:scopeId(market,account.id),version:digest([HOME_METRIC_ORDERING,HOME_POLICY,market,account.id,source.businessDate,days,current,holdings,selected.map(p=>p.metric.version),categoryMetricObjects.map(v=>v.metric.version),unknownCount(market,account.id)]),market,accountId:account.id,currency,sourceSequence:source.sequence,computedAt:source.asOf,valuationCutoff:source.asOf,businessDate:source.businessDate,days,current,holdings,reasons:[...current.reasons,...(unknownCount(market,account.id)?[`${unknownCount(market,account.id)} 条记录交易性质待核实，未计入实盘`]:[])]});
     const signature=scopeSignatures.get(key);if(signature)options.cache?.putScope(key,signature,scopes[scopes.length-1].version);
   }
   phase('scopes');

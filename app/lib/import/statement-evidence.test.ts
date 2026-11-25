@@ -303,17 +303,74 @@ describe("attachStatementEvidence", () => {
     expect(parsed.monthly?.positions[0]).toMatchObject({ symbol: "QID", quantity: "-10", cost: "38.33", phase: "closing", date: "2025-01-31" });
   });
 
-  it("extracts a Tiger transfer independently of trade rows and zero cost", () => {
-    const parsed = attachStatementEvidence([page([
+  function tigerTransferPage(cost: string | undefined = "0.0000", costHeader: string | undefined = "成本价", currency?: string): PdfTextPage {
+    return { ...page([
       [[33, "头寸转账"]],
-      [[29, "产品"], [206, "代码"], [452, "日期"], [583, "方式"], [650, "转出方"], [732, "转入方"], [816, "转移数量"], [912, "费用数量"], [1001, "成本价"], [1078, "市值"], [1139, "币种"]],
-      [[29, "股票"], [218, "LI"], [333, "2025-01-08, 11:31:04, GMT+8"], [537, "外部转账 转入"], [729, "12345"], [856, "2"], [951, "0"], [1003, "0.0000"], [1075, "62.58"], [1146, "USD"]],
+      [[29, "产品"], [206, "代码"], [452, "日期"], [583, "方式"], [650, "转出方"], [732, "转入方"], [816, "转移数量"], [912, "费用数量"], ...(costHeader ? [[1001, costHeader] as [number, string]] : []), [1078, "市值"], [1139, "币种"]],
+      [[29, "股票"], [218, "LI"], [333, "2020-12-22, 11:31:04, GMT+8"], [537, "外部转账 转入"], [729, "12345"], [856, "2"], [951, "0"], ...(cost === undefined ? [] : [[1003, cost] as [number, string]]), [1075, "62.58"], ...(currency ? [[1146, currency] as [number, string]] : [])],
       [[192, "合计 LI"], [856, "2"], [951, "0"], [1075, "62.58"]],
-    ])], result("tiger"));
+    ]), pageNumber: 3 };
+  }
+
+  it("extracts a Tiger transfer independently of trade rows and zero cost", () => {
+    const parsed = attachStatementEvidence([tigerTransferPage("0.0000", "成本价", "USD")], result("tiger"));
     expect(parsed.monthly?.events).toHaveLength(1);
-    expect(parsed.monthly?.events[0]).toMatchObject({ documentId: "fixture", symbol: "LI", market: "US", kind: "transfer-in", quantity: "2", date: "2025-01-08T03:31:04.000Z" });
+    expect(parsed.monthly?.events[0]).toMatchObject({ documentId: "fixture", id: "fixture:evidence:3:3", accountId: "acct", symbol: "LI", market: "US", kind: "transfer-in", quantity: "2", reportedUnitCost: "0.0000", currency: "USD", date: "2020-12-22T03:31:04.000Z", source: [{ page: 3, row: 3, role: "transfer" }] });
+    expect(parsed.monthly?.events[0].amount).toBeUndefined();
     expect(isMonthlyStatement({ ...parsed.monthly, events: [{ ...parsed.monthly!.events[0], documentId: 42 }] })).toBe(false);
     expect(parsed.records).toEqual([]);
+  });
+
+  it.each(["成本价", "成本價格", "成本价格", "成本價"])("reads a positive Tiger transfer cost under %s without borrowing market value", (header) => {
+    const parsed = attachStatementEvidence([tigerTransferPage("12.3400", header, "USD")], result("tiger"));
+    expect(parsed.monthly?.events[0]).toMatchObject({ quantity: "2", reportedUnitCost: "12.3400", currency: "USD" });
+    expect(parsed.monthly?.events[0].amount).toBeUndefined();
+    expect(parsed.records).toEqual([]);
+  });
+
+  it("keeps missing transfer costs absent instead of borrowing market value or fee quantity", () => {
+    for (const layout of [tigerTransferPage("--", "成本价", "USD"), tigerTransferPage("--", "", "USD")]) {
+      const parsed = attachStatementEvidence([layout], result("tiger"));
+      expect(parsed.monthly?.events).toHaveLength(1);
+      expect(parsed.monthly?.events[0]).not.toHaveProperty("reportedUnitCost");
+      expect(parsed.monthly?.events[0].amount).toBeUndefined();
+      expect(parsed.monthly?.events[0].quantity).toBe("2");
+    }
+  });
+
+  it("does not infer a transfer currency from the account or preceding cash section", () => {
+    const cash = page([
+      [[20, "账户币种"], [200, "HKD"]],
+      [[20, "資金進出"]],
+      [[20, "日期"], [180, "金額"], [300, "備註"]],
+      [[20, "2020/12/21"], [180, "10"], [300, "存入現金"]],
+    ]);
+    const parsed = attachStatementEvidence([cash, tigerTransferPage("0.0000")], result("tiger"));
+    expect(parsed.monthly?.events.find(event => event.kind === "transfer-in")).toMatchObject({ reportedUnitCost: "0.0000", market: "US" });
+    expect(parsed.monthly?.events.find(event => event.kind === "transfer-in")?.currency).toBeUndefined();
+  });
+
+  it("accepts old and string-cost statement JSON while rejecting invalid reported costs", () => {
+    const monthly = attachStatementEvidence([tigerTransferPage("0.0000", "成本价", "USD")], result("tiger")).monthly!;
+    expect(isMonthlyStatement(JSON.parse(JSON.stringify(monthly)))).toBe(true);
+    const { reportedUnitCost: _cost, ...legacyEvent } = monthly.events[0];
+    expect(isMonthlyStatement({ ...monthly, events: [legacyEvent] })).toBe(true);
+    for (const reportedUnitCost of [0, null]) {
+      expect(isMonthlyStatement({ ...monthly, events: [{ ...monthly.events[0], reportedUnitCost }] })).toBe(false);
+    }
+  });
+
+  it("retains transfer evidence on history attachment and replaces it on the same document reparse", () => {
+    const execution: TradeExecution = { id: "li-sale", accountId: "acct", accountLabel: "Test", instrument: { id: "US:LI", market: "US", symbol: "LI", name: "LI", currency: "USD" }, source: { platform: "tiger", row: 1 }, side: "sell", executedAt: "2020-12-22T15:15:28Z", quantity: "2", price: "32.10", fee: "2.98" };
+    const first = attachStatementEvidence([tigerTransferPage("0.0000", "成本价", "USD")], result("tiger"));
+    const attached = applyMonthlyHistoryEvidence([execution], [first.monthly!]);
+    expect(attached[0].source.positionEvents).toEqual([expect.objectContaining({ documentId: "fixture", id: "fixture:evidence:3:3", reportedUnitCost: "0.0000", currency: "USD", source: [{ page: 3, row: 3, role: "transfer" }] })]);
+    const reparsed = attachStatementEvidence([tigerTransferPage("12.3400", "成本价", "USD")], first);
+    expect(reparsed.monthly?.events).toHaveLength(1);
+    const replaced = applyMonthlyHistoryEvidence(attached, [reparsed.monthly!]);
+    expect(replaced[0].source.positionEvents).toEqual([expect.objectContaining({ id: "fixture:evidence:3:3", quantity: "2", reportedUnitCost: "12.3400", currency: "USD" })]);
+    expect(first.monthly?.events[0]).toMatchObject({ reportedUnitCost: "0.0000" });
+    expect(execution.source.positionEvents).toBeUndefined();
   });
 
   it("retains Futu IPO and distribution cash evidence without turning share remarks into quantity", () => {

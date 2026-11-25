@@ -359,7 +359,7 @@ function snapshotRate(snapshot: LibraryFxSnapshot, currency: string): Decimal | 
   return parseRate(raw);
 }
 
-function fxConversion(currency: string, targetCurrency: RoomTargetCurrency, snapshot?: LibraryFxSnapshot): Conversion {
+export function fxConversion(currency: string, targetCurrency: RoomTargetCurrency, snapshot?: LibraryFxSnapshot): Conversion {
   if (currency === targetCurrency) return { rate: new Decimal(1) };
   if (!snapshot) return { rate: null, reason: "missing-fx" };
   if (isRoomFxSnapshot(snapshot) && snapshot.status !== "complete") {

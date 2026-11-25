@@ -1874,7 +1874,7 @@ export function TradeReviewWorkspace({
     [tradeLibraryEntries, sharedScope,homeActivityRange],
   );
   const sharedAccountOptions = useMemo(() => {
-    const options = libraryDataScope.isScoped ? libraryDataScope.directory.filter(account=>account.natures.includes(sharedScope.nature)).map(({id,label})=>({id,label})) : [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
+    const options = libraryDataScope.directory.length > 0 ? libraryDataScope.directory.filter(account=>account.natures.includes(sharedScope.nature)).map(({id,label})=>({id,label})) : [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
       .filter(item => sharedEpisodeNature(entry.tradeNature, item.episode) === sharedScope.nature)
       .map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel || "未命名账户" }] as const))).values()];
     const displayLabels = stableAccountDisplayLabels(options);
@@ -5128,15 +5128,16 @@ export function TradeReviewWorkspace({
         resolvedMonthly?.incomingToMerge ?? recordsForStorage,
       );
     const evidenceUpdated = applyMonthlyHistoryEvidence(mergedBeforeEvidence, [
-      ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
-        .flatMap(entry => entry.monthly ? [entry.monthly] : []),
+      ...selectMonthlyEvidenceHistory(importHistory.filter(
+        entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId,
+      )),
       ...(pendingImport.monthly ? [pendingImport.monthly] : []),
     ]);
     // Compare both overlays on the same merged set: only the changed
     // statement may alter existing evidence, including account-wide evidence.
     const priorEvidenceUpdated = applyMonthlyHistoryEvidence(
       mergedBeforeEvidence,
-      importHistory.flatMap(entry => entry.monthly ? [entry.monthly] : []),
+      selectMonthlyEvidenceHistory(importHistory),
     );
     const mergedExecutions = evidenceUpdated.map((execution, index) =>
       pendingImport.monthly && !belongsToMonthlyDocument(execution, pendingImport.monthly) &&
@@ -5314,6 +5315,16 @@ export function TradeReviewWorkspace({
         : current,
     );
     setActiveView("library");
+  }
+
+  function clearHomeActivityRange() {
+    setHomeActivityRange(null);
+    // Reload must retain the explicit all-period choice instead of replaying
+    // the homepage's original date query. Keep the other source context.
+    const url = new URL(window.location.href);
+    url.searchParams.set("rangeMode", "all");
+    for (const key of ["from", "to", "tradeStart", "tradeEnd"]) url.searchParams.delete(key);
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
   }
 
   function returnToDashboardSource() {
@@ -5746,7 +5757,7 @@ export function TradeReviewWorkspace({
   }
 
   return (
-    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}
+    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""} ${activeView === "library" ? "is-library" : ""}`}
     >
       <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" multiple={!supplementScope} disabled={importing} onChange={(event) => {
         const files = Array.from(event.target.files ?? []);
@@ -5795,12 +5806,13 @@ export function TradeReviewWorkspace({
             onClick={() => {
               setPlaying(false);
               setMobileNavOpen(false);
-              if (librarySourceSnapshot) returnToDashboardSource();
-              else setActiveView("dashboard");
+              if (homeLibraryEntry?.returnTo) window.location.assign(homeLibraryEntry.returnTo);
+              else if (librarySourceSnapshot) returnToDashboardSource();
+              else window.location.assign("/home");
             }}
           >
             <LayoutDashboard size={16} aria-hidden="true" />
-            <span className="app-nav-label">我的交易室</span>
+            <span className="app-nav-label">{activeView === "library" ? "首页" : "我的交易室"}</span>
           </button>
           <button
             type="button"
@@ -6039,11 +6051,15 @@ export function TradeReviewWorkspace({
         </div>
         {activeView === "library" ? (
           <div className="library-page-shell">
-            {homeLibraryEntry?.returnTo && <a className="library-source-return" href={homeLibraryEntry.returnTo}>返回我的交易室</a>}{librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
+
           {homeLibraryEntry?.notice&&<p role="status">{homeLibraryEntry.notice}</p>}
-          {homeActivityRange&&(homeActivityRange.from||homeActivityRange.to)&&<div role="status">首页成交期间：{homeActivityRange.from??'最早'} 至 {homeActivityRange.to??'最新'} <button type="button" onClick={()=>setHomeActivityRange(null)}>清除成交期间</button></div>}
           {libraryDataScope.isScoped && (libraryDataScope.error || libraryDataScope.phase==='upgrading') && <p role="status" className="navigation-notice">{libraryDataScope.error ? <>完整交易库读取失败：{libraryDataScope.error} <button className="library-scope-retry" onClick={()=>void libraryDataScope.ensureFull().catch(()=>undefined)}>重试完整读取</button></> : libraryDataScope.phase==='upgrading' ? '正在读取完整交易库，当前证券和筛选保持不变…' : null}</p>}
           <TradeLibrary
+            sourceBar={(homeLibraryEntry?.returnTo || librarySourceSnapshot || (homeActivityRange && (homeActivityRange.from || homeActivityRange.to))) && <div className="library-source-bar">
+              {homeActivityRange && (homeActivityRange.from || homeActivityRange.to) && <span role="status">首页成交期间：{homeActivityRange.from ?? '最早'} 至 {homeActivityRange.to ?? '最新'}</span>}
+              {homeLibraryEntry?.returnTo && <a className="library-source-return" href={homeLibraryEntry.returnTo}>返回我的交易室</a>}{librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
+              {homeActivityRange && (homeActivityRange.from || homeActivityRange.to) && <button type="button" className="library-source-return" onClick={clearHomeActivityRange}>清除成交期间</button>}
+            </div>}
             onRequireFullData={libraryDataScope.isScoped ? libraryDataScope.ensureFull : undefined}
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}

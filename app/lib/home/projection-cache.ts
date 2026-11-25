@@ -1,9 +1,10 @@
 import type {DatabaseSync} from 'node:sqlite';
 import {deflateSync,inflateSync} from 'node:zlib';
-import {HOME_POLICY,type MetricObject,type NativeDay} from './contracts';
+import {HOME_POLICY,type HomeCategory,type MetricObject,type NativeDay,type SourceFifoProof} from './contracts';
 import type {NativePosition} from './finance';
 import {compactSeries} from './native-series';
-export type ObjectProjection={metric?:MetricObject;days:NativeDay[];current:NativeDay;state:NativePosition;price:string|null;opened:string|null};
+export type CategoryProjection={category:HomeCategory;metric:MetricObject;days:NativeDay[];current:NativeDay;sourceFifo?:SourceFifoProof};
+export type ObjectProjection={metric?:MetricObject;days:NativeDay[];current:NativeDay;state:NativePosition;price:string|null;opened:string|null;categories?:CategoryProjection[]};
 export type BaseProjection={days:NativeDay[];positions:Record<string,Omit<ObjectProjection,'days'>>};
 /** Rebuildable background-only cache. Never part of the published read contract. */
 export class ProjectionCache {

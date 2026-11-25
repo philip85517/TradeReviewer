@@ -4,12 +4,21 @@ import {initializeSqlite} from '../../../db/sqlite';
 import {HomeRefresh} from './refresh';
 import {HomeStore} from './store';
 import {request,release} from './test-fixtures';
+import {HOME_FINANCIAL_PARTITION_VERSION} from './contracts';
 const opened:DatabaseSync[]=[];
 afterEach(()=>opened.splice(0).forEach(db=>db.close()));
 function setup(){const db=new DatabaseSync(':memory:');opened.push(db);initializeSqlite(db);return{db,refresh:new HomeRefresh(db),store:new HomeStore(db)};}
 const now=Date.parse('2026-01-02T16:00:00Z');
 function change(db:DatabaseSync,key='x'){db.prepare("INSERT INTO home_source_change(entity_kind,entity_key,effective_from,committed_at,change_json)VALUES('test',?,'2026-01-01','2026-01-02T16:00:00.000Z','{}')").run(key);}
 describe('durable refresh coordination',()=>{
+ it('asynchronously upgrades an old full financial partition version while keeping the old publication readable',()=>{
+  const {db,store}=setup(),refresh=new HomeRefresh(db,true);store.stage(release('old-finance',0));store.publish('old-finance',null);
+  db.prepare("UPDATE home_release SET manifest_json=json_set(manifest_json,'$.financialPartitionVersion',?) WHERE release_id='old-finance'").run(HOME_FINANCIAL_PARTITION_VERSION-1);
+  db.prepare('INSERT INTO home_full_release VALUES(?,?,?)').run('old-finance','{}',now);
+  expect(refresh.status(now).state).toBe('updating');
+  expect(store.readHome(request).stamp.version).toBe('old-finance');
+  expect(db.prepare('SELECT release_id FROM home_head').get()?.release_id).toBe('old-finance');
+ });
  it('upgrades the year-only format while its previous publication remains readable',()=>{
   const {db,refresh,store}=setup();store.stage(release('year-only',0));store.publish('year-only',null);
   db.exec("UPDATE home_release SET manifest_json=json_remove(manifest_json,'$.preparedSubtotalVersion') WHERE release_id='year-only'");

@@ -1,3 +1,4 @@
+import { verifiedSplitBoundaries } from "../home/split-valuation-safety";
 import type { RecallReviewSummary } from "../recall/summary";
 import { displayTradeNature, tradingNatureLabel } from "./trading-nature";
 import Decimal from "decimal.js";
@@ -34,6 +35,7 @@ import {
 export type TradeLibraryEpisode = {
   episode: TradeEpisode;
   metrics: TradeEpisodeMetrics;
+  valuationNote?: string;
   review?: EpisodeReviewRecord;
   recallReview?: RecallReviewSummary;
   reviewStatus: EpisodeReviewStatus;
@@ -129,6 +131,42 @@ export function tradeEntryClosingTradingDate(entry: TradeLibraryEntry): string {
     : marketTradingDate(entry.lastTradeAt, entry.instrument.market);
 }
 
+/** Holdings marks use valid local daily closes, independently of replay coverage. */
+function localHoldingMark(episode: TradeEpisode, candle: DailyCandleRecord | undefined): { price?: string; note?: string } {
+  if (episode.status !== "open" || !candle) return {};
+  const dates = episode.executions.map(tradeExecutionTradingDate);
+  if (!dates.length || dates.some(date => date > candle.tradingDate)) return {};
+  let price = new Decimal(candle.close);
+  let note: string | undefined;
+  for (const split of verifiedSplitBoundaries) {
+    if (split.instrumentId !== episode.instrument.id) continue;
+    const times = episode.executions.map(execution => Date.parse(execution.executedAt));
+    if (times.some(time => !Number.isFinite(time))) return {};
+    const before = times.every(time => time < Date.parse(split.effectiveAt));
+    const after = times.every(time => time >= Date.parse(split.effectiveAt));
+    // Mixed units require an inventory projection; never guess by changing source fills.
+    if (!before && !after) return {};
+    const quoteAfter = candle.tradingDate >= split.firstSession;
+    if (after && !quoteAfter) return {};
+    if (before && quoteAfter) {
+      price = price.times(split.ratio);
+      note = `拆股推算：1 拆 ${split.ratio}，${candle.tradingDate} 日收按原回合单位换算；余仓毛浮盈不含费用`;
+    }
+  }
+  return { price: price.toString(), ...(note ? { note } : {}) };
+}
+
+function validHoldingCandle(candle: DailyCandleRecord, instrument: Instrument): boolean {
+  try {
+    const price = new Decimal(candle.close);
+    return candle.instrumentId === instrument.id && candle.currency === instrument.currency &&
+      candle.adjustmentMode === "raw" && /^\d{4}-\d{2}-\d{2}$/.test(candle.tradingDate) &&
+      Number.isFinite(Date.parse(candle.tradingDate)) && price.isFinite() && price.gt(0);
+  } catch {
+    return false;
+  }
+}
+
 export function buildTradeLibraryEntries(
   summaries: InstrumentTradeSummary[],
   candlesByInstrument: Record<string, DailyCandleRecord[]>,
@@ -145,9 +183,9 @@ export function buildTradeLibraryEntries(
       ).at(-1);
       const marketDataStatus =
         marketDataStatuses[summary.instrument.id] ?? "not-requested";
-      const hasCompleteMarketData =
-        marketDataStatus === "complete" ||
-        marketDataStatus === "ready";
+      const holdingCandle = [...(candlesByInstrument[summary.instrument.id] ?? [])]
+        .filter(candle => validHoldingCandle(candle, summary.instrument))
+        .sort((a, b) => a.tradingDate.localeCompare(b.tradingDate)).at(-1);
       const allEpisodes = buildTradeEpisodes(summary.executions);
       const episodesByScope = new Map<string, TradeEpisode[]>();
       for (const episode of allEpisodes) {
@@ -172,21 +210,8 @@ export function buildTradeLibraryEntries(
             );
         const episodes = scopeEpisodes
           .map((episode) => {
-          const latestExecution =
-            episode.executions.at(-1) ?? episode.executions[0];
-          const latestExecutionTradingDate = marketTradingDate(
-            latestExecution.executedAt,
-            episode.instrument.market,
-          );
-          const metrics = summarizeTradeEpisode(
-            episode,
-            episode.status === "open" &&
-              hasCompleteMarketData &&
-              latestCandle &&
-              latestCandle.tradingDate >= latestExecutionTradingDate
-              ? latestCandle.close
-              : undefined,
-          );
+          const mark = localHoldingMark(episode, holdingCandle);
+          const metrics = summarizeTradeEpisode(episode, mark.price);
           const review = reviewsByEpisode[episode.id];
           const candidate = summariesByEpisode[episode.id];
           const recallReview = candidate?.episodeId === episode.id ? candidate : undefined;
@@ -196,6 +221,7 @@ export function buildTradeLibraryEntries(
           return {
             episode,
             metrics,
+            ...(mark.note && metrics.unrealizedPnl !== null ? { valuationNote: mark.note } : {}),
             review,
             ...(recallReview ? { recallReview } : {}),
             reviewStatus,

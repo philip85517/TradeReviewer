@@ -1,4 +1,4 @@
-import {act,cleanup,fireEvent,render,renderHook,screen,waitFor} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,renderHook,screen,waitFor,within} from '@testing-library/react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {FullHomepage} from './full-homepage';
 import {fullLibraryParameters} from './full-client';
@@ -18,7 +18,7 @@ async function response(market:'all'|'CN'|'HK'='all'):Promise<FullResultV1>{
  const core=await createMockSource({scenario:'normal',delayMs:0}).readHome(DEFAULT_REQUEST,new AbortController().signal);
  const request=defaultFullRequest('2026-11-18');request.selection.market=market;
  core.holdings.rows=core.holdings.rows.slice(0,1).map(row=>({...row,id:'position-101',accountId:'account-real-101'}));
- return {accountIdsByMarket:{CN:core.accounts.filter(a=>a.id!=='all').map(a=>a.id),HK:core.accounts.filter(a=>a.id!=='all').map(a=>a.id),US:[]},evidenceTransport:'release-key-v2',schema:'full-home-v1',releaseId:'release-real',manifest:{schema:'full-home-v1',releaseId:'release-real',sourceSequence:1,asOf:'2026-11-18T01:00:00Z',businessDate:'2026-11-18',timezone:'Asia/Shanghai',fx:{},fxVersion:'fx-1',capabilities:[],moduleComplete:true,modules:{}},request,selectionKey:market,queryArtifactId:market,core:{...core,snapshot:{releaseId:'release-real',scopeId:market,scopeVersion:'one',sourceSequence:1,computedAt:'2026-11-18',valuationCutoff:'2026-11-18',businessDate:'2026-11-18'}},history:{coverage,net:money,fees:money,confirmedNet:money,confirmedFees:money,winRate:null,confirmedWinRate:null,years:[],buckets:[]},contribution:{mode:'current',category:'long',rows:[],total:0,page:1,pages:1,net:money,fees:money,coverage,categories:[],markets:[]},capabilities:{globalOpenOnly:true,review:true,assetTypes:false,reasons:[]},catalogCount:299};
+ return {historyBounds:{fromYear:2020,toYear:2026},accountIdsByMarket:{CN:core.accounts.filter(a=>a.id!=='all').map(a=>a.id),HK:core.accounts.filter(a=>a.id!=='all').map(a=>a.id),US:[]},evidenceTransport:'release-key-v2',schema:'full-home-v1',releaseId:'release-real',manifest:{schema:'full-home-v1',releaseId:'release-real',sourceSequence:1,asOf:'2026-11-18T01:00:00Z',businessDate:'2026-11-18',timezone:'Asia/Shanghai',fx:{},fxVersion:'fx-1',capabilities:[],moduleComplete:true,modules:{}},request,selectionKey:market,queryArtifactId:market,core:{...core,snapshot:{releaseId:'release-real',scopeId:market,scopeVersion:'one',sourceSequence:1,computedAt:'2026-11-18',valuationCutoff:'2026-11-18',businessDate:'2026-11-18'}},history:{coverage,net:money,fees:money,confirmedNet:money,confirmedFees:money,winRate:null,confirmedWinRate:null,years:[],buckets:[]},contribution:{mode:'current',category:'long',rows:[],total:0,page:1,pages:1,net:money,fees:money,coverage,categories:[],markets:[]},capabilities:{globalOpenOnly:true,review:true,assetTypes:false,reasons:[]},catalogCount:299};
 }
 it('opens the clicked position beyond catalog page 100 without an empty search lookup',async()=>{
  const data=await response();const fetcher=vi.fn(async(input:RequestInfo|URL)=>{const url=new URL(String(input),'http://localhost');if(url.pathname.endsWith('/detail')){const target=JSON.parse(url.searchParams.get('target')!);const detail:FullDetail={schema:'full-home-v1',releaseId:data.releaseId,target,items:[],holding:null,description:'第101标的真实身份',rounds:[],trades:[],nextCursor:null};return Response.json(detail);}return Response.json(data);});vi.stubGlobal('fetch',fetcher);
@@ -73,6 +73,36 @@ it('maps a cross-market searched object to its actual market and explicit accoun
  const request=defaultFullRequest('2026-11-18');request.selection.market='CN';const params=fullLibraryParameters(request,['CN-account'],{instrumentId:'US:ABC',market:'US',accountId:'US-account'});expect(fullLibraryEntry(Object.fromEntries(params))).toMatchObject({market:'US',accounts:['US-account'],instrumentId:'US:ABC',from:'2026-01-01',to:'2026-11-18',returnTo:'/home'});
 });
 
+it.each([
+ {name:'selected historical year',entry:'contribution',mode:'historical',all:false,from:'2020-01-01',to:'2020-12-31'},
+ {name:'all history',entry:'contribution',mode:'historical',all:true,from:null,to:null},
+ {name:'holdings while historical contribution is selected',entry:'holding',mode:'historical',all:false,from:'2026-01-01',to:'2026-11-18'},
+ {name:'current contribution',entry:'contribution',mode:'current',all:false,from:'2026-01-01',to:'2026-11-18'},
+] as const)('preserves the library range from the $name entry',async({entry,mode,all,from,to})=>{
+ const data=await response(),accountId='tiger:5793572';
+ data.request.selection={...data.request.selection,market:'US',accountId};data.request.contribution.mode=mode;
+ data.request.historyRange=all?{fromYear:2020,toYear:2026,scope:'all'}:{fromYear:2020,toYear:2020};
+ data.core.accounts=[{id:'all',name:'全部实盘账户'},{id:accountId,name:'Tiger'}];data.accountIdsByMarket.US=[accountId];
+ const item={id:'position-LI',instrumentId:'US:LI',accountId,market:'US' as const,name:'理想汽车',code:'LI',exchange:'NASDAQ',currency:'USD',assetType:'stock',positionKey:'position-LI',tradeSetId:'LI-trades',open:false};
+ data.core.holdings.rows=data.core.holdings.rows.map(row=>({...row,...item}));
+ data.contribution={...data.contribution,mode,total:1,rows:[{...item,net:money,realized:money,unrealizedChange:money,fees:money,roundCount:4}]};
+ vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{const url=new URL(String(input),'http://localhost');if(url.pathname.endsWith('/detail')){const detail:FullDetail={schema:'full-home-v1',releaseId:data.releaseId,target:JSON.parse(url.searchParams.get('target')!),items:[item],holding:null,description:'LI',rounds:[],trades:[],nextCursor:null};return Response.json(detail);}return Response.json(data);}));
+ const browser=window,assign=vi.fn(),location={get href(){return browser.location.href;},get search(){return browser.location.search;},assign};
+ vi.stubGlobal('window',new Proxy(browser,{get:(target,key)=>key==='location'?location:Reflect.get(target,key)}));
+ render(<FullHomepage/>);
+ fireEvent.click(await screen.findByRole('button',{name:entry==='holding'?'查看理想汽车详情':'查看理想汽车贡献详情（US:LI）'}));
+ const dialog=await screen.findByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'查看交易'}));
+ expect(assign).toHaveBeenCalledOnce();const url=new URL(assign.mock.calls[0][0],'http://localhost');
+ expect(url.pathname).toBe('/trades');expect(fullLibraryEntry(Object.fromEntries(url.searchParams))).toMatchObject({market:'US',accounts:[accountId],instrumentId:'US:LI',from,to,returnTo:'/home'});
+ const saved=JSON.parse(sessionStorage.getItem('tradereview-full-home-context-v1')!);expect(saved.request).toEqual(data.request);expect(saved.focus).toMatchObject({id:item.id,source:entry==='holding'?'holdings-heading':'contribution-heading'});
+});
+
+it('keeps a daily chart date narrower than the historical library source',()=>{
+ const request=defaultFullRequest('2026-11-18');request.contribution.mode='historical';request.historyRange={fromYear:2020,toYear:2020};
+ const params=fullLibraryParameters(request,['Tiger'],undefined,'2026-11-17','historical-contribution');
+ expect(fullLibraryEntry(Object.fromEntries(params))).toMatchObject({from:'2026-11-17',to:'2026-11-17'});expect(params.get('rangeMode')).toBe('custom');
+});
+
 it('keeps a slow market read cancelable and announces progress to screen readers',async()=>{
  const data=await response();let reads=0;vi.stubGlobal('fetch',vi.fn(async()=>{if(reads++===0)return Response.json(data);return new Promise<Response>(()=>{});}));render(<FullHomepage/>);await screen.findByRole('button',{name:/查看.*详情/});vi.useFakeTimers();fireEvent.click(screen.getByRole('button',{name:'A股'}));expect(screen.queryByText('更新中，仍显示上次完整结果')).not.toBeInTheDocument();await act(async()=>vi.advanceTimersByTimeAsync(499));expect(screen.queryByText('更新中，仍显示上次完整结果')).not.toBeInTheDocument();await act(async()=>vi.advanceTimersByTimeAsync(1));expect(screen.getByText('更新中，仍显示上次完整结果').parentElement).toHaveClass('hp-performance-chart__sr-only');fireEvent.click(screen.getByRole('button',{name:'取消读取'}));expect(screen.queryByText('更新中，仍显示上次完整结果')).not.toBeInTheDocument();
 });
@@ -83,6 +113,12 @@ it('shows future history cards and tooltip values as unknown despite backend emp
  const data=await response();data.history.buckets=[{key:'2027-01',granularity:'month',net:money,fees:money,count:0,knownWins:0,winRate:null,cumulativeNet:money,coverage}];render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2027,toYear:2027}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);const point=screen.getByRole('button',{name:/2027-01 该期间尚未到达/});fireEvent.focus(point);expect(screen.getByRole('tooltip')).toHaveTextContent('当期净盈亏：— CNY');expect(screen.getByRole('tooltip')).toHaveTextContent('盈利 / 全部回合：— / —');
 });
 
+it('shows identified rounds and the known-net subset rate when history coverage is partial',async()=>{
+ const data=await response();const partial={...coverage,universeComplete:false,confirmedClosedCount:2,closedCount:null,knownNetCount:1,unknownNetCount:1,knownCount:1,knownWins:1,reasons:['round-financial-unavailable']};data.history.coverage=partial;data.history.confirmedWinRate='100.00';data.history.buckets=[{key:'2026-01',granularity:'month',net:{...money,value:null,reasons:['round-financial-unavailable']},fees:money,count:2,knownWins:1,winRate:null,cumulativeNet:{...money,value:null,reasons:['round-financial-unavailable']},coverage:partial}];render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
+ expect(screen.getByText('已平仓回合')).toHaveAttribute('title','按交易表中的实际平仓记录统计，一条记录计一回合');expect(screen.getByTestId('history-win')).toHaveTextContent('已知净额胜率');expect(screen.getByTestId('history-win')).toHaveTextContent('100.00%');expect(screen.getByTestId('history-win')).toHaveTextContent('1 / 1');expect(screen.getByText(/已识别 2 笔交易/)).toBeInTheDocument();
+ fireEvent.change(screen.getByRole('combobox',{name:'历史图表指标'}),{target:{value:'rounds'}});expect(screen.getByRole('button',{name:/2026-01 2 回合/})).toBeInTheDocument();
+});
+
 it('carries cumulative realized money across an inactive month while period net and win rates keep the gap',async()=>{
  const data=await response();const one={...coverage,confirmedClosedCount:1,closedCount:1,knownNetCount:1};data.history.buckets=[
   {key:'2026-01',granularity:'month',net:money,fees:money,count:1,knownWins:0,winRate:'0.00',cumulativeNet:money,coverage:one},
@@ -90,7 +126,7 @@ it('carries cumulative realized money across an inactive month while period net 
   {key:'2026-03',granularity:'month',net:{...money,value:'1.00'},fees:money,count:1,knownWins:1,winRate:'100.00',cumulativeNet:{...money,value:'1.00'},coverage:one}
  ];render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
  const chart=screen.getByTestId('history-chart'),selector=screen.getByRole('combobox',{name:'历史图表指标'});
- for(const metric of ['net','win']){fireEvent.change(selector,{target:{value:metric}});expect(chart.querySelectorAll('circle.hp-history-point')).toHaveLength(2);expect(chart.querySelector('circle.true-zero')).not.toBeNull();expect(chart.querySelectorAll('polyline.hp-history-series')).toHaveLength(2);}
+ for(const metric of ['net','win']){fireEvent.change(selector,{target:{value:metric}});expect(chart.querySelectorAll('circle.hp-history-point')).toHaveLength(metric==='net'?5:2);expect(chart.querySelector('circle.true-zero')).not.toBeNull();expect(chart.querySelectorAll('polyline.hp-history-series')).toHaveLength(metric==='net'?3:2);}
  fireEvent.focus(screen.getByRole('button',{name:/2026-02 该期间无已平仓成交/}));expect(screen.getByRole('tooltip')).toHaveTextContent('当期净盈亏：— CNY');expect(screen.getByRole('tooltip')).toHaveTextContent('累计净盈亏：0.00 CNY');
  fireEvent.change(selector,{target:{value:'cumulative'}});expect(chart.querySelectorAll('circle.hp-history-point')).toHaveLength(3);expect(chart.querySelectorAll('polyline.hp-history-series')).toHaveLength(1);
  fireEvent.change(selector,{target:{value:'rounds'}});expect(chart.querySelectorAll('circle.hp-history-point')).toHaveLength(3);expect(chart.querySelector('circle.true-zero')).not.toBeNull();
@@ -101,11 +137,12 @@ it('shows the source market with no activity rows and does not report a valid fi
 });
 
 it('shares contribution market with the global header and retains applied values until complete selection commits',async()=>{
- const initial=await response(),cn=await response('CN'),hk=await response('HK');let resolve!:(r:Response)=>void;const requested:string[]=[];
+ const initial=await response(),cn=await response('CN'),hk=await response('HK');let resolve!:(r:Response)=>void;const requested:string[]=[];cn.core.dataRange={from:'2026-01-01',to:'2026-11-18'};
  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{const r=JSON.parse(new URL(String(input),'http://localhost').searchParams.get('request')!);requested.push(r.selection.market);return requested.length===1?Response.json(initial):new Promise<Response>(next=>resolve=next);}));
  render(<FullHomepage/>);await screen.findByRole('button',{name:/查看.*详情/});const market=screen.getByRole('combobox',{name:'贡献全局市场'});
- fireEvent.change(market,{target:{value:'CN'}});expect(requested).toEqual(['all','CN']);expect(market).toHaveValue('all');expect(screen.getByRole('button',{name:/^全部$/})).toHaveAttribute('aria-pressed','true');expect(screen.getByRole('button',{name:/^A股$/})).toHaveAttribute('aria-pressed','false');
+ fireEvent.change(market,{target:{value:'CN'}});expect(requested).toEqual(['all','CN']);expect(market).toHaveValue('all');expect(within(screen.getByLabelText('市场范围')).getByRole('button',{name:/^全部$/})).toHaveAttribute('aria-pressed','true');expect(screen.getByRole('button',{name:/^A股$/})).toHaveAttribute('aria-pressed','false');
  await act(async()=>resolve(Response.json(cn)));expect(market).toHaveValue('CN');expect(screen.getByRole('button',{name:/^A股$/})).toHaveAttribute('aria-pressed','true');
+ fireEvent.click(screen.getByRole('button',{name:/历史年份范围/}));fireEvent.change(screen.getByRole('combobox',{name:'年份范围类型'}),{target:{value:'all'}});expect(within(screen.getByRole('dialog',{name:'历史年份范围选择'})).getByText('2020–2026')).toBeVisible();fireEvent.click(screen.getByRole('button',{name:/^取消$/}));
  fireEvent.click(screen.getByRole('button',{name:/^港股$/}));expect(requested).toEqual(['all','CN','HK']);expect(market).toHaveValue('CN');await act(async()=>resolve(Response.json(hk)));expect(market).toHaveValue('HK');expect(screen.getByRole('button',{name:/^港股$/})).toHaveAttribute('aria-pressed','true');
 });
 
@@ -144,4 +181,50 @@ it('recovers a removed saved account once before displaying the initial result',
  vi.stubGlobal('fetch',fetcher);const hook=renderHook(()=>useFullHome());
  await waitFor(()=>expect(hook.result.current.result).not.toBeNull());
  expect(hook.result.current.request.selection.accountId).toBe('all');expect(fetcher).toHaveBeenCalledTimes(2);
+});
+
+it('shows known fees without a positive sign and preserves unknown fees', async()=>{
+ const data=await response(); data.history.fees={...money,value:'12.5'};
+ const view=render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
+ expect(screen.getByText('费用（已扣除）').parentElement).toHaveTextContent('12.50');
+ expect(screen.getByText('费用（已扣除）').parentElement).not.toHaveTextContent('+');
+ data.history.fees={...money,value:null}; view.rerender(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
+ expect(screen.getByText('费用（已扣除）').parentElement).toHaveTextContent('—');
+});
+
+
+it('defaults to period and cumulative money on one axis using backend cumulative precision',async()=>{
+ const data=await response();const one={...coverage,confirmedClosedCount:1,closedCount:1,knownNetCount:1};
+ data.history.buckets=[['2026-01','6000.00','6000.00'],['2026-02','6000.00','12000.00'],['2026-03','-0.01','11999.99'],['2026-04','0.01','12000.01']].map(([key,net,cumulative])=>({key,granularity:'month',net:{...money,value:net},fees:money,count:1,knownWins:1,winRate:'100.00',cumulativeNet:{...money,value:cumulative},coverage:one}));
+ render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
+ const chart=screen.getByTestId('history-chart'),selector=screen.getByRole('combobox',{name:'历史图表指标'});
+ expect(selector).toHaveValue('net');expect(within(selector).getByRole('option',{name:/每月.*累计/})).toBeInTheDocument();
+ expect(within(chart).getByRole('list',{name:'曲线图例'})).toHaveTextContent('各期净盈亏累计净盈亏');
+ expect(chart.querySelectorAll('[data-history-series="net"] polyline')).toHaveLength(1);expect(chart.querySelectorAll('[data-history-series="cumulative"] polyline')).toHaveLength(1);
+ for(const dot of chart.querySelectorAll('circle.hp-history-point'))expect(Number(dot.getAttribute('cy'))).toBeGreaterThanOrEqual(18);
+ fireEvent.focus(screen.getByRole('button',{name:/2026-04/}));
+ expect(screen.getByRole('tooltip')).toHaveTextContent('当期净盈亏：+0.01 CNY');expect(screen.getByRole('tooltip')).toHaveTextContent('累计净盈亏：+12,000.01 CNY');
+ expect(screen.getByRole('button',{name:/2026-04/})).toHaveAccessibleName(/累计净盈亏.*12,000.01/);
+ fireEvent.change(selector,{target:{value:'cumulative'}});expect(chart.querySelectorAll('[data-history-series="net"]')).toHaveLength(0);expect(chart.querySelectorAll('[data-history-series="cumulative"] polyline')).toHaveLength(1);
+ fireEvent.change(selector,{target:{value:'win'}});expect(chart.querySelectorAll('[data-history-series="cumulative"]')).toHaveLength(0);
+});
+
+it('draws cumulative independently through known zero and missing period net while leaving unknown and future gaps',async()=>{
+ const data=await response();const one={...coverage,confirmedClosedCount:1,closedCount:1,knownNetCount:1};
+ data.history.buckets=[
+  {key:'2026-01',net:money,cumulativeNet:money,coverage:one},
+  {key:'2026-02',net:{...money,value:null,reasons:['no-closed-transactions']},cumulativeNet:money,coverage},
+  {key:'2026-03',net:{...money,value:null,reasons:['missing']},cumulativeNet:{...money,value:'25.00'},coverage:one},
+  {key:'2026-04',net:{...money,value:'1.00'},cumulativeNet:{...money,value:null,reasons:['missing']},coverage:one},
+  {key:'2026-05',net:{...money,value:'2.00'},cumulativeNet:{...money,value:'28.00'},coverage:one},
+  {key:'2026-12',net:money,cumulativeNet:money,coverage:one}
+ ].map(b=>({...b,granularity:'month',fees:money,count:b.coverage.closedCount,knownWins:0,winRate:null}));
+ render(<FullHistoryPanel request={DEFAULT_REQUEST} range={{fromYear:2026,toYear:2026}} onRangeChange={vi.fn()} history={data.history} today='2026-11-18' firstYear={2020}/>);
+ const chart=screen.getByTestId('history-chart');
+ expect(chart.querySelectorAll('[data-history-series="net"] circle')).toHaveLength(3);
+ expect(chart.querySelectorAll('[data-history-series="cumulative"] circle')).toHaveLength(4);
+ const cumulativePaths=chart.querySelectorAll('[data-history-series="cumulative"] polyline');expect(cumulativePaths).toHaveLength(2);expect(cumulativePaths[0].getAttribute('points')!.split(' ')).toHaveLength(3);
+ fireEvent.focus(screen.getByRole('button',{name:/2026-03/}));expect(screen.getByRole('tooltip')).toHaveTextContent('当期净盈亏：— CNY');expect(screen.getByRole('tooltip')).toHaveTextContent('累计净盈亏：+25.00 CNY');
+ fireEvent.focus(screen.getByRole('button',{name:/2026-04/}));expect(screen.getByRole('tooltip')).toHaveTextContent('累计净盈亏：— CNY');expect(screen.getByRole('tooltip')).toHaveTextContent('前期数据缺失，累计暂不可计算');
+ fireEvent.focus(screen.getByRole('button',{name:/2026-12/}));expect(screen.getByRole('tooltip')).toHaveTextContent('累计净盈亏：— CNY');
 });

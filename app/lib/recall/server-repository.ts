@@ -10,6 +10,7 @@ import { rebuildRecallPlanProjections } from "./plan-projections";
 import type { DatabaseSync } from "node:sqlite";
 
 import { withSqliteTransaction } from "../../../db/sqlite";
+import { applyMonthlyHistoryEvidence, selectMonthlyEvidenceHistory } from "../import/statement-evidence";
 import { buildTradeEpisodes } from "../trades/episodes";
 import type { TradeEpisode } from "../trades/types";
 import { getSqliteStore } from "../storage/sqlite-store";
@@ -115,7 +116,10 @@ export function getRecallDocument(
 export const loadRecallDocument = getRecallDocument;
 
 function currentEpisode(database: DatabaseSync, episodeId: string): TradeEpisode {
-  const executions = getSqliteStore(database).getExecutions();
+  const store = getSqliteStore(database);
+  // Match bootstrap's authoritative evidence projection before comparing a
+  // capture. This is a pure read overlay, not a relaxation of capture checks.
+  const executions = applyMonthlyHistoryEvidence(store.getExecutions(), selectMonthlyEvidenceHistory(store.getImportHistory()));
   const episode = buildTradeEpisodes(executions).find((candidate) => candidate.id === episodeId);
   if (!episode) throw new RecallNotFoundError(`Unknown episode: ${episodeId}`);
   return episode;

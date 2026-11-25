@@ -52,6 +52,41 @@ describe('historical closed presentation', () => {
     fireEvent.keyDown(screen.getByRole('button', { name: /2024年.*%/ }), { key: 'Escape' });
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
+  it('keeps keyboard readouts through scroll-generated hover until the pointer moves or clicks', () => {
+    render(<HistoricalStatistics request={DEFAULT_REQUEST} scenario="gaps" range={{ fromYear: 2024, toYear: 2026 }} onRangeChange={() => {}} />);
+    const first = screen.getByRole('button', { name: /^2024年 / });
+    const missing = screen.getByRole('button', { name: /^2025年 / });
+    const last = screen.getByRole('button', { name: /^2026年 / });
+    fireEvent.mouseEnter(first, { clientX: 100, clientY: 100 });
+    act(() => first.focus());
+    fireEvent.keyDown(first, { key: 'End' });
+    expect(last).toHaveFocus();
+    // A stationary pointer receives enter/move as focused SVG content scrolls underneath it.
+    fireEvent.mouseEnter(missing, { clientX: 100, clientY: 100 });
+    fireEvent.mouseMove(missing, { clientX: 100, clientY: 100 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2026 · CNY');
+    fireEvent.keyDown(last, { key: 'Home' });
+    fireEvent.mouseEnter(missing, { clientX: 100, clientY: 100 });
+    expect(first).toHaveFocus();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2024 · CNY');
+    fireEvent.keyDown(first, { key: 'ArrowRight' });
+    expect(missing).toHaveFocus();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2025 · CNY');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('该期源数据缺失，不能视为零');
+    fireEvent.keyDown(missing, { key: 'Escape' });
+    fireEvent.mouseEnter(first, { clientX: 100, clientY: 100 });
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+    fireEvent.mouseMove(first, { clientX: 101, clientY: 100 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2024 · CNY');
+    act(() => last.focus());
+    fireEvent.click(last);
+    expect(last).toHaveFocus();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2026 · CNY');
+    // End already has focus; reclaiming keyboard ownership must still refresh its readout.
+    fireEvent.mouseEnter(first, { clientX: 101, clientY: 100 });
+    fireEvent.keyDown(last, { key: 'End' });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('2026 · CNY');
+  });
   it('empty has no fake profit line or zero percent', () => {
     render(<HistoricalStatistics request={DEFAULT_REQUEST} scenario="empty" range={year} onRangeChange={() => {}} />);
     expect(screen.getByText('暂无已平仓回合')).toBeInTheDocument();

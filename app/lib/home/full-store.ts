@@ -13,11 +13,12 @@ import {convertNative,decimal,currentAmounts,nextDay,periodAmounts,projectPeriod
 import {confirmedSubtotal} from './metric-objects';
 import {NativeSeriesAccumulator} from './native-series';
 import {windowNativeObjects,validateNativeOrdering} from './full-window';
-const FULL_QUERY_COMPUTATION='window-prefix-v11-split-provenance';
+const FULL_QUERY_COMPUTATION='window-prefix-v18-canonical-fifo-category-cents';
 const FINANCIAL_ALGORITHM=FULL_QUERY_COMPUTATION+':'+HOME_FINANCIAL_PARTITION_VERSION;
 const jsonHash=(text:string)=>createHash('sha256').update(text,'utf8').digest('hex');
 const money=(value:string|null,reasons:string[]=[],valuationNotes:string[]=[]):FullMoney=>({value:value===null?null:decimal(value).toFixed(2),currency:'CNY',reasons,...(valuationNotes.length?{valuationNotes:[...new Set(valuationNotes)]}:{})});
 const sum=(items:FullMoney[],extra:string[]=[]):FullMoney=>money(items.some(i=>i.value===null)||extra.length?null:items.reduce((v,i)=>v.plus(i.value!),decimal('0')).toFixed(2),[...new Set([...extra,...items.flatMap(i=>i.reasons)])],items.flatMap(i=>i.valuationNotes??[]));
+const sumKnown=(items:FullMoney[],extra:string[]=[]):FullMoney=>{const known=items.filter(i=>i.value!==null),reasons=[...new Set([...extra,...items.flatMap(i=>i.reasons)])];return money(known.length?known.reduce((v,i)=>v.plus(i.value!),decimal('0')).toFixed(2):null,reasons,items.flatMap(i=>i.valuationNotes??[]));};
 function page<T>(rows:T[],requested:number){const pages=Math.max(1,Math.ceil(rows.length/8)),p=Math.min(requested,pages);return {rows:rows.slice((p-1)*8,p*8),total:rows.length,page:p,pages};}
 export class FullHomeStore{
  private readonly accountDirectoryMemo=new WeakMap<FullBuild,FullResultV1['accountIdsByMarket']>();
@@ -25,6 +26,22 @@ export class FullHomeStore{
  private readonly evidenceMemo=new WeakMap<FullBuild,Map<string,{text:string;hash:string;refs:ExecutionContentRef[]}>>();
  private readonly coverageSources=new WeakMap<FullBuild,WeakMap<Set<string>,{scopes:FullSourceCoverage[];refs:ExecutionContentRef[]}>>();
  constructor(private readonly db:DatabaseSync){}
+ private resolveRequest(full:FullBuild,input:FullRequestV1):FullRequestV1{
+  const request=structuredClone(input);
+  if(request.historyRange.scope!=='all'){
+   delete request.historyRange.scope;
+   return request;
+  }
+  request.historyRange={...this.historyBounds(full),scope:'all'};
+  return request;
+ }
+ private historyBounds(full:FullBuild):FullResultV1['historyBounds']{
+  const row=this.db.prepare('SELECT first_business_date FROM home_release_scope r JOIN home_scope_result s USING(scope_version) WHERE r.release_id=? AND r.scope_id=?').get(full.manifest.releaseId,JSON.stringify(['all','all'])) as {first_business_date?:unknown}|undefined;
+  // Published first_business_date includes the opening baseline, one day
+  // before the first activity. An empty release has no earlier activity.
+  const first=row?.first_business_date?nextDay(String(row.first_business_date)):full.manifest.businessDate;
+  return {fromYear:Number(first.slice(0,4)),toYear:Number(full.manifest.businessDate.slice(0,4))};
+ }
  private resolve(id?:string):FullBuild{
   id=id??new HomeStore(this.db).head()??undefined;if(!id)throw new HomeReadError(503,'完整首页正在准备');
   if(!this.db.prepare('SELECT 1 FROM home_publication WHERE release_id=?').get(id))throw new HomeReadError(410,'结果版本已过期，请刷新');
@@ -54,8 +71,9 @@ export class FullHomeStore{
   let source=bySelection.get(ids);if(!source){const scopes=full.modules.coverage.filter(s=>ids.has(JSON.stringify([s.accountId,s.instrumentId])));source={scopes,refs:scopes.flatMap(s=>s.sourceRefs)};this.coverageRecipes.set(source.refs,full.modules.coverage.flatMap((scope,index)=>ids.has(JSON.stringify([scope.accountId,scope.instrumentId]))?[index]:[]));bySelection.set(ids,source);}const {scopes}=source;
   const reasons=[...new Set([...scopes.flatMap(s=>s.reasons),...rounds.filter(r=>!r.closeBusinessDay).map(()=>'close-business-day-unknown')])];
   const complete=scopes.every(s=>s.universeComplete)&&!rounds.some(r=>!r.closeBusinessDay);
-  const known=rounds.filter(r=>this.convert(r.net,full).value!==null).length;
-  return {universeComplete:complete,confirmedClosedCount:rounds.length,closedCount:complete?rounds.length:null,knownNetCount:known,unknownNetCount:rounds.length-known,reasons,sourceRefsKey:'',affectedSourceRefs:source.refs};
+  const known=rounds.filter(r=>r.net.value!==null).length;
+  const knownWins=rounds.filter(r=>r.net.value!==null&&decimal(r.net.value).gt(0)).length;
+  return {universeComplete:complete,confirmedClosedCount:rounds.length,closedCount:complete?rounds.length:null,knownNetCount:known,unknownNetCount:rounds.length-known,knownWins,knownCount:known,reasons,sourceRefsKey:'',affectedSourceRefs:source.refs};
  }
  private selection(full:FullBuild,r:FullRequestV1){
   const s=r.selection;if(s.assetTypes.some(v=>!['stock','etf'].includes(v)))throw new HomeReadError(422,'不支持该资产类型');
@@ -85,13 +103,16 @@ export class FullHomeStore{
   const unknownNature=full.modules.coverage.some(v=>ids.has(JSON.stringify([v.accountId,v.instrumentId]))&&v.reasons.includes('unknown-trading-nature'));
   const financial=(from:string,to:string)=>unknownNature?{net:money(null,['unknown-trading-nature']),fees:money(null,['unknown-trading-nature'])}:financialObjects.length<keys.size?{net:money(null,['metric-object-unavailable']),fees:money(null,['metric-object-unavailable'])}:this.historicalFinancial(full,financialObjects,from,to,reviewUnknown);
   const complete=(_rows:FullRound[],_c:FullCoverage)=>financial(`${r.historyRange.fromYear}-01-01`,`${r.historyRange.toYear}-12-31`);
-  const wins=(rows:FullRound[])=>rows.filter(v=>{const n=this.convert(v.net,full).value;return n!==null&&decimal(n).gt(0);}).length;
-  const rate=(rows:FullRound[],c:FullCoverage)=>!c.universeComplete||c.unknownNetCount||!rows.length?null:decimal(String(wins(rows))).div(rows.length).mul(100).toFixed(2);
+  // Win/loss is a native-sign fact; an unavailable FX quote makes the CNY
+  // subtotal unknown but must not erase a known native positive/negative.
+  const wins=(rows:FullRound[])=>rows.filter(v=>v.net.value!==null&&decimal(v.net.value).gt(0)).length;
+  const rate=(rows:FullRound[],c:FullCoverage)=>!c.universeComplete||rows.some(v=>v.net.value===null)||!rows.length?null:decimal(String(wins(rows))).div(rows.length).mul(100).toFixed(2);
   const years=Array.from({length:r.historyRange.toYear-r.historyRange.fromYear+1},(_,i)=>{const year=r.historyRange.fromYear+i,rows=rounds.filter(v=>v.closeBusinessDay?.startsWith(String(year)));const c=this.coverage(full,ids,rows);if(!coverage.universeComplete){c.universeComplete=false;c.closedCount=null;c.reasons=coverage.reasons;}return {year,...financial(`${year}-01-01`,`${year}-12-31`),count:rows.length,coverage:c};});
   const monthly=r.historyRange.fromYear===r.historyRange.toYear;
   const bucketKeys=monthly?Array.from({length:12},(_,i)=>`${r.historyRange.fromYear}-${String(i+1).padStart(2,'0')}`):years.map(y=>String(y.year));
   let cumulative=money('0');const buckets=bucketKeys.map(key=>{const rows=rounds.filter(v=>v.closeBusinessDay?.startsWith(key)),c=this.coverage(full,ids,rows);if(!coverage.universeComplete){c.universeComplete=false;c.closedCount=null;c.reasons=coverage.reasons;}const t=financial(`${key}${monthly?'-01':'-01-01'}`,monthly?nextDay(`${Number(key.slice(5))===12?Number(key.slice(0,4))+1:Number(key.slice(0,4))}-${String(Number(key.slice(5))===12?1:Number(key.slice(5))+1).padStart(2,'0')}-01`,-1):`${key}-12-31`);if(!t.net.reasons.includes('no-closed-transactions'))cumulative=financial(`${r.historyRange.fromYear}-01-01`,monthly?nextDay(`${Number(key.slice(5))===12?Number(key.slice(0,4))+1:Number(key.slice(0,4))}-${String(Number(key.slice(5))===12?1:Number(key.slice(5))+1).padStart(2,'0')}-01`,-1):`${key}-12-31`).net;return {key,granularity:monthly?'month' as const:'year' as const,...t,count:rows.length,knownWins:wins(rows),winRate:rate(rows,c),cumulativeNet:cumulative,coverage:c};});
-  return {coverage,...complete(rounds,coverage),confirmedNet:totals(rounds).net,confirmedFees:totals(rounds).fees,winRate:rate(rounds,coverage),confirmedWinRate:coverage.unknownNetCount||!rounds.length?null:decimal(String(wins(rounds))).div(rounds.length).mul(100).toFixed(2),years,buckets};
+  const knownRate=coverage.knownCount?decimal(String(coverage.knownWins??0)).div(coverage.knownCount).mul(100).toFixed(2):null;
+  return {coverage,...complete(rounds,coverage),confirmedNet:totals(rounds).net,confirmedFees:totals(rounds).fees,winRate:rate(rounds,coverage),confirmedWinRate:knownRate,years,buckets};
  }
  private historyEndpoints(r:FullRequestV1,full:FullBuild):string[]{
   const dates=new Set<string>([`${r.historyRange.fromYear-1}-12-31`,full.manifest.businessDate]);
@@ -101,7 +122,7 @@ export class FullHomeStore{
   }
   return [...dates].filter(d=>d<=full.manifest.businessDate).sort();
  }
- private historicalFinancial(full:FullBuild,objects:MetricObject[],from:string,to:string,unknown:boolean){
+ private historicalFinancial(full:FullBuild,objects:MetricObject[],from:string,to:string,unknown:boolean,allowKnownSubtotal=false){
   const end=to<full.manifest.businessDate?to:full.manifest.businessDate;
   if(unknown)return {net:money(null,['selection-membership-unknown']),fees:money(null,['selection-membership-unknown'])};
   if(from>end)return {net:money(null,['future-period']),fees:money(null,['future-period'])};
@@ -114,10 +135,10 @@ export class FullHomeStore{
    const feeDay=(day:NativeDay|null):NativeDay|null=>day&&({...day,feeWindows:[],buckets:Object.fromEntries(Object.entries(day.buckets).map(([code,b])=>[code,{...b,fees:(b as typeof b & {closedFees?:string|null}).closedFees??'0',feesMissing:(b as typeof b & {closedFeesMissing?:number}).closedFeesMissing??1}]))});
    const fees=periodAmounts(feeDay(start),feeDay(finish)??undefined,from,'CNY').fees;
    const published=[start,finish].every(d=>d&&Object.values(d.buckets).every(b=>Object.hasOwn(b,'closedFees')));
-   return {net:{value:net.value,currency:'CNY' as const,reasons:net.reasons,...(net.valuationNotes?.length?{valuationNotes:net.valuationNotes}:{})},fees:published?{value:fees.value,currency:'CNY' as const,reasons:fees.reasons}:money(null,['closed-fees-not-published'])};
+   return {net:money(net.value,net.reasons,net.valuationNotes),fees:published?money(fees.value,fees.reasons,fees.valuationNotes):money(null,['closed-fees-not-published'])};
   });
   const active=values.filter(v=>!v.net.reasons.includes('no-closed-transactions'));
-  return active.length?{net:sum(active.map(v=>v.net)),fees:sum(active.map(v=>v.fees))}:{net:money(null,['no-closed-transactions']),fees:money(null,['no-closed-transactions'])};
+  return active.length?{net:(allowKnownSubtotal?sumKnown:sum)(active.map(v=>v.net)),fees:(allowKnownSubtotal?sumKnown:sum)(active.map(v=>v.fees))}:{net:money(null,['no-closed-transactions']),fees:money(null,['no-closed-transactions'])};
  }
  private objects(full:FullBuild,keys:Set<string>,endpoints?:string[],opening?:string):MetricObject[]{
   const rows=this.db.prepare(`SELECT o.* FROM (SELECT DISTINCT m.object_version FROM home_release_scope s JOIN home_metric_member m USING(scope_version) WHERE s.release_id=?) v JOIN home_metric_object o USING(object_version)`).all(full.manifest.releaseId);
@@ -146,7 +167,8 @@ export class FullHomeStore{
  }
  private endpoint(object:MetricObject,date:string,full:FullBuild):NativeDay|null{if(date<object.firstDay)return {date,buckets:{},fx:full.manifest.fx,reasons:[]};if(date>object.lastDay)return null;const day=object.boundaries.filter(b=>b.date<=date).at(-1);return day?{...day,date,fx:full.manifest.fx}:null;}
  private contribution(full:FullBuild,r:FullRequestV1,ids:Set<string>,objects:MetricObject[],reviewUnknown:boolean,preloadedHistory?:MetricObject[]):FullContribution{
-  const rows:Record<'long'|'short'|'ipo',FullContributionRow[]>={long:[],short:[],ipo:[]};
+  const rows:Record<'all'|'long'|'short'|'ipo',FullContributionRow[]>={all:[],long:[],short:[],ipo:[]};
+  const currentNative=new Map<string,Record<'net'|'realized'|'unrealizedChange'|'fees',FullMoney>>();
   const historyObjects=r.contribution.mode==='current'?new Map<string,MetricObject>():new Map((preloadedHistory??this.objects(full,new Set(full.modules.catalog.filter(v=>ids.has(JSON.stringify([v.accountId,v.instrumentId]))).map(v=>v.positionKey)),this.historyEndpoints(r,full))).map(o=>[o.positionKey,o]));
   const allocations=new Map(full.modules.allocations.map(a=>[a.positionKey,a])),objectsByPosition=new Map(objects.map(o=>[o.positionKey,o]));
   const activeIds=new Set<string>();
@@ -173,6 +195,9 @@ export class FullHomeStore{
      const residual=target.minus(entries.reduce((v,e)=>v.plus(e[field].value!),decimal('0')));
      if(entries.length&&residual.abs().lte('0.02'))entries[entries.length-1][field].value=decimal(entries[entries.length-1][field].value!).plus(residual).toFixed(2);
     }
+    const allAmounts=values;
+    currentNative.set(item.id,Object.fromEntries((['net','realized','unrealizedChange','fees'] as const).map(field=>[field,{value:allAmounts[field].value,currency:'CNY',reasons:allAmounts[field].reasons,valuationNotes:allAmounts[field].valuationNotes}])) as Record<'net'|'realized'|'unrealizedChange'|'fees',FullMoney>);
+    if(entries.length||allAmounts.net.value!==null||allAmounts.net.reasons.length)rows.all.push({id:item.id,name:item.name,code:item.code,accountId:item.accountId,instrumentId:item.instrumentId,market:item.market,open:item.open,net:money(allAmounts.net.value,allAmounts.net.reasons,allAmounts.net.valuationNotes),realized:money(allAmounts.realized.value,allAmounts.realized.reasons,allAmounts.realized.valuationNotes),unrealizedChange:money(allAmounts.unrealizedChange.value,allAmounts.unrealizedChange.reasons,allAmounts.unrealizedChange.valuationNotes),fees:money(allAmounts.fees.value,allAmounts.fees.reasons,allAmounts.fees.valuationNotes),roundCount:null});
     for(const entry of entries){
      if(allocation?.categoryMetrics&&entry.realized.value!==null&&entry.unrealizedChange.value!==null)entry.net.value=decimal(entry.realized.value).plus(entry.unrealizedChange.value).toFixed(2);
      rows[entry.category].push({id:item.id,name:item.name,code:item.code,accountId:item.accountId,instrumentId:item.instrumentId,market:item.market,open:item.open,net:entry.net,realized:entry.realized,unrealizedChange:entry.unrealizedChange,fees:entry.fees,roundCount:null});
@@ -181,35 +206,125 @@ export class FullHomeStore{
     const object=historyObjects.get(item.positionKey);
     if(!object)continue;
     const parts=allocation?.categoryMetrics?.map(m=>({category:m.category,object:m.metric}))??(allocation?.category?[{category:allocation.category,object}]:[]);
-    for(const part of parts){
-     const {net,fees}=this.historicalFinancial(full,[part.object],`${r.historyRange.fromYear}-01-01`,`${r.historyRange.toYear}-12-31`,reviewUnknown);
-     if(net.reasons.includes('no-closed-transactions'))continue;
+    const entries=parts.flatMap(({category,object:part})=>{
+     // Historical monetary attribution is source/ledger based. Manual round
+     // confirmation remains a separate history diagnostic and must not null a
+     // financially knowable contribution row.
+     const {net,fees}=this.historicalFinancial(full,[part],`${r.historyRange.fromYear}-01-01`,`${r.historyRange.toYear}-12-31`,false);
+     if(net.reasons.includes('no-closed-transactions'))return [];
      const rounds=full.modules.closeRounds.filter(v=>v.accountId===item.accountId&&v.instrumentId===item.instrumentId&&v.closeBusinessDay&&Number(v.closeBusinessDay.slice(0,4))>=r.historyRange.fromYear&&Number(v.closeBusinessDay.slice(0,4))<=r.historyRange.toYear);
-     rows[part.category].push({id:item.id,name:item.name,code:item.code,accountId:item.accountId,instrumentId:item.instrumentId,market:item.market,open:item.open,net,realized:net,unrealizedChange:money('0'),fees,roundCount:allocation?.categoryMetrics?null:rounds.length});
+     return [{category,net,realized:net,unrealizedChange:money('0'),fees,roundCount:allocation?.categoryMetrics?null:rounds.length}];
+    });
+    const allValue=this.historicalFinancial(full,[object],`${r.historyRange.fromYear}-01-01`,`${r.historyRange.toYear}-12-31`,false);
+    // Each category metric is independently converted and rounded to CNY cents.
+    // When the persisted source partition is complete and every amount is known,
+    // publish the bounded rounding residual on the deterministically last part;
+    // never use this to manufacture a value for a missing/unknown part.
+    if(allocation?.categoryMetrics&&entries.length===parts.length&&entries.length>0&&
+       allValue.net.value!==null&&allValue.fees.value!==null&&
+       entries.every(entry=>entry.net.value!==null&&entry.fees.value!==null)){
+     const ordered=[...entries].sort((a,b)=>a.category.localeCompare(b.category));
+     const assign=(field:'net'|'fees',target:string)=>{
+      const residual=decimal(target).minus(ordered.reduce((total,entry)=>total.plus(entry[field].value!),decimal('0')));
+      const boundary=decimal('0.01').times(ordered.length);
+      if(residual.abs().lte(boundary)){
+       const last=ordered.at(-1)!;last[field].value=decimal(last[field].value!).plus(residual).toFixed(2);
+       if(field==='net')last.realized.value=last[field].value;
+      }
+     };
+     assign('net',allValue.net.value);assign('fees',allValue.fees.value);
     }
+    if(entries.length||!allValue.net.reasons.includes('no-closed-transactions'))rows.all.push({id:item.id,name:item.name,code:item.code,accountId:item.accountId,instrumentId:item.instrumentId,market:item.market,open:item.open,net:allValue.net,realized:allValue.net,unrealizedChange:money('0'),fees:allValue.fees,roundCount:null});
+    for(const part of entries)rows[part.category].push({id:item.id,name:item.name,code:item.code,accountId:item.accountId,instrumentId:item.instrumentId,market:item.market,open:item.open,net:part.net,realized:part.realized,unrealizedChange:part.unrealizedChange,fees:part.fees,roundCount:part.roundCount});
    }
   }
   const current=r.contribution.mode==='current',coverageIds=current?activeIds:ids;
   // Unknown-nature executions may have no catalog/metric object at all. Their
   // absence from the known projection does not prove an empty current scope.
   if(current)for(const scope of full.modules.coverage)if(ids.has(JSON.stringify([scope.accountId,scope.instrumentId]))&&scope.reasons.includes('unknown-trading-nature'))coverageIds.add(JSON.stringify([scope.accountId,scope.instrumentId]));
-  const coverage=this.coverage(full,coverageIds,full.modules.closeRounds.filter(v=>coverageIds.has(JSON.stringify([v.accountId,v.instrumentId]))));
-  const selectedAllocations=full.modules.allocations.filter(a=>coverageIds.has(JSON.stringify([a.accountId,a.instrumentId])));
-  const selectedByScope=new Map(selectedAllocations.map(a=>[JSON.stringify([a.accountId,a.instrumentId]),a]));
-  const unallocated=full.modules.coverage.filter(c=>{const key=JSON.stringify([c.accountId,c.instrumentId]),a=selectedByScope.get(key);return coverageIds.has(key)&&(c.reasons.includes('unknown-trading-nature')||!(a?.category||a?.categoryMetrics?.length)||(current?!objectsByPosition.has(a!.positionKey):!historyObjects.has(a!.positionKey)));});
-  coverage.classifiedCount=coverageIds.size-unallocated.length;coverage.eligibleCount=coverageIds.size;
-  // Current attribution needs source direction, not confirmation of business closes.
-  // Historical coverage still requires confirmed rounds and their complete universe.
-  if(current){coverage.reasons=[...new Set(unallocated.flatMap(c=>{const a=selectedByScope.get(JSON.stringify([c.accountId,c.instrumentId]));return [...(a?.reasons??[]),...(c.reasons.includes('unknown-trading-nature')?['unknown-trading-nature']:[]),...(!a?['source-scope-not-inspected']:!objectsByPosition.has(a.positionKey)?['metric-object-unavailable']:[])];}))];coverage.universeComplete=unallocated.length===0;coverage.closedCount=coverage.universeComplete?coverage.confirmedClosedCount:null;}
-  if(reviewUnknown||unallocated.length){coverage.universeComplete=false;coverage.closedCount=null;coverage.reasons.push(reviewUnknown?'selection-membership-unknown':'unallocated-source');}
-  const totals=(values:FullContributionRow[])=>{const missing=(!current&&unallocated.length)||!values.length&&!coverage.universeComplete?coverage.reasons:[];return {net:sum(values.map(v=>v.net),missing),realized:sum(values.map(v=>v.realized),missing),unrealizedChange:sum(values.map(v=>v.unrealizedChange),missing),fees:sum(values.map(v=>v.fees),missing),count:values.length,coverage};};
-  if(r.contribution.localOpenOnly)for(const category of ['long','short','ipo'] as const)rows[category]=rows[category].filter(v=>v.open);
-  const categories=(['long','short','ipo'] as const).map(category=>({category,...totals(rows[category]),...(!coverage.universeComplete&&rows[category].length===0?{net:money(null,coverage.reasons),realized:money(null,coverage.reasons),unrealizedChange:money(null,coverage.reasons),fees:money(null,coverage.reasons)}:{})}));
+  const coverageByKey=new Map(full.modules.coverage.map(scope=>[JSON.stringify([scope.accountId,scope.instrumentId]),scope]));
+  const catalogByKey=new Map(full.modules.catalog.map(item=>[JSON.stringify([item.accountId,item.instrumentId]),item]));
+  const financialCoverage=(scopeIds:Set<string>,category:FullRequestV1['contribution']['category']=r.contribution.category)=>{
+   const result=this.coverage(full,scopeIds,full.modules.closeRounds.filter(v=>scopeIds.has(JSON.stringify([v.accountId,v.instrumentId]))));
+   const unresolved=new Set<string>(),reasons=new Set<string>();
+   for(const key of scopeIds){
+    const item=catalogByKey.get(key),source=coverageByKey.get(key),allocation=item&&allocations.get(item.positionKey);
+    if(source?.reasons.includes('unknown-trading-nature')){unresolved.add(key);reasons.add('unknown-trading-nature');}
+    if(!item||!(current?objectsByPosition:historyObjects).has(item.positionKey)){
+     unresolved.add(key);for(const reason of source?.reasons.length?source.reasons:['metric-object-unavailable'])reasons.add(reason);
+    }
+    // All is a financial view. Direction/IPO attribution only gates the
+    // individual classified views, never an otherwise knowable ledger amount.
+    if(category!=='all'&&!(allocation?.category||allocation?.categoryMetrics?.length)){
+     unresolved.add(key);for(const reason of allocation?.reasons??['source-scope-not-inspected'])reasons.add(reason);
+    }
+   }
+   for(const row of rows[category]){
+    const key=JSON.stringify([row.accountId,row.instrumentId]);
+    if((!current||category==='all')&&scopeIds.has(key)&&(row.net.value===null||row.fees.value===null)){
+     unresolved.add(key);reasons.add('financial-amount-unknown');
+     for(const reason of [...row.net.reasons,...row.fees.reasons])reasons.add(reason);
+    }
+   }
+   result.classifiedCount=scopeIds.size-unresolved.size;result.eligibleCount=scopeIds.size;
+   result.universeComplete=unresolved.size===0&&!reviewUnknown;
+   result.closedCount=result.universeComplete?result.confirmedClosedCount:null;
+   if(reviewUnknown)reasons.add('selection-membership-unknown');
+   result.reasons=[...reasons];
+   return result;
+  };
+  const coverage=financialCoverage(coverageIds);
+  const subtotal=(values:FullMoney[],reasons:string[])=>{
+   const known=values.filter(value=>value.value!==null);
+   const allReasons=[...new Set([...reasons,...values.flatMap(value=>value.reasons)])];
+   return money(known.length?known.reduce((total,value)=>total.plus(value.value!),decimal('0')).toFixed(2):values.length||allReasons.length?null:'0.00',allReasons,values.flatMap(value=>value.valuationNotes??[]));
+  };
+  const totals=(values:FullContributionRow[],scopeCoverage=coverage)=>{
+   if(current){const missing=!values.length&&!scopeCoverage.universeComplete?scopeCoverage.reasons:[];return {net:sum(values.map(v=>v.net),missing),realized:sum(values.map(v=>v.realized),missing),unrealizedChange:sum(values.map(v=>v.unrealizedChange),missing),fees:sum(values.map(v=>v.fees),missing),count:values.length,coverage:scopeCoverage};}
+   const financialUnknown=values.some(value=>value.net.value===null||value.realized.value===null||value.fees.value===null);
+   const effectiveCoverage=financialUnknown?{...scopeCoverage,universeComplete:false,closedCount:null,reasons:[...new Set([...scopeCoverage.reasons,'financial-amount-unknown'])]}:scopeCoverage;
+   const reasons=effectiveCoverage.universeComplete?[]:effectiveCoverage.reasons;
+   return {net:subtotal(values.map(v=>v.net),reasons),realized:subtotal(values.map(v=>v.realized),reasons),unrealizedChange:subtotal(values.map(v=>v.unrealizedChange),reasons),fees:subtotal(values.map(v=>v.fees),reasons),count:values.length,coverage:effectiveCoverage};
+  };
+  if(r.contribution.localOpenOnly)for(const category of ['all','long','short','ipo'] as const)rows[category]=rows[category].filter(v=>v.open);
+  const categories=(['all','long','short','ipo'] as const).map(category=>({category,...totals(rows[category],financialCoverage(coverageIds,category))}));
+  const rawHistorical=(scopeIds:Set<string>,scopeCoverage:FullCoverage)=>{
+   if(current)return null;
+   const selectedObjects=[...historyObjects.values()].filter(object=>{const item=full.modules.catalog.find(v=>v.positionKey===object.positionKey);return item&&scopeIds.has(JSON.stringify([item.accountId,item.instrumentId]));});
+   const value=this.historicalFinancial(full,selectedObjects,`${r.historyRange.fromYear}-01-01`,`${r.historyRange.toYear}-12-31`,false,true);
+   const amount=(v:FullMoney)=>v.reasons.includes('no-closed-transactions')
+    ?money(scopeCoverage.universeComplete?'0':null,scopeCoverage.reasons)
+    :money(v.value,[...new Set([...v.reasons,...scopeCoverage.reasons])],v.valuationNotes);
+   return {net:amount(value.net),realized:amount(value.net),unrealizedChange:money('0'),fees:amount(value.fees)};
+  };
+  const rawCurrent=(values:FullContributionRow[],scopeCoverage:FullCoverage)=>{
+   if(!current)return null;
+   const amounts=values.map(row=>currentNative.get(row.id)!);
+   return Object.fromEntries((['net','realized','unrealizedChange','fees'] as const).map(field=>[field,sum(amounts.map(value=>value[field]),!values.length&&!scopeCoverage.universeComplete?scopeCoverage.reasons:[])])) as Record<'net'|'realized'|'unrealizedChange'|'fees',FullMoney>;
+  };
+  const allRaw=current?rawCurrent(rows.all,categories[0].coverage):rawHistorical(coverageIds,categories[0].coverage);
+  if(allRaw)Object.assign(categories[0],allRaw);
   const selected=rows[r.contribution.category];
-  const markets=(['all','CN','HK','US'] as const).map(market=>({market,...totals(selected.filter(v=>market==='all'||v.market===market))}));
+  const marketScopeIds=(market:'CN'|'HK'|'US')=>new Set([...coverageIds].filter(key=>{
+   const scope=coverageByKey.get(key);
+   const sourceMarket=scope?.market??'',instrument=JSON.parse(key)[1] as string;
+   return sourceMarket===market||(market==='CN'&&sourceMarket.startsWith('CN'))||(market==='US'&&sourceMarket.startsWith('US'))||(market==='HK'&&sourceMarket.startsWith('HK'))||instrument.startsWith(`${market}:`)||(market==='CN'&&instrument.startsWith('CN-'));
+  }));
+  const markets=(['all','CN','HK','US'] as const).map(market=>{
+   const values=selected.filter(v=>market==='all'||v.market===market);
+   const scopeIds=market==='all'?coverageIds:marketScopeIds(market);
+   const scoped=market==='all'?coverage:financialCoverage(scopeIds);
+   const raw=r.contribution.category==='all'?(market==='all'?allRaw:current?rawCurrent(values,scoped):rawHistorical(scopeIds,scoped)):null;
+   const summary=totals(values,scoped);
+   return {market,...summary,...(raw??{})};
+  });
   const filtered=selected.filter(v=>r.contribution.drillMarket==='all'||v.market===r.contribution.drillMarket);
   filtered.sort((a,b)=>{const av=a.net.value,bv=b.net.value;return (r.contribution.sort==='name'?a.name.localeCompare(b.name,'zh-CN'):av===null||bv===null?av===bv?0:av===null?1:-1:decimal(av).comparedTo(bv))*(r.contribution.direction==='asc'?1:-1)||a.id.localeCompare(b.id);});
-  return {mode:r.contribution.mode,category:r.contribution.category,...page(filtered,r.contribution.page),...totals(filtered),categories,markets};
+  const drillIds=r.contribution.drillMarket==='all'?coverageIds:marketScopeIds(r.contribution.drillMarket);
+  const drillCoverage=r.contribution.drillMarket==='all'?coverage:financialCoverage(drillIds);
+  const drillSummary=totals(filtered,drillCoverage);
+  const drillRaw=r.contribution.category==='all'?(r.contribution.drillMarket==='all'?allRaw:current?rawCurrent(filtered,drillCoverage):rawHistorical(drillIds,drillCoverage)):null;
+  return {mode:r.contribution.mode,category:r.contribution.category,...page(filtered,r.contribution.page),...drillSummary,...(drillRaw??{}),categories,markets};
  }
  private readEvidence(full:FullBuild,key:string,required=true):ExecutionContentRef[]|null{
   const row=this.db.prepare('SELECT recipe_json,payload_hash FROM home_full_evidence WHERE release_id=? AND source_key=?').get(full.manifest.releaseId,key);
@@ -239,7 +354,8 @@ export class FullHomeStore{
   this.db.exec(HOME_FULL_SCHEMA);const full=validateFull(this.db,releaseId);if(!full)throw new Error('full release required for financial partitions');
   const defaults=()=>this.db.prepare('SELECT scope_id FROM home_release_scope WHERE release_id=?').all(releaseId).map(row=>JSON.parse(String(row.scope_id))).filter(([market,account])=>account==='all'&&['all','CN','HK','US'].includes(market)).map(([market])=>{const r=initialFullRequest(full.manifest.businessDate);r.selection.market=market;return r;});
   const keys:string[]=[],owned=!this.db.isTransaction;if(owned)this.db.exec('BEGIN IMMEDIATE');try{
-   for(const request of requests??defaults()){
+   for(const rawRequest of requests??defaults()){
+    const request=this.resolveRequest(full,rawRequest);
     const selected=this.selection(full,request),filtered=request.selection.assetTypes.length>0||request.selection.globalOpenOnly||request.selection.review!=='all';
     if(filtered)throw new Error('financial publication requires unfiltered scope');
     const objects=this.objects(full,new Set(selected.items.map(c=>c.positionKey)),[...new Set([...this.historyEndpoints(request,full),nextDay(request.currentPeriod.from,-1),request.currentPeriod.to<full.manifest.businessDate?request.currentPeriod.to:full.manifest.businessDate])]);
@@ -256,11 +372,12 @@ export class FullHomeStore{
    if(owned)this.db.exec('COMMIT');return {count:keys.length,keys};
   }catch(error){if(owned)this.db.exec('ROLLBACK');throw error;}
  }
- read(request:FullRequestV1,id?:string):FullResultV1{
+ read(rawRequest:FullRequestV1,id?:string):FullResultV1{
   const full=this.resolve(id),releaseId=full.manifest.releaseId;
+  const request=this.resolveRequest(full,rawRequest);
   const artifactKey=fullHash([FULL_SCHEMA,'release-key-v2-hash1',FULL_QUERY_COMPUTATION,request,full.manifest.fxVersion]);
   const cached=this.db.prepare('SELECT artifact_id,payload_json FROM home_full_query WHERE release_id=? AND query_key=?').get(releaseId,artifactKey);
-  if(cached){const text=String(cached.payload_json);if(jsonHash(text)!==String(cached.artifact_id))throw new Error('invalid full query payload hash');const result=JSON.parse(text) as FullResultV1;if(result.releaseId!==releaseId||result.evidenceTransport!=='release-key-v2'||fullHash(result.request)!==fullHash(request))throw new Error('invalid full query identity');if(evidenceKeys(result).every(key=>this.readEvidence(full,key,false)!==null))return {...result,accountIdsByMarket:this.accountIdsByMarket(full)};}
+  if(cached){const text=String(cached.payload_json);if(jsonHash(text)!==String(cached.artifact_id))throw new Error('invalid full query payload hash');const result=JSON.parse(text) as FullResultV1;if(result.releaseId!==releaseId||result.evidenceTransport!=='release-key-v2'||fullHash(result.request)!==fullHash(request))throw new Error('invalid full query identity');if(evidenceKeys(result).every(key=>this.readEvidence(full,key,false)!==null))return {...result,accountIdsByMarket:this.accountIdsByMarket(full),historyBounds:this.historyBounds(full)};}
   if(!this.db.prepare('SELECT 1 FROM home_release_scope WHERE release_id=? AND scope_id=?').get(releaseId,JSON.stringify([request.selection.market,request.selection.accountId])))throw new HomeReadError(404,'账户范围不存在');
   const selected=this.selection(full,request),partition=this.financialPartition(full,request),initial=initialFullRequest(full.manifest.businessDate);
   const historicalPartition=partition??this.financialPartition(full,{...request,currentPeriod:initial.currentPeriod,contribution:initial.contribution});
@@ -292,7 +409,7 @@ export class FullHomeStore{
   }
   const history=historicalPartition?.history??this.history(full,request,selected.ids,selected.reviewUnknown,sharedFinancial),contribution=partition?.contribution??this.contribution(full,request,selected.ids,objects,selected.reviewUnknown,sharedFinancial);
   const selectionKey=fullHash(request.selection),queryArtifactId=fullHash([releaseId,request,full.manifest.fxVersion,FULL_SCHEMA,FULL_QUERY_COMPUTATION]);
-  const result:FullResultV1={schema:FULL_SCHEMA,evidenceTransport:'release-key-v2',releaseId,manifest:full.manifest,request,selectionKey,queryArtifactId,core,accountIdsByMarket:this.accountIdsByMarket(full),history,contribution,capabilities:{globalOpenOnly:true,review:true,assetTypes:true,reasons:[...(selected.assetUnknown?['asset-type-membership-unknown']:[]),...(selected.reviewUnknown?['selection-membership-unknown']:[])]},catalogCount:full.modules.catalog.length};
+  const result:FullResultV1={schema:FULL_SCHEMA,evidenceTransport:'release-key-v2',releaseId,manifest:full.manifest,request,selectionKey,queryArtifactId,core,accountIdsByMarket:this.accountIdsByMarket(full),historyBounds:this.historyBounds(full),history,contribution,capabilities:{globalOpenOnly:true,review:true,assetTypes:true,reasons:[...(selected.assetUnknown?['asset-type-membership-unknown']:[]),...(selected.reviewUnknown?['selection-membership-unknown']:[])]},catalogCount:full.modules.catalog.length};
   const evidence=compactFullEvidence(result);
   // The recipe survives derived-query eviction and is visible before a key can
   // escape. Publication retention and recipe persistence share this writer lock.

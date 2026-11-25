@@ -1,4 +1,5 @@
 import Decimal from 'decimal.js';
+import { projectRecallSplitUnits } from './split-valuation';
 import { calculateRecallPlan } from './plans';
 import { replayPositionAtPrice } from '../replay/position-ledger';
 import { executionBoundaryForCursor, orderedRecallExecutions, visibleRecallExecutions } from '../replay/recall-replay';
@@ -141,7 +142,10 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
         return fail('unknown-cost');
     // The existing ledger is the evidence authority. Strip only fee incompleteness
     // for its gross-cost check; missing fees must not hide otherwise known gross PnL.
-    const grossExecutions = visible.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
+    const splitProjection = projectRecallSplitUnits(visible, context.cursor, input.mark);
+    if (splitProjection.reason) return fail(splitProjection.reason);
+    const calculationExecutions = splitProjection.executions;
+    const grossExecutions = calculationExecutions.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
     // The canonical shared visibility helper above supplies the exact visible
     // execution prefix while the ledger keeps the independent market cutoff
     // for ancillary statement evidence.
@@ -163,7 +167,7 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     let feesKnown = true;
     const openingSide = episode.direction === 'long' ? 'buy' : 'sell';
     const openingIds: string[] = [];
-    for (const e of visible) {
+    for (const e of calculationExecutions) {
         const q = number(e.quantity)!;
         const s = e.source.settlement;
         const p = s ? number(s.grossAmount)!.div(number(s.quantity)!) : number(e.price)!;
@@ -198,6 +202,8 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
         exitAmount = exitAmount.plus(p.mul(q));
         result.exitAllocations.push({ executionId: e.id, decisionId: input.decisions.find(d => d.executionIds.includes(e.id))?.id ?? null, quantity: q.toString(), entryFee: metric(feesKnown ? allocation : null, 'unknown-fees'), exitFee: metric(known ? fee : null, 'unknown-fees'), grossPnl: metric(gain), netPnl: metric(feesKnown ? exitNet : null, 'unknown-fees') });
     }
+    // Allocation identities retain the original fill quantity; only valuation units change.
+    for (const allocation of result.exitAllocations) allocation.quantity = visible.find(e => e.id === allocation.executionId)!.quantity;
     metrics.remainingQuantity = metric(qty, null, 'quantity');
     metrics.averageEntryPrice = metric(entryQty.gt(0) ? entryAmount.div(entryQty) : null, 'unknown-cost', 'price');
     metrics.weightedExitPrice = metric(exitQty.gt(0) ? exitAmount.div(exitQty) : null, 'no-exits', 'price');
@@ -208,7 +214,7 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     const closed = qty.isZero();
     metrics.netPnl = metric(closed && feesKnown ? net : null, closed ? 'unknown-fees' : 'episode-open');
     const mark = input.mark;
-    const markPrice = number(mark?.price);
+    const markPrice = number(splitProjection.markPrice);
     metrics.unrealizedGross = metric(closed ? new Arithmetic(0) : mark?.priceBasis === 'raw' && markPrice?.gt(0) && Date.parse(mark.time) <= cutoff ? (episode.direction === 'long' ? markPrice.minus(cost) : cost.minus(markPrice)).mul(qty) : null, mark?.priceBasis === 'adjusted' ? 'price-basis-mismatch' : 'missing-visible-raw-mark');
     const owners = openingIds.map(id => input.decisions.filter(d => d.executionIds.includes(id)));
     const openingDecisions = [...new Set(owners.flat().map(d => d.id))];

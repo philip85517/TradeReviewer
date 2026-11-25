@@ -765,6 +765,11 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   }), [expandedTextIds, renderDrawings, size]);
 
   function hitDrawing(point: ProjectedPoint) {
+    const selected = drawings.find((drawing) => drawing.id === selectedDrawingId);
+    if (selected && !selected.hidden && !selected.locked && selected.tool !== "text" &&
+        selected.anchors.some((anchor) => isPointNearAnchorHandle(point, pointFor(anchor)))) {
+      return selected;
+    }
     return [...drawings].sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0)).find((drawing) => {
       if (drawing.hidden) return false;
       const points = drawing.anchors.map(pointFor);
@@ -1102,7 +1107,19 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       return Boolean(target?.closest?.(".drawing-text-editor-shell, .drawing-text-card-control"));
     };
     const onPointerDown = (event: Event) => {
-      if (fromTextEditor(event)) return;
+      const target = event.target instanceof Element ? event.target : null;
+      // Stage capture runs before overlay controls. Only chart surfaces may
+      // start a drawing gesture; otherwise an underlying drawing would steal
+      // the control's pointerup through setPointerCapture.
+      if (!target) return;
+      const interactiveTarget = target.closest(
+        '.drawing-text-editor-shell, .drawing-text-card-control, button, a[href], form, input, select, textarea, summary, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="dialog"], [role="menu"], [role="listbox"], [tabindex]',
+      );
+      // A focusable workspace outside the stage is a navigation container,
+      // not an overlay owning this pointer. Do not let closest escape scope.
+      if (interactiveTarget && interactiveTarget !== stage && stage.contains(interactiveTarget)) return;
+      const surface = target.closest(".lightweight-chart, .drawing-canvas");
+      if (target !== stage && (!surface || !stage.contains(surface))) return;
       const handlers = gestureHandlersRef.current;
       if (handlers?.activeTool !== "cursor") return;
       const pointer = event as PointerEvent;

@@ -17,6 +17,9 @@ function date(value?: string) {
   if (!value) return "—";
   return formatBeijingDate(value);
 }
+function auditCount(value: unknown): number | string {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : "—";
+}
 function maskSensitive(value: string): string {
   return value.replace(/\d{4,}/g, match => `••••${match.slice(-4)}`);
 }
@@ -72,14 +75,14 @@ export function ImportHistoryDialog({ entries, onClose }: Props) {
                 <td><strong>{date(entry.importedAt)}</strong><small>{maskSensitive(entry.fileName)}</small></td>
                 <td>{entry.sourceLabel}<small>{entry.sourceKind === "tradingview" ? "TradingView · 模拟盘" : entry.sourceKind === "screenshot" ? "截图恢复" : "文件导入"}</small></td>
                 <td>{date(entry.firstTradeAt)} — {date(entry.lastTradeAt)}<small>账户元数据已脱敏</small></td>
-                <td>{entry.tradeCount} 笔<small>{entry.instrumentCount} 个标的</small></td><td>{entry.duplicateTradeCount} / {entry.excludedRecordCount}</td>
+                <td>{auditCount(entry.tradeCount)} 笔<small>{auditCount(entry.instrumentCount)} 个标的</small></td><td>{auditCount(entry.duplicateTradeCount)} / {auditCount(entry.excludedRecordCount)}</td>
                 <td>{entry.unresolvedInstrumentCount > 0 ? "待处理" : entry.duplicateTradeCount > 0 ? "已跳过重复" : "成功"}</td>
               </tr>
             ))}
             </tbody></table>
             {filtered.length === 0 && <p className="history-empty">没有匹配的导入记录。</p>}
             </div>
-            {selected && <aside className="history-evidence" aria-label="选中导入证据详情"><strong>选中批次证据</strong><p>{maskSensitive(selected.fileName)} · {date(selected.importedAt)}</p><details><summary>查看原文件名（本地核对）</summary><p>{selected.fileName}</p></details><p>排除 {selected.excludedRecordCount} 笔记录 / {selected.excludedInstrumentCount} 个标的。</p>{selected.sourceKind === "screenshot" && <div className="history-screenshot-meta"><span>{selected.captureCount ?? 0} 张截图</span><span>已处理 {selected.conflictTradeCount ?? 0} 笔冲突</span></div>}<p>交易区间：{date(selected.firstTradeAt)} — {date(selected.lastTradeAt)}；重复 {selected.duplicateTradeCount} 笔；未识别标的 {selected.unresolvedInstrumentCount} 个。</p>
+            {selected && <aside className="history-evidence" aria-label="选中导入证据详情"><strong>选中批次证据</strong><p>{maskSensitive(selected.fileName)} · {date(selected.importedAt)}</p><details><summary>查看原文件名（本地核对）</summary><p>{selected.fileName}</p></details><p>排除 {auditCount(selected.excludedRecordCount)} 笔记录 / {auditCount(selected.excludedInstrumentCount)} 个标的。</p>{selected.sourceKind === "screenshot" && <div className="history-screenshot-meta"><span>{auditCount(selected.captureCount)} 张截图</span><span>已处理 {auditCount(selected.conflictTradeCount)} 笔冲突</span></div>}<p>交易区间：{date(selected.firstTradeAt)} — {date(selected.lastTradeAt)}；重复 {auditCount(selected.duplicateTradeCount)} 笔；未识别标的 {auditCount(selected.unresolvedInstrumentCount)} 个。</p>
                   {selected.monthly && <details><summary>{selected.monthly.month} 月结单证据</summary><p>{selected.monthly.templateIds.join(" / ")}</p><p>{selected.monthly.timePolicy}</p><p>持仓快照 {selected.monthly.positions.length} · 辅助流水 {selected.monthly.events.length}</p><ul>{selected.monthly.events.map(event => <li key={event.id}>{event.date} {event.symbol} {event.description}（第 {event.source.map(s => s.page).join(", ")} 页）</li>)}</ul></details>}
             </aside>}
 

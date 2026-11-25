@@ -1,3 +1,5 @@
+import { projectRecallSplitUnits } from './split-valuation';
+import { replayPositionAtPrice } from '../replay/position-ledger';
 import { describe, expect, it } from 'vitest';
 import { calculateRecallActualMetrics, type RecallActualMetricsInput } from './actual-metrics';
 import type { TradeEpisode } from '../trades/types';
@@ -42,6 +44,68 @@ function setCanonicalTradingViewScope(f: RecallActualMetricsInput) {
 }
 
 describe('actual metrics', () => {
+    it('projects verified SNDK split units at the visible cutoff without rewriting source facts', () => {
+        const f = fixture();
+        const instrument = { id: 'US:SNDK', symbol: 'SNDK', name: 'SNDK', market: 'US', currency: 'USD' };
+        const entry = { ...f.episode.executions[0], instrument, executedAt: '2026-08-17T14:43:25Z', quantity: '1', price: '1363', fee: '1' };
+        f.episode = { ...f.episode, instrument, direction: 'long', status: 'open', executions: [entry] };
+        f.planVersions = []; f.riskBaselines = [];
+        f.context = { phase: 'post-review', cursor: '2026-11-20T21:00:00Z', executionCursor: entry.id };
+        f.mark = { price: '79.24', time: '2026-11-20T21:00:00Z', priceBasis: 'raw' };
+        const original = JSON.stringify(f.episode);
+        const after = calculateRecallActualMetrics(f);
+        expect(after.metrics.remainingQuantity.value).toBe('8');
+        expect(after.metrics.averageEntryPrice.value).toBe('170.375');
+        expect(after.metrics.unrealizedGross.value).toBe('-729.08');
+        expect(after.metrics.remainingEntryFee.value).toBe('1');
+        f.mark = { price: '755.16', time: '2026-11-19T21:00:00Z', priceBasis: 'raw' };
+        expect(calculateRecallActualMetrics(f).metrics.unrealizedGross.value).toBe('-607.84');
+        f.context.cursor = '2026-11-19T21:00:00Z';
+        const before = calculateRecallActualMetrics(f);
+        expect(before.metrics.remainingQuantity.value).toBe('1');
+        expect(before.metrics.averageEntryPrice.value).toBe('1363');
+        expect(before.metrics.unrealizedGross.value).toBe('-607.84');
+        expect(JSON.stringify(f.episode)).toBe(original);
+    });
+    it('keeps SNDK statement-backed footer and actual gross units consistent across the split', () => {
+        const f = fixture();
+        const instrument = { id: 'US:SNDK', symbol: 'SNDK', name: 'SNDK', market: 'US', currency: 'USD' };
+        const position = { accountId: 'a', market: 'US', symbol: 'SNDK', phase: 'closing' as const, date: '2026-08-31', quantity: '1', cost: '1364', source: [] };
+        const buy = { ...f.episode.executions[0], instrument, executedAt: '2026-08-12T18:14:39Z', quantity: '2', price: '1363', fee: '2', source: { platform: 'tiger', row: 1, statementPositions: [position] } };
+        const sell = { ...buy, id: 'exit', side: 'sell' as const, executedAt: '2026-08-17T14:43:25Z', quantity: '1', price: '1789.63', fee: '2.03' };
+        f.episode = { ...f.episode, instrument, direction: 'long', status: 'open', executions: [buy, sell] };
+        f.planVersions = []; f.riskBaselines = [];
+        f.context = { phase: 'post-review', cursor: '2026-11-20T21:00:00Z', executionCursor: sell.id };
+        f.mark = { price: '79.24', time: '2026-11-20T21:00:00Z', priceBasis: 'raw' };
+        const original = JSON.stringify(f.episode);
+        const projected = projectRecallSplitUnits(f.episode.executions, f.context.cursor, f.mark);
+        const footer = replayPositionAtPrice({ executions: projected.executions, markPrice: projected.markPrice!, cursor: f.context.cursor, visibleExecutionIds: [buy.id, sell.id] });
+        expect(footer.quantity).toBe('8');
+        expect(footer.averageCost).toBe('170.375');
+        expect(footer.unrealizedPnl).toBe('-729.08');
+        expect(projected.notes.join(' ')).toContain('拆股推算');
+        const actual = calculateRecallActualMetrics(f);
+        expect(actual.metrics.remainingQuantity.value).toBe('8');
+        expect(actual.metrics.averageEntryPrice.value).toBe('170.375');
+        expect(actual.metrics.unrealizedGross.value).toBe('-729.08');
+        expect(actual.metrics.realizedNet.value).toBe('423.6');
+        expect(actual.exitAllocations[0].quantity).toBe('1');
+        expect(JSON.stringify(f.episode)).toBe(original);
+        // A post-action sale is already in current units and must not be scaled twice.
+        const laterSale = { ...sell, id: 'post-split-exit', executedAt: '2026-11-20T16:00:00Z', quantity: '4', price: '80', fee: '0' };
+        const mixed = projectRecallSplitUnits([buy, sell, laterSale], f.context.cursor, f.mark);
+        expect(mixed.executions.map(e => e.quantity)).toEqual(['16', '8', '4']);
+        expect(replayPositionAtPrice({ executions: mixed.executions, markPrice: mixed.markPrice!, cursor: f.context.cursor }).quantity).toBe('4');
+        // A round closed before the action retains its historical fill units.
+        const closed = projectRecallSplitUnits([buy, { ...sell, quantity: '2' }], f.context.cursor, f.mark);
+        expect(closed.executions.map(e => e.quantity)).toEqual(['2', '2']);
+        expect(closed.notes).toEqual([]);
+        const anchored = { ...buy, source: { ...buy.source, openingPosition: { ...position, phase: 'opening' as const, date: '2026-08-01' } } };
+        expect(projectRecallSplitUnits([anchored, sell], f.context.cursor, f.mark).reason).toBe('corporate-action-reconciliation-required');
+        const futureAnchor = { ...anchored, source: { ...anchored.source, openingPosition: { ...anchored.source.openingPosition, date: '2026-12-01' } } };
+        expect(projectRecallSplitUnits([futureAnchor, sell], f.context.cursor, f.mark).reason).toBeNull();
+
+    });
     it('uses the same date-only visibility as Recall at a next-decision knowledge boundary', () => {
         const instrument = { id: 'CN-SH:TEST', symbol: 'TEST', name: 'Test', market: 'CN-SH', currency: 'CNY' };
         const execution = {

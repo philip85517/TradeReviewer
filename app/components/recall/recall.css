@@ -1687,6 +1687,16 @@
   }
 }
 
+/* E19/E22: records own the remaining space instead of sharing the chart's
+   flexible track. Keep the same desktop trend height in both disclosure states. */
+@container recall-work (min-width: 1106px) {
+  .recall-main > .recall-chart-and-plan {
+    flex: 0 0 clamp(220px, calc(100dvh - 400px), 500px);
+    height: clamp(220px, calc(100dvh - 400px), 500px);
+    min-height: 220px;
+  }
+}
+
 /* When More explicitly yields the narrow plan panel, the chart keeps its
    220px trend floor and the replay bar receives the remaining main height.
    Plan visibility itself is stateful (hidden/aria-expanded); this rule only

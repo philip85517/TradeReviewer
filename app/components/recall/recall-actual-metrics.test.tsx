@@ -24,13 +24,13 @@ it("keeps unknown fees separate from confirmed zero and hides actual results bef
   expect(screen.getAllByText("费用待补齐").length).toBeGreaterThan(0);
   expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("费用待补齐");
   rerender(<RecallActualMetricsPanel phase="post-review" metrics={sample("0")} />);
-  expect(screen.getAllByText("20 USD").length).toBeGreaterThan(0);
-  expect(screen.getAllByText("0 USD").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("20.00 USD").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("0.00 USD").length).toBeGreaterThan(0);
 });
 it("does not fill an old capture with current metrics", () => {
   render(<RecallActualMetricsPanel phase="post-review" metrics={null} retained />);
   expect(screen.getByText(/该快照未留存统计口径/)).toBeInTheDocument();
-  expect(screen.queryByText("20 USD")).toBeNull();
+  expect(screen.queryByText("20.00 USD")).toBeNull();
 });
 
 it("keeps realized and floating metrics visible after a partial exit while final totals stay open", () => {
@@ -50,13 +50,13 @@ it("keeps realized and floating metrics visible after a partial exit while final
   expect(metrics.metrics.unrealizedGross.value).toBe("7");
   expect(metrics.metrics.netPnl).toMatchObject({ value: null, reason: "episode-open" });
   expect(metrics.metrics.actualR).toMatchObject({ value: null, reason: "episode-open" });
-  expect(formatRecallActualMetricValue(metrics.metrics.realizedNet)).toBe("6 USD");
-  expect(formatRecallActualMetricValue(metrics.metrics.unrealizedGross)).toBe("7 USD");
+  expect(formatRecallActualMetricValue(metrics.metrics.realizedNet)).toBe("6.00 USD");
+  expect(formatRecallActualMetricValue(metrics.metrics.unrealizedGross)).toBe("7.00 USD");
   expect(formatRecallActualMetricValue(metrics.metrics.netPnl)).toBe("尚未平仓");
   expect(formatRecallActualMetricValue(metrics.metrics.actualR)).toBe("尚未平仓");
   render(<RecallActualMetricsPanel phase="post-review" metrics={metrics} />);
-  expect(screen.getByText("已实现净盈亏").parentElement).toHaveTextContent("6 USD");
-  expect(screen.getByText("持仓浮盈亏（未扣费）").parentElement).toHaveTextContent("7 USD");
+  expect(screen.getByText("已实现净盈亏").parentElement).toHaveTextContent("6.00 USD");
+  expect(screen.getByText("持仓浮盈亏（未扣费）").parentElement).toHaveTextContent("7.00 USD");
   expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("尚未平仓");
   expect(screen.getByText("实际 R").parentElement).toHaveTextContent("尚未平仓");
 });
@@ -67,7 +67,22 @@ it("offers a compact trusted summary while keeping the complete panel in details
   const region = screen.getByRole("region", { name: "实际结果" });
   expect(region).toHaveClass("recall-actual-metrics--compact");
   expect(region.querySelector(":scope > dl")?.children).toHaveLength(2);
-  expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("20 USD");
+  expect(screen.getByText("回合净盈亏").parentElement).toHaveTextContent("20.00 USD");
   expect(screen.getByText("实际 R").parentElement).toHaveTextContent("初始风险未记录");
   expect(region.querySelector("details")).toBeInTheDocument();
+});
+
+it("formats only monetary readouts to two decimals while retaining raw precision", () => {
+  const metrics = sample("0");
+  metrics.metrics.netPnl.value = "885.505142353";
+  metrics.metrics.realizedGross.value = "-31912.515";
+  expect(formatRecallActualMetricValue(metrics.metrics.netPnl)).toBe("885.51 USD");
+  expect(formatRecallActualMetricValue(metrics.metrics.realizedGross)).toBe("-31,912.52 USD");
+  expect(formatRecallActualMetricValue({ ...metrics.metrics.netPnl, value: "10.123456", unit: "price" })).toBe("10.123456 USD");
+  expect(formatRecallActualMetricValue({ ...metrics.metrics.remainingQuantity, value: "15500" })).toBe("15500");
+  expect(formatRecallActualMetricValue({ ...metrics.metrics.actualR, value: "1.234567" })).toBe("1.234567R");
+  expect(formatRecallActualMetricValue({ ...metrics.metrics.quantityDeviation, value: "0.123456" })).toBe("12.3456%");
+  render(<RecallActualMetricsPanel phase="post-review" metrics={metrics} />);
+  expect(screen.getByText("885.51 USD")).toHaveAttribute("title", "885.505142353 USD");
+  expect(metrics.metrics.netPnl.value).toBe("885.505142353");
 });

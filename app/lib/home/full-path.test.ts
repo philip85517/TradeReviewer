@@ -28,7 +28,7 @@ it('real isolated confirmation/build/stage/publication/read paths preserve parti
  for(const [i,b,s,q] of [['US:X','xb','xs','4'],['US:Y','yb','ys','2']]){const pairing=new BusinessPairingStore(db),scope={accountId:'A',instrumentId:i},v=pairing.inspectScope(scope);pairing.save({scope,expectedRevision:v.revision,expectedFingerprint:v.fingerprint,confirmedBy:'fixture',basis:'explicit close',rounds:[{id:'round',closingExecutionIds:[s],pairings:[{openingExecutionId:b,closingExecutionId:s,quantity:q}]}]});}
  db.exec("INSERT INTO daily_candles(instrument_id,date,adjustment_mode,open,high,low,close,currency,provider)VALUES('US:X','2026-01-06','raw','12','12','12','12','USD','yahoo')");
  const first=buildOnce(path,'2026-01-07T23:00:00Z');const store=new FullHomeStore(db),r=defaultFullRequest('2026-01-08');r.currentPeriod={preset:'custom',from:'2026-01-02',to:'2026-01-08'};r.historyRange={fromYear:2026,toYear:2026};
- const view=store.read(r,first.release);expect(view.accountIdsByMarket).toEqual({CN:[],HK:[],US:['A']});expect(store.read(r,first.release).accountIdsByMarket).toEqual(view.accountIdsByMarket);expect(view.manifest.moduleComplete).toBe(true);expect(view.history.coverage.closedCount).toBeNull();expect(view.history.coverage.confirmedClosedCount).toBe(2);expect(view.history.winRate).toBeNull();expect(view.history.buckets).toHaveLength(12);expect(store.evidence(view.releaseId,view.history.coverage.sourceRefsKey).sourceRefs).toHaveLength(6);expect(JSON.stringify(view)).not.toContain('affectedSourceRefs');
+ const view=store.read(r,first.release);expect(view.accountIdsByMarket).toEqual({CN:[],HK:[],US:['A']});expect(store.read(r,first.release).accountIdsByMarket).toEqual(view.accountIdsByMarket);expect(view.manifest.moduleComplete).toBe(true);expect(view.history.coverage.closedCount).toBe(3);expect(view.history.coverage.confirmedClosedCount).toBe(3);expect(view.history.coverage.unknownNetCount).toBe(0);expect(view.history.winRate).toBe('100.00');expect(view.history.buckets).toHaveLength(12);expect(store.evidence(view.releaseId,view.history.coverage.sourceRefsKey).sourceRefs).toHaveLength(6);expect(JSON.stringify(view)).not.toContain('affectedSourceRefs');
  // Published financial partitions share the original algorithms and evidence,
  // survive query eviction, and are independent of holding-table controls.
  const published=store.publishFinancialPartitions(first.release,[r]);expect(published.count).toBe(1);
@@ -65,11 +65,11 @@ it('real isolated confirmation/build/stage/publication/read paths preserve parti
  db.prepare('DELETE FROM home_full_evidence WHERE release_id=? AND source_key=?').run(first.release,openView.history.coverage.sourceRefsKey);expect(store.read(open,first.release)).toEqual(openView);expect(store.evidence(first.release,openView.history.coverage.sourceRefsKey).count).toBe(2);
  const historical=structuredClone(r);historical.contribution.mode='historical';expect(store.read(historical,first.release).contribution.rows).toHaveLength(3);
  // Financial closes include Z despite absent manual business-round confirmation.
- expect(store.read(historical,first.release).contribution.rows.find(row=>row.code==='Z')?.roundCount).toBe(0);
+ expect(store.read(historical,first.release).contribution.rows.find(row=>row.code==='Z')?.roundCount).toBe(1);
  // Direction and current-period finance do not require a confirmed business close.
  expect(view.contribution.rows.find(row=>row.code==='Z')?.realized).toMatchObject({value:null,reasons:expect.arrayContaining([expect.stringMatching(/汇率/)])});
  expect(view.contribution.coverage).toMatchObject({classifiedCount:3,eligibleCount:3,universeComplete:true});
- expect(view.history.coverage.universeComplete).toBe(false);
+ expect(view.history.coverage.universeComplete).toBe(true);
  // Validation memo identity includes every persisted trade's complete raw JSON,
  // regardless of the index/order used to retrieve those immutable members.
  const trade=db.prepare('SELECT trade_set_id,ordinal,trade_json FROM home_holding_trade ORDER BY trade_set_id,ordinal LIMIT 1').get()!;
@@ -125,10 +125,29 @@ it('real isolated confirmation/build/stage/publication/read paths preserve parti
  }
  expect(validateFull(db,first.release)!.modules).toEqual(logical.modules);
  for(const row of compactRows)db.prepare('INSERT OR REPLACE INTO home_full_module VALUES(?,?,?)').run(first.release,row.kind,row.payload_json);db.prepare('UPDATE home_full_release SET manifest_json=? WHERE release_id=?').run(compactManifest,first.release);db.prepare('DELETE FROM home_full_query WHERE release_id=?').run(first.release);
- db.exec("UPDATE executions SET price='11' WHERE id='xb'");const second=buildOnce(path,'2026-01-07T23:00:00Z');expect(second.release).not.toBe(first.release);expect(()=>store.evidence(second.release,view.history.coverage.sourceRefsKey)).toThrow('证据键不存在');expect(store.read(r,first.release).history.coverage.confirmedClosedCount).toBe(2);expect(store.read(r,second.release).history.coverage.confirmedClosedCount).toBe(1);
+ db.exec("UPDATE executions SET price='11' WHERE id='xb'");const second=buildOnce(path,'2026-01-07T23:00:00Z');expect(second.release).not.toBe(first.release);expect(()=>store.evidence(second.release,view.history.coverage.sourceRefsKey)).toThrow('证据键不存在');expect(store.read(r,first.release).history.coverage.confirmedClosedCount).toBe(3);expect(store.read(r,second.release).history.coverage.confirmedClosedCount).toBe(3);const detailTarget={kind:'position' as const,id:store.search(first.release,'Partial').items[0].id,accountScope:['A'],sourceContext:'search' as const};const firstRound=store.detail(first.release,detailTarget).rounds.find(round=>round.closingExecutionIds.includes('xs')),secondRound=store.detail(second.release,detailTarget).rounds.find(round=>round.closingExecutionIds.includes('xs'));expect(secondRound?.net.value).not.toBe(firstRound?.net.value);
  process.stdout.write('FULL_REAL_SAMPLE '+JSON.stringify({first:first.release,second:second.release,confirmed:view.history.coverage.confirmedClosedCount,universeComplete:view.history.coverage.universeComplete,closedSearch:found.items[0].id,openConfirmed:openView.history.coverage.confirmedClosedCount,historyRows:store.read(historical,first.release).contribution.total,buildMs:first.totalMs})+'\n');
  }finally{db.close();rmSync(dir,{recursive:true,force:true});}
 },60000);
+it('publishes one verifiable short close per transaction-table record without a pairing confirmation',()=>{
+ const {dir,path,db}=setup();try{
+  db.exec("INSERT INTO instruments(id,symbol,name,market,currency)VALUES('US:S','S','Short','US','USD')");
+  const add=db.prepare('INSERT INTO executions(id,instrument_id,account,side,executed_at,quantity,price,fee,trade_nature,evidence_json)VALUES(?,?,?,?,?,?,?,?,?,?)');
+  add.run('ss-open','US:S','A','sell','2026-01-02T15:00:00Z','50','103.51','2.30','live',JSON.stringify({source:{platform:'fixture',positionEffect:'open-short'},accountLabel:'A'}));
+  add.run('ss-close','US:S','A','buy','2026-01-03T15:00:00Z','50','102.43','2.19','live',JSON.stringify({source:{platform:'fixture',positionEffect:'close-short'},accountLabel:'A'}));
+  const built=buildOnce(path,'2026-01-04T03:00:00Z'),full=validateFull(db,built.release)!;
+  expect(full.modules.closeRounds).toHaveLength(1);expect(full.modules.closeRounds[0]).toMatchObject({closingExecutionIds:['ss-close'],gross:{currency:'USD',value:'54.00'},net:{currency:'USD',value:'49.51'},category:'short'});
+  const view=new FullHomeStore(db).read(defaultFullRequest('2026-01-04'),built.release);expect(view.history.coverage.confirmedClosedCount).toBe(1);expect(view.history.coverage.unknownNetCount).toBe(0);
+ }finally{db.close();rmSync(dir,{recursive:true,force:true});}
+});
+it('keeps an explicit close with no opening pair as a readable unknown-money round',()=>{
+ const {dir,path,db}=setup();try{
+  db.exec("INSERT INTO instruments(id,symbol,name,market,currency)VALUES('US:U','U','Unpaired','US','USD')");
+  db.prepare('INSERT INTO executions(id,instrument_id,account,side,executed_at,quantity,price,fee,trade_nature,evidence_json)VALUES(?,?,?,?,?,?,?,?,?,?)').run('unpaired-close','US:U','A','sell','2026-01-03T15:00:00Z','5','10','0','live',JSON.stringify({source:{platform:'fixture',positionEffect:'close-long'},accountLabel:'A'}));
+  const built=buildOnce(path,'2026-01-04T03:00:00Z'),full=validateFull(db,built.release)!;
+  expect(full.modules.closeRounds).toHaveLength(1);expect(full.modules.closeRounds[0]).toMatchObject({closingExecutionIds:['unpaired-close'],pairings:[],net:{value:null}});
+ }finally{db.close();rmSync(dir,{recursive:true,force:true});}
+});
 it('rejects a missing full module and requires publication fence',()=>{
  const {dir,db}=setup();try{
  const source=readSourceSnapshot(db,'2026-01-08T03:00:00Z'),pairing=new BusinessPairingStore(db);const core=buildRelease(source,'full-fence');core.full=buildFullRelease(source,core,{inspections:pairing.readFullInspections(source),financial:pairing.readAll(source)});const store=new HomeStore(db);store.stage(core);
@@ -184,13 +203,13 @@ it('publishes financial closes independently of business round confirmation and 
  const add=(id:string,side:string,q:string,p:string,fee:string,day:string)=>db.prepare('INSERT INTO executions(id,instrument_id,account,side,executed_at,quantity,price,fee,trade_nature,evidence_json)VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,'CN-SH:F','A',side,day+'T06:00:00Z',q,p,fee,'live',JSON.stringify({source:{platform:'fixture'},accountLabel:'A'}));
  add('open','buy','100','10','2','2025-12-29');add('partial','sell','40','12','1','2026-01-05');
  const built=buildOnce(path,'2026-02-17T03:00:00Z'),store=new FullHomeStore(db),r=defaultFullRequest('2026-02-17');r.historyRange={fromYear:2026,toYear:2026};
- const v=store.read(r,built.release);expect(v.history.coverage.confirmedClosedCount).toBe(0);expect(v.history.coverage.closedCount).toBeNull();
+ const v=store.read(r,built.release);expect(v.history.coverage.confirmedClosedCount).toBe(1);expect(v.history.coverage.closedCount).toBe(1);expect(v.history.winRate).toBe('100.00');expect(v.core.holdings.rows.find(row=>row.code==='F')?.quantity).toBe('60');
  // 40*(12-10) - 2*(40/100) - 1 = 78.2; entry fee for 60 open shares is excluded.
  const queriesBefore=Number(db.prepare('SELECT count(*) n FROM home_full_query').get()!.n);expect(store.publishFinancialPartitions(built.release,[r]).count).toBe(1);expect(Number(db.prepare('SELECT count(*) n FROM home_full_query').get()!.n)).toBe(queriesBefore);
  db.exec('DELETE FROM home_full_query');expect(store.read(r,built.release).history).toEqual(v.history);
  expect(v.history.net.value).toBe('78.20');expect(v.history.fees.value).toBe('1.80');expect(v.history.buckets[0]).toMatchObject({net:{value:'78.20'},fees:{value:'1.80'},cumulativeNet:{value:'78.20'}});
  expect(v.history.buckets[1].net).toMatchObject({value:null,reasons:['no-closed-transactions']});expect(v.history.buckets[1].cumulativeNet.value).toBe('78.20');
- r.contribution.mode='historical';expect(store.read(r,built.release).contribution.rows[0]).toMatchObject({net:{value:'78.20'},fees:{value:'1.80'},roundCount:0});
+ r.contribution.mode='historical';expect(store.read(r,built.release).contribution.rows[0]).toMatchObject({net:{value:'78.20'},fees:{value:'1.80'},roundCount:1});
  r.historyRange={fromYear:2025,toYear:2026};expect(store.read(r,built.release).history.years[1].net.value).toBe('78.20');
  const full=validateFull(db,built.release)!;
  const legacy=store['objects'](full,new Set(full.modules.catalog.map(c=>c.positionKey)));
@@ -200,14 +219,27 @@ it('publishes financial closes independently of business round confirmation and 
 
  }finally{db.close();rmSync(dir,{recursive:true,force:true});}
 },60000);
-it('rounds financial history only after aggregating securities and computes cumulative directly from native prefixes',()=>{
+it('converts a cross-currency close from native ledger facts and preserves unknown when FX disappears',()=>{
+ const {dir,path,db}=setup();try{
+  db.exec("INSERT INTO instruments(id,symbol,name,market,currency)VALUES('HK:FX','FX','Cross currency','HK','HKD')");
+  const add=(id:string,side:string,q:string,p:string,fee:string,day:string,evidence:object={})=>db.prepare('INSERT INTO executions(id,instrument_id,account,side,executed_at,quantity,price,fee,trade_nature,evidence_json)VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,'HK:FX','A',side,day+'T06:00:00Z',q,p,fee,'live',JSON.stringify({source:{platform:'fixture',...evidence},accountLabel:'A'}));
+  add('fx-open','buy','100','10','0','2026-01-02');add('fx-close','sell','100','59.6','361.06','2026-01-05',{settlement:{currency:'CNY',quantity:'100',grossAmount:'4225.23',netAmount:'3864.17',fees:{commission:'361.06'}}});
+  const snapshot=(rates:Record<string,number>)=>replaceFxSnapshot(db,{version:1,baseCurrency:'CNY',rates:{CNY:1,...rates} as Parameters<typeof replaceFxSnapshot>[1]['rates'],source:{id:'frankfurter-ecb',label:'fixture',url:'https://example.com',attributionUrl:'https://example.com'},rateDate:'2026-01-15',fetchedAt:'2026-01-16T00:00:00Z',lastAttemptedAt:'2026-01-16T00:00:00Z',cacheStatus:'fresh'});
+  snapshot({HKD:0.8518608870967743,USD:7});
+  const first=buildOnce(path,'2026-01-17T03:00:00Z'),store=new FullHomeStore(db),r=defaultFullRequest('2026-01-17');r.historyRange={fromYear:2026,toYear:2026};
+  const known=store.read(r,first.release),knownRound=JSON.parse(String(db.prepare("SELECT payload_json FROM home_full_module WHERE release_id=? AND kind='closeRounds'").get(first.release)!.payload_json)).find((round:{closingExecutionIds:string[]})=>round.closingExecutionIds.includes('fx-close'));expect(known.history.net.value).toBe('3864.17');expect(knownRound.net).toMatchObject({currency:'CNY',value:'3864.17'});expect(knownRound.fees).toEqual(expect.arrayContaining([expect.objectContaining({currency:'CNY',value:'361.06'})]));
+  snapshot({HKD:0.8518608870967743,USD:7});const missingSource=readSourceSnapshot(db,'2026-01-17T03:00:00Z');delete (missingSource.currentFx as Record<string,unknown>).HKD;const missingCore=buildRelease(missingSource,'cross-missing-fx'),missingFull=buildFullRelease(missingSource,missingCore,{inspections:new BusinessPairingStore(db).readFullInspections(missingSource),financial:new BusinessPairingStore(db).readAll(missingSource)}),missingRound=missingFull.modules.closeRounds.find(round=>round.closingExecutionIds.includes('fx-close'))!;
+  expect(missingRound.net.value).toBeNull();expect(missingRound.net.reasons).toEqual(expect.arrayContaining(['HKD/CNY 边界汇率缺失']));
+ }finally{db.close();rmSync(dir,{recursive:true,force:true});}
+},60000);
+it('adds published security cents consistently in history totals, years and cumulative amounts',()=>{
  const {dir,path,db}=setup();try{
  for(const code of ['A','B']){
  db.prepare('INSERT INTO instruments(id,symbol,name,market,currency)VALUES(?,?,?,?,?)').run('CN-SH:'+code,code,code,'CN-SH','CNY');
  for(const [suffix,side,price,day] of [['b','buy','1','2026-01-02'],['s','sell','1.004',code==='A'?'2026-01-05':'2026-02-05']])db.prepare('INSERT INTO executions(id,instrument_id,account,side,executed_at,quantity,price,fee,trade_nature,evidence_json)VALUES(?,?,?,?,?,?,?,?,?,?)').run(code+suffix,'CN-SH:'+code,'A',side,day+'T06:00:00Z','1',price,'0','live',JSON.stringify({source:{platform:'fixture'},accountLabel:'A'}));
  }
  const built=buildOnce(path,'2026-03-17T03:00:00Z'),r=defaultFullRequest('2026-03-17');r.historyRange={fromYear:2026,toYear:2026};const h=new FullHomeStore(db).read(r,built.release).history;
- expect(h.net.value).toBe('0.01');expect(h.buckets[0].net.value).toBe('0.00');expect(h.buckets[1].net.value).toBe('0.00');expect(h.buckets[1].cumulativeNet.value).toBe('0.01');expect(h.years[0].net.value).toBe('0.01');
+ expect(h.net.value).toBe('0.00');expect(h.buckets[0].net.value).toBe('0.00');expect(h.buckets[1].net.value).toBe('0.00');expect(h.buckets[1].cumulativeNet.value).toBe('0.00');expect(h.years[0].net.value).toBe('0.00');
  }finally{db.close();rmSync(dir,{recursive:true,force:true});}
 },60000);
 it('publishes fee-only market membership for daily, ranged and unknown-amount evidence without inferring unassigned markets',()=>{

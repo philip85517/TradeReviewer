@@ -1,3 +1,4 @@
+import { carryGiftAcquisitionEvidence, collectGiftAcquisitionEvidence, giftEventIdentity, isGiftAcquisitionEvidence } from "../trades/gift-acquisition-evidence";
 import Decimal from "decimal.js";
 import {resolvedTradeNatureOf} from "../trades/nature-resolution";
 import {exactDecimalOperation} from "../home/exact-decimal-operations";
@@ -14,6 +15,7 @@ import { bonusShareEvidenceKey, collectBonusShareEvidence, isBonusShareEvidence 
 import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
 
 import {nativeMarketBoundary,nativeExecutionAt,nativeExecutionDay} from './native-boundary';
+import {type SourceFifoCategory, type SourceFifoConsumption, type SourceFifoFacts} from './fifo-source-ledger';
 
 export type PositionLedgerSnapshot = {
   /** With unavailable accuracy, numeric PnL/cost fields are compatibility placeholders. */
@@ -131,6 +133,8 @@ export type NativePositionFacts = {
   closedFeesByCurrency: Record<string,string>;
   realizedByCurrency: Record<string,string>; openFeesByCurrency: Record<string,string> | null;
   lifetimeComplete: boolean; historicalReasons: string[];
+  /** Published only for a fully proven overlapping IPO/ordinary long episode. */
+  sourceFifo?: SourceFifoFacts;
 };
 export function replayPositionAtPrice(input: {
   executions: TradeExecution[];
@@ -191,6 +195,29 @@ export function replayPositionAtPrice(input: {
   const hasVerifiedSplit=!!input.nativeFacts&&!!splitIdentity&&(input.nativeSplits??[]).some(s=>s.instrumentId===canonicalInstrumentId(splitIdentity.symbol,splitIdentity.market));
   let provenStart = false;
   const historicalReasons = new Set<string>();
+  const fifoLots: Array<{sourceKey:string;category:SourceFifoCategory;quantity:Decimal;remaining:Decimal;cashCost:Decimal;at:string}> = [];
+  const fifoConsumptions: SourceFifoConsumption[] = [];
+  const fifoRealized: Record<SourceFifoCategory,Decimal> = {ipo:new D(0),long:new D(0)};
+  const fifoGrossByClosing: Record<string,Decimal> = {};
+  const fifoCostByClosing: Record<string,Decimal> = {};
+  const fifoGrossByClosingCategory: Record<string,Record<SourceFifoCategory,Decimal>> = {};
+  const fifoCostByClosingCategory: Record<string,Record<SourceFifoCategory,Decimal>> = {};
+  const fifoFeeByClosingCategory: Record<string,Record<SourceFifoCategory,Decimal>> = {};
+  const fifoFeesByCategory:Record<SourceFifoCategory,Decimal>={ipo:new D(0),long:new D(0)};
+  const fifoHistoryCategories = new Set<SourceFifoCategory>();
+  const fifoCanonicalCloseIds = new Set<string>();
+  let fifoCategoryUnsupportedFees = false;
+  let fifoInvalid = false;
+  let fifoActivationChecked = false;
+  let fifoActivated = false;
+  let fifoPublishedActive = false;
+  const beginFifoEpisode = () => {
+    // Category facts are cumulative across flat episodes.  Only the working
+    // lots/activation state is reset by recoverFlat; clearing the publication
+    // marker here would erase a proven IPO prefix when a later ordinary
+    // episode starts.
+    return;
+  };
   const allocateFees = (key: string, side: 'buy' | 'sell', size: Decimal, fee: Decimal | null, price?: Decimal, feeCurrency=quoteCurrency) => {
     const closes = side === 'sell' ? quantity.gt(0) : quantity.lt(0);
     const closed = closes ? D.min(quantity.abs(), size) : new D(0);
@@ -220,15 +247,18 @@ export function replayPositionAtPrice(input: {
   let grossCapitalDeployed = new D(0);
   const reasons = new Set<string>();
   const warnings: Array<{ code: "statement-coverage-gap"; from: string; to: string }> = [];
-  const rawEvents = [
+  const attachedEvents = [
     ...(input.evidence ?? []).flatMap(e => e.events),
     ...input.executions.flatMap(e => e.source.positionEvents ?? []),
   ];
+  const rawEvents = carryGiftAcquisitionEvidence(attachedEvents, attachedEvents);
+  const gifts = collectGiftAcquisitionEvidence(rawEvents);
   const bonusEvidence = collectBonusShareEvidence(rawEvents);
   const duplicateBonusKeys = new Set(bonusEvidence.duplicateKeys);
   const events = [...new Map([
     ...bonusEvidence.events,
-    ...rawEvents.filter(event => !isBonusShareEvidence(event)),
+    ...rawEvents.filter(event => !isBonusShareEvidence(event) && !isGiftAcquisitionEvidence(event)),
+    ...gifts.events,
   ].map(event => [`${event.accountId}:${event.id}`, event])).values()];
   // An explicit same-day reversal cancels the quantity evidence, not a sale.
   // Keep cash rows intact: refunds retain their actual recognition dates.
@@ -295,7 +325,7 @@ export function replayPositionAtPrice(input: {
     const at=nativeMonthAt(evidence.month,identity.market);if(at)timeline.push({at,incomplete:evidence.documentId});
   }
   const ambiguousAt=new Set<string>();
-  if(input.nativeFacts){
+  {
     const groups=new Map<string,TradeExecution[]>();
     for(const execution of input.executions){
       // Preserve the pre-existing, verified acquisition-before-session contract.
@@ -310,7 +340,7 @@ export function replayPositionAtPrice(input: {
       // sequence: source order alone must not move a date-only fill into the past.
       const comparable=rows.every(e=>!executionHasExactTime(e))&&documents.size===1&&!documents.has(undefined)&&orders.every(o=>o!==undefined)&&new Set(orders).size===orders.length;
       if(!comparable){
-        const at=nativeMarketBoundary(`${day}T23:59:59.999Z`,rows[0].instrument.market);
+        const at=input.nativeFacts ? nativeMarketBoundary(`${day}T23:59:59.999Z`,rows[0].instrument.market) : `${day}T23:59:59.999Z`;
         const first=rows.map(getExecutionAt).sort()[0];
         for(const boundary of new Set([first,at])){ambiguousAt.add(boundary);timeline.push({at:boundary,ambiguousOrder:true});}
       }
@@ -323,8 +353,9 @@ export function replayPositionAtPrice(input: {
   // Same-day transaction balances belong after their own fill, not after all
   // fills or before all fills. Only durable document/row + explicit source order
   // may interleave date-only rows; a storage array order is not clock evidence.
+  // Recall and ordinary replay use the same source evidence as native facts.
   const ordered=new Map<Entry,{document:string;order:number;after:number}>();
-  if(input.nativeFacts)for(const entry of timeline){
+  for(const entry of timeline){
     const matches=entry.execution?[entry.execution]:entry.position?input.executions.filter(e=>statementPositionMatchesExecution(entry.position!,e)&&getExecutionAt(e)===entry.at):[];
     if(matches.length!==1||ambiguousAt.has(entry.at))continue;
     const execution=matches[0],order=explicitExecutionSourceOrder(execution),document=executionDocumentKey(execution);
@@ -346,6 +377,40 @@ export function replayPositionAtPrice(input: {
     : visibleAt(getExecutionAt(execution));
   const visibleExecutions = input.executions.filter(selectedExecution);
   const actualVisibleExecutions = visibleExecutions.filter(execution => tradeNatureOf(execution) !== "simulation");
+  const executionBackedIpo = (execution: TradeExecution) => (execution.source.positionEvents ?? []).some(event =>
+    event.kind === 'ipo' && event.quantity !== undefined && event.accountId === execution.accountId &&
+    event.symbol && event.market && canonicalInstrumentId(event.symbol, event.market) === canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) &&
+    isExecutionBackedIpoAllocation(event, [execution]));
+  const orderedSourceExecutions = [...actualVisibleExecutions].sort((left, right) =>
+    getExecutionAt(left).localeCompare(getExecutionAt(right)) || left.id.localeCompare(right.id));
+  const hasProvenOrdinaryLongChain = (execution: TradeExecution) => {
+    const start = orderedSourceExecutions.findIndex(item => item.id === execution.id);
+    if (start < 0 || execution.side !== 'buy' || executionBackedIpo(execution)) return false;
+    // Event-only allotments are inventory too, even though they have no
+    // execution row to participate in the execution chain.  Seed the proof
+    // with those visible, non-backed IPO quantities so a later ordinary buy
+    // is not rejected merely because FIFO consumed the event lot first.
+    let balance = visibleEvents
+      .filter(event => event.kind === 'ipo' && event.quantity !== undefined &&
+        event.accountId === execution.accountId && event.symbol && event.market &&
+        canonicalInstrumentId(event.symbol, event.market) === canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) &&
+        !isExecutionBackedIpoAllocation(event, actualVisibleExecutions))
+      .reduce((sum, event) => sum.plus(new D(event.quantity!)), new D(0));
+    // Validate the complete visible inventory chain, not an isolated
+    // ordinary-only suffix.  A prior IPO buy is real inventory and must seed
+    // the balance; excluding it makes a later ordinary lot appear to be an
+    // over-close when FIFO legitimately consumes the IPO lot first.
+    for (let i = 0; i < orderedSourceExecutions.length; i++) {
+      const item = orderedSourceExecutions[i], size = new D(item.quantity).abs(), effect = item.source.positionEffect;
+      if (!size.gt(0) || (effect && effect !== (item.side === 'buy' ? 'open-long' : 'close-long'))) return false;
+      balance = item.side === 'buy' ? balance.plus(size) : balance.minus(size);
+      if (balance.lt(0)) return false;
+    }
+    // A visible, internally consistent positive remainder is already a
+    // proven ordinary long chain.  Requiring a later flat close made a new
+    // ordinary opening disappear from the category facts at its first cursor.
+    return orderedSourceExecutions.slice(start).some(item => item.id === execution.id) && balance.gte(0);
+  };
   const executionMatchesPosition = (execution: TradeExecution, position: StatementPosition) =>
     tradeNatureOf(execution) !== "simulation" &&
     execution.accountId === position.accountId &&
@@ -371,6 +436,11 @@ export function replayPositionAtPrice(input: {
     if(quantityPrecisionTainted)return;
     precisionTainted = false;
     splitEstimates.clear();splitCostBasis=false;
+    fifoPublishedActive = fifoPublishedActive || fifoActivated;
+    fifoLots.length = 0;
+    fifoActivationChecked = false;
+    fifoActivated = false;
+    fifoInvalid = false;
     for (const reason of reasons) historicalReasons.add(reason);
     reasons.clear(); averageCost = new D(0); openFees = new D(0); feePoolKnown = true;
     for(const currency of Object.keys(feePools))delete feePools[currency];
@@ -522,6 +592,24 @@ export function replayPositionAtPrice(input: {
         reasons.add("position-event");
         hasHistory = true;
         continue;
+      } else if (isGiftAcquisitionEvidence(event)) {
+        pendingTransfers.delete(`${event.accountId}:${event.id}`);
+        const currency = input.inventoryIdentity?.currency ?? actualVisibleExecutions.find(e => e.accountId === event.accountId && e.instrument.market === event.market && canonicalInstrumentId(e.instrument.symbol,e.instrument.market) === canonicalInstrumentId(event.symbol!,event.market!))?.instrument.currency;
+        if (currency?.trim().toUpperCase() !== event.giftAcquisition!.currency) reasons.add("currency-conflict");
+        if (gifts.duplicateKeys.includes(giftEventIdentity(event))) reasons.add("duplicate-position-event");
+        if (sameDayExecution || sameMonthExecution) reasons.add("ambiguous-event-order");
+        if (quantity.isNegative()) reasons.add("unknown-cost");
+        const knownGift = !quantityUncertain && !pendingTransfers.size && !reasons.size && !historicalReasons.size && quantity.gte(0);
+        if (knownGift && !hasHistory && quantity.isZero()) provenStart = true;
+        if (input.nativeFacts && knownGift) {
+          beginFifoEpisode();
+          fifoHistoryCategories.add('long');
+          const size = new D(event.quantity!);
+          fifoLots.push({sourceKey:`event:${event.accountId}:${event.id}`,category:'long',quantity:size,remaining:size,cashCost:new D(0),at:getEventAt(event)});
+        }
+        const next = quantity.plus(event.quantity!);
+        averageCost = next.isZero() ? new D(0) : averageCost.mul(quantity).div(next);
+        quantity = next;
       } else if (event.kind === "transfer-in" || event.kind === "transfer-out") {
         const sameDay = event.date.length === 10 && actualVisibleExecutions.some(e => e.accountId === event.accountId && e.instrument.symbol === event.symbol && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date);
         pendingTransfers.delete(`${event.accountId}:${event.id}`);
@@ -557,7 +645,19 @@ export function replayPositionAtPrice(input: {
           reasons.add("unknown-cost");
         }
         allocateFees(`event:${event.accountId}:${event.id}`, 'buy', size, cost ? new D(cost.feeCost) : null, allocationCost);
-        if (cost) fees = fees.plus(cost.feeCost);
+        if (cost) {
+          fees = fees.plus(cost.feeCost);
+          if (input.nativeFacts) {
+            beginFifoEpisode();
+            fifoHistoryCategories.add('ipo');
+            fifoLots.push({
+              sourceKey:`event:${event.accountId}:${event.id}`,
+              category:'ipo', quantity:size, remaining:size,
+              cashCost:new D(cost.cashCost), at:getEventAt(event),
+            });
+            fifoFeesByCategory.ipo = fifoFeesByCategory.ipo.plus(new D(cost.feeCost));
+          }
+        }
         if (quantity.gte(0)) {
           const newQuantity = quantity.plus(size);
           if (allocationCost) {
@@ -625,6 +725,39 @@ export function replayPositionAtPrice(input: {
     const price = settlement && settlement.currency === execution.instrument.currency
       ? new D(settlement.grossAmount).div(settlement.quantity)
       : new D(execution.price);
+    if (input.nativeFacts && execution.side === 'buy' && execution.source.positionEffect !== 'close-short') {
+      const ipoEvent = executionBackedIpo(execution);
+      const category = ipoEvent ? 'ipo' : execution.source.positionEffect === 'open-long' || hasProvenOrdinaryLongChain(execution) ? 'long' : undefined;
+      if (category) {
+        if (executionFeeCurrency(execution) !== quoteCurrency) fifoCategoryUnsupportedFees = true;
+        beginFifoEpisode();
+        fifoHistoryCategories.add(category);
+        fifoLots.push({sourceKey:`execution:${execution.id}`,category,quantity:size,remaining:size,cashCost:price.mul(size),at:getExecutionAt(execution)});
+        if (execution.source.feeStatus!=='unknown') fifoFeesByCategory[category]=fifoFeesByCategory[category].plus(new D(execution.fee||0));
+      }
+    } else if (input.nativeFacts && execution.side === 'sell' && quantity.gt(0)) {
+      if (executionFeeCurrency(execution) !== quoteCurrency) fifoCategoryUnsupportedFees = true;
+      let remaining = D.min(quantity,size);
+      for (const lot of fifoLots) {
+        if (remaining.isZero()) break;
+        if (lot.remaining.isZero()) continue;
+        const consumed=D.min(remaining,lot.remaining),cashCost=lot.cashCost.mul(consumed).div(lot.quantity);
+        fifoConsumptions.push({closingId:execution.id,openingSourceKey:lot.sourceKey,category:lot.category,quantity:consumed.toFixed(),cashCost:cashCost.toFixed()});
+        fifoRealized[lot.category]=fifoRealized[lot.category].plus(price.mul(consumed).minus(cashCost));
+        fifoGrossByClosing[execution.id]=(fifoGrossByClosing[execution.id]??new D(0)).plus(price.mul(consumed));
+        fifoCostByClosing[execution.id]=(fifoCostByClosing[execution.id]??new D(0)).plus(cashCost);
+        (fifoGrossByClosingCategory[execution.id]??={ipo:new D(0),long:new D(0)})[lot.category]=(fifoGrossByClosingCategory[execution.id][lot.category]??new D(0)).plus(price.mul(consumed));
+        (fifoCostByClosingCategory[execution.id]??={ipo:new D(0),long:new D(0)})[lot.category]=(fifoCostByClosingCategory[execution.id][lot.category]??new D(0)).plus(cashCost);
+        lot.remaining=lot.remaining.minus(consumed);remaining=remaining.minus(consumed);
+      }
+      if (!remaining.isZero()) fifoInvalid=true;
+      if (fifoActivated) fifoCanonicalCloseIds.add(execution.id);
+      if (!fifoInvalid && execution.source.feeStatus!=='unknown' && size.gt(0)) for(const item of fifoConsumptions.filter(item=>item.closingId===execution.id)) {
+        const fee=new D(execution.fee||0).mul(item.quantity).div(size);
+        fifoFeesByCategory[item.category]=fifoFeesByCategory[item.category].plus(fee);
+        (fifoFeeByClosingCategory[execution.id]??={ipo:new D(0),long:new D(0)})[item.category]=(fifoFeeByClosingCategory[execution.id][item.category]??new D(0)).plus(fee);
+      }
+    }
     if(certify && (resolvedTradeNatureOf(execution)!=='live'||execution.source.positionEvents?.length||execution.source.statementPositions?.length||execution.source.openingPosition||settlement&&settlement.currency!==execution.instrument.currency||execution.instrument.currency!==quoteCurrency)) reasons.add('unsupported-gross-source');
     if(certify && settlement && settlement.currency === execution.instrument.currency) exact('divide',new D(settlement.grossAmount),new D(settlement.quantity),price);
     if (input.nativeFacts && execution.side === 'sell' && size.gt(D.max(quantity, 0)) && execution.source.positionEffect !== 'open-short') {
@@ -691,9 +824,82 @@ export function replayPositionAtPrice(input: {
       }
       if (quantity.isZero()) averageCost = new D(0);
     }
+    if (input.nativeFacts && !fifoActivationChecked && new Set(fifoLots.map(lot=>lot.category)).size===2) {
+      const fifoCost=fifoLots.reduce((sum,lot)=>sum.plus(lot.cashCost.mul(lot.remaining).div(lot.quantity)),new D(0));
+      const nativeCost=averageCost.mul(quantity);
+      fifoActivationChecked=true;
+      if (fifoCost.minus(nativeCost).abs().gt('0.00000000000000000001')) { fifoInvalid=true; reasons.add('mixed-source-cost-conflict'); }
+      else {
+        fifoActivated=true;
+        for (const item of fifoConsumptions) fifoCanonicalCloseIds.add(item.closingId);
+      }
+    }
     recoverFlat();
   }
 
+  const fifoCategories = new Set<SourceFifoCategory>([...fifoHistoryCategories, ...fifoLots.map(lot => lot.category)]);
+  const fifoRemainingByCategory={ipo:fifoLots.filter(lot=>lot.category==='ipo').reduce((n,lot)=>n.plus(lot.remaining),new D(0)),long:fifoLots.filter(lot=>lot.category==='long').reduce((n,lot)=>n.plus(lot.remaining),new D(0))};
+  const fifoRemainingCashByCategory={ipo:fifoLots.filter(lot=>lot.category==='ipo').reduce((n,lot)=>n.plus(lot.cashCost.mul(lot.remaining).div(lot.quantity)),new D(0)),long:fifoLots.filter(lot=>lot.category==='long').reduce((n,lot)=>n.plus(lot.cashCost.mul(lot.remaining).div(lot.quantity)),new D(0))};
+  const fifoClosingQuantities:Record<string,Decimal>={};
+  for(const item of fifoConsumptions)fifoClosingQuantities[item.closingId]=(fifoClosingQuantities[item.closingId]??new D(0)).plus(item.quantity);
+  const fifoClosedFeesByCategory={ipo:new D(0),long:new D(0)};
+  for(const item of fifoConsumptions){const fee=closedFeeContributions[`execution:${item.closingId}:${quoteCurrency}`]?.amount,total=fifoClosingQuantities[item.closingId];if(fee&&total?.gt(0))fifoClosedFeesByCategory[item.category]=fifoClosedFeesByCategory[item.category].plus(new D(fee).mul(item.quantity).div(total));}
+  const fifoOpenFee=new D(feePools[quoteCurrency]??0),fifoRemainingTotal=fifoRemainingByCategory.ipo.plus(fifoRemainingByCategory.long);
+  const fifoOpenFeesByCategory={ipo:fifoRemainingTotal.gt(0)?fifoOpenFee.mul(fifoRemainingByCategory.ipo).div(fifoRemainingTotal):new D(0),long:fifoRemainingTotal.gt(0)?fifoOpenFee.mul(fifoRemainingByCategory.long).div(fifoRemainingTotal):new D(0)};
+  const fifoShadowNet=fifoRealized.ipo.plus(fifoRealized.long).minus(fifoClosedFeesByCategory.ipo).minus(fifoClosedFeesByCategory.long);
+  const singleCategoryConsistent=fifoCategories.size===1 && fifoShadowNet.minus(knownRealized).abs().lte('0.00000000000000000001') &&
+    (quantity.isZero() || fifoRemainingCashByCategory.ipo.plus(fifoRemainingCashByCategory.long).minus(averageCost.mul(quantity)).abs().lte('0.00000000000000000001'));
+  const mixedPreActivationConsistent=fifoCategories.size===2 && fifoCanonicalCloseIds.size===0 && fifoRemainingCashByCategory.ipo.plus(fifoRemainingCashByCategory.long).minus(averageCost.mul(quantity)).abs().lte('0.00000000000000000001');
+  const categoryRealized:Record<SourceFifoCategory,Decimal>={ipo:new D(0),long:new D(0)};
+  for(const [closingId,items] of Object.entries(Object.groupBy(fifoConsumptions,item=>item.closingId))){
+    if (!items) continue;
+    const total=items.reduce((sum,item)=>sum.plus(item.quantity),new D(0));
+    const known=realizedContributions[`execution:${closingId}:${quoteCurrency}`]?.amount;
+    for(const category of ['ipo','long'] as const){
+      const quantityPart=items.filter(item=>item.category===category).reduce((sum,item)=>sum.plus(item.quantity),new D(0));
+      if(quantityPart.isZero())continue;
+      if(fifoCanonicalCloseIds.has(closingId)) {
+        const totalClosedFee=closedFeeContributions[`execution:${closingId}:${quoteCurrency}`]?.amount;
+        const allocatedFee=totalClosedFee!==undefined&&totalClosedFee!==null&&total.gt(0)?new D(totalClosedFee).mul(quantityPart).div(total):new D(0);
+        categoryRealized[category]=categoryRealized[category].plus((fifoGrossByClosingCategory[closingId]?.[category]??new D(0)).minus(fifoCostByClosingCategory[closingId]?.[category]??0).minus(allocatedFee));
+      }
+      else if(known!==undefined&&known!==null&&total.gt(0)) categoryRealized[category]=categoryRealized[category].plus(new D(known).mul(quantityPart).div(total));
+    }
+  }
+  const categoryRemainingCash = (fifoActivated || mixedPreActivationConsistent)
+    ? fifoRemainingCashByCategory
+    : {ipo:quantity.gt(0)&&fifoRemainingByCategory.ipo.gt(0)?averageCost.mul(quantity).mul(fifoRemainingByCategory.ipo).div(fifoRemainingTotal):new D(0),long:quantity.gt(0)&&fifoRemainingByCategory.long.gt(0)?averageCost.mul(quantity).mul(fifoRemainingByCategory.long).div(fifoRemainingTotal):new D(0)};
+  const sourceFifo: SourceFifoFacts | undefined = input.nativeFacts && !fifoInvalid && !fifoCategoryUnsupportedFees && fifoCategories.size>0 && (fifoCanonicalCloseIds.size>0 || singleCategoryConsistent || mixedPreActivationConsistent) && !quantityUncertain && !pendingTransfers.size && !reasons.size && !historicalReasons.size && realizedMissing===0 && feesMissing===0
+    ? {
+      version:1,activated:fifoActivated,consumptions:fifoConsumptions,
+      remaining:fifoLots.filter(lot=>!lot.remaining.isZero()).map(lot=>({sourceKey:lot.sourceKey,category:lot.category,quantity:lot.remaining.toFixed(),cashCost:lot.cashCost.mul(lot.remaining).div(lot.quantity).toFixed()})),
+      realizedByCategory:{ipo:categoryRealized.ipo.toFixed(),long:categoryRealized.long.toFixed()},
+      closedFeesByCategory:{ipo:fifoClosedFeesByCategory.ipo.toFixed(),long:fifoClosedFeesByCategory.long.toFixed()},
+      feesByCategory:{ipo:fifoFeesByCategory.ipo.toFixed(),long:fifoFeesByCategory.long.toFixed()},
+      openFeesByCategory:{ipo:fifoOpenFeesByCategory.ipo.toFixed(),long:fifoOpenFeesByCategory.long.toFixed()},
+      remainingCashCostByCategory:{ipo:categoryRemainingCash.ipo.toFixed(),long:categoryRemainingCash.long.toFixed()},
+      remainingByCategory:{ipo:fifoRemainingByCategory.ipo.toFixed(),long:fifoRemainingByCategory.long.toFixed()},
+    }
+    : undefined;
+  if (fifoCanonicalCloseIds.size) {
+    // Apply only the closes proven after the mixed-source cost check.  The
+    // legacy MA prefix and any later pure episode remain untouched.
+    for (const closingId of fifoCanonicalCloseIds) {
+      const key=`execution:${closingId}:${quoteCurrency}`;
+      const fee=closedFeeContributions[key]?.amount;
+      const fifoNet=(fifoGrossByClosing[closingId]??new D(0)).minus(fifoCostByClosing[closingId]??0).minus(fee??'0');
+      const previous=realizedContributions[key]?.amount;
+      if (previous!==undefined && previous!==null && fee!==undefined && fee!==null) {
+        const delta=fifoNet.minus(previous);
+        realizedPnl=realizedPnl.plus(delta);
+        knownRealized=knownRealized.plus(delta);
+        realizedContributions[key]={currency:quoteCurrency,amount:fifoNet.toFixed()};
+      }
+    }
+    realizedByCurrency[quoteCurrency]=knownRealized.toFixed();
+    const remainingCash=fifoLots.reduce((sum,lot)=>sum.plus(lot.cashCost.mul(lot.remaining).div(lot.quantity)),new D(0));
+    if (fifoActivated && quantity.gt(0)) averageCost=remainingCash.div(quantity);
+  }
   const markPrice = new D(input.markPrice);
   const unrealizedPnl = quantity.isPositive()
     ? markPrice.minus(averageCost).mul(quantity)
@@ -721,6 +927,7 @@ export function replayPositionAtPrice(input: {
       reasons: [...reasons], closedCount, knownRealized: knownRealized.toFixed(), realizedMissing, feesMissing, realizedContributions, realizedByCurrency, closedFeeContributions, closedFeesByCurrency,
       openFeesByCurrency:feesKnown?Object.fromEntries(Object.entries(feePools).map(([c,v])=>[c,v.toFixed()])):null,
       historicalReasons: [...historicalReasons], lifetimeComplete: (!hasHistory || provenStart) && historicalReasons.size === 0 && reasons.size === 0 && realizedMissing === 0 && feesMissing === 0,
+      ...(sourceFifo ? {sourceFifo} : {}),
     });
   }
   return {

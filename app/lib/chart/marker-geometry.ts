@@ -45,13 +45,13 @@ export type MarkerDisplayGeometry = {
 
 /**
  * Price-axis labels are centered on the plot boundary and can extend into the
- * pane. Reserve half of the measured axis width for marker text without
- * moving the marker's time/price anchor.
+ * pane. Reserve the measured axis width as a conservative keep-out for both
+ * diamonds and action text. The source time/price anchor remains unchanged.
  */
 export function markerRightLabelBoundary(plotWidth: number, priceScaleWidth?: number) {
   if (!Number.isFinite(plotWidth)) return undefined;
   if (!Number.isFinite(priceScaleWidth) || (priceScaleWidth as number) <= 0) return plotWidth;
-  return Math.max(0, plotWidth - (priceScaleWidth as number) / 2);
+  return Math.max(0, plotWidth - (priceScaleWidth as number));
 }
 
 /**
@@ -69,6 +69,7 @@ export function markerDisplayGeometry(input: {
   offsetX?: number;
   offsetY?: number;
   maxX?: number;
+  rightLabelBoundaryX?: number;
   radius?: number;
 }): MarkerDisplayGeometry {
   const radius = input.radius ?? 6;
@@ -76,10 +77,13 @@ export function markerDisplayGeometry(input: {
   const canClampToPane = Number.isFinite(input.maxX) &&
     input.anchorX >= 0 &&
     input.anchorX <= (input.maxX as number);
+  const displayRight = Number.isFinite(input.rightLabelBoundaryX)
+    ? Math.min(input.maxX ?? Infinity, input.rightLabelBoundaryX as number)
+    : input.maxX;
   const x = canClampToPane
     ? Math.min(
         Math.max(radius, translatedX),
-        Math.max(radius, (input.maxX as number) - radius),
+        Math.max(radius, (displayRight as number) - radius),
       )
     : translatedX;
   const y = input.anchorY + (input.position === "aboveBar" ? -10 : 10) + (input.offsetY ?? 0);

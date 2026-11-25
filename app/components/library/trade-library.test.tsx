@@ -124,6 +124,7 @@ function setup(
     sharedScope?: SharedScope;
     onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
     roomFxSnapshot?: RoomFxSnapshot | null;
+    sharedAccountOptions?: { id: string; label: string }[];
     initialBrowseState?: Partial<import("./library-browse-state").TradeLibraryBrowseState>;
   } = {},
 ) {
@@ -211,6 +212,7 @@ function setup(
     sharedScope: options.sharedScope,
     onSharedScopeChange: options.onSharedScopeChange,
     roomFxSnapshot: options.roomFxSnapshot,
+    sharedAccountOptions: options.sharedAccountOptions,
     initialBrowseState: options.initialBrowseState
       ? normalizeTradeLibraryBrowseState(options.initialBrowseState)
       : undefined,
@@ -449,7 +451,8 @@ describe("TradeLibrary", () => {
 
     expect(screen.getByRole("combobox", { name: "共享模拟运行" })).toHaveValue("");
     expect(screen.getByText(/请选择模拟运行后查看交易库/)).toBeInTheDocument();
-    expect(screen.getByRole("banner", { name: "交易库页面头部" })).toHaveTextContent("0 个标的 · 0 个回合");
+    expect(screen.getByRole("banner", { name: "交易库页面头部" })).toHaveTextContent("交易库");
+    expect(screen.getByText("0 个标的 · 0 个回合")).toBeInTheDocument();
   });
 
   it("keeps workspace simulation run choices available after selecting one run", () => {
@@ -1349,4 +1352,46 @@ it("treats canonical source runs as one sortable account in the library caller",
   await user.selectOptions(sort, "net-profit");
   expect(sort).toHaveValue("net-profit");
   expect(screen.queryByText(/绩效排序不可用/)).not.toBeInTheDocument();
+});
+
+it("converts trusted open episode detail PnL with the shared FX snapshot", () => {
+  setup({ openDetail: true, sharedScope: { nature: "live", accountIds: [], reportCurrency: "CNY", simulationRunId: null }, roomFxSnapshot: { id: "fx", baseCurrency: "CNY", asOf: "2026-01-01", source: "BOC", status: "complete", rates: { "USD/CNY": "7" } } });
+  expect(screen.getByText(/¥693\.00/)).toBeInTheDocument();
+});
+
+it("keeps open episode converted PnL unknown without FX", () => {
+  setup({ openDetail: true, sharedScope: { nature: "live", accountIds: [], reportCurrency: "CNY", simulationRunId: null } });
+  expect(screen.getByText("数据待补齐")).toBeInTheDocument();
+});
+
+it("shows trusted open episode PnL in original currency without FX", () => {
+  setup({ openDetail: true, sharedScope: { nature: "live", accountIds: [], reportCurrency: "original", simulationRunId: null } });
+  expect(screen.getAllByText(/\+US\$99\.00/).length).toBeGreaterThan(1);
+});
+
+it("opens and closes mobile browse filters while keeping the review action", async () => {
+  cleanup();
+  const user = userEvent.setup();
+  setup();
+  const toggle = screen.getByRole("button", { name: /^筛选/ });
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(screen.getByRole("button", { name: /开始复盘/ })).toBeInTheDocument();
+  await user.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("combobox", { name: "按市场筛选" })).toBeInTheDocument();
+  await user.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+});
+
+
+it("summarizes a complete explicit account scope without hiding partial selections", () => {
+  cleanup();
+  const options = [{ id: "acct-main", label: "主账户" }, { id: "acct-hk", label: "港股账户" }];
+  setup({ sharedAccountOptions: options, sharedScope: { nature: "live", accountIds: options.map(item => item.id), reportCurrency: "original", simulationRunId: null } });
+  expect(screen.getByText("全部实盘账户")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /移除账户/ })).not.toBeInTheDocument();
+  cleanup();
+  setup({ sharedAccountOptions: options, sharedScope: { nature: "live", accountIds: ["acct-main"], reportCurrency: "original", simulationRunId: null } });
+  expect(screen.queryByText("全部实盘账户")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /移除账户：主账户/ })).toBeInTheDocument();
 });

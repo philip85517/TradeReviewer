@@ -182,7 +182,7 @@ describe("buildTradeLibraryEntries", () => {
     expect(entry.returnPercent).toBeNull();
   });
 
-  it("does not mark an open episode with pre-trade or partial candles", () => {
+  it("rejects pre-trade marks but values valid closes independently of coverage", () => {
     const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "a", "buy", "2025-01-10T14:30:00Z", "100", "10"),
     ]);
@@ -199,10 +199,10 @@ describe("buildTradeLibraryEntries", () => {
     );
 
     expect(stale.netPnl).toBeNull();
-    expect(partial.netPnl).toBeNull();
+    expect(partial.netPnl).toBe("1200");
   });
 
-  it("projects the latest quote without changing financial metrics", () => {
+  it("projects a valid local quote and values holdings with partial coverage", () => {
     const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
     ]);
@@ -220,10 +220,10 @@ describe("buildTradeLibraryEntries", () => {
       provider: "tencent",
       status: "partial",
     });
-    expect(entry.netPnl).toBeNull();
+    expect(entry.netPnl).toBe("1200");
   });
 
-  it("requires a complete mark on or after the latest add-on trading day", () => {
+  it("requires a valid mark on or after the latest add-on trading day", () => {
     const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "a", "buy", "2025-01-10T14:30:00Z", "100", "10"),
       fill(xpev, "a", "buy", "2025-01-13T14:30:00Z", "100", "12"),
@@ -250,6 +250,42 @@ describe("buildTradeLibraryEntries", () => {
     );
 
     expect(entry.netPnl).toBe("200");
+  });
+
+  it("values the approved current holdings examples without relaxing cost trust", () => {
+    const ganli: Instrument = { id: "CN-SH:603087", symbol: "603087", name: "甘李药业", market: "CN-SH", currency: "CNY" };
+    const sndk: Instrument = { ...xpev, id: "US:SNDK", symbol: "SNDK" };
+    const executions = [
+      fill(ganli, "a", "buy", "2026-08-27T07:00:00Z", "300", "71.28"),
+      fill(sndk, "a", "buy", "2026-08-12T18:14:39Z", "2", "1363"),
+      fill(sndk, "a", "sell", "2026-08-17T14:00:00Z", "1", "1789.63"),
+    ];
+    const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {
+      [ganli.id]: [{ ...candle(ganli.id, "2026-11-20", "60.860"), currency: "CNY" }],
+      [sndk.id]: [candle(sndk.id, "2026-11-20", "79.240")],
+    }, { [ganli.id]: "latest-available", [sndk.id]: "partial" });
+    expect(entries.find(entry => entry.instrument.id === ganli.id)?.episodes[0].metrics.unrealizedPnl).toBe("-3126");
+    const projected = entries.find(entry => entry.instrument.id === sndk.id)!;
+    expect(projected.episodes[0].metrics.unrealizedPnl).toBe("-729.08");
+    expect(projected.episodes[0].valuationNote).toContain("拆股推算");
+    expect(projected.executions).toEqual(executions.filter(fill => fill.instrument.id === sndk.id));
+    executions[0].source.feeStatus = "unknown";
+    expect(buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {
+      [ganli.id]: [{ ...candle(ganli.id, "2026-11-20", "60.860"), currency: "CNY" }],
+    }, {}) .find(entry => entry.instrument.id === ganli.id)?.episodes[0].metrics.unrealizedPnl).toBeNull();
+  });
+
+  it("rejects invalid local closes and mixed split-unit executions", () => {
+    const sndk: Instrument = { ...xpev, id: "US:SNDK", symbol: "SNDK" };
+    const mixed = buildInstrumentTradeSummaries([
+      fill(sndk, "a", "buy", "2026-08-12T18:00:00Z", "2", "1363"),
+      fill(sndk, "a", "buy", "2026-11-20T15:00:00Z", "1", "79.24"),
+    ]);
+    expect(buildTradeLibraryEntries(mixed, { [sndk.id]: [candle(sndk.id, "2026-11-20", "79.24")] }, {})[0].netPnl).toBeNull();
+    const summaries = buildInstrumentTradeSummaries([fill(xpev, "a", "buy", "2025-01-10T14:30:00Z", "100", "10")]);
+    for (const price of ["0", "-1", "NaN", "Infinity", "invalid"]) {
+      expect(buildTradeLibraryEntries(summaries, { [xpev.id]: [candle(xpev.id, "2025-01-11", price)] }, {})[0].netPnl).toBeNull();
+    }
   });
 
   it("projects confirmed review status, tags, and exact R by episode id", () => {

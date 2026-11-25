@@ -56,3 +56,8 @@ describe("marker timeline geometry", () => {
     }).x).toBe(158);
   });
 });
+
+it("reserves the full price-label strip without pulling offscreen facts into view", () => {
+  expect(markerDisplayGeometry({ anchorX: 390, anchorY: 200, position: "aboveBar", maxX: 400, rightLabelBoundaryX: 320 })).toEqual({ x: 314, y: 190, radius: 6 });
+  expect(markerDisplayGeometry({ anchorX: 420, anchorY: 200, position: "aboveBar", maxX: 400, rightLabelBoundaryX: 320 }).x).toBe(420);
+});

@@ -1,0 +1,11 @@
+{
+  "branch": "codex/homepage-performance-data-optimization",
+  "head": "3eb5813b7469f828339b9555194f3e98cd84d707",
+  "files": {
+    "app/components/homepage-preview/full-history.tsx": "6eca37a3fc8a437550d7c75d397b6bd4d3f4386874b7c96664f5595f2466f113",
+    "app/components/homepage-preview/complete-mock/history.css": "cf44ee74eb222e2d915ff387467caf5d2c0ac95e85ea7fc9f1df252de8eed3cd",
+    "app/components/homepage-preview/full-cutover.test.tsx": "757b56bbadda98b9896d47130d4b207811744b9f6fd6882ce334c8e9b673e0fc",
+    "docs/design-system/baselines/2026-10-22-homepage-v2.5/source/visual-design.candidate.md": "727981ebbb4a7feac53437df0b973630523f51fb7e14644990a3a84439410406"
+  },
+  "archiveNote": "Historical source fingerprints copied without recalculation. Documentation archival may change current specification fingerprints. This archival is not renewed acceptance."
+}

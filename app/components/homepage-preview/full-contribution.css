@@ -4,11 +4,20 @@
 .hp-full-contrib-market select{appearance:none;position:relative;z-index:1;width:120px;height:36px;border:0;background:transparent;color:#e6edf7;padding:0 30px 0 14px;font-size:14px;cursor:pointer;outline-offset:1px}
 .hp-full-contrib-market option{color:#e6edf7;background:#162233}
 .hp-full-contrib-market svg{position:absolute;right:14px;top:10px;color:#a8b6cb;pointer-events:none}
-/* Both approved desktop SVGs anchor label x712 / select x760 to panel x0.
-   The toolbar starts at panel x32: label offset680, select another48. */
-@media(min-width:1280px){
- .hp-contrib-controls:has(>.hp-full-contrib-market){position:relative}
- .hp-contrib-scope.hp-full-contrib-market{position:absolute;left:680px;bottom:0;margin-left:0;min-width:168px}
- .hp-full-contrib-market>span:last-child{margin-left:48px}
-}
+/* Approved panel anchors: label x712 / select x760, toolbar starts at x32.
+   An 848px flow toolbar leaves the final 168px group at offset680. It shrinks
+   with the available panel width; no viewport breakpoint changes positioning. */
+.hp-contrib-controls:has(>.hp-full-contrib-market){width:min(100%,848px);flex-wrap:wrap}
+.hp-contrib-scope.hp-full-contrib-market{margin-left:auto;min-width:168px;flex:none}
+.hp-full-contrib-market>span:last-child{margin-left:48px}
 @media(pointer:coarse){.hp-full-contrib-market>span:last-child,.hp-full-contrib-market select{min-height:44px}.hp-full-contrib-market svg{top:14px}}
+.hp-subtotal-label{font-size:12px;font-weight:600;color:#f3c969;letter-spacing:.02em}
+.hp-contrib-feedback{min-height:36px;height:auto;overflow-wrap:anywhere}
+/* Four labels retain the approved desktop toolbar anchors. */
+.hp-contrib-category{min-width:264px;flex:none}
+.hp-contribution .hp-contrib-category button{min-width:60px;flex:1}
+@media(max-width:1100px){.hp-contrib-controls{flex-wrap:wrap}}
+@media(max-width:600px){
+  .hp-contribution .hp-contrib-heading{flex-direction:column;gap:8px}
+  .hp-contribution .hp-contrib-heading>strong{white-space:normal;overflow-wrap:anywhere}
+}

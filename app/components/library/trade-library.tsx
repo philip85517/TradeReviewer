@@ -1,5 +1,7 @@
 "use client";
 
+import Decimal from "decimal.js";
+
 import {
   ArrowLeft,
   BarChart3,
@@ -50,6 +52,7 @@ import {
 import { sortLibraryItems } from "../../lib/reviews/library-sorting";
 import {
   canSortLibraryPerformance,
+  fxConversion,
   summarizeLibraryPerformance,
   type LibraryFxSnapshot,
   type LibraryPerformanceSummary,
@@ -86,7 +89,6 @@ import type { SharedScope } from "../../lib/reviews/shared-scope";
 import { pendingFinalCloseDate } from "../../lib/reviews/trading-room-pending";
 import type { RoomFxSnapshot, TradingRoomMetadataInput } from "../../lib/reviews/trading-room-scope";
 import { LibraryScopeControls } from "./library-scope-controls";
-import { UnifiedPageHeader } from "../workspace/unified-page-header";
 import "./trade-library.css";
 
 export type { TradeLibraryBrowseState } from "./library-browse-state";
@@ -119,6 +121,7 @@ type Props = {
   /** Workspace-wide simulation runs for the current nature/account scope. */
   sharedSimulationRunOptions?: readonly { id: string; label: string }[];
   /** Existing workspace-owned search/notification/user tools. */
+  sourceBar?: ReactNode;
   globalTools?: ReactNode;
   /** Search-only global slot aligned with the shared scope inputs. */
   globalSearch?: ReactNode;
@@ -385,6 +388,7 @@ export function TradeLibrary({
   onSharedScopeChange,
   sharedAccountOptions,
   sharedSimulationRunOptions,
+  sourceBar,
   globalTools,
   globalSearch,
   instrumentMetadata,
@@ -444,6 +448,7 @@ export function TradeLibrary({
   };
   const [queueNotice, setQueueNotice] = useState("");
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [fxSnapshot, setFxSnapshot] = useState<FxSnapshot | null>(null);
   const processedIds = useRef(new Set<string>());
   const reopenedIds = useRef(new Set<string>());
@@ -518,8 +523,11 @@ export function TradeLibrary({
     [entries,scopeFilterEntries],
   );
   const advancedOptions = useMemo(
-    () => buildLibraryFilterOptions(entries),
-    [entries],
+    () => {
+      const options = buildLibraryFilterOptions(entries);
+      return sharedAccountOptions?.length ? { ...options, accounts: [...sharedAccountOptions] } : options;
+    },
+    [entries, sharedAccountOptions],
   );
   const simulationRunOptions = sharedSimulationRunOptions ?? advancedOptions.simulationRuns;
 
@@ -899,9 +907,16 @@ export function TradeLibrary({
     setFilterDrawerOpen(false);
   };
 
+  // A homepage URL can explicitly enumerate every account in the selected
+  // nature. Preserve that scope for filtering, but do not present it as seven
+  // separate local restrictions when the full account directory is selected.
+  const allSharedAccountsSelected = Boolean(sharedScope && sharedAccountOptions?.length &&
+    effectiveAccounts.length === sharedAccountOptions.length &&
+    sharedAccountOptions.every(option => effectiveAccounts.includes(option.id)));
+  const displayedAccounts = allSharedAccountsSelected ? [] : effectiveAccounts;
   const advancedFilterCount = [
     ...browseState.brokers,
-    ...effectiveAccounts,
+    ...displayedAccounts,
     browseState.year !== "all" ? browseState.year : "",
     !simulationScopeNeedsRun && effectiveSimulationRunId !== "all" ? effectiveSimulationRunId : "",
     browseState.positionStatus !== "all" ? browseState.positionStatus : "",
@@ -966,7 +981,7 @@ export function TradeLibrary({
       kind: "broker" as const,
       value: id,
     })),
-    ...effectiveAccounts.map(id => ({
+    ...displayedAccounts.map(id => ({
       key: `account:${id}`,
       label: `账户：${accountLabels.get(id) ?? id}`,
       kind: "account" as const,
@@ -1047,9 +1062,17 @@ export function TradeLibrary({
     updateBrowseMode(nextMode);
   };
 
+  const mobileFilterSummary = [
+    market !== "all" ? (filterOptions.marketOptions.find(option => option.value === market)?.label ?? market) : "",
+    query.trim() ? `搜索：${query.trim()}` : "",
+    reviewStatus !== "all" ? (reviewStatus === "pending" ? "待复盘" : "已复盘") : "",
+  ].filter(Boolean);
+  const mobileFilterCount = advancedFilterCount + mobileFilterSummary.length;
   const sharedBrowseControls = (
     <>
-      <div className="library-shared-browse-controls" aria-label="交易库常用筛选">
+      <div className={`library-shared-browse-controls${mobileFiltersOpen ? " mobile-filters-open" : ""}`} aria-label="交易库常用筛选">
+      <button type="button" className="library-mobile-filter-toggle" aria-expanded={mobileFiltersOpen} onClick={() => setMobileFiltersOpen(open => !open)}>筛选{mobileFilterCount > 0 ? `（${mobileFilterCount}）` : ""}</button>
+      {mobileFilterSummary.length > 0 && <span className="library-mobile-filter-summary">{mobileFilterSummary.join(" · ")}</span>}
       {!sharedScope && <label>
         <span>交易性质</span>
         <select
@@ -1121,6 +1144,7 @@ export function TradeLibrary({
         高级筛选{advancedFilterCount > 0 ? `（${advancedFilterCount}）` : ""}
       </button>
       </div>
+      {allSharedAccountsSelected && <p className="library-all-accounts-summary">全部{sharedScope?.nature === "live" ? "实盘" : sharedScope?.nature === "simulation" ? "模拟盘" : ""}账户</p>}
       <AppliedFilterChips chips={appliedFilterChips} onRemove={removeAdvancedFilter} />
       {isPerformanceSort(sort) && !performanceSortAvailability.allowed && <p role="status" className="review-queue-notice">绩效排序不可用：{performanceSortAvailability.reason ?? "请缩小范围"}。</p>}
       {queueNotice && <p role="status" className="review-queue-notice">{queueNotice}</p>}
@@ -1187,17 +1211,15 @@ export function TradeLibrary({
     </div>
   );
   const libraryHeader = (
-    <UnifiedPageHeader
-      className="libraryUnifiedHeader"
-      title="交易库"
-      description="浏览已导入交易并开始复盘"
-      status={<strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong>}
-      scopeControls={sharedScopeControl ?? <div />}
-      scopeTools={globalSearch}
-      globalTools={globalTools}
-      tabs={libraryViewTabs}
-      filters={hasImportedEntries ? sharedBrowseControls : undefined}
-    />
+    <div className="library-route-header">
+      <header role="banner" aria-label="交易库页面头部" className="library-route-title"><h1>交易库</h1></header>
+      <div className="library-route-tabs" data-content-rail>{libraryViewTabs}</div>
+      <div className="library-route-tools">
+        <div className="library-route-context">{sourceBar}<div className="library-route-status"><span>浏览已导入交易并开始复盘</span><strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong>{globalTools}</div></div>
+        <div className="library-route-scope"><div role="group" aria-label="共享范围">{sharedScopeControl}</div>{globalSearch}</div>
+        {hasImportedEntries && sharedBrowseControls}
+      </div>
+    </div>
   );
   const simulationScopeNotice = simulationScopeNeedsRun
     ? <p className="library-simulation-scope-notice" role="status">请选择模拟运行后查看交易库；不会合并多个模拟运行。</p>
@@ -1236,20 +1258,21 @@ export function TradeLibrary({
       (item) => item.episode.id === episode.id,
     );
     const selectedNumber = selectedEntry.episodeCount - selectedIndex;
-    const detailPerformance = summarizeLibraryPerformance(
-      [{ entry: selectedEntry, item: selectedEpisode }],
-      effectiveFxSnapshot ?? undefined,
-      performanceTargetCurrency,
-    );
-    const detailMetric = reportCurrency === "HKD" ? detailPerformance.target : detailPerformance.cny;
-    const detailPnl = reportCurrency === "original"
-      ? metrics.netPnl
-      : detailMetric?.available && detailMetric.netPnl !== null
-        ? detailMetric.netPnl
-        : null;
     const detailPnlCurrency = reportCurrency === "original"
       ? selectedEntry.instrument.currency
-      : detailMetric?.currency ?? reportCurrency;
+      : performanceTargetCurrency;
+    const detailRate = reportCurrency === "original"
+      ? new Decimal(1)
+      : fxConversion(selectedEntry.instrument.currency, performanceTargetCurrency, effectiveFxSnapshot ?? undefined).rate;
+    let detailPnl: string | null = null;
+    if (metrics.pnlAvailable !== false && metrics.netPnl !== null && detailRate) {
+      try {
+        const value = new Decimal(metrics.netPnl);
+        if (value.isFinite()) detailPnl = value.times(detailRate).toString();
+      } catch {
+        // Invalid amounts are unavailable, never treated as zero.
+      }
+    }
 
     return (
       <section className="trade-library trade-library-detail" aria-label="交易库">

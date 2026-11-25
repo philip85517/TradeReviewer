@@ -4,7 +4,7 @@ import {encodeSourceEvidence,isStrictExecutionRef,sourceEvidenceDecoder} from '.
 import type {ExecutionContentRef} from './execution-content-ref';
 import {decimal} from './period';
 import type {DatabaseSync} from 'node:sqlite';
-import {FULL_MODULES,FULL_SCHEMA,type FullManifestV1} from './full-contracts';
+import {FULL_MODULES,FULL_SCHEMA,type FullManifestV1,type FullAllocation} from './full-contracts';
 import {fullCanonical,fullHash,type FullBuild,type FullModules} from './full-projection';
 import {HOME_FULL_SCHEMA} from '../../../db/home-full-schema';
 import {HOME_POLICY} from './contracts';
@@ -13,7 +13,7 @@ export function stageFull(db:DatabaseSync,full:FullBuild){
  db.exec(HOME_FULL_SCHEMA);
  const {manifest,modules}=full;
  manifest.scopeRefs=db.prepare('SELECT scope_id,scope_version FROM home_release_scope WHERE release_id=? ORDER BY scope_id').all(manifest.releaseId).map(r=>({id:String(r.scope_id),version:String(r.scope_version)}));
- manifest.versions={native:HOME_POLICY,closeRound:'confirmed-long-round-v1',allocation:'source-partition-metrics-v4',effectiveReview:'effective-completion-v1',catalog:'catalog-v1',query:'full-home-query-v1'};
+ manifest.versions={native:HOME_POLICY,closeRound:'visible-close-round-v2-canonical-fifo',allocation:'source-partition-metrics-v6',effectiveReview:'effective-completion-v1',catalog:'catalog-v1',query:'full-home-query-v1'};
  manifest.marketCutoffs=Object.assign({},...db.prepare('SELECT metadata_json FROM home_scope_result s JOIN home_release_scope r USING(scope_version) WHERE r.release_id=?').all(manifest.releaseId).map(r=>JSON.parse(String(r.metadata_json)).marketCutoffs??{}));
  if(manifest.schema!==FULL_SCHEMA||!manifest.moduleComplete)throw new Error('invalid full manifest');
  for(const key of FULL_MODULES){const ref=manifest.modules[key],rows=modules[key];if(!ref?.complete||!Array.isArray(rows)||rows.length!==ref.count||fullHash(rows)!==ref.hash)throw new Error('incomplete full module '+key);}
@@ -78,7 +78,7 @@ export function validateFull(db:DatabaseSync,id:string):FullBuild|null{
  if(!manifest.scopeRefs||fullHash(scopes)!==fullHash(manifest.scopeRefs)||manifest.versions?.query!=='full-home-query-v1')throw new Error('invalid full scope refs or versions');
  const coveredScopes=new Set(modules.coverage.map(c=>JSON.stringify([c.accountId,c.instrumentId])));
  const identities=new Set<string>(),catalogByScope=new Map(modules.catalog.map(c=>[JSON.stringify([c.accountId,c.instrumentId]),c]));
- const tradesBySet=new Map<string,{positionKey:string;expected:number;trades:Map<string,{quantity:string;side:string;sourceRef:unknown}>}>();
+ const tradesBySet=new Map<string,{positionKey:string;expected:number;trades:Map<string,{quantity:string;side:string;sourceRef:unknown;executedAt?:string}>}>();
  persisted=persistedTrades(db,modules.catalog.map(c=>c.tradeSetId));
  for(const row of persisted){const key=String(row.trade_set_id);let set=tradesBySet.get(key);if(!set){set={positionKey:String(row.position_key),expected:Number(row.trade_count),trades:new Map()};tradesBySet.set(key,set);}if(row.trade_json)set.trades.set(String(row.execution_id),JSON.parse(String(row.trade_json)));}
  // Four primitive fields preserve exact canonical identity without allocation;
@@ -99,14 +99,56 @@ export function validateFull(db:DatabaseSync,id:string):FullBuild|null{
   }
   if(allocation.category&&seen.size!==trades?.size)throw new Error('incomplete direction allocation');
   if(allocation.categoryMetrics){
-   if(manifest.versions?.allocation!=='source-partition-metrics-v4'||allocation.category!==null||allocation.categoryMetrics.length<2||new Set(allocation.categoryMetrics.map(m=>m.category)).size!==allocation.categoryMetrics.length)throw new Error('invalid category metrics');
+   const allocationVersion=manifest.versions?.allocation;
+   const v6=allocationVersion==='source-partition-metrics-v6'&&allocation.canonicalFifo===true;
+   if(!['source-partition-metrics-v4','source-partition-metrics-v5','source-partition-metrics-v6'].includes(allocationVersion??'')||allocation.category!==null||(allocationVersion==='source-partition-metrics-v4'?allocation.categoryMetrics.length<2:allocation.categoryMetrics.length<1)||new Set(allocation.categoryMetrics.map(m=>m.category)).size!==allocation.categoryMetrics.length)throw new Error('invalid category metrics');
    const members=new Set<string>();
    for(const {category,executionIds,metric} of allocation.categoryMetrics){
     if(!['long','short','ipo'].includes(category)||metric.positionKey!==allocation.positionKey||!metric.boundaries.length||metric.firstDay!==metric.boundaries[0].date||metric.lastDay!==metric.current.date)throw new Error('invalid category metric identity');
     const {version,...content}=metric;if(metricObjectVersion(content)!==version)throw new Error('invalid category metric hash');
-    for(const id of executionIds){if(!seen.has(id)||members.has(id))throw new Error('invalid category metric membership');members.add(id);}
+    for(const id of executionIds){if(!seen.has(id)||(!v6&&members.has(id)))throw new Error('invalid category metric membership');members.add(id);}
    }
-   if(members.size!==seen.size||seen.size!==trades?.size)throw new Error('incomplete category metric membership');
+   if(!v6&&(members.size!==seen.size||seen.size!==trades?.size))throw new Error('incomplete category metric membership');
+   if(v6){
+    const quantities=allocation.sourceQuantities??[],consumptions=allocation.consumptions??[],lots=allocation.sourceLots??[];
+    if((!quantities.length&&lots.some(l=>l.executionId!==undefined))||new Set(quantities.map(q=>JSON.stringify([q.executionId,q.sourceKey,q.category,q.role]))).size!==quantities.length)throw new Error('missing v6 source quantities');
+    const refsById=new Map(allocation.sourceRefs.map(r=>[r.executionId,r]));
+    const asOfMs=Date.parse(manifest.asOf),knownAt=(value:string)=>{const ms=Date.parse(value);return Number.isFinite(ms)&&Number.isFinite(asOfMs)&&ms<=asOfMs;};
+    for(const q of quantities){const ref=q.executionId===undefined?undefined:refsById.get(q.executionId),trade=q.executionId===undefined?undefined:trades?.get(q.executionId);if((q.executionId!==undefined&&(!seen.has(q.executionId)||!ref))||(!q.executionId&&!q.sourceKey)||!decimal(q.quantity).gt(0)||!['long','ipo','short'].includes(q.category)||!['open-long','close-long','open-short','close-short'].includes(q.role)||(!q.executionId&&q.role.startsWith('close-'))||(q.executionId!==undefined&&(!q.sourceRef||!sameReference(ref,q.sourceRef)||!trade||!sameReference(trade.sourceRef,q.sourceRef)||trade.executedAt!==undefined&&!knownAt(trade.executedAt))))throw new Error('invalid v6 source quantity');}
+    for(const id of seen){const total=quantities.filter(q=>q.executionId===id).reduce((v,q)=>v.plus(q.quantity),decimal('0'));const trade=trades?.get(id);if(!trade||!total.eq(trade.quantity))throw new Error('v6 source quantity not conserved');}
+    const openings=new Set([...quantities.filter(q=>q.role.startsWith('open-')).map(q=>q.sourceKey??q.executionId!),...((allocation as FullAllocation & {sourceLots?:{sourceKey:string}[]}).sourceLots??[]).map(l=>l.sourceKey)]);
+    if(!lots.length)throw new Error('missing v6 immutable source lots');
+    const lotsByKey=new Map<string,typeof lots[number]>();
+    for(const lot of lots){
+      if(lotsByKey.has(lot.sourceKey)||!decimal(lot.quantity).gt(0)||!decimal(lot.cashCost).gte(0)||!lot.at||!knownAt(lot.at)||!Array.isArray(lot.dependencyHashes)||!lot.dependencyHashes.length||lot.dependencyHashes.some(h=>!/^[a-f0-9]{64}$/.test(h)))throw new Error('invalid v6 immutable source lot');
+      const {proofHash,...payload}=lot;if(fullHash(payload)!==proofHash)throw new Error('invalid v6 source lot hash');
+      if(lot.executionId!==undefined&&!refsById.has(lot.executionId))throw new Error('dangling v6 source lot ref');
+      if(lot.executionId!==undefined&&(!seen.has(lot.executionId)||!trades?.get(lot.executionId)||trades.get(lot.executionId)!.executedAt!==undefined&&!knownAt(trades.get(lot.executionId)!.executedAt!)))throw new Error('future v6 source lot');
+      if(lot.executionId!==undefined&&!lot.dependencyHashes.includes(refsById.get(lot.executionId)!.effectiveVersion))throw new Error('unbound v6 source lot ref');
+      lotsByKey.set(lot.sourceKey,lot);
+    }
+    const orderedLots=[...lots].sort((a,b)=>a.at.localeCompare(b.at)||a.sourceKey.localeCompare(b.sourceKey));
+    const usedLots=new Map<string,ReturnType<typeof decimal>>();
+    for(const c of consumptions){
+      const lot=lotsByKey.get(c.openingSourceKey);
+      const closeTrade=trades?.get(c.closingExecutionId),closeAt=closeTrade?.executedAt;
+      if(!refsById.has(c.closingExecutionId)||!seen.has(c.closingExecutionId)||!closeTrade||closeAt!==undefined&&!knownAt(closeAt)||!lot||lot.category!==c.category||!decimal(c.quantity).gt(0)||!decimal(c.cashCost).gte(0)||!['long','ipo','short'].includes(c.category)||closeAt!==undefined&&Date.parse(lot.at)>Date.parse(closeAt))throw new Error('invalid v6 consumption');
+      const expected=decimal(lot.cashCost).mul(c.quantity).div(lot.quantity);if(!expected.eq(c.cashCost))throw new Error('v6 FIFO cash cost mismatch');
+      const index=orderedLots.findIndex(l=>l.sourceKey===c.openingSourceKey);
+      for(const earlier of orderedLots.slice(0,index)){
+       const used=usedLots.get(earlier.sourceKey)??decimal('0');
+       // Only cross-category unfinished lots are a canonical mixed-phase
+       // ordering claim. Same-category ordinary MA remains native and is not
+       // re-FIFOed by this persistence validator.
+       if(earlier.category!==lot.category&&used.lt(earlier.quantity))throw new Error('v6 FIFO order mismatch');
+      }
+      usedLots.set(c.openingSourceKey,(usedLots.get(c.openingSourceKey)??decimal('0')).plus(c.quantity));
+    }
+    for(const [key,used] of new Map([...lotsByKey].map(([key,lot])=>[key,consumptions.filter(c=>c.openingSourceKey===key).reduce((n,c)=>n.plus(c.quantity),decimal('0'))] as const)))if(used.gt(lotsByKey.get(key)!.quantity))throw new Error('v6 FIFO lot overconsumed');
+    const closeByExecution=new Map<string,typeof quantities>();
+    for(const q of quantities)if(q.executionId&&q.role.startsWith('close-'))closeByExecution.set(q.executionId,[...(closeByExecution.get(q.executionId)??[]),q]);
+    for(const [id,rows] of closeByExecution){for(const category of ['ipo','long','short'] as const){const expected=rows.filter(q=>q.category===category).reduce((n,q)=>n.plus(q.quantity),decimal('0'));const actual=consumptions.filter(c=>c.closingExecutionId===id&&c.category===category).reduce((n,c)=>n.plus(c.quantity),decimal('0'));if(!expected.eq(actual))throw new Error('v6 closing category quantity mismatch');}}
+   }
   }
 
  }
@@ -115,12 +157,13 @@ export function validateFull(db:DatabaseSync,id:string):FullBuild|null{
  const roundIds=new Set<string>(),closingIds=new Set<string>(),pairedOpen=new Map<string,ReturnType<typeof decimal>>();
  for(const round of modules.closeRounds){
   const scope=JSON.stringify([round.accountId,round.instrumentId]),allocation=allocationsByScope.get(scope),item=catalogByScope.get(scope);
-  if(roundIds.has(round.id)||!item||!allocation||round.id!==JSON.stringify([round.accountId,round.instrumentId,round.revision,round.roundId])||round.category!==allocation.category)throw new Error('invalid close round identity');roundIds.add(round.id);
+  if(roundIds.has(round.id)||!item||!allocation||round.id!==JSON.stringify([round.accountId,round.instrumentId,round.revision,round.roundId])||allocation.category!==null&&round.category!==allocation.category)throw new Error('invalid close round identity');roundIds.add(round.id);
   const parts=new Map((allocation.parts??[]).map(p=>[p.sourceRef.executionId,p]));const refs=new Map(round.sourceRefs.map(r=>[r.executionId,r]));
   if(refs.size!==round.sourceRefs.length||!round.closingExecutionIds.length||new Set(round.closingExecutionIds).size!==round.closingExecutionIds.length)throw new Error('invalid round source references');
   for(const ref of refs.values())if(!parts.has(ref.executionId)||!sameReference(parts.get(ref.executionId)!.sourceRef,ref))throw new Error('dangling round source reference');
-  for(const id of round.closingExecutionIds){const part=parts.get(id),key=JSON.stringify([scope,id]);if(closingIds.has(key)||!part||part.role!=='close-long'||!refs.has(id))throw new Error('duplicate or invalid round close');closingIds.add(key);const sum=round.pairings.filter(p=>p.closingExecutionId===id).reduce((v,p)=>v.plus(p.quantity),decimal('0'));if(!sum.eq(part.quantity))throw new Error('round closing quantity not conserved');}
-  for(const pair of round.pairings){const open=parts.get(pair.openingExecutionId);if(!open||open.role!=='open-long'||!round.closingExecutionIds.includes(pair.closingExecutionId)||!refs.has(pair.openingExecutionId)||!decimal(pair.quantity).gt(0))throw new Error('invalid round pairing');const key=JSON.stringify([scope,pair.openingExecutionId]),used=(pairedOpen.get(key)??decimal('0')).plus(pair.quantity);if(used.gt(open.quantity))throw new Error('round opening quantity overallocated');pairedOpen.set(key,used);}
+  const short=round.category==='short',closeRole=short?'close-short':'close-long',openRole=short?'open-short':'open-long';
+  for(const id of round.closingExecutionIds){const part=parts.get(id),key=JSON.stringify([scope,id]);if(closingIds.has(key)||!part||part.role!==closeRole||!refs.has(id))throw new Error('duplicate or invalid round close');closingIds.add(key);const pairings=round.pairings.filter(p=>p.closingExecutionId===id);const sum=pairings.reduce((v,p)=>v.plus(p.quantity),decimal('0'));if(pairings.length&&!sum.eq(part.quantity))throw new Error('round closing quantity not conserved');}
+  for(const pair of round.pairings){const open=parts.get(pair.openingExecutionId);if(!open||open.role!==openRole||!round.closingExecutionIds.includes(pair.closingExecutionId)||!refs.has(pair.openingExecutionId)||!decimal(pair.quantity).gt(0))throw new Error('invalid round pairing');const key=JSON.stringify([scope,pair.openingExecutionId]),used=(pairedOpen.get(key)??decimal('0')).plus(pair.quantity);if(used.gt(open.quantity))throw new Error('round opening quantity overallocated');pairedOpen.set(key,used);}
   if(round.gross.value!==null&&round.net.value!==null&&round.fees.every(f=>f.value!==null&&f.currency===round.net.currency)&&!round.fees.reduce((v,f)=>v.minus(f.value!),decimal(round.gross.value)).eq(round.net.value))throw new Error('round money not conserved');
  }
  if(modules.effectiveReview.length!==modules.catalog.length||new Set(modules.effectiveReview.map(r=>r.positionKey)).size!==modules.catalog.length||modules.effectiveReview.some(r=>!identities.has(r.positionKey)))throw new Error('invalid effective review identities');

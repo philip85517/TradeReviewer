@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { openSqliteDatabase } from "../../../db/sqlite";
+import { applyMonthlyHistoryEvidence, selectMonthlyEvidenceHistory } from "../import/statement-evidence";
 import { buildTradeEpisodes } from "../trades/episodes";
 import type { TradeExecution } from "../trades/types";
 import { getSqliteStore } from "../storage/sqlite-store";
@@ -434,4 +435,27 @@ it("lists lightweight recall summaries from current drafts without loading old f
     const database = { prepare } as unknown as Parameters<typeof listRecallReviewSummaries>[0];
     expect(listRecallReviewSummaries(database)).toEqual([{ episodeId: "episode-summary", status: "needs-confirmation", updatedAt: "2026-09-25", text: "", snapshotCount: 0 }]);
     expect(prepare.mock.calls[0][0]).not.toContain("finalized_json");
+});
+
+it('accepts capture from the same authoritative monthly projection as bootstrap', () => {
+    const db = database();
+    const store = getSqliteStore(db);
+    store.mergeTradeData({ executions: [execution('monthly-buy', 'buy', '2026-01-01T00:00:00.000Z')], importHistory: [{
+        id: 'monthly-import', fileName: 'fixture.pdf', sourceLabel: 'fixture', importedAt: '2026-02-01T00:00:00.000Z', tradeCount: 1, instrumentCount: 1, excludedInstrumentCount: 0, excludedRecordCount: 0, duplicateTradeCount: 0, unresolvedInstrumentCount: 0,
+        monthly: { documentId: 'monthly-document', templateIds: [], accountId: 'account', month: '2026-01', reviewRequired: false, events: [], positions: [{ documentId: 'monthly-document', accountId: 'account', market: 'US', symbol: 'TEST', phase: 'closing', date: '2026-01-31', quantity: '1', source: [] }] }
+    }] });
+    const raw = store.getExecutions();
+    const monthly = selectMonthlyEvidenceHistory(store.getImportHistory());
+    const projected = applyMonthlyHistoryEvidence(raw, monthly);
+    expect(projected).not.toEqual(raw);
+    expect(applyMonthlyHistoryEvidence(projected, monthly)).toEqual(projected);
+    const episode = buildTradeEpisodes(projected)[0];
+    let document = createRecallDocument(episode);
+    document = retainRecallSnapshot(document, snapshot(document.decisions[0].id));
+    document = freezeRecallSnapshotBundle(document, 'snapshot', { bundleId: 'monthly-bundle', retainedAt: '2026-02-01', episode });
+    const before = structuredClone(document.retainedBundles![0].captureContext);
+    const saved = saveRecallDocument(db, { document, expectedRevision: 0 });
+    expect(saved.document.retainedBundles![0].executionEvidence).toEqual(document.retainedBundles![0].executionEvidence);
+    expect(saved.document.retainedBundles![0].captureContext).toEqual(before);
+    expect(store.getExecutions()).toEqual(raw);
 });

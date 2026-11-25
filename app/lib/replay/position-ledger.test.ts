@@ -63,6 +63,26 @@ function fill(
 }
 
 describe("replayPositionAtPrice", () => {
+  it("orders date-only transaction balances after their own explicitly ordered fills", () => {
+    const first = fill("buy", "2026-02-02T07:00:00.000Z", "2000", "10", "0");
+    const second = fill("buy", "2026-02-02T07:00:00.000Z", "3000", "11", "0");
+    for (const [index, execution] of [first, second].entries()) {
+      execution.source = { ...execution.source, timePrecision: "date-only", fileFingerprint: "document", page: 1, row: index + 1, sourceOrder: index + 1 };
+      execution.source.statementPositions = [{ documentId: "test:document", accountId: execution.accountId, market: "US", symbol: "TEST", phase: "closing", date: "2026-02-02", quantity: index === 0 ? "2000" : "5000", source: [{ page: 1, row: index + 1, role: "transaction-position" }] }];
+    }
+    const result = replayPositionAtPrice({ executions: [second, first], markPrice: "12" });
+    expect(result.accuracy).toBeUndefined();
+    expect(result).toMatchObject({ quantity: "5000", averageCost: "10.6", netPnl: "7000" });
+    second.source.statementPositions![0].quantity = "5100";
+    expect(replayPositionAtPrice({ executions: [second, first], markPrice: "12" }).accuracy?.reasons).toContain("position-gap");
+    second.source.statementPositions![0].quantity = "5000";
+    second.source.sourceOrder = first.source.sourceOrder;
+    expect(replayPositionAtPrice({ executions: [second, first], markPrice: "12" }).accuracy?.reasons).toContain("ambiguous-execution-order");
+    second.source.sourceOrder = 2;
+    second.source.timePrecision = "second";
+    expect(replayPositionAtPrice({ executions: [second, first], markPrice: "12" }).accuracy?.reasons).toContain("ambiguous-execution-order");
+  });
+
   it("adds known zero-cash bonus shares while preserving total cost and ignoring a reference price", () => {
     const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
     const bonus = fixtureEvent({

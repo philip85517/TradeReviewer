@@ -1,8 +1,8 @@
-.panel { display: grid; gap: 14px; color: var(--dashboard-ink, #17212b); }
+.panel { min-width: 0; display: grid; gap: 14px; color: var(--dashboard-ink, #17212b); }
 .panel header { display: flex; justify-content: space-between; gap: 12px; }
 .panel h2 { margin: 4px 0; font-size: 18px; }
 .panel p { margin: 0; color: var(--dashboard-muted, #69727f); font-size: 12px; line-height: 1.5; }
-.form { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)) minmax(240px, 1.4fr) minmax(120px, 1fr) minmax(220px, 1.4fr); gap: 10px; align-items: end; }
+.form { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)) minmax(240px, 1.4fr) minmax(120px, 1fr) minmax(220px, 1.4fr); gap: 10px; align-items: end; }
 .form > label, .formActions { min-width: 0; }
 .form label { display: grid; min-width: 0; gap: 5px; font-size: 13px; }
 .form input, .form select { box-sizing: border-box; width: 100%; min-width: 0; }
@@ -12,6 +12,7 @@
 .formActions { display: flex; gap: 6px; align-items: stretch; }
 .formActions button { flex: 1 1 0; min-width: 0; white-space: nowrap; }
 .revision { align-self: center; color: var(--dashboard-muted, #69727f); font-size: 11px; white-space: nowrap; }
+.tableWrap { min-width: 0; max-width: 100%; overflow-x: auto; }
 .panel table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .panel th, .panel td { padding: 8px; border-bottom: 1px solid var(--dashboard-line, #d9dee5); text-align: left; }
 .panel caption { margin-bottom: 6px; text-align: left; font-weight: 600; }
@@ -29,7 +30,7 @@
   .form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .form > label:nth-child(4) { grid-column: 1 / -1; }
   .formActions { grid-column: 1 / -1; }
-  .panel { overflow-x: auto; }
+  .panel table { min-width: 620px; }
   .form input, .form select, .panel button { min-height: 44px; }
 }
 @media (min-width: 801px) and (max-width: 1100px) {
@@ -38,3 +39,9 @@
   .formActions { grid-column: 1 / -1; }
 }
 .form input, .form select { color-scheme: dark; }
+
+@media (max-width: 480px) {
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .formActions { flex-wrap: wrap; }
+  .revision { flex-basis: 100%; }
+}

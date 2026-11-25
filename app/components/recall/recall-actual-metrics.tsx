@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { formatEvidenceAmount } from "../homepage-preview/evidence-amount";
 import type { RecallActualMetrics } from "../../lib/recall/actual-metrics";
 import type { RecallPhase } from "../../lib/recall/types";
 import "./recall-actual-metrics.css";
@@ -21,6 +22,7 @@ const reasons: Record<string, string> = {
 };
 export function formatRecallActualMetricValue(metric: Metric): string {
   if (metric.value === null) return reasons[metric.reason ?? ""] ?? "待核算 · 来源不完整";
+  if (metric.unit === "money") return `${formatEvidenceAmount(metric.value)}${metric.currency ? ` ${metric.currency}` : ""}`;
   const value = new Decimal(metric.value);
   const shown = metric.unit === "ratio" ? value.mul(100) : value;
   const rounded = shown.toSignificantDigits(8);
@@ -67,7 +69,7 @@ export function RecallActualMetricsPanel({ metrics, phase, retained = false, com
     <h3>{phase === "holding" ? "当前执行" : "实际结果"}</h3>
     <p>{retained ? "留存版本" : "按当前已知成交计算"} · 原币口径</p>
     <dl>{keys.map(key => <div key={key}><dt>{labels[key]}</dt><dd><Value metric={metrics.metrics[key]} /></dd></div>)}</dl>
-    {metrics.denominator && <p className="recall-actual-risk">{metrics.denominator.method === "fixed-budget" ? "预算 R" : "价格风险 R"} · 冻结分母 {metrics.denominator.amount} {metrics.denominator.currency}</p>}
+    {metrics.denominator && <p className="recall-actual-risk">{metrics.denominator.method === "fixed-budget" ? "预算 R" : "价格风险 R"} · 冻结分母 <span title={`${metrics.denominator.amount} ${metrics.denominator.currency}`}>{formatEvidenceAmount(metrics.denominator.amount)} {metrics.denominator.currency}</span></p>}
     <details><summary>费用、计划偏差与退出明细</summary>
       <dl>{(["realizedGross", "totalFees", "remainingEntryFee", "entryPriceDeviation", "quantityDeviation", "targetRealization"] as const).map(key => <div key={key}><dt>{labels[key]}</dt><dd><Value metric={metrics.metrics[key]} /></dd></div>)}</dl>
       {metrics.exitAllocations.map((exit, index) => <div className="recall-actual-exit" key={exit.executionId}>

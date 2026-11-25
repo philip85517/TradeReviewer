@@ -329,6 +329,7 @@ export function CashBaselinePanel({
       {activeMessage && !activeConflict && <p role="status">{activeMessage}</p>}
       {activeError && !activeConflict && <p role="alert">{activeError}</p>}
 
+      <div className={styles.tableWrap} role="region" aria-label="现金基准记录表格，可横向滚动" tabIndex={0}>
       <table>
         <caption>当前范围现金基准</caption>
         <thead><tr><th>账户</th><th>原币</th><th>截至时间</th><th>余额</th><th>来源</th><th>版本</th><th /></tr></thead>
@@ -346,6 +347,7 @@ export function CashBaselinePanel({
           ))}
         </tbody>
       </table>
+      </div>
       {visible.length === 0 && <p className={styles.empty}>当前范围还没有现金基准记录。</p>}
       {history.length > 0 && (
         <details className={styles.history} role="group" aria-label="现金基准修订历史">

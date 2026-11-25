@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { HistoryProps, HistoryRange } from './contracts';
 import { historyAmount, historyRangeLabel, historySeries, historyTicks, readHistorySnapshot, type HistoryMetric, type HistoryPoint } from './history-data';
@@ -13,6 +13,7 @@ export function HistoricalStatistics({ request, scenario, range, onRangeChange }
   const [open, setOpen] = useState(false), [draft, setDraft] = useState<HistoryRange>(range), [kind, setKind] = useState('single');
   const [pending, setPending] = useState(false), [error, setError] = useState<string | null>(null);
   const [hover, setHover] = useState<number | null>(null);
+  const tipInput = useRef<{ keyboard: boolean; position: { x: number; y: number } | null }>({ keyboard: false, position: null });
   const trigger = useRef<HTMLButtonElement>(null), chooser = useRef<HTMLDivElement>(null), chart = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null), timer = useRef<ReturnType<typeof setTimeout> | null>(null), lastAttempt = useRef(range), failedOnce = useRef(false), generation = useRef(0);
   const [width, setWidth] = useState(1200);
@@ -72,11 +73,23 @@ export function HistoricalStatistics({ request, scenario, range, onRangeChange }
   points.forEach((point, i) => { if (point.value === null) { if (path.length) paths.push(path.join(' ')); path = []; } else path.push(`${x(i)},${y(point.value)}`); });
   if (path.length) paths.push(path.join(' '));
   const closeTip = () => { setHover(null); };
+  const enterTip = (event: MouseEvent<SVGRectElement>, i: number) => {
+    // Scrolling a keyboard-focused point under a stationary pointer also emits mouseenter.
+    if (tipInput.current.keyboard) return;
+    tipInput.current.position = { x: event.clientX, y: event.clientY };
+    setHover(i);
+  };
+  const moveTip = (event: MouseEvent<SVGRectElement>, i: number) => {
+    const { keyboard, position } = tipInput.current;
+    if (keyboard && position?.x === event.clientX && position.y === event.clientY) return;
+    tipInput.current = { keyboard: false, position: { x: event.clientX, y: event.clientY } };
+    setHover(i);
+  };
   const move = (event: KeyboardEvent<SVGRectElement>, i: number) => {
-    if (event.key === 'Escape') { event.preventDefault(); closeTip(); return; }
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setHover(i); return; }
+    if (event.key === 'Escape') { event.preventDefault(); tipInput.current.keyboard = true; closeTip(); return; }
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); tipInput.current.keyboard = true; setHover(i); return; }
     const next = event.key === 'ArrowRight' ? Math.min(points.length - 1, i + 1) : event.key === 'ArrowLeft' ? Math.max(0, i - 1) : event.key === 'Home' ? 0 : event.key === 'End' ? points.length - 1 : null;
-    if (next !== null) { event.preventDefault(); svg.current?.querySelector<SVGRectElement>(`[data-history-index="${next}"]`)?.focus(); }
+    if (next !== null) { event.preventDefault(); tipInput.current.keyboard = true; setHover(next); svg.current?.querySelector<SVGRectElement>(`[data-history-index="${next}"]`)?.focus(); }
   };
   const valueLabel = (value: number | null, full = false) => value === null ? '—' : metric === 'win' ? `${value.toFixed(full ? 1 : 0)}%` : metric === 'rounds' ? `${value}${full ? ' 回合' : ''}` : historyAmount(value, full, !full);
   const activePoint = hover === null ? null : points[hover];
@@ -100,18 +113,21 @@ export function HistoricalStatistics({ request, scenario, range, onRangeChange }
     </div>
     <div className="hp-history-chart" data-testid="history-chart" aria-busy={pending}>
       <div className="hp-history-chart-title"><h3>{title}</h3><span>{unit}</span></div>
-      <div className="hp-history-plot" ref={chart} onMouseLeave={() => setHover(null)}>
-        <svg ref={svg} viewBox={`0 0 ${width} 264`} role="group" aria-label={chartLabel} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setHover(null); }}>
+      <div className="hp-history-plot" onMouseLeave={() => { if (!tipInput.current.keyboard) setHover(null); }}>
+        <div className="hp-history-chart-scroll" role="region" aria-label="历史趋势图，可横向滚动" tabIndex={0}><div className="hp-history-chart-surface" ref={chart}>
+        <svg ref={svg} viewBox={`0 0 ${width} 264`} role="group" aria-label={chartLabel} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) { tipInput.current.keyboard = false; setHover(null); } }}>
           {points.map((point, i) => point.state === 'value' ? null : <rect key={`zone-${point.key}`} className={`hp-history-zone ${point.state}`} x={i === 0 ? left : (x(i - 1) + x(i)) / 2} y={top} width={(i === points.length - 1 ? right : (x(i) + x(i + 1)) / 2) - (i === 0 ? left : (x(i - 1) + x(i)) / 2)} height={bottom - top} />)}
           {ticks.map(value => <g key={`tick-${value}`}><line className={value === 0 ? 'hp-history-zero' : 'hp-history-grid'} x1={left} x2={right} y1={y(value)} y2={y(value)} /><text className="hp-history-tick" x={left - 12} y={y(value) + 4} textAnchor="end">{valueLabel(value)}</text></g>)}
           {paths.map((points, i) => <polyline key={i} className="hp-history-series" points={points} />)}
           {points.map((point, i) => <g key={point.key}><text className="hp-history-tick" x={x(i)} y={254} textAnchor="middle">{point.label}</text>{point.value !== null && <circle className={`hp-history-point${point.value === 0 ? ' true-zero' : ''}`} cx={x(i)} cy={y(point.value)} r={3} />}</g>)}
           {activePoint && hover !== null && <g aria-hidden="true" className="hp-history-crosshair"><line x1={x(hover)} x2={x(hover)} y1={top} y2={bottom} />{activePoint.value !== null && <line x1={left} x2={right} y1={y(activePoint.value)} y2={y(activePoint.value)} />}</g>}
-          {points.map((point, i) => <rect key={`hit-${point.key}`} role="button" tabIndex={0} data-history-index={i} className="hp-history-hit" aria-label={`${point.key}${monthly ? '' : '年'} ${reasonFor(point) || valueLabel(point.value, true)}`} x={i === 0 ? left : (x(i - 1) + x(i)) / 2} y={top} width={(i === points.length - 1 ? right : (x(i) + x(i + 1)) / 2) - (i === 0 ? left : (x(i - 1) + x(i)) / 2)} height={bottom - top} onMouseEnter={() => setHover(i)} onFocus={() => setHover(i)} onClick={() => { setHover(i); }} onKeyDown={event => move(event, i)} />)}
+          {points.map((point, i) => <rect key={`hit-${point.key}`} role="button" tabIndex={0} data-history-index={i} className="hp-history-hit" aria-label={`${point.key}${monthly ? '' : '年'} ${reasonFor(point) || valueLabel(point.value, true)}`} x={i === 0 ? left : (x(i - 1) + x(i)) / 2} y={top} width={(i === points.length - 1 ? right : (x(i) + x(i + 1)) / 2) - (i === 0 ? left : (x(i - 1) + x(i)) / 2)} height={bottom - top} onMouseEnter={event => enterTip(event, i)} onMouseMove={event => moveTip(event, i)} onFocus={() => { tipInput.current.keyboard = true; setHover(i); }} onClick={event => { tipInput.current = { keyboard: false, position: { x: event.clientX, y: event.clientY } }; setHover(i); }} onKeyDown={event => move(event, i)} />)}
         </svg>
+        </div></div>
         {snapshot.state === 'empty' && <p className="hp-history-empty">暂无已平仓回合</p>}{snapshot.state === 'future' && <p className="hp-history-empty">该年份尚未到达</p>}
         {activePoint && hover !== null && <div role="tooltip" className="hp-history-tooltip" style={{ left: Math.min(width - 276, Math.max(0, x(hover) + (x(hover) > width * .65 ? -276 : 12))), top: 30 }}><strong>{activePoint.key} · {unit}</strong><span>{title}：{valueLabel(activePoint.value, true)}</span><span>当期净盈亏：{historyAmount(activePoint.net, true)} CNY</span><span>累计净盈亏：{historyAmount(activePoint.cumulative, true)} CNY</span><span>盈利 / 全部回合：{activePoint.wins ?? '—'} / {activePoint.closed ?? '—'}</span><span className="hp-history-tooltip-note">{reasonFor(activePoint) || (metric === 'cumulative' && activePoint.value === null ? '前期数据缺失，累计暂不可计算' : '费用已扣除')}</span></div>}
       </div>
+      <p className="hp-history-scroll-hint">左右滚动查看完整趋势，聚焦图点后可用方向键浏览</p>
       <div className="hp-history-feedback" aria-live="polite">{pending && <span>正在读取新年份，仍显示原范围</span>}{error && <span role="alert">{error}<button type="button" aria-label="重试历史读取" onClick={() => apply(lastAttempt.current, true)}>重试</button></span>}</div>
     </div>
   </section>;

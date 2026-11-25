@@ -4,16 +4,17 @@ import { buildReplayChartMarkers, chartTickLabel, createExecutionMarkerPrimitive
 import type { ComponentProps } from "react";
 import type { Time } from "lightweight-charts";
 
-const engine = vi.hoisted(() => ({ priceRange:{from:0,to:0}, data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 }, rangeCalls: [] as Array<{ from: number; to: number }>, setDataCalls: 0, planLines: [] as {price:number; title:string}[], removedLines: 0, markers: [] as unknown[], clickHandler: null as ((param: { hoveredInfo?: { objectId?: unknown } }) => void) | null }));
+const engine = vi.hoisted(() => ({ priceRange:{from:0,to:0}, data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 }, rangeCalls: [] as Array<{ from: number; to: number }>, setDataCalls: 0, planLines: [] as {price:number; title:string}[], removedLines: 0, markers: [] as unknown[], clickHandler: null as ((param: { point?: {x:number;y:number}; hoveredInfo?: { objectId?: unknown } }) => void) | null }));
 vi.mock("./drawing-canvas", () => ({ DrawingCanvas: () => null }));
 vi.mock("lightweight-charts", () => ({
   TickMarkType: { Year: 0, Month: 1, DayOfMonth: 2, Time: 3, TimeWithSeconds: 4 },
   CandlestickSeries: "candle", HistogramSeries: "volume", ColorType: { Solid: "solid" }, CrosshairMode: { MagnetOHLC: 1 }, LineStyle: { Dashed: 1 },
   createSeriesMarkers: () => ({ setMarkers: (markers: unknown[]) => { engine.markers = markers; } }),
   createChart: () => ({
-    applyOptions: () => {}, remove: () => {}, subscribeCrosshairMove: () => {}, subscribeClick: (handler: (param: { hoveredInfo?: { objectId?: unknown } }) => void) => { engine.clickHandler = handler; }, unsubscribeClick: () => { engine.clickHandler = null; },
+    applyOptions: () => {}, remove: () => {}, subscribeCrosshairMove: () => {}, subscribeClick: (handler: (param: { point?: {x:number;y:number}; hoveredInfo?: { objectId?: unknown } }) => void) => { engine.clickHandler = handler; }, unsubscribeClick: () => { engine.clickHandler = null; },
     timeScale: () => ({ subscribeVisibleLogicalRangeChange: () => {}, fitContent: () => { engine.visible = engine.data.map(bar => bar.time); }, getVisibleLogicalRange: () => engine.range, getVisibleRange: () => { const from = engine.data[Math.max(0, Math.round(engine.range.from))]?.time; const to = engine.data[Math.min(engine.data.length - 1, Math.round(engine.range.to))]?.time; return from === undefined || to === undefined ? null : { from, to }; }, setVisibleLogicalRange: (range: { from: number; to: number }) => { engine.range = range; engine.rangeCalls.push(range); } }),
     addSeries: (kind: string) => ({
+      attachPrimitive: (primitive: ReturnType<typeof createExecutionMarkerPrimitive>) => primitive.attached?.({ chart: { timeScale: () => ({ timeToCoordinate: () => 100, logicalToCoordinate: () => 100, width: () => 300 }) }, series: { priceToCoordinate: () => 100 }, requestUpdate: () => {} } as never),
       setData: (data: { time: number }[]) => { if (kind === "candle") { engine.data = data; engine.setDataCalls += 1; } },
       applyOptions: () => {}, priceToCoordinate: (p:number)=>p, coordinateToPrice:(p:number)=>p, priceScale: () => ({ applyOptions: () => {}, setVisibleRange:(r:{from:number;to:number})=>{engine.priceRange=r;} }), createPriceLine: (line: {price:number; title:string}) => { engine.planLines.push(line); return { applyOptions: () => {} }; }, removePriceLine: () => { engine.removedLines++; },
     }),
@@ -186,6 +187,10 @@ it("hit-tests the clamped diamond position at the pane boundary", () => {
 
   expect(primitive.hitTest?.(104, 190)).toEqual(expect.objectContaining({ externalId: "fill-final" }));
   expect(primitive.hitTest?.(120, 190)).toBeNull();
+  const overlapping = { time: 1 as Time, price: 61.5, position: "aboveBar" as const, color: "#ef5350", shape: "diamond" as const, actionLabel: "清仓", text: "清仓", offsetX: 18 };
+  primitive.setMarkers([{ ...overlapping, executionIds: ["fill-first", "fill-shared"] }, { ...overlapping, executionIds: ["fill-second", "fill-shared"] }]);
+  expect(primitive.executionIdsAt(104, 190)).toEqual(["fill-first", "fill-shared", "fill-second"]);
+  expect(primitive.executionIdsAt(120, 190)).toEqual([]);
 });
 
 it("anchors a revealed execution in its actual whitespace time when the candle OHLC is still withheld", () => {
@@ -371,6 +376,61 @@ it("routes a click on a revealed execution marker to its source execution", asyn
     engine.clickHandler?.({ hoveredInfo: { objectId: "fill-1" } });
     expect(onExecutionSelect).toHaveBeenCalledWith("fill-1");
   });
+});
+
+it("disambiguates dense fills without selecting on close or Escape", async () => {
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const execution = {
+    id: "fill-1",
+    source: { platform: "fixture", row: 1, displayTimePolicy: "execution-time" as const },
+    accountId: "account", accountLabel: "Account",
+    instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side: "buy" as const, executedAt: "2026-01-01T00:30:00Z", quantity: "1", price: "1", fee: "0",
+  };
+  const onExecutionSelect = vi.fn();
+  const candle = { time: "2026-01-01T00:00:00Z", open: 1, high: 2, low: 1, close: 2, volume: 10 };
+  const chart = (phaseKey: string) => <ReplayChart
+    phaseKey={phaseKey}
+    candles={[candle]}
+    executions={[execution, { ...execution, id: "fill-2", side: "sell" }]}
+    cursor={candle.time}
+    averageCost={0}
+    drawings={[]}
+    activeTool="cursor"
+    episodeId="episode"
+    selectedDrawingId={null}
+    plannedRiskAmount={undefined}
+    currency="USD"
+    onSelectDrawing={() => {}}
+    onCommand={() => {}}
+    onExecutionSelect={onExecutionSelect}
+    settings={{ version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" }}
+  />;
+  const view = render(chart("holding"));
+  await waitFor(() => expect(engine.clickHandler).not.toBeNull());
+  await waitFor(() => { engine.clickHandler?.({ point: { x: 100, y: 100 } }); expect(view.getByRole("dialog", { name: "选择成交" })).toBeTruthy(); });
+  expect(onExecutionSelect).not.toHaveBeenCalled();
+  fireEvent.keyDown(view.getByRole("dialog"), { key: "Escape" });
+  expect(view.queryByRole("dialog")).toBeNull();
+  expect(onExecutionSelect).not.toHaveBeenCalled();
+  await waitFor(() => { engine.clickHandler?.({ point: { x: 100, y: 100 } }); expect(view.getByRole("dialog")).toBeTruthy(); });
+  fireEvent.click(view.getByRole("button", { name: /卖出/ }));
+  expect(onExecutionSelect).toHaveBeenCalledExactlyOnceWith("fill-2");
+  expect(view.queryByRole("dialog")).toBeNull();
+  await waitFor(() => { engine.clickHandler?.({ point: { x: 100, y: 100 } }); expect(view.getByRole("dialog")).toBeTruthy(); });
+  fireEvent.click(view.getByRole("button", { name: "关闭成交候选" }));
+  expect(view.queryByRole("dialog")).toBeNull();
+  expect(onExecutionSelect).toHaveBeenCalledTimes(1);
+  await waitFor(() => { engine.clickHandler?.({ point: { x: 100, y: 100 } }); expect(view.getByRole("dialog")).toBeTruthy(); });
+  const previousRange = { ...engine.range };
+  const previousData = [...engine.data];
+  const rangeCalls = engine.rangeCalls.length;
+  view.rerender(chart("post-review"));
+  expect(view.queryByRole("dialog")).toBeNull();
+  expect(onExecutionSelect).toHaveBeenCalledTimes(1);
+  expect(engine.range).toEqual(previousRange);
+  expect(engine.rangeCalls).toHaveLength(rangeCalls);
+  expect(engine.data).toEqual(previousData);
 });
 
 it("refits the rendered range after changing stock/period, but keeps zoom on ordinary rerenders", async () => {
@@ -628,4 +688,13 @@ it('drag shares plan callback, pauses interaction and cancellation restores orig
  fireEvent.pointerCancel(button);expect(change).toHaveBeenLastCalledWith('entry','68');
  fireEvent.click(button);expect(select).toHaveBeenCalledWith('entry');
  vi.restoreAllMocks();
+});
+
+it("hit-tests the diamond shifted away from the price-label strip", () => {
+  const primitive = createExecutionMarkerPrimitive(() => [{ time: 1 as Time, open: 1, high: 2, low: 1, close: 2, volume: 10 }]);
+  primitive.attached?.({ chart: { timeScale: () => ({ width: () => 400, timeToCoordinate: () => 390 }) }, series: { priceToCoordinate: () => 200, priceScale: () => ({ width: () => 80 }) }, requestUpdate: () => {} } as never);
+  primitive.setMarkers([{ time: 1 as Time, price: 10, position: "aboveBar", color: "#26a69a", shape: "diamond", actionLabel: "买入", text: "买入", executionIds: ["actual-fill"] }]);
+  expect(primitive.executionIdsAt(314, 190)).toEqual(["actual-fill"]);
+  expect(primitive.hitTest?.(314, 190)).toEqual(expect.objectContaining({ externalId: "actual-fill" }));
+  expect(primitive.executionIdsAt(390, 190)).toEqual([]);
 });

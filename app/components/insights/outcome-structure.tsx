@@ -1,7 +1,9 @@
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { OutcomeBucket, OutcomeStructureReport } from "../../lib/insights/outcome-structure";
 import styles from "./outcome-structure.module.css";
+
+import { stripLanes } from "./strip-lanes";
 
 type Props = {
   report: OutcomeStructureReport;
@@ -154,6 +156,27 @@ export function OddsWinRatePlot({
 }
 
 export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [stripWidth, setStripWidth] = useState(0);
+  const [targetSize, setTargetSize] = useState({width:44,height:44});
+  useEffect(() => {
+    const node = stripRef.current;
+    if (!node) return;
+    const measure = () => {
+      setStripWidth(node.getBoundingClientRect().width);
+      const targets = Array.from(node.querySelectorAll<HTMLButtonElement>("button"));
+      const width = Math.max(36, ...targets.map(target => target.getBoundingClientRect().width));
+      const height = Math.max(36, ...targets.map(target => target.getBoundingClientRect().height));
+      setTargetSize(previous => previous.width === width && previous.height === height ? previous : {width,height});
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    node.querySelectorAll("button").forEach(target => observer.observe(target));
+    return () => observer.disconnect();
+  });
+  const lanes = stripLanes(report.strip.points.map(point => Number(point.positionPercent)), stripWidth, targetSize.width + 6);
+  const laneHeight = Math.max(1, ...lanes.map(lane => lane + 1)) * (targetSize.height + 6);
   const [view, setView] = useState<"return" | "pnl">("return");
   const smallSample = report.sampleCount < 8;
   const factsByEpisode = new Map(facts.map((fact) => [fact.episodeId, fact]));
@@ -201,15 +224,15 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
           </div>
         </div>
         {view === "return" ? (
-          <div role="img" aria-label="逐回合费用后收益率点图，含零收益线和中位数线" style={{ position: "relative", height: 54, margin: "16px 8px" }}>
+          <div ref={stripRef} role="img" aria-label="逐回合费用后收益率点图，含零收益线和中位数线" style={{ position: "relative", height: laneHeight + 34, margin: "16px 8px" }}>
             <div aria-hidden="true" style={{ position: "absolute", left: "0%", right: 0, top: 24, borderTop: "1px solid var(--border, #455)" }} />
             <div aria-label="点图零收益参考线 0%" style={{ position: "absolute", left: `${report.histogram.zeroPositionPercent ?? 50}%`, top: 4, bottom: 4, borderLeft: "2px solid #d4a72c" }} />
-            {report.strip.points.map((point) => {
+            {report.strip.points.map((point, index) => {
               const fact = factsByEpisode.get(point.episodeId);
               if (!fact) return null;
-              return <button className={styles.stripPoint} key={point.episodeId} type="button" title={`${displayNumber(point.returnPercent, "%")} · 查看回合`} aria-label={`查看收益率 ${displayNumber(point.returnPercent, "%")} ${fact.instrumentName}`} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)} style={{ position: "absolute", left: `${point.positionPercent}%`, top: 17, width: 14, height: 14, borderRadius: "50%", padding: 0, transform: "translateX(-50%)" }} />;
+              return <button className={styles.stripPoint} key={point.episodeId} type="button" title={`${displayNumber(point.returnPercent, "%")} · 查看回合`} aria-label={`查看收益率 ${displayNumber(point.returnPercent, "%")} ${fact.instrumentName}`} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)} style={{ position: "absolute", left: `${point.positionPercent}%`, top: 7 + lanes[index] * (targetSize.height + 6), borderRadius: "50%", padding: 0, transform: "translateX(-50%)" }} />;
             })}
-            {report.strip.medianPercent !== null && <span style={{ position: "absolute", left: `${report.strip.medianPositionPercent ?? 50}%`, top: 36, fontSize: 12 }}>中位 {displayNumber(report.strip.medianPercent, "%")}</span>}
+            {report.strip.medianPercent !== null && <span style={{ position: "absolute", left: `${report.strip.medianPositionPercent ?? 50}%`, top: laneHeight + 12, fontSize: 12 }}>中位 {displayNumber(report.strip.medianPercent, "%")}</span>}
           </div>
         ) : (
           <p className={styles.note}>{report.netPnlContribution.currency === null ? "当前范围含多个币种，净盈亏贡献按原币分组；未合并不同币种。" : `分子：当前回合净盈亏；分母：${report.netPnlContribution.currency} 范围全部可用净盈亏合计（${displayNumber(report.netPnlContribution.totalNetPnl)}）。负分母时占比方向会随总额保留，不能当作账户收益率。`}</p>

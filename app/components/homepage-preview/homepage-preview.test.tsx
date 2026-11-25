@@ -321,7 +321,7 @@ describe('homepage mock journey', () => {
       const view = await base.readHome(request, signal);
       return { ...view, series: { ...view.series, points: view.series.points.map(point => ({ ...point,
         marketValue: { ...point.marketValue, value: '1234.5678' },
-        unrealized: { ...point.unrealized, value: '-0.004' },
+        unrealized: { ...point.unrealized, value: '-1e-43' },
         realized: { ...point.realized, value: '0.004' },
         net: { ...point.net, value: null },
         periodNet: { ...point.periodNet, value: '-4380.745' },
@@ -336,6 +336,14 @@ describe('homepage mock journey', () => {
     expect(screen.getByTestId('hp-chart-value-net').textContent).toBe('—');
     const amount = screen.getByTestId('hp-chart-value-periodNet');
     expect(amount.textContent).toBe('-4,380.75');
+    expect(amount).toHaveAttribute('data-raw-value', '-4380.745');
+    expect(amount.getAttribute('aria-label')).not.toContain('-4380.745');
+    expect(amount.getAttribute('title')).not.toContain('-4380.745');
+    const zero = screen.getByTestId('hp-chart-value-unrealized');
+    expect(zero.getAttribute('aria-label')).toContain('0.00');
+    expect(zero.getAttribute('aria-label')).not.toMatch(/-0\.00|e-43/);
+    expect(zero.getAttribute('title')).not.toMatch(/-0\.00|e-43/);
+    expect(zero).toHaveAttribute('data-raw-value', '-1e-43');
     fireEvent.focus(amount);
     expect(document.getElementById(amount.getAttribute('aria-describedby')!)).toHaveTextContent('原始金额：-4380.745 CNY');
   });

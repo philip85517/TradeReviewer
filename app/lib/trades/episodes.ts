@@ -1,3 +1,4 @@
+import { carryGiftAcquisitionEvidence, collectGiftAcquisitionEvidence, giftEventIdentity, isGiftAcquisitionEvidence } from "./gift-acquisition-evidence";
 import Decimal from "decimal.js";
 import { simulationScope } from "./trading-nature";
 
@@ -201,12 +202,15 @@ export function buildTradeEpisodes(
     ...evidence.flatMap(e => e.positions),
     ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])]),
   ].map(p => [statementPositionEvidenceKey(p), p])).values()];
-  const rawEvents = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  const attachedEvents = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  const rawEvents = carryGiftAcquisitionEvidence(attachedEvents, attachedEvents);
+  const gifts = collectGiftAcquisitionEvidence(rawEvents);
   const bonusEvidence = collectBonusShareEvidence(rawEvents);
   const duplicateBonusKeys = new Set(bonusEvidence.duplicateKeys);
   const events = [...new Map([
     ...bonusEvidence.events,
-    ...rawEvents.filter(event => !isBonusShareEvidence(event)),
+    ...rawEvents.filter(event => !isBonusShareEvidence(event) && !isGiftAcquisitionEvidence(event)),
+    ...gifts.events,
   ].map(event => [`${event.accountId}:${event.id}`, event])).values()];
   const ipoAllocations = [...new Map(events.filter(event => event.kind === "ipo" && event.quantity !== undefined).map(event => [event.id, event])).values()];
   const ipoCosts = new Map<string, IpoAcquisitionCost>();
@@ -358,6 +362,7 @@ export function buildTradeEpisodes(
       if (!template) continue; // Inventory-only instruments need an Instrument from the caller before rendering.
       const existing = active.get(key);
       let next = existing?.position ?? new Decimal(0);
+      let isGift = false;
       let isBonusShare = false;
       let bonusBasisKnown = false;
       let ambiguous = false;
@@ -383,6 +388,7 @@ export function buildTradeEpisodes(
         // happened to be active on the cash posting date.
         if (isAttributableIpoCashEvent(event)) continue;
         const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+        isGift = isGiftAcquisitionEvidence(event);
         isBonusShare = isBonusShareEvidence(event);
         if (isIpoAllocation && isZeroStatementQuantity(event.quantity)) {
           if (existing) {
@@ -426,7 +432,8 @@ export function buildTradeEpisodes(
             && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)).startsWith(event.date))));
         if (bonusDuplicate) flag(key, "duplicate-position-event", existing?.episode);
         if (ambiguous) flag(key, "ambiguous-event-order", existing?.episode);
-        if (isBonusShare) {
+        if (isGift && gifts.duplicateKeys.includes(giftEventIdentity(event))) flag(key, "duplicate-position-event", existing?.episode);
+        if (isBonusShare || isGift) {
           const currencies = new Set(executions
             .filter(e => e.accountId === event.accountId && event.symbol && event.market &&
               canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol, event.market))
@@ -447,7 +454,7 @@ export function buildTradeEpisodes(
           bonusBasisKnown = Boolean(existing?.position.gt(0) &&
             !["unknown-cost", "position-event", "position-gap", "ambiguous-event-order", "currency-conflict", "duplicate-position-event", "initial-position"]
               .some(reason => priorReasons.has(reason)));
-          if (existing?.position.isNegative() || (existing?.position.isZero() && existing !== undefined)) {
+          if (existing?.position.isNegative() || (!isGift && existing?.position.isZero() && existing !== undefined)) {
             flag(key, "position-event", existing.episode);
             flag(key, "unknown-cost", existing.episode);
             (existing.episode.positionEvents ??= []).push(event);
@@ -461,7 +468,7 @@ export function buildTradeEpisodes(
         const isAddition = event.kind === "transfer-in" || isIpoAllocation || isBonusShare;
         next = next.plus(new Decimal(event.quantity).abs().times(isAddition ? 1 : -1));
         const knownIpoCost = isIpoAllocation && ipoCosts.has(event.id);
-        if (!knownIpoCost && !isBonusShare) flag(key, "position-event", existing?.episode);
+        if (!knownIpoCost && !isBonusShare && !isGift) flag(key, "position-event", existing?.episode);
       }
       if (existing && (next.isZero() || next.isPositive() !== existing.position.isPositive())) {
         existing.episode.status = "closed";
@@ -485,7 +492,7 @@ export function buildTradeEpisodes(
         if (entry.position) target.episode.initialPosition = entry.position;
         if (coverageWarnings.has(key)) target.episode.warnings = [...coverageWarnings.get(key)!];
         attachPendingEvents(key, target.episode);
-        if (!(entry.event?.kind === "ipo" && entry.event.quantity !== undefined && ipoCosts.has(entry.event.id))) flag(key, "initial-position", target.episode);
+        if (!isGift && !(entry.event?.kind === "ipo" && entry.event.quantity !== undefined && ipoCosts.has(entry.event.id))) flag(key, "initial-position", target.episode);
         active.set(key, target);
       }
       if (entry.event) (target.episode.positionEvents ??= []).push(entry.event);
@@ -501,6 +508,7 @@ export function buildTradeEpisodes(
       const eventHasKnownCost = entry.event?.kind === "ipo"
         && entry.event.quantity !== undefined
         && ipoCosts.has(entry.event.id)
+        || isGift && !ambiguous && !gifts.duplicateKeys.includes(giftEventIdentity(entry.event!))
         || isBonusShare && bonusBasisKnown && !ambiguous && !bonusDuplicate;
       if (!eventHasKnownCost) flag(key, "unknown-cost", target.episode);
       continue;

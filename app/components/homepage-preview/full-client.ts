@@ -30,6 +30,12 @@ export type FullRefreshStatus={sourceRepairRange?:{from:string;to:string;limited
 export async function repairFull(from:string,signal?:AbortSignal,to?:string):Promise<FullRefreshStatus>{const response=await fetch('/api/home/repair?'+new URLSearchParams({reader:'full-home-v1',from,...(to?{to}:{})}),{method:'POST',signal,cache:'no-store'});if(!response.ok){let message=`修复请求失败（${response.status}）`;try{const body=await response.json() as {error?:string};message=body.error??message;}catch{}throw new Error(message);}return response.json();}
 export async function retryFull(signal?:AbortSignal):Promise<FullRefreshStatus>{const response=await fetch('/api/home/retry?reader=full-home-v1',{method:'POST',signal,cache:'no-store'});if(!response.ok)throw new Error(`重试失败（${response.status}）`);return response.json();}
 
-export function fullLibraryParameters(request:FullRequestV1,accounts:string[],item?:Pick<FullCatalogItem,'instrumentId'|'accountId'|'market'>,date?:string){
- const params=new URLSearchParams({market:item?.market??request.selection.market,accounts:JSON.stringify(item?[item.accountId]:accounts),rangeMode:date?'custom':request.currentPeriod.preset,from:date??request.currentPeriod.from,to:date??request.currentPeriod.to,returnTo:'/home'});if(item)params.set('instrument',item.instrumentId);return params;
+export type FullLibrarySource='current'|'historical-contribution';
+export function fullLibraryParameters(request:FullRequestV1,accounts:string[],item?:Pick<FullCatalogItem,'instrumentId'|'accountId'|'market'>,date?:string,source:FullLibrarySource='current'){
+ const range=date?{preset:'custom',from:date,to:date}:source==='historical-contribution'
+  ?request.historyRange.scope==='all'?{preset:'all',from:null,to:null}:{preset:'custom',from:`${request.historyRange.fromYear}-01-01`,to:`${request.historyRange.toYear}-12-31`}
+  :request.currentPeriod;
+ const params=new URLSearchParams({market:item?.market??request.selection.market,accounts:JSON.stringify(item?[item.accountId]:accounts),rangeMode:range.preset,returnTo:'/home'});
+ if(range.from)params.set('from',range.from);if(range.to)params.set('to',range.to);
+ if(item)params.set('instrument',item.instrumentId);return params;
 }

@@ -72,6 +72,43 @@ describe('native finance projection', () => {
     const trades=[cross('1','buy','100','10','9','2026-01-05'),cross('2','sell','50','12','9','2026-01-06')];
     expect(run(trades,'13')).toMatchObject({quantity:'50',averageCost:'10',openFeesByCurrency:{CNY:'4.5'},realizedByCurrency:{HKD:'100',CNY:'-13.5'},closedFeesByCurrency:{HKD:'0',CNY:'13.5'},unrealized:null});
   });
+  it('publishes the canonical source FIFO seam for a proven execution-backed IPO overlap',()=>{
+    const ipoEvent: import('../import/monthly-statement').StatementEvent={documentId:'ipo-doc',id:'ipo-1',accountId:'a',market:'HK',symbol:'00001',date:'2026-01-07',kind:'ipo',quantity:'80',displayTimePolicy:'session-open',description:'IPO allotment 1',source:[{page:1,row:1,role:'stock'}]};
+    const ipo=fill('ipo-buy','buy','80','165','0','2026-01-07');ipo.source={...ipo.source,positionEffect:'open-long',positionEvents:[ipoEvent],displayTimePolicy:'session-open',marketCalendarDate:'2026-01-07',sourceTradeId:'1'};
+    const ordinary=fill('ordinary-buy','buy','100','233','0','2026-01-09');ordinary.source={...ordinary.source,positionEffect:'open-long'};
+    const sell=fill('sell','sell','60','393','0','2026-01-13');sell.source={...sell.source,positionEffect:'close-long'};
+    const facts=run([ipo,ordinary,sell],'393');
+    expect(facts).toMatchObject({quantity:'120',averageCost:'221.666666666666666666666666666666666666666666667',realized:'13680',unrealized:'20560'});
+    expect(facts.sourceFifo).toMatchObject({remainingByCategory:{ipo:'20',long:'100'}});
+    expect(facts.sourceFifo?.consumptions).toEqual([{closingId:'sell',openingSourceKey:'execution:ipo-buy',category:'ipo',quantity:'60',cashCost:'9900'}]);
+  });
+  it('does not reapply an earlier FIFO episode to a later pure ordinary round',()=>{
+    const ipo=fill('ipo-buy','buy','80','165','0','2026-01-07');
+    const ordinary=fill('ordinary-buy','buy','100','233','0','2026-01-09');
+    const firstClose=fill('first-close','sell','180','393','0','2026-01-13');
+    for(const e of [ipo,ordinary])e.source={...e.source,positionEffect:'open-long'};
+    firstClose.source={...firstClose.source,positionEffect:'close-long'};
+    const laterBuy=fill('later-buy','buy','100','10','0','2026-01-20');
+    const laterSell=fill('later-sell','sell','100','30','0','2026-01-21');
+    laterBuy.source={...laterBuy.source,positionEffect:'open-long'};
+    laterSell.source={...laterSell.source,positionEffect:'close-long'};
+    const ipoEvent: import('../import/monthly-statement').StatementEvent={documentId:'ipo-doc',id:'ipo-1',accountId:'a',market:'HK',symbol:'00001',date:'2026-01-07',kind:'ipo',quantity:'80',displayTimePolicy:'session-open',description:'IPO allotment 1',source:[{page:1,row:1,role:'stock'}]};
+    ipo.source={...ipo.source,positionEvents:[ipoEvent],displayTimePolicy:'session-open',marketCalendarDate:'2026-01-07',sourceTradeId:'1'};
+    const facts=run([ipo,ordinary,firstClose,laterBuy,laterSell],'30');
+    expect(facts).toMatchObject({quantity:'0',realized:'36240',unrealized:'0'});
+    expect([...new Set(facts.sourceFifo?.consumptions.map(item=>item.closingId))]).toEqual(['first-close','later-sell']);
+  });
+  it('does not publish a non-canonical FIFO shadow over a pure MA episode',()=>{
+    const first=fill('first','buy','100','10','0','2026-01-07');
+    const second=fill('second','buy','100','20','0','2026-01-08');
+    const close=fill('close','sell','100','30','0','2026-01-09');
+    first.source={...first.source,positionEffect:'open-long'};
+    second.source={...second.source,positionEffect:'open-long'};
+    close.source={...close.source,positionEffect:'close-long'};
+    const facts=run([first,second,close],'30');
+    expect(facts).toMatchObject({quantity:'100',averageCost:'15',realized:'1500',unrealized:'1500'});
+    expect(facts.sourceFifo).toBeUndefined();
+  });
   it('recovers a valid new lot after malformed old prices without certifying old realization',()=>{
     const trades=[fill('1','buy','1','NaN','0'),fill('2','sell','1','120','0','2026-01-06'),fill('3','buy','1','20','1','2026-01-07')];
     expect(run(trades,'25')).toMatchObject({quantity:'1',averageCost:'20',unrealized:'4',realized:null,knownRealized:'0',realizedMissing:1});

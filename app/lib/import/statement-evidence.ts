@@ -1,3 +1,4 @@
+import { carryGiftAcquisitionEvidence } from "../trades/gift-acquisition-evidence";
 import type { StatementParseResult } from "./contracts";
 import { isMonthlyEvidenceScope, isMonthlyStatement, type MonthlyStatement, type StatementEvent, type StatementPosition } from "./monthly-statement";
 import type { PdfTextItem, PdfTextPage } from "./pdf-text";
@@ -74,7 +75,8 @@ export function selectMonthlyEvidenceHistory(
     // A full snapshot is the base when revisions share a timestamp.
     return Number(Boolean(left.monthly.evidenceScope)) - Number(Boolean(right.monthly.evidenceScope));
   });
-  return selected.map((candidate) => candidate.monthly);
+  const priorEvents = entries.flatMap(entry => entry.monthly && isMonthlyStatement(entry.monthly) ? entry.monthly.events : []);
+  return selected.map(({monthly}) => ({...monthly, events: carryGiftAcquisitionEvidence(monthly.events, priorEvents)}));
 }
 type LedgerStatement = Pick<MonthlyStatement, "positions" | "events"> & Partial<MonthlyStatement>;
 type InventoryIdentity = { accountId: string; market: string; symbol: string };
@@ -343,6 +345,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       let ipoAction: StatementEvent["ipoAction"];
       let quantity: string | undefined;
       let amount: string | undefined;
+      let reportedUnitCost: string | undefined;
       if (section === "stock") {
         const movement = stockMovementPattern.test(text);
         if (!movement) continue;
@@ -362,6 +365,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
         if (!/股票/.test(row.text)) continue;
         kind = /转入|轉入/.test(row.text) ? "transfer-in" : /转出|轉出/.test(row.text) ? "transfer-out" : undefined;
         quantity = numericCell(row, headers, /^转移数量$/);
+        reportedUnitCost = numericCell(row, headers, /^(成本价格|成本價格|成本價|成本价)$/);
         if (!instrument || !date || !kind || quantity === undefined) {
           unresolved(page, row, "transfer", instrument?.symbol);
           continue;
@@ -394,7 +398,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       }
       if (!kind || !date || (section === "cash" && amount === undefined)) continue;
       const eventCurrency = rowCurrency(row) ?? (section === "cash" ? sectionCurrency : undefined);
-      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(ipoAction ? { ipoAction } : {}), ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: section === "stock" || section === "transfer" ? undefined : eventCurrency, description: row.text, source });
+      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(ipoAction ? { ipoAction } : {}), ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(reportedUnitCost !== undefined ? { reportedUnitCost } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: section === "stock" ? undefined : eventCurrency, description: row.text, source });
     }
   }
   const positionKeys = new Set(monthly.positions.map(statementPositionEvidenceKey));
@@ -500,6 +504,8 @@ export function executionSourceOrderConflictsWithTime(left: TradeExecution, righ
  * from this call retain their attachments. Callers must supply only the current revision per ID.
  */
 export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthly: MonthlyStatement[]): TradeExecution[] {
+  const priorEvents = [...monthly.flatMap(m => m.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  monthly = monthly.map(m => ({...m, events: carryGiftAcquisitionEvidence(m.events, priorEvents)}));
   const appliesToExecution = (statement: MonthlyStatement, execution: TradeExecution) => {
     if (statement.evidenceScope === undefined) return true;
     // A malformed persisted scope must never fall back to document-wide

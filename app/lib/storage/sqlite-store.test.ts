@@ -1814,3 +1814,16 @@ it('does not invalidate source projections when identical instrument metadata is
   store.putInstrumentMetadata({ ...record, name: 'Apple Inc. updated', resolvedAt: '2026-02-01T00:00:00.000Z' });
   expect(sequence()).not.toEqual(before);
 });
+
+it('retains user gift confirmation when the same import history ID is overwritten only for the exact source event',()=>{
+ const store=createStore();
+ const event:import('../import/monthly-statement').StatementEvent={documentId:'gift-doc',id:'gift-row',accountId:'account-1',market:'HK',symbol:'700',date:'2020-12-22T03:31:04.000Z',kind:'transfer-in',quantity:'2',currency:'HKD',reportedUnitCost:'0.0000',description:'Transfer in',source:[{page:3,row:22}],giftAcquisition:{kind:'user-confirmed-zero-cost-gift',source:'user',note:'Confirmed gift',confirmedAt:'2026-11-25T00:00:00.000Z',currency:'HKD'}};
+ const {giftAcquisition: _confirmation,...raw}=event;
+ const monthly={documentId:'gift-doc',templateIds:[],positions:[],events:[event],reviewRequired:false};
+ const history={id:'same-gift-history',fileName:'gift.pdf',sourceLabel:'fixture',importedAt:'2026-11-24T00:00:00Z',tradeCount:0,instrumentCount:0,excludedInstrumentCount:0,excludedRecordCount:0,duplicateTradeCount:0,unresolvedInstrumentCount:0,monthly};
+ store.mergeTradeData({executions:[],importHistory:[history]});
+ store.mergeTradeData({executions:[],importHistory:[{...history,monthly:{...monthly,events:[raw]}}]});
+ expect(store.getImportHistory()[0].monthly?.events[0].giftAcquisition).toEqual(event.giftAcquisition);
+ store.mergeTradeData({executions:[],importHistory:[{...history,monthly:{...monthly,events:[{...raw,quantity:'3'}]}}]});
+ expect(store.getImportHistory()[0].monthly?.events[0].giftAcquisition).toBeUndefined();
+});

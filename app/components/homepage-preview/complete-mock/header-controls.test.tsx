@@ -5,11 +5,14 @@ import { DEFAULT_REQUEST } from '../mock-source';
 import { mockInstruments } from './mock-source';
 afterEach(cleanup);
 const accounts=[{id:'all',name:'全部实盘账户'},{id:'account-1',name:'招商证券 · 实盘'}];
-it('keeps unapplied filter draft on Escape and commits dimensions together', async()=>{
+it('keeps unapplied draft on Escape from the trigger', async()=>{
   const change=vi.fn();render(<HeaderControls request={DEFAULT_REQUEST} accounts={accounts} instruments={mockInstruments('normal')} pending={false} error={null} onChange={change} onOpenInstrument={vi.fn()}/>);
   fireEvent.click(screen.getByRole('button',{name:'附加筛选'}));
   fireEvent.click(screen.getByRole('checkbox',{name:'ETF'}));
-  fireEvent.keyDown(screen.getByRole('dialog',{name:'附加筛选'}),{key:'Escape'});
+  const trigger=screen.getByRole('button',{name:'附加筛选'}); trigger.focus();
+  fireEvent.keyDown(trigger,{key:'Escape'});
+  expect(screen.queryByRole('dialog',{name:'附加筛选'})).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
   expect(change).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button',{name:'附加筛选'}));
   expect(screen.getByRole('checkbox',{name:'ETF'})).toBeChecked();

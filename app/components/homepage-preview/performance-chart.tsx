@@ -176,9 +176,9 @@ function DateDetail({ selection, reportCurrency, pinned, id, detailRef, onMouseE
           <dt>{field.label}</dt>
           <dd tabIndex={0} data-raw-value={raw ?? undefined} data-testid={`hp-chart-value-${field.key}`}
             className={`hp-performance-chart__${sign} ${field.key === "periodNet" ? "hp-performance-chart__period-net" : ""}`}
-            aria-label={`${field.label} ${reportCurrency} ${value}${reason ? `；${reason}` : ""}；${evidence}`}
+            aria-label={`${field.label} ${reportCurrency} ${value}${reason ? `；${reason}` : ""}`}
             aria-describedby={evidenceField === field.key ? `${id}-${field.key}-evidence` : undefined}
-            title={`${value}${reason ? `；${reason}` : ""}；${evidence}`}
+            title={`${value}${reason ? `；${reason}` : ""}`}
             onFocus={() => setEvidenceField(field.key)} onBlur={() => setEvidenceField(null)}
             onMouseEnter={() => setEvidenceField(field.key)} onMouseLeave={event => { if (document.activeElement !== event.currentTarget) setEvidenceField(null); }}
           >{value}{raw !== null && notes.length > 0 && <span className="hp-estimate-label"> 含拆股推算</span>}</dd>

@@ -5,6 +5,7 @@ import type { LibraryScopeBootstrap, StorageBootstrap } from "../lib/storage/sql
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
+import { fullLibraryEntry } from "./homepage-preview/full-library";
 const frame = { cursorIndex: 0, cursor: "2026-11-20T14:30:00.000Z", candles15m: [], executions: [], canGoBack: false, canGoForward: false };
 const execution: TradeExecution = { id: "a-buy", source: { platform: "futu", row: 2 }, accountId: "acct", accountLabel: "账户 A", instrument: { id: "US:A", symbol: "A", name: "Alpha", market: "US", currency: "USD" }, side: "buy", executedAt: "2016-01-02T14:30:00.000Z", quantity: "1", price: "10", fee: "0" };
 const bootstrap: StorageBootstrap = { schemaVersion: 1, migration: null, executions: [execution], importHistory: [], instruments: [], reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [], settings: {} };
@@ -38,12 +39,18 @@ describe("real workspace scoped library lifecycle",()=>{
     expect(screen.getByRole("searchbox",{name:"搜索已导入标的"})).toHaveValue("Alpha");
   });
   it("clears the homepage period using complete local security history without upgrading", async () => {
+    window.history.replaceState({ source: "home" }, "", "/trades?accounts=%5B%22acct%22%5D&market=US&rangeMode=custom&from=2026-08-01&to=2026-08-31&instrument=US%3AA&returnTo=%2Fhome");
     const {client}=setup(undefined,"2026-01-01");
     await screen.findByRole("button",{name:"清除成交期间"});
     fireEvent.click(screen.getByRole("button",{name:"清除成交期间"}));
     await waitFor(()=>expect(document.querySelector(".library-stock-row")?.textContent).toContain("Alpha"));
     expect(client.getBootstrap).not.toHaveBeenCalled();
     expect(screen.getByRole("link",{name:"返回我的交易室"})).toHaveAttribute("href","/home");
+    const params = Object.fromEntries(new URLSearchParams(window.location.search));
+    expect(fullLibraryEntry(params)).toMatchObject({from:null,to:null,accounts:["acct"],market:"US",instrumentId:"US:A",returnTo:"/home",notice:""});
+    expect(params).not.toHaveProperty("from");
+    expect(params).not.toHaveProperty("to");
+    expect(window.history.state).toEqual({source:"home"});
   });
   it("opens the real global menu once and fills it after full reading, never displaying scoped counts",async()=>{
     const {client,full}=setup();

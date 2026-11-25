@@ -1,3 +1,4 @@
+import { carryGiftAcquisitionEvidence } from "../trades/gift-acquisition-evidence";
 import "server-only";
 
 import Decimal from "decimal.js";
@@ -1987,6 +1988,14 @@ export class SqliteStore {
 
   private putImportHistory(entry: ImportHistoryEntry): void {
     validateImportHistory(entry);
+    if (entry.monthly) {
+      // A same-ID upsert replaces the previous JSON, so selection-time carry
+      // alone cannot preserve a user interpretation across this write path.
+      const previous = this.database.prepare(`select b.reconciliation_json, r.request_json as revision_request_json
+        from import_batches b left join trade_revisions r on r.id=b.id where b.id=?`).get(entry.id) as Row | undefined;
+      const monthly = previous ? projectImportHistoryMonthly(parseJson<ImportHistoryEntry>(previous.reconciliation_json, "import history"),previous.revision_request_json).monthly : undefined;
+      if (monthly) entry = {...entry,monthly:{...entry.monthly,events:carryGiftAcquisitionEvidence(entry.monthly.events,monthly.events)}};
+    }
     this.database.prepare(`
       insert into import_batches (
         id, source_name, source_type, imported_at, record_count,

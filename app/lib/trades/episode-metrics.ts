@@ -1,3 +1,4 @@
+import { collectGiftAcquisitionEvidence, isGiftAcquisitionEvidence } from "./gift-acquisition-evidence";
 import Decimal from "decimal.js";
 
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt } from "../import/statement-evidence";
@@ -44,6 +45,8 @@ export function summarizeTradeEpisode(
   let buyCount = 0;
   let sellCount = 0;
 
+  const gifts = collectGiftAcquisitionEvidence(episode.positionEvents ?? []);
+  if (gifts.duplicateKeys.length) unavailable = true;
   const bonusEvidence = collectBonusShareEvidence(episode.positionEvents ?? []);
   if (bonusEvidence.duplicateKeys.length > 0) unavailable = true;
   if ((episode.positionEvents ?? []).some(event => event.kind === "corporate-action" && !isBonusShareEvidence(event))) unavailable = true;
@@ -62,7 +65,7 @@ export function summarizeTradeEpisode(
       if (!cost) unavailable = true;
       return cost ? [{ at: statementEventAt(allocation), kind: "acquisition" as const, acquisition: { allocation, cost } }] : [];
     }) : []),
-    ...(episode.direction === "long" ? bonusEvidence.events.flatMap(bonus => {
+    ...(episode.direction === "long" ? [...bonusEvidence.events, ...gifts.events].flatMap(bonus => {
       const sameSession = episode.executions.some(execution => {
         const executionDate = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
         return bonus.date.length === 7 ? executionDate.startsWith(bonus.date) : executionDate === bonus.date;
@@ -81,7 +84,7 @@ export function summarizeTradeEpisode(
   for (const entry of entries) {
     if (entry.kind === "bonus") {
       const quantity = new Decimal(entry.bonus.quantity!);
-      if (remainingQuantity.isZero()) unavailable = true;
+      if (remainingQuantity.isZero() && !isGiftAcquisitionEvidence(entry.bonus)) unavailable = true;
       const existingExposure = remainingQuantity.times(averageEntryPrice);
       remainingQuantity = remainingQuantity.plus(quantity);
       averageEntryPrice = remainingQuantity.isZero()

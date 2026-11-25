@@ -1,3 +1,4 @@
+import { isGiftAcquisitionMetadata, type GiftAcquisitionEvidence } from "../trades/gift-acquisition-evidence";
 import { canonicalInstrumentId } from "../instruments/display-name";
 
 /** Evidence retained with an imported monthly statement, independent of executions. */
@@ -29,6 +30,10 @@ export type StatementEvent = {
   reversesEventId?: string;
   quantity?: string;
   amount?: string;
+  /** Original statement unit cost; not automatically an economic acquisition cost. */
+  reportedUnitCost?: string;
+  /** Explicit user interpretation, retained separately from original broker fields. */
+  giftAcquisition?: GiftAcquisitionEvidence;
   currency?: string;
   /** IPO allotments are displayed on the first candle of the trading session. */
   displayTimePolicy?: "session-open";
@@ -101,5 +106,5 @@ export function isMonthlyStatement(value: unknown): value is MonthlyStatement {
   if (item.incompleteInstruments !== undefined && (!Array.isArray(item.incompleteInstruments) || !item.incompleteInstruments.every(i => i && typeof i === "object" && typeof i.market === "string" && typeof i.symbol === "string"))) return false;
   if (typeof item.documentId !== "string" || !Array.isArray(item.templateIds) || !item.templateIds.every(t => typeof t === "string") || typeof item.reviewRequired !== "boolean" || !["month", "accountId", "timePolicy"].every(k => optionalString(item, k))) return false;
   if (!Array.isArray(item.positions) || !item.positions.every(p => p && typeof p === "object" && ["accountId", "market", "symbol", "date", "quantity"].every(k => typeof p[k] === "string") && (p.phase === "opening" || p.phase === "closing") && ["cost", "documentId"].every(k => optionalString(p, k)) && fragments(p.source))) return false;
-  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "currency", "documentId", "reversesEventId"].every(k => optionalString(e, k)) && (e.ipoAction === undefined || e.ipoAction === "ipo-cancellation" || e.ipoAction === "cash-refund") && (e.displayTimePolicy === undefined || e.displayTimePolicy === "session-open") && fragments(e.source));
+  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "reportedUnitCost", "currency", "documentId", "reversesEventId"].every(k => optionalString(e, k)) && (e.ipoAction === undefined || e.ipoAction === "ipo-cancellation" || e.ipoAction === "cash-refund") && (e.displayTimePolicy === undefined || e.displayTimePolicy === "session-open") && (e.giftAcquisition === undefined || isGiftAcquisitionMetadata(e.giftAcquisition)) && fragments(e.source));
 }

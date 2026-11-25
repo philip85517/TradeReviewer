@@ -100,6 +100,7 @@ type Props = {
   episodeId: string;
   timeframe?: Timeframe;
   viewportKey?: string;
+  phaseKey?: string;
   focusRange?: EpisodeViewport;
   revealRequest?: ReplayChartRevealRequest;
   locateRequest?: ReviewChartLocateRequest;
@@ -237,7 +238,7 @@ function positionEventSignature(positionEvents: readonly StatementEvent[]) {
 
 type VisibleTimeRange = { from: Time; to: Time };
 type LogicalRange = { from: number; to: number };
-type ReplayChartClickParam = { hoveredInfo?: { objectId?: unknown }; hoveredObjectId?: unknown };
+type ReplayChartClickParam = { point?: { x: number; y: number }; hoveredInfo?: { objectId?: unknown }; hoveredObjectId?: unknown };
 
 function logicalRangesEqual(left: LogicalRange | null | undefined, right: LogicalRange | null | undefined) {
   return left !== null && left !== undefined && right !== null && right !== undefined &&
@@ -425,6 +426,7 @@ function actionLabelForExecution(
 
 type ReplayExecutionMarkerPrimitive = ISeriesPrimitive<Time> & {
   setMarkers: (markers: readonly ReplayChartMarker[]) => void;
+  executionIdsAt: (x: number, y: number) => string[];
 };
 
 export function createExecutionMarkerPrimitive(
@@ -484,6 +486,18 @@ export function createExecutionMarkerPrimitive(
       requestUpdate = null;
     },
     updateAllViews() {},
+    executionIdsAt(x: number, y: number) {
+      if (!chart || !series) return [];
+      const ids: string[] = [];
+      for (const marker of markers) {
+        const anchorX = timeToX(marker.time);
+        const anchorY = series.priceToCoordinate(marker.price);
+        if (anchorX === null || anchorY === null) continue;
+        const geometry = markerDisplayGeometry({ anchorX, anchorY, position: marker.position, offsetX: marker.offsetX, offsetY: marker.offsetY, maxX: chart.timeScale().width?.(), rightLabelBoundaryX: markerRightLabelBoundary(chart.timeScale().width?.() ?? NaN, series.priceScale?.().width?.()) });
+        if (Math.hypot(x - geometry.x, y - geometry.y) <= 14) ids.push(...(marker.executionIds ?? []));
+      }
+      return [...new Set(ids)];
+    },
     hitTest(x: number, y: number) {
       if (!chart || !series) return null;
       let nearest: { marker: ReplayChartMarker; distance: number } | null = null;
@@ -498,6 +512,7 @@ export function createExecutionMarkerPrimitive(
           offsetX: marker.offsetX,
           offsetY: marker.offsetY,
           maxX: chart.timeScale().width?.(),
+          rightLabelBoundaryX: markerRightLabelBoundary(chart.timeScale().width?.() ?? NaN, series.priceScale?.().width?.()),
         });
         const distance = Math.hypot(x - geometry.x, y - geometry.y);
         if (distance <= 14 && (!nearest || distance < nearest.distance)) nearest = { marker, distance };
@@ -838,6 +853,7 @@ export function ReplayChart({
   episodeId,
   timeframe = "1D",
   viewportKey = episodeId,
+  phaseKey,
   focusRange,
   revealRequest,
   locateRequest,
@@ -897,6 +913,9 @@ export function ReplayChart({
   const pendingLogicalRangeRef = useRef<LogicalRange | null>(null);
   const pendingLogicalRangeVersionRef = useRef(0);
   const [chartReady, setChartReady] = useState(false);
+  const [executionCandidates, setExecutionCandidates] = useState<string[]>([]);
+  useLayoutEffect(() => { setExecutionCandidates([]); }, [episodeId, viewportKey, phaseKey, cursor]);
+  const [hoveredExecutionId, setHoveredExecutionId] = useState<string | null>(null);
   const [coordinateVersion, setCoordinateVersion] = useState(0);
   const [crosshair, setCrosshair] = useState<CrosshairCandle | null>(
     null,
@@ -1089,6 +1108,8 @@ export function ReplayChart({
         chart.subscribeCrosshairMove((param) => {
           if (disposed) return;
           setCoordinateVersion((version) => version + 1);
+          const hoveredId = param.hoveredObjectId;
+          setHoveredExecutionId(typeof hoveredId === "string" && visibleExecutionIdsRef.current.has(hoveredId) ? hoveredId : null);
           if (!param.time) {
             setCrosshair(null);
             return;
@@ -1106,8 +1127,13 @@ export function ReplayChart({
         });
         const handleChartClick = (param: ReplayChartClickParam) => {
           const objectId = param.hoveredInfo?.objectId ?? param.hoveredObjectId;
-          if (typeof objectId === "string" && visibleExecutionIdsRef.current.has(objectId)) {
-            onExecutionSelectRef.current?.(objectId);
+          const candidateIds = (param.point
+            ? executionMarkerPrimitive.executionIdsAt(param.point.x, param.point.y)
+            : typeof objectId === "string" ? [objectId] : []).filter(id => visibleExecutionIdsRef.current.has(id));
+          if (candidateIds.length > 1) setExecutionCandidates(candidateIds);
+          else {
+            setExecutionCandidates([]);
+            if (candidateIds[0]) onExecutionSelectRef.current?.(candidateIds[0]);
           }
         };
         const clickCapableChart = chart as IChartApi & {
@@ -1462,6 +1488,7 @@ export function ReplayChart({
       markerData.flatMap((marker) => marker.executionIds ?? []),
     );
     markerPrimitive.setMarkers(markerData);
+    setExecutionCandidates([]);
   // Marker values are derived from the signature; array identity is irrelevant.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartReady, markerSignature]);
@@ -1814,6 +1841,23 @@ export function ReplayChart({
         )}
       </div>
       <div ref={containerRef} className="lightweight-chart" />
+      {executionCandidates.length > 1 && (
+        <div role="dialog" aria-label="选择成交" onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); setExecutionCandidates([]); } }} style={{ position: "absolute", left: 56, top: 40, zIndex: 12, padding: 12, background: "#162233", border: "1px solid #40566D", borderRadius: 6, maxWidth: "calc(100% - 120px)", maxHeight: "65%", overflowY: "auto" }}>
+          <button type="button" autoFocus onClick={() => setExecutionCandidates([])}>关闭成交候选</button>
+          {executionCandidates.map(id => executions.find(execution => execution.id === id)).filter((execution): execution is TradeExecution => Boolean(execution) && visibleExecutionIdsRef.current.has(execution!.id)).map(execution => (
+            <button type="button" key={execution.id} style={{ display: "block", marginTop: 8, minHeight: 44 }} onClick={() => { setExecutionCandidates([]); onExecutionSelectRef.current?.(execution.id); }}>
+              {formatBeijingDateTime(execution.executedAt)} · {execution.side === "buy" ? "买入" : "卖出"} · {execution.quantity} · {execution.price} {execution.instrument.currency}
+            </button>
+          ))}
+        </div>
+      )}
+      {hoveredExecutionId && (
+        <div role="tooltip" style={{ position: "absolute", left: 56, top: 40, zIndex: 9, padding: "8px 12px", background: "#162233", border: "1px solid #40566D", borderRadius: 6, pointerEvents: "none", maxWidth: "calc(100% - 120px)" }}>
+          {executions.filter(execution => (markerData.find(marker => marker.executionIds?.includes(hoveredExecutionId))?.executionIds ?? []).includes(execution.id) && visibleExecutionIdsRef.current.has(execution.id)).map(execution => (
+            <div key={execution.id}>{formatBeijingDateTime(execution.executedAt)} · {execution.side === "buy" ? "买入" : "卖出"} · {execution.quantity} @ {execution.price}</div>
+          ))}
+        </div>
+      )}
       {safePlanLines.length > 0 && (
         <button type="button" className="recall-plan-price-action" onClick={fitPlanPrices}
           style={{ position: "absolute", left: 76, bottom: 48, zIndex: 8 }}>
